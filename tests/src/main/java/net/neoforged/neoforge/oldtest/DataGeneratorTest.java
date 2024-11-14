@@ -61,7 +61,6 @@ import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -80,6 +79,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.TheEndBiomeSource;
 import net.minecraft.world.level.block.BarrelBlock;
@@ -182,7 +182,7 @@ public class DataGeneratorTest {
         gen.addProvider(event.includeClient(), new SoundDefinitions(packOutput, event.getExistingFileHelper()));
         gen.addProvider(event.includeClient(), new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
 
-        gen.addProvider(event.includeServer(), new Recipes(packOutput, lookupProvider));
+        gen.addProvider(event.includeServer(), new Recipes.Runner(packOutput, lookupProvider));
         gen.addProvider(event.includeServer(), new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
         gen.addProvider(event.includeServer(), new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
         gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
@@ -199,14 +199,18 @@ public class DataGeneratorTest {
     }
 
     public static class Recipes extends RecipeProvider implements IConditionBuilder {
-        public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-            super(gen, lookupProvider);
+        public Recipes(HolderLookup.Provider registries, RecipeOutput output) {
+            super(registries, output);
+        }
+
+        private static ResourceKey<Recipe<?>> recipeKey(String path) {
+            return ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath("data_gen_test", path));
         }
 
         @Override
-        protected void buildRecipes(RecipeOutput consumer) {
+        protected void buildRecipes() {
             // conditional recipe
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
                     .pattern("XXX")
                     .pattern("XXX")
                     .pattern("XXX")
@@ -214,14 +218,14 @@ public class DataGeneratorTest {
                     .group("")
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
-                            consumer.withConditions(
+                            output.withConditions(
                                     and(
                                             not(modLoaded("minecraft")),
                                             itemExists("minecraft", "dirt"),
                                             FALSE())),
-                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional"));
+                            recipeKey("conditional"));
 
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
                     .pattern("XXX")
                     .pattern("XXX")
                     .pattern("XXX")
@@ -229,73 +233,89 @@ public class DataGeneratorTest {
                     .group("")
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
-                            consumer.withConditions(
+                            output.withConditions(
                                     not(
                                             and(
                                                     not(modLoaded("minecraft")),
                                                     itemExists("minecraft", "dirt"),
                                                     FALSE()))),
-                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional2"));
+                            recipeKey("conditional2"));
 
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
                     .pattern("XX")
                     .pattern("XX")
                     .define('X', Blocks.DIAMOND_BLOCK)
                     .group("")
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
-                            consumer.withConditions(
+                            output.withConditions(
                                     tagEmpty(ItemTags.PLANKS)),
-                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional3"));
+                            recipeKey("conditional3"));
 
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
                     .pattern("XX")
                     .pattern("XX")
                     .define('X', Blocks.DIAMOND_BLOCK)
                     .group("")
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
-                            consumer.withConditions(
+                            output.withConditions(
                                     not(tagEmpty(ItemTags.PLANKS))),
-                            ResourceLocation.fromNamespaceAndPath("data_gen_test", "conditional4"));
+                            recipeKey("conditional4"));
 
             // intersection - should match all non-flammable planks
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERRACK)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERRACK)
                     .pattern("###")
                     .pattern("###")
                     .pattern(" # ")
-                    .define('#', IntersectionIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
+                    .define('#', IntersectionIngredient.of(tag(ItemTags.PLANKS), tag(ItemTags.NON_FLAMMABLE_WOOD)))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "intersection_ingredient"));
+                    .save(output, recipeKey("intersection_ingredient"));
 
             // difference - should match all flammable fences
-            ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Items.FLINT_AND_STEEL)
+            this.shaped(RecipeCategory.TOOLS, Items.FLINT_AND_STEEL)
                     .pattern(" # ")
                     .pattern("###")
                     .pattern(" # ")
-                    .define('#', DifferenceIngredient.of(Ingredient.of(ItemTags.FENCES), Ingredient.of(ItemTags.NON_FLAMMABLE_WOOD)))
+                    .define('#', DifferenceIngredient.of(tag(ItemTags.FENCES), tag(ItemTags.NON_FLAMMABLE_WOOD)))
                     .unlockedBy("has_fence", has(Items.CRIMSON_FENCE))
-                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "difference_ingredient"));
+                    .save(output, recipeKey("difference_ingredient"));
 
             // compound - should match planks, logs, or bedrock
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIRT)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIRT)
                     .pattern("###")
                     .pattern(" # ")
-                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), Ingredient.of(Blocks.BEDROCK)))
+                    .define('#', CompoundIngredient.of(tag(ItemTags.PLANKS), tag(ItemTags.LOGS), Ingredient.of(Blocks.BEDROCK)))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "compound_ingredient_only_vanilla"));
+                    .save(output, recipeKey("compound_ingredient_only_vanilla"));
 
             // compound - should match planks, logs, or a stone pickaxe with 3 damage
-            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
+            this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.GOLD_BLOCK)
                     .pattern("#")
                     .pattern("#")
-                    .define('#', CompoundIngredient.of(Ingredient.of(ItemTags.PLANKS), Ingredient.of(ItemTags.LOGS), net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, Util.make(() -> {
+                    .define('#', CompoundIngredient.of(tag(ItemTags.PLANKS), tag(ItemTags.LOGS), net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, Util.make(() -> {
                         ItemStack stack = new ItemStack(Items.STONE_PICKAXE);
                         stack.setDamageValue(3);
                         return stack;
                     }))))
                     .unlockedBy("has_planks", has(Items.CRIMSON_PLANKS))
-                    .save(consumer, ResourceLocation.fromNamespaceAndPath("data_gen_test", "compound_ingredient_custom_types"));
+                    .save(output, recipeKey("compound_ingredient_custom_types"));
+        }
+
+        private static class Runner extends RecipeProvider.Runner {
+            protected Runner(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
+                super(packOutput, registries);
+            }
+
+            @Override
+            protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
+                return new Recipes(registries, output);
+            }
+
+            @Override
+            public String getName() {
+                return "DataGeneratorTest Recipes";
+            }
         }
     }
 
@@ -995,17 +1015,17 @@ public class DataGeneratorTest {
         .parent(ResourceLocation.withDefaultNamespace("not_there/not_here"))
         .save(consumer, ResourceLocation.withDefaultNamespace("illegal_parent"), fileHelper);*/
 
-//            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
-//                    Component.translatable(Items.COBBLESTONE.getDescriptionId()),
-//                    Component.literal("You got cobblestone"),
-//                    ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
-//                    AdvancementType.TASK,
-//                    false,
-//                    false,
-//                    false)
-//                    .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-//                    .parent(ResourceLocation.fromNamespaceAndPath("neoforge", "dummy_parent"))
-//                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"), existingFileHelper);
+            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
+                    Component.translatable(Items.COBBLESTONE.getDescriptionId()),
+                    Component.literal("You got cobblestone"),
+                    ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png"),
+                    AdvancementType.TASK,
+                    false,
+                    false,
+                    false)
+                    .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
+                    .parent(ResourceLocation.fromNamespaceAndPath("neoforge", "dummy_parent"))
+                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"), existingFileHelper);
         }
     }
 

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.client;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -70,7 +71,7 @@ public class DimensionTransitionScreenTests {
 
         @Override
         public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            graphics.blit(this.bgTexture, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
+            graphics.blit(RenderType::guiTextured, this.bgTexture, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
         }
     }
 }

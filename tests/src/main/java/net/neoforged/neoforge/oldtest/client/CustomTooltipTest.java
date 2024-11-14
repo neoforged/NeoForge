@@ -18,8 +18,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -45,7 +46,7 @@ public class CustomTooltipTest {
     static final String ID = "custom_tooltip_test";
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
-    static final DeferredItem<Item> CUSTOM_ITEM = ITEMS.register("test_item", () -> new CustomItemWithTooltip(new Item.Properties()));
+    static final DeferredItem<Item> CUSTOM_ITEM = ITEMS.registerItem("test_item", CustomItemWithTooltip::new);
 
     public CustomTooltipTest(IEventBus modEventBus) {
         if (ENABLED) {
@@ -67,7 +68,7 @@ public class CustomTooltipTest {
 
     record CustomClientTooltip(CustomTooltip tooltip) implements ClientTooltipComponent {
         @Override
-        public int getHeight() {
+        public int getHeight(Font font) {
             return 10;
         }
 
@@ -77,7 +78,7 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void renderImage(Font font, int x, int y, GuiGraphics graphics) {
+        public void renderImage(Font font, int x, int y, int width, int height, GuiGraphics graphics) {
             graphics.fill(x, y, x + 10, y + 10, tooltip.color);
         }
     }
@@ -94,11 +95,11 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
             if (level.isClientSide && FMLEnvironment.dist.isClient()) {
                 TooltipTestScreen.show();
             }
-            return InteractionResultHolder.success(player.getItemInHand(hand));
+            return InteractionResult.SUCCESS;
         }
 
         @Override
@@ -115,6 +116,8 @@ public class CustomTooltipTest {
     }
 
     private static class ClientEventHandler {
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ID, "test");
+
         @SubscribeEvent
         public static void gatherTooltips(RenderTooltipEvent.GatherComponents event) {
             if (event.getItemStack().getItem() == Items.STICK) {
@@ -126,12 +129,9 @@ public class CustomTooltipTest {
         }
 
         @SubscribeEvent
-        public static void preTooltip(RenderTooltipEvent.Color event) {
+        public static void preTooltip(RenderTooltipEvent.Texture event) {
             if (event.getItemStack().getItem() == Items.APPLE) {
-                event.setBackgroundStart(0xFF0000FF);
-                event.setBackgroundEnd(0xFFFFFF00);
-                event.setBorderStart(0xFFFF0000);
-                event.setBorderEnd(0xFF000011);
+                event.setTexture(TEXTURE);
             }
         }
     }

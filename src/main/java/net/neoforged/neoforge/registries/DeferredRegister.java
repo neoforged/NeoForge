@@ -424,22 +424,54 @@ public class DeferredRegister<T> {
          * @param func  A factory for the new block. The factory should not cache the created block.
          * @param props The properties for the created block.
          * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         * @see #registerBlock(String, Function)
          * @see #registerSimpleBlock(String, BlockBehaviour.Properties)
+         * @see #registerSimpleBlock(String)
          */
         public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func, BlockBehaviour.Properties props) {
-            return this.register(name, () -> func.apply(props));
+            return this.register(name, key -> func.apply(props.setId(ResourceKey.create(Registries.BLOCK, key))));
         }
 
         /**
-         * Adds a new simple {@link Block} to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         * Adds a new block to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         * This method uses the default {@link BlockBehaviour.Properties}.
+         *
+         * @param name The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @param func A factory for the new block. The factory should not cache the created block.
+         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         * @see #registerBlock(String, Function, BlockBehaviour.Properties)
+         * @see #registerSimpleBlock(String, BlockBehaviour.Properties)
+         * @see #registerSimpleBlock(String)
+         */
+        public <B extends Block> DeferredBlock<B> registerBlock(String name, Function<BlockBehaviour.Properties, ? extends B> func) {
+            return this.registerBlock(name, func, BlockBehaviour.Properties.of());
+        }
+
+        /**
+         * Adds a new simple {@link Block} with the given {@link BlockBehaviour.Properties properties} to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
          *
          * @param name  The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
          * @param props The properties for the created block.
          * @return A {@link DeferredHolder} that will track updates from the registry for this block.
          * @see #registerBlock(String, Function, BlockBehaviour.Properties)
+         * @see #registerBlock(String, Function)
+         * @see #registerSimpleBlock(String)
          */
         public DeferredBlock<Block> registerSimpleBlock(String name, BlockBehaviour.Properties props) {
             return this.registerBlock(name, Block::new, props);
+        }
+
+        /**
+         * Adds a new simple {@link Block} with the default {@link BlockBehaviour.Properties properties} to the list of entries to be registered and returns a {@link DeferredHolder} that will be populated with the created block automatically.
+         *
+         * @param name The new block's name. It will automatically have the {@linkplain #getNamespace() namespace} prefixed.
+         * @return A {@link DeferredHolder} that will track updates from the registry for this block.
+         * @see #registerBlock(String, Function, BlockBehaviour.Properties)
+         * @see #registerBlock(String, Function)
+         * @see #registerSimpleBlock(String, BlockBehaviour.Properties)
+         */
+        public DeferredBlock<Block> registerSimpleBlock(String name) {
+            return this.registerSimpleBlock(name, BlockBehaviour.Properties.of());
         }
 
         @Override
@@ -496,7 +528,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleBlockItem(Holder)
          */
         public DeferredItem<BlockItem> registerSimpleBlockItem(String name, Supplier<? extends Block> block, Item.Properties properties) {
-            return this.register(name, key -> new BlockItem(block.get(), properties));
+            return this.register(name, key -> new BlockItem(block.get(), properties.setId(ResourceKey.create(Registries.ITEM, key)).useBlockDescriptionPrefix()));
         }
 
         /**
@@ -558,7 +590,7 @@ public class DeferredRegister<T> {
          * @see #registerSimpleItem(String)
          */
         public <I extends Item> DeferredItem<I> registerItem(String name, Function<Item.Properties, ? extends I> func, Item.Properties props) {
-            return this.register(name, () -> func.apply(props));
+            return this.register(name, key -> func.apply(props.setId(ResourceKey.create(Registries.ITEM, key))));
         }
 
         /**
@@ -645,12 +677,13 @@ public class DeferredRegister<T> {
             this.registryKey = registryKey;
         }
 
-        @SuppressWarnings("unchecked")
+        // FIXME porting: there must be a better way than using a rawtype
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public @Nullable Registry<V> get() {
             // Keep looking up the registry until it's not null
             if (this.registry == null)
-                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.get(this.registryKey.location());
+                this.registry = (Registry<V>) BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey) this.registryKey);
 
             return this.registry;
         }

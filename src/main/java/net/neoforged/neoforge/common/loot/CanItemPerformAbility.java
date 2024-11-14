@@ -9,9 +9,9 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
@@ -39,12 +39,12 @@ public class CanItemPerformAbility implements LootItemCondition {
         return LOOT_CONDITION_TYPE;
     }
 
-    public Set<LootContextParam<?>> getReferencedContextParams() {
+    public Set<ContextKey<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.TOOL);
     }
 
     public boolean test(LootContext lootContext) {
-        ItemStack itemstack = lootContext.getParamOrNull(LootContextParams.TOOL);
+        ItemStack itemstack = lootContext.getOptionalParameter(LootContextParams.TOOL);
         return itemstack != null && itemstack.canPerformAction(this.ability);
     }
 

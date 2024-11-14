@@ -8,6 +8,7 @@ package net.neoforged.neoforge.registries;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryDataLoader;
@@ -72,6 +73,29 @@ public abstract class DataPackRegistryEvent extends Event implements IModBusEven
          */
         public <T> void dataPackRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec) {
             this.registryDataList.add(new DataPackRegistryData<>(new RegistryDataLoader.RegistryData<>(registryKey, codec, false), networkCodec));
+        }
+
+        /**
+         * Registers the registry key as a datapack registry with a {@link RegistryBuilder} configurator, which will cause data to be loaded from
+         * a datapack folder based on the registry's name.
+         * <p>
+         * Data JSONs will be loaded from {@code data/<datapack_namespace>/modid/registryname/}, where {@code modid} is the namespace of the registry key.
+         *
+         * @param registryKey  the root registry key of the new datapack registry
+         * @param codec        the codec to be used for loading data from datapacks on servers
+         * @param networkCodec the codec to be used for syncing loaded data to clients.
+         *                     If {@code networkCodec} is null, data will not be synced, and clients are not required to have this
+         *                     datapack registry to join a server.
+         *                     <p>
+         *                     If {@code networkCodec} is not null, clients must have this datapack registry/mod
+         *                     when joining a server that has this datapack registry/mod.
+         *                     The data will be synced using the network codec and accessible via {@link ClientPacketListener#registryAccess()}.
+         * @param consumer     A consumer that configures the provided RegistryBuilder
+         * @see #dataPackRegistry(ResourceKey, Codec)
+         * @see #dataPackRegistry(ResourceKey, Codec, Codec)
+         */
+        public <T> void dataPackRegistry(ResourceKey<Registry<T>> registryKey, Codec<T> codec, @Nullable Codec<T> networkCodec, Consumer<RegistryBuilder<T>> consumer) {
+            this.registryDataList.add(new DataPackRegistryData<>(new RegistryDataLoader.RegistryData<>(registryKey, codec, false, consumer), networkCodec));
         }
 
         void process() {

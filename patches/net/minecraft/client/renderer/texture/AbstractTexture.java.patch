@@ -1,9 +1,25 @@
 --- a/net/minecraft/client/renderer/texture/AbstractTexture.java
 +++ b/net/minecraft/client/renderer/texture/AbstractTexture.java
-@@ -36,6 +_,20 @@
-         GlStateManager._texParameter(3553, 10240, j);
-     }
+@@ -15,9 +_,13 @@
+     public static final int NOT_ASSIGNED = -1;
+     protected int id = -1;
+     protected boolean defaultBlur;
++    protected boolean blur;
++    protected boolean mipmap;
  
+     public void setFilter(boolean p_117961_, boolean p_117962_) {
+         RenderSystem.assertOnRenderThreadOrInit();
++        this.blur = p_117961_;
++        this.mipmap = p_117962_;
+         int i;
+         int j;
+         if (p_117961_) {
+@@ -31,6 +_,20 @@
+         this.bind();
+         GlStateManager._texParameter(3553, 10241, i);
+         GlStateManager._texParameter(3553, 10240, j);
++    }
++
 +    // FORGE: This seems to have been stripped out, but we need it
 +    private boolean lastBlur;
 +    private boolean lastMipmap;
@@ -16,8 +32,6 @@
 +
 +    public void restoreLastBlurMipmap() {
 +        setFilter(this.lastBlur, this.lastMipmap);
-+    }
-+
+     }
+ 
      public int getId() {
-         RenderSystem.assertOnRenderThreadOrInit();
-         if (this.id == -1) {

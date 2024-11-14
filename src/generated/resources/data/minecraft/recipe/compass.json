@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "tag": "c:ingots/iron"
-    },
-    "X": {
-      "item": "minecraft:redstone"
-    }
+    "#": "#c:ingots/iron",
+    "X": "minecraft:redstone"
   },
   "pattern": [
     " # ",

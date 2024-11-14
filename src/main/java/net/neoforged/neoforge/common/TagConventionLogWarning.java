@@ -10,6 +10,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -411,12 +412,17 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "candy", Tags.Items.FOODS_CANDY),
             createForgeMapEntry(Registries.ITEM, "candies", Tags.Items.FOODS_CANDY),
             createMapEntry(Registries.ITEM, "c", "foods/candies", Tags.Items.FOODS_CANDY),
+            createForgeMapEntry(Registries.ITEM, "pie", Tags.Items.FOODS_PIE),
+            createForgeMapEntry(Registries.ITEM, "pies", Tags.Items.FOODS_PIE),
+            createMapEntry(Registries.ITEM, "c", "foods/pies", Tags.Items.FOODS_PIE),
 
             createForgeMapEntry(Registries.FLUID, "water", Tags.Fluids.WATER),
             createForgeMapEntry(Registries.FLUID, "lava", Tags.Fluids.LAVA),
             createForgeMapEntry(Registries.FLUID, "milk", Tags.Fluids.MILK),
             createForgeMapEntry(Registries.FLUID, "gaseous", Tags.Fluids.GASEOUS),
             createForgeMapEntry(Registries.FLUID, "honey", Tags.Fluids.HONEY),
+            createForgeMapEntry(Registries.FLUID, "xp", Tags.Fluids.EXPERIENCE),
+            createForgeMapEntry(Registries.FLUID, "experience", Tags.Fluids.EXPERIENCE),
             createForgeMapEntry(Registries.FLUID, "potion", Tags.Fluids.POTION),
             createForgeMapEntry(Registries.FLUID, "plantoil", "plant_oil"),
 
@@ -498,7 +504,7 @@ public final class TagConventionLogWarning {
                     // We only care about vanilla registries
                     registryAccess.registries().forEach(registryEntry -> {
                         if (registryEntry.key().location().getNamespace().equals("minecraft")) {
-                            registryEntry.value().getTagNames().forEach(tagKey -> {
+                            registryEntry.value().getTags().map(HolderSet.Named::key).forEach(tagKey -> {
                                 // Grab tags under 'forge' namespace
                                 if (LEGACY_FORGE_TAGS.containsKey(tagKey) || tagKey.location().getNamespace().equals("forge")) {
                                     legacyTags.add(tagKey);

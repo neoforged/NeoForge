@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -344,6 +_,7 @@
+@@ -367,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final DebugSampleSubscriber debugSampleSubscriber;
@@ -8,15 +8,17 @@
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -366,6 +_,7 @@
+@@ -388,7 +_,8 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
+-        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
 +        this.connectionType = p_295121_.connectionType();
-         this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures);
++        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures, this.registryAccess);
+         this.fuelValues = FuelValues.vanillaBurnTimes(p_295121_.receivedRegistries(), this.enabledFeatures);
      }
  
-@@ -427,12 +_,13 @@
+@@ -451,12 +_,13 @@
  
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
@@ -31,9 +33,9 @@
          this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
          this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
          this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
-@@ -828,7 +_,8 @@
+@@ -900,7 +_,8 @@
+                         this.serverCookies,
                          chatcomponent$state,
-                         this.strictErrorHandling,
                          this.customReportDetails,
 -                        this.serverLinks
 +                        this.serverLinks,
@@ -41,7 +43,7 @@
                      )
                  )
              );
-@@ -1142,7 +_,7 @@
+@@ -1217,7 +_,7 @@
              localplayer1 = this.minecraft.gameMode.createPlayer(this.level, localplayer.getStats(), localplayer.getRecipeBook());
          }
  
@@ -50,15 +52,15 @@
          localplayer1.setId(localplayer.getId());
          this.minecraft.player = localplayer1;
          if (flag) {
-@@ -1164,6 +_,7 @@
+@@ -1245,6 +_,7 @@
+             localplayer1.getAttributes().assignBaseValues(localplayer.getAttributes());
          }
  
-         localplayer1.resetPos();
 +        net.neoforged.neoforge.client.ClientHooks.firePlayerRespawn(this.minecraft.gameMode, localplayer, localplayer1, localplayer1.connection.connection);
          this.level.addEntity(localplayer1);
-         localplayer1.setYRot(-180.0F);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
-@@ -1306,10 +_,7 @@
+         this.minecraft.gameMode.adjustPlayer(localplayer1);
+@@ -1391,10 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
          this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
@@ -70,7 +72,7 @@
  
              if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1420,9 +_,15 @@
+@@ -1505,9 +_,15 @@
          }
      }
  
@@ -87,7 +89,7 @@
      }
  
      @Override
-@@ -1471,7 +_,9 @@
+@@ -1555,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -98,28 +100,33 @@
      }
  
      @Override
-@@ -1493,6 +_,7 @@
-         ClientRecipeBook clientrecipebook = this.minecraft.player.getRecipeBook();
-         clientrecipebook.setupCollections(this.recipeManager.getOrderedRecipes(), this.minecraft.level.registryAccess());
-         this.searchTrees.updateRecipes(clientrecipebook, this.registryAccess);
-+        net.neoforged.neoforge.client.ClientHooks.onRecipesUpdated(this.recipeManager);
+@@ -1574,6 +_,11 @@
+     public void handleUpdateRecipes(ClientboundUpdateRecipesPacket p_105132_) {
+         PacketUtils.ensureRunningOnSameThread(p_105132_, this, this.minecraft);
+         this.recipes = new ClientRecipeContainer(p_105132_.itemSets(), p_105132_.stonecutterRecipes());
++
++        // Neo: abuse recipe sync to overwrite fuel values with datamap values after their sync (tag update doesn't fire on initial sync and the constructor is too early)
++        if (this.connectionType.isNeoForge()) {
++            this.fuelValues = net.neoforged.neoforge.common.DataMapHooks.populateFuelValues(this.registryAccess, this.enabledFeatures);
++        }
      }
  
      @Override
-@@ -1595,8 +_,10 @@
-         TagCollector tagcollector = new TagCollector();
-         p_294888_.getTags().forEach(tagcollector::append);
-         tagcollector.updateTags(this.registryAccess, this.connection.isMemoryConnection());
--        List<ItemStack> list = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
--        this.searchTrees.updateCreativeTags(list);
+@@ -1698,8 +_,11 @@
+         });
+         list.forEach(Registry.PendingTags::apply);
+         this.fuelValues = FuelValues.vanillaBurnTimes(this.registryAccess, this.enabledFeatures);
+-        List<ItemStack> list1 = List.copyOf(CreativeModeTabs.searchTab().getDisplayItems());
+-        this.searchTrees.updateCreativeTags(list1);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(this.registryAccess, true, flag));
 +        CreativeModeTabs.allTabs().stream().filter(net.minecraft.world.item.CreativeModeTab::hasSearchBar).forEach(tab -> {
-+            List<ItemStack> list = List.copyOf(tab.getDisplayItems());
-+            this.searchTrees.updateCreativeTags(list, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
++            List<ItemStack> stacks = List.copyOf(tab.getDisplayItems());
++            this.searchTrees.updateCreativeTags(stacks, net.neoforged.neoforge.client.CreativeModeTabSearchRegistry.getTagSearchKey(tab));
 +        });
      }
  
      @Override
-@@ -2407,6 +_,8 @@
+@@ -2526,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -128,7 +135,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2416,6 +_,7 @@
+@@ -2535,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -136,7 +143,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2490,6 +_,10 @@
+@@ -2622,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

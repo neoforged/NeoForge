@@ -11,7 +11,7 @@ on:
 
 jobs:
   publish-jcc:
-    if: true
+    if: ${{ ! startsWith(github.event.workflow_run.head_branch, 'port/') }}
     uses: neoforged/actions/.github/workflows/publish-jcc.yml@main
     with:
       beta_version_pattern: .*-beta.*

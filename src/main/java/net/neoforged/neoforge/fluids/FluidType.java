@@ -8,7 +8,6 @@ package net.neoforged.neoforge.fluids;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
@@ -24,7 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -42,7 +41,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
@@ -333,7 +331,7 @@ public class FluidType {
      * @param boat the boat trying to be used on the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    public boolean supportsBoating(Boat boat) {
+    public boolean supportsBoating(AbstractBoat boat) {
         return this.supportsBoating;
     }
 
@@ -344,7 +342,7 @@ public class FluidType {
      * @param boat  the boat trying to be used on the fluid
      * @return {@code true} if the boat can be used, {@code false} otherwise
      */
-    public boolean supportsBoating(FluidState state, Boat boat) {
+    public boolean supportsBoating(FluidState state, AbstractBoat boat) {
         return this.supportsBoating(boat);
     }
 
@@ -845,12 +843,6 @@ public class FluidType {
         ResourceLocation name = NeoForgeRegistries.FLUID_TYPES.getKey(this);
         return name != null ? name.toString() : "Unregistered FluidType";
     }
-
-    /**
-     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
-     */
-    @Deprecated(forRemoval = true, since = "1.21")
-    public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {}
 
     /**
      * The properties of the fluid. The simple forms of each property can

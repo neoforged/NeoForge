@@ -10,7 +10,10 @@ plugins {
     id 'net.neoforged.gradle.platform' version '7.0.163'
 }
 
-rootProject.name = rootDir.name
+if (rootProject.name.toLowerCase() == "neoforge") {
+    // Solve name clashes between projects/neoforge and the rootProject for Eclipse.
+    rootProject.name = "NeoForge-Root"
+}
 
 dynamicProjects {
     include ':base'
@@ -24,3 +27,7 @@ include ':tests'
 project(":tests").projectDir = file("tests")
 
 include ':testframework'
+include ':coremods'
+// Ensure a unique artifact id within JIJ that does not conflict with net.neoforged:coremods, which is
+// another external dependency.
+project(":coremods").name = "neoforge-coremods"

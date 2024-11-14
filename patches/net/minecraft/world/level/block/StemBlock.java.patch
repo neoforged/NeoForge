@@ -27,7 +27,7 @@
                      BlockState blockstate = p_222539_.getBlockState(blockpos.below());
 -                    if (p_222539_.getBlockState(blockpos).isAir() && (blockstate.is(Blocks.FARMLAND) || blockstate.is(BlockTags.DIRT))) {
 +                    if (p_222539_.isEmptyBlock(blockpos) && (blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || blockstate.is(BlockTags.DIRT))) {
-                         Registry<Block> registry = p_222539_.registryAccess().registryOrThrow(Registries.BLOCK);
+                         Registry<Block> registry = p_222539_.registryAccess().lookupOrThrow(Registries.BLOCK);
                          Optional<Block> optional = registry.getOptional(this.fruit);
                          Optional<Block> optional1 = registry.getOptional(this.attachedStem);
 @@ -100,6 +_,7 @@

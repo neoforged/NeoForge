@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
-import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -31,18 +31,18 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     private final ItemStack itemStack;
-    private final ItemFrame itemFrameEntity;
+    private final ItemFrameRenderState frameRenderState;
     private final ItemFrameRenderer<?> renderer;
     private final PoseStack poseStack;
     private final MultiBufferSource multiBufferSource;
     private final int packedLight;
 
     @ApiStatus.Internal
-    public RenderItemInFrameEvent(ItemFrame itemFrame, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
+    public RenderItemInFrameEvent(ItemFrameRenderState frameRenderState, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
             MultiBufferSource multiBufferSource, int packedLight) {
-        itemStack = itemFrame.getItem();
-        itemFrameEntity = itemFrame;
-        renderer = renderItemFrame;
+        this.itemStack = frameRenderState.itemStack;
+        this.frameRenderState = frameRenderState;
+        this.renderer = renderItemFrame;
         this.poseStack = poseStack;
         this.multiBufferSource = multiBufferSource;
         this.packedLight = packedLight;
@@ -58,8 +58,8 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     /**
      * {@return the item frame entity}
      */
-    public ItemFrame getItemFrameEntity() {
-        return itemFrameEntity;
+    public ItemFrameRenderState getItemFrameRenderState() {
+        return frameRenderState;
     }
 
     /**

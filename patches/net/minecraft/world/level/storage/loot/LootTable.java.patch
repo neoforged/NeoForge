@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
 @@ -38,8 +_,8 @@
-         p_338123_ -> p_338123_.group(
-                     LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(p_298001_ -> p_298001_.paramSet),
+         p_380905_ -> p_380905_.group(
+                     LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(p_380906_ -> p_380906_.paramSet),
                      ResourceLocation.CODEC.optionalFieldOf("random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
 -                    LootPool.CODEC.listOf().optionalFieldOf("pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
 -                    LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
 +                    net.neoforged.neoforge.common.CommonHooks.lootPoolsCodec(LootPool::setName).optionalFieldOf("pools", List.of()).forGetter(p_298002_ -> p_298002_.pools),
 +                        net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter(p_298000_ -> p_298000_.functions)
                  )
-                 .apply(p_338123_, LootTable::new)
+                 .apply(p_380905_, LootTable::new)
      );
 @@ -53,7 +_,7 @@
-     LootTable(LootContextParamSet p_287716_, Optional<ResourceLocation> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
-         this.paramSet = p_287716_;
+     LootTable(ContextKeySet p_380952_, Optional<ResourceLocation> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
+         this.paramSet = p_380952_;
          this.randomSequence = p_299055_;
 -        this.pools = p_298390_;
 +        this.pools = Lists.newArrayList(p_298390_);

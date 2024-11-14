@@ -6,12 +6,14 @@
 package net.neoforged.neoforge.debug.entity;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.animal.Cow;
@@ -21,14 +23,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -41,7 +45,7 @@ public class EntityEventTests {
     @EmptyTemplate(value = "15x5x15", floor = true)
     @TestHolder(description = "Tests if the entity teleport event is fired")
     static void entityTeleportEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final EntityTeleportEvent.ChorusFruit event) -> {
+        test.eventListeners().forge().addListener((final EntityTeleportEvent.ItemConsumption event) -> {
             if (event.getEntity() instanceof Pig) {
                 event.setCanceled(true);
             } else if (event.getEntity() instanceof Cow cow) {
@@ -95,11 +99,11 @@ public class EntityEventTests {
         });
 
         test.onGameTest(helper -> {
-            DamageSource source = new DamageSource(helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.MOB_ATTACK));
+            DamageSource source = new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK));
             helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
                     .thenExecute(player -> player.setCustomName(NAME))
                     .thenExecute(player -> player.setInvulnerable(true))
-                    .thenWaitUntil(player -> helper.assertFalse(player.isInvulnerableTo(source), "Player Invulnerability not bypassed."))
+                    .thenWaitUntil(player -> helper.assertFalse(player.isInvulnerableTo(helper.getLevel(), source), "Player Invulnerability not bypassed."))
                     .thenSucceed();
         });
     }
@@ -140,28 +144,63 @@ public class EntityEventTests {
                 .thenSequence(seq -> seq
                         .thenMap(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 0, 2, 0))
                         .thenExecute(pig -> pig.setCustomName(Component.literal("travel-to-dimension-test")))
-                        .thenExecute(pig -> pig.changeDimension(new DimensionTransition(helper.getLevel(), pig.position().add(1.0, 0.0, 0.0), Vec3.ZERO, 0.0f, 0.0f,
-                                DimensionTransition.DO_NOTHING)))
+                        .thenExecute(pig -> pig.teleport(new TeleportTransition(helper.getLevel(), pig.position().add(1.0, 0.0, 0.0), Vec3.ZERO, 0.0f, 0.0f,
+                                TeleportTransition.DO_NOTHING)))
                         .thenExecute(() -> {
                             helper.assertEntityPresent(EntityType.PIG, 0, 2, 0);
                             helper.assertEntityNotPresent(EntityType.PIG, 1, 2, 0);
                         })
-                        .thenExecute(pig -> pig.changeDimension(new DimensionTransition(helper.getLevel().getServer().getLevel(Level.NETHER), Vec3.ZERO, Vec3.ZERO, 0.0f, 0.0f, DimensionTransition.DO_NOTHING)))
+                        .thenExecute(pig -> pig.teleport(new TeleportTransition(helper.getLevel().getServer().getLevel(Level.NETHER), Vec3.ZERO, Vec3.ZERO, 0.0f, 0.0f, TeleportTransition.DO_NOTHING)))
                         .thenExecute(pig -> helper.assertTrue(pig.level().dimension() == Level.OVERWORLD, "Dimension change was not prevented")))
 
                 .thenSequence(seq -> seq
                         .thenMap(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                         .thenExecute(player -> player.setCustomName(Component.literal("travel-to-dimension-test")))
-                        .thenExecute(player -> player.changeDimension(new DimensionTransition(helper.getLevel(), player.position().add(1.0, 0.0, 0.0), Vec3.ZERO, 0.0f, 0.0f, DimensionTransition.DO_NOTHING)))
+                        .thenExecute(player -> player.teleport(new TeleportTransition(helper.getLevel(), player.position().add(1.0, 0.0, 0.0), Vec3.ZERO, 0.0f, 0.0f, TeleportTransition.DO_NOTHING)))
                         .thenExecute(() -> {
                             helper.assertEntityPresent(EntityType.PLAYER, 0, 2, 0);
                             helper.assertEntityNotPresent(EntityType.PLAYER, 1, 2, 0);
                         })
-                        .thenExecute(player -> player.changeDimension(new DimensionTransition(helper.getLevel().getServer().getLevel(Level.NETHER), Vec3.ZERO, Vec3.ZERO, 0.0f, 0.0f, DimensionTransition.DO_NOTHING)))
+                        .thenExecute(player -> player.teleport(new TeleportTransition(helper.getLevel().getServer().getLevel(Level.NETHER), Vec3.ZERO, Vec3.ZERO, 0.0f, 0.0f, TeleportTransition.DO_NOTHING)))
                         .thenExecute(player -> {
                             helper.assertEntityPresent(EntityType.PLAYER, 0, 2, 0);
                             helper.assertTrue(player.level().dimension() == Level.OVERWORLD, "Dimension change was not prevented");
                         }))
+                .thenExecute(helper::killAllEntities)
+                .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests that the FinalizeSpawnEvent is emitted at all")
+    static void entityFinalizeSpawnEvent(final DynamicTest test) {
+        // Identify the entity we spawn in this test by their spawn location, since we do not have
+        // access to the entity object at all before the event is emitted.
+        AtomicReference<BlockPos> spawnPosRef = new AtomicReference<>();
+        test.eventListeners().forge().addListener((final FinalizeSpawnEvent event) -> {
+            if (Objects.equals(spawnPosRef.get(), event.getEntity().blockPosition())) {
+                event.setSpawnCancelled(true);
+                test.pass();
+            }
+        });
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> {
+                    var spawnPos = helper.absolutePos(BlockPos.ZERO);
+                    spawnPosRef.set(spawnPos);
+                    EntityType.PIG.create(
+                            helper.getLevel(),
+                            ignored -> {},
+                            spawnPos,
+                            EntitySpawnReason.SPAWN_ITEM_USE,
+                            false,
+                            false);
+                })
+                .thenExecute(() -> {
+                    // The event handler canceled the spawn
+                    helper.assertEntityNotPresent(EntityType.PIG);
+                })
+                .thenWaitUntil(() -> helper.assertValueEqual(test.status(), Test.Status.PASSED, "listener called"))
                 .thenExecute(helper::killAllEntities)
                 .thenSucceed());
     }

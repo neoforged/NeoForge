@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -42,7 +42,7 @@ public class CustomFluidContainerTest {
 
     public static final boolean ENABLED = true;
 
-    public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.register("custom_fluid_container", () -> new CustomFluidContainer((new Item.Properties()).stacksTo(1)));
+    public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SimpleFluidContent>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<SimpleFluidContent>builder()
             .persistent(SimpleFluidContent.CODEC)
             .networkSynchronized(SimpleFluidContent.STREAM_CODEC).build());
@@ -88,7 +88,7 @@ public class CustomFluidContainerTest {
         }
 
         @Override
-        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
             var itemStack = player.getItemInHand(hand);
             var result = new AtomicReference<FluidActionResult>();
             FluidUtil.getFluidHandler(itemStack).ifPresent(fluidHandler -> {
@@ -108,7 +108,7 @@ public class CustomFluidContainerTest {
                 }
             });
             if (result.get() != null && result.get().isSuccess()) {
-                return InteractionResultHolder.sidedSuccess(result.get().getResult(), level.isClientSide());
+                return InteractionResult.SUCCESS.heldItemTransformedTo(result.get().getResult());
             }
             return super.use(level, player, hand);
         }

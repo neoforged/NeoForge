@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
-@@ -221,6 +_,8 @@
+@@ -214,6 +_,8 @@
                      break;
                  }
              }

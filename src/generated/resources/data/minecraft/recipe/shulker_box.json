@@ -3,17 +3,11 @@
   "category": "misc",
   "key": {
     "#": {
-      "type": "neoforge:difference",
-      "base": {
-        "tag": "c:chests/wooden"
-      },
-      "subtracted": {
-        "tag": "c:chests/trapped"
-      }
+      "neoforge:ingredient_type": "neoforge:difference",
+      "base": "#c:chests/wooden",
+      "subtracted": "#c:chests/trapped"
     },
-    "-": {
-      "item": "minecraft:shulker_shell"
-    }
+    "-": "minecraft:shulker_shell"
   },
   "pattern": [
     "-",

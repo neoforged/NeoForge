@@ -45,8 +45,8 @@
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();
              } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
-@@ -153,7 +_,8 @@
-                 this.move(MoverType.SELF, this.getDeltaMovement());
+@@ -154,7 +_,8 @@
+                 this.applyEffectsFromBlocks();
                  float f = 0.98F;
                  if (this.onGround()) {
 -                    f = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction() * 0.98F;
@@ -55,7 +55,7 @@
                  }
  
                  this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -185,7 +_,15 @@
+@@ -186,7 +_,15 @@
                  }
              }
  
@@ -72,16 +72,16 @@
                  this.discard();
              }
          }
-@@ -282,7 +_,7 @@
-             this.health = (int)((float)this.health - p_32014_);
-             this.gameEvent(GameEvent.ENTITY_DAMAGE, p_32013_.getEntity());
+@@ -294,7 +_,7 @@
+             this.health = (int)((float)this.health - p_376562_);
+             this.gameEvent(GameEvent.ENTITY_DAMAGE, p_376452_.getEntity());
              if (this.health <= 0) {
 -                this.getItem().onDestroyed(this);
-+                this.getItem().onDestroyed(this, p_32013_);
++                this.getItem().onDestroyed(this, p_376452_);
                  this.discard();
              }
  
-@@ -295,6 +_,7 @@
+@@ -312,6 +_,7 @@
          p_32050_.putShort("Health", (short)this.health);
          p_32050_.putShort("Age", (short)this.age);
          p_32050_.putShort("PickupDelay", (short)this.pickupDelay);
@@ -89,7 +89,7 @@
          if (this.thrower != null) {
              p_32050_.putUUID("Thrower", this.thrower);
          }
-@@ -315,6 +_,9 @@
+@@ -332,6 +_,9 @@
          if (p_32034_.contains("PickupDelay")) {
              this.pickupDelay = p_32034_.getShort("PickupDelay");
          }
@@ -99,7 +99,7 @@
  
          if (p_32034_.hasUUID("Owner")) {
              this.target = p_32034_.getUUID("Owner");
-@@ -343,7 +_,22 @@
+@@ -360,7 +_,22 @@
              ItemStack itemstack = this.getItem();
              Item item = itemstack.getItem();
              int i = itemstack.getCount();
@@ -123,7 +123,7 @@
                  p_32040_.take(this, i);
                  if (itemstack.isEmpty()) {
                      this.discard();
-@@ -398,6 +_,15 @@
+@@ -415,6 +_,15 @@
          this.target = p_266724_;
      }
  
@@ -139,7 +139,7 @@
      public void setThrower(Entity p_306324_) {
          this.thrower = p_306324_.getUUID();
          this.cachedThrower = p_306324_;
-@@ -437,7 +_,7 @@
+@@ -454,7 +_,7 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();
@@ -147,4 +147,4 @@
 +        this.age = getItem().getEntityLifespan(this.level()) - 1;
      }
  
-     public float getSpin(float p_32009_) {
+     public static float getSpin(float p_32009_, float p_361295_) {

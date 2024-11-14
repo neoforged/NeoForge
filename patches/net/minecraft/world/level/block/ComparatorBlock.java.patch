@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ComparatorBlock.java
 +++ b/net/minecraft/world/level/block/ComparatorBlock.java
-@@ -199,4 +_,16 @@
+@@ -207,4 +_,17 @@
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_51887_) {
          p_51887_.add(FACING, MODE, POWERED);
      }
@@ -11,9 +11,10 @@
 +    }
 +
 +    @Override
-+    public void onNeighborChange(BlockState state, net.minecraft.world.level.LevelReader world, BlockPos pos, BlockPos neighbor) {
-+        if (pos.getY() == neighbor.getY() && world instanceof Level && !((Level)world).isClientSide()) {
-+            state.handleNeighborChanged((Level)world, pos, world.getBlockState(neighbor).getBlock(), neighbor, false);
++    public void onNeighborChange(BlockState state, net.minecraft.world.level.LevelReader levelReader, BlockPos pos, BlockPos neighbor) {
++        if (pos.getY() == neighbor.getY() && levelReader instanceof Level level && !levelReader.isClientSide()) {
++            // TODO porting: check this still works as expected
++            state.handleNeighborChanged(level, pos, levelReader.getBlockState(neighbor).getBlock(), null, false);
 +        }
 +    }
  }
