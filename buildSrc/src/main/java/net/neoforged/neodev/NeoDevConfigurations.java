@@ -72,8 +72,8 @@ class NeoDevConfigurations {
     final Configuration modulePath;
     /**
      * Userdev dependencies (written to a json file in the userdev jar).
-     * This should contain all of NeoForge's dependencies for userdev and NeoForm,
-     * but does not need to include all of Minecraft's libraries.
+     * This should contain all of NeoForge's additional dependencies for userdev,
+     * but does not need to include Minecraft or NeoForm's libraries.
      */
     final Configuration userdevClasspath;
     /**
@@ -141,7 +141,7 @@ class NeoDevConfigurations {
         modulePath.extendsFrom(moduleLibraries);
         modulePath.shouldResolveConsistentlyWith(runtimeClasspath);
 
-        userdevClasspath.extendsFrom(libraries, moduleLibraries, userdevCompileOnly, neoFormData); // TODO: is neoFormData necessary here?
+        userdevClasspath.extendsFrom(libraries, moduleLibraries, userdevCompileOnly);
         userdevClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
         userdevCompileOnlyClasspath.extendsFrom(userdevCompileOnly);
