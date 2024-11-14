@@ -245,7 +245,11 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getMcAndNeoFormVersion().set(mcAndNeoFormVersion);
             task.getIcon().set(project.getRootProject().file("docs/assets/neoforged.ico"));
-            task.setLibraries(configurations.installerProfileLibraries);
+            // Anything that is on the launcher classpath should be downloaded by the installer.
+            // (At least on the server side).
+            task.addLibraries(configurations.launcherProfileClasspath);
+            // We need the NeoForm zip for the SRG mappings.
+            task.addLibraries(configurations.neoFormDataOnly);
             task.getRepositoryURLs().set(project.provider(() -> {
                 List<URI> repos = new ArrayList<>();
                 for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
@@ -267,10 +271,11 @@ public class NeoDevPlugin implements Plugin<Project> {
                 files.setCanBeResolved(true);
                 files.getDependencies().add(installerProcessor.tool.asDependency(project));
             });
-            configurations.installerProfileLibraries.extendsFrom(configuration);
-            // Each tool should resolve consistently with the full set of installed libraries.
-            configuration.shouldResolveConsistentlyWith(configurations.installerProfileLibraries);
             createInstallerProfile.configure(task -> {
+                // Add installer processor.
+                // Different processors might use different versions of the same library,
+                // but that is fine because each processor gets its own classpath.
+                task.addLibraries(configuration);
                 task.getProcessorClasspaths().put(installerProcessor, DependencyUtils.configurationToGavList(configuration));
                 task.getProcessorGavs().put(installerProcessor, installerProcessor.tool.asGav(project));
             });

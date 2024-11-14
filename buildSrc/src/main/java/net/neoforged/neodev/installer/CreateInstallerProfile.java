@@ -2,6 +2,7 @@ package net.neoforged.neodev.installer;
 
 import com.google.gson.GsonBuilder;
 import net.neoforged.neodev.utils.FileUtils;
+import net.neoforged.neodev.utils.MavenIdentifier;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.RegularFileProperty;
@@ -46,8 +47,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     @Nested
     protected abstract ListProperty<IdentifiedFile> getLibraryFiles();
 
-    public void setLibraries(Configuration libraries) {
-        getLibraryFiles().set(IdentifiedFile.listFromConfiguration(getProject(), libraries));
+    public void addLibraries(Configuration libraries) {
+        getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(getProject(), libraries));
     }
 
     @Input
@@ -134,8 +135,23 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         );
 
         getLogger().info("Collecting libraries for Installer Profile");
+        // Remove potential duplicates.
+        var libraryFilesToResolve = new LinkedHashMap<MavenIdentifier, IdentifiedFile>(getLibraryFiles().get().size());
+        for (var libraryFile : getLibraryFiles().get()) {
+            var existingFile = libraryFilesToResolve.putIfAbsent(libraryFile.getIdentifier().get(), libraryFile);
+            if (existingFile != null) {
+                var existing = existingFile.getFile().getAsFile().get();
+                var duplicate = libraryFile.getFile().getAsFile().get();
+                if (!existing.equals(duplicate)) {
+                    throw new IllegalArgumentException("Cannot resolve installer profile! Library %s has different files: %s and %s.".formatted(
+                            libraryFile.getIdentifier().get(),
+                            existing,
+                            duplicate));
+                }
+            }
+        }
         var libraries = new ArrayList<>(
-                LibraryCollector.resolveLibraries(getRepositoryURLs().get(), getLibraryFiles().get()));
+                LibraryCollector.resolveLibraries(getRepositoryURLs().get(), libraryFilesToResolve.values()));
 
         var universalJar = getUniversalJar().getAsFile().get().toPath();
         libraries.add(new Library(

@@ -57,6 +57,12 @@ class NeoDevConfigurations {
     //
 
     /**
+     * Resolved {@link #neoFormDataOnly}.
+     * This is used to add NeoForm to the installer libraries.
+     * Only the zip is used (for the mappings), not the NeoForm tools, so it's not transitive.
+     */
+    final Configuration neoFormDataOnly;
+    /**
      * Resolvable {@link #neoFormDependencies}.
      */
     final Configuration neoFormClasspath;
@@ -84,12 +90,6 @@ class NeoDevConfigurations {
      * This is also used to produce the legacy classpath file for server installs.
      */
     final Configuration launcherProfileClasspath;
-    /**
-     * Libraries that need to be downloaded and installed by the installer.
-     * This includes all dependencies added by NeoForge, the NeoForm archive,
-     * and all dependencies needed by the various tools that the installer runs.
-     */
-    final Configuration installerProfileLibraries;
 
     //
     // The configurations for resolution only are declared in the build.gradle file.
@@ -117,21 +117,26 @@ class NeoDevConfigurations {
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
 
+        neoFormDataOnly = resolvable(configurations, "neoFormDataOnly");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
         modulePath = resolvable(configurations, "modulePath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
         userdevCompileOnlyClasspath = resolvable(configurations, "userdevCompileOnlyClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
         launcherProfileClasspath = resolvable(configurations, "launcherProfileClasspath");
-        installerProfileLibraries = resolvable(configurations, "installerProfileLibraries");
 
         // Libraries & module libraries & MC dependencies need to be available when compiling in NeoDev,
         // and on the runtime classpath too for IDE debugging support.
         configurations.getByName("implementation").extendsFrom(libraries, moduleLibraries, neoFormDependencies);
 
-        // runtimeClasspath is our reference for all dependency versions.
-        // Make sure that any configuration we resolve are consistent with it.
+        // runtimeClasspath is our reference for all MC dependency versions.
+        // Make sure that any classpath we resolve is consistent with it.
         var runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+
+        neoFormDataOnly.setTransitive(false);
+        neoFormDataOnly.extendsFrom(neoFormData);
+
+        neoFormClasspath.extendsFrom(neoFormDependencies);
 
         modulePath.extendsFrom(moduleLibraries);
         modulePath.shouldResolveConsistentlyWith(runtimeClasspath);
@@ -147,9 +152,5 @@ class NeoDevConfigurations {
 
         launcherProfileClasspath.extendsFrom(libraries, moduleLibraries);
         launcherProfileClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
-
-        installerProfileLibraries.extendsFrom(libraries, moduleLibraries, neoFormData);
-        installerProfileLibraries.shouldResolveConsistentlyWith(runtimeClasspath);
-        // Installer tools are also added to `installerProfileLibraries`, from NeoDevPlugin.
     }
 }
