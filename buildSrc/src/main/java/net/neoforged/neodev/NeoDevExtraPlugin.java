@@ -29,22 +29,15 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
 
         var extension = project.getExtensions().create(NeoDevExtension.NAME, NeoDevExtension.class);
 
-        var rawNeoFormVersion = project.getProviders().gradleProperty("neoform_version");
-        var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
-        var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
+        var modulePathDependency = projectDep(dependencyFactory, neoForgeProject, "net.neoforged:neoforge-moddev-module-path");
 
         // TODO: this is temporary
-        var modulesConfiguration = project.getConfigurations().create("moduleOnly", spec -> {
-            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "moduleOnly"));
-        });
-
         var downloadAssets = neoForgeProject.getTasks().named("downloadAssets", DownloadAssets.class);
         var createArtifacts = neoForgeProject.getTasks().named("createSourceArtifacts", CreateMinecraftArtifacts.class);
         var writeNeoDevConfig = neoForgeProject.getTasks().named("writeNeoDevConfig", WriteUserDevConfig.class);
 
         Consumer<Configuration> configureLegacyClasspath = spec -> {
-            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "modDevRuntimeElements"));
-            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "userdevCompileOnly"));
+            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "net.neoforged:neoforge-dependencies"));
             // TODO: Convert into a cross-project dependency too
             spec.getDependencies().add(
                     dependencyFactory.create(
@@ -61,7 +54,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 neoDevBuildDir,
                 extension.getRuns(),
                 writeNeoDevConfig,
-                modulePath -> modulePath.extendsFrom(modulesConfiguration),
+                modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 configureLegacyClasspath,
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
         );
@@ -77,15 +70,17 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 writeNeoDevConfig,
                 testExtension.getLoadedMods(),
                 testExtension.getTestedMod(),
-                modulePath -> modulePath.extendsFrom(modulesConfiguration),
+                modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 configureLegacyClasspath,
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
         );
     }
 
-    private static ProjectDependency projectDep(DependencyFactory dependencyFactory, Project project, String configurationName) {
+    private static ProjectDependency projectDep(DependencyFactory dependencyFactory, Project project, String capabilityNotation) {
         var dep = dependencyFactory.create(project);
-        dep.setTargetConfiguration(configurationName);
+        dep.capabilities(caps -> {
+            caps.requireCapability(capabilityNotation);
+        });
         return dep;
     }
 }

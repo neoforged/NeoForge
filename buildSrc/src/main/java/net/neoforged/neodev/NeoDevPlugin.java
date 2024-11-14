@@ -14,11 +14,11 @@ import net.neoforged.nfrtgradle.NeoFormRuntimePlugin;
 import net.neoforged.nfrtgradle.NeoFormRuntimeTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.BasePluginExtension;
-import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Sync;
@@ -32,17 +32,12 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class NeoDevPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(MinecraftDependenciesPlugin.class);
 
-        var createSourceArtifacts = configureMinecraftDecompilation(project);
-
-        var configurations = project.getConfigurations();
-        var runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
         var dependencyFactory = project.getDependencyFactory();
         var tasks = project.getTasks();
         var neoDevBuildDir = project.getLayout().getBuildDirectory().dir("neodev");
@@ -54,35 +49,24 @@ public class NeoDevPlugin implements Plugin<Project> {
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
 
         var extension = project.getExtensions().create(NeoDevExtension.NAME, NeoDevExtension.class);
+        var configurations = NeoDevConfigurations.createAndSetup(project);
 
-        var neoFormDependencies = configurations.create("neoFormDependencies", spec -> {
-            spec.setCanBeConsumed(false);
-            spec.setCanBeResolved(true);
-            spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
-                var dep = dependencyFactory.create("net.neoforged:neoform:" + version).capabilities(caps -> {
-                    caps.requireCapability("net.neoforged:neoform-dependencies");
-                });
-                dep.endorseStrictVersions();
-                return dep;
-            }));
-        });
+        /*
+         * MINECRAFT SOURCES SETUP
+         */
+        // 1. Obtain decompiled Minecraft sources jar using NeoForm.
+        var createSourceArtifacts = configureMinecraftDecompilation(project);
 
-        var jstConfiguration = configurations.create("javaSourceTransformer", files -> {
-            files.setCanBeConsumed(false);
-            files.setCanBeResolved(true);
-            files.getDependencies().add(Tools.JST.asDependency(project));
-        });
-
+        // 2. Apply AT to the jar from 1.
         var atFile = project.getRootProject().file("src/main/resources/META-INF/accesstransformer.cfg");
-        var applyAt = tasks.register("applyAccessTransformer", ApplyAccessTransformer.class, task -> {
-            task.classpath(jstConfiguration);
-            task.getInputJar().set(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getSourcesArtifact));
-            task.getAccessTransformer().set(atFile);
-            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/access-transformed-sources.jar")));
-            task.getLibraries().from(neoFormDependencies);
-            task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-jst.txt")));
-        });
+        var applyAt = configureAccessTransformer(
+                project,
+                configurations.neoFormClasspath,
+                createSourceArtifacts,
+                neoDevBuildDir,
+                atFile);
 
+        // 3. Apply patches to the jar from 2.
         var patchesFolder = project.getRootProject().file("patches");
         var applyPatches = tasks.register("applyPatches", ApplyPatches.class, task -> {
             task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
@@ -91,31 +75,19 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getRejectsFolder().set(project.getRootProject().file("rejects"));
         });
 
+        // 4. Decompile jar from 3.
         var mcSourcesPath = project.file("src/main/java");
         tasks.register("setup", Sync.class, task -> {
             task.from(project.zipTree(applyPatches.flatMap(ApplyPatches::getPatchedJar)));
             task.into(mcSourcesPath);
         });
 
-        var downloadAssets = tasks.register("downloadAssets", DownloadAssets.class, task -> {
-            task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(v -> "net.neoforged:neoform:" + v + "@zip"));
-            task.getAssetPropertiesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft_assets.properties")));
+        // Modules are on the classpath too but should be ignored by BootstrapLauncher
+        var modulePathIgnoreList = configurations.modulePath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
+            return results.stream().map(r -> r.getFile().getName()).toList();
         });
 
-        var installerConfiguration = project.getConfigurations().create("installer");
-        var installerLibrariesConfiguration = configurations.create("installerLibraries");
-        var modulesConfiguration = configurations.create("moduleOnly");
-        var userDevCompileOnlyConfiguration = configurations.create("userdevCompileOnly");
-        var userDevTestImplementationConfiguration = configurations.create("userdevTestImplementation");
-        userDevTestImplementationConfiguration.shouldResolveConsistentlyWith(runtimeClasspath);
-
-        var devLibrariesConfiguration = configurations.create("devLibraries", files -> {
-            files.setCanBeConsumed(false);
-            files.setCanBeResolved(true);
-        });
-        devLibrariesConfiguration.shouldResolveConsistentlyWith(runtimeClasspath);
-        devLibrariesConfiguration.extendsFrom(installerLibrariesConfiguration, modulesConfiguration, userDevCompileOnlyConfiguration);
-
+        // 1. Write configs that contain the runs in a format understood by MDG/NG/etc. Currently one for neodev and one for userdev.
         var writeNeoDevConfig = tasks.register("writeNeoDevConfig", WriteUserDevConfig.class, task -> {
             task.getForNeoDev().set(true);
             task.getUserDevConfig().set(neoDevBuildDir.map(dir -> dir.file("neodev-config.json")));
@@ -130,14 +102,12 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                task.getLibraries().addAll(DependencyUtils.configurationToGavList(devLibrariesConfiguration));
-                task.getModules().addAll(DependencyUtils.configurationToGavList(modulesConfiguration));
-                task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(userDevTestImplementationConfiguration));
+                task.getLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevClasspath));
+                task.getModules().addAll(DependencyUtils.configurationToGavList(configurations.modulePath));
+                task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
                 task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
-                task.getIgnoreList().addAll(modulesConfiguration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                    return results.stream().map(r -> r.getFile().getName()).toList();
-                }));
-                task.getIgnoreList().addAll(userDevCompileOnlyConfiguration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
+                task.getIgnoreList().addAll(modulePathIgnoreList);
+                task.getIgnoreList().addAll(configurations.userdevCompileOnlyClasspath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
                     return results.stream().map(r -> r.getFile().getName()).toList();
                 }));
                 task.getIgnoreList().addAll("client-extra", "neoforge-");
@@ -145,13 +115,20 @@ public class NeoDevPlugin implements Plugin<Project> {
             });
         }
 
+        // 2. Task to download assets.
+        var downloadAssets = tasks.register("downloadAssets", DownloadAssets.class, task -> {
+            task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(v -> "net.neoforged:neoform:" + v + "@zip"));
+            task.getAssetPropertiesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft_assets.properties")));
+        });
+
+        // 3. Let MDG do the rest of the setup. :)
         NeoDevFacade.setupRuns(
                 project,
                 neoDevBuildDir,
                 extension.getRuns(),
                 writeNeoDevConfig,
                 modulePath -> {
-                    modulePath.extendsFrom(modulesConfiguration);
+                    modulePath.extendsFrom(configurations.moduleLibraries);
                 },
                 legacyClassPath -> {
                     legacyClassPath.getDependencies().addLater(mcAndNeoFormVersion.map(v -> dependencyFactory.create("net.neoforged:neoform:" + v).capabilities(caps -> {
@@ -162,22 +139,29 @@ public class NeoDevPlugin implements Plugin<Project> {
                                     project.files(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))
                             )
                     );
-                    legacyClassPath.extendsFrom(installerLibrariesConfiguration, modulesConfiguration, userDevCompileOnlyConfiguration);
+                    legacyClassPath.extendsFrom(configurations.libraries, configurations.moduleLibraries, configurations.userdevCompileOnly);
                 },
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
         );
 
+        /*
+         * OTHER TASKS
+         */
+
+        // Generate source patches into a patch archive.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
             task.getModifiedSources().set(project.file("src/main/java"));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
         });
 
+        // Update the patch/ folder with the current patches.
         var genPatches = tasks.register("genPatches", Sync.class, task -> {
             task.from(project.zipTree(genSourcePatches.flatMap(GenerateSourcePatches::getPatchesJar)));
             task.into(project.getRootProject().file("patches"));
         });
 
+        // Universal jar = the jar that contains NeoForge classes
         // TODO: signing?
         var universalJar = tasks.register("universalJar", Jar.class, task -> {
             task.getArchiveClassifier().set("universal");
@@ -231,18 +215,13 @@ public class NeoDevPlugin implements Plugin<Project> {
                 patchesFolder
         );
 
-        var launcherProfileLibraries = configurations.create("launcherProfileLibraries", spec -> {
-            spec.setCanBeResolved(true);
-            spec.setCanBeConsumed(false);
-        });
-        launcherProfileLibraries.extendsFrom(installerConfiguration, modulesConfiguration);
-        launcherProfileLibraries.shouldResolveConsistentlyWith(runtimeClasspath);
+        // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.getFmlVersion().set(fmlVersion);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
-            task.setLibraries(launcherProfileLibraries);
+            task.setLibraries(configurations.launcherProfileClasspath);
             task.getRepositoryURLs().set(project.provider(() -> {
                 List<URI> repos = new ArrayList<>();
                 for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
@@ -254,26 +233,19 @@ public class NeoDevPlugin implements Plugin<Project> {
                 }
                 return repos;
             }));
-            task.getIgnoreList().addAll(modulesConfiguration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                return results.stream().map(r -> r.getFile().getName()).toList();
-            }));
+            task.getIgnoreList().addAll(modulePathIgnoreList);
             task.getIgnoreList().addAll("client-extra", "neoforge-");
-            task.setModules(modulesConfiguration);
+            task.setModules(configurations.modulePath);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
         });
 
-        var installerProfileLibraries = configurations.create("installerProfileLibraries", spec -> {
-            spec.setCanBeResolved(true);
-            spec.setCanBeConsumed(false);
-        });
-        installerProfileLibraries.extendsFrom(installerLibrariesConfiguration);
-        installerProfileLibraries.shouldResolveConsistentlyWith(runtimeClasspath);
+        // Installer profile = the .json file used by the NeoForge installer.
         var createInstallerProfile = tasks.register("createInstallerProfile", CreateInstallerProfile.class, task -> {
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getMcAndNeoFormVersion().set(mcAndNeoFormVersion);
             task.getIcon().set(project.getRootProject().file("docs/assets/neoforged.ico"));
-            task.setLibraries(installerProfileLibraries);
+            task.setLibraries(configurations.installerProfileLibraries);
             task.getRepositoryURLs().set(project.provider(() -> {
                 List<URI> repos = new ArrayList<>();
                 for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
@@ -290,14 +262,14 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         for (var installerProcessor : InstallerProcessor.values()) {
-            var configuration = configurations.create("installerProcessor" + installerProcessor.toString(), files -> {
+            var configuration = project.getConfigurations().create("installerProcessor" + installerProcessor.toString(), files -> {
                 files.setCanBeConsumed(false);
                 files.setCanBeResolved(true);
                 files.getDependencies().add(installerProcessor.tool.asDependency(project));
             });
-            installerProfileLibraries.extendsFrom(configuration);
+            configurations.installerProfileLibraries.extendsFrom(configuration);
             // Each tool should resolve consistently with the full set of installed libraries.
-            configuration.shouldResolveConsistentlyWith(installerProfileLibraries);
+            configuration.shouldResolveConsistentlyWith(configurations.installerProfileLibraries);
             createInstallerProfile.configure(task -> {
                 task.getProcessorClasspaths().put(installerProcessor, DependencyUtils.configurationToGavList(configuration));
                 task.getProcessorGavs().put(installerProcessor, installerProcessor.tool.asGav(project));
@@ -305,11 +277,11 @@ public class NeoDevPlugin implements Plugin<Project> {
         }
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(";", installerConfiguration, modulesConfiguration);
+            task.setLibraries(";", configurations.launcherProfileClasspath, configurations.modulePath);
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("windows-server-args.txt")));
         });
         var createUnixServerArgsFile = tasks.register("createUnixServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(":", installerConfiguration, modulesConfiguration);
+            task.setLibraries(":", configurations.launcherProfileClasspath, configurations.modulePath);
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("unix-server-args.txt")));
         });
 
@@ -320,14 +292,12 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                task.getIgnoreList().addAll(modulesConfiguration.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                    return results.stream().map(r -> r.getFile().getName()).toList();
-                }));
+                task.getIgnoreList().addAll(modulePathIgnoreList);
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }
 
-        var installerConfig = configurations.create("legacyInstaller", files -> {
+        var installerConfig = project.getConfigurations().create("legacyInstaller", files -> {
             files.setCanBeConsumed(false);
             files.setCanBeResolved(true);
             files.setTransitive(false);
@@ -422,6 +392,28 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.dependsOn(universalJar);
             task.dependsOn(userdevJar);
             task.dependsOn(sourcesJarProvider);
+        });
+    }
+
+    private static TaskProvider<ApplyAccessTransformer> configureAccessTransformer(
+            Project project,
+            Configuration neoFormClasspath,
+            TaskProvider<CreateMinecraftArtifacts> createSourceArtifacts,
+            Provider<Directory> neoDevBuildDir,
+            File atFile) {
+        var jstConfiguration = project.getConfigurations().create("javaSourceTransformer", files -> {
+            files.setCanBeConsumed(false);
+            files.setCanBeResolved(true);
+            files.getDependencies().add(Tools.JST.asDependency(project));
+        });
+
+        return project.getTasks().register("applyAccessTransformer", ApplyAccessTransformer.class, task -> {
+            task.classpath(jstConfiguration);
+            task.getInputJar().set(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getSourcesArtifact));
+            task.getAccessTransformer().set(atFile);
+            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/access-transformed-sources.jar")));
+            task.getLibraries().from(neoFormClasspath);
+            task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-jst.txt")));
         });
     }
 
