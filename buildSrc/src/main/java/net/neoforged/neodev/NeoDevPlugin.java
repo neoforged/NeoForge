@@ -57,7 +57,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // 1. Obtain decompiled Minecraft sources jar using NeoForm.
         var createSourceArtifacts = configureMinecraftDecompilation(project);
 
-        // 2. Apply AT to the jar from 1.
+        // 2. Apply AT to the source jar from 1.
         var atFile = project.getRootProject().file("src/main/resources/META-INF/accesstransformer.cfg");
         var applyAt = configureAccessTransformer(
                 project,
@@ -66,7 +66,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 neoDevBuildDir,
                 atFile);
 
-        // 3. Apply patches to the jar from 2.
+        // 3. Apply patches to the source jar from 2.
         var patchesFolder = project.getRootProject().file("patches");
         var applyPatches = tasks.register("applyPatches", ApplyPatches.class, task -> {
             task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
@@ -75,7 +75,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getRejectsFolder().set(project.getRootProject().file("rejects"));
         });
 
-        // 4. Decompile jar from 3.
+        // 4. Unpack jar from 3.
         var mcSourcesPath = project.file("src/main/java");
         tasks.register("setup", Sync.class, task -> {
             task.from(project.zipTree(applyPatches.flatMap(ApplyPatches::getPatchedJar)));

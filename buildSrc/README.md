@@ -36,11 +36,14 @@ Implicitly applies: [MinecraftDependenciesPlugin](#minecraftdependenciesplugin).
 
 The primary plugin of this repository sets up the `neoforge` project.
 
+#### Setup
+
 It creates a `setup` task that performs the following actions via various subtasks:
 
 - Decompile Minecraft using the [NeoForm Runtime](https://github.com/neoforged/neoformruntime) and Minecraft version specific [NeoForm data](https://github.com/neoforged/NeoForm).
-- Apply the [NeoForge patches](../patches) to Minecraft sources. Any rejects are saved to the `/rejects` folder in the repository for manual inspection. During updates to new versions, the task can be run with `-Pupdating=true` to apply patches more leniently.
-- 
+- Applies [Access Transformers](../src/main/resources/META-INF/accesstransformer.cfg) to Minecraft sources.
+- Applies [NeoForge patches](../patches) to Minecraft sources. Any rejects are saved to the `/rejects` folder in the repository for manual inspection. During updates to new versions, the task can be run with `-Pupdating=true` to apply patches more leniently.
+- Finally it unpacks the patched sources to `projects/neoforge/src/main/java`.
 
 ### NeoDevExtraPlugin
 

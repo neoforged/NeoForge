@@ -57,7 +57,7 @@ class NeoDevConfigurations {
     //
 
     /**
-     * Resolved {@link #neoFormDataOnly}.
+     * Resolved {@link #neoFormData}.
      * This is used to add NeoForm to the installer libraries.
      * Only the zip is used (for the mappings), not the NeoForm tools, so it's not transitive.
      */
