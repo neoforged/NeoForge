@@ -1,4 +1,3 @@
-
 plugins {
     id 'java'
     id 'com.diffplug.spotless'
@@ -20,8 +19,7 @@ sourceSets {
             srcDir file('src/generated/resources')
         }
     }
-    junit {
-    }
+    junit {}
 }
 
 dependencies {
