@@ -85,6 +85,22 @@
                      } catch (NbtException | ReportedNbtException | IOException ioexception) {
                          LOGGER.error("Failed to load world data from {}", levelstoragesource$leveldirectory.oldDataFile(), ioexception);
                          LOGGER.error(
+@@ -173,6 +_,15 @@
+ 
+             PackRepository packrepository = ServerPacksSource.createPackRepository(levelstoragesource$levelstorageaccess);
+ 
++            if (gametestEnabled) {
++                net.neoforged.neoforge.gametest.GameTestHooks.registerGametests();
++                net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
++                MinecraftServer.spin(thread -> net.minecraft.gametest.framework.GameTestServer.create(thread, levelstoragesource$levelstorageaccess, packrepository, net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions(), spawnPos));
++                // If we're running a gametest server we don't need to load the resources normally (GameTestServer#create does it using a flat world)
++                // or create a shutdown thread as the gametest server will always exit itself
++                return;
++            }
++
+             WorldStem worldstem;
+             try {
+                 WorldLoader.InitConfig worldloader$initconfig = loadOrCreateConfig(dedicatedserversettings.getProperties(), dynamic1, flag, packrepository);
 @@ -214,6 +_,9 @@
                                              worlddimensions = dedicatedserverproperties.createDimensions(p_359487_.datapackWorldgen());
                                          }
@@ -95,48 +111,9 @@
                                          WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
                                          Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_359487_.datapackWorldgen().allRegistriesLifecycle());
                                          return new WorldLoader.DataLoadOutput<>(
-@@ -246,24 +_,22 @@
- 
-             WorldData worlddata = worldstem.worldData();
-             levelstoragesource$levelstorageaccess.saveDataTag(registryaccess$frozen, worlddata);
--            final DedicatedServer dedicatedserver = MinecraftServer.spin(
-+            final MinecraftServer dedicatedserver = MinecraftServer.spin(
-                 p_293760_ -> {
--                    DedicatedServer dedicatedserver1 = new DedicatedServer(
--                        p_293760_,
--                        levelstoragesource$levelstorageaccess,
--                        packrepository,
--                        worldstem,
--                        dedicatedserversettings,
--                        DataFixers.getDataFixer(),
--                        services,
--                        LoggerChunkProgressListener::createFromGameruleRadius
--                    );
-+                    MinecraftServer dedicatedserver1;
-+                    if (gametestEnabled) {
-+                        net.neoforged.neoforge.gametest.GameTestHooks.registerGametests();
-+                        net.minecraft.core.BlockPos spawnPos = optionset.valueOf(spawnPosOpt);
-+                        dedicatedserver1 = net.minecraft.gametest.framework.GameTestServer.create(p_293760_, levelstoragesource$levelstorageaccess, packrepository, net.minecraft.gametest.framework.GameTestRegistry.getAllTestFunctions(), spawnPos);
-+                    } else {
-+                        dedicatedserver1 = new DedicatedServer(p_293760_, levelstoragesource$levelstorageaccess, packrepository, worldstem, dedicatedserversettings, DataFixers.getDataFixer(), services, LoggerChunkProgressListener::createFromGameruleRadius);
-+                    }
-                     dedicatedserver1.setPort(optionset.valueOf(optionspec11));
-                     dedicatedserver1.setDemo(optionset.has(optionspec2));
-                     dedicatedserver1.setId(optionset.valueOf(optionspec12));
-                     boolean flag2 = !optionset.has(optionspec) && !optionset.valuesOf(optionspec15).contains("nogui");
--                    if (flag2 && !GraphicsEnvironment.isHeadless()) {
--                        dedicatedserver1.showGui();
-+                    if (dedicatedserver1 instanceof DedicatedServer dedicatedServer && flag2 && !GraphicsEnvironment.isHeadless()) {
-+                        dedicatedServer.showGui();
-                     }
- 
-                     return dedicatedserver1;
-@@ -272,7 +_,10 @@
-             Thread thread = new Thread("Server Shutdown Thread") {
+@@ -273,6 +_,7 @@
                  @Override
                  public void run() {
-+                    // FORGE: Halting as GameTestServer will cause issues as it always calls System#exit on both crash and normal exit, so skip it
-+                    if (!(dedicatedserver instanceof net.minecraft.gametest.framework.GameTestServer))
                      dedicatedserver.halt(true);
 +                    org.apache.logging.log4j.LogManager.shutdown(); // we're manually managing the logging shutdown on the server. Make sure we do it here at the end.
                  }

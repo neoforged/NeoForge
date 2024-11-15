@@ -37,6 +37,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.equipment.ArmorMaterials;
@@ -48,7 +49,6 @@ import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -117,7 +117,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().registerItem("test_spawn_egg", props -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, props) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), 0x0000FF, 0xFF0000, props) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);
