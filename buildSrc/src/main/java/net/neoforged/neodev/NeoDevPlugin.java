@@ -82,11 +82,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.into(mcSourcesPath);
         });
 
-        // Modules are on the classpath too but should be ignored by BootstrapLauncher
-        var modulePathIgnoreList = configurations.modulePath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-            return results.stream().map(r -> r.getFile().getName()).toList();
-        });
-
         // 1. Write configs that contain the runs in a format understood by MDG/NG/etc. Currently one for neodev and one for userdev.
         var writeNeoDevConfig = tasks.register("writeNeoDevConfig", WriteUserDevConfig.class, task -> {
             task.getForNeoDev().set(true);
@@ -106,7 +101,6 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getModules().addAll(DependencyUtils.configurationToGavList(configurations.modulePath));
                 task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
                 task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
-                task.getIgnoreList().addAll(modulePathIgnoreList);
                 task.getIgnoreList().addAll(configurations.userdevCompileOnlyClasspath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
                     return results.stream().map(r -> r.getFile().getName()).toList();
                 }));
@@ -233,7 +227,6 @@ public class NeoDevPlugin implements Plugin<Project> {
                 }
                 return repos;
             }));
-            task.getIgnoreList().addAll(modulePathIgnoreList);
             task.getIgnoreList().addAll("client-extra", "neoforge-");
             task.setModules(configurations.modulePath);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
@@ -297,7 +290,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                task.getIgnoreList().addAll(modulePathIgnoreList);
+                task.getIgnoreList().set(List.of());
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }
@@ -318,7 +311,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setMetadataCharset("UTF-8");
             task.getDestinationDirectory().convention(project.getExtensions().getByType(BasePluginExtension.class).getLibsDirectory());
 
-            // TODO: is this correct?
             task.from(project.zipTree(project.provider(installerConfig::getSingleFile)), spec -> {
                 spec.exclude("big_logo.png");
             });
