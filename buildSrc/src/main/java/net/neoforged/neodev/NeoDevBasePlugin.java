@@ -15,6 +15,7 @@ public class NeoDevBasePlugin implements Plugin<Project> {
         var createSources = NeoDevPlugin.configureMinecraftDecompilation(project);
 
         project.getTasks().register("setup", Sync.class, task -> {
+            task.setGroup(NeoDevPlugin.GROUP);
             task.setDescription("Replaces the contents of the base project sources with the unpatched, decompiled Minecraft source code.");
             task.from(project.zipTree(createSources.flatMap(CreateMinecraftArtifacts::getSourcesArtifact)));
             task.into(project.file("src/main/java/"));

@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 public class NeoDevPlugin implements Plugin<Project> {
+    static final String GROUP = "neoforge development";
+    static final String INTERNAL_GROUP = "neoforge development/internal";
+
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(MinecraftDependenciesPlugin.class);
@@ -68,6 +71,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // 3. Apply patches to the source jar from 2.
         var patchesFolder = project.getRootProject().file("patches");
         var applyPatches = tasks.register("applyPatches", ApplyPatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
             task.getPatchesFolder().set(patchesFolder);
             task.getPatchedJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/patched-sources.jar")));
@@ -77,6 +81,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // 4. Unpack jar from 3.
         var mcSourcesPath = project.file("src/main/java");
         tasks.register("setup", Sync.class, task -> {
+            task.setGroup(GROUP);
             task.from(project.zipTree(applyPatches.flatMap(ApplyPatches::getPatchedJar)));
             task.into(mcSourcesPath);
         });
@@ -92,6 +97,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
         for (var taskProvider : List.of(writeNeoDevConfig, writeUserDevConfig)) {
             taskProvider.configure(task -> {
+                task.setGroup(INTERNAL_GROUP);
                 task.getFmlVersion().set(fmlVersion);
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
@@ -110,6 +116,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         // 2. Task to download assets.
         var downloadAssets = tasks.register("downloadAssets", DownloadAssets.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(v -> "net.neoforged:neoform:" + v + "@zip"));
             task.getAssetPropertiesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft_assets.properties")));
         });
@@ -136,6 +143,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 },
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
         );
+        // TODO: Gradle run tasks should be moved to gradle group GROUP
 
         /*
          * OTHER TASKS
@@ -143,13 +151,15 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         // Generate source patches into a patch archive.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
             task.getModifiedSources().set(project.file("src/main/java"));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
         });
 
         // Update the patch/ folder with the current patches.
-        var genPatches = tasks.register("genPatches", Sync.class, task -> {
+        tasks.register("genPatches", Sync.class, task -> {
+            task.setGroup(GROUP);
             task.from(project.zipTree(genSourcePatches.flatMap(GenerateSourcePatches::getPatchesJar)));
             task.into(project.getRootProject().file("patches"));
         });
@@ -157,6 +167,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // Universal jar = the jar that contains NeoForge classes
         // TODO: signing?
         var universalJar = tasks.register("universalJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getArchiveClassifier().set("universal");
 
             task.from(project.zipTree(
@@ -189,9 +200,11 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         var jarJarTask = JarJar.registerWithConfiguration(project, "jarJar");
+        jarJarTask.configure(task -> task.setGroup(INTERNAL_GROUP));
         universalJar.configure(task -> task.from(jarJarTask));
 
         var createCleanArtifacts = tasks.register("createCleanArtifacts", CreateCleanArtifacts.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             var cleanArtifactsDir = neoDevBuildDir.map(dir -> dir.dir("artifacts/clean"));
             task.getCleanClientJar().set(cleanArtifactsDir.map(dir -> dir.file("client.jar")));
             task.getRawServerJar().set(cleanArtifactsDir.map(dir -> dir.file("raw-server.jar")));
@@ -211,6 +224,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getFmlVersion().set(fmlVersion);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
@@ -234,6 +248,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         // Installer profile = the .json file used by the NeoForge installer.
         var createInstallerProfile = tasks.register("createInstallerProfile", CreateInstallerProfile.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getMcAndNeoFormVersion().set(mcAndNeoFormVersion);
@@ -281,6 +296,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         for (var taskProvider : List.of(createWindowsServerArgsFile, createUnixServerArgsFile)) {
             taskProvider.configure(task -> {
+                task.setGroup(INTERNAL_GROUP);
                 task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
                 task.getFmlVersion().set(fmlVersion);
                 task.getMinecraftVersion().set(minecraftVersion);
@@ -297,6 +313,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // - Jar tasks have special manifest handling, so use Zip.
         // - The manifest must be the first entry in the jar so LegacyInstaller has to be the first input.
         var installerJar = tasks.register("installerJar", Zip.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getArchiveClassifier().set("installer");
             task.getArchiveExtension().set("jar");
             task.setMetadataCharset("UTF-8");
@@ -351,6 +368,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         var userdevJar = tasks.register("userdevJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.getArchiveClassifier().set("userdev");
 
             task.from(writeUserDevConfig.flatMap(WriteUserDevConfig::getUserDevConfig), spec -> {
@@ -368,7 +386,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         project.getExtensions().getByType(JavaPluginExtension.class).withSourcesJar();
-        final TaskProvider<? extends Jar> sourcesJarProvider = project.getTasks().named("sourcesJar", Jar.class);
+        var sourcesJarProvider = project.getTasks().named("sourcesJar", Jar.class);
         sourcesJarProvider.configure(task -> {
             task.exclude("net/minecraft/**");
             task.exclude("com/**");
@@ -391,6 +409,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             File atFile) {
 
         return project.getTasks().register("applyAccessTransformer", ApplyAccessTransformer.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.classpath(configurations.getExecutableTool(Tools.JST));
             task.getInputJar().set(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getSourcesArtifact));
             task.getAccessTransformer().set(atFile);
@@ -409,6 +428,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
         var remapClientJar = tasks.register("remapClientJar", RemapJar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates a Minecraft client jar with the official mappings applied. Used as the base for generating binary patches for the client.");
             task.classpath(artConfig);
             task.getMainClass().set("net.neoforged.art.Main");
@@ -417,6 +437,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getMojmapJar().set(neoDevBuildDir.map(dir -> dir.file("remapped-client.jar")));
         });
         var remapServerJar = tasks.register("remapServerJar", RemapJar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates a Minecraft dedicated server jar with the official mappings applied. Used as the base for generating binary patches for the client.");
             task.classpath(artConfig);
             task.getMainClass().set("net.neoforged.art.Main");
@@ -427,6 +448,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var binpatcherConfig = configurations.getExecutableTool(Tools.BINPATCHER);
         var generateMergedBinPatches = tasks.register("generateMergedBinPatches", GenerateBinaryPatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates binary patch files by diffing a merged client/server jar-file and the compiled Minecraft classes in this project.");
             task.classpath(binpatcherConfig);
             task.getCleanJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
@@ -436,6 +458,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("merged-binpatches.lzma")));
         });
         var generateClientBinPatches = tasks.register("generateClientBinPatches", GenerateBinaryPatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates binary patch files by diffing a merged client jar-file and the compiled Minecraft classes in this project.");
             task.classpath(binpatcherConfig);
             task.getCleanJar().set(remapClientJar.flatMap(RemapJar::getMojmapJar));
@@ -445,6 +468,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("client-binpatches.lzma")));
         });
         var generateServerBinPatches = tasks.register("generateServerBinPatches", GenerateBinaryPatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates binary patch files by diffing a merged server jar-file and the compiled Minecraft classes in this project.");
             task.classpath(binpatcherConfig);
             task.getCleanJar().set(remapServerJar.flatMap(RemapJar::getMojmapJar));
