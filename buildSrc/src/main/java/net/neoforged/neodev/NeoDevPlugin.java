@@ -14,7 +14,6 @@ import net.neoforged.nfrtgradle.NeoFormRuntimePlugin;
 import net.neoforged.nfrtgradle.NeoFormRuntimeTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
@@ -61,7 +60,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         var atFile = project.getRootProject().file("src/main/resources/META-INF/accesstransformer.cfg");
         var applyAt = configureAccessTransformer(
                 project,
-                configurations.neoFormClasspath,
+                configurations,
                 createSourceArtifacts,
                 neoDevBuildDir,
                 atFile);
@@ -204,6 +203,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var binaryPatchOutputs = configureBinaryPatchCreation(
                 project,
+                configurations,
                 createCleanArtifacts,
                 neoDevBuildDir,
                 patchesFolder
@@ -259,11 +259,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         for (var installerProcessor : InstallerProcessor.values()) {
-            var configuration = project.getConfigurations().create("installerProcessor" + installerProcessor.toString(), files -> {
-                files.setCanBeConsumed(false);
-                files.setCanBeResolved(true);
-                files.getDependencies().add(installerProcessor.tool.asDependency(project));
-            });
+            var configuration = project.getConfigurations().getByName(installerProcessor.tool.getGradleConfigurationName());
             createInstallerProfile.configure(task -> {
                 // Add installer processor.
                 // Different processors might use different versions of the same library,
@@ -295,14 +291,9 @@ public class NeoDevPlugin implements Plugin<Project> {
             });
         }
 
-        var installerConfig = project.getConfigurations().create("legacyInstaller", files -> {
-            files.setCanBeConsumed(false);
-            files.setCanBeResolved(true);
-            files.setTransitive(false);
-            files.getDependencies().add(Tools.LEGACYINSTALLER.asDependency(project));
-        });
+        var installerConfig = configurations.getExecutableTool(Tools.LEGACYINSTALLER);
         // TODO: signing?
-        // We want to use the manifest from LegacyInstaller.
+        // We want to inherit the executable JAR manifest from LegacyInstaller.
         // - Jar tasks have special manifest handling, so use Zip.
         // - The manifest must be the first entry in the jar so LegacyInstaller has to be the first input.
         var installerJar = tasks.register("installerJar", Zip.class, task -> {
@@ -394,39 +385,29 @@ public class NeoDevPlugin implements Plugin<Project> {
 
     private static TaskProvider<ApplyAccessTransformer> configureAccessTransformer(
             Project project,
-            Configuration neoFormClasspath,
+            NeoDevConfigurations configurations,
             TaskProvider<CreateMinecraftArtifacts> createSourceArtifacts,
             Provider<Directory> neoDevBuildDir,
             File atFile) {
-        var jstConfiguration = project.getConfigurations().create("javaSourceTransformer", files -> {
-            files.setCanBeConsumed(false);
-            files.setCanBeResolved(true);
-            files.getDependencies().add(Tools.JST.asDependency(project));
-        });
 
         return project.getTasks().register("applyAccessTransformer", ApplyAccessTransformer.class, task -> {
-            task.classpath(jstConfiguration);
+            task.classpath(configurations.getExecutableTool(Tools.JST));
             task.getInputJar().set(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getSourcesArtifact));
             task.getAccessTransformer().set(atFile);
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/access-transformed-sources.jar")));
-            task.getLibraries().from(neoFormClasspath);
+            task.getLibraries().from(configurations.neoFormClasspath);
             task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-jst.txt")));
         });
     }
 
     private static BinaryPatchOutputs configureBinaryPatchCreation(Project project,
+                                                                   NeoDevConfigurations configurations,
                                                                    TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
                                                                    Provider<Directory> neoDevBuildDir,
                                                                    File sourcesPatchesFolder) {
-        var configurations = project.getConfigurations();
         var tasks = project.getTasks();
 
-        var artConfig = configurations.create("art", spec -> {
-            spec.setDescription("Used to resolve the jar remapping tool");
-            spec.setCanBeConsumed(false);
-            spec.setCanBeResolved(true);
-            spec.getDependencies().add(Tools.AUTO_RENAMING_TOOL.asDependency(project));
-        });
+        var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
         var remapClientJar = tasks.register("remapClientJar", RemapJar.class, task -> {
             task.setDescription("Creates a Minecraft client jar with the official mappings applied. Used as the base for generating binary patches for the client.");
             task.classpath(artConfig);
@@ -444,13 +425,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getMojmapJar().set(neoDevBuildDir.map(dir -> dir.file("remapped-server.jar")));
         });
 
-        var binpatcherConfig = configurations.create("binpatcher", spec -> {
-            spec.setDescription("Used to resolve the tool for creating binary patches");
-            spec.setCanBeConsumed(false);
-            spec.setCanBeResolved(true);
-            spec.setTransitive(false);
-            spec.getDependencies().add(Tools.BINPATCHER.asDependency(project));
-        });
+        var binpatcherConfig = configurations.getExecutableTool(Tools.BINPATCHER);
         var generateMergedBinPatches = tasks.register("generateMergedBinPatches", GenerateBinaryPatches.class, task -> {
             task.setDescription("Creates binary patch files by diffing a merged client/server jar-file and the compiled Minecraft classes in this project.");
             task.classpath(binpatcherConfig);

@@ -5,6 +5,10 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.plugins.JavaPlugin;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * Helper class to keep track of many {@link Configuration}s used for the {@code neoforge} project.
  *
@@ -12,7 +16,7 @@ import org.gradle.api.plugins.JavaPlugin;
  */
 class NeoDevConfigurations {
     static NeoDevConfigurations createAndSetup(Project project) {
-        return new NeoDevConfigurations(project.getConfigurations());
+        return new NeoDevConfigurations(project);
     }
 
     //
@@ -91,6 +95,11 @@ class NeoDevConfigurations {
      */
     final Configuration launcherProfileClasspath;
 
+    /**
+     * To download each executable tool, we use a separate resolvable configuration.
+     */
+    final Map<Tools, Configuration> toolClasspaths;
+
     //
     // The configurations for resolution only are declared in the build.gradle file.
     //
@@ -109,7 +118,9 @@ class NeoDevConfigurations {
         });
     }
 
-    private NeoDevConfigurations(ConfigurationContainer configurations) {
+    private NeoDevConfigurations(Project project) {
+        var configurations = project.getConfigurations();
+
         neoFormData = dependencyScope(configurations, "neoFormData");
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
@@ -152,5 +163,39 @@ class NeoDevConfigurations {
 
         launcherProfileClasspath.extendsFrom(libraries, moduleLibraries);
         launcherProfileClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
+
+        toolClasspaths = createToolClasspaths(project);
+    }
+
+    private Map<Tools, Configuration> createToolClasspaths(Project project) {
+        var configurations = project.getConfigurations();
+        var dependencyFactory = project.getDependencyFactory();
+
+        var result = new HashMap<Tools, Configuration>();
+
+        for (var tool : Tools.values()) {
+            var configuration = configurations.create(tool.getGradleConfigurationName(), spec -> {
+                spec.setDescription("Resolves the executable for tool " + tool.name());
+                spec.setCanBeConsumed(false);
+                // Tools are considered to be executable jars.
+                // Gradle requires the classpath for JavaExec to only contain a single file for these.
+                spec.setTransitive(false);
+
+                var gav = tool.asGav(project);
+                spec.getDependencies().add(dependencyFactory.create(gav));
+            });
+            result.put(tool, configuration);
+        }
+
+        return Map.copyOf(result);
+    }
+
+    /**
+     * Gets a configuration representing the classpath for an executable tool.
+     * Since executable tools are assumed to be executable jars, these configurations
+     * generally only contain a single file.
+     */
+    public Configuration getExecutableTool(Tools tool) {
+        return Objects.requireNonNull(toolClasspaths.get(tool));
     }
 }
