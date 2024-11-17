@@ -179,7 +179,9 @@ class NeoDevConfigurations {
                 spec.setCanBeConsumed(false);
                 // Tools are considered to be executable jars.
                 // Gradle requires the classpath for JavaExec to only contain a single file for these.
-                spec.setTransitive(false);
+                if (tool.isIgnoreTransitiveDependencies()) {
+                    spec.setTransitive(false);
+                }
 
                 var gav = tool.asGav(project);
                 spec.getDependencies().add(dependencyFactory.create(gav));

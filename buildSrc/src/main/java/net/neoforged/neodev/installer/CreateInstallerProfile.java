@@ -187,8 +187,8 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         FileUtils.writeStringSafe(
                 getInstallerProfile().getAsFile().get().toPath(),
                 new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(profile),
-                // TODO: Not sure what this should be? Most likely the file is ASCII.
-                StandardCharsets.UTF_8);
+                StandardCharsets.UTF_8
+        );
     }
 }
 

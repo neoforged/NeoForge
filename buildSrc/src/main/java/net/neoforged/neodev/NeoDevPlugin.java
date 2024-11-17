@@ -271,19 +271,17 @@ public class NeoDevPlugin implements Plugin<Project> {
             }));
             task.getUniversalJar().set(universalJar.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getInstallerProfile().set(neoDevBuildDir.map(dir -> dir.file("installer-profile.json")));
-        });
 
-        for (var installerProcessor : InstallerProcessor.values()) {
-            var configuration = project.getConfigurations().getByName(installerProcessor.tool.getGradleConfigurationName());
-            createInstallerProfile.configure(task -> {
-                // Add installer processor.
+            // Make all installer processor tools available to the profile
+            for (var installerProcessor : InstallerProcessor.values()) {
+                var configuration = configurations.getExecutableTool(installerProcessor.tool);
                 // Different processors might use different versions of the same library,
                 // but that is fine because each processor gets its own classpath.
                 task.addLibraries(configuration);
                 task.getProcessorClasspaths().put(installerProcessor, DependencyUtils.configurationToGavList(configuration));
                 task.getProcessorGavs().put(installerProcessor, installerProcessor.tool.asGav(project));
-            });
-        }
+            }
+        });
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
             task.setLibraries(";", configurations.launcherProfileClasspath, configurations.modulePath);
