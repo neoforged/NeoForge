@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+/**
+ * Creates the JSON profile used by legacyinstaller for installing the client into the vanilla launcher,
+ * or installing a dedicated server.
+ */
 public abstract class CreateInstallerProfile extends DefaultTask {
     @Inject
     public CreateInstallerProfile() {}
@@ -127,6 +131,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
         serverProcessor.accept(InstallerProcessor.JARSPLITTER,
                 List.of("--input", "{MC_UNPACKED}", "--slim", "{MC_SLIM}", "--extra", "{MC_EXTRA}", "--srg", "{MERGED_MAPPINGS}")
         );
+        // Note that the options supplied here have to match the ones used in the RemapJar task used to generate the binary patches
         commonProcessor.accept(InstallerProcessor.FART,
                 List.of("--input", "{MC_SLIM}", "--output", "{MC_SRG}", "--names", "{MERGED_MAPPINGS}", "--ann-fix", "--ids-fix", "--src-fix", "--record-fix")
         );

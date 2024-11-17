@@ -19,10 +19,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-abstract class WriteUserDevConfig extends DefaultTask {
+/**
+ * Creates the userdev configuration file used by the various Gradle plugins used to develop
+ * mods for NeoForge, such as <a href="https://github.com/architectury/architectury-loom">Architectury Loom</a>,
+ * <a href="https://github.com/neoforged/ModDevGradle/">ModDevGradle
+ * or <a href="https://github.com/neoforged/NeoGradle">NeoGradle</a>.
+ */
+abstract class CreateUserDevConfig extends DefaultTask {
     @Inject
-    public WriteUserDevConfig() {}
+    public CreateUserDevConfig() {}
 
+    /**
+     * Toggles the launch type written to the userdev configuration between *dev and *userdev.
+     */
     @Input
     abstract Property<Boolean> getForNeoDev();
 

@@ -22,6 +22,11 @@ import org.gradle.work.DisableCachingByDefault;
 import javax.inject.Inject;
 import java.io.IOException;
 
+/**
+ * Applies Java source patches to a source jar and produces a patched source jar as an output.
+ * It can optionally store rejected hunks into a given folder, which is primarily used for updating
+ * when the original sources changed and some hunks are expected to fail.
+ */
 @DisableCachingByDefault(because = "Not worth caching")
 abstract class ApplyPatches extends DefaultTask {
     @InputFile

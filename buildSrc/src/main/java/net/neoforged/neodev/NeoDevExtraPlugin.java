@@ -34,7 +34,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
         // TODO: this is temporary
         var downloadAssets = neoForgeProject.getTasks().named("downloadAssets", DownloadAssets.class);
         var createArtifacts = neoForgeProject.getTasks().named("createSourceArtifacts", CreateMinecraftArtifacts.class);
-        var writeNeoDevConfig = neoForgeProject.getTasks().named("writeNeoDevConfig", WriteUserDevConfig.class);
+        var writeNeoDevConfig = neoForgeProject.getTasks().named("writeNeoDevConfig", CreateUserDevConfig.class);
 
         Consumer<Configuration> configureLegacyClasspath = spec -> {
             spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "net.neoforged:neoforge-dependencies"));

@@ -16,6 +16,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Runs <a href="https://github.com/neoforged/JavaSourceTransformer">JavaSourceTransformer</a> to apply
+ * access transformers to the Minecraft source code for extending the access level of existing classes/methods/etc.
+ * <p>
+ * Note that at runtime, FML also applies access transformers.
+ */
 abstract class ApplyAccessTransformer extends JavaExec {
     @InputFile
     public abstract RegularFileProperty getInputJar();

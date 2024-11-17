@@ -87,11 +87,11 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         // 1. Write configs that contain the runs in a format understood by MDG/NG/etc. Currently one for neodev and one for userdev.
-        var writeNeoDevConfig = tasks.register("writeNeoDevConfig", WriteUserDevConfig.class, task -> {
+        var writeNeoDevConfig = tasks.register("writeNeoDevConfig", CreateUserDevConfig.class, task -> {
             task.getForNeoDev().set(true);
             task.getUserDevConfig().set(neoDevBuildDir.map(dir -> dir.file("neodev-config.json")));
         });
-        var writeUserDevConfig = tasks.register("writeUserDevConfig", WriteUserDevConfig.class, task -> {
+        var writeUserDevConfig = tasks.register("writeUserDevConfig", CreateUserDevConfig.class, task -> {
             task.getForNeoDev().set(false);
             task.getUserDevConfig().set(neoDevBuildDir.map(dir -> dir.file("userdev-config.json")));
         });
@@ -369,7 +369,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.setGroup(INTERNAL_GROUP);
             task.getArchiveClassifier().set("userdev");
 
-            task.from(writeUserDevConfig.flatMap(WriteUserDevConfig::getUserDevConfig), spec -> {
+            task.from(writeUserDevConfig.flatMap(CreateUserDevConfig::getUserDevConfig), spec -> {
                 spec.rename(s -> "config.json");
             });
             task.from(atFile, spec -> {

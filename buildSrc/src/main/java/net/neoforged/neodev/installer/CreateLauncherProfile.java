@@ -24,6 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Creates the JSON file for running NeoForge via the Vanilla launcher.
+ */
 public abstract class CreateLauncherProfile extends DefaultTask {
     @Inject
     public CreateLauncherProfile() {}

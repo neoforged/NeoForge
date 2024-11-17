@@ -34,7 +34,7 @@ Sources: [NeoDevPlugin.java](src/main/java/net/neoforged/neodev/NeoDevPlugin.jav
 
 Implicitly applies: [MinecraftDependenciesPlugin](#minecraftdependenciesplugin).
 
-The primary plugin of this repository sets up the `neoforge` project.
+This is the primary of this repository and is used to configure the `neoforge` subproject.
 
 #### Setup
 
@@ -43,7 +43,26 @@ It creates a `setup` task that performs the following actions via various subtas
 - Decompile Minecraft using the [NeoForm Runtime](https://github.com/neoforged/neoformruntime) and Minecraft version specific [NeoForm data](https://github.com/neoforged/NeoForm).
 - Applies [Access Transformers](../src/main/resources/META-INF/accesstransformer.cfg) to Minecraft sources.
 - Applies [NeoForge patches](../patches) to Minecraft sources. Any rejects are saved to the `/rejects` folder in the repository for manual inspection. During updates to new versions, the task can be run with `-Pupdating=true` to apply patches more leniently.
-- Finally it unpacks the patched sources to `projects/neoforge/src/main/java`.
+- Unpacks the patched sources to `projects/neoforge/src/main/java`.
+
+#### Config Generation
+
+The plugin creates and configures the tasks to create various configuration files used downstream to develop
+mods with this version of NeoForge ([CreateUserDevConfig](src/main/java/net/neoforged/neodev/CreateUserDevConfig.java)), or install it ([CreateInstallerProfile](src/main/java/net/neoforged/neodev/installer/CreateInstallerProfile.java) and [CreateLauncherProfile](src/main/java/net/neoforged/neodev/installer/CreateLauncherProfile.java)).
+
+A separate userdev profile is created for use by other subprojects in this repository.
+The only difference is that it uses the FML launch types ending in `dev` rather than `userdev`. 
+
+#### Patch Generation
+
+NeoForge injects its hooks into Minecraft by patching the decompiled source code.
+Changes are made locally to the decompiled and patched source.
+Since that source cannot be published, patches need to be generated before checking in.
+The plugin configures the necessary task to do this
+([GenerateSourcePatches](src/main/java/net/neoforged/neodev/GenerateSourcePatches.java)).
+
+The source patches are only used during development of NeoForge itself and development of mods that use Gradle plugins implementing the decompile/patch/recompile pipeline. 
+For use by the installer intended for players as well as Gradle plugins wanting to replicate the production artifacts more closely, binary patches are generated using the ([GenerateBinaryPatches](src/main/java/net/neoforged/neodev/GenerateBinaryPatches.java)) task.
 
 ### NeoDevExtraPlugin
 

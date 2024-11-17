@@ -12,6 +12,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * Produces a remapped jar-file that has almost no other changes applied with the intent of being
+ * the base against which we {@link GenerateBinaryPatches generate binary patches}.
+ * <p>
+ * The installer produces the same Jar file as this task does and then applies the patches against that.
+ * <p>
+ * Any changes to the options used here have to be reflected in the {@link net.neoforged.neodev.installer.CreateInstallerProfile installer profile}
+ * and vice versa, to ensure the patches are generated against the same binary files as they are applied to later.
+ */
 abstract class RemapJar extends JavaExec {
     @Inject
     public RemapJar() {}

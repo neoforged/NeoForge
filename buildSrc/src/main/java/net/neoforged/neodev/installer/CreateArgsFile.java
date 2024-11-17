@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Creates the JVM/program argument files used by the dedicated server launcher.
+ */
 public abstract class CreateArgsFile extends DefaultTask {
     @Inject
     public CreateArgsFile() {}
