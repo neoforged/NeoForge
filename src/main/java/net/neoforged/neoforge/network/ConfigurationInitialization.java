@@ -12,6 +12,7 @@ import net.minecraft.server.network.config.SynchronizeRegistriesTask;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
+import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.configuration.CommonRegisterTask;
 import net.neoforged.neoforge.network.configuration.CommonVersionTask;
 import net.neoforged.neoforge.network.configuration.RegistryDataMapNegotiation;
@@ -53,8 +54,9 @@ public class ConfigurationInitialization {
             event.register(new SyncConfig(listener));
         }
 
-        //These two can always be registered they detect the listener connection type internally and will skip themselves.
+        //These can always be registered, they detect the listener connection type internally and will skip themselves.
         event.register(new RegistryDataMapNegotiation(listener));
         event.register(new CheckExtensibleEnums(listener));
+        event.register(new CheckFeatureFlags(listener));
     }
 }

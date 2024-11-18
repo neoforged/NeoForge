@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/gui/font/glyphs/BakedGlyph.java
++++ b/net/minecraft/client/gui/font/glyphs/BakedGlyph.java
+@@ -75,6 +_,15 @@
+         p_95223_.addVertex(p_254370_, p_95221_.x0, p_95221_.y1, p_95221_.depth).setColor(p_95221_.color).setUv(this.u1, this.v0).setLight(p_95224_);
+     }
+ 
++    /**
++     * Neo: returns the {@link RenderType} to use for the given {@link Font.DisplayMode} and blur setting
++     */
++    public RenderType renderType(Font.DisplayMode p_181388_, boolean blur) {
++        return this.renderTypes.select(p_181388_, blur);
++    }
++
++    /** @deprecated Neo: Use {@link #renderType(Font.DisplayMode, boolean)} instead */
++    @Deprecated
+     public RenderType renderType(Font.DisplayMode p_181388_) {
+         return this.renderTypes.select(p_181388_);
+     }

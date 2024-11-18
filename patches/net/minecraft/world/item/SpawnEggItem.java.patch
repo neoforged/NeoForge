@@ -1,51 +1,48 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -41,11 +_,14 @@
-     private final int highlightColor;
-     private final EntityType<?> defaultType;
- 
-+    /** @deprecated Forge: Use {@link net.neoforged.neoforge.common.DeferredSpawnEggItem} instead for suppliers */
-+    @Deprecated
-     public SpawnEggItem(EntityType<? extends Mob> p_43207_, int p_43208_, int p_43209_, Item.Properties p_43210_) {
-         super(p_43210_);
-         this.defaultType = p_43207_;
-         this.backgroundColor = p_43208_;
-         this.highlightColor = p_43209_;
-+        if (p_43207_ != null)
-         BY_ID.put(p_43207_, this);
-     }
- 
-@@ -133,6 +_,8 @@
- 
-     @Nullable
-     public static SpawnEggItem byId(@Nullable EntityType<?> p_43214_) {
-+        var ret = net.neoforged.neoforge.common.DeferredSpawnEggItem.deferredOnlyById(p_43214_);
-+        if (ret != null) return ret;
-         return BY_ID.get(p_43214_);
-     }
- 
-@@ -142,12 +_,12 @@
- 
-     public EntityType<?> getType(ItemStack p_330335_) {
-         CustomData customdata = p_330335_.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
--        return !customdata.isEmpty() ? customdata.read(ENTITY_TYPE_FIELD_CODEC).result().orElse(this.defaultType) : this.defaultType;
-+        return !customdata.isEmpty() ? customdata.read(ENTITY_TYPE_FIELD_CODEC).result().orElse(getDefaultType()) : getDefaultType();
-     }
- 
-     @Override
-     public FeatureFlagSet requiredFeatures() {
--        return this.defaultType.requiredFeatures();
-+        return this.getDefaultType().requiredFeatures();
-     }
- 
-     public Optional<Mob> spawnOffspringFromSpawnEgg(
-@@ -178,5 +_,9 @@
-                 }
+@@ -179,4 +_,45 @@
              }
          }
+     }
++
++    public static final net.minecraft.core.dispenser.DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = new net.minecraft.core.dispenser.DefaultDispenseItemBehavior() {
++        @Override
++        protected ItemStack execute(net.minecraft.core.dispenser.BlockSource source, ItemStack egg) {
++            Direction direction = source.state().getValue(net.minecraft.world.level.block.DispenserBlock.FACING);
++            EntityType<?> entitytype = ((SpawnEggItem)egg.getItem()).getType(egg);
++
++            try {
++                entitytype.spawn(
++                        source.level(), egg, null, source.pos().relative(direction), EntitySpawnReason.DISPENSER, direction != Direction.UP, false
++                );
++            } catch (Exception exception) {
++                LOGGER.error("Error while dispensing spawn egg from dispenser at {}", source.pos(), exception);
++                return ItemStack.EMPTY;
++            }
++
++            egg.shrink(1);
++            source.level().gameEvent(null, GameEvent.ENTITY_PLACE, source.pos());
++            return egg;
++        }
++    };
++
++    /**
++     * {@return the dispense behavior to register by default}
++     */
++    @Nullable
++    protected net.minecraft.core.dispenser.DispenseItemBehavior createDispenseBehavior() {
++        return DEFAULT_DISPENSE_BEHAVIOR;
 +    }
 +
-+    protected EntityType<?> getDefaultType() {
-+        return defaultType;
-     }
++    @net.neoforged.bus.api.SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
++    private static void registerDispenseBehavior(final net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) {
++        event.enqueueWork(() -> eggs().forEach(egg -> {
++            if (!net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(egg)) {
++                var beh = egg.createDispenseBehavior();
++                if (beh != null) {
++                    net.minecraft.world.level.block.DispenserBlock.registerBehavior(egg, beh);
++                }
++            }
++        }));
++    }
  }

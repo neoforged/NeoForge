@@ -18,3 +18,13 @@
                          blockpos = blockhitresult.getBlockPos();
                          flag1 = true;
                      }
+@@ -236,6 +_,9 @@
+             }
+ 
+             this.setDeltaMovement(this.getDeltaMovement().scale(0.98));
++            if (isAlive() && block instanceof net.neoforged.neoforge.common.extensions.IFallableExtension feblock) {
++                feblock.fallingTick(level(), blockPosition(), this);
++            }
+         }
+     }
+ 
