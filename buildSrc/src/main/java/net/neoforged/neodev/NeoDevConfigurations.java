@@ -3,6 +3,7 @@ package net.neoforged.neodev;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.attributes.Bundling;
 import org.gradle.api.plugins.JavaPlugin;
 
 import java.util.HashMap;
@@ -179,8 +180,10 @@ class NeoDevConfigurations {
                 spec.setCanBeConsumed(false);
                 // Tools are considered to be executable jars.
                 // Gradle requires the classpath for JavaExec to only contain a single file for these.
-                if (tool.isIgnoreTransitiveDependencies()) {
-                    spec.setTransitive(false);
+                if (tool.isRequestFatJar()) {
+                    spec.attributes(attr -> {
+                        attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.SHADOWED));
+                    });
                 }
 
                 var gav = tool.asGav(project);
