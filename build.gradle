@@ -153,3 +153,17 @@ spotless {
         bumpThisNumberIfACustomStepChanges(5)
     }
 }
+
+/*
+ * Due to the way that Gradle forks (or rather, doesn't fork) the compiler when the compile task's JVM differs from the
+ * Daemon's JVM, if the Gradle Daemon is not running on Java 21, trying to compile the NeoForge sources will result in
+ * an OutOfMemory error.
+ *
+ * To avoid this being a silent problem that is hard to diagnose and figure out for developers, the Daemon JVM discovery
+ * feature is configured to require and use a Java 21 JVM for the Daemon. (As of Gradle 8.10, Daemon JVM discovery does not
+ * do auto-provisioning in the same way as the Java toolchains feature does, so the developer has to install a Java 21
+ * JVM if they do not have one already.)
+ */
+tasks.named('updateDaemonJvm') {
+    jvmVersion = JavaVersion.VERSION_21
+}
