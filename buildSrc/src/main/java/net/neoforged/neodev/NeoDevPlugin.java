@@ -426,55 +426,49 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
         var remapClientJar = tasks.register("remapClientJar", RemapJar.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates a Minecraft client jar with the official mappings applied. Used as the base for generating binary patches for the client.");
-            task.classpath(artConfig);
-            task.getMainClass().set("net.neoforged.art.Main");
             task.getObfSlimJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanClientJar));
-            task.getMergedMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             task.getMojmapJar().set(neoDevBuildDir.map(dir -> dir.file("remapped-client.jar")));
         });
         var remapServerJar = tasks.register("remapServerJar", RemapJar.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates a Minecraft dedicated server jar with the official mappings applied. Used as the base for generating binary patches for the client.");
-            task.classpath(artConfig);
-            task.getMainClass().set("net.neoforged.art.Main");
             task.getObfSlimJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanServerJar));
-            task.getMergedMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             task.getMojmapJar().set(neoDevBuildDir.map(dir -> dir.file("remapped-server.jar")));
         });
+        for (var remapTask : List.of(remapClientJar, remapServerJar)) {
+            remapTask.configure(task -> {
+                task.setGroup(INTERNAL_GROUP);
+                task.classpath(artConfig);
+                task.getMainClass().set("net.neoforged.art.Main");
+                task.getMergedMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            });
+        }
 
         var binpatcherConfig = configurations.getExecutableTool(Tools.BINPATCHER);
         var generateMergedBinPatches = tasks.register("generateMergedBinPatches", GenerateBinaryPatches.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates binary patch files by diffing a merged client/server jar-file and the compiled Minecraft classes in this project.");
-            task.classpath(binpatcherConfig);
             task.getCleanJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
-            task.getPatchedJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
-            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
-            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("merged-binpatches.lzma")));
         });
         var generateClientBinPatches = tasks.register("generateClientBinPatches", GenerateBinaryPatches.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates binary patch files by diffing a merged client jar-file and the compiled Minecraft classes in this project.");
-            task.classpath(binpatcherConfig);
             task.getCleanJar().set(remapClientJar.flatMap(RemapJar::getMojmapJar));
-            task.getPatchedJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
-            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
-            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("client-binpatches.lzma")));
         });
         var generateServerBinPatches = tasks.register("generateServerBinPatches", GenerateBinaryPatches.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
             task.setDescription("Creates binary patch files by diffing a merged server jar-file and the compiled Minecraft classes in this project.");
-            task.classpath(binpatcherConfig);
             task.getCleanJar().set(remapServerJar.flatMap(RemapJar::getMojmapJar));
-            task.getPatchedJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
-            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
-            task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("server-binpatches.lzma")));
         });
+        for (var generateBinPatchesTask : List.of(generateMergedBinPatches, generateClientBinPatches, generateServerBinPatches)) {
+            generateBinPatchesTask.configure(task -> {
+                task.setGroup(INTERNAL_GROUP);
+                task.classpath(binpatcherConfig);
+                task.getPatchedJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
+                task.getSourcePatchesFolder().set(sourcesPatchesFolder);
+                task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
+            });
+        }
 
         return new BinaryPatchOutputs(
                 generateMergedBinPatches.flatMap(GenerateBinaryPatches::getOutputFile),
