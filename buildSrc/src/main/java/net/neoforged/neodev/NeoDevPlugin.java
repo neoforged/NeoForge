@@ -300,7 +300,12 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
-                task.getIgnoreList().set(List.of());
+                // In theory, new BootstrapLauncher shouldn't need the module path in the ignore list anymore.
+                // However, in server installs libraries are passed as relative paths here.
+                // Module path detection doesn't currently work with relative paths (BootstrapLauncher #20).
+                task.getIgnoreList().set(configurations.modulePath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
+                    return results.stream().map(r -> r.getFile().getName()).toList();
+                }));
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
             });
         }
