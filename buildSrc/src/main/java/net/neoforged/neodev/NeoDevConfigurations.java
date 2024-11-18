@@ -11,9 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Helper class to keep track of many {@link Configuration}s used for the {@code neoforge} project.
- *
- * <p>Self-contained configurations (e.g. used to resolve tools) are not included here.
+ * Helper class to keep track of the many {@link Configuration}s used for the {@code neoforge} project.
  */
 class NeoDevConfigurations {
     static NeoDevConfigurations createAndSetup(Project project) {
@@ -96,14 +94,15 @@ class NeoDevConfigurations {
      */
     final Configuration launcherProfileClasspath;
 
-    /**
-     * To download each executable tool, we use a separate resolvable configuration.
-     */
-    final Map<Tools, Configuration> toolClasspaths;
-
     //
     // The configurations for resolution only are declared in the build.gradle file.
     //
+
+    /**
+     * To download each executable tool, we use a resolvable configuration.
+     * These configurations support both declaration and resolution.
+     */
+    final Map<Tools, Configuration> toolClasspaths;
 
     private static Configuration dependencyScope(ConfigurationContainer configurations, String name) {
         return configurations.create(name, configuration -> {
