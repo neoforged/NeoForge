@@ -71,7 +71,12 @@ public abstract class CreateInstallerProfile extends DefaultTask {
     public abstract RegularFileProperty getInstallerProfile();
 
     private void addProcessor(List<ProcessorEntry> processors, @Nullable List<String> sides, InstallerProcessor processor, List<String> args) {
-        processors.add(new ProcessorEntry(sides, getProcessorGavs().get().get(processor), getProcessorClasspaths().get().get(processor), args));
+        var classpath = getProcessorClasspaths().get().get(processor);
+        var mainJar = getProcessorGavs().get().get(processor);
+        if (!classpath.contains(mainJar)) {
+            throw new IllegalStateException("Processor %s is not included in its own classpath %s".formatted(mainJar, classpath));
+        }
+        processors.add(new ProcessorEntry(sides, mainJar, classpath, args));
     }
 
     @TaskAction

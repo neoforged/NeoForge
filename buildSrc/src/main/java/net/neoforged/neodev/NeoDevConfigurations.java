@@ -167,7 +167,7 @@ class NeoDevConfigurations {
         toolClasspaths = createToolClasspaths(project);
     }
 
-    private Map<Tools, Configuration> createToolClasspaths(Project project) {
+    private static Map<Tools, Configuration> createToolClasspaths(Project project) {
         var configurations = project.getConfigurations();
         var dependencyFactory = project.getDependencyFactory();
 
@@ -196,8 +196,7 @@ class NeoDevConfigurations {
 
     /**
      * Gets a configuration representing the classpath for an executable tool.
-     * Since executable tools are assumed to be executable jars, these configurations
-     * generally only contain a single file.
+     * Some tools are assumed to be executable jars, and their configurations only contain a single file.
      */
     public Configuration getExecutableTool(Tools tool) {
         return Objects.requireNonNull(toolClasspaths.get(tool));
