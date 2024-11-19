@@ -82,6 +82,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
@@ -96,6 +97,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
@@ -130,6 +132,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
@@ -284,6 +288,27 @@ public class ClientHooks {
                 modifier.accept(entity, renderState);
             }
         }
+    }
+
+    public static void onUpdateMapRenderState(MapItemSavedData mapItemSavedData, MapRenderState renderState) {
+        renderState.resetRenderData();
+        var modifiers = RenderStateExtensions.getMapModifiers();
+        if (!modifiers.isEmpty()) {
+            for (BiConsumer<MapItemSavedData, MapRenderState> modifier : modifiers) {
+                modifier.accept(mapItemSavedData, renderState);
+            }
+        }
+    }
+
+    public static MapRenderState.MapDecorationRenderState onUpdateMapDecorationRenderState(Holder<MapDecorationType> mapDecorationTypeHolder, MapItemSavedData mapItemSavedData, MapRenderState mapRenderState, MapRenderState.MapDecorationRenderState mapDecorationRenderState) {
+        mapDecorationRenderState.resetRenderData();
+        var modifiers = RenderStateExtensions.getMapDecorationModifiers(mapDecorationTypeHolder.getKey());
+        if (!modifiers.isEmpty()) {
+            for (var modifier : modifiers) {
+                modifier.accept(mapItemSavedData, mapRenderState, mapDecorationRenderState);
+            }
+        }
+        return mapDecorationRenderState;
     }
 
     public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {

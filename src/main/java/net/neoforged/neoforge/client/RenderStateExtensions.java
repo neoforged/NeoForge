@@ -15,7 +15,12 @@ import java.util.function.BiConsumer;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.neoforged.neoforge.client.event.RegisterRenderStateModifiersEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public final class RenderStateExtensions {
@@ -23,6 +28,10 @@ public final class RenderStateExtensions {
 
     private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY = new Reference2ObjectArrayMap<>();
     private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY_CACHE = new Reference2ObjectOpenHashMap<>();
+
+    private static final List<BiConsumer<MapItemSavedData, MapRenderState>> MAP = new ObjectArrayList<>();
+
+    private static final Map<ResourceKey<MapDecorationType>, Collection<RegisterRenderStateModifiersEvent.MapDecorationRenderStateModifier>> MAP_DECORATION = new Reference2ObjectArrayMap<>();
 
     @SuppressWarnings("unchecked")
     static <E extends Entity, S extends EntityRenderState> Collection<BiConsumer<E, S>> getCachedEntityModifiers(EntityRenderer<E, S> renderer) {
@@ -41,10 +50,27 @@ public final class RenderStateExtensions {
 
         return modifiers;
     }
+
+    static Collection<BiConsumer<MapItemSavedData, MapRenderState>> getMapModifiers() {
+        return MAP;
+    }
+
+    static Collection<RegisterRenderStateModifiersEvent.MapDecorationRenderStateModifier> getMapDecorationModifiers(ResourceKey<MapDecorationType> mapDecorationTypeKey) {
+        return MAP_DECORATION.getOrDefault(mapDecorationTypeKey, List.of());
     }
 
     @ApiStatus.Internal
-    public static <E extends Entity, S extends EntityRenderState> void registerEntity(Class<? extends EntityRenderer<E, S>> baseRenderer, EntityRenderStateModifier<E, S> modifier) {
-        ENTITY_EXTENSIONS.computeIfAbsent(baseRenderer, aClass -> new ObjectArrayList<>()).add(modifier);
+    public static <E extends Entity, S extends EntityRenderState> void registerEntity(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
+        ENTITY.computeIfAbsent(baseRenderer, aClass -> new ObjectArrayList<>()).add(modifier);
+    }
+
+    @ApiStatus.Internal
+    public static void registerMap(BiConsumer<MapItemSavedData, MapRenderState> modifier) {
+        MAP.add(modifier);
+    }
+
+    @ApiStatus.Internal
+    public static void registerMapDecoration(ResourceKey<MapDecorationType> mapDecorationTypeKey, RegisterRenderStateModifiersEvent.MapDecorationRenderStateModifier modifier) {
+        MAP_DECORATION.computeIfAbsent(mapDecorationTypeKey, aClass -> new ObjectArrayList<>()).add(modifier);
     }
 }
