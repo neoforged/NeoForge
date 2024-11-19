@@ -5,14 +5,14 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class MapRenderState {
-+public class MapRenderState extends net.neoforged.neoforge.client.BaseRenderState {
++public class MapRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
      @Nullable
      public ResourceLocation texture;
      public final List<MapRenderState.MapDecorationRenderState> decorations = new ArrayList<>();
  
      @OnlyIn(Dist.CLIENT)
 -    public static class MapDecorationRenderState {
-+    public static class MapDecorationRenderState extends net.neoforged.neoforge.client.BaseRenderState {
++    public static class MapDecorationRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
 +        public net.minecraft.core.Holder<net.minecraft.world.level.saveddata.maps.MapDecorationType> type;
          @Nullable
          public TextureAtlasSprite atlasSprite;

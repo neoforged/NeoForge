@@ -17,7 +17,7 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.RenderStateExtensions;
+import net.neoforged.neoforge.client.renderstate.RenderStateExtensions;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

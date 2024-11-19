@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class EntityRenderState {
-+public class EntityRenderState extends net.neoforged.neoforge.client.BaseRenderState {
++public class EntityRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
      public double x;
      public double y;
      public double z;
