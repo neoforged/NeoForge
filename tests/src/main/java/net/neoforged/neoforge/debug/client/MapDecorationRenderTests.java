@@ -108,6 +108,7 @@ public class MapDecorationRenderTests {
 
     private static final class TestDecorationRenderer implements IMapDecorationRenderer {
         private final ContextKey<Integer> customColorKey;
+
         TestDecorationRenderer(ContextKey<Integer> customColorKey) {
             this.customColorKey = customColorKey;
         }
