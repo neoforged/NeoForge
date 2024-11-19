@@ -1,8 +1,14 @@
 --- a/net/minecraft/data/DataProvider.java
 +++ b/net/minecraft/data/DataProvider.java
-@@ -28,6 +_,9 @@
+@@ -27,7 +_,15 @@
+ import org.slf4j.Logger;
  
  public interface DataProvider {
++    /**
++     * Neo: Allows changing the indentation width used by {@link #saveStable}.
++     */
++    java.util.concurrent.atomic.AtomicInteger INDENT_WIDTH = new java.util.concurrent.atomic.AtomicInteger(2);
++
      ToIntFunction<String> FIXED_ORDER_FIELDS = Util.make(new Object2IntOpenHashMap<>(), p_236070_ -> {
 +        // Neo: conditions go first
 +        p_236070_.put("neoforge:conditions", -1);
@@ -10,3 +16,12 @@
          p_236070_.put("type", 0);
          p_236070_.put("parent", 1);
          p_236070_.defaultReturnValue(2);
+@@ -72,7 +_,7 @@
+ 
+                 try (JsonWriter jsonwriter = new JsonWriter(new OutputStreamWriter(hashingoutputstream, StandardCharsets.UTF_8))) {
+                     jsonwriter.setSerializeNulls(false);
+-                    jsonwriter.setIndent("  ");
++                    jsonwriter.setIndent(" ".repeat(java.lang.Math.max(0, INDENT_WIDTH.get()))); // Neo: Allow changing the indent width without needing to mixin this lambda.
+                     GsonHelper.writeValue(jsonwriter, p_254542_, KEY_COMPARATOR);
+                 }
+ 
