@@ -13,7 +13,7 @@
      public final S createRenderState(T p_361382_, float p_360885_) {
          S s = this.reusedState;
          this.extractRenderState(p_361382_, s, p_360885_);
-+        net.neoforged.neoforge.client.ClientHooks.onUpdateEntityRenderState(this, p_361382_, s);
++        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateEntityRenderState(this, p_361382_, s);
          return s;
      }
  
