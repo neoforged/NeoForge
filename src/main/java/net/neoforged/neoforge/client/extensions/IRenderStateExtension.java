@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
  * simple class extension.
  */
 public interface IRenderStateExtension {
-
     /**
      * Gets the object associated with the given key.
+     * 
      * @param key Static key reference object
      * @return The object associated with the key or null if the key is not present.
      * @param <T> Type of render data
@@ -25,14 +25,16 @@ public interface IRenderStateExtension {
 
     /**
      * Sets the object associated with the given key. Key should be stored statically for later retrieval of the object.
-     * @param key Static key reference object
+     * 
+     * @param key  Static key reference object
      * @param data Object to store for custom rendering
-     * @param <T> Type of render data
+     * @param <T>  Type of render data
      */
     <T> void setRenderData(ContextKey<T> key, @Nullable T data);
 
     /**
      * Gets the value or throws an exception. Should be used in cases where the data must be present.
+     * 
      * @param key Static key reference object
      * @return The data associate with the key
      * @param <T> Type of render data
@@ -47,7 +49,8 @@ public interface IRenderStateExtension {
 
     /**
      * Gets the value or returns the default object if an object is not present
-     * @param key Static key reference object
+     * 
+     * @param key        Static key reference object
      * @param defaultVal Default value if an object is not present
      * @return Value from the render data or the given default value if value is not present
      * @param <T> Type of render data
