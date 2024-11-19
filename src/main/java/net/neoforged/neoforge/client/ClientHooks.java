@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -137,7 +138,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
-import net.neoforged.neoforge.client.entity.state.EntityRenderStateModifier;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -276,11 +276,11 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
     }
 
-    public static <E extends Entity, S extends EntityRenderState> void onUpdateRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
+    public static <E extends Entity, S extends EntityRenderState> void onUpdateEntityRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
         renderState.resetRenderData();
         var modifiers = RenderStateExtensions.getCachedEntityModifiers(renderer);
         if (!modifiers.isEmpty()) {
-            for (EntityRenderStateModifier<E, S> modifier : modifiers) {
+            for (BiConsumer<E, S> modifier : modifiers) {
                 modifier.accept(entity, renderState);
             }
         }

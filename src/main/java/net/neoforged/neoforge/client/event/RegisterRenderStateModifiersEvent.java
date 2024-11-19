@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
+import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.context.ContextKey;
@@ -13,7 +14,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.RenderStateExtensions;
-import net.neoforged.neoforge.client.entity.state.EntityRenderStateModifier;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -27,7 +27,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     public RegisterRenderStateModifiersEvent() {}
 
     /**
-     * Registers an {@link EntityRenderStateModifier} for use in-game when updating the {@link EntityRenderState}. Can
+     * Registers a {@link BiConsumer} for use in-game when updating the {@link EntityRenderState}. Can
      * add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}. Any subclasses
      * of the passed renderer class will also have this modifier applied.
      * 
@@ -36,7 +36,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      * @param <E>          The type of the entity
      * @param <S>          The specific render state type
      */
-    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<E, S>> baseRenderer, EntityRenderStateModifier<E, S> modifier) {
+    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
         RenderStateExtensions.registerEntity(baseRenderer, modifier);
     }
 }
