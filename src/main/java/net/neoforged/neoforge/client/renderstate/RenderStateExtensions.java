@@ -30,7 +30,7 @@ public final class RenderStateExtensions {
 
     private static final List<BiConsumer<MapItemSavedData, MapRenderState>> MAP = new ObjectArrayList<>();
 
-    private static final Map<ResourceKey<MapDecorationType>, Collection<RegisterRenderStateModifiersEvent.MapDecorationRenderStateModifier>> MAP_DECORATION = new Reference2ObjectArrayMap<>();
+    private static final Map<ResourceKey<MapDecorationType>, Collection<MapDecorationRenderStateModifier>> MAP_DECORATION = new Reference2ObjectArrayMap<>();
 
     @SuppressWarnings("unchecked")
     static <E extends Entity, S extends EntityRenderState> Collection<BiConsumer<E, S>> getCachedEntityModifiers(EntityRenderer<E, S> renderer) {
@@ -67,7 +67,7 @@ public final class RenderStateExtensions {
     }
 
     @ApiStatus.Internal
-    public static void registerMapDecoration(ResourceKey<MapDecorationType> mapDecorationTypeKey, RegisterRenderStateModifiersEvent.MapDecorationRenderStateModifier modifier) {
+    public static void registerMapDecoration(ResourceKey<MapDecorationType> mapDecorationTypeKey, MapDecorationRenderStateModifier modifier) {
         MAP_DECORATION.computeIfAbsent(mapDecorationTypeKey, aClass -> new ObjectArrayList<>()).add(modifier);
     }
 }
