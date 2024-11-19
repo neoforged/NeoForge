@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.event;
+package net.neoforged.neoforge.client.renderstate;
 
 import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -17,8 +17,6 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.renderstate.MapDecorationRenderStateModifier;
-import net.neoforged.neoforge.client.renderstate.RenderStateExtensions;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

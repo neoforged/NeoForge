@@ -20,7 +20,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.neoforged.neoforge.client.event.RegisterRenderStateModifiersEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public final class RenderStateExtensions {
@@ -78,18 +77,15 @@ public final class RenderStateExtensions {
         return mapDecorationRenderState;
     }
 
-    @ApiStatus.Internal
-    public static <E extends Entity, S extends EntityRenderState> void registerEntity(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
+    static <E extends Entity, S extends EntityRenderState> void registerEntity(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
         ENTITY.computeIfAbsent(baseRenderer, aClass -> new ObjectArrayList<>()).add(modifier);
     }
 
-    @ApiStatus.Internal
-    public static void registerMap(BiConsumer<MapItemSavedData, MapRenderState> modifier) {
+    static void registerMap(BiConsumer<MapItemSavedData, MapRenderState> modifier) {
         MAP.add(modifier);
     }
 
-    @ApiStatus.Internal
-    public static void registerMapDecoration(ResourceKey<MapDecorationType> mapDecorationTypeKey, MapDecorationRenderStateModifier modifier) {
+    static void registerMapDecoration(ResourceKey<MapDecorationType> mapDecorationTypeKey, MapDecorationRenderStateModifier modifier) {
         MAP_DECORATION.computeIfAbsent(mapDecorationTypeKey, aClass -> new ObjectArrayList<>()).add(modifier);
     }
 }
