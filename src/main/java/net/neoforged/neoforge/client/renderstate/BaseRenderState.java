@@ -21,10 +21,12 @@ public abstract class BaseRenderState implements IRenderStateExtension {
 
     @SuppressWarnings("unchecked")
     @Nullable
+    @Override
     public <T> T getRenderData(ContextKey<T> key) {
         return (T) extensions.get(key);
     }
 
+    @Override
     public <T> void setRenderData(ContextKey<T> key, @Nullable T data) {
         if (data != null) {
             extensions.put(key, data);
