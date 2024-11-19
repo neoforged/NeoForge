@@ -132,19 +132,21 @@ public class ClientEventTests {
         });
     }
 
-    @TestHolder(description = { "" }, enabledByDefault = true)
+    @TestHolder(description = { "Test render state modifier system and registration event" }, enabledByDefault = true)
     static void updateRenderState(final DynamicTest test) {
-        var key = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "test"));
+        var key = new ContextKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "rotation"));
+        var attachmentKey = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "times_to_render"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
         test.whenEnabled(listeners -> {
             listeners.mod().addListener((RegisterRenderStateModifiersEvent event) -> {
                 event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
-                    renderState.setRenderData(key, 5);
+                    renderState.setRenderData(key, 5f);
+                    renderState.setRenderData(attachmentKey, entity.getData(testAttachment));
                 });
             });
             listeners.forge().addListener((RenderPlayerEvent.Post event) -> {
-                int numRender = event.getRenderState().getData(testAttachment);
-                int xRotation = event.getRenderState().getRenderDataOrDefault(key, -1);
+                int numRender = event.getRenderState().getRenderDataOrThrow(attachmentKey);
+                float xRotation = event.getRenderState().getRenderDataOrDefault(key, 0f);
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 for (int i = 0; i < numRender; i++) {

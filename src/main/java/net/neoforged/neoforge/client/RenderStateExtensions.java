@@ -22,7 +22,6 @@ public final class RenderStateExtensions {
     private RenderStateExtensions() {}
 
     private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<EntityRenderStateModifier<?, ?>>> ENTITY_EXTENSIONS = new Reference2ObjectArrayMap<>();
-
     private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<EntityRenderStateModifier<?, ?>>> ENTITY_CACHE = Util.make(new Reference2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(List.of()));
 
     @SuppressWarnings("unchecked")
@@ -42,7 +41,7 @@ public final class RenderStateExtensions {
     }
 
     @ApiStatus.Internal
-    public static <E extends Entity, S extends EntityRenderState> void registerExtender(Class<? extends EntityRenderer<E, S>> baseRenderer, EntityRenderStateModifier<E, S> modifier) {
+    public static <E extends Entity, S extends EntityRenderState> void registerEntity(Class<? extends EntityRenderer<E, S>> baseRenderer, EntityRenderStateModifier<E, S> modifier) {
         ENTITY_EXTENSIONS.computeIfAbsent(baseRenderer, aClass -> new ObjectArrayList<>()).add(modifier);
     }
 }

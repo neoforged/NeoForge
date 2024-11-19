@@ -15,6 +15,7 @@ import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 @EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
@@ -50,10 +51,6 @@ public final class AttachmentInternals {
      * Do not call directly, use {@link IEntityExtension#copyAttachmentsFrom(Entity, boolean)}.
      */
     public static void copyEntityAttachments(Entity from, Entity to, boolean isDeath) {
-        copyAttachments(from.registryAccess(), from, to, isDeath ? type -> type.copyOnDeath : type -> true);
-    }
-
-    public static <H extends AttachmentHolder> void copyEntityAttachments(Entity from, H to, boolean isDeath) {
         copyAttachments(from.registryAccess(), from, to, isDeath ? type -> type.copyOnDeath : type -> true);
     }
 

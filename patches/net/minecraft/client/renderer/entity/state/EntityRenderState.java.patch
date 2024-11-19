@@ -5,37 +5,15 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class EntityRenderState {
-+public class EntityRenderState extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.client.extensions.IRenderStateExtension {
++public class EntityRenderState extends net.neoforged.neoforge.client.BaseRenderState {
      public double x;
      public double y;
      public double z;
-@@ -27,6 +_,29 @@
+@@ -27,6 +_,7 @@
      public Vec3 nameTagAttachment;
      @Nullable
      public EntityRenderState.LeashState leashState;
 +    public float partialTick;
-+    private final java.util.Map<net.minecraft.util.context.ContextKey<?>, Object> extensions = new it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap<>(); // NeoForge: allow generic extension of render states
-+
-+    @SuppressWarnings("unchecked")
-+    @Nullable
-+    @Override
-+    public <T> T getRenderData(net.minecraft.util.context.ContextKey<T> key) {
-+        return (T) extensions.getOrDefault(key, null);
-+    }
-+
-+    @Override
-+    public <T> void setRenderData(net.minecraft.util.context.ContextKey<T> key, @Nullable T data) {
-+        if (data == null) {
-+            extensions.remove(key);
-+        } else {
-+            extensions.put(key, data);
-+        }
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void resetRenderData() {
-+        extensions.clear();
-+    }
  
      @OnlyIn(Dist.CLIENT)
      public static class LeashState {
