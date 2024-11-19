@@ -145,7 +145,8 @@ public class ClientEventTests {
                 });
             });
             listeners.forge().addListener((RenderPlayerEvent.Post event) -> {
-                int numRender = event.getRenderState().getRenderDataOrThrow(attachmentKey);
+                int numRender = event.getRenderState().getRenderDataOrDefault(attachmentKey, -1);
+                if (numRender == -1) test.fail("Attachment render data not set");
                 float xRotation = event.getRenderState().getRenderDataOrDefault(key, 0f);
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
