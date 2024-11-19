@@ -274,6 +274,16 @@ public class Tags {
          */
         public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
         /**
+         * Controls what items Piglins can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PIGLIN_USABLE_CROSSBOWS = neoforgeTag("piglin_usable_crossbows");
+        /**
+         * Controls what items Pillagers can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PILLAGER_USABLE_CROSSBOWS = neoforgeTag("pillager_usable_crossbows");
+        /**
          * Controls what items Skeletons can use as default as a valid bow
          * This tag defaults to {@link net.minecraft.world.item.Items#BOW} when not present in any datapacks, including forge client on vanilla server
          */
