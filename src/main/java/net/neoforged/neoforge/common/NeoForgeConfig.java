@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import org.apache.commons.lang3.tuple.Pair;
@@ -84,6 +85,7 @@ public class NeoForgeConfig {
      */
     public static class Client {
         public final BooleanValue experimentalForgeLightPipelineEnabled;
+        boolean experimentalPipelineActive;
 
         public final BooleanValue showLoadWarnings;
 
@@ -134,11 +136,23 @@ public class NeoForgeConfig {
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent.Loading configEvent) {
         LogManager.getLogger().debug(Logging.FORGEMOD, "Loaded NeoForge config file {}", configEvent.getConfig().getFileName());
+
+        if (configEvent.getConfig().getSpec() == clientSpec) {
+            CLIENT.experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+        }
     }
 
     @SubscribeEvent
     public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
         LogManager.getLogger().debug(Logging.FORGEMOD, "NeoForge config just got changed on the file system!");
+
+        if (configEvent.getConfig().getSpec() == clientSpec) {
+            boolean experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            if (experimentalPipelineActive != CLIENT.experimentalPipelineActive) {
+                CLIENT.experimentalPipelineActive = experimentalPipelineActive;
+                ClientHooks.reloadRenderer();
+            }
+        }
     }
 
     //General

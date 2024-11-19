@@ -10,6 +10,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.common.extensions.IAttributeExtension;
 
 /**
  * A Percentage Attribute is one which always displays modifiers as percentages, including for {@link Operation#ADD_VALUE}.
@@ -46,6 +47,10 @@ public class PercentageAttribute extends RangedAttribute {
 
     @Override
     public MutableComponent toValueComponent(Operation op, double value, TooltipFlag flag) {
-        return Component.translatable("neoforge.value.percent", FORMAT.format(value * this.scaleFactor));
+        if (IAttributeExtension.isNullOrAddition(op)) {
+            return Component.translatable("neoforge.value.percent", FORMAT.format(value * this.scaleFactor));
+        }
+
+        return Component.translatable("neoforge.value.percent", FORMAT.format(value * 100));
     }
 }
