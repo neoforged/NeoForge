@@ -34,7 +34,7 @@ public final class RenderStateExtensions {
 
     @SuppressWarnings("unchecked")
     static <E extends Entity, S extends EntityRenderState> Collection<BiConsumer<E, S>> getCachedEntityModifiers(EntityRenderer<E, S> renderer) {
-        var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
+        return (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
             var list = new ObjectArrayList<BiConsumer<?, ?>>();
             for (var entry : ENTITY.entrySet()) {
                 if (aClass.isAssignableFrom(entry.getKey())) {
@@ -46,8 +46,6 @@ public final class RenderStateExtensions {
             }
             return list;
         });
-
-        return modifiers;
     }
 
     static Collection<BiConsumer<MapItemSavedData, MapRenderState>> getMapModifiers() {
