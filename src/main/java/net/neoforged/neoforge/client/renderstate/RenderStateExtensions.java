@@ -15,6 +15,7 @@ import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
@@ -33,8 +34,10 @@ public final class RenderStateExtensions {
     private static final Map<ResourceKey<MapDecorationType>, Collection<MapDecorationRenderStateModifier>> MAP_DECORATION = new Reference2ObjectArrayMap<>();
 
     @SuppressWarnings("unchecked")
-    static <E extends Entity, S extends EntityRenderState> Collection<BiConsumer<E, S>> getCachedEntityModifiers(EntityRenderer<E, S> renderer) {
-        return (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
+    @ApiStatus.Internal
+    public static <E extends Entity, S extends EntityRenderState> void onUpdateEntityRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
+        renderState.resetRenderData();
+        var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
             var list = new ObjectArrayList<BiConsumer<?, ?>>();
             for (var entry : ENTITY.entrySet()) {
                 if (aClass.isAssignableFrom(entry.getKey())) {
@@ -46,14 +49,33 @@ public final class RenderStateExtensions {
             }
             return list;
         });
+        if (!modifiers.isEmpty()) {
+            for (BiConsumer<E, S> modifier : modifiers) {
+                modifier.accept(entity, renderState);
+            }
+        }
     }
 
-    static Collection<BiConsumer<MapItemSavedData, MapRenderState>> getMapModifiers() {
-        return MAP;
+    @ApiStatus.Internal
+    public static void onUpdateMapRenderState(MapItemSavedData mapItemSavedData, MapRenderState renderState) {
+        renderState.resetRenderData();
+        if (!MAP.isEmpty()) {
+            for (BiConsumer<MapItemSavedData, MapRenderState> modifier : MAP) {
+                modifier.accept(mapItemSavedData, renderState);
+            }
+        }
     }
 
-    static Collection<RegisterRenderStateModifiersEvent.MapDecorationRenderStateModifier> getMapDecorationModifiers(ResourceKey<MapDecorationType> mapDecorationTypeKey) {
-        return MAP_DECORATION.getOrDefault(mapDecorationTypeKey, List.of());
+    @ApiStatus.Internal
+    public static MapRenderState.MapDecorationRenderState onUpdateMapDecorationRenderState(Holder<MapDecorationType> mapDecorationTypeHolder, MapItemSavedData mapItemSavedData, MapRenderState mapRenderState, MapRenderState.MapDecorationRenderState mapDecorationRenderState) {
+        mapDecorationRenderState.resetRenderData();
+        var modifiers = MAP_DECORATION.getOrDefault(mapDecorationTypeHolder.getKey(), List.of());
+        if (!modifiers.isEmpty()) {
+            for (var modifier : modifiers) {
+                modifier.accept(mapItemSavedData, mapRenderState, mapDecorationRenderState);
+            }
+        }
+        return mapDecorationRenderState;
     }
 
     @ApiStatus.Internal

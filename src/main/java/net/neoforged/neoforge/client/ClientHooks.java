@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -79,10 +78,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
@@ -97,7 +93,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.locale.Language;
@@ -132,8 +127,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.level.saveddata.maps.MapDecorationType;
-import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
@@ -188,7 +181,6 @@ import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.renderstate.RenderStateExtensions;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
@@ -279,37 +271,6 @@ public class ClientHooks {
 
     public static boolean onDrawHighlight(LevelRenderer context, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource, boolean forTranslucentBlocks) {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
-    }
-
-    public static <E extends Entity, S extends EntityRenderState> void onUpdateEntityRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
-        renderState.resetRenderData();
-        var modifiers = RenderStateExtensions.getCachedEntityModifiers(renderer);
-        if (!modifiers.isEmpty()) {
-            for (BiConsumer<E, S> modifier : modifiers) {
-                modifier.accept(entity, renderState);
-            }
-        }
-    }
-
-    public static void onUpdateMapRenderState(MapItemSavedData mapItemSavedData, MapRenderState renderState) {
-        renderState.resetRenderData();
-        var modifiers = RenderStateExtensions.getMapModifiers();
-        if (!modifiers.isEmpty()) {
-            for (BiConsumer<MapItemSavedData, MapRenderState> modifier : modifiers) {
-                modifier.accept(mapItemSavedData, renderState);
-            }
-        }
-    }
-
-    public static MapRenderState.MapDecorationRenderState onUpdateMapDecorationRenderState(Holder<MapDecorationType> mapDecorationTypeHolder, MapItemSavedData mapItemSavedData, MapRenderState mapRenderState, MapRenderState.MapDecorationRenderState mapDecorationRenderState) {
-        mapDecorationRenderState.resetRenderData();
-        var modifiers = RenderStateExtensions.getMapDecorationModifiers(mapDecorationTypeHolder.getKey());
-        if (!modifiers.isEmpty()) {
-            for (var modifier : modifiers) {
-                modifier.accept(mapItemSavedData, mapRenderState, mapDecorationRenderState);
-            }
-        }
-        return mapDecorationRenderState;
     }
 
     public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
