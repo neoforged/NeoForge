@@ -22,22 +22,25 @@ public final class RenderStateExtensions {
     private RenderStateExtensions() {}
 
     private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY = new Reference2ObjectArrayMap<>();
-    private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY_CACHE = Util.make(new Reference2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(List.of()));
+    private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY_CACHE = new Reference2ObjectOpenHashMap<>();
 
     @SuppressWarnings("unchecked")
     static <E extends Entity, S extends EntityRenderState> Collection<BiConsumer<E, S>> getCachedEntityModifiers(EntityRenderer<E, S> renderer) {
-        return (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
+        var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
             var list = new ObjectArrayList<BiConsumer<?, ?>>();
             for (var entry : ENTITY.entrySet()) {
-                if (aClass.isInstance(entry.getKey())) {
+                if (aClass.isAssignableFrom(entry.getKey())) {
                     list.addAll(entry.getValue());
                 }
             }
             if (list.isEmpty()) {
-                return null;
+                return List.of();
             }
             return list;
         });
+
+        return modifiers;
+    }
     }
 
     @ApiStatus.Internal
