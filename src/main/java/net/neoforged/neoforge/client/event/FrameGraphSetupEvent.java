@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelTargetBundle;
@@ -19,26 +20,31 @@ import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
 /**
- * Fired when the {@linkplain FrameGraphBuilder frame graph} is set up at the start of level rendering.
+ * Fired when the {@linkplain FrameGraphBuilder frame graph} is set up at the start of level rendering, right before
+ * the vanilla frame passes are set up.
  * <p>
- * These events are not {@linkplain ICancellableEvent cancellable}.
+ * This event is not {@linkplain ICancellableEvent cancellable}.
  * <p>
- * These events are fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+ * This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
-public abstract sealed class FrameGraphSetupEvent extends Event {
-    protected final FrameGraphBuilder builder;
+public final class FrameGraphSetupEvent extends Event {
+    private final FrameGraphBuilder builder;
     private final LevelTargetBundle targets;
+    private final RenderTargetDescriptor renderTargetDescriptor;
     private final Frustum frustum;
     private final Camera camera;
     private final Matrix4f modelViewMatrix;
     private final Matrix4f projectionMatrix;
     private final DeltaTracker deltaTracker;
     private final ProfilerFiller profiler;
+    private boolean enableOutline;
 
-    protected FrameGraphSetupEvent(
+    @ApiStatus.Internal
+    public FrameGraphSetupEvent(
             FrameGraphBuilder builder,
             LevelTargetBundle targets,
+            RenderTargetDescriptor renderTargetDescriptor,
             Frustum frustum,
             Camera camera,
             Matrix4f modelViewMatrix,
@@ -47,6 +53,7 @@ public abstract sealed class FrameGraphSetupEvent extends Event {
             ProfilerFiller profiler) {
         this.builder = builder;
         this.targets = targets;
+        this.renderTargetDescriptor = renderTargetDescriptor;
         this.frustum = frustum;
         this.camera = camera;
         this.modelViewMatrix = modelViewMatrix;
@@ -67,6 +74,13 @@ public abstract sealed class FrameGraphSetupEvent extends Event {
      */
     public LevelTargetBundle getTargetBundle() {
         return targets;
+    }
+
+    /**
+     * {@return the render target descriptor to use for creating full-screen render targets}
+     */
+    public RenderTargetDescriptor getRenderTargetDescriptor() {
+        return renderTargetDescriptor;
     }
 
     /**
@@ -112,54 +126,16 @@ public abstract sealed class FrameGraphSetupEvent extends Event {
     }
 
     /**
-     * Fired at the start of frame graph setup, right after the "clear" pass is added
+     * Enables the entity outline post-processing shader regardless of any entities having active outlines
      */
-    public static final class Pre extends FrameGraphSetupEvent {
-        private boolean enableOutline;
-
-        @ApiStatus.Internal
-        public Pre(
-                FrameGraphBuilder builder,
-                LevelTargetBundle targets,
-                Frustum frustum,
-                Camera camera,
-                Matrix4f modelViewMatrix,
-                Matrix4f projectionMatrix,
-                DeltaTracker deltaTracker,
-                ProfilerFiller profiler) {
-            super(builder, targets, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler);
-        }
-
-        /**
-         * Enables the entity outline post-processing shader regardless of any entities having active outlines
-         */
-        public void enableOutlineProcessing() {
-            this.enableOutline = true;
-        }
-
-        /**
-         * {@return whether the entity outline post-processing shader will be enabled regardless of entities using it}
-         */
-        public boolean isOutlineProcessingEnabled() {
-            return enableOutline;
-        }
+    public void enableOutlineProcessing() {
+        this.enableOutline = true;
     }
 
     /**
-     * Fired at the end of frame graph setup, right before the frame graph is executed
+     * {@return whether the entity outline post-processing shader will be enabled regardless of entities using it}
      */
-    public static final class Post extends FrameGraphSetupEvent {
-        @ApiStatus.Internal
-        public Post(
-                FrameGraphBuilder builder,
-                LevelTargetBundle targets,
-                Frustum frustum,
-                Camera camera,
-                Matrix4f modelViewMatrix,
-                Matrix4f projectionMatrix,
-                DeltaTracker deltaTracker,
-                ProfilerFiller profiler) {
-            super(builder, targets, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler);
-        }
+    public boolean isOutlineProcessingEnabled() {
+        return enableOutline;
     }
 }

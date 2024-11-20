@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -1106,12 +1107,7 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static FrameGraphSetupEvent.Pre fireFrameGraphSetupPre(FrameGraphBuilder builder, LevelTargetBundle targets, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
-        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent.Pre(builder, targets, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
-    }
-
-    @ApiStatus.Internal
-    public static FrameGraphSetupEvent.Post fireFrameGraphSetupPost(FrameGraphBuilder builder, LevelTargetBundle targets, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
-        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent.Post(builder, targets, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
+    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
     }
 }
