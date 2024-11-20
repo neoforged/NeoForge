@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.renderstate;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -37,31 +38,24 @@ public final class RenderStateExtensions {
     public static <E extends Entity, S extends EntityRenderState> void onUpdateEntityRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
         renderState.resetRenderData();
         var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
-            var list = new ObjectArrayList<BiConsumer<?, ?>>();
+            var builder = ImmutableList.<BiConsumer<?, ?>>builder();
             for (var entry : ENTITY.entrySet()) {
                 if (aClass.isAssignableFrom(entry.getKey())) {
-                    list.addAll(entry.getValue());
+                    builder.addAll(entry.getValue());
                 }
             }
-            if (list.isEmpty()) {
-                return List.of();
-            }
-            return list;
+            return builder.build();
         });
-        if (!modifiers.isEmpty()) {
-            for (BiConsumer<E, S> modifier : modifiers) {
-                modifier.accept(entity, renderState);
-            }
+        for (BiConsumer<E, S> modifier : modifiers) {
+            modifier.accept(entity, renderState);
         }
     }
 
     @ApiStatus.Internal
     public static void onUpdateMapRenderState(MapItemSavedData mapItemSavedData, MapRenderState renderState) {
         renderState.resetRenderData();
-        if (!MAP.isEmpty()) {
-            for (BiConsumer<MapItemSavedData, MapRenderState> modifier : MAP) {
-                modifier.accept(mapItemSavedData, renderState);
-            }
+        for (BiConsumer<MapItemSavedData, MapRenderState> modifier : MAP) {
+            modifier.accept(mapItemSavedData, renderState);
         }
     }
 
@@ -69,10 +63,8 @@ public final class RenderStateExtensions {
     public static MapRenderState.MapDecorationRenderState onUpdateMapDecorationRenderState(Holder<MapDecorationType> mapDecorationTypeHolder, MapItemSavedData mapItemSavedData, MapRenderState mapRenderState, MapRenderState.MapDecorationRenderState mapDecorationRenderState) {
         mapDecorationRenderState.resetRenderData();
         var modifiers = MAP_DECORATION.getOrDefault(mapDecorationTypeHolder.getKey(), List.of());
-        if (!modifiers.isEmpty()) {
-            for (var modifier : modifiers) {
-                modifier.accept(mapItemSavedData, mapRenderState, mapDecorationRenderState);
-            }
+        for (var modifier : modifiers) {
+            modifier.accept(mapItemSavedData, mapRenderState, mapDecorationRenderState);
         }
         return mapDecorationRenderState;
     }
