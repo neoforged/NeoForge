@@ -47,7 +47,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         var rawNeoFormVersion = project.getProviders().gradleProperty("neoform_version");
         var fmlVersion = project.getProviders().gradleProperty("fancy_mod_loader_version");
         var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
-        var neoForgeVersion = project.provider(() -> (String) project.getVersion()); // TODO: is this correct?
+        var neoForgeVersion = project.provider(() -> project.getVersion().toString());
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
 
         var extension = project.getExtensions().create(NeoDevExtension.NAME, NeoDevExtension.class);
@@ -178,6 +178,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
             task.manifest(manifest -> {
                 manifest.attributes(Map.of("FML-System-Mods", "neoforge"));
+                // These attributes are used from NeoForgeVersion.java to find the NF version without command line arguments.
                 manifest.attributes(
                         Map.of(
                                 "Specification-Title", "NeoForge",
@@ -362,7 +363,8 @@ public class NeoDevPlugin implements Plugin<Project> {
             });
 
             // This is true by default (see gradle.properties), and needs to be disabled explicitly when building (see release.yml).
-            if (project.getProperties().containsKey("neogradle.runtime.platform.installer.debug") && Boolean.parseBoolean(project.getProperties().get("neogradle.runtime.platform.installer.debug").toString())) {
+            String installerDebugProperty = "neogradle.runtime.platform.installer.debug";
+            if (project.getProperties().containsKey(installerDebugProperty) && Boolean.parseBoolean(project.getProperties().get(installerDebugProperty).toString())) {
                 task.from(universalJar.flatMap(AbstractArchiveTask::getArchiveFile), spec -> {
                     spec.into(String.format("/maven/net/neoforged/neoforge/%s/", neoForgeVersion.get()));
                     spec.rename(name -> String.format("neoforge-%s-universal.jar", neoForgeVersion.get()));
@@ -444,7 +446,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             remapTask.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
                 task.classpath(artConfig);
-                task.getMainClass().set("net.neoforged.art.Main");
                 task.getMergedMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             });
         }
