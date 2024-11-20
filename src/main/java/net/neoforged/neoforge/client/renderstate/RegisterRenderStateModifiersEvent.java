@@ -31,7 +31,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     public RegisterRenderStateModifiersEvent() {}
 
     /**
-     * Registers a {@link BiConsumer} for use in-game when updating the {@link EntityRenderState}. Can
+     * Registers a render state modifier for use in-game when updating the {@link EntityRenderState}. Can
      * add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}. Any subclasses
      * of the passed renderer class will also have this modifier applied. Modifiers are run after all vanilla data is
      * extracted.
@@ -46,7 +46,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     }
 
     /**
-     * Registers a {@link BiConsumer} for use in-game when updating {@link MapRenderState}s. Can
+     * Registers a render state modifier for use in-game when updating {@link MapRenderState}s. Can
      * add custom data to the map using {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
      * Modifiers are run after the texture has been set and before decorations have been added.
      *
@@ -57,7 +57,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     }
 
     /**
-     * Registers a {@link BiConsumer} for use in-game when updating {@link MapRenderState.MapDecorationRenderState}s. Can
+     * Registers a render state modifier for use in-game when updating {@link MapRenderState.MapDecorationRenderState}s. Can
      * add custom data to the map using {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
      * Modifiers are run after vanilla map decoration data has been set.
      *
