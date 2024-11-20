@@ -7,13 +7,14 @@ package net.neoforged.neoforge.client.renderstate;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.Map;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.neoforge.client.extensions.IRenderStateExtension;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Extension class for RenderState objects (ie {@link net.minecraft.client.renderer.entity.state.EntityRenderState}).
+ * Extension class for RenderState objects (ie {@link EntityRenderState}).
  * Allows modders to add arbitrary data onto render states for use in custom rendering.
  */
 public abstract class BaseRenderState implements IRenderStateExtension {
