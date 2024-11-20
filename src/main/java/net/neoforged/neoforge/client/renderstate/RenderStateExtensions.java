@@ -40,7 +40,7 @@ public final class RenderStateExtensions {
         var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
             var builder = ImmutableList.<BiConsumer<?, ?>>builder();
             for (var entry : ENTITY.entrySet()) {
-                if (aClass.isAssignableFrom(entry.getKey())) {
+                if (entry.getKey().isAssignableFrom(aClass)) {
                     builder.addAll(entry.getValue());
                 }
             }
