@@ -157,6 +157,7 @@ public class ClientEventTests {
                 if (numRender == -1) test.fail("Custom render data not set");
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
+                poseStack.scale(0.3f, 0.3f, 0.3f);
                 for (int i = 0; i < numRender; i++) {
                     poseStack.translate(0, 1, 0);
                     poseStack.pushPose();
