@@ -1,0 +1,23 @@
+--- a/net/minecraft/data/models/model/ModelTemplates.java
++++ b/net/minecraft/data/models/model/ModelTemplates.java
+@@ -195,14 +_,17 @@
+     }
+ 
+     public static ModelTemplate create(String p_125724_, TextureSlot... p_125725_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("block/" + p_125724_)), Optional.empty(), p_125725_);
++        // NeoForge: Support modded paths
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateBlockModelLocation(p_125724_)), Optional.empty(), p_125725_);
+     }
+ 
+     public static ModelTemplate createItem(String p_125731_, TextureSlot... p_125732_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("item/" + p_125731_)), Optional.empty(), p_125732_);
++        // NeoForge: Use ResourceLocation.parse to support modded paths
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateItemModelLocation(p_125731_)), Optional.empty(), p_125732_);
+     }
+ 
+     public static ModelTemplate create(String p_125720_, String p_125721_, TextureSlot... p_125722_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("block/" + p_125720_)), Optional.of(p_125721_), p_125722_);
++        // NeoForge: Use ResourceLocation.parse to support modded paths
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateBlockModelLocation(p_125720_)), Optional.of(p_125721_), p_125722_);
+     }
+ }
