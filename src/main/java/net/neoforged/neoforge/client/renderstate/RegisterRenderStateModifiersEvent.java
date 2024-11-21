@@ -5,18 +5,14 @@
 
 package net.neoforged.neoforge.client.renderstate;
 
-import java.util.function.BiConsumer;
-
 import com.google.common.reflect.TypeToken;
+import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.bus.api.Event;
