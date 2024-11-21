@@ -26,19 +26,19 @@ abstract class RemapJar extends JavaExec {
     public RemapJar() {}
 
     @InputFile
-    abstract RegularFileProperty getObfSlimJar();
+    abstract RegularFileProperty getInputJar();
 
     @InputFile
-    abstract RegularFileProperty getMergedMappings();
+    abstract RegularFileProperty getMappings();
 
     @OutputFile
-    abstract RegularFileProperty getMojmapJar();
+    abstract RegularFileProperty getOutputJar();
 
     @Override
     public void exec() {
-        args("--input", getObfSlimJar().get().getAsFile().getAbsolutePath());
-        args("--output", getMojmapJar().get().getAsFile().getAbsolutePath());
-        args("--names", getMergedMappings().get().getAsFile().getAbsolutePath());
+        args("--input", getInputJar().get().getAsFile().getAbsolutePath());
+        args("--output", getOutputJar().get().getAsFile().getAbsolutePath());
+        args("--names", getMappings().get().getAsFile().getAbsolutePath());
         args("--ann-fix", "--ids-fix", "--src-fix", "--record-fix");
 
         var logFile = new File(getTemporaryDir(), "console.log");
@@ -47,7 +47,7 @@ abstract class RemapJar extends JavaExec {
             setStandardOutput(out);
             super.exec();
         } catch (IOException e) {
-            throw new GradleException("Failed to create binary patches.", e);
+            throw new GradleException("Failed to remap jar.", e);
         }
     }
 }
