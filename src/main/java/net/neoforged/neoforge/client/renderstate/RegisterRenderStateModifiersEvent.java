@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.client.renderstate;
 
 import com.google.common.reflect.TypeToken;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -42,6 +45,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      * @param <S>          The specific render state type
      */
     public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(TypeToken<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
+        ensureParametersMatchBounds(baseRenderer);
         RenderStateExtensions.registerEntity(baseRenderer.getRawType(), modifier);
     }
 
@@ -66,5 +70,43 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      */
     public void registerMapDecorationModifier(ResourceKey<MapDecorationType> mapDecorationTypeKey, MapDecorationRenderStateModifier modifier) {
         RenderStateExtensions.registerMapDecoration(mapDecorationTypeKey, modifier);
+    }
+
+    private static void ensureParametersMatchBounds(TypeToken<?> baseRenderer) {
+        if (baseRenderer.getType() instanceof ParameterizedType parameterizedType) {
+            Class<?> bound = baseRenderer.getRawType();
+            var parameterized = parameterizedType;
+            do {
+                var userArgs = parameterizedType.getActualTypeArguments();
+                var typeArgs = ((Class) parameterizedType.getRawType()).getTypeParameters();
+                for (int i = 0; i < userArgs.length; i++) {
+                    var userType = userArgs[i];
+                    // ignore wildcards. compilation would catch illegal states, so this must not be an important type to capture
+                    if (userType instanceof WildcardType) continue;
+                    var typeBounds = typeArgs[i].getBounds();
+                    // a generic class with multiple bounds, ie AbstractHoglinRenderer<T extends Mob & HoglinBase>
+                    if (userType instanceof TypeVariable<?> typeVariable) {
+                        var userBounds = typeVariable.getBounds();
+                        // check interface bounds
+                        for (int j = 0; j < typeBounds.length; j++) {
+                            if (!((Class) typeBounds[j]).isAssignableFrom((Class<?>) userBounds[j])) {
+                                throw new IllegalArgumentException("%s does not match actual type parameters %s".formatted(userType, parameterized.getRawType()));
+                            }
+                        }
+                    } else {
+                        // check the base class is the same
+                        if (typeBounds.length != 1 || typeBounds[0] != userType) {
+                            throw new IllegalArgumentException("%s does not match actual type parameters %s".formatted(userType, parameterized.getRawType()));
+                        }
+                    }
+                }
+
+                if (!(parameterized.getOwnerType() instanceof ParameterizedType parameterizedOwner)) {
+                    break;
+                }
+                parameterized = parameterizedOwner;
+                bound = bound.getEnclosingClass();
+            } while (bound != null);
+        }
     }
 }
