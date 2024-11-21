@@ -83,8 +83,6 @@ public abstract class CreateLauncherProfile extends DefaultTask {
         var jvmArguments = new ArrayList<>(List.of(
                 "-Djava.net.preferIPv6Addresses=system",
                 "-DignoreList=" + String.join(",", getIgnoreList().get()),
-                // TODO: is this still relevant in any way?
-                "-DmergeModules=jna-5.10.0.jar,jna-platform-5.10.0.jar",
                 "-DlibraryDirectory=${library_directory}"));
 
         jvmArguments.add("-p");
