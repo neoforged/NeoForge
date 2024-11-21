@@ -37,8 +37,6 @@ dependencies {
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }
-// Required to fix compile classpath using an older junit version. Alternatively we could also just bump junit.
-configurations.junitCompileClasspath.shouldResolveConsistentlyWith configurations.junitRuntimeClasspath
 
 junitTest {
     useJUnitPlatform()
@@ -106,7 +104,7 @@ neoDev {
 }
 
 neoDevTest {
-    loadedMods = [ project(":neoforge").neoDev.mods.minecraft, neoDev.mods.testframework, neoDev.mods.junit ]
+    loadedMods = [ project(":neoforge").neoDev.mods.minecraft, neoDev.mods.testframework, neoDev.mods.coremods, neoDev.mods.junit ]
 }
 
 license {
