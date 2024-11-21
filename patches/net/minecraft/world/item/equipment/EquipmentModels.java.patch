@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/item/equipment/EquipmentModels.java
++++ b/net/minecraft/world/item/equipment/EquipmentModels.java
+@@ -76,13 +_,15 @@
+     }
+ 
+     public static EquipmentModel onlyHumanoid(String p_371738_) {
+-        return EquipmentModel.builder().addHumanoidLayers(ResourceLocation.withDefaultNamespace(p_371738_)).build();
++        // NeoForge: Use ResourceLocation.parse to support modded paths
++        return EquipmentModel.builder().addHumanoidLayers(ResourceLocation.parse(p_371738_)).build();
+     }
+ 
+     public static EquipmentModel humanoidAndHorse(String p_371340_) {
++        // NeoForge: Use ResourceLocation.parse to support modded paths
+         return EquipmentModel.builder()
+-            .addHumanoidLayers(ResourceLocation.withDefaultNamespace(p_371340_))
+-            .addLayers(EquipmentModel.LayerType.HORSE_BODY, EquipmentModel.Layer.leatherDyeable(ResourceLocation.withDefaultNamespace(p_371340_), false))
++            .addHumanoidLayers(ResourceLocation.parse(p_371340_))
++            .addLayers(EquipmentModel.LayerType.HORSE_BODY, EquipmentModel.Layer.leatherDyeable(ResourceLocation.parse(p_371340_), false))
+             .build();
+     }
+ }
