@@ -37,7 +37,7 @@ public final class RenderStateExtensions {
     @ApiStatus.Internal
     public static <E extends Entity, S extends EntityRenderState> void onUpdateEntityRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
         renderState.resetRenderData();
-        var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent((Class<? extends EntityRenderer<E, S>>) renderer.getClass(), aClass -> {
+        var modifiers = (Collection<BiConsumer<E, S>>) (Object) ENTITY_CACHE.computeIfAbsent(renderer.getClass(), aClass -> {
             var builder = ImmutableList.<BiConsumer<?, ?>>builder();
             for (var entry : ENTITY.entrySet()) {
                 if (entry.getKey().isAssignableFrom(aClass)) {
