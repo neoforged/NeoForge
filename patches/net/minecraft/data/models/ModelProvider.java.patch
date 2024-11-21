@@ -1,0 +1,24 @@
+--- a/net/minecraft/data/models/ModelProvider.java
++++ b/net/minecraft/data/models/ModelProvider.java
+@@ -33,6 +_,11 @@
+         this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
+     }
+ 
++    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
++        blockModels.run();
++        itemModels.run();
++    }
++
+     @Override
+     public CompletableFuture<?> run(CachedOutput p_253790_) {
+         Map<Block, BlockStateGenerator> map = Maps.newHashMap();
+@@ -52,8 +_,7 @@
+             }
+         };
+         Consumer<Item> consumer1 = set::add;
+-        new BlockModelGenerators(consumer, biconsumer, consumer1).run();
+-        new ItemModelGenerators(biconsumer).run();
++        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1), new ItemModelGenerators(biconsumer));
+         List<Block> list = BuiltInRegistries.BLOCK
+             .entrySet()
+             .stream()
