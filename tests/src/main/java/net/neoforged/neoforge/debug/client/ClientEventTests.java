@@ -141,6 +141,8 @@ public class ClientEventTests {
             listeners.mod().addListener((RegisterRenderStateModifiersEvent event) -> {
                 event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
                     renderState.setRenderData(key, 5f);
+                });
+                event.registerLivingEntityModifier((entity, renderState) -> {
                     renderState.setRenderData(attachmentKey, entity.getData(testAttachment));
                 });
             });

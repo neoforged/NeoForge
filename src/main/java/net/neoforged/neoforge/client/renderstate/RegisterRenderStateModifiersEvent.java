@@ -7,11 +7,14 @@ package net.neoforged.neoforge.client.renderstate;
 
 import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.bus.api.Event;
@@ -43,6 +46,19 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      */
     public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
         RenderStateExtensions.registerEntity(baseRenderer, modifier);
+    }
+
+    /**
+     * Registers a render state modifier for use in-game when updating the {@link LivingEntityRenderState}. Can
+     * add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}. Any subclasses
+     * of the passed renderer class will also have this modifier applied. Modifiers are run after all vanilla data is
+     * extracted.
+     *
+     * @param modifier The function for modifying the {@link LivingEntityRenderState} and adding custom render data.
+     */
+    @SuppressWarnings("unchecked")
+    public void registerLivingEntityModifier(BiConsumer<LivingEntity, LivingEntityRenderState> modifier) {
+        registerEntityModifier((Class<? extends EntityRenderer<LivingEntity, LivingEntityRenderState>>) (Object) LivingEntityRenderer.class, modifier);
     }
 
     /**
