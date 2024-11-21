@@ -52,18 +52,6 @@ checkJarCompatibility {
     baseJar = createCompatJar.flatMap { it.output }
 }
 
-// TODO: re-enable AT validation
-//tasks.configureEach { tsk ->
-//    if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
-//        tsk.inputs.property('validation', 'error')
-//        tsk.logLevel('ERROR')
-//        tsk.doFirst {
-//            tsk.getRuntimeProgramArguments().addAll(tsk.getRuntimeProgramArguments().get())
-//            tsk.getRuntimeProgramArguments().add('--access-transformer-validation=error')
-//        }
-//    }
-//}
-
 neoDev {
     mods {
         minecraft {

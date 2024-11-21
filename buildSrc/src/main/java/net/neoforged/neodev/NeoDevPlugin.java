@@ -413,11 +413,14 @@ public class NeoDevPlugin implements Plugin<Project> {
             Provider<Directory> neoDevBuildDir,
             File atFile) {
 
+        // Pass -PvalidateAccessTransformers to validate ATs.
+        var validateAts = project.getProviders().gradleProperty("validateAccessTransformers").map(p -> true).orElse(false);
         return project.getTasks().register("applyAccessTransformer", ApplyAccessTransformer.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.classpath(configurations.getExecutableTool(Tools.JST));
             task.getInputJar().set(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getSourcesArtifact));
             task.getAccessTransformer().set(atFile);
+            task.getValidate().set(validateAts);
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/access-transformed-sources.jar")));
             task.getLibraries().from(configurations.neoFormClasspath);
             task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-jst.txt")));
