@@ -34,10 +34,9 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     public RegisterRenderStateModifiersEvent() {}
 
     /**
-     * Registers a render state modifier for use in-game when updating the {@link EntityRenderState}. Can
-     * add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}. Any subclasses
-     * of the passed renderer class will also have this modifier applied. Modifiers are run after all vanilla data is
-     * extracted.
+     * Registers a render state modifier for {@link EntityRenderState}s which are run after all vanilla data is
+     * extracted. Can add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}.
+     * Any subclasses of the passed renderer class will also have this modifier applied.
      * 
      * @param baseRenderer Entity renderer class. Any subclasses will also apply this modifier.
      * @param modifier     The function for modifying the {@link EntityRenderState} and adding custom render data.
@@ -49,10 +48,9 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     }
 
     /**
-     * Registers a render state modifier for use in-game when updating the {@link LivingEntityRenderState}. Can
-     * add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}. Any subclasses
-     * of the passed renderer class will also have this modifier applied. Modifiers are run after all vanilla data is
-     * extracted.
+     * Registers a render state modifier for {@link LivingEntityRenderState}s which are run after all vanilla data is
+     * extracted. Can add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}.
+     * Any subclasses of the passed renderer class will also have this modifier applied.
      *
      * @param modifier The function for modifying the {@link LivingEntityRenderState} and adding custom render data.
      */
@@ -62,9 +60,9 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     }
 
     /**
-     * Registers a render state modifier for use in-game when updating {@link MapRenderState}s. Can
-     * add custom data to the map using {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
-     * Modifiers are run after the texture has been set and before decorations have been added.
+     * Registers a render state modifier for {@link MapRenderState}s which are run after the texture has been set
+     * and before decorations have been added. Can add custom data to the map using
+     * {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
      *
      * @param modifier The function for modifying the {@link net.minecraft.client.renderer.state.MapRenderState} and adding custom render data.
      */
@@ -73,9 +71,9 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     }
 
     /**
-     * Registers a render state modifier for use in-game when updating {@link MapRenderState.MapDecorationRenderState}s. Can
-     * add custom data to the map using {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
-     * Modifiers are run after vanilla map decoration data has been set.
+     * Registers a render state modifier for {@link MapRenderState.MapDecorationRenderState}s which are run after
+     * vanilla map decoration data has been set. Can add custom data to the map using
+     * {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
      *
      * @param mapDecorationTypeKey Key for the registered {@link MapDecorationType}
      * @param modifier             The function for modifying the {@link MapRenderState.MapDecorationRenderState} and adding custom render data.
