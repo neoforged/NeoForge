@@ -1,0 +1,18 @@
+--- a/net/minecraft/data/models/model/ModelLocationUtils.java
++++ b/net/minecraft/data/models/model/ModelLocationUtils.java
+@@ -8,11 +_,13 @@
+ public class ModelLocationUtils {
+     @Deprecated
+     public static ResourceLocation decorateBlockModelLocation(String p_125582_) {
+-        return ResourceLocation.withDefaultNamespace("block/" + p_125582_);
++        // NeoForge: Use ResourceLocation.parse to support modded paths
++        return ResourceLocation.parse(p_125582_).withPrefix("block/");
+     }
+ 
+     public static ResourceLocation decorateItemModelLocation(String p_125584_) {
+-        return ResourceLocation.withDefaultNamespace("item/" + p_125584_);
++        // NeoForge: Use ResourceLocation.parse to support modded paths
++        return ResourceLocation.parse(p_125584_).withPrefix("item/");
+     }
+ 
+     public static ResourceLocation getModelLocation(Block p_125579_, String p_125580_) {
