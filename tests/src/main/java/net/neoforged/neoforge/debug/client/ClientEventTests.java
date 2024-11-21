@@ -5,12 +5,18 @@
 
 package net.neoforged.neoforge.debug.client;
 
+import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.SectionPos;
@@ -18,6 +24,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -139,10 +147,10 @@ public class ClientEventTests {
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
         test.whenEnabled(listeners -> {
             listeners.mod().addListener((RegisterRenderStateModifiersEvent event) -> {
-                event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
+                event.registerEntityModifier(new TypeToken<PlayerRenderer>(){}, (entity, renderState) -> {
                     renderState.setRenderData(key, 5f);
                 });
-                event.registerLivingEntityModifier((entity, renderState) -> {
+                event.registerEntityModifier(new TypeToken<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>>(){}, (entity, renderState) -> {
                     renderState.setRenderData(attachmentKey, entity.getData(testAttachment));
                 });
             });

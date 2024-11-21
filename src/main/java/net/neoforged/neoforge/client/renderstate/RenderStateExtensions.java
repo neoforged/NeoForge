@@ -26,8 +26,8 @@ import org.jetbrains.annotations.ApiStatus;
 public final class RenderStateExtensions {
     private RenderStateExtensions() {}
 
-    private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY = new Reference2ObjectArrayMap<>();
-    private static final Map<Class<? extends EntityRenderer<?, ?>>, Collection<BiConsumer<?, ?>>> ENTITY_CACHE = new Reference2ObjectOpenHashMap<>();
+    private static final Map<Class<?>, Collection<BiConsumer<?, ?>>> ENTITY = new Reference2ObjectArrayMap<>();
+    private static final Map<Class<?>, Collection<BiConsumer<?, ?>>> ENTITY_CACHE = new Reference2ObjectOpenHashMap<>();
 
     private static final List<BiConsumer<MapItemSavedData, MapRenderState>> MAP = new ObjectArrayList<>();
 
@@ -69,7 +69,7 @@ public final class RenderStateExtensions {
         return mapDecorationRenderState;
     }
 
-    static <E extends Entity, S extends EntityRenderState> void registerEntity(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
+    static void registerEntity(Class<?> baseRenderer, BiConsumer<?, ?> modifier) {
         ENTITY.computeIfAbsent(baseRenderer, aClass -> new ObjectArrayList<>()).add(modifier);
     }
 

@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client.renderstate;
 
 import java.util.function.BiConsumer;
+
+import com.google.common.reflect.TypeToken;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -43,20 +45,8 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      * @param <E>          The type of the entity
      * @param <S>          The specific render state type
      */
-    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
-        RenderStateExtensions.registerEntity(baseRenderer, modifier);
-    }
-
-    /**
-     * Registers a render state modifier for {@link LivingEntityRenderState}s which are run after all vanilla data is
-     * extracted. Can add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}.
-     * Any subclasses of the passed renderer class will also have this modifier applied.
-     *
-     * @param modifier The function for modifying the {@link LivingEntityRenderState} and adding custom render data.
-     */
-    @SuppressWarnings("unchecked")
-    public void registerLivingEntityModifier(BiConsumer<LivingEntity, LivingEntityRenderState> modifier) {
-        registerEntityModifier((Class<? extends EntityRenderer<LivingEntity, LivingEntityRenderState>>) (Object) LivingEntityRenderer.class, modifier);
+    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(TypeToken<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
+        RenderStateExtensions.registerEntity(baseRenderer.getRawType(), modifier);
     }
 
     /**
