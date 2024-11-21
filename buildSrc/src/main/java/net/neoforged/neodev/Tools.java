@@ -2,6 +2,7 @@ package net.neoforged.neodev;
 
 import org.gradle.api.Project;
 
+// If a GAV is changed, make sure to change the corresponding renovate comment in gradle.properties.
 public enum Tools {
     // Fatjar jst-cli-bundle instead of jst-cli because publication of the latter is currently broken.
     JST("net.neoforged.jst:jst-cli-bundle:%s", "jst_version", "toolJstClasspath", true),
