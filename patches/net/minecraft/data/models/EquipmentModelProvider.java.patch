@@ -1,0 +1,18 @@
+--- a/net/minecraft/data/models/EquipmentModelProvider.java
++++ b/net/minecraft/data/models/EquipmentModelProvider.java
+@@ -17,10 +_,14 @@
+         this.pathProvider = p_371200_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models/equipment");
+     }
+ 
++    protected void registerModels(java.util.function.BiConsumer<ResourceLocation, EquipmentModel> consumer) {
++        EquipmentModels.bootstrap(consumer);
++    }
++
+     @Override
+     public CompletableFuture<?> run(CachedOutput p_371294_) {
+         Map<ResourceLocation, EquipmentModel> map = new HashMap<>();
+-        EquipmentModels.bootstrap((p_371303_, p_371237_) -> {
++        registerModels((p_371303_, p_371237_) -> {
+             if (map.putIfAbsent(p_371303_, p_371237_) != null) {
+                 throw new IllegalStateException("Tried to register equipment model twice for id: " + p_371303_);
+             }
