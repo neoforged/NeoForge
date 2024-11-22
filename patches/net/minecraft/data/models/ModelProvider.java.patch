@@ -1,18 +1,30 @@
 --- a/net/minecraft/data/models/ModelProvider.java
 +++ b/net/minecraft/data/models/ModelProvider.java
-@@ -33,6 +_,11 @@
-         this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
-     }
+@@ -27,10 +_,22 @@
+ public class ModelProvider implements DataProvider {
+     private final PackOutput.PathProvider blockStatePathProvider;
+     private final PackOutput.PathProvider modelPathProvider;
++    private final String modId;
  
+-    public ModelProvider(PackOutput p_252226_) {
++    public ModelProvider(PackOutput p_252226_, String modId) {
+         this.blockStatePathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+         this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++        this.modId = modId;
++    }
++
++    @Deprecated
++    public ModelProvider(PackOutput p_252226_) {
++        this(p_252226_, "minecraft");
++    }
++
 +    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
 +        blockModels.run();
 +        itemModels.run();
-+    }
-+
+     }
+ 
      @Override
-     public CompletableFuture<?> run(CachedOutput p_253790_) {
-         Map<Block, BlockStateGenerator> map = Maps.newHashMap();
-@@ -52,8 +_,7 @@
+@@ -52,19 +_,18 @@
              }
          };
          Consumer<Item> consumer1 = set::add;
@@ -22,3 +34,16 @@
          List<Block> list = BuiltInRegistries.BLOCK
              .entrySet()
              .stream()
+-            .filter(p_300706_ -> true)
++            .filter(p_300706_ -> p_300706_.getKey().location().getNamespace().equals(modId))
+             .map(Entry::getValue)
+             .filter(p_125117_ -> !map.containsKey(p_125117_))
+             .toList();
+         if (!list.isEmpty()) {
+             throw new IllegalStateException("Missing blockstate definitions for: " + list);
+         } else {
+-            BuiltInRegistries.BLOCK.forEach(p_125128_ -> {
++            BuiltInRegistries.BLOCK.stream().filter(block -> BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(modId)).forEach(p_125128_ -> {
+                 Item item = Item.BY_BLOCK.get(p_125128_);
+                 if (item != null) {
+                     if (set.contains(item)) {
