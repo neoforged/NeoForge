@@ -18,6 +18,7 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.BasePluginExtension;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Sync;
@@ -58,6 +59,8 @@ public class NeoDevPlugin implements Plugin<Project> {
          */
         // 1. Obtain decompiled Minecraft sources jar using NeoForm.
         var createSourceArtifacts = configureMinecraftDecompilation(project);
+        // Task must run on sync to have MC resources available for IDEA nondelegated builds.
+        NeoDevFacade.runTaskOnProjectSync(project, createSourceArtifacts);
 
         // 2. Apply AT to the source jar from 1.
         var atFile = project.getRootProject().file("src/main/resources/META-INF/accesstransformer.cfg");
@@ -85,6 +88,10 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.from(project.zipTree(applyPatches.flatMap(ApplyPatches::getPatchedJar)));
             task.into(mcSourcesPath);
         });
+
+        /*
+         * RUNS SETUP
+         */
 
         // 1. Write configs that contain the runs in a format understood by MDG/NG/etc. Currently one for neodev and one for userdev.
         var writeNeoDevConfig = tasks.register("writeNeoDevConfig", CreateUserDevConfig.class, task -> {
@@ -121,6 +128,13 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getAssetPropertiesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft_assets.properties")));
         });
 
+        // FML needs Minecraft resources on the classpath to find it. Add to runtimeOnly so subprojects also get it at runtime.
+        var runtimeClasspath = project.getConfigurations().getByName(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME);
+        runtimeClasspath.getDependencies().add(
+                dependencyFactory.create(
+                        project.files(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))
+                )
+        );
         // 3. Let MDG do the rest of the setup. :)
         NeoDevFacade.setupRuns(
                 project,
@@ -134,11 +148,6 @@ public class NeoDevPlugin implements Plugin<Project> {
                     legacyClassPath.getDependencies().addLater(mcAndNeoFormVersion.map(v -> dependencyFactory.create("net.neoforged:neoform:" + v).capabilities(caps -> {
                         caps.requireCapability("net.neoforged:neoform-dependencies");
                     })));
-                    legacyClassPath.getDependencies().add(
-                            dependencyFactory.create(
-                                    project.files(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getResourcesArtifact))
-                            )
-                    );
                     legacyClassPath.extendsFrom(configurations.libraries, configurations.moduleLibraries, configurations.userdevCompileOnly);
                 },
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
@@ -524,7 +533,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         return tasks.register("createSourceArtifacts", CreateMinecraftArtifacts.class, task -> {
             var minecraftArtifactsDir = neoDevBuildDir.map(dir -> dir.dir("artifacts"));
             task.getSourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("base-sources.jar")));
-            task.getResourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("minecraft-local-resources-aka-client-extra.jar")));
+            task.getResourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("minecraft-resources.jar")));
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(version -> "net.neoforged:neoform:" + version + "@zip"));
         });
     }
