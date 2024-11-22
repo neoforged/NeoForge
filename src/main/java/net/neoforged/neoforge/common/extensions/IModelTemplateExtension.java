@@ -39,7 +39,7 @@ public interface IModelTemplateExtension {
         return self().create(modelPath, textures, modelOutput, (path, output) -> createBaseTemplate(path, output, fileHelper));
     }
 
-    default JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> modelOutput, @Nullable ExistingFileHelper fileHelper) {
+    default JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap, @Nullable ExistingFileHelper fileHelper) {
         var modelJson = new JsonObject();
 
         model().ifPresent(parentPath -> {
@@ -50,10 +50,10 @@ public interface IModelTemplateExtension {
             }
         });
 
-        if (!modelOutput.isEmpty()) {
+        if (!textureMap.isEmpty()) {
             var texturesJson = new JsonObject();
 
-            modelOutput.forEach((slot, texturePath) -> {
+            textureMap.forEach((slot, texturePath) -> {
                 texturesJson.addProperty(slot.getId(), texturePath.toString());
 
                 if (fileHelper != null) {
