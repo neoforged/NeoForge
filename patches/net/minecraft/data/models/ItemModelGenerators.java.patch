@@ -1,0 +1,61 @@
+--- a/net/minecraft/data/models/ItemModelGenerators.java
++++ b/net/minecraft/data/models/ItemModelGenerators.java
+@@ -39,23 +_,31 @@
+         new ItemModelGenerators.TrimModelData("amethyst", 1.0F, Map.of())
+     );
+     public final BiConsumer<ResourceLocation, Supplier<JsonElement>> output;
++    @org.jetbrains.annotations.Nullable protected final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
+ 
+-    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
++    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
+         this.output = p_125082_;
++        this.fileHelper = fileHelper;
++    }
++
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
++    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
++        this(p_125082_, null);
+     }
+ 
+     public void generateFlatItem(Item p_125089_, ModelTemplate p_125090_) {
+-        p_125090_.create(ModelLocationUtils.getModelLocation(p_125089_), TextureMapping.layer0(p_125089_), this.output);
++        p_125090_.create(ModelLocationUtils.getModelLocation(p_125089_), TextureMapping.layer0(p_125089_), this.output, this.fileHelper);
+     }
+ 
+     public void generateFlatItem(Item p_125092_, String p_125093_, ModelTemplate p_125094_) {
+         p_125094_.create(
+-            ModelLocationUtils.getModelLocation(p_125092_, p_125093_), TextureMapping.layer0(TextureMapping.getItemTexture(p_125092_, p_125093_)), this.output
++            ModelLocationUtils.getModelLocation(p_125092_, p_125093_), TextureMapping.layer0(TextureMapping.getItemTexture(p_125092_, p_125093_)), this.output, this.fileHelper
+         );
+     }
+ 
+     public void generateFlatItem(Item p_125085_, Item p_125086_, ModelTemplate p_125087_) {
+-        p_125087_.create(ModelLocationUtils.getModelLocation(p_125085_), TextureMapping.layer0(p_125086_), this.output);
++        p_125087_.create(ModelLocationUtils.getModelLocation(p_125085_), TextureMapping.layer0(p_125086_), this.output, this.fileHelper);
+     }
+ 
+     public void generateItemWithOverlay(Item p_330987_) {
+@@ -79,11 +_,11 @@
+     }
+ 
+     public void generateLayeredItem(ResourceLocation p_267272_, ResourceLocation p_266738_, ResourceLocation p_267328_) {
+-        ModelTemplates.TWO_LAYERED_ITEM.create(p_267272_, TextureMapping.layered(p_266738_, p_267328_), this.output);
++        ModelTemplates.TWO_LAYERED_ITEM.create(p_267272_, TextureMapping.layered(p_266738_, p_267328_), this.output, this.fileHelper);
+     }
+ 
+     public void generateLayeredItem(ResourceLocation p_268353_, ResourceLocation p_268162_, ResourceLocation p_268173_, ResourceLocation p_268312_) {
+-        ModelTemplates.THREE_LAYERED_ITEM.create(p_268353_, TextureMapping.layered(p_268162_, p_268173_, p_268312_), this.output);
++        ModelTemplates.THREE_LAYERED_ITEM.create(p_268353_, TextureMapping.layered(p_268162_, p_268173_, p_268312_), this.output, this.fileHelper);
+     }
+ 
+     public ResourceLocation getItemModelForTrimMaterial(ResourceLocation p_266817_, String p_267030_) {
+@@ -91,7 +_,7 @@
+     }
+ 
+     public JsonObject generateBaseArmorTrimTemplate(ResourceLocation p_266939_, Map<TextureSlot, ResourceLocation> p_267324_, ResourceLocation p_371397_) {
+-        JsonObject jsonobject = ModelTemplates.TWO_LAYERED_ITEM.createBaseTemplate(p_266939_, p_267324_);
++        JsonObject jsonobject = ModelTemplates.TWO_LAYERED_ITEM.createBaseTemplate(p_266939_, p_267324_, fileHelper);
+         JsonArray jsonarray = new JsonArray();
+ 
+         for (ItemModelGenerators.TrimModelData itemmodelgenerators$trimmodeldata : GENERATED_TRIM_MODELS) {

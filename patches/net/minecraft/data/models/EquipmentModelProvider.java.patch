@@ -1,13 +1,27 @@
 --- a/net/minecraft/data/models/EquipmentModelProvider.java
 +++ b/net/minecraft/data/models/EquipmentModelProvider.java
-@@ -17,10 +_,14 @@
-         this.pathProvider = p_371200_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models/equipment");
-     }
+@@ -12,18 +_,32 @@
  
-+    protected void registerModels(java.util.function.BiConsumer<ResourceLocation, EquipmentModel> consumer) {
-+        EquipmentModels.bootstrap(consumer);
+ public class EquipmentModelProvider implements DataProvider {
+     private final PackOutput.PathProvider pathProvider;
++    protected final @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
+ 
+-    public EquipmentModelProvider(PackOutput p_371200_) {
++    public EquipmentModelProvider(PackOutput p_371200_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
+         this.pathProvider = p_371200_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models/equipment");
++        this.fileHelper = fileHelper;
 +    }
 +
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
++    public EquipmentModelProvider(PackOutput p_371200_) {
++        this(p_371200_, null);
++    }
++
++    protected void registerModels(java.util.function.BiConsumer<ResourceLocation, EquipmentModel> consumer) {
++        EquipmentModels.bootstrap(consumer);
+     }
+ 
      @Override
      public CompletableFuture<?> run(CachedOutput p_371294_) {
          Map<ResourceLocation, EquipmentModel> map = new HashMap<>();
@@ -16,3 +30,30 @@
              if (map.putIfAbsent(p_371303_, p_371237_) != null) {
                  throw new IllegalStateException("Tried to register equipment model twice for id: " + p_371303_);
              }
++
++            trackAndValidateModel(p_371303_, p_371237_);
+         });
+         return DataProvider.saveAll(p_371294_, EquipmentModel.CODEC, this.pathProvider, map);
+     }
+@@ -31,5 +_,21 @@
+     @Override
+     public String getName() {
+         return "Equipment Model Definitions";
++    }
++
++    private void trackAndValidateModel(ResourceLocation path, EquipmentModel model) {
++        if(fileHelper == null) {
++            return;
++        }
++
++        fileHelper.trackGenerated(path, net.neoforged.neoforge.client.model.generators.ModelProvider.MODEL);
++
++        model.layers().forEach((layerType, layers) -> {
++            layers.forEach(layer -> {
++                var texturePath = layer.getTextureLocation(layerType);
++                // Neo: 'ModelProvider.TEXTURE' does not work here as 'getTextureLocation' spits out the full compiled texture path
++                com.google.common.base.Preconditions.checkArgument(fileHelper.exists(texturePath, net.minecraft.server.packs.PackType.CLIENT_RESOURCES), "Texture %s does not exist in any known resource pack", texturePath);
++            });
++        });
+     }
+ }

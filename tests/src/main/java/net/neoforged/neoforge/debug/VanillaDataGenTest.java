@@ -40,7 +40,7 @@ public interface VanillaDataGenTest {
         var block = reg.blocks().registerSimpleBlock("vanilla_model_gen_block", BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
         var blockItem = reg.items().registerSimpleBlockItem(block);
 
-        reg.addProvider(event -> new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
+        reg.addProvider(event -> new ModelProvider(event.getGenerator().getPackOutput(), reg.modId(), event.getExistingFileHelper()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 // generate simple cube model for our block
@@ -56,7 +56,7 @@ public interface VanillaDataGenTest {
             }
         });
 
-        reg.addProvider(event -> new EquipmentModelProvider(event.getGenerator().getPackOutput()) {
+        reg.addProvider(event -> new EquipmentModelProvider(event.getGenerator().getPackOutput(), event.getExistingFileHelper()) {
             @Override
             protected void registerModels(BiConsumer<ResourceLocation, EquipmentModel> consumer) {
                 // generate model which switches out the texture when worn

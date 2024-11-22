@@ -1,0 +1,45 @@
+--- a/net/minecraft/data/models/model/TexturedModel.java
++++ b/net/minecraft/data/models/model/TexturedModel.java
+@@ -8,7 +_,7 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.level.block.Block;
+ 
+-public class TexturedModel {
++public class TexturedModel implements net.neoforged.neoforge.common.extensions.ITexturedModelExtension {
+     public static final TexturedModel.Provider CUBE = createDefault(TextureMapping::cube, ModelTemplates.CUBE_ALL);
+     public static final TexturedModel.Provider CUBE_INNER_FACES = createDefault(TextureMapping::cube, ModelTemplates.CUBE_ALL_INNER_FACES);
+     public static final TexturedModel.Provider CUBE_MIRRORED = createDefault(TextureMapping::cube, ModelTemplates.CUBE_MIRRORED_ALL);
+@@ -57,10 +_,14 @@
+         return this;
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public ResourceLocation create(Block p_125938_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125939_) {
+         return this.template.create(p_125938_, this.mapping, p_125939_);
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public ResourceLocation createWithSuffix(Block p_125934_, String p_125935_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125936_) {
+         return this.template.createWithSuffix(p_125934_, p_125935_, this.mapping, p_125936_);
+     }
+@@ -74,13 +_,17 @@
+     }
+ 
+     @FunctionalInterface
+-    public interface Provider {
++    public interface Provider extends net.neoforged.neoforge.common.extensions.ITexturedModelExtension.Provider {
+         TexturedModel get(Block p_125965_);
+ 
++        // Neo: Use ExistingFileHelper sensitive version
++        @Deprecated
+         default ResourceLocation create(Block p_125957_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125958_) {
+             return this.get(p_125957_).create(p_125957_, p_125958_);
+         }
+ 
++        // Neo: Use ExistingFileHelper sensitive version
++        @Deprecated
+         default ResourceLocation createWithSuffix(Block p_125953_, String p_125954_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125955_) {
+             return this.get(p_125953_).createWithSuffix(p_125953_, p_125954_, p_125955_);
+         }

@@ -1,0 +1,70 @@
+--- a/net/minecraft/data/models/model/ModelTemplate.java
++++ b/net/minecraft/data/models/model/ModelTemplate.java
+@@ -14,7 +_,7 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.level.block.Block;
+ 
+-public class ModelTemplate {
++public class ModelTemplate implements net.neoforged.neoforge.common.extensions.IModelTemplateExtension {
+     private final Optional<ResourceLocation> model;
+     private final Set<TextureSlot> requiredSlots;
+     private final Optional<String> suffix;
+@@ -29,22 +_,30 @@
+         return ModelLocationUtils.getModelLocation(p_309103_, this.suffix.orElse(""));
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public ResourceLocation create(Block p_125593_, TextureMapping p_125594_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125595_) {
+         return this.create(ModelLocationUtils.getModelLocation(p_125593_, this.suffix.orElse("")), p_125594_, p_125595_);
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public ResourceLocation createWithSuffix(
+         Block p_125597_, String p_125598_, TextureMapping p_125599_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125600_
+     ) {
+         return this.create(ModelLocationUtils.getModelLocation(p_125597_, p_125598_ + this.suffix.orElse("")), p_125599_, p_125600_);
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public ResourceLocation createWithOverride(
+         Block p_125617_, String p_125618_, TextureMapping p_125619_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125620_
+     ) {
+         return this.create(ModelLocationUtils.getModelLocation(p_125617_, p_125618_), p_125619_, p_125620_);
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public ResourceLocation create(ResourceLocation p_125613_, TextureMapping p_125614_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125615_) {
+         return this.create(p_125613_, p_125614_, p_125615_, this::createBaseTemplate);
+     }
+@@ -60,6 +_,8 @@
+         return p_266990_;
+     }
+ 
++    // Neo: Use ExistingFileHelper sensitive version
++    @Deprecated
+     public JsonObject createBaseTemplate(ResourceLocation p_266830_, Map<TextureSlot, ResourceLocation> p_266912_) {
+         JsonObject jsonobject = new JsonObject();
+         this.model.ifPresent(p_176461_ -> jsonobject.addProperty("parent", p_176461_.toString()));
+@@ -75,6 +_,18 @@
+     private Map<TextureSlot, ResourceLocation> createMap(TextureMapping p_125609_) {
+         return Streams.concat(this.requiredSlots.stream(), p_125609_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_125609_::get));
+     }
++
++    // region: NeoForge Additions
++    @Override
++    public Optional<ResourceLocation> model() {
++        return model;
++    }
++
++    @Override
++    public Optional<String> suffix() {
++        return suffix;
++    }
++    // endregion
+ 
+     public interface JsonFactory {
+         JsonObject create(ResourceLocation p_266987_, Map<TextureSlot, ResourceLocation> p_266933_);

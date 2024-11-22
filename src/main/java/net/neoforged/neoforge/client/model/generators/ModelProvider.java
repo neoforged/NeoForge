@@ -28,7 +28,7 @@ public abstract class ModelProvider<T extends ModelBuilder<T>> implements DataPr
     public static final String ITEM_FOLDER = "item";
 
     public static final ResourceType TEXTURE = new ResourceType(PackType.CLIENT_RESOURCES, ".png", "textures");
-    protected static final ResourceType MODEL = new ResourceType(PackType.CLIENT_RESOURCES, ".json", "models");
+    public static final ResourceType MODEL = new ResourceType(PackType.CLIENT_RESOURCES, ".json", "models");
     protected static final ResourceType MODEL_WITH_EXTENSION = new ResourceType(PackType.CLIENT_RESOURCES, "", "models");
 
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
