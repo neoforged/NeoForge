@@ -57,6 +57,30 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
     }
 
     /**
+     * Convenience method for cases where generics are not present. Registers a render state modifier for
+     * {@link EntityRenderState}s which are run after all vanilla data is extracted. Can add custom data to the map
+     * using {@link EntityRenderState#setRenderData(ContextKey, Object)}. Any subclasses of the passed renderer class
+     * will also have this modifier applied.
+     *
+     * <pre>
+     * <code>
+     *     event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
+     *         . . .
+     *     });
+     * </code>
+     * </pre>
+     *
+     * @param baseRenderer Entity renderer class. Any subclasses will also apply this modifier.
+     * @param modifier     The function for modifying the {@link EntityRenderState} and adding custom render data.
+     * @param <E>          The type of the entity
+     * @param <S>          The specific render state type
+     */
+    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(Class<? extends EntityRenderer<? extends E, ? extends S>> baseRenderer, BiConsumer<E, S> modifier) {
+        ensureParametersMatchBounds(TypeToken.of(baseRenderer));
+        RenderStateExtensions.registerEntity(baseRenderer, modifier);
+    }
+
+    /**
      * Registers a render state modifier for {@link MapRenderState}s which are run after the texture has been set
      * and before decorations have been added. Can add custom data to the map using
      * {@link IRenderStateExtension#setRenderData(ContextKey, Object)}.
