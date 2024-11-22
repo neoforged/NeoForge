@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.client.renderstate;
 
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.util.function.BiConsumer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -44,7 +43,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      * @param <E>          The type of the entity
      * @param <S>          The specific render state type
      */
-    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(TypeToken<? extends EntityRenderer<E, S>> baseRenderer, BiConsumer<E, S> modifier) {
+    public <E extends Entity, S extends EntityRenderState> void registerEntityModifier(TypeToken<? extends EntityRenderer<? extends E, ? extends S>> baseRenderer, BiConsumer<E, S> modifier) {
         ensureParametersMatchBounds(baseRenderer);
         RenderStateExtensions.registerEntity(baseRenderer.getRawType(), modifier);
     }
@@ -72,31 +71,22 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
         RenderStateExtensions.registerMapDecoration(mapDecorationTypeKey, modifier);
     }
 
-    private static void ensureParametersMatchBounds(TypeToken<?> baseRenderer) {
+    private static void ensureParametersMatchBounds(TypeToken<? extends EntityRenderer<? extends Entity, ? extends EntityRenderState>> baseRenderer) {
         if (baseRenderer.getType() instanceof ParameterizedType parameterizedType) {
             Class<?> bound = baseRenderer.getRawType();
-            var parameterized = parameterizedType;
+            ParameterizedType parameterized = parameterizedType;
             do {
-                var userArgs = parameterizedType.getActualTypeArguments();
-                var typeArgs = ((Class) parameterizedType.getRawType()).getTypeParameters();
+                var userArgs = parameterized.getActualTypeArguments();
+                var typeArgs = bound.getTypeParameters();
+
                 for (int i = 0; i < userArgs.length; i++) {
-                    var userType = userArgs[i];
-                    // ignore wildcards. compilation would catch illegal states, so this must not be an important type to capture
-                    if (userType instanceof WildcardType) continue;
-                    var typeBounds = typeArgs[i].getBounds();
-                    // a generic class with multiple bounds, ie AbstractHoglinRenderer<T extends Mob & HoglinBase>
-                    if (userType instanceof TypeVariable<?> typeVariable) {
-                        var userBounds = typeVariable.getBounds();
-                        // check interface bounds
-                        for (int j = 0; j < typeBounds.length; j++) {
-                            if (!((Class) typeBounds[j]).isAssignableFrom((Class<?>) userBounds[j])) {
-                                throw new IllegalArgumentException("%s does not match actual type parameters %s".formatted(userType, parameterized.getRawType()));
-                            }
-                        }
-                    } else {
-                        // check the base class is the same
-                        if (typeBounds.length != 1 || typeBounds[0] != userType) {
-                            throw new IllegalArgumentException("%s does not match actual type parameters %s".formatted(userType, parameterized.getRawType()));
+                    var userArg = userArgs[i];
+                    var userToken = Container.of(TypeToken.of(userArg));
+                    var typeArg = typeArgs[i];
+                    for (var singleBound : typeArg.getBounds()) {
+                        var token = Container.of(TypeToken.of(singleBound));
+                        if (!token.isSubtypeOf(userToken)) {
+                            throw new IllegalArgumentException("%s does not match actual type parameter %s".formatted(userArg, singleBound));
                         }
                     }
                 }
@@ -107,6 +97,14 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
                 parameterized = parameterizedOwner;
                 bound = bound.getEnclosingClass();
             } while (bound != null);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private record Container<X>() {
+        private static <Z> TypeToken<Container<Z>> of(TypeToken<Z> parameter) {
+            return new TypeToken<Container<Z>>() {}
+                    .where(new TypeParameter<>() {}, parameter);
         }
     }
 }
