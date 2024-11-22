@@ -13,3 +13,19 @@ dependencies {
         endorseStrictVersions()
     }
 }
+
+neoDev {
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        // Generated files are in run/generated
+        data {
+            data()
+            programArgument "--all"
+        }
+    }
+}
