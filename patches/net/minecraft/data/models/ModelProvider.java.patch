@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/models/ModelProvider.java
 +++ b/net/minecraft/data/models/ModelProvider.java
-@@ -27,10 +_,22 @@
+@@ -27,10 +_,23 @@
  public class ModelProvider implements DataProvider {
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider modelPathProvider;
@@ -13,6 +13,7 @@
 +        this.modId = modId;
 +    }
 +
++    // NeoForge: Use the above constructor passing in their mod id
 +    @Deprecated
 +    public ModelProvider(PackOutput p_252226_) {
 +        this(p_252226_, "minecraft");
