@@ -37,6 +37,14 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
      * Registers a render state modifier for {@link EntityRenderState}s which are run after all vanilla data is
      * extracted. Can add custom data to the map using {@link EntityRenderState#setRenderData(ContextKey, Object)}.
      * Any subclasses of the passed renderer class will also have this modifier applied.
+     *
+     * <pre>
+     * <code>
+     *     event.registerEntityModifier(new TypeToken<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {
+     *         . . .
+     *     });
+     * </code>
+     * </pre>
      * 
      * @param baseRenderer Entity renderer class. Any subclasses will also apply this modifier.
      * @param modifier     The function for modifying the {@link EntityRenderState} and adding custom render data.
