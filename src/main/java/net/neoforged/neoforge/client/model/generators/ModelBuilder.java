@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.Direction;
+import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -147,6 +148,60 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 "Texture %s does not exist in any known resource pack", texture);
         this.textures.put(key, texture.toString());
         return self();
+    }
+
+    /**
+     * Set the texture for a given dictionary slot.
+     *
+     * @param slot    the texture slot
+     * @param texture the texture, can be another slot e.g. {@code "#all"}
+     * @return this builder
+     * @throws NullPointerException  if {@code slot} is {@code null}
+     * @throws NullPointerException  if {@code texture} is {@code null}
+     * @throws IllegalStateException if {@code texture} is not a slot (does not start
+     *                               with {@code '#'}) and does not exist in any
+     *                               known resource pack
+     */
+    public T texture(TextureSlot slot, String texture) {
+        Preconditions.checkNotNull(slot, "Slot must not be null");
+        Preconditions.checkNotNull(texture, "Texture must not be null");
+        return texture(slot.getId(), texture);
+    }
+
+    /**
+     * Set the texture for a given dictionary slot.
+     *
+     * @param slot          the texture slot
+     * @param referenceSlot the texture, can be another slot e.g. {@code "#all"}
+     * @return this builder
+     * @throws NullPointerException  if {@code slot} is {@code null}
+     * @throws NullPointerException  if {@code texture} is {@code null}
+     * @throws IllegalStateException if {@code texture} is not a slot (does not start
+     *                               with {@code '#'}) and does not exist in any
+     *                               known resource pack
+     */
+    public T texture(TextureSlot slot, TextureSlot referenceSlot) {
+        Preconditions.checkNotNull(slot, "Slot must not be null");
+        Preconditions.checkNotNull(referenceSlot, "Reference slot must not be null");
+        return texture(slot.getId(), referenceSlot.toString());
+    }
+
+    /**
+     * Set the texture for a given dictionary slot.
+     *
+     * @param slot    the texture slot
+     * @param texture the texture
+     * @return this builder
+     * @throws NullPointerException  if {@code slot} is {@code null}
+     * @throws NullPointerException  if {@code texture} is {@code null}
+     * @throws IllegalStateException if {@code texture} is not a slot (does not start
+     *                               with {@code '#'}) and does not exist in any
+     *                               known resource pack
+     */
+    public T texture(TextureSlot slot, ResourceLocation texture) {
+        Preconditions.checkNotNull(slot, "Slot must not be null");
+        Preconditions.checkNotNull(texture, "Texture must not be null");
+        return texture(slot.getId(), texture);
     }
 
     /**
