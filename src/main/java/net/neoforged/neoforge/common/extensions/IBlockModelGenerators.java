@@ -52,11 +52,11 @@ public interface IBlockModelGenerators {
     }
 
     default ResourceLocation modLocation(String modelPath) {
-        return ResourceLocation.fromNamespaceAndPath(self().modId, modelPath);
+        return ResourceLocation.fromNamespaceAndPath(self().modId, modelPath).withPath(IBlockModelGenerators::appendBlockFolder);
     }
 
     default ResourceLocation mcLocation(String modelPath) {
-        return ResourceLocation.withDefaultNamespace(modelPath);
+        return ResourceLocation.withDefaultNamespace(modelPath).withPath(IBlockModelGenerators::appendBlockFolder);
     }
 
     private BlockModelGenerators self() {

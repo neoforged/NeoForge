@@ -52,11 +52,11 @@ public interface IItemModelGenerators {
     }
 
     default ResourceLocation modLocation(String modelPath) {
-        return ResourceLocation.fromNamespaceAndPath(self().modId, modelPath);
+        return ResourceLocation.fromNamespaceAndPath(self().modId, modelPath).withPath(IItemModelGenerators::appendItemFolder);
     }
 
     default ResourceLocation mcLocation(String modelPath) {
-        return ResourceLocation.withDefaultNamespace(modelPath);
+        return ResourceLocation.withDefaultNamespace(modelPath).withPath(IItemModelGenerators::appendItemFolder);
     }
 
     private ItemModelGenerators self() {
