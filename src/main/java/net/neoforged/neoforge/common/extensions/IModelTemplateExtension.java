@@ -68,7 +68,7 @@ public interface IModelTemplateExtension {
     }
 
     default ModelTemplate withRenderType(ResourceLocation renderType) {
-        return new ModelTemplateWithCustomData(self()).withRenderType(renderType);
+        return new ModelTemplateWithCustomData(self(), renderType);
     }
 
     private ModelTemplate self() {
