@@ -9,22 +9,24 @@
      public static final ResourceLocation TRIM_TYPE_PREDICATE_ID = ResourceLocation.withDefaultNamespace("trim_type");
      public static final List<ItemModelGenerators.TrimModelData> GENERATED_TRIM_MODELS = List.of(
          new ItemModelGenerators.TrimModelData("quartz", 0.1F, Map.of()),
-@@ -39,23 +_,31 @@
+@@ -39,23 +_,33 @@
          new ItemModelGenerators.TrimModelData("amethyst", 1.0F, Map.of())
      );
      public final BiConsumer<ResourceLocation, Supplier<JsonElement>> output;
 +    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
++    public final String modId;
  
 -    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
-+    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper, String modId) {
          this.output = p_125082_;
 +        this.fileHelper = fileHelper;
++        this.modId = modId;
 +    }
 +
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
 +    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
-+        this(p_125082_, null);
++        this(p_125082_, null, ResourceLocation.DEFAULT_NAMESPACE);
      }
  
      public void generateFlatItem(Item p_125089_, ModelTemplate p_125090_) {

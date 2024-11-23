@@ -8,7 +8,7 @@
 +public class ModelProvider implements DataProvider, net.neoforged.neoforge.common.extensions.IModelProviderExtension {
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider modelPathProvider;
-+    private final String modId;
++    public final String modId;
 +    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
  
 -    public ModelProvider(PackOutput p_252226_) {
@@ -22,7 +22,7 @@
 +    // NeoForge: Use the above constructor passing in their mod id
 +    @Deprecated
 +    public ModelProvider(PackOutput p_252226_) {
-+        this(p_252226_, "minecraft", null);
++        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE, null);
 +    }
 +
 +    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
@@ -42,7 +42,7 @@
          Consumer<Item> consumer1 = set::add;
 -        new BlockModelGenerators(consumer, biconsumer, consumer1).run();
 -        new ItemModelGenerators(biconsumer).run();
-+        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.fileHelper), new ItemModelGenerators(biconsumer, this.fileHelper));
++        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.fileHelper, this.modId), new ItemModelGenerators(biconsumer, this.fileHelper, this.modId));
          List<Block> list = BuiltInRegistries.BLOCK
              .entrySet()
              .stream()

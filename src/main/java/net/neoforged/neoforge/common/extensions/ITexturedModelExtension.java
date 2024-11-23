@@ -10,6 +10,10 @@ import net.minecraft.data.models.model.TexturedModel;
 import net.minecraft.resources.ResourceLocation;
 
 public interface ITexturedModelExtension {
+    default TexturedModel withRenderType(String renderType) {
+        return new TexturedModel(self().getMapping(), self().getTemplate().withRenderType(renderType));
+    }
+
     default TexturedModel withRenderType(ResourceLocation renderType) {
         return new TexturedModel(self().getMapping(), self().getTemplate().withRenderType(renderType));
     }
@@ -27,6 +31,10 @@ public interface ITexturedModelExtension {
     }
 
     interface Provider {
+        default TexturedModel.Provider withRenderType(String renderType) {
+            return block -> self().get(block).withRenderType(renderType);
+        }
+
         default TexturedModel.Provider withRenderType(ResourceLocation renderType) {
             return block -> self().get(block).withRenderType(renderType);
         }

@@ -48,17 +48,15 @@ public interface VanillaDataGenTest {
                 // generate simple cube model for our block
                 // blockModels.createTrivialCube(block.value());
                 // generates the same output as above but with added render type (cutout)
-                blockModels.createTrivialBlock(block.value(), TexturedModel.CUBE.withRenderType(ResourceLocation.withDefaultNamespace("cutout")));
-
-                // TODO: have all paths be auto namespaced with given mod id (if missing)
-                // TODO: auto prefix paths with model type folder with missing
+                blockModels.createTrivialBlock(block.value(), TexturedModel.CUBE.withRenderType("cutout"));
 
                 // generate simple flat model for our item
-                // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.withRenderType(ResourceLocation.withDefaultNamespace("cutout")));
+                // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.withRenderType("cutout"));
 
                 // generates the same output as generateFlatItem
                 // but running through custom model building instead of templates
                 itemModels.generateCustom(item.value(), builder -> builder
+                        // .parent(getExistingModel("item/generated"))
                         .parent(itemModels.getExistingModel("generated"))
                         .texture(TextureSlot.LAYER0, TextureMapping.getItemTexture(item.value()))
                         .renderType("cutout"));

@@ -12,6 +12,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.vanilla.ModelTemplateWithCustomData;
 
 public interface IModelTemplateExtension {
+    default ModelTemplate withRenderType(String renderType) {
+        return withRenderType(ResourceLocation.withDefaultNamespace(renderType));
+    }
+
     default ModelTemplate withRenderType(ResourceLocation renderType) {
         return withCustomData(customData -> customData.renderType = renderType);
     }

@@ -9,7 +9,7 @@
      public final Consumer<BlockStateGenerator> blockStateOutput;
      public final BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput;
      public final Consumer<Item> skippedAutoModelsOutput;
-@@ -187,32 +_,67 @@
+@@ -187,32 +_,69 @@
      public static final Map<BlockModelGenerators.BookSlotModelCacheKey, ResourceLocation> CHISELED_BOOKSHELF_SLOT_MODEL_CACHE = new HashMap<>();
  
      public static BlockStateGenerator createMirroredCubeGenerator(
@@ -64,15 +64,17 @@
 +    }
 +
 +    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
++    public final String modId;
 +
      public BlockModelGenerators(
 -        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
-+            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper
++            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper, String modId
      ) {
          this.blockStateOutput = p_124481_;
          this.modelOutput = p_124482_;
          this.skippedAutoModelsOutput = p_124483_;
 +        this.fileHelper = fileHelper;
++        this.modId = modId;
 +    }
 +
 +    // Neo: Use ExistingFileHelper sensitive version
@@ -80,7 +82,7 @@
 +    public BlockModelGenerators(
 +            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
 +    ) {
-+        this(p_124481_, p_124482_, p_124483_, null);
++        this(p_124481_, p_124482_, p_124483_, null, ResourceLocation.DEFAULT_NAMESPACE);
      }
  
      public void skipAutoItemBlock(Block p_124525_) {
