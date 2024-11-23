@@ -9,43 +9,99 @@
      public final Optional<ResourceLocation> model;
      public final Set<TextureSlot> requiredSlots;
      public final Optional<String> suffix;
-@@ -29,22 +_,30 @@
+@@ -29,24 +_,52 @@
          return ModelLocationUtils.getModelLocation(p_309103_, this.suffix.orElse(""));
      }
  
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public ResourceLocation create(Block p_125593_, TextureMapping p_125594_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125595_) {
-         return this.create(ModelLocationUtils.getModelLocation(p_125593_, this.suffix.orElse("")), p_125594_, p_125595_);
-     }
- 
+-        return this.create(ModelLocationUtils.getModelLocation(p_125593_, this.suffix.orElse("")), p_125594_, p_125595_);
+-    }
+-
++        return this.create(p_125593_, p_125594_, p_125595_, null);
++    }
++
++    public ResourceLocation create(Block p_125593_, TextureMapping p_125594_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125595_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++        return this.create(ModelLocationUtils.getModelLocation(p_125593_, this.suffix.orElse("")), p_125594_, p_125595_, fileHelper);
++    }
++
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public ResourceLocation createWithSuffix(
          Block p_125597_, String p_125598_, TextureMapping p_125599_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125600_
      ) {
-         return this.create(ModelLocationUtils.getModelLocation(p_125597_, p_125598_ + this.suffix.orElse("")), p_125599_, p_125600_);
-     }
- 
+-        return this.create(ModelLocationUtils.getModelLocation(p_125597_, p_125598_ + this.suffix.orElse("")), p_125599_, p_125600_);
+-    }
+-
++        return this.createWithSuffix(p_125597_, p_125598_, p_125599_, p_125600_, null);
++    }
++
++    public ResourceLocation createWithSuffix(
++            Block p_125597_, String p_125598_, TextureMapping p_125599_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125600_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper
++    ) {
++        return this.create(ModelLocationUtils.getModelLocation(p_125597_, p_125598_ + this.suffix.orElse("")), p_125599_, p_125600_, fileHelper);
++    }
++
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public ResourceLocation createWithOverride(
          Block p_125617_, String p_125618_, TextureMapping p_125619_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125620_
      ) {
-         return this.create(ModelLocationUtils.getModelLocation(p_125617_, p_125618_), p_125619_, p_125620_);
-     }
- 
+-        return this.create(ModelLocationUtils.getModelLocation(p_125617_, p_125618_), p_125619_, p_125620_);
+-    }
+-
++        return this.createWithOverride(p_125617_, p_125618_, p_125619_, p_125620_, null);
++    }
++
++    public ResourceLocation createWithOverride(
++            Block p_125617_, String p_125618_, TextureMapping p_125619_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125620_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper
++    ) {
++        return this.create(ModelLocationUtils.getModelLocation(p_125617_, p_125618_), p_125619_, p_125620_, fileHelper);
++    }
++
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public ResourceLocation create(ResourceLocation p_125613_, TextureMapping p_125614_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125615_) {
-         return this.create(p_125613_, p_125614_, p_125615_, this::createBaseTemplate);
+-        return this.create(p_125613_, p_125614_, p_125615_, this::createBaseTemplate);
++        return this.create(p_125613_, p_125614_, p_125615_, (net.neoforged.neoforge.common.data.ExistingFileHelper) null);
++    }
++
++    public ResourceLocation create(ResourceLocation p_125613_, TextureMapping p_125614_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125615_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++        return this.create(p_125613_, p_125614_, p_125615_, (p_266987_, p_266933_) -> createBaseTemplate(p_266987_, p_266933_, fileHelper));
      }
-@@ -60,6 +_,8 @@
+ 
+     public ResourceLocation create(
+@@ -60,12 +_,30 @@
          return p_266990_;
      }
  
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public JsonObject createBaseTemplate(ResourceLocation p_266830_, Map<TextureSlot, ResourceLocation> p_266912_) {
++        return this.createBaseTemplate(p_266830_, p_266912_, null);
++    }
++
++    public JsonObject createBaseTemplate(ResourceLocation p_266830_, Map<TextureSlot, ResourceLocation> p_266912_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
          JsonObject jsonobject = new JsonObject();
-         this.model.ifPresent(p_176461_ -> jsonobject.addProperty("parent", p_176461_.toString()));
+-        this.model.ifPresent(p_176461_ -> jsonobject.addProperty("parent", p_176461_.toString()));
++        this.model.ifPresent(p_176461_ -> {
++            jsonobject.addProperty("parent", p_176461_.toString());
++
++            if (fileHelper != null) {
++                com.google.common.base.Preconditions.checkState(fileHelper.exists(p_176461_, net.neoforged.neoforge.client.model.generators.ModelProvider.MODEL), "Model at %s does not exist", p_176461_);
++            }
++        });
+         if (!p_266912_.isEmpty()) {
+             JsonObject jsonobject1 = new JsonObject();
+-            p_266912_.forEach((p_176457_, p_176458_) -> jsonobject1.addProperty(p_176457_.getId(), p_176458_.toString()));
++            p_266912_.forEach((p_176457_, p_176458_) -> {
++                jsonobject1.addProperty(p_176457_.getId(), p_176458_.toString());
++                if (fileHelper != null) {
++                    com.google.common.base.Preconditions.checkState(fileHelper.exists(p_176458_, net.neoforged.neoforge.client.model.generators.ModelProvider.TEXTURE), "Texture %s does not exist in any known resource pack", p_176458_);
++                }
++
++            });
+             jsonobject.add("textures", jsonobject1);
+         }
+ 

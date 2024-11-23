@@ -1,45 +1,60 @@
 --- a/net/minecraft/data/models/model/TexturedModel.java
 +++ b/net/minecraft/data/models/model/TexturedModel.java
-@@ -8,7 +_,7 @@
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.world.level.block.Block;
- 
--public class TexturedModel {
-+public class TexturedModel implements net.neoforged.neoforge.common.extensions.ITexturedModelExtension {
-     public static final TexturedModel.Provider CUBE = createDefault(TextureMapping::cube, ModelTemplates.CUBE_ALL);
-     public static final TexturedModel.Provider CUBE_INNER_FACES = createDefault(TextureMapping::cube, ModelTemplates.CUBE_ALL_INNER_FACES);
-     public static final TexturedModel.Provider CUBE_MIRRORED = createDefault(TextureMapping::cube, ModelTemplates.CUBE_MIRRORED_ALL);
-@@ -57,10 +_,14 @@
+@@ -57,12 +_,24 @@
          return this;
      }
  
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public ResourceLocation create(Block p_125938_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125939_) {
-         return this.template.create(p_125938_, this.mapping, p_125939_);
-     }
- 
+-        return this.template.create(p_125938_, this.mapping, p_125939_);
+-    }
+-
++        return this.create(p_125938_, p_125939_, null);
++    }
++
++    public ResourceLocation create(Block p_125938_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125939_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++        return this.template.create(p_125938_, this.mapping, p_125939_, fileHelper);
++    }
++
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
      public ResourceLocation createWithSuffix(Block p_125934_, String p_125935_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125936_) {
-         return this.template.createWithSuffix(p_125934_, p_125935_, this.mapping, p_125936_);
-     }
-@@ -74,13 +_,17 @@
+-        return this.template.createWithSuffix(p_125934_, p_125935_, this.mapping, p_125936_);
++        return this.createWithSuffix(p_125934_, p_125935_, p_125936_, null);
++    }
++
++    public ResourceLocation createWithSuffix(Block p_125934_, String p_125935_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125936_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++        return this.template.createWithSuffix(p_125934_, p_125935_, this.mapping, p_125936_, fileHelper);
      }
  
-     @FunctionalInterface
--    public interface Provider {
-+    public interface Provider extends net.neoforged.neoforge.common.extensions.ITexturedModelExtension.Provider {
+     public static TexturedModel.Provider createDefault(Function<Block, TextureMapping> p_125943_, ModelTemplate p_125944_) {
+@@ -77,12 +_,24 @@
+     public interface Provider {
          TexturedModel get(Block p_125965_);
  
 +        // Neo: Use ExistingFileHelper sensitive version
 +        @Deprecated
          default ResourceLocation create(Block p_125957_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125958_) {
-             return this.get(p_125957_).create(p_125957_, p_125958_);
-         }
- 
+-            return this.get(p_125957_).create(p_125957_, p_125958_);
+-        }
+-
++            return this.create(p_125957_, p_125958_, null);
++        }
++
++        default ResourceLocation create(Block p_125957_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125958_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++            return this.get(p_125957_).create(p_125957_, p_125958_, fileHelper);
++        }
++
 +        // Neo: Use ExistingFileHelper sensitive version
 +        @Deprecated
          default ResourceLocation createWithSuffix(Block p_125953_, String p_125954_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125955_) {
-             return this.get(p_125953_).createWithSuffix(p_125953_, p_125954_, p_125955_);
+-            return this.get(p_125953_).createWithSuffix(p_125953_, p_125954_, p_125955_);
++            return this.createWithSuffix(p_125953_, p_125954_, p_125955_, null);
++        }
++
++        default ResourceLocation createWithSuffix(Block p_125953_, String p_125954_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125955_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++            return this.get(p_125953_).createWithSuffix(p_125953_, p_125954_, p_125955_, fileHelper);
          }
+ 
+         default TexturedModel.Provider updateTexture(Consumer<TextureMapping> p_125960_) {
