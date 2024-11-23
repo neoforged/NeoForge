@@ -13,6 +13,7 @@ import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.data.models.ModelProvider;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.data.models.model.TextureSlot;
+import net.minecraft.data.models.model.TexturedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -45,7 +46,12 @@ public interface VanillaDataGenTest {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 // generate simple cube model for our block
-                blockModels.createTrivialCube(block.value());
+                // blockModels.createTrivialCube(block.value());
+                // generates the same output as above but with added render type (cutout)
+                blockModels.createTrivialBlock(block.value(), TexturedModel.CUBE.withRenderType(ResourceLocation.withDefaultNamespace("cutout")));
+
+                // TODO: have all paths be auto namespaced with given mod id (if missing)
+                // TODO: auto prefix paths with model type folder with missing
 
                 // generate simple flat model for our item
                 // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.withRenderType(ResourceLocation.withDefaultNamespace("cutout")));

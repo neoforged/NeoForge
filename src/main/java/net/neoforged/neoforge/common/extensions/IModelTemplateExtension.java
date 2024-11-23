@@ -5,16 +5,32 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import java.util.function.Consumer;
+import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.data.models.model.ModelTemplate;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.vanilla.ModelTemplateWithCustomData;
 
 public interface IModelTemplateExtension {
     default ModelTemplate withRenderType(ResourceLocation renderType) {
-        return new ModelTemplateWithCustomData(self(), renderType);
+        return withCustomData(customData -> customData.renderType = renderType);
+    }
+
+    default ModelTemplate withAmbientOcclusion(boolean ambientOcclusion) {
+        return withCustomData(customData -> customData.ambientOcclusion = ambientOcclusion);
+    }
+
+    default ModelTemplate withGuiLight(BlockModel.GuiLight guiLight) {
+        return withCustomData(customData -> customData.guiLight = guiLight);
     }
 
     private ModelTemplate self() {
         return (ModelTemplate) this;
+    }
+
+    default ModelTemplate withCustomData(Consumer<ModelTemplateWithCustomData> mutator) {
+        var template = new ModelTemplateWithCustomData(self());
+        mutator.accept(template);
+        return template;
     }
 }
