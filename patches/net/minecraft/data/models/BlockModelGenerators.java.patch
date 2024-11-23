@@ -1,5 +1,14 @@
 --- a/net/minecraft/data/models/BlockModelGenerators.java
 +++ b/net/minecraft/data/models/BlockModelGenerators.java
+@@ -82,7 +_,7 @@
+ import net.minecraft.world.level.block.state.properties.Tilt;
+ import net.minecraft.world.level.block.state.properties.WallSide;
+ 
+-public class BlockModelGenerators {
++public class BlockModelGenerators implements net.neoforged.neoforge.common.extensions.IBlockModelGenerators {
+     public final Consumer<BlockStateGenerator> blockStateOutput;
+     public final BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput;
+     public final Consumer<Item> skippedAutoModelsOutput;
 @@ -187,32 +_,67 @@
      public static final Map<BlockModelGenerators.BookSlotModelCacheKey, ResourceLocation> CHISELED_BOOKSHELF_SLOT_MODEL_CACHE = new HashMap<>();
  
@@ -54,7 +63,7 @@
 +        return createMirroredColumnGenerator(p_176180_, p_176181_, p_176182_, p_176183_, null);
 +    }
 +
-+    @org.jetbrains.annotations.Nullable protected final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
++    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
 +
      public BlockModelGenerators(
 -        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_

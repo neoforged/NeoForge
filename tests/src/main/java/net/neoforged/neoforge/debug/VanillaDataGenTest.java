@@ -11,7 +11,9 @@ import net.minecraft.data.models.BlockModelGenerators;
 import net.minecraft.data.models.EquipmentModelProvider;
 import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.data.models.ModelProvider;
-import net.minecraft.data.models.model.ModelTemplates;
+import net.minecraft.data.models.model.ModelLocationUtils;
+import net.minecraft.data.models.model.TextureMapping;
+import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -19,6 +21,7 @@ import net.minecraft.world.item.equipment.EquipmentModel;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -47,7 +50,13 @@ public interface VanillaDataGenTest {
                 blockModels.createTrivialCube(block.value());
 
                 // generate simple flat model for our item
-                itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM);
+                // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM);
+
+                // generates the same output as generateFlatItem
+                // but running through custom model building instead of templates
+                itemModels.generateCustom(item.value(), builder -> builder
+                        .parent(new ModelFile.ExistingModelFile(ModelLocationUtils.decorateItemModelLocation("generated"), itemModels.fileHelper))
+                        .texture(TextureSlot.LAYER0, TextureMapping.getItemTexture(item.value())));
 
                 // It is possible to tell system to not generate a BlockItem model for a matching Block
                 // this allows generating your own custom Item model for your BlockItem

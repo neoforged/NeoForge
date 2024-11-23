@@ -1,10 +1,19 @@
 --- a/net/minecraft/data/models/ItemModelGenerators.java
 +++ b/net/minecraft/data/models/ItemModelGenerators.java
+@@ -24,7 +_,7 @@
+ import net.minecraft.world.item.equipment.EquipmentModels;
+ import net.minecraft.world.item.equipment.Equippable;
+ 
+-public class ItemModelGenerators {
++public class ItemModelGenerators implements net.neoforged.neoforge.common.extensions.IItemModelGenerators {
+     public static final ResourceLocation TRIM_TYPE_PREDICATE_ID = ResourceLocation.withDefaultNamespace("trim_type");
+     public static final List<ItemModelGenerators.TrimModelData> GENERATED_TRIM_MODELS = List.of(
+         new ItemModelGenerators.TrimModelData("quartz", 0.1F, Map.of()),
 @@ -39,23 +_,31 @@
          new ItemModelGenerators.TrimModelData("amethyst", 1.0F, Map.of())
      );
      public final BiConsumer<ResourceLocation, Supplier<JsonElement>> output;
-+    @org.jetbrains.annotations.Nullable protected final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
++    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
  
 -    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
 +    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
