@@ -6,7 +6,7 @@
  
 +    // Neo: Allow passing model builders into block state variants
 +    // Not to be used in conjunction with 'MODEL'
-+    public static final VariantProperty<net.neoforged.neoforge.client.model.generators.BlockModelBuilder> MODEL_BUILDER = new VariantProperty<>("model", net.neoforged.neoforge.client.model.generators.BlockModelBuilder::toJson);
++    public static final VariantProperty<net.neoforged.neoforge.client.model.generators.BlockModelBuilder> MODEL_BUILDER = new VariantProperty<>("model", model -> new JsonPrimitive(model.getLocation().toString()));
 +
      public static enum Rotation {
          R0(0),
