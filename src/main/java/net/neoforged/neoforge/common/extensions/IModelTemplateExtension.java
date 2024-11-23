@@ -7,8 +7,10 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.function.Consumer;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.data.models.model.ModelTemplate;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.common.data.vanilla.ModelTemplateWithCustomData;
 
 public interface IModelTemplateExtension {
@@ -28,11 +30,15 @@ public interface IModelTemplateExtension {
         return withCustomData(customData -> customData.guiLight = guiLight);
     }
 
+    default ModelTemplate withItemTransform(ItemDisplayContext displayContext, ItemTransform transform) {
+        return withCustomData(customData -> customData.transforms.put(displayContext, transform));
+    }
+
     private ModelTemplate self() {
         return (ModelTemplate) this;
     }
 
-    default ModelTemplate withCustomData(Consumer<ModelTemplateWithCustomData> mutator) {
+    private ModelTemplate withCustomData(Consumer<ModelTemplateWithCustomData> mutator) {
         var template = new ModelTemplateWithCustomData(self());
         mutator.accept(template);
         return template;

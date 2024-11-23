@@ -6,17 +6,22 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.function.BiConsumer;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.models.BlockModelGenerators;
 import net.minecraft.data.models.EquipmentModelProvider;
 import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.data.models.ModelProvider;
+import net.minecraft.data.models.model.ModelTemplates;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.data.models.model.TexturedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.EquipmentModel;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.block.Blocks;
@@ -25,6 +30,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.joml.Vector3f;
 
 @ForEachTest(groups = "vanilla_data_gen")
 public interface VanillaDataGenTest {
@@ -65,6 +71,24 @@ public interface VanillaDataGenTest {
                 // this allows generating your own custom Item model for your BlockItem
                 // blockModels.skipAutoItemBlock(block.value());
                 // itemModels.generateFlatItem(blockItem.value(), ModelTemplates.FLAT_HANDHELD_ITEM);
+
+                // custom model generation
+                // output should have all the below custom properties
+                // parent 'item/generated'
+                // and have texture slot 'layer0' set to 'item/diamond'
+                ModelTemplates.FLAT_ITEM
+                        .withItemTransform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, new ItemTransform(new Vector3f(75F, 45F, 0F), new Vector3f(0F, 3F, 4F), new Vector3f(.375F)))
+                        .withItemTransform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND, new ItemTransform(new Vector3f(75F, 45F, 0F), new Vector3f(0F, 3F, 4F), new Vector3f(.375F)))
+                        .withItemTransform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, new ItemTransform(new Vector3f(0F, 135F, 0F), new Vector3f(0F, 7F, 4F), new Vector3f(.4F)))
+                        .withItemTransform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND, new ItemTransform(new Vector3f(0F, 135F, 0F), new Vector3f(0F, 7F, 4F), new Vector3f(.4F)))
+                        .withItemTransform(ItemDisplayContext.HEAD, new ItemTransform(new Vector3f(0F), new Vector3f(0F, 30F, 4F), new Vector3f(1F)))
+                        .withItemTransform(ItemDisplayContext.GROUND, new ItemTransform(new Vector3f(0F), new Vector3f(0F, 6F, 4F), new Vector3f(.25F)))
+                        .withItemTransform(ItemDisplayContext.FIXED, new ItemTransform(new Vector3f(-90F, 0F, 0F), new Vector3f(0F, 0F, -23F), new Vector3f(1F)))
+                        .withItemTransform(ItemDisplayContext.GUI, new ItemTransform(new Vector3f(30F, -135F, 0F), new Vector3f(0F, 3F, 0F), new Vector3f(.5F)))
+                        .withRenderType("cutout")
+                        .withAmbientOcclusion(true)
+                        .withGuiLight(BlockModel.GuiLight.FRONT)
+                        .create(itemModels.modLocation("custom_model_generation"), TextureMapping.layer0(Items.DIAMOND), itemModels.output, fileHelper);
             }
         });
 

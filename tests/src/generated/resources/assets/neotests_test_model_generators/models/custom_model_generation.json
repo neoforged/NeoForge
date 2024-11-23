@@ -1,0 +1,127 @@
+{
+  "parent": "minecraft:item/generated",
+  "ambientocclusion": true,
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        0.0,
+        135.0,
+        0.0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "translation": [
+        0.0,
+        7.0,
+        4.0
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0.0,
+        135.0,
+        0.0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "translation": [
+        0.0,
+        7.0,
+        4.0
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        -90.0,
+        0.0,
+        0.0
+      ],
+      "translation": [
+        0.0,
+        0.0,
+        -23.0
+      ]
+    },
+    "ground": {
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ],
+      "translation": [
+        0.0,
+        6.0,
+        4.0
+      ]
+    },
+    "gui": {
+      "rotation": [
+        30.0,
+        -135.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "translation": [
+        0.0,
+        3.0,
+        0.0
+      ]
+    },
+    "head": {
+      "translation": [
+        0.0,
+        30.0,
+        4.0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        75.0,
+        45.0,
+        0.0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ],
+      "translation": [
+        0.0,
+        3.0,
+        4.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75.0,
+        45.0,
+        0.0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ],
+      "translation": [
+        0.0,
+        3.0,
+        4.0
+      ]
+    }
+  },
+  "gui_light": "front",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "layer0": "minecraft:item/diamond"
+  }
+}
