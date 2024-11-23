@@ -50,13 +50,14 @@ public interface VanillaDataGenTest {
                 blockModels.createTrivialCube(block.value());
 
                 // generate simple flat model for our item
-                // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM);
+                // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.withRenderType(ResourceLocation.withDefaultNamespace("cutout")));
 
                 // generates the same output as generateFlatItem
                 // but running through custom model building instead of templates
                 itemModels.generateCustom(item.value(), builder -> builder
                         .parent(new ModelFile.ExistingModelFile(ModelLocationUtils.decorateItemModelLocation("generated"), itemModels.fileHelper))
-                        .texture(TextureSlot.LAYER0, TextureMapping.getItemTexture(item.value())));
+                        .texture(TextureSlot.LAYER0, TextureMapping.getItemTexture(item.value()))
+                        .renderType("cutout"));
 
                 // It is possible to tell system to not generate a BlockItem model for a matching Block
                 // this allows generating your own custom Item model for your BlockItem

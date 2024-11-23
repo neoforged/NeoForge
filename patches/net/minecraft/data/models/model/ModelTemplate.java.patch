@@ -6,9 +6,9 @@
  
 -public class ModelTemplate {
 +public class ModelTemplate implements net.neoforged.neoforge.common.extensions.IModelTemplateExtension {
-     private final Optional<ResourceLocation> model;
-     private final Set<TextureSlot> requiredSlots;
-     private final Optional<String> suffix;
+     public final Optional<ResourceLocation> model;
+     public final Set<TextureSlot> requiredSlots;
+     public final Optional<String> suffix;
 @@ -29,22 +_,30 @@
          return ModelLocationUtils.getModelLocation(p_309103_, this.suffix.orElse(""));
      }
@@ -49,22 +49,3 @@
      public JsonObject createBaseTemplate(ResourceLocation p_266830_, Map<TextureSlot, ResourceLocation> p_266912_) {
          JsonObject jsonobject = new JsonObject();
          this.model.ifPresent(p_176461_ -> jsonobject.addProperty("parent", p_176461_.toString()));
-@@ -75,6 +_,18 @@
-     private Map<TextureSlot, ResourceLocation> createMap(TextureMapping p_125609_) {
-         return Streams.concat(this.requiredSlots.stream(), p_125609_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_125609_::get));
-     }
-+
-+    // region: NeoForge Additions
-+    @Override
-+    public Optional<ResourceLocation> model() {
-+        return model;
-+    }
-+
-+    @Override
-+    public Optional<String> suffix() {
-+        return suffix;
-+    }
-+    // endregion
- 
-     public interface JsonFactory {
-         JsonObject create(ResourceLocation p_266987_, Map<TextureSlot, ResourceLocation> p_266933_);

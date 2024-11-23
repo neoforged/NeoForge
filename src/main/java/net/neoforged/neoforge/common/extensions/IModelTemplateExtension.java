@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import net.minecraft.data.models.model.ModelLocationUtils;
@@ -20,15 +19,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.ModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.vanilla.ModelTemplateWithCustomData;
 import org.jetbrains.annotations.Nullable;
 
 public interface IModelTemplateExtension {
     default ResourceLocation create(Block block, TextureMapping textures, BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput, @Nullable ExistingFileHelper fileHelper) {
-        return create(ModelLocationUtils.getModelLocation(block, suffix().orElse("")), textures, modelOutput, fileHelper);
+        return create(ModelLocationUtils.getModelLocation(block, self().suffix.orElse("")), textures, modelOutput, fileHelper);
     }
 
     default ResourceLocation createWithSuffix(Block block, String suffix, TextureMapping textures, BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput, @Nullable ExistingFileHelper fileHelper) {
-        return create(ModelLocationUtils.getModelLocation(block, suffix + suffix().orElse("")), textures, modelOutput, fileHelper);
+        return create(ModelLocationUtils.getModelLocation(block, suffix + self().suffix.orElse("")), textures, modelOutput, fileHelper);
     }
 
     default ResourceLocation createWithOverride(Block block, String suffix, TextureMapping textures, BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput, @Nullable ExistingFileHelper fileHelper) {
@@ -42,7 +42,7 @@ public interface IModelTemplateExtension {
     default JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap, @Nullable ExistingFileHelper fileHelper) {
         var modelJson = new JsonObject();
 
-        model().ifPresent(parentPath -> {
+        self().model.ifPresent(parentPath -> {
             modelJson.addProperty("parent", parentPath.toString());
 
             if (fileHelper != null) {
@@ -67,12 +67,11 @@ public interface IModelTemplateExtension {
         return modelJson;
     }
 
+    default ModelTemplate withRenderType(ResourceLocation renderType) {
+        return new ModelTemplateWithCustomData(self()).withRenderType(renderType);
+    }
+
     private ModelTemplate self() {
         return (ModelTemplate) this;
     }
-
-    // TODO: Potentially replace these with AT
-    Optional<ResourceLocation> model();
-
-    Optional<String> suffix();
 }
