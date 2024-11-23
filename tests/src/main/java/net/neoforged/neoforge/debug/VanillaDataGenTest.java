@@ -11,7 +11,6 @@ import net.minecraft.data.models.BlockModelGenerators;
 import net.minecraft.data.models.EquipmentModelProvider;
 import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.data.models.ModelProvider;
-import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.data.models.model.TextureMapping;
 import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +20,6 @@ import net.minecraft.world.item.equipment.EquipmentModel;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -55,7 +53,7 @@ public interface VanillaDataGenTest {
                 // generates the same output as generateFlatItem
                 // but running through custom model building instead of templates
                 itemModels.generateCustom(item.value(), builder -> builder
-                        .parent(new ModelFile.ExistingModelFile(ModelLocationUtils.decorateItemModelLocation("generated"), itemModels.fileHelper))
+                        .parent(itemModels.getExistingModel("generated"))
                         .texture(TextureSlot.LAYER0, TextureMapping.getItemTexture(item.value()))
                         .renderType("cutout"));
 

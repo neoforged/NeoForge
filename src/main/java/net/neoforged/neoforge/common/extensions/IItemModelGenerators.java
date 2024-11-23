@@ -12,6 +12,7 @@ import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public interface IItemModelGenerators {
     default ItemModelBuilder generateCustom(String modelPath, Consumer<ItemModelBuilder> action) {
@@ -24,6 +25,13 @@ public interface IItemModelGenerators {
 
     default ItemModelBuilder generateCustom(Item item, Consumer<ItemModelBuilder> action) {
         return generateCustom(ModelLocationUtils.getModelLocation(item), action);
+    }
+
+    default ModelFile getExistingModel(String modelPath) {
+        // ExistingFileHelper is nullable for backwards compat with vanilla data gen
+        // should never/rarely ever be null in modded data gen
+        var fileHelper = Objects.requireNonNull(self().fileHelper, "Looking up models requires a nonnull ExistingFileHelper");
+        return new ModelFile.ExistingModelFile(ModelLocationUtils.decorateItemModelLocation(modelPath), fileHelper);
     }
 
     private ItemModelBuilder generateCustom(ResourceLocation modelPath, Consumer<ItemModelBuilder> action) {

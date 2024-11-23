@@ -1,11 +1,15 @@
 --- a/net/minecraft/data/models/ModelProvider.java
 +++ b/net/minecraft/data/models/ModelProvider.java
-@@ -27,10 +_,25 @@
- public class ModelProvider implements DataProvider {
+@@ -24,13 +_,28 @@
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.level.block.Block;
+ 
+-public class ModelProvider implements DataProvider {
++public class ModelProvider implements DataProvider, net.neoforged.neoforge.common.extensions.IModelProviderExtension {
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider modelPathProvider;
 +    private final String modId;
-+    @org.jetbrains.annotations.Nullable private final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
++    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
  
 -    public ModelProvider(PackOutput p_252226_) {
 +    public ModelProvider(PackOutput p_252226_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
