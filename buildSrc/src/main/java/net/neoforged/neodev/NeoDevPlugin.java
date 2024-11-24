@@ -3,9 +3,16 @@ package net.neoforged.neodev;
 import net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin;
 import net.neoforged.moddevgradle.internal.NeoDevFacade;
 import net.neoforged.moddevgradle.tasks.JarJar;
+import net.neoforged.neodev.e2e.InstallProductionClient;
+import net.neoforged.neodev.e2e.InstallProductionServer;
+import net.neoforged.neodev.e2e.RunProductionClient;
+import net.neoforged.neodev.e2e.RunProductionServer;
+import net.neoforged.neodev.e2e.TestProductionClient;
+import net.neoforged.neodev.e2e.TestProductionServer;
 import net.neoforged.neodev.installer.CreateArgsFile;
 import net.neoforged.neodev.installer.CreateInstallerProfile;
 import net.neoforged.neodev.installer.CreateLauncherProfile;
+import net.neoforged.neodev.installer.IdentifiedFile;
 import net.neoforged.neodev.installer.InstallerProcessor;
 import net.neoforged.neodev.utils.DependencyUtils;
 import net.neoforged.nfrtgradle.CreateMinecraftArtifacts;
@@ -32,6 +39,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class NeoDevPlugin implements Plugin<Project> {
     static final String GROUP = "neoforge development";
@@ -404,6 +412,17 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.dependsOn(userdevJar);
             task.dependsOn(sourcesJarProvider);
         });
+
+        // Set up E2E testing of the produced installer
+        setupProductionClientTest(
+                project,
+                configurations,
+                downloadAssets,
+                installerJar,
+                minecraftVersion,
+                neoForgeVersion
+        );
+        setupProductionServerTest(project, installerJar);
     }
 
     private static TaskProvider<ApplyAccessTransformer> configureAccessTransformer(
@@ -526,6 +545,65 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getSourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("base-sources.jar")));
             task.getResourcesArtifact().set(minecraftArtifactsDir.map(dir -> dir.file("minecraft-resources.jar")));
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(version -> "net.neoforged:neoform:" + version + "@zip"));
+        });
+    }
+
+    private void setupProductionClientTest(Project project,
+                                      NeoDevConfigurations configurations,
+                                      TaskProvider<? extends DownloadAssets> downloadAssets,
+                                      TaskProvider<? extends AbstractArchiveTask> installer,
+                                      Provider<String> minecraftVersion,
+                                      Provider<String> neoForgeVersion) {
+
+        var installClient = project.getTasks().register("installProductionClient", InstallProductionClient.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.setDescription("Runs the installer produced by this build and installs a production client.");
+            task.getInstaller().from(installer.flatMap(AbstractArchiveTask::getArchiveFile));
+
+            var destinationDir = project.getLayout().getBuildDirectory().dir("production-client");
+            task.getInstallationDir().set(destinationDir);
+        });
+
+        Consumer<RunProductionClient> configureRunProductionClient = task -> {
+            task.getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(project, configurations.neoFormClasspath));
+            task.getLibraryFiles().addAll(IdentifiedFile.listFromConfiguration(project, configurations.launcherProfileClasspath));
+            task.getAssetPropertiesFile().set(downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile));
+            task.getMinecraftVersion().set(minecraftVersion);
+            task.getNeoForgeVersion().set(neoForgeVersion);
+            task.getInstallationDir().set(installClient.flatMap(InstallProductionClient::getInstallationDir));
+        };
+        project.getTasks().register("runProductionClient", RunProductionClient.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.setDescription("Runs the production client installed by installProductionClient.");
+            configureRunProductionClient.accept(task);
+        });
+        project.getTasks().register("testProductionClient", TestProductionClient.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.setDescription("Tests the production client installed by installProductionClient.");
+            configureRunProductionClient.accept(task);
+        });
+    }
+
+    private void setupProductionServerTest(Project project, TaskProvider<? extends AbstractArchiveTask> installer) {
+        var installServer = project.getTasks().register("installProductionServer", InstallProductionServer.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.setDescription("Runs the installer produced by this build and installs a production server.");
+            task.getInstaller().from(installer.flatMap(AbstractArchiveTask::getArchiveFile));
+
+            var destinationDir = project.getLayout().getBuildDirectory().dir("production-server");
+            task.getInstallationDir().set(destinationDir);
+        });
+
+        project.getTasks().register("runProductionServer", RunProductionServer.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.setDescription("Runs the production server installed by installProductionServer.");
+            task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
+        });
+
+        project.getTasks().register("testProductionServer", TestProductionServer.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.setDescription("Tests the production server installed by installProductionServer.");
+            task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });
     }
 }
