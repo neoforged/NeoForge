@@ -13,21 +13,19 @@
          return createRotatedVariant(p_176180_, p_176181_, resourcelocation).with(createRotatedPillar());
      }
  
--    public BlockModelGenerators(
--        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
 +    public final String modId;
 +
 +    // Neo: Use mod id sensitive version
 +    @Deprecated
-+    public BlockModelGenerators(
-+            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
-+    ) {
+     public BlockModelGenerators(
+         Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
+     ) {
 +        this(p_124481_, p_124482_, p_124483_, ResourceLocation.DEFAULT_NAMESPACE);
 +    }
 +
 +    public BlockModelGenerators(
-+            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_, String modId
-     ) {
++        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_, String modId
++    ) {
          this.blockStateOutput = p_124481_;
          this.modelOutput = p_124482_;
          this.skippedAutoModelsOutput = p_124483_;
