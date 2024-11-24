@@ -13,20 +13,19 @@
          new ItemModelGenerators.TrimModelData("amethyst", 1.0F, Map.of())
      );
      public final BiConsumer<ResourceLocation, Supplier<JsonElement>> output;
-+    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
 +    public final String modId;
++    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
  
--    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
-+    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper, String modId) {
-         this.output = p_125082_;
-+        this.fileHelper = fileHelper;
-+        this.modId = modId;
-+    }
-+
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
-+    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
-+        this(p_125082_, null, ResourceLocation.DEFAULT_NAMESPACE);
+     public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_) {
++        this(p_125082_, ResourceLocation.DEFAULT_NAMESPACE, null);
++    }
++
++    public ItemModelGenerators(BiConsumer<ResourceLocation, Supplier<JsonElement>> p_125082_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
+         this.output = p_125082_;
++        this.modId = modId;
++        this.fileHelper = fileHelper;
      }
  
      public void generateFlatItem(Item p_125089_, ModelTemplate p_125090_) {

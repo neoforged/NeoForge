@@ -55,6 +55,8 @@
          return createRotatedVariant(p_176180_, p_176181_, resourcelocation).with(createRotatedPillar());
      }
  
+-    public BlockModelGenerators(
+-        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
 +    public static BlockStateGenerator createMirroredColumnGenerator(
@@ -63,26 +65,25 @@
 +        return createMirroredColumnGenerator(p_176180_, p_176181_, p_176182_, p_176183_, null);
 +    }
 +
-+    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
 +    public final String modId;
-+
-     public BlockModelGenerators(
--        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
-+            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper, String modId
-     ) {
-         this.blockStateOutput = p_124481_;
-         this.modelOutput = p_124482_;
-         this.skippedAutoModelsOutput = p_124483_;
-+        this.fileHelper = fileHelper;
-+        this.modId = modId;
-+    }
++    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
 +
 +    // Neo: Use ExistingFileHelper sensitive version
 +    @Deprecated
 +    public BlockModelGenerators(
 +            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
 +    ) {
-+        this(p_124481_, p_124482_, p_124483_, null, ResourceLocation.DEFAULT_NAMESPACE);
++        this(p_124481_, p_124482_, p_124483_, ResourceLocation.DEFAULT_NAMESPACE, null);
++    }
++
++    public BlockModelGenerators(
++            Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper
+     ) {
+         this.blockStateOutput = p_124481_;
+         this.modelOutput = p_124482_;
+         this.skippedAutoModelsOutput = p_124483_;
++        this.modId = modId;
++        this.fileHelper = fileHelper;
      }
  
      public void skipAutoItemBlock(Block p_124525_) {

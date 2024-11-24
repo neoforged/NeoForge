@@ -11,18 +11,17 @@
 +    public final String modId;
 +    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
  
--    public ModelProvider(PackOutput p_252226_) {
++    // NeoForge: Use the above constructor passing in their mod id
++    @Deprecated
+     public ModelProvider(PackOutput p_252226_) {
++        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE, null);
++    }
++
 +    public ModelProvider(PackOutput p_252226_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
          this.blockStatePathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
          this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +        this.modId = modId;
 +        this.fileHelper = fileHelper;
-+    }
-+
-+    // NeoForge: Use the above constructor passing in their mod id
-+    @Deprecated
-+    public ModelProvider(PackOutput p_252226_) {
-+        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE, null);
 +    }
 +
 +    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
@@ -42,7 +41,7 @@
          Consumer<Item> consumer1 = set::add;
 -        new BlockModelGenerators(consumer, biconsumer, consumer1).run();
 -        new ItemModelGenerators(biconsumer).run();
-+        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.fileHelper, this.modId), new ItemModelGenerators(biconsumer, this.fileHelper, this.modId));
++        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.modId, this.fileHelper), new ItemModelGenerators(biconsumer, this.modId, this.fileHelper));
          List<Block> list = BuiltInRegistries.BLOCK
              .entrySet()
              .stream()
