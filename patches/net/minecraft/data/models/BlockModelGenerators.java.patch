@@ -9,41 +9,12 @@
      public final Consumer<BlockStateGenerator> blockStateOutput;
      public final BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput;
      public final Consumer<Item> skippedAutoModelsOutput;
-@@ -187,32 +_,40 @@
-     public static final Map<BlockModelGenerators.BookSlotModelCacheKey, ResourceLocation> CHISELED_BOOKSHELF_SLOT_MODEL_CACHE = new HashMap<>();
- 
-     public static BlockStateGenerator createMirroredCubeGenerator(
--        Block p_176110_, ResourceLocation p_176111_, TextureMapping p_176112_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_176113_
-+            Block p_176110_, ResourceLocation p_176111_, TextureMapping p_176112_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_176113_
-     ) {
--        ResourceLocation resourcelocation = ModelTemplates.CUBE_MIRRORED_ALL.create(p_176110_, p_176112_, p_176113_);
--        return createRotatedVariant(p_176110_, p_176111_, resourcelocation);
-+        return createMirroredCubeGenerator(p_176110_, p_176111_, p_176112_, p_176113_);
+@@ -207,12 +_,23 @@
+         return createRotatedVariant(p_176180_, p_176181_, resourcelocation).with(createRotatedPillar());
      }
  
-     public static BlockStateGenerator createNorthWestMirroredCubeGenerator(
--        Block p_236317_, ResourceLocation p_236318_, TextureMapping p_236319_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_236320_
-+            Block p_236317_, ResourceLocation p_236318_, TextureMapping p_236319_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_236320_
-     ) {
--        ResourceLocation resourcelocation = ModelTemplates.CUBE_NORTH_WEST_MIRRORED_ALL.create(p_236317_, p_236319_, p_236320_);
--        return createSimpleBlock(p_236317_, resourcelocation);
-+        return createNorthWestMirroredCubeGenerator(p_236317_, p_236318_, p_236319_, p_236320_);
-     }
- 
-     public static BlockStateGenerator createMirroredColumnGenerator(
--        Block p_176180_, ResourceLocation p_176181_, TextureMapping p_176182_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_176183_
--    ) {
--        ResourceLocation resourcelocation = ModelTemplates.CUBE_COLUMN_MIRRORED.create(p_176180_, p_176182_, p_176183_);
--        return createRotatedVariant(p_176180_, p_176181_, resourcelocation).with(createRotatedPillar());
--    }
--
 -    public BlockModelGenerators(
 -        Consumer<BlockStateGenerator> p_124481_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_124482_, Consumer<Item> p_124483_
-+            Block p_176180_, ResourceLocation p_176181_, TextureMapping p_176182_, BiConsumer<ResourceLocation, Supplier<JsonElement>> p_176183_
-+    ) {
-+        return createMirroredColumnGenerator(p_176180_, p_176181_, p_176182_, p_176183_);
-+    }
-+
 +    public final String modId;
 +
 +    // Neo: Use mod id sensitive version
