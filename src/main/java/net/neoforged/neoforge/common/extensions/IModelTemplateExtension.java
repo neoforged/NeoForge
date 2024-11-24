@@ -38,7 +38,7 @@ public interface IModelTemplateExtension {
         return (ModelTemplate) this;
     }
 
-    private ModelTemplate withCustomData(Consumer<ModelTemplateWithCustomData> mutator) {
+    default ModelTemplate withCustomData(Consumer<ModelTemplateWithCustomData> mutator) {
         var template = new ModelTemplateWithCustomData(self());
         mutator.accept(template);
         return template;
