@@ -25,7 +25,7 @@ neoDev {
         server {
             server()
         }
-        // Generated files are in run/generated
+        // Generated files are in run/data/generated
         data {
             data()
             programArgument "--all"

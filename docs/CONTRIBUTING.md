@@ -19,8 +19,11 @@ Contributing to NeoForge
 8. Modify the patched Minecraft sources in `projects/neoforge/src/main/java` as needed. The unmodified sources are available in `projects/base/src/main/java` for your reference. Do not modify these.
 9. Test your changes
    - Run the game (Runs are available in the IDE)
-   - Run `gradlew :tests:runGameTestServer` or `Tests: GameTestServer` from IDE
-   - Run `gradlew :tests:runGameTestClient` or `Tests: GameTestClient` from IDE
+     - Runs starting with `base -` run Vanilla without NeoForge or its patches.
+     - Runs starting with `neoforge -` run NeoForge.
+     - Runs starting with `tests -` run NeoForge along with the test mods in the `tests` project.
+   - Run `gradlew :tests:runGameTestServer` or `tests - GameTestServer` from IDE
+   - Run `gradlew :tests:runClient` or `tests - Client` from IDE
    - If possible, write an automated test under the tests project. See [NEOGAMETESTS.md](NEOGAMETESTS.md) for more info.
 10. Run `gradlew genPatches` to generate patch-files from the patched sources
 11. Run `gradlew applyAllFormatting` to automatically format sources
