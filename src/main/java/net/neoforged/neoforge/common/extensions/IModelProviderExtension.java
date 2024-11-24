@@ -22,7 +22,9 @@ public interface IModelProviderExtension {
         // ExistingFileHelper is nullable for backwards compat with vanilla data gen
         // should never/rarely ever be null in modded data gen
         var fileHelper = Objects.requireNonNull(self().fileHelper, "Looking up models requires a nonnull ExistingFileHelper");
-        return new ModelFile.ExistingModelFile(modelPath, fileHelper);
+        var model = new ModelFile.ExistingModelFile(modelPath, fileHelper);
+        model.assertExistence();
+        return model;
     }
 
     default ResourceLocation modLocation(String modelPath) {

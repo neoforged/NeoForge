@@ -37,7 +37,9 @@ public interface IItemModelGenerators {
         // ExistingFileHelper is nullable for backwards compat with vanilla data gen
         // should never/rarely ever be null in modded data gen
         var fileHelper = Objects.requireNonNull(self().fileHelper, "Looking up models requires a nonnull ExistingFileHelper");
-        return new ModelFile.ExistingModelFile(modelPath.withPath(IItemModelGenerators::appendItemFolder), fileHelper);
+        var model = new ModelFile.ExistingModelFile(modelPath.withPath(IItemModelGenerators::appendItemFolder), fileHelper);
+        model.assertExistence();
+        return model;
     }
 
     default ItemModelBuilder generateCustom(ResourceLocation modelPath, Consumer<ItemModelBuilder> action) {

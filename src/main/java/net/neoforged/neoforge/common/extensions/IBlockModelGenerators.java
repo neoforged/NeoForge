@@ -37,7 +37,9 @@ public interface IBlockModelGenerators {
         // ExistingFileHelper is nullable for backwards compat with vanilla data gen
         // should never/rarely ever be null in modded data gen
         var fileHelper = Objects.requireNonNull(self().fileHelper, "Looking up models requires a nonnull ExistingFileHelper");
-        return new ModelFile.ExistingModelFile(modelPath.withPath(IBlockModelGenerators::appendBlockFolder), fileHelper);
+        var model = new ModelFile.ExistingModelFile(modelPath.withPath(IBlockModelGenerators::appendBlockFolder), fileHelper);
+        model.assertExistence();
+        return model;
     }
 
     default BlockModelBuilder generateCustom(ResourceLocation modelPath, Consumer<BlockModelBuilder> action) {
