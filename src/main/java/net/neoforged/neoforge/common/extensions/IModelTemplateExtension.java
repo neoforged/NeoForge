@@ -15,7 +15,7 @@ import net.neoforged.neoforge.common.data.vanilla.ModelTemplateWithCustomData;
 
 public interface IModelTemplateExtension {
     default ModelTemplate withRenderType(String renderType) {
-        return withRenderType(ResourceLocation.withDefaultNamespace(renderType));
+        return withRenderType(ResourceLocation.parse(renderType));
     }
 
     default ModelTemplate withRenderType(ResourceLocation renderType) {
