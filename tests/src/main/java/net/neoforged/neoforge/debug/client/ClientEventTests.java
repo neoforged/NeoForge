@@ -146,7 +146,7 @@ public class ClientEventTests {
         var rotationKey = new ContextKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "rotation"));
         var numRenderAttachmentKey = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "times_to_render"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
-        test.eventListeners().mod().addListener((RegisterRenderStateModifiersEvent event) -> {
+        test.framework().modEventBus().addListener((RegisterRenderStateModifiersEvent event) -> {
             event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
                 renderState.setRenderData(rotationKey, 45f);
             });
