@@ -5,43 +5,25 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.Objects;
-import java.util.function.Consumer;
 import net.minecraft.data.models.ItemModelGenerators;
-import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.ModelProvider;
 import org.apache.commons.lang3.StringUtils;
 
 public interface IItemModelGenerators {
-    default ItemModelBuilder generateCustom(String modelPath, Consumer<ItemModelBuilder> action) {
+    // TODO: reimplement these
+    /*default ItemModelBuilder generateCustom(String modelPath, Consumer<ItemModelBuilder> action) {
         return generateCustom(modLocation(modelPath), action);
     }
-
+    
     default ItemModelBuilder generateCustom(Item item, String suffix, Consumer<ItemModelBuilder> action) {
         return generateCustom(ModelLocationUtils.getModelLocation(item, suffix), action);
     }
-
+    
     default ItemModelBuilder generateCustom(Item item, Consumer<ItemModelBuilder> action) {
         return generateCustom(ModelLocationUtils.getModelLocation(item), action);
     }
-
-    default ModelFile getExistingModel(String modelPath) {
-        return getExistingModel(mcLocation(modelPath));
-    }
-
-    default ModelFile getExistingModel(ResourceLocation modelPath) {
-        // ExistingFileHelper is nullable for backwards compat with vanilla data gen
-        // should never/rarely ever be null in modded data gen
-        var fileHelper = Objects.requireNonNull(self().fileHelper, "Looking up models requires a nonnull ExistingFileHelper");
-        var model = new ModelFile.ExistingModelFile(modelPath.withPath(IItemModelGenerators::appendItemFolder), fileHelper);
-        model.assertExistence();
-        return model;
-    }
-
+    
     default ItemModelBuilder generateCustom(ResourceLocation modelPath, Consumer<ItemModelBuilder> action) {
         // ExistingFileHelper is nullable for backwards compat with vanilla data gen
         // should never/rarely ever be null in modded data gen
@@ -51,8 +33,7 @@ public interface IItemModelGenerators {
         action.accept(builder);
         self().output.accept(corrected, builder::toJson);
         return builder;
-    }
-
+    }*/
     default ResourceLocation modLocation(String modelPath) {
         return ResourceLocation.fromNamespaceAndPath(self().modId, modelPath).withPath(IItemModelGenerators::appendItemFolder);
     }

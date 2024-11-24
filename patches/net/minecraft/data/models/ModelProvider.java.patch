@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/models/ModelProvider.java
 +++ b/net/minecraft/data/models/ModelProvider.java
-@@ -24,13 +_,28 @@
+@@ -24,13 +_,26 @@
  import net.minecraft.world.item.Item;
  import net.minecraft.world.level.block.Block;
  
@@ -9,19 +9,17 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider modelPathProvider;
 +    public final String modId;
-+    @org.jetbrains.annotations.Nullable public final net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper;
  
 +    // NeoForge: Use the above constructor passing in their mod id
 +    @Deprecated
      public ModelProvider(PackOutput p_252226_) {
-+        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE, null);
++        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE);
 +    }
 +
-+    public ModelProvider(PackOutput p_252226_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++    public ModelProvider(PackOutput p_252226_, String modId) {
          this.blockStatePathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
          this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +        this.modId = modId;
-+        this.fileHelper = fileHelper;
 +    }
 +
 +    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
@@ -30,18 +28,13 @@
      }
  
      @Override
-@@ -50,21 +_,23 @@
-             if (supplier != null) {
-                 throw new IllegalStateException("Duplicate model definition for " + p_339374_);
+@@ -52,19 +_,18 @@
              }
-+            if(fileHelper != null) {
-+                fileHelper.trackGenerated(p_339374_, net.neoforged.neoforge.client.model.generators.ModelProvider.MODEL);
-+            }
          };
          Consumer<Item> consumer1 = set::add;
 -        new BlockModelGenerators(consumer, biconsumer, consumer1).run();
 -        new ItemModelGenerators(biconsumer).run();
-+        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.modId, this.fileHelper), new ItemModelGenerators(biconsumer, this.modId, this.fileHelper));
++        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.modId), new ItemModelGenerators(biconsumer, this.modId));
          List<Block> list = BuiltInRegistries.BLOCK
              .entrySet()
              .stream()

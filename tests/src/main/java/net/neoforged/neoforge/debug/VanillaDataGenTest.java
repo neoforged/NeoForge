@@ -15,7 +15,6 @@ import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.data.models.ModelProvider;
 import net.minecraft.data.models.model.ModelTemplates;
 import net.minecraft.data.models.model.TextureMapping;
-import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.data.models.model.TexturedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -48,7 +47,7 @@ public interface VanillaDataGenTest {
         var block = reg.blocks().registerSimpleBlock("vanilla_model_gen_block", BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
         var blockItem = reg.items().registerSimpleBlockItem(block);
 
-        reg.addProvider(event -> new ModelProvider(event.getGenerator().getPackOutput(), reg.modId(), event.getExistingFileHelper()) {
+        reg.addProvider(event -> new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 // generate simple cube model for our block
@@ -57,15 +56,15 @@ public interface VanillaDataGenTest {
                 blockModels.createTrivialBlock(block.value(), TexturedModel.CUBE.withRenderType("cutout"));
 
                 // generate simple flat model for our item
-                // itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.withRenderType("cutout"));
+                itemModels.generateFlatItem(item.value(), ModelTemplates.FLAT_ITEM.withRenderType("cutout"));
 
                 // generates the same output as generateFlatItem
                 // but running through custom model building instead of templates
-                itemModels.generateCustom(item.value(), builder -> builder
+                /*itemModels.generateCustom(item.value(), builder -> builder
                         // .parent(getExistingModel("item/generated"))
                         .parent(itemModels.getExistingModel("generated"))
                         .texture(TextureSlot.LAYER0, TextureMapping.getItemTexture(item.value()))
-                        .renderType("cutout"));
+                        .renderType("cutout"));*/
 
                 // It is possible to tell system to not generate a BlockItem model for a matching Block
                 // this allows generating your own custom Item model for your BlockItem
@@ -88,11 +87,11 @@ public interface VanillaDataGenTest {
                         .withRenderType("cutout")
                         .withAmbientOcclusion(true)
                         .withGuiLight(BlockModel.GuiLight.FRONT)
-                        .create(itemModels.modLocation("custom_model_generation"), TextureMapping.layer0(Items.DIAMOND), itemModels.output, fileHelper);
+                        .create(itemModels.modLocation("custom_model_generation"), TextureMapping.layer0(Items.DIAMOND), itemModels.output);
             }
         });
 
-        reg.addProvider(event -> new EquipmentModelProvider(event.getGenerator().getPackOutput(), event.getExistingFileHelper()) {
+        reg.addProvider(event -> new EquipmentModelProvider(event.getGenerator().getPackOutput()) {
             @Override
             protected void registerModels(BiConsumer<ResourceLocation, EquipmentModel> consumer) {
                 // generate model which switches out the texture when worn

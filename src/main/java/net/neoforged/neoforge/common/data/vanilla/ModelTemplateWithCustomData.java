@@ -15,7 +15,6 @@ import net.minecraft.data.models.model.ModelTemplate;
 import net.minecraft.data.models.model.TextureSlot;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -40,8 +39,8 @@ public class ModelTemplateWithCustomData extends ModelTemplate {
     }
 
     @Override
-    public JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap, @Nullable ExistingFileHelper fileHelper) {
-        var json = super.createBaseTemplate(modelPath, textureMap, fileHelper);
+    public JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap) {
+        var json = super.createBaseTemplate(modelPath, textureMap);
 
         if (renderType != null) {
             json.addProperty("render_type", renderType.toString());
@@ -62,11 +61,6 @@ public class ModelTemplateWithCustomData extends ModelTemplate {
         }
 
         return json;
-    }
-
-    @Override
-    public JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap) {
-        return createBaseTemplate(modelPath, textureMap, null);
     }
 
     public static JsonObject serializeItemTransform(ItemTransform transform) {
