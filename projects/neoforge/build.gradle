@@ -138,6 +138,9 @@ dependencies {
 
 neoDev {
     runs {
+        configureEach {
+            gameDirectory = layout.projectDir.dir("run/$name")
+        }
         client {
             client()
         }
