@@ -55,7 +55,7 @@ public class ModelTemplateWithCustomData extends ModelTemplate {
             json.addProperty("gui_light", guiLight.getSerializedName());
         }
 
-        var transformsJson = toJson(transforms);
+        var transformsJson = serializeItemTransforms(transforms);
 
         if (!transformsJson.isEmpty()) {
             json.add("display", transformsJson);
@@ -69,30 +69,30 @@ public class ModelTemplateWithCustomData extends ModelTemplate {
         return createBaseTemplate(modelPath, textureMap, null);
     }
 
-    public static JsonObject toJson(ItemTransform transform) {
+    public static JsonObject serializeItemTransform(ItemTransform transform) {
         var json = new JsonObject();
         var hasRightRotation = !transform.rightRotation.equals(ItemTransform.Deserializer.DEFAULT_ROTATION);
 
         if (!transform.translation.equals(ItemTransform.Deserializer.DEFAULT_TRANSLATION))
-            json.add("translation", toJson(transform.translation));
+            json.add("translation", serializeVec3(transform.translation));
         if (!transform.rotation.equals(ItemTransform.Deserializer.DEFAULT_ROTATION))
-            json.add(hasRightRotation ? "left_rotation" : "rotation", toJson(transform.rotation));
+            json.add(hasRightRotation ? "left_rotation" : "rotation", serializeVec3(transform.rotation));
         if (!transform.scale.equals(ItemTransform.Deserializer.DEFAULT_SCALE))
-            json.add("scale", toJson(transform.scale));
+            json.add("scale", serializeVec3(transform.scale));
         if (hasRightRotation)
-            json.add("right_rotation", toJson(transform.rightRotation));
+            json.add("right_rotation", serializeVec3(transform.rightRotation));
 
         return json;
     }
 
-    public static JsonObject toJson(Map<ItemDisplayContext, ItemTransform> transforms) {
+    public static JsonObject serializeItemTransforms(Map<ItemDisplayContext, ItemTransform> transforms) {
         var json = new JsonObject();
 
         transforms.forEach((context, transform) -> {
             if (transform.equals(ItemTransform.NO_TRANSFORM))
                 return;
 
-            var transformJson = toJson(transform);
+            var transformJson = serializeItemTransform(transform);
 
             if (!transformJson.isEmpty())
                 json.add(context.getSerializedName(), transformJson);
@@ -101,7 +101,7 @@ public class ModelTemplateWithCustomData extends ModelTemplate {
         return json;
     }
 
-    public static JsonArray toJson(Vector3f vec) {
+    public static JsonArray serializeVec3(Vector3f vec) {
         var array = new JsonArray();
         array.add(vec.x());
         array.add(vec.y());
