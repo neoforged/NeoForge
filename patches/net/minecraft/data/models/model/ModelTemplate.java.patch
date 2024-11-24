@@ -72,7 +72,7 @@
      }
  
      public ResourceLocation create(
-@@ -60,12 +_,30 @@
+@@ -60,7 +_,18 @@
          return p_266990_;
      }
  
@@ -83,25 +83,11 @@
 +    }
 +
 +    public JsonObject createBaseTemplate(ResourceLocation p_266830_, Map<TextureSlot, ResourceLocation> p_266912_, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper fileHelper) {
++        if (fileHelper != null) {
++            this.model.ifPresent(parent -> com.google.common.base.Preconditions.checkState(fileHelper.exists(parent, net.neoforged.neoforge.client.model.generators.ModelProvider.MODEL), "Model at %s does not exist", parent));
++            p_266912_.forEach((slot, path) -> com.google.common.base.Preconditions.checkState(fileHelper.exists(path, net.neoforged.neoforge.client.model.generators.ModelProvider.TEXTURE), "Texture %s does not exist in any known resource pack", path));
++        }
++
          JsonObject jsonobject = new JsonObject();
--        this.model.ifPresent(p_176461_ -> jsonobject.addProperty("parent", p_176461_.toString()));
-+        this.model.ifPresent(p_176461_ -> {
-+            jsonobject.addProperty("parent", p_176461_.toString());
-+
-+            if (fileHelper != null) {
-+                com.google.common.base.Preconditions.checkState(fileHelper.exists(p_176461_, net.neoforged.neoforge.client.model.generators.ModelProvider.MODEL), "Model at %s does not exist", p_176461_);
-+            }
-+        });
+         this.model.ifPresent(p_176461_ -> jsonobject.addProperty("parent", p_176461_.toString()));
          if (!p_266912_.isEmpty()) {
-             JsonObject jsonobject1 = new JsonObject();
--            p_266912_.forEach((p_176457_, p_176458_) -> jsonobject1.addProperty(p_176457_.getId(), p_176458_.toString()));
-+            p_266912_.forEach((p_176457_, p_176458_) -> {
-+                jsonobject1.addProperty(p_176457_.getId(), p_176458_.toString());
-+                if (fileHelper != null) {
-+                    com.google.common.base.Preconditions.checkState(fileHelper.exists(p_176458_, net.neoforged.neoforge.client.model.generators.ModelProvider.TEXTURE), "Texture %s does not exist in any known resource pack", p_176458_);
-+                }
-+
-+            });
-             jsonobject.add("textures", jsonobject1);
-         }
- 
