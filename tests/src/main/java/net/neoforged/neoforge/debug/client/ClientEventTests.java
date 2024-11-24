@@ -146,23 +146,23 @@ public class ClientEventTests {
         var rotationKey = new ContextKey<Float>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "rotation"));
         var numRenderAttachmentKey = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "times_to_render"));
         var testAttachment = test.registrationHelper().attachments().registerSimpleAttachment("test", () -> 3);
-        test.whenEnabled(listeners -> {
-            listeners.mod().addListener((RegisterRenderStateModifiersEvent event) -> {
-                event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
-                    renderState.setRenderData(rotationKey, 45f);
-                });
-                event.registerEntityModifier(new TypeToken<LivingEntityRenderer<? extends LivingEntity, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {
-                    renderState.setRenderData(numRenderAttachmentKey, entity.getData(testAttachment));
-                });
-                // Test other type parameters for safety
-                event.registerEntityModifier(new TypeToken<AbstractHoglinRenderer<?>>() {}, (entity, renderState) -> {});
-                event.registerEntityModifier(new TypeToken<MobRenderer<Mob, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {});
-                try {
-                    class TestBrokenHoglinRendererTypeToken<T extends Mob & HoglinBase> extends TypeToken<AbstractHoglinRenderer<T>> {}
-                    event.registerEntityModifier(new TestBrokenHoglinRendererTypeToken<>(), (entity, renderState) -> {});
-                    test.fail("Unsafe type parameter succeeded. Cannot assume T can be ?.");
-                } catch (IllegalArgumentException ignored) {}
+        test.eventListeners().mod().addListener((RegisterRenderStateModifiersEvent event) -> {
+            event.registerEntityModifier(PlayerRenderer.class, (entity, renderState) -> {
+                renderState.setRenderData(rotationKey, 45f);
             });
+            event.registerEntityModifier(new TypeToken<LivingEntityRenderer<? extends LivingEntity, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {
+                renderState.setRenderData(numRenderAttachmentKey, entity.getData(testAttachment));
+            });
+            // Test other type parameters for safety
+            event.registerEntityModifier(new TypeToken<AbstractHoglinRenderer<?>>() {}, (entity, renderState) -> {});
+            event.registerEntityModifier(new TypeToken<MobRenderer<Mob, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {});
+            try {
+                class TestBrokenHoglinRendererTypeToken<T extends Mob & HoglinBase> extends TypeToken<AbstractHoglinRenderer<T>> {}
+                event.registerEntityModifier(new TestBrokenHoglinRendererTypeToken<>(), (entity, renderState) -> {});
+                test.fail("Unsafe type parameter succeeded. Cannot assume T can be ?.");
+            } catch (IllegalArgumentException ignored) {}
+        });
+        test.whenEnabled(listeners -> {
             listeners.forge().addListener((RenderLivingEvent.Post<?, ?, ?> event) -> {
                 int numRender = event.getRenderState().getRenderDataOrDefault(numRenderAttachmentKey, -1);
                 if (numRender == -1) test.fail("Attachment render data not set");

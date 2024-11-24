@@ -118,7 +118,7 @@ public class RegisterRenderStateModifiersEvent extends Event implements IModBusE
                     for (var singleBound : typeArg.getBounds()) {
                         var token = Container.of(TypeToken.of(singleBound));
                         if (!token.isSubtypeOf(userToken)) {
-                            throw new IllegalArgumentException("%s does not match actual type parameter %s".formatted(userArg, singleBound));
+                            throw new IllegalArgumentException("%s does not match expected type parameter %s".formatted(userArg, singleBound));
                         }
                     }
                 }
