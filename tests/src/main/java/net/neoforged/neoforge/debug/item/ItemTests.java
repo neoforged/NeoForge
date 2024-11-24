@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.debug.item;
 
+import java.util.EnumMap;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,8 +42,10 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentModels;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -49,6 +53,7 @@ import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -199,9 +204,19 @@ public class ItemTests {
                 .thenSucceed());
     }
 
-    @TestHolder(description = "Adds a stone-pickaxe-like item that cannot mine bamboo blocks and is repaired with beds. Tests that registries can correctly handle named holder set references.")
+    private static final ArmorMaterial NEO_MATERIAL = new ArmorMaterial(5, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BOOTS, 1);
+        map.put(ArmorType.LEGGINGS, 2);
+        map.put(ArmorType.CHESTPLATE, 3);
+        map.put(ArmorType.HELMET, 1);
+        map.put(ArmorType.BODY, 3);
+    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.Items.BARRELS, EquipmentModels.LEATHER);
+
+    @TestHolder(description = "Tests that registries can correctly handle named holder set references.")
     static void toolItem(final DynamicTest test, final RegistrationHelper reg) {
         var material = new ToolMaterial(BlockTags.BAMBOO_BLOCKS, 160, 5.0F, 0.5F, 10, ItemTags.BEDS);
         reg.items().registerItem("neo_pickaxe", properties -> new PickaxeItem(material, 1.0F, -2.8F, properties));
+        // This is invalid registration, but replicates an error suppression issue found in RegistryManager#applySnapshot
+//        reg.items().register("neo_helmet", () -> new ArmorItem(NEO_MATERIAL, ArmorType.HELMET, new Item.Properties()));
     }
 }
