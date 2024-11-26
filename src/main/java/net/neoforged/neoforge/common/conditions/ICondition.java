@@ -81,28 +81,12 @@ public interface ICondition {
             public <T> boolean isTagLoaded(TagKey<T> key) {
                 return false;
             }
-
-            @Override
-            public FeatureFlagSet enabledFeatures() {
-                // returning the vanilla set causes everything to result in everything being disabled
-                // return FeatureFlags.VANILLA_SET;
-
-                // lookup the active enabledFeatures from the current server
-                // if no server exists, delegating back to 'VANILLA_SET' should be fine (should rarely ever happen)
-                var server = ServerLifecycleHooks.getCurrentServer();
-                return server == null ? FeatureFlags.VANILLA_SET : server.getWorldData().enabledFeatures();
-            }
         };
 
         IContext TAGS_INVALID = new IContext() {
             @Override
             public <T> boolean isTagLoaded(TagKey<T> key) {
                 throw new UnsupportedOperationException("Usage of tag-based conditions is not permitted in this context!");
-            }
-
-            @Override
-            public FeatureFlagSet enabledFeatures() {
-                throw new UnsupportedOperationException("Usage of flag-based conditions is not permitted in this context!");
             }
         };
 
@@ -111,6 +95,14 @@ public interface ICondition {
          */
         <T> boolean isTagLoaded(TagKey<T> key);
 
-        FeatureFlagSet enabledFeatures();
+        default FeatureFlagSet enabledFeatures() {
+            // returning the vanilla set causes reports false positives for flags outside of vanilla
+            // return FeatureFlags.VANILLA_SET;
+
+            // lookup the active enabledFeatures from the current server
+            // if no server exists, delegating back to 'VANILLA_SET' should be fine (should rarely ever happen)
+            var server = ServerLifecycleHooks.getCurrentServer();
+            return server == null ? FeatureFlags.VANILLA_SET : server.getWorldData().enabledFeatures();
+        }
     }
 }
