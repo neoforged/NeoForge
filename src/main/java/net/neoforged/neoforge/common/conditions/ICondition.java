@@ -19,7 +19,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public interface ICondition {
     Codec<ICondition> CODEC = NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()
@@ -78,6 +81,17 @@ public interface ICondition {
             public <T> boolean isTagLoaded(TagKey<T> key) {
                 return false;
             }
+
+            @Override
+            public FeatureFlagSet enabledFeatures() {
+                // returning the vanilla set causes everything to result in everything being disabled
+                // return FeatureFlags.VANILLA_SET;
+
+                // lookup the active enabledFeatures from the current server
+                // if no server exists, delegating back to 'VANILLA_SET' should be fine (should rarely ever happen)
+                var server = ServerLifecycleHooks.getCurrentServer();
+                return server == null ? FeatureFlags.VANILLA_SET : server.getWorldData().enabledFeatures();
+            }
         };
 
         IContext TAGS_INVALID = new IContext() {
@@ -85,11 +99,18 @@ public interface ICondition {
             public <T> boolean isTagLoaded(TagKey<T> key) {
                 throw new UnsupportedOperationException("Usage of tag-based conditions is not permitted in this context!");
             }
+
+            @Override
+            public FeatureFlagSet enabledFeatures() {
+                throw new UnsupportedOperationException("Usage of flag-based conditions is not permitted in this context!");
+            }
         };
 
         /**
          * Returns {@code true} if the requested tag is available.
          */
         <T> boolean isTagLoaded(TagKey<T> key);
+
+        FeatureFlagSet enabledFeatures();
     }
 }
