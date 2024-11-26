@@ -8,4 +8,4 @@
 +    public final boolean onlineMode = this.get("online-mode", !net.minecraft.SharedConstants.IS_RUNNING_IN_IDE);
      public final boolean preventProxyConnections = this.get("prevent-proxy-connections", false);
      public final String serverIp = this.get("server-ip", "");
-     public final boolean spawnAnimals = this.get("spawn-animals", true);
+     public final boolean pvp = this.get("pvp", true);

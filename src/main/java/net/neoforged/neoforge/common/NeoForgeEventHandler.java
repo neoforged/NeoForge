@@ -57,7 +57,7 @@ public class NeoForgeEventHandler {
                     entity.discard();
                     event.setCanceled(true);
                     var executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
-                    executor.tell(new TickTask(0, () -> event.getLevel().addFreshEntity(newEntity)));
+                    executor.schedule(new TickTask(0, () -> event.getLevel().addFreshEntity(newEntity)));
                 }
             }
         }
@@ -110,7 +110,7 @@ public class NeoForgeEventHandler {
     public void onDpSync(final OnDatapackSyncEvent event) {
         RegistryManager.getDataMaps().forEach((registry, values) -> {
             final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
-                    .registry(registry);
+                    .lookup(registry);
             if (regOpt.isEmpty()) return;
             event.getRelevantPlayers().forEach(player -> {
                 if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {

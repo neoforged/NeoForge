@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/item/PickaxeItem.java
 +++ b/net/minecraft/world/item/PickaxeItem.java
 @@ -6,4 +_,9 @@
-     public PickaxeItem(Tier p_42961_, Item.Properties p_42964_) {
-         super(p_42961_, BlockTags.MINEABLE_WITH_PICKAXE, p_42964_);
+     public PickaxeItem(ToolMaterial p_362209_, float p_364146_, float p_361793_, Item.Properties p_42964_) {
+         super(p_362209_, BlockTags.MINEABLE_WITH_PICKAXE, p_364146_, p_361793_, p_42964_);
      }
 +
 +    @Override

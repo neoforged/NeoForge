@@ -33,7 +33,7 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
 
     @Override
     public boolean test(ICondition.IContext context) {
-        return context.getTag(tag).isEmpty();
+        return !context.isTagLoaded(tag);
     }
 
     @Override

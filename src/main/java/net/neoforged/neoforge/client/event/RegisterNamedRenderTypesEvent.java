@@ -40,24 +40,10 @@ public class RegisterNamedRenderTypesEvent extends Event implements IModBusEvent
      * @param entityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
      */
     public void register(ResourceLocation key, RenderType blockRenderType, RenderType entityRenderType) {
-        register(key, blockRenderType, entityRenderType, entityRenderType);
-    }
-
-    /**
-     * Registers a named {@link RenderTypeGroup}.
-     *
-     * @param key                      The ID of the group
-     * @param blockRenderType          One of the values returned by {@link RenderType#chunkBufferLayers()}
-     * @param entityRenderType         A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY}
-     * @param fabulousEntityRenderType A {@link RenderType} using {@link DefaultVertexFormat#NEW_ENTITY} for use when
-     *                                 "fabulous" rendering is enabled
-     */
-    public void register(ResourceLocation key, RenderType blockRenderType, RenderType entityRenderType, RenderType fabulousEntityRenderType) {
         Preconditions.checkArgument(!renderTypes.containsKey(key), "Render type already registered: " + key);
         Preconditions.checkArgument(blockRenderType.format() == DefaultVertexFormat.BLOCK, "The block render type must use the BLOCK vertex format.");
         Preconditions.checkArgument(blockRenderType.getChunkLayerId() >= 0, "Only chunk render types can be used for block rendering. Query RenderType#chunkBufferLayers() for a list.");
         Preconditions.checkArgument(entityRenderType.format() == DefaultVertexFormat.NEW_ENTITY, "The entity render type must use the NEW_ENTITY vertex format.");
-        Preconditions.checkArgument(fabulousEntityRenderType.format() == DefaultVertexFormat.NEW_ENTITY, "The fabulous entity render type must use the NEW_ENTITY vertex format.");
-        renderTypes.put(key, new RenderTypeGroup(blockRenderType, entityRenderType, fabulousEntityRenderType));
+        renderTypes.put(key, new RenderTypeGroup(blockRenderType, entityRenderType));
     }
 }

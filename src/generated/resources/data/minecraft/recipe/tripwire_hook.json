@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": {
-      "tag": "minecraft:planks"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "S": {
-      "tag": "c:rods/wooden"
-    }
+    "#": "#minecraft:planks",
+    "I": "#c:ingots/iron",
+    "S": "#c:rods/wooden"
   },
   "pattern": [
     "I",

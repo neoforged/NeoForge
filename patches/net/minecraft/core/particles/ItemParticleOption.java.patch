@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/particles/ItemParticleOption.java
 +++ b/net/minecraft/core/particles/ItemParticleOption.java
-@@ -24,7 +_,7 @@
+@@ -25,7 +_,7 @@
              throw new IllegalArgumentException("Empty stacks are not allowed");
          } else {
              this.type = p_123705_;

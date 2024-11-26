@@ -25,7 +25,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -60,10 +59,10 @@ public abstract class DataMapProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        gather();
-
         return lookupProvider.thenCompose(provider -> {
-            final DynamicOps<JsonElement> dynamicOps = RegistryOps.create(JsonOps.INSTANCE, provider);
+            gather(provider);
+
+            final DynamicOps<JsonElement> dynamicOps = provider.createSerializationContext(JsonOps.INSTANCE);
 
             return CompletableFuture.allOf(this.builders.entrySet().stream().map(entry -> {
                 DataMapType<?, ?> type = entry.getKey();
@@ -83,7 +82,7 @@ public abstract class DataMapProvider implements DataProvider {
     /**
      * Generate data map entries.
      */
-    protected abstract void gather();
+    protected abstract void gather(HolderLookup.Provider provider);
 
     @SuppressWarnings("unchecked")
     public <T, R> Builder<T, R> builder(DataMapType<R, T> type) {

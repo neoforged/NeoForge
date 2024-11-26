@@ -20,7 +20,7 @@ import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 
 /**
  * Abstract scroll panel class.
@@ -250,7 +250,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
             int barBgGreen = this.barBgColor >> 8 & 0xff;
             int barBgBlue = this.barBgColor & 0xff;
 
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShader(CoreShaders.POSITION_COLOR);
             BufferBuilder worldr = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             worldr.addVertex(barLeft, this.bottom, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);
             worldr.addVertex(barLeft + barWidth, this.bottom, 0.0F).setColor(barBgRed, barBgGreen, barBgBlue, barBgAlpha);

@@ -1,18 +1,17 @@
 --- a/net/minecraft/world/entity/animal/Cat.java
 +++ b/net/minecraft/world/entity/animal/Cat.java
-@@ -368,9 +_,9 @@
+@@ -373,9 +_,9 @@
                      }
                  } else if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
                      if (!this.level().isClientSide()) {
 -                        this.usePlayerItem(p_28153_, p_28154_, itemstack);
--                        FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
-+                        FoodProperties foodproperties = itemstack.getFoodProperties(this);
+                         FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
                          this.heal(foodproperties != null ? (float)foodproperties.nutrition() : 1.0F);
 +                        this.usePlayerItem(p_28153_, p_28154_, itemstack);
+                         this.playEatingSound();
                      }
  
-                     return InteractionResult.sidedSuccess(this.level().isClientSide());
-@@ -430,7 +_,7 @@
+@@ -437,7 +_,7 @@
      }
  
      private void tryToTame(Player p_333858_) {

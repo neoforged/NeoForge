@@ -1,28 +1,28 @@
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -231,7 +_,7 @@
-                 DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_338251_.getItem();
-                 BlockPos blockpos = p_338850_.pos().relative(p_338850_.state().getValue(DispenserBlock.FACING));
-                 Level level = p_338850_.level();
+@@ -192,7 +_,7 @@
+                 DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_338735_.getItem();
+                 BlockPos blockpos = p_338297_.pos().relative(p_338297_.state().getValue(DispenserBlock.FACING));
+                 Level level = p_338297_.level();
 -                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null)) {
-+                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_338251_)) {
-                     dispensiblecontaineritem.checkExtraContent(null, level, p_338251_, blockpos);
-                     return this.consumeWithRemainder(p_338850_, p_338251_, new ItemStack(Items.BUCKET));
++                if (dispensiblecontaineritem.emptyContents(null, level, blockpos, null, p_338735_)) {
+                     dispensiblecontaineritem.checkExtraContent(null, level, p_338735_, blockpos);
+                     return this.consumeWithRemainder(p_338297_, p_338735_, new ItemStack(Items.BUCKET));
                  } else {
-@@ -279,12 +_,13 @@
+@@ -240,12 +_,13 @@
                  if (BaseFireBlock.canBePlacedAt(serverlevel, blockpos, direction)) {
                      serverlevel.setBlockAndUpdate(blockpos, BaseFireBlock.getState(serverlevel, blockpos));
                      serverlevel.gameEvent(null, GameEvent.BLOCK_PLACE, blockpos);
 -                } else if (CampfireBlock.canLight(blockstate) || CandleBlock.canLight(blockstate) || CandleCakeBlock.canLight(blockstate)) {
 -                    serverlevel.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
-+                } else if (blockstate.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(p_338494_.level(), null, net.minecraft.world.InteractionHand.MAIN_HAND, p_338444_, new net.minecraft.world.phys.BlockHitResult(blockpos.getCenter(), direction.getOpposite(), blockpos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false) instanceof BlockState blockstate2) {
++                } else if (blockstate.getToolModifiedState(new net.minecraft.world.item.context.UseOnContext(serverlevel, null, net.minecraft.world.InteractionHand.MAIN_HAND, p_338526_, new net.minecraft.world.phys.BlockHitResult(blockpos.getCenter(), direction.getOpposite(), blockpos, false)), net.neoforged.neoforge.common.ItemAbilities.FIRESTARTER_LIGHT, false) instanceof BlockState blockstate2) {
 +                    serverlevel.setBlockAndUpdate(blockpos, blockstate2);
                      serverlevel.gameEvent(null, GameEvent.BLOCK_CHANGE, blockpos);
 -                } else if (blockstate.getBlock() instanceof TntBlock) {
 -                    TntBlock.explode(serverlevel, blockpos);
 -                    serverlevel.removeBlock(blockpos, false);
-+                } else if (blockstate.isFlammable(serverlevel, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite())) {
-+                    blockstate.onCaughtFire(serverlevel, blockpos, p_338494_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
++                } else if (blockstate.isFlammable(serverlevel, blockpos, p_338386_.state().getValue(DispenserBlock.FACING).getOpposite())) {
++                    blockstate.onCaughtFire(serverlevel, blockpos, p_338386_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
 +                    if (blockstate.getBlock() instanceof TntBlock)
 +                        serverlevel.removeBlock(blockpos, false);
                  } else {

@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
@@ -32,6 +33,8 @@ import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
@@ -42,12 +45,14 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperFullBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.debug.EventTests;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
@@ -83,7 +88,7 @@ public class DataMapTests {
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
                         .add(Items.BLUE_ORCHID.builtInRegistryHolder(), List.of(
                                 new SomeObject(1, "a")), false);
@@ -101,7 +106,7 @@ public class DataMapTests {
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
                         .add(Items.BLUE_ORCHID.builtInRegistryHolder(), List.of(
                                 new SomeObject(2, "b"),
@@ -163,7 +168,7 @@ public class DataMapTests {
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
                         .add(Items.POTATO.builtInRegistryHolder(), Map.of(
                                 "value1", new SomeObject(1, "a"),
@@ -183,7 +188,7 @@ public class DataMapTests {
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
                         .remove(Items.POTATO.builtInRegistryHolder(), new CustomRemover(
                                 List.of("value2")));
@@ -227,7 +232,7 @@ public class DataMapTests {
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
                         // Add to carrot and logs
                         .add(Items.CARROT.builtInRegistryHolder(), new SomeObject(14, "some_string"), false)
@@ -248,7 +253,7 @@ public class DataMapTests {
 
         test.onGameTest(helper -> {
             final Registry<Item> registry = helper.getLevel().registryAccess()
-                    .registryOrThrow(Registries.ITEM);
+                    .lookupOrThrow(Registries.ITEM);
             helper.assertTrue(Objects.equals(registry.wrapAsHolder(Items.CARROT).getData(someData), new SomeObject(14, "some_string")), "Data wasn't attached to carrot!");
 
             // All logs but birch should have the value
@@ -280,7 +285,7 @@ public class DataMapTests {
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(xpGrant)
                         .add(DamageTypes.FELL_OUT_OF_WORLD, new ExperienceGrant(130), false);
             }
@@ -303,11 +308,45 @@ public class DataMapTests {
 
     @GameTest
     @EmptyTemplate
+    @TestHolder(description = "Tests if data maps can be successfully attached to reloadable registries")
+    static void reloadableRegDataMaps(final DynamicTest test, final RegistrationHelper reg) {
+        final DataMapType<LootTable, MobEffectInstance> effectGrant = reg.registerDataMap(DataMapType.builder(
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "effect_grant"),
+                Registries.LOOT_TABLE, MobEffectInstance.CODEC)
+                .build());
+
+        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                builder(effectGrant)
+                        .add(Blocks.COPPER_BLOCK.getLootTable().orElseThrow(), new MobEffectInstance(MobEffects.CONFUSION, 100), false);
+            }
+        });
+
+        test.eventListeners().forge().addListener((final BlockEvent.EntityPlaceEvent event) -> {
+            var table = event.getPlacedBlock().getBlock().getLootTable();
+            if (table.isEmpty()) return;
+            final var grant = event.getLevel().getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(table.get()).getData(effectGrant);
+            if (grant != null && event.getEntity() instanceof Player player) {
+                player.addEffect(grant);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final Player player = helper.makeMockPlayer();
+            helper.useBlock(new BlockPos(0, 1, 0), player, Blocks.COPPER_BLOCK.asItem().getDefaultInstance());
+            helper.assertMobEffectPresent(player, MobEffects.CONFUSION, "has confusion");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests if custom compostables work")
     static void compostablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.COMPOSTABLES)
                         .add(ItemTags.COMPASSES, new Compostable(1f), false);
             }
@@ -330,7 +369,7 @@ public class DataMapTests {
                 .build());
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(dataMap)
                         .add(Items.BLUE_ORCHID.builtInRegistryHolder(), 5, false)
                         .add(Items.OMINOUS_TRIAL_KEY.builtInRegistryHolder(), 10, false);
@@ -342,7 +381,7 @@ public class DataMapTests {
             if (event.getCause() == DataMapsUpdatedEvent.UpdateCause.SERVER_RELOAD) {
                 event.ifRegistry(Registries.ITEM, items -> {
                     entries.set(items.getDataMap(dataMap).entrySet().stream()
-                            .map(entry -> WeightedEntry.wrap(items.get(entry.getKey()), entry.getValue()))
+                            .map(entry -> WeightedEntry.wrap(items.getValue(entry.getKey()), entry.getValue()))
                             .toList());
                 });
             }
@@ -369,14 +408,14 @@ public class DataMapTests {
     static void oxidizablesAndWaxablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
         BlockPos blockPos = new BlockPos(1, 1, 1);
 
-        Holder<Block> lightlyOxidizedIron = reg.blocks().register("lightly_oxidized_iron", () -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.EXPOSED, BlockBehaviour.Properties.of()));
-        Holder<Block> moreOxidizedIron = reg.blocks().register("more_oxidized_iron", () -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.WEATHERED, BlockBehaviour.Properties.of()));
+        Holder<Block> lightlyOxidizedIron = reg.blocks().registerBlock("lightly_oxidized_iron", props -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.EXPOSED, props), BlockBehaviour.Properties.of());
+        Holder<Block> moreOxidizedIron = reg.blocks().registerBlock("more_oxidized_iron", props -> new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.WEATHERED, props), BlockBehaviour.Properties.of());
 
-        Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().register("lightly_oxidized_waxed_iron", () -> new Block(BlockBehaviour.Properties.of()));
+        Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new, BlockBehaviour.Properties.of());
 
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
-            protected void gather() {
+            protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.OXIDIZABLES)
                         .add(lightlyOxidizedIron, new Oxidizable(moreOxidizedIron.value()), false);
 

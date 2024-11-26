@@ -122,9 +122,9 @@ public class CustomPresetEditorTest {
             // The original dimension list from the world preset json is provided to the DimensionsUpdater lambda here.
             // We can alter which dimensions are present by returning a different list of dimensions.
             return (registries, oldDimensions) -> {
-                Holder<NoiseGeneratorSettings> overworldNoise = registries.registryOrThrow(Registries.NOISE_SETTINGS)
-                        .getHolderOrThrow(NoiseGeneratorSettings.OVERWORLD);
-                Holder<Biome> biome = registries.registryOrThrow(Registries.BIOME).getHolderOrThrow(biomeKey);
+                Holder<NoiseGeneratorSettings> overworldNoise = registries.lookupOrThrow(Registries.NOISE_SETTINGS)
+                        .getOrThrow(NoiseGeneratorSettings.OVERWORLD);
+                Holder<Biome> biome = registries.lookupOrThrow(Registries.BIOME).getOrThrow(biomeKey);
                 return oldDimensions.replaceOverworldGenerator(registries, new NoiseBasedChunkGenerator(new FixedBiomeSource(biome), overworldNoise));
             };
         }

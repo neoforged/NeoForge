@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import org.apache.commons.lang3.tuple.Pair;
@@ -84,10 +85,9 @@ public class NeoForgeConfig {
      */
     public static class Client {
         public final BooleanValue experimentalForgeLightPipelineEnabled;
+        boolean experimentalPipelineActive;
 
         public final BooleanValue showLoadWarnings;
-
-        public final BooleanValue useCombinedDepthStencilAttachment;
 
         public final BooleanValue logUntranslatedConfigurationWarnings;
 
@@ -101,11 +101,6 @@ public class NeoForgeConfig {
                     .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
                     .translation("neoforge.configgui.showLoadWarnings")
                     .define("showLoadWarnings", true);
-
-            useCombinedDepthStencilAttachment = builder
-                    .comment("Set to true to use a combined DEPTH_STENCIL attachment instead of two separate ones.")
-                    .translation("neoforge.configgui.useCombinedDepthStencilAttachment")
-                    .define("useCombinedDepthStencilAttachment", false);
 
             logUntranslatedConfigurationWarnings = builder
                     .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")
@@ -141,11 +136,23 @@ public class NeoForgeConfig {
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent.Loading configEvent) {
         LogManager.getLogger().debug(Logging.FORGEMOD, "Loaded NeoForge config file {}", configEvent.getConfig().getFileName());
+
+        if (configEvent.getConfig().getSpec() == clientSpec) {
+            CLIENT.experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+        }
     }
 
     @SubscribeEvent
     public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
         LogManager.getLogger().debug(Logging.FORGEMOD, "NeoForge config just got changed on the file system!");
+
+        if (configEvent.getConfig().getSpec() == clientSpec) {
+            boolean experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            if (experimentalPipelineActive != CLIENT.experimentalPipelineActive) {
+                CLIENT.experimentalPipelineActive = experimentalPipelineActive;
+                ClientHooks.reloadRenderer();
+            }
+        }
     }
 
     //General

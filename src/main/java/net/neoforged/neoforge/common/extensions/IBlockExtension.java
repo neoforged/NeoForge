@@ -723,7 +723,7 @@ public interface IBlockExtension {
      * @param pos       Block position in level
      * @param explosion The explosion instance affecting the block
      */
-    default void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
+    default void onBlockExploded(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion) {
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         self().wasExploded(level, pos, explosion);
     }
@@ -1018,5 +1018,17 @@ public interface IBlockExtension {
         } else {
             return BubbleColumnDirection.NONE;
         }
+    }
+
+    /**
+     * Determines if a fluid adjacent to the block on the given side should not be rendered.
+     * 
+     * @param state         the block state of the block
+     * @param selfFace      the face of this block that the fluid is adjacent to
+     * @param adjacentFluid the fluid that is touching that face
+     * @return true if this block should cause the fluid's face to not render
+     */
+    default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
+        return state.getFluidState().getType().isSame(adjacentFluid.getType());
     }
 }

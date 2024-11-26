@@ -51,8 +51,8 @@ public class LevelTests {
 
         test.eventListeners().forge().addListener((EntityTickEvent.Pre event) -> {
             if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().getName().equals("test-mock-player")) {
-                if (player.level().getGameRules().getBoolean(booleanGameRule)) {
-                    player.setHealth(player.getHealth() - player.level().getGameRules().getInt(integerGameRule));
+                if (player.getServer().getGameRules().getBoolean(booleanGameRule)) {
+                    player.setHealth(player.getHealth() - player.getServer().getGameRules().getInt(integerGameRule));
                 }
             }
         });
@@ -60,8 +60,8 @@ public class LevelTests {
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
 
-            final var boolRule = player.level().getGameRules().getRule(booleanGameRule);
-            final var intRule = player.level().getGameRules().getRule(integerGameRule);
+            final var boolRule = player.getServer().getGameRules().getRule(booleanGameRule);
+            final var intRule = player.getServer().getGameRules().getRule(integerGameRule);
 
             final var oldBool = boolRule.get();
             final var oldInt = intRule.get();

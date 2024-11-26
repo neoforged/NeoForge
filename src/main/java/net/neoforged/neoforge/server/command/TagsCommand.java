@@ -11,10 +11,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.datafixers.util.Pair;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -52,6 +51,10 @@ import net.minecraft.util.Mth;
  * </ul>
  */
 class TagsCommand {
+    // The limit of how long the clipboard text can be; no more elements are added to the text if they would push it over this limit
+    // This is roughly below 32767, the default limit for UTF-8 strings in FriendlyByteBuf. When adjusting this, make sure to leave
+    // ample room for the explanatory text (see #createMessage() below).
+    private static final long CLIPBOARD_TEXT_LIMIT = 32600;
     private static final long PAGE_SIZE = 8;
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("root"));
 
@@ -75,7 +78,7 @@ class TagsCommand {
                                         .executes(ctx -> listTags(ctx, IntegerArgumentType.getInteger(ctx, "page")))))
                         .then(Commands.literal("get")
                                 .then(Commands.argument("tag", ResourceLocationArgument.id())
-                                        .suggests(CommandUtils.suggestFromRegistry(r -> r.getTagNames().map(TagKey::location)::iterator, "registry", ROOT_REGISTRY_KEY))
+                                        .suggests(CommandUtils.suggestFromRegistry(r -> r.getTags().map(HolderSet.Named::key).map(TagKey::location)::iterator, "registry", ROOT_REGISTRY_KEY))
                                         .executes(ctx -> listTagElements(ctx, 1))
                                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                                 .executes(ctx -> listTagElements(ctx, IntegerArgumentType.getInteger(ctx, "page"))))))
@@ -90,7 +93,7 @@ class TagsCommand {
     private static int listTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         final long tagCount = registry.getTags().count();
@@ -103,7 +106,6 @@ class TagsCommand {
                 page,
                 ChatFormatting.DARK_GREEN,
                 () -> registry.getTags()
-                        .map(Pair::getSecond)
                         .map(s -> s.unwrap().map(k -> k.location().toString(), Object::toString))),
                 false);
 
@@ -113,14 +115,15 @@ class TagsCommand {
     private static int listTagElements(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         final ResourceLocation tagLocation = ResourceLocationArgument.getId(ctx, "tag");
         final TagKey<?> tagKey = TagKey.create(cast(registryKey), tagLocation);
 
-        final HolderSet.Named<?> tag = registry.getTag(cast(tagKey))
-                .orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Optional<HolderSet.Named<?>> optional = registry.get(TagsCommand.<ResourceKey>cast(tagKey));
+        final HolderSet.Named<?> tag = optional.orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
 
         ctx.getSource().sendSuccess(() -> createMessage(
                 Component.translatable("commands.neoforge.tags.tag_key",
@@ -139,14 +142,14 @@ class TagsCommand {
     private static int queryElementTags(final CommandContext<CommandSourceStack> ctx, final int page) throws CommandSyntaxException {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         final ResourceLocation elementLocation = ResourceLocationArgument.getId(ctx, "element");
         final ResourceKey<?> elementKey = ResourceKey.create(cast(registryKey), elementLocation);
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        final Optional<Holder<?>> elementHolderOpt = registry.getHolder(TagsCommand.<ResourceKey>cast(elementKey));
+        final Optional<Holder<?>> elementHolderOpt = registry.get(TagsCommand.<ResourceKey>cast(elementKey));
         final Holder<?> elementHolder = elementHolderOpt.orElseThrow(() -> UNKNOWN_ELEMENT.create(elementLocation, registryKey.location()));
 
         final long containingTagsCount = elementHolder.tags().count();
@@ -172,16 +175,45 @@ class TagsCommand {
             final long currentPage,
             final ChatFormatting elementColor,
             final Supplier<Stream<String>> names) {
-        final String allElementNames = names.get().sorted().collect(Collectors.joining("\n"));
         final long totalPages = (count - 1) / PAGE_SIZE + 1;
         final long actualPage = (long) Mth.clamp(currentPage, 1, totalPages);
 
         MutableComponent containsComponent = Component.translatable(containsText, count);
         if (count > 0) // Highlight the count text, make it clickable, and append page counters
         {
+            final String clipboardText;
+            final StringBuilder clipboardTextBuilder = new StringBuilder();
+            boolean reachedLimit = false;
+            int countedLines = 0;
+
+            Iterator<String> iterator = names.get().sorted().iterator();
+            while (iterator.hasNext()) {
+                final String line = iterator.next();
+                if (clipboardTextBuilder.length() + line.length() > CLIPBOARD_TEXT_LIMIT) {
+                    // The to-be-added line puts us over the limit, so stop adding lines
+                    reachedLimit = true;
+                    break;
+                }
+                clipboardTextBuilder.append(line).append('\n');
+                countedLines++;
+            }
+            // Remove the trailing newline if present
+            if (!clipboardTextBuilder.isEmpty()) {
+                clipboardTextBuilder.deleteCharAt(clipboardTextBuilder.length() - 1);
+            }
+
+            if (reachedLimit) {
+                // Almost went over the limit; add additional info to clipboard text
+                clipboardText = "(Too many entries to fit in clipboard, showing only first " + countedLines + " entries...)" + '\n'
+                        + clipboardTextBuilder + '\n'
+                        + "(..." + (count - countedLines) + " more entries not shown)";
+            } else {
+                clipboardText = clipboardTextBuilder.toString();
+            }
+
             containsComponent = ComponentUtils.wrapInSquareBrackets(containsComponent.withStyle(s -> s
                     .withColor(ChatFormatting.GREEN)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, allElementNames))
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, clipboardText))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             Component.translatable(copyHoverText)))));
             containsComponent = Component.translatable("commands.neoforge.tags.page_info",

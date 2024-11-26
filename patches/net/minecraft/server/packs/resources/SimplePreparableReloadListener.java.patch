@@ -1,11 +1,11 @@
 --- a/net/minecraft/server/packs/resources/SimplePreparableReloadListener.java
 +++ b/net/minecraft/server/packs/resources/SimplePreparableReloadListener.java
-@@ -4,7 +_,7 @@
- import java.util.concurrent.Executor;
+@@ -5,7 +_,7 @@
+ import net.minecraft.util.profiling.Profiler;
  import net.minecraft.util.profiling.ProfilerFiller;
  
 -public abstract class SimplePreparableReloadListener<T> implements PreparableReloadListener {
 +public abstract class SimplePreparableReloadListener<T> extends net.neoforged.neoforge.resource.ContextAwareReloadListener implements PreparableReloadListener {
      @Override
      public final CompletableFuture<Void> reload(
-         PreparableReloadListener.PreparationBarrier p_10780_,
+         PreparableReloadListener.PreparationBarrier p_10780_, ResourceManager p_10781_, Executor p_10784_, Executor p_10785_
