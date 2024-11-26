@@ -7,6 +7,8 @@ package net.neoforged.neoforge.common.conditions;
 
 import java.util.List;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.flag.FeatureFlag;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 
 public interface IConditionBuilder {
@@ -40,5 +42,29 @@ public interface IConditionBuilder {
 
     default ICondition tagEmpty(TagKey<Item> tag) {
         return new TagEmptyCondition(tag.location());
+    }
+
+    default ICondition isFeatureEnabled(FeatureFlagSet requiredFeatures) {
+        return FlagCondition.isEnabled(requiredFeatures);
+    }
+
+    default ICondition isFeatureEnabled(FeatureFlag requiredFlag) {
+        return FlagCondition.isEnabled(requiredFlag);
+    }
+
+    default ICondition isFeatureEnabled(FeatureFlag requiredFlag, FeatureFlag... requiredFlags) {
+        return FlagCondition.isEnabled(requiredFlag, requiredFlags);
+    }
+
+    default ICondition isFeatureDisabled(FeatureFlagSet requiredFeatures) {
+        return FlagCondition.isDisabled(requiredFeatures);
+    }
+
+    default ICondition isFeatureDisabled(FeatureFlag requiredFlag) {
+        return FlagCondition.isDisabled(requiredFlag);
+    }
+
+    default ICondition isFeatureDisabled(FeatureFlag requiredFlag, FeatureFlag... requiredFlags) {
+        return FlagCondition.isDisabled(requiredFlag, requiredFlags);
     }
 }
