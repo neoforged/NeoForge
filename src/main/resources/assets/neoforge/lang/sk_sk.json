@@ -180,6 +180,8 @@
   "neoforge.configuration.section.neoforge.server.toml.title": "Nastavenia serveru",
   "neoforge.configgui.advertiseDedicatedServerToLan": "Inzerujte vyhradený server do siete LAN",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Nastavte toto na true, aby ste povolili reklamu dedikovaného servera lokálnym klientom LAN, aby sa automaticky zobrazoval na obrazovke pre viacerých hráčov.",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Povoliť kanál vykresľovania blokov NeoForge – opravuje osvetlenie vlastných modelov.",
   "neoforge.configgui.fullBoundingBoxLadders": "Úplné vymedzovanie boxov rebríkov",
