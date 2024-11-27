@@ -65,7 +65,10 @@ public class NeoForgeConfig {
      */
     public static class Common {
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logUntranslatedItemTagWarnings;
+
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logLegacyTagWarnings;
+
+        public final BooleanValue attributeAdvancedTooltipDebugInfo;
 
         Common(ModConfigSpec.Builder builder) {
             logUntranslatedItemTagWarnings = builder
@@ -77,6 +80,11 @@ public class NeoForgeConfig {
                     .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
                     .translation("neoforge.configgui.logLegacyTagWarnings")
                     .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LogWarningMode.DEV_SHORT);
+
+            attributeAdvancedTooltipDebugInfo = builder
+                    .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
+                    .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
+                    .define("attributeAdvancedTooltipDebugInfo", true);
         }
     }
 
