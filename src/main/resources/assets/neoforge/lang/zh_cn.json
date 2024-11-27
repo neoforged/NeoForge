@@ -180,6 +180,8 @@
   "neoforge.configuration.section.neoforge.server.toml.title": "服务端设置",
   "neoforge.configgui.advertiseDedicatedServerToLan": "向局域网开放服务器",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "将此设置为true以启用向本地局域网客户端开放服务器，以便它自动显示在多人游戏屏幕中。",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge 光照管线",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "启用 NeoForge 方块渲染管线 - 修复自定义模型的光照问题。",
   "neoforge.configgui.fullBoundingBoxLadders": "梯子使用完整实体碰撞箱",
