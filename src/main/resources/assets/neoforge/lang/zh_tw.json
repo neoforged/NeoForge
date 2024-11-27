@@ -180,6 +180,8 @@
   "neoforge.configuration.section.neoforge.server.toml.title": "伺服器端設定",
   "neoforge.configgui.advertiseDedicatedServerToLan": "將專用伺服器公開至區域網路",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "開啟該選項後，即可讓專用伺服器公開至區域網路，使其自動顯示在多人遊戲畫面中。",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge 光照繪製管線",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "啟用 NeoForge 方塊繪製管線 - 修正自訂模型的光照問題。",
   "neoforge.configgui.fullBoundingBoxLadders": "全邊界框梯子",
