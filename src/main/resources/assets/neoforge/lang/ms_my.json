@@ -180,6 +180,8 @@
   "neoforge.configuration.section.neoforge.server.toml.title": "Tetapan pelayan",
   "neoforge.configgui.advertiseDedicatedServerToLan": "Iklankan Pelayan Khusus Kepada LAN",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Tetapkan ini kepada true untuk membolehkan pengiklanan pelayan khusus kepada klien LAN tempatan supaya ia muncul dalam skrin Multipemain secara automatik.",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.forgeLightPipelineEnabled": "Talian Paip Cahaya NeoForge",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.",
   "neoforge.configgui.fullBoundingBoxLadders": "Full Bounding Box Ladders",
