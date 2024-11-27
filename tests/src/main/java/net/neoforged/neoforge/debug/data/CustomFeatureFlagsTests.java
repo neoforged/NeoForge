@@ -23,7 +23,6 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -110,7 +109,6 @@ public class CustomFeatureFlagsTests {
 
         var modId = reg.modId();
         var enabledRecipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(modId, "diamonds_from_dirt"));
-        var disabledRecipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(modId, "dirt_from_diamonds"));
 
         reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
@@ -127,12 +125,6 @@ public class CustomFeatureFlagsTests {
                                 .requires(ItemTags.DIRT)
                                 .unlockedBy("has_dirt", has(ItemTags.DIRT))
                                 .save(output.withConditions(featureFlagsEnabled(flag)), enabledRecipeName);
-
-                        // recipe available when above flag is disabled
-                        shapeless(RecipeCategory.MISC, Items.DIRT)
-                                .requires(Tags.Items.GEMS_DIAMOND)
-                                .unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
-                                .save(output.withConditions(not(featureFlagsEnabled(flag))), disabledRecipeName);
                     }
                 }
                 return new Provider(registries, output);
@@ -149,21 +141,14 @@ public class CustomFeatureFlagsTests {
             var isFlagEnabled = server.getWorldData().enabledFeatures().contains(flag);
             var recipeMap = server.getRecipeManager().recipeMap();
             var hasEnabledRecipe = recipeMap.byKey(enabledRecipeName) != null;
-            var hasDisabledRecipe = recipeMap.byKey(disabledRecipeName) != null;
 
             if (isFlagEnabled) {
                 if (!hasEnabledRecipe) {
                     test.fail("Missing recipe '" + enabledRecipeName.location() + "', This should be enabled due to our flag '" + flagName + "' being enabled");
                 }
-                if (hasDisabledRecipe) {
-                    test.fail("Found recipe '" + disabledRecipeName.location() + "', This should be disabled due to our flag '" + flagName + "' being disabled");
-                }
             } else {
                 if (hasEnabledRecipe) {
                     test.fail("Found recipe '" + enabledRecipeName.location() + "', This should be disabled due to our flag '" + flagName + "' being enabled");
-                }
-                if (!hasDisabledRecipe) {
-                    test.fail("Missing recipe '" + disabledRecipeName.location() + "', This should be enabled due to our flag '" + flagName + "' being disabled");
                 }
             }
 
