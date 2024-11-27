@@ -125,7 +125,7 @@
   "commands.neoforge.data_components.list.tooltip.deleted": "组件 %s 的值 %s 已被删除",
   "commands.neoforge.data_components.list.tooltip.modified": "组件 %s 已从 %s 修改为 %s",
   "commands.neoforge.data_components.list.tooltip.added": "组件 %s 添加了值 %s",
-  "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "Recipe lookup is not possible in client commands",
+  "commands.neoforge.vanilla.resource_key.no_recipes_on_client": "配方无法通过客户端命令查找",
   "commands.config.getwithtype": "%s 类型 %s 的配置在 %s 发现",
   "commands.config.noconfig": "未发现 %s（类型为 %s）的配置",
   "neoforge.update.beta.1": "%s警告：%s NeoForge 为测试版",
