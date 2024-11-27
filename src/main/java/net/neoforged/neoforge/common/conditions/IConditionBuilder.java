@@ -44,27 +44,11 @@ public interface IConditionBuilder {
         return new TagEmptyCondition(tag.location());
     }
 
-    default ICondition isFeatureEnabled(FeatureFlagSet requiredFeatures) {
-        return FlagCondition.isEnabled(requiredFeatures);
+    default ICondition featureFlags(FeatureFlagSet requiredFeatures) {
+        return FlagCondition.of(requiredFeatures);
     }
 
-    default ICondition isFeatureEnabled(FeatureFlag requiredFlag) {
-        return FlagCondition.isEnabled(requiredFlag);
-    }
-
-    default ICondition isFeatureEnabled(FeatureFlag requiredFlag, FeatureFlag... requiredFlags) {
-        return FlagCondition.isEnabled(requiredFlag, requiredFlags);
-    }
-
-    default ICondition isFeatureDisabled(FeatureFlagSet requiredFeatures) {
-        return FlagCondition.isDisabled(requiredFeatures);
-    }
-
-    default ICondition isFeatureDisabled(FeatureFlag requiredFlag) {
-        return FlagCondition.isDisabled(requiredFlag);
-    }
-
-    default ICondition isFeatureDisabled(FeatureFlag requiredFlag, FeatureFlag... requiredFlags) {
-        return FlagCondition.isDisabled(requiredFlag, requiredFlags);
+    default ICondition isFeatureEnabled(FeatureFlag... requiredFlags) {
+        return FlagCondition.of(requiredFlags);
     }
 }

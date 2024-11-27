@@ -1,11 +1,13 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:feature_flags",
-      "expected_result": false,
-      "flags": [
-        "custom_feature_flags_pack_test:test_flag"
-      ]
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:feature_flags",
+        "flags": [
+          "custom_feature_flags_pack_test:test_flag"
+        ]
+      }
     }
   ],
   "type": "minecraft:crafting_shapeless",
