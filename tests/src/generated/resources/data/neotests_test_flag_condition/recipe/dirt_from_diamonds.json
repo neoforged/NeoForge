@@ -2,7 +2,7 @@
   "neoforge:conditions": [
     {
       "type": "neoforge:feature_flags",
-      "check_enabled": false,
+      "expected_result": false,
       "flags": [
         "custom_feature_flags_pack_test:test_flag"
       ]

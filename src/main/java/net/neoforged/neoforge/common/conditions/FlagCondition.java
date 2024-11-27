@@ -23,7 +23,7 @@ import net.minecraft.world.flag.FeatureFlags;
 public final class FlagCondition implements ICondition {
     public static final MapCodec<FlagCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             FeatureFlags.CODEC.fieldOf("flags").forGetter(condition -> condition.requiredFeatures),
-            Codec.BOOL.lenientOptionalFieldOf("check_enabled", true).forGetter(condition -> condition.expectedResult)).apply(instance, FlagCondition::new));
+            Codec.BOOL.lenientOptionalFieldOf("expected_result", true).forGetter(condition -> condition.expectedResult)).apply(instance, FlagCondition::new));
 
     private final FeatureFlagSet requiredFeatures;
     private final boolean expectedResult;
