@@ -24,7 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.conditions.FlagCondition;
+import net.neoforged.neoforge.common.conditions.FeatureFlagsEnabledCondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -123,13 +123,13 @@ public class CustomFeatureFlagsTests {
                         shapeless(RecipeCategory.MISC, Items.DIAMOND)
                                 .requires(ItemTags.DIRT)
                                 .unlockedBy("has_dirt", has(ItemTags.DIRT))
-                                .save(output.withConditions(FlagCondition.of(flag)), enabledRecipeName);
+                                .save(output.withConditions(FeatureFlagsEnabledCondition.of(flag)), enabledRecipeName);
 
                         // recipe available when above flag is disabled
                         shapeless(RecipeCategory.MISC, Items.DIRT)
                                 .requires(Tags.Items.GEMS_DIAMOND)
                                 .unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
-                                .save(output.withConditions(new NotCondition(FlagCondition.of(flag))), disabledRecipeName);
+                                .save(output.withConditions(new NotCondition(FeatureFlagsEnabledCondition.of(flag))), disabledRecipeName);
                     }
                 };
             }

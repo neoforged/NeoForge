@@ -44,11 +44,11 @@ public interface IConditionBuilder {
         return new TagEmptyCondition(tag.location());
     }
 
-    default ICondition featureFlags(FeatureFlagSet requiredFeatures) {
-        return FlagCondition.of(requiredFeatures);
+    default ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {
+        return FeatureFlagsEnabledCondition.of(requiredFeatures);
     }
 
-    default ICondition isFeatureEnabled(FeatureFlag... requiredFlags) {
-        return FlagCondition.of(requiredFlags);
+    default ICondition featureFlagsEnabled(FeatureFlag... requiredFlags) {
+        return FeatureFlagsEnabledCondition.of(requiredFlags);
     }
 }

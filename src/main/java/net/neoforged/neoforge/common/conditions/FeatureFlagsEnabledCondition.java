@@ -17,15 +17,15 @@ import org.apache.commons.lang3.ArrayUtils;
  *
  * @apiNote Mainly to be used when flagged content is not contained within the same feature pack which also enables said {@link FeatureFlag feature flags}.
  */
-public final class FlagCondition implements ICondition {
-    public static final MapCodec<FlagCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            FeatureFlags.CODEC.fieldOf("flags").forGetter(condition -> condition.requiredFeatures)).apply(instance, FlagCondition::new));
+public final class FeatureFlagsEnabledCondition implements ICondition {
+    public static final MapCodec<FeatureFlagsEnabledCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            FeatureFlags.CODEC.fieldOf("flags").forGetter(condition -> condition.requiredFeatures)).apply(instance, FeatureFlagsEnabledCondition::new));
 
     private final FeatureFlagSet requiredFeatures;
 
-    private FlagCondition(FeatureFlagSet requiredFeatures) {
+    private FeatureFlagsEnabledCondition(FeatureFlagSet requiredFeatures) {
         if (requiredFeatures.isEmpty()) {
-            throw new IllegalArgumentException("FlagCondition requires a non-empty feature flag set");
+            throw new IllegalArgumentException("FeatureFlagsEnabledCondition requires a non-empty feature flag set");
         }
         this.requiredFeatures = requiredFeatures;
     }
@@ -41,17 +41,17 @@ public final class FlagCondition implements ICondition {
     }
 
     public static ICondition of(FeatureFlagSet requiredFeatures) {
-        return new FlagCondition(requiredFeatures);
+        return new FeatureFlagsEnabledCondition(requiredFeatures);
     }
 
     public static ICondition of(FeatureFlag... requiredFlags) {
         if (requiredFlags.length == 0) {
-            throw new IllegalArgumentException("FlagCondition requires at least one feature flag.");
+            throw new IllegalArgumentException("FeatureFlagsEnabledCondition requires at least one feature flag.");
         }
         if (requiredFlags.length == 1) {
-            return new FlagCondition(FeatureFlagSet.of(requiredFlags[0]));
+            return new FeatureFlagsEnabledCondition(FeatureFlagSet.of(requiredFlags[0]));
         } else {
-            return new FlagCondition(FeatureFlagSet.of(requiredFlags[1], ArrayUtils.remove(requiredFlags, 0)));
+            return new FeatureFlagsEnabledCondition(FeatureFlagSet.of(requiredFlags[0], ArrayUtils.remove(requiredFlags, 0)));
         }
     }
 }
