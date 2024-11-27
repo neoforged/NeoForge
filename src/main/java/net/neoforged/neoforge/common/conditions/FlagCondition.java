@@ -16,29 +16,29 @@ import net.minecraft.world.flag.FeatureFlags;
  * Condition checking for the enabled state of a given {@link FeatureFlagSet}.
  * <p>
  * {@code requiredFeatures} - {@link FeatureFlagSet} containing all {@link FeatureFlag feature flags} to be validated.
- * {@code checkEnabled} - Validates that all given {@link FeatureFlag feature flags} are enabled when {@code true} or disabled when {@code false}.
+ * {@code expectedResult} - Validates that all given {@link FeatureFlag feature flags} are enabled when {@code true} or disabled when {@code false}.
  *
  * @apiNote Mainly to be used when flagged content is not contained within the same feature pack which also enables said {@link FeatureFlag feature flags}.
  */
 public final class FlagCondition implements ICondition {
     public static final MapCodec<FlagCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             FeatureFlags.CODEC.fieldOf("flags").forGetter(condition -> condition.requiredFeatures),
-            Codec.BOOL.lenientOptionalFieldOf("check_enabled", true).forGetter(condition -> condition.checkEnabled)).apply(instance, FlagCondition::new));
+            Codec.BOOL.lenientOptionalFieldOf("check_enabled", true).forGetter(condition -> condition.expectedResult)).apply(instance, FlagCondition::new));
 
     private final FeatureFlagSet requiredFeatures;
-    private final boolean checkEnabled;
+    private final boolean expectedResult;
 
-    private FlagCondition(FeatureFlagSet requiredFeatures, boolean checkEnabled) {
+    private FlagCondition(FeatureFlagSet requiredFeatures, boolean expectedResult) {
         this.requiredFeatures = requiredFeatures;
-        this.checkEnabled = checkEnabled;
+        this.expectedResult = expectedResult;
     }
 
     @Override
     public boolean test(IContext context) {
         var flagsEnabled = requiredFeatures.isSubsetOf(context.enabledFeatures());
-        // true if: 'checkEnabled' is true nd all given flags are enabled
+        // true if: 'expectedResult' is true nd all given flags are enabled
         // false if: `enabledEnabled' is false and all given flags are disabled
-        return flagsEnabled == checkEnabled;
+        return flagsEnabled == expectedResult;
     }
 
     @Override
