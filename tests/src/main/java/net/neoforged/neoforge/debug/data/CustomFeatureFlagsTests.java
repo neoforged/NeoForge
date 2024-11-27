@@ -24,8 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.conditions.FeatureFlagsEnabledCondition;
-import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -116,22 +115,27 @@ public class CustomFeatureFlagsTests {
         reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                return new RecipeProvider(registries, output) {
+                class Provider extends RecipeProvider implements IConditionBuilder {
+                    protected Provider(HolderLookup.Provider p_360573_, RecipeOutput p_360872_) {
+                        super(p_360573_, p_360872_);
+                    }
+
                     @Override
                     protected void buildRecipes() {
                         // recipe available when above flag is enabled
                         shapeless(RecipeCategory.MISC, Items.DIAMOND)
                                 .requires(ItemTags.DIRT)
                                 .unlockedBy("has_dirt", has(ItemTags.DIRT))
-                                .save(output.withConditions(FeatureFlagsEnabledCondition.of(flag)), enabledRecipeName);
+                                .save(output.withConditions(featureFlagsEnabled(flag)), enabledRecipeName);
 
                         // recipe available when above flag is disabled
                         shapeless(RecipeCategory.MISC, Items.DIRT)
                                 .requires(Tags.Items.GEMS_DIAMOND)
                                 .unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
-                                .save(output.withConditions(new NotCondition(FeatureFlagsEnabledCondition.of(flag))), disabledRecipeName);
+                                .save(output.withConditions(not(featureFlagsEnabled(flag))), disabledRecipeName);
                     }
-                };
+                }
+                return new Provider(registries, output);
             }
 
             @Override
