@@ -180,6 +180,8 @@
   "neoforge.configuration.section.neoforge.server.toml.title": "Серверні налаштування",
   "neoforge.configgui.advertiseDedicatedServerToLan": "Показати виділений сервер для локальної мережі",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Встановіть значення \"true\", для показування виділених серверів місцевим клієнтам локальної мережі, щоб це автоматично з'являлося на екрані багатокористувацького режиму.",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.forgeLightPipelineEnabled": "Конвеєр світла NeoForge",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Активує конвеєр NeoForge для рендерингу блоків — виправляє освітлення користувацьких моделей.",
   "neoforge.configgui.fullBoundingBoxLadders": "Повні області колізії з драбиною",
