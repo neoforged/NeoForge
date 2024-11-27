@@ -214,7 +214,9 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var createCleanArtifacts = tasks.register("createCleanArtifacts", CreateCleanArtifacts.class, task -> {
             task.setGroup(INTERNAL_GROUP);
+            task.setDescription("This task retrieves various files for the Minecraft version without applying NeoForge patches to them");
             var cleanArtifactsDir = neoDevBuildDir.map(dir -> dir.dir("artifacts/clean"));
+            task.getRawClientJar().set(cleanArtifactsDir.map(dir -> dir.file("raw-client.jar")));
             task.getCleanClientJar().set(cleanArtifactsDir.map(dir -> dir.file("client.jar")));
             task.getRawServerJar().set(cleanArtifactsDir.map(dir -> dir.file("raw-server.jar")));
             task.getCleanServerJar().set(cleanArtifactsDir.map(dir -> dir.file("server.jar")));
@@ -420,7 +422,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 downloadAssets,
                 installerJar,
                 minecraftVersion,
-                neoForgeVersion
+                neoForgeVersion,
+                createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar)
         );
         setupProductionServerTest(project, installerJar);
     }
@@ -553,7 +556,9 @@ public class NeoDevPlugin implements Plugin<Project> {
                                       TaskProvider<? extends DownloadAssets> downloadAssets,
                                       TaskProvider<? extends AbstractArchiveTask> installer,
                                       Provider<String> minecraftVersion,
-                                      Provider<String> neoForgeVersion) {
+                                           Provider<String> neoForgeVersion,
+                                           Provider<RegularFile> originalClientJar
+    ) {
 
         var installClient = project.getTasks().register("installProductionClient", InstallProductionClient.class, task -> {
             task.setGroup(INTERNAL_GROUP);
@@ -571,6 +576,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getInstallationDir().set(installClient.flatMap(InstallProductionClient::getInstallationDir));
+            task.getOriginalClientJar().set(originalClientJar);
         };
         project.getTasks().register("runProductionClient", RunProductionClient.class, task -> {
             task.setGroup(INTERNAL_GROUP);

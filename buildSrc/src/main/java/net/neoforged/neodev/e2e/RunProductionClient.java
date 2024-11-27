@@ -81,6 +81,13 @@ public abstract class RunProductionClient extends JavaExec {
     @Input
     public abstract Property<String> getNeoForgeVersion();
 
+    /**
+     * The original, unmodified client jar.
+     * The Vanilla launcher puts this on the classpath when it launches the game.
+     */
+    @InputFile
+    public abstract RegularFileProperty getOriginalClientJar();
+
     @Inject
     public RunProductionClient(ExecOperations execOperations) {
         this.execOperations = execOperations;
@@ -99,7 +106,7 @@ public abstract class RunProductionClient extends JavaExec {
         var librariesDir = installDir.resolve("libraries");
 
         var minecraftVersion = getMinecraftVersion().get();
-        var neoForgeVersion = getNeoForgeVersion().get();
+        var versionId = "neoforge-" + getNeoForgeVersion().get();
 
         var assetProperties = new Properties();
         try (var in = new FileInputStream(getAssetPropertiesFile().getAsFile().get())) {
@@ -137,7 +144,7 @@ public abstract class RunProductionClient extends JavaExec {
             spec.workingDir(installDir);
 
             spec.environment(getEnvironment());
-            applyVersionManifest(installDir, "neoforge-" + neoForgeVersion, placeholders, librariesDir, spec);
+            applyVersionManifest(installDir, versionId, placeholders, librariesDir, spec);
         });
     }
 
@@ -213,27 +220,15 @@ public abstract class RunProductionClient extends JavaExec {
                 // Copy over the library to the libraries directory, since our loader only deduplicates class-path
                 // items with module-path items when they are at the same location (and the module-path is defined
                 // relative to the libraries directory).
-                Path destination = null;
-                try {
-                    destination = librariesDir.resolve(id.repositoryPath());
-                    if (!Files.exists(destination)
-                        || !Objects.equals(Files.getLastModifiedTime(destination), Files.getLastModifiedTime(availableLibrary))
-                        || Files.size(destination) != Files.size(availableLibrary)) {
-                        Files.createDirectories(destination.getParent());
-                        Files.copy(availableLibrary, destination, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
-                    }
-                } catch (IOException e) {
-                    throw new GradleException("Failed to copy library " + availableLibrary + " to " + destination + ": " + e, e);
-                }
+                Path destination = librariesDir.resolve(id.repositoryPath());
+                copyIfNeeded(availableLibrary, destination);
                 classpathItems.add(destination.toAbsolutePath().toString());
             }
         }
 
         // The Vanilla launcher adds the actual game jar (obfuscated) as the last classpath item
         var gameJar = installDir.resolve("versions").resolve(versionId).resolve(versionId + ".jar");
-        if (!Files.exists(gameJar)) {
-            throw new GradleException("Missing game jar " + gameJar + ". Expected the installer to provide this.");
-        }
+        copyIfNeeded(getOriginalClientJar().get().getAsFile().toPath(), gameJar);
         classpathItems.add(gameJar.toAbsolutePath().toString());
 
         var classpath = String.join(File.pathSeparator, classpathItems);
@@ -349,6 +344,19 @@ public abstract class RunProductionClient extends JavaExec {
     private static JsonObject readJson(Path path) throws IOException {
         try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             return new Gson().fromJson(reader, JsonObject.class);
+        }
+    }
+
+    private static void copyIfNeeded(Path source, Path destination) {
+        try {
+            if (!Files.exists(destination)
+                || !Objects.equals(Files.getLastModifiedTime(destination), Files.getLastModifiedTime(source))
+                || Files.size(destination) != Files.size(source)) {
+                Files.createDirectories(destination.getParent());
+                Files.copy(source, destination, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new GradleException("Failed to copy " + source + " to " + destination + ": " + e, e);
         }
     }
 }
