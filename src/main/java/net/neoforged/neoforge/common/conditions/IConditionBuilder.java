@@ -59,4 +59,8 @@ public interface IConditionBuilder {
             return new FeatureFlagsEnabledCondition(FeatureFlagSet.of(requiredFlags[0], ArrayUtils.remove(requiredFlags, 0)));
         }
     }
+
+    static IConditionBuilder of() {
+        return new IConditionBuilder() {};
+    }
 }

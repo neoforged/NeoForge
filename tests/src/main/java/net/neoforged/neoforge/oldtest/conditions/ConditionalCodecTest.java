@@ -20,7 +20,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.slf4j.Logger;
 
@@ -141,7 +141,7 @@ public class ConditionalCodecTest {
                       ],
                       "i": 1,
                       "s": "test"
-                    }""", write(SimpleRecord.CONDITIONS_CODEC, Optional.of(WithConditions.builder(record).addCondition(TrueCondition.INSTANCE).build())));
+                    }""", write(SimpleRecord.CONDITIONS_CODEC, Optional.of(WithConditions.builder(record).addCondition(IConditionBuilder.of().TRUE()).build())));
         }
 
         private record SimpleRecord(int i, String s) {
@@ -223,7 +223,7 @@ public class ConditionalCodecTest {
                         }
                       ],
                       "neoforge:value": 1
-                    }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(TrueCondition.INSTANCE).build())));
+                    }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(IConditionBuilder.of().TRUE()).build())));
         }
     }
 

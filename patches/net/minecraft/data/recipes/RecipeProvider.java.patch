@@ -1,5 +1,14 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
+@@ -51,7 +_,7 @@
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.SuspiciousEffectHolder;
+ 
+-public abstract class RecipeProvider {
++public abstract class RecipeProvider implements net.neoforged.neoforge.common.conditions.IConditionBuilder {
+     protected final HolderLookup.Provider registries;
+     private final HolderGetter<Item> items;
+     protected final RecipeOutput output;
 @@ -566,8 +_,7 @@
      }
  

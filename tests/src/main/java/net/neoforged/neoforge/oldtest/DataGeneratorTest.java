@@ -116,8 +116,6 @@ import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
@@ -132,6 +130,7 @@ import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -163,17 +162,17 @@ public class DataGeneratorTest {
         PackOutput packOutput = gen.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        gen.addProvider(true, new PackMetadataGenerator(packOutput)
-                .add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
+        var metadata = gen.addProvider(true, new PackMetadataGenerator(packOutput));
+        metadata.add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
+                new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("neoforge")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("does_not_exist")))))
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), metadata.modLoaded(NeoForgeVersion.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), metadata.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
+                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE))));
         gen.addProvider(true, new Lang(packOutput));
         // Let blockstate provider see generated item models by passing its existing file helper
         ItemModelProvider itemModels = new ItemModels(packOutput, event.getExistingFileHelper());
@@ -198,7 +197,7 @@ public class DataGeneratorTest {
         context.register(TEST_LEVEL_STEM, levelStem);
     }
 
-    public static class Recipes extends RecipeProvider implements IConditionBuilder {
+    public static class Recipes extends RecipeProvider {
         public Recipes(HolderLookup.Provider registries, RecipeOutput output) {
             super(registries, output);
         }
