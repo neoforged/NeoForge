@@ -15,7 +15,7 @@
           "item": "minecraft:dirt"
         },
         {
-          "type": "neoforge:false"
+          "type": "neoforge:never"
         }
       ]
     }

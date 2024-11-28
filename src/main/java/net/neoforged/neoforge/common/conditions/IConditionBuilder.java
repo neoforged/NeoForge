@@ -20,8 +20,7 @@ public interface IConditionBuilder {
     }
 
     default ICondition never() {
-        // TODO: Maybe also rename class and registry entry to 'never' as well
-        return FalseCondition.INSTANCE;
+        return NeverCondition.INSTANCE;
     }
 
     /**
@@ -29,12 +28,11 @@ public interface IConditionBuilder {
      */
     @Deprecated(forRemoval = true, since = "1.21.3")
     default ICondition FALSE() {
-        return never();
+        return FalseCondition.INSTANCE;
     }
 
     default ICondition always() {
-        // TODO: Maybe also rename class and registry entry to 'always' as well
-        return TrueCondition.INSTANCE;
+        return AlwaysCondition.INSTANCE;
     }
 
     /**
@@ -42,7 +40,7 @@ public interface IConditionBuilder {
      */
     @Deprecated(forRemoval = true, since = "1.21.3")
     default ICondition TRUE() {
-        return always();
+        return TrueCondition.INSTANCE;
     }
 
     default ICondition not(ICondition value) {
