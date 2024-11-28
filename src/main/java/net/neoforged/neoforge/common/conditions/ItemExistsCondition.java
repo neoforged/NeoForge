@@ -22,7 +22,7 @@ public class ItemExistsCondition implements ICondition {
     /**
      * @deprecated Use {@link IConditionBuilder}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public ItemExistsCondition(String location) {
         this(ResourceLocation.parse(location));
     }
@@ -30,7 +30,7 @@ public class ItemExistsCondition implements ICondition {
     /**
      * @deprecated Use {@link IConditionBuilder}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public ItemExistsCondition(String namespace, String path) {
         this(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }

@@ -22,7 +22,7 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
     /**
      * @deprecated Use {@link IConditionBuilder}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public TagEmptyCondition(String location) {
         this(ResourceLocation.parse(location));
     }
@@ -30,7 +30,7 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
     /**
      * @deprecated Use {@link IConditionBuilder}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public TagEmptyCondition(String namespace, String path) {
         this(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
@@ -38,7 +38,7 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
     /**
      * @deprecated Use {@link IConditionBuilder}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public TagEmptyCondition(ResourceLocation tag) {
         this(TagKey.create(Registries.ITEM, tag));
     }

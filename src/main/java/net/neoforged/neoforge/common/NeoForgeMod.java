@@ -362,7 +362,7 @@ public class NeoForgeMod {
     /**
      * @deprecated To be replaced with {@link #NEVER_CONDITION}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FalseCondition>> FALSE_CONDITION = CONDITION_CODECS.register("false", () -> FalseCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<NeverCondition>> NEVER_CONDITION = CONDITION_CODECS.register("never", () -> NeverCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<ItemExistsCondition>> ITEM_EXISTS_CONDITION = CONDITION_CODECS.register("item_exists", () -> ItemExistsCondition.CODEC);
@@ -373,7 +373,7 @@ public class NeoForgeMod {
     /**
      * @deprecated To be replaced with {@link #ALWAYS_CONDITION}
      */
-    @Deprecated(forRemoval = true, since = "1.12.3")
+    @Deprecated(forRemoval = true, since = "1.21.3")
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TrueCondition>> TRUE_CONDITION = CONDITION_CODECS.register("true", () -> TrueCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AlwaysCondition>> ALWAYS_CONDITION = CONDITION_CODECS.register("always", () -> AlwaysCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FeatureFlagsEnabledCondition>> FEATURE_FLAGS_ENABLED_CONDITION = CONDITION_CODECS.register("feature_flags_enabled", () -> FeatureFlagsEnabledCondition.CODEC);
