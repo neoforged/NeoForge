@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.common.conditions;
 
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -51,8 +53,16 @@ public interface IConditionBuilder {
         return new OrCondition(List.of(values));
     }
 
+    default ICondition itemExists(ResourceLocation itemName) {
+        return new ItemExistsCondition(itemName);
+    }
+
     default ICondition itemExists(String namespace, String path) {
-        return new ItemExistsCondition(namespace, path);
+        return new ItemExistsCondition(ResourceLocation.fromNamespaceAndPath(namespace, path));
+    }
+
+    default ICondition itemExists(String itemName) {
+        return new ItemExistsCondition(ResourceLocation.parse(itemName));
     }
 
     default ICondition modLoaded(String modid) {
@@ -60,7 +70,19 @@ public interface IConditionBuilder {
     }
 
     default ICondition tagEmpty(TagKey<Item> tag) {
-        return new TagEmptyCondition(tag.location());
+        return new TagEmptyCondition(tag);
+    }
+
+    default ICondition tagEmpty(ResourceLocation itemTag) {
+        return tagEmpty(ItemTags.create(itemTag));
+    }
+
+    default ICondition tagEmpty(String namespace, String tagPath) {
+        return tagEmpty(ResourceLocation.fromNamespaceAndPath(namespace, tagPath));
+    }
+
+    default ICondition tagEmpty(String tagPath) {
+        return tagEmpty(ResourceLocation.parse(tagPath));
     }
 
     default ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {
