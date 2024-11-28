@@ -28,6 +28,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType;
 import org.slf4j.Logger;
@@ -35,14 +36,14 @@ import org.slf4j.Logger;
 /**
  * <p>Dataprovider for using a Codec to generate jsons.
  * Path names for jsons are derived from the given registry folder and each entry's namespaced id, in the format:</p>
- * 
+ *
  * <pre>
  * {@code <assets/data>/entryid/registryfolder/entrypath.json }
  * </pre>
  *
  * @param <T> the type of thing being generated.
  */
-public abstract class JsonCodecProvider<T> implements DataProvider {
+public abstract class JsonCodecProvider<T> implements DataProvider, IConditionBuilder {
     private static final Logger LOGGER = LogUtils.getLogger();
     protected final ResourceType resourceType;
     protected final PackOutput.PathProvider pathProvider;

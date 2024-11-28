@@ -30,6 +30,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.DataMapLoader;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
@@ -41,7 +42,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
 /**
  * A provider for {@link DataMapType data map} generation.
  */
-public abstract class DataMapProvider implements DataProvider {
+public abstract class DataMapProvider implements DataProvider, IConditionBuilder {
     protected final CompletableFuture<HolderLookup.Provider> lookupProvider;
     protected final PackOutput.PathProvider pathProvider;
     private final Map<DataMapType<?, ?>, Builder<?, ?>> builders = new HashMap<>();

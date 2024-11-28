@@ -19,6 +19,15 @@
              .forEach(
                  (p_359424_, p_359425_) -> {
                      if (p_359425_.requiredFeatures().isSubsetOf(p_313879_)) {
+@@ -736,7 +_,7 @@
+         RecipeBuilder create(RecipeProvider p_363562_, ItemLike p_362052_, ItemLike p_363871_);
+     }
+ 
+-    public abstract static class Runner implements DataProvider {
++    public abstract static class Runner implements DataProvider, net.neoforged.neoforge.common.conditions.IConditionBuilder {
+         private final PackOutput packOutput;
+         private final CompletableFuture<HolderLookup.Provider> registries;
+ 
 @@ -756,13 +_,13 @@
                          final List<CompletableFuture<?>> list = new ArrayList<>();
                          RecipeOutput recipeoutput = new RecipeOutput() {
