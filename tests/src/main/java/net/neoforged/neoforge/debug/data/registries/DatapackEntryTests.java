@@ -45,8 +45,8 @@ public class DatapackEntryTests {
                 event.getLookupProvider(),
                 builder,
                 conditions -> {
-                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, IConditionBuilder.of().FALSE());
-                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, IConditionBuilder.of().TRUE());
+                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, IConditionBuilder.of().never());
+                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, IConditionBuilder.of().always());
                 },
                 Set.of(reg.modId())));
 

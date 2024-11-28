@@ -221,7 +221,7 @@ public class DataGeneratorTest {
                                     and(
                                             not(modLoaded("minecraft")),
                                             itemExists("minecraft", "dirt"),
-                                            FALSE())),
+                                            never())),
                             recipeKey("conditional"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
@@ -237,7 +237,7 @@ public class DataGeneratorTest {
                                             and(
                                                     not(modLoaded("minecraft")),
                                                     itemExists("minecraft", "dirt"),
-                                                    FALSE()))),
+                                                    never()))),
                             recipeKey("conditional2"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)

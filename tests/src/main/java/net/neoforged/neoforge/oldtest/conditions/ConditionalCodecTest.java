@@ -141,7 +141,7 @@ public class ConditionalCodecTest {
                       ],
                       "i": 1,
                       "s": "test"
-                    }""", write(SimpleRecord.CONDITIONS_CODEC, Optional.of(WithConditions.builder(record).addCondition(IConditionBuilder.of().TRUE()).build())));
+                    }""", write(SimpleRecord.CONDITIONS_CODEC, Optional.of(WithConditions.builder(record).addCondition(IConditionBuilder.of().always()).build())));
         }
 
         private record SimpleRecord(int i, String s) {
@@ -223,7 +223,7 @@ public class ConditionalCodecTest {
                         }
                       ],
                       "neoforge:value": 1
-                    }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(IConditionBuilder.of().TRUE()).build())));
+                    }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(IConditionBuilder.of().always()).build())));
         }
     }
 

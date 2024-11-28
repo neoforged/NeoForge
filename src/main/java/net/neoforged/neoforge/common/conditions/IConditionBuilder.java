@@ -17,12 +17,30 @@ public interface IConditionBuilder {
         return new AndCondition(List.of(values));
     }
 
-    default ICondition FALSE() {
+    default ICondition never() {
+        // TODO: Maybe also rename class and registry entry to 'never' as well
         return FalseCondition.INSTANCE;
     }
 
-    default ICondition TRUE() {
+    /**
+     * @deprecated To be replaced with {@link #never()}
+     */
+    @Deprecated(forRemoval = true, since = "1.21.3")
+    default ICondition FALSE() {
+        return never();
+    }
+
+    default ICondition always() {
+        // TODO: Maybe also rename class and registry entry to 'always' as well
         return TrueCondition.INSTANCE;
+    }
+
+    /**
+     * @deprecated To be replaced with {@link #always()}
+     */
+    @Deprecated(forRemoval = true, since = "1.21.3")
+    default ICondition TRUE() {
+        return always();
     }
 
     default ICondition not(ICondition value) {

@@ -37,7 +37,7 @@ public interface ConditionalRecipeTest {
                                 .requires(Items.STONE)
                                 .unlockedBy("has_stone", has(Items.STONE))
                                 // false condition to have this recipe always disabled
-                                .save(output.withConditions(FALSE()), recipeName);
+                                .save(output.withConditions(never()), recipeName);
                     }
                 };
             }
