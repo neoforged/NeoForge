@@ -187,6 +187,20 @@ generateAccessTransformers {
             matchMethodsReturning('net/minecraft/advancements/Criterion')
     )
 
+    // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
+    methodGroup(
+            'skeleton step sound', PROTECTED,
+            matchClassesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
+            matchMethodsWithName('getStepSound')
+    )
+
+    // Make all noise generator setting factories public so mods can use them for custom dimensions
+    methodGroup(
+            'noise generator', PUBLIC,
+            matchClass('net/minecraft/world/level/levelgen/NoiseGeneratorSettings'),
+            matchMethodsReturning('net/minecraft/world/level/levelgen/NoiseGeneratorSettings')
+    )
+
     fieldGroup(
             'biome effects builder', PROTECTED,
             matchClass('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
