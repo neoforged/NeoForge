@@ -159,6 +159,47 @@ neoDev {
     }
 }
 
+generateAccessTransformers {
+    classGroup(
+            'render state shard classes', PUBLIC,
+            matchInnerClassesOf('net/minecraft/client/renderer/RenderStateShard')
+    )
+    fieldGroup(
+            'render state shards', PUBLIC,
+            matchClass('net/minecraft/client/renderer/RenderStateShard'),
+            matchFieldsOfType(matchClassesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
+    )
+
+    methodGroup(
+            'block constructors', PUBLIC,
+            matchClassesWithSuperclass('net/minecraft/world/level/block/Block'),
+            matchMethodsWithName('<init>')
+    )
+    methodGroup(
+            'particle constructors', PUBLIC,
+            matchClassesWithSuperclass('net/minecraft/client/particle/Particle'),
+            matchMethodsWithName('<init>')
+    )
+
+    methodGroup(
+            'recipe criteria', PROTECTED,
+            matchClass('net/minecraft/data/recipes/RecipeProvider'),
+            matchMethodsReturning('net/minecraft/advancements/Criterion')
+    )
+
+    fieldGroup(
+            'biome effects builder', PROTECTED,
+            matchClass('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
+            matchAny()
+    )
+
+    fieldGroup(
+            'creative tabs', PUBLIC,
+            matchClass('net/minecraft/world/item/CreativeModeTabs'),
+            matchFieldsOfType(matchClass('net/minecraft/resources/ResourceKey'))
+    )
+}
+
 tasks.withType(Javadoc.class).configureEach {
     options.tags = [
             'apiNote:a:<em>API Note:</em>',

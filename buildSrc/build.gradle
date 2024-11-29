@@ -23,4 +23,9 @@ dependencies {
 
     implementation "com.google.code.gson:gson:${gradle.parent.ext.gson_version}"
     implementation "io.codechicken:DiffPatch:${gradle.parent.ext.diffpatch_version}"
+
+    implementation "org.ow2.asm:asm:${gradle.parent.ext.asm_version}"
+    implementation "org.ow2.asm:asm-commons:${gradle.parent.ext.asm_version}"
+    implementation "org.ow2.asm:asm-tree:${gradle.parent.ext.asm_version}"
+    implementation "org.ow2.asm:asm-util:${gradle.parent.ext.asm_version}"
 }
