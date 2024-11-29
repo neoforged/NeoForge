@@ -230,6 +230,7 @@ public abstract class RunProductionClient extends JavaExec {
         var gameJar = installDir.resolve("versions").resolve(versionId).resolve(versionId + ".jar");
         copyIfNeeded(getOriginalClientJar().get().getAsFile().toPath(), gameJar);
         classpathItems.add(gameJar.toAbsolutePath().toString());
+        placeholders.put("version_name", versionId);
 
         var classpath = String.join(File.pathSeparator, classpathItems);
         placeholders.putIfAbsent("classpath", classpath);
