@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * Allows modders to add arbitrary data onto render states for use in custom rendering.
  */
 public abstract class BaseRenderState implements IRenderStateExtension {
-    protected Map<ContextKey<?>, Object> extensions = new Reference2ObjectOpenHashMap<>();
+    protected final Map<ContextKey<?>, Object> extensions = new Reference2ObjectOpenHashMap<>();
 
     @SuppressWarnings("unchecked")
     @Nullable
