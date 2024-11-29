@@ -7,9 +7,18 @@ import org.gradle.api.tasks.OutputFile;
 import javax.inject.Inject;
 
 abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
+    /**
+     * The unmodified downloaded client jar.
+     */
+    @OutputFile
+    abstract RegularFileProperty getRawClientJar();
+
     @OutputFile
     abstract RegularFileProperty getCleanClientJar();
 
+    /**
+     * The unmodified downloaded server jar.
+     */
     @OutputFile
     abstract RegularFileProperty getRawServerJar();
 
@@ -24,6 +33,7 @@ abstract class CreateCleanArtifacts extends CreateMinecraftArtifacts {
 
     @Inject
     public CreateCleanArtifacts() {
+        getAdditionalResults().put("node.downloadClient.output.output", getRawClientJar().getAsFile());
         getAdditionalResults().put("node.stripClient.output.output", getCleanClientJar().getAsFile());
         getAdditionalResults().put("node.downloadServer.output.output", getRawServerJar().getAsFile());
         getAdditionalResults().put("node.stripServer.output.output", getCleanServerJar().getAsFile());

@@ -21,8 +21,8 @@ import java.util.List;
  * Combines a {@link File} and its {@link MavenIdentifier maven identifier},
  * for usage as task inputs that will be passed to {@link LibraryCollector}.
  */
-abstract class IdentifiedFile {
-    static Provider<List<IdentifiedFile>> listFromConfiguration(Project project, Configuration configuration) {
+public abstract class IdentifiedFile {
+    public static Provider<List<IdentifiedFile>> listFromConfiguration(Project project, Configuration configuration) {
         return configuration.getIncoming().getArtifacts().getResolvedArtifacts().map(
                 artifacts -> artifacts.stream()
                         .map(artifact -> IdentifiedFile.of(project, artifact))
@@ -41,8 +41,8 @@ abstract class IdentifiedFile {
 
     @InputFile
     @PathSensitive(PathSensitivity.NONE)
-    protected abstract RegularFileProperty getFile();
+    public abstract RegularFileProperty getFile();
 
     @Input
-    protected abstract Property<MavenIdentifier> getIdentifier();
+    public abstract Property<MavenIdentifier> getIdentifier();
 }

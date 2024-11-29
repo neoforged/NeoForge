@@ -29,12 +29,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
     @Inject
     public CreateUserDevConfig() {}
 
-    /**
-     * Toggles the launch type written to the userdev configuration between *dev and *userdev.
-     */
-    @Input
-    abstract Property<Boolean> getForNeoDev();
-
     @Input
     abstract Property<String> getFmlVersion();
 
@@ -85,11 +79,11 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
         for (var runType : RunType.values()) {
             var launchTarget = switch (runType) {
-                case CLIENT -> "forgeclient";
-                case DATA -> "forgedata";
-                case GAME_TEST_SERVER, SERVER -> "forgeserver";
-                case JUNIT -> "forgejunit";
-            } + (getForNeoDev().get() ? "dev" : "userdev");
+                case CLIENT -> "forgeclientdev";
+                case DATA -> "forgedatadev";
+                case GAME_TEST_SERVER, SERVER -> "forgeserverdev";
+                case JUNIT -> "forgejunitdev";
+            };
 
             List<String> args = new ArrayList<>();
             Collections.addAll(args,

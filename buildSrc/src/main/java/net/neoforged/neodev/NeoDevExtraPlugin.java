@@ -2,7 +2,6 @@ package net.neoforged.neodev;
 
 import net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin;
 import net.neoforged.moddevgradle.internal.NeoDevFacade;
-import net.neoforged.nfrtgradle.CreateMinecraftArtifacts;
 import net.neoforged.nfrtgradle.DownloadAssets;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -33,7 +32,10 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
 
         // TODO: this is temporary
         var downloadAssets = neoForgeProject.getTasks().named("downloadAssets", DownloadAssets.class);
-        var writeNeoDevConfig = neoForgeProject.getTasks().named("writeNeoDevConfig", CreateUserDevConfig.class);
+
+        var neoForgeConfigOnly = project.getConfigurations().create("neoForgeConfigOnly", spec -> {
+            spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "net.neoforged:neoforge-moddev-config"));
+        });
 
         Consumer<Configuration> configureLegacyClasspath = spec -> {
             spec.getDependencies().add(projectDep(dependencyFactory, neoForgeProject, "net.neoforged:neoforge-dependencies"));
@@ -46,7 +48,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 project,
                 neoDevBuildDir,
                 extension.getRuns(),
-                writeNeoDevConfig,
+                neoForgeConfigOnly,
                 modulePath -> modulePath.getDependencies().add(modulePathDependency),
                 configureLegacyClasspath,
                 downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
@@ -60,7 +62,7 @@ public class NeoDevExtraPlugin implements Plugin<Project> {
                 project,
                 neoDevBuildDir,
                 testTask,
-                writeNeoDevConfig,
+                neoForgeConfigOnly,
                 testExtension.getLoadedMods(),
                 testExtension.getTestedMod(),
                 modulePath -> modulePath.getDependencies().add(modulePathDependency),
