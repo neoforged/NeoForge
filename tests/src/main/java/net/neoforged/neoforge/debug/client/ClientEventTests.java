@@ -165,9 +165,15 @@ public class ClientEventTests {
         test.whenEnabled(listeners -> {
             listeners.forge().addListener((RenderLivingEvent.Post<?, ?, ?> event) -> {
                 int numRender = event.getRenderState().getRenderDataOrDefault(numRenderAttachmentKey, -1);
-                if (numRender == -1) test.fail("Attachment render data not set");
+                if (numRender == -1) {
+                    test.fail("Attachment render data not set");
+                    return;
+                }
                 float xRotation = event.getRenderState().getRenderDataOrDefault(rotationKey, 0f);
-                if (event.getRenderer() instanceof PlayerRenderer && numRender == 0) test.fail("Custom render data not set for player");
+                if (event.getRenderer() instanceof PlayerRenderer && numRender == 0) {
+                    test.fail("Custom render data not set for player");
+                    return;
+                }
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 poseStack.scale(0.3f, 0.3f, 0.3f);
@@ -179,8 +185,8 @@ public class ClientEventTests {
                     poseStack.popPose();
                 }
                 poseStack.popPose();
+                test.pass();
             });
-            test.pass();
         });
     }
 }
