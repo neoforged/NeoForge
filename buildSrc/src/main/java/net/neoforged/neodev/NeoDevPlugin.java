@@ -84,7 +84,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoFormArtifact().set(mcAndNeoFormVersion.map(version -> "net.neoforged:neoform:" + version + "@zip"));
         });
 
-        var genAts = project.getRootProject().file("src/generated/resources/generatedaccesstransformer.cfg");
+        var genAts = project.getRootProject().file("src/generated/sync/META-INF/accesstransformergenerated.cfg");
 
         tasks.register("generateAccessTransformers", GenerateAccessTransformers.class, task -> {
             task.setGroup(GROUP);

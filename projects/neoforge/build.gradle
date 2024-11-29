@@ -28,7 +28,7 @@ sourceSets {
             srcDirs rootProject.file('src/main/java')
         }
         resources {
-            srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources')
+            srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources'), rootProject.file('src/generated/sync')
         }
     }
 }
