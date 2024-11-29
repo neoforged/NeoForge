@@ -252,7 +252,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 }
                 return repos;
             }));
-            task.getIgnoreList().addAll("client-extra", "neoforge-");
+            // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
+            task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
             task.setModules(configurations.modulePath);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
         });
