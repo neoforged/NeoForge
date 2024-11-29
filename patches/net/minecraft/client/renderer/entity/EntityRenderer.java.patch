@@ -9,6 +9,14 @@
              this.renderNameTag(p_364816_, p_364816_.nameTag, p_114488_, p_114489_, p_114490_);
          }
      }
+@@ -245,6 +_,7 @@
+     public final S createRenderState(T p_361382_, float p_360885_) {
+         S s = this.reusedState;
+         this.extractRenderState(p_361382_, s, p_360885_);
++        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateEntityRenderState(this, p_361382_, s);
+         return s;
+     }
+ 
 @@ -270,9 +_,11 @@
          }
  
