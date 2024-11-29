@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.SpawnEggItem;
@@ -43,17 +42,16 @@ import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
-    static {
-        TranslatableContents.lang = () -> com.ibm.icu.util.ULocale.forLocale(net.minecraft.client.Minecraft.getInstance().getLocale());
-    }
-
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
+        SelfTest.initClient();
+
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
 

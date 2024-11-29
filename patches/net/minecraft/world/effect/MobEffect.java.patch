@@ -49,8 +49,8 @@
          return this.requiredFeatures;
      }
  
--    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
-+    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
+-    public static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++    public static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
 +
 +        public AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
 +            this(id, amount, operation, null);

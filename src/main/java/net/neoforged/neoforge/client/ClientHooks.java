@@ -1096,6 +1096,10 @@ public class ClientHooks {
         return renderTypes.contains(RenderType.TRANSLUCENT) || renderTypes.contains(RenderType.TRIPWIRE);
     }
 
+    public static void reloadRenderer() {
+        Minecraft.getInstance().levelRenderer.allChanged();
+    }
+
     public static Map<ResourceLocation, ResourceLocation> gatherMaterialAtlases(Map<ResourceLocation, ResourceLocation> vanillaAtlases) {
         vanillaAtlases = new HashMap<>(vanillaAtlases);
         ModLoader.postEvent(new RegisterMaterialAtlasesEvent(vanillaAtlases));

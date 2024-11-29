@@ -16,6 +16,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This event is fired before an entity renderer renders the nameplate of an entity.
@@ -26,14 +27,12 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public abstract class RenderNameTagEvent extends Event {
     private final EntityRenderState renderState;
-    protected final Component originalContent;
     private final EntityRenderer<?, ?> entityRenderer;
     private final float partialTick;
 
     @ApiStatus.Internal
-    public RenderNameTagEvent(EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, float partialTick) {
+    public RenderNameTagEvent(EntityRenderState renderState, EntityRenderer<?, ?> entityRenderer, float partialTick) {
         this.renderState = renderState;
-        this.originalContent = content;
         this.entityRenderer = entityRenderer;
         this.partialTick = partialTick;
     }
@@ -69,12 +68,16 @@ public abstract class RenderNameTagEvent extends Event {
      */
     public static class CanRender extends RenderNameTagEvent {
         private final Entity entity;
+        @Nullable
+        private final Component originalContent;
+        @Nullable
         private Component content;
         private TriState canRender = TriState.DEFAULT;
 
-        public CanRender(Entity entity, EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, float partialTick) {
-            super(renderState, content, entityRenderer, partialTick);
+        public CanRender(Entity entity, EntityRenderState renderState, @Nullable Component content, EntityRenderer<?, ?> entityRenderer, float partialTick) {
+            super(renderState, entityRenderer, partialTick);
             this.entity = entity;
+            this.originalContent = content;
             this.content = content;
         }
 
@@ -88,6 +91,7 @@ public abstract class RenderNameTagEvent extends Event {
         /**
          * {@return the original text on the nameplate}
          */
+        @Nullable
         public Component getOriginalContent() {
             return this.originalContent;
         }
@@ -121,6 +125,7 @@ public abstract class RenderNameTagEvent extends Event {
         /**
          * {@return the text on the nameplate that will be rendered}
          */
+        @Nullable
         public Component getContent() {
             return this.content;
         }
@@ -137,12 +142,14 @@ public abstract class RenderNameTagEvent extends Event {
      * @see EntityRenderer
      */
     public static class DoRender extends RenderNameTagEvent implements ICancellableEvent {
+        private final Component content;
         private final PoseStack poseStack;
         private final MultiBufferSource multiBufferSource;
         private final int packedLight;
 
         public DoRender(EntityRenderState renderState, Component content, EntityRenderer<?, ?> entityRenderer, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, float partialTick) {
-            super(renderState, content, entityRenderer, partialTick);
+            super(renderState, entityRenderer, partialTick);
+            this.content = content;
             this.poseStack = poseStack;
             this.multiBufferSource = multiBufferSource;
             this.packedLight = packedLight;
@@ -152,7 +159,7 @@ public abstract class RenderNameTagEvent extends Event {
          * {@return the text on the nameplate}
          */
         public Component getContent() {
-            return this.originalContent;
+            return this.content;
         }
 
         /**

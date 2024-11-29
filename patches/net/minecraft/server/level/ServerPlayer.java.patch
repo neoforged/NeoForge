@@ -23,6 +23,15 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
+@@ -781,7 +_,7 @@
+ 
+     private void synchronizeSpecialItemUpdates(ItemStack p_372884_) {
+         MapId mapid = p_372884_.get(DataComponents.MAP_ID);
+-        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, this.level());
++        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(p_372884_, this.level());
+         if (mapitemsaveddata != null) {
+             Packet<?> packet = mapitemsaveddata.getUpdatePacket(mapid, this);
+             if (packet != null) {
 @@ -850,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {
