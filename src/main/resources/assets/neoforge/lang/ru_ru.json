@@ -115,7 +115,7 @@
   "commands.config.noconfig": "Настройки для %s типа %s не найдены",
   "neoforge.update.beta.1": "%sВНИМАНИЕ: %sэто бета-версия NeoForge",
   "neoforge.update.beta.2": "Недоработки ожидаемы. Перед тем, как сообщить о проблеме, проверьте, не сообщали ли о ней.",
-  "neoforge.update.newversion": "Доступна новая версия NeoForge: %s",
+  "neoforge.update.newversion": "Вышла новая версия NeoForge: %s",
   "neoforge.menu.updatescreen.title": "Обновление мода",
   "neoforge.configgui.removeErroringEntities.tooltip": "Установите значение true, чтобы удалять любые сущности, которые вызывают ошибку в методе обновления, вместо завершения работы сервера и создания отчёта об ошибке. БУДЬТЕ ОСТОРОЖНЫ, ЭТО МОЖЕТ ПРИВЕСТИ К НЕИСПРАВНОСТЯМ; ИСПОЛЬЗУЙТЕ С ОСТОРОЖНОСТЬЮ, МЫ НЕ НЕСЁМ ОТВЕТСТВЕННОСТИ ЗА УЩЕРБ.",
   "neoforge.configgui.removeErroringEntities": "Удалять сущности, вызывающие ошибки",
