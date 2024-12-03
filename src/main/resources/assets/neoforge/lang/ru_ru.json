@@ -85,7 +85,7 @@
   "commands.neoforge.mods.list": "Список модов: %1$s",
   "commands.neoforge.tracking.entity.enabled": "Отслеживание сущностей включено на %d секунд.",
   "commands.neoforge.tracking.entity.reset": "Данные с таймингами сущностей очищены!",
-  "commands.neoforge.tracking.invalid": "Неверные данные отслеживания.",
+  "commands.neoforge.tracking.invalid": "Предоставлены неправильные данные для отслеживания.",
   "commands.neoforge.tracking.be.enabled": "Отслеживание блочных сущностей включено на %d секунд.",
   "commands.neoforge.tracking.be.reset": "Данные с таймингами блочных сущностей очищены!",
   "commands.neoforge.tracking.timing_entry": "%1$s - %2$s [%3$s, %4$s, %5$s]: %6$s",
