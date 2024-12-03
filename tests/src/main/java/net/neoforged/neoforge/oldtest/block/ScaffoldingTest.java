@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.oldtest.block;
 
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -21,10 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -48,17 +47,17 @@ public class ScaffoldingTest {
 
     private void gatherData(final GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
-        event.addProvider(new ScaffoldingBlockState(gen.getPackOutput(), MODID, event.getExistingFileHelper()));
+        event.addProvider(new ScaffoldingModels(gen.getPackOutput()));
     }
 
-    static class ScaffoldingBlockState extends BlockStateProvider {
-        public ScaffoldingBlockState(PackOutput output, String modid, ExistingFileHelper exFileHelper) {
-            super(output, modid, exFileHelper);
+    private static final class ScaffoldingModels extends ModelProvider {
+        public ScaffoldingModels(PackOutput output) {
+            super(output, MODID);
         }
 
         @Override
-        protected void registerStatesAndModels() {
-            this.getVariantBuilder(SCAFFOLDING_METHOD_TEST.get()).forAllStatesExcept((state) -> ConfiguredModel.builder().modelFile(state.getValue(ScaffoldingBlock.BOTTOM) ? new ModelFile.ExistingModelFile(ResourceLocation.withDefaultNamespace("block/scaffolding_unstable"), this.models().existingFileHelper) : new ModelFile.ExistingModelFile(ResourceLocation.withDefaultNamespace("block/scaffolding_stable"), this.models().existingFileHelper)).build(), ScaffoldingBlock.DISTANCE, ScaffoldingBlock.WATERLOGGED);
+        protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+            blockModels.createScaffolding(SCAFFOLDING_METHOD_TEST.value());
         }
     }
 

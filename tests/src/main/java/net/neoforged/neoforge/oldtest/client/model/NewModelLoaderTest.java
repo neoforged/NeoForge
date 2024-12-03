@@ -9,7 +9,14 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.util.Arrays;
+import java.util.stream.Stream;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -19,6 +26,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -30,9 +38,11 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -46,17 +56,14 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.ExtendedUnbakedModel;
 import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
-import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
 import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -89,10 +96,6 @@ public class NewModelLoaderTest {
 
     public static DeferredItem<Item> custom_loader = ITEMS.registerSimpleItem("custom_loader");
 
-    public static DeferredItem<Item> item_layers = ITEMS.registerSimpleItem("item_layers");
-
-    public static DeferredItem<Item> separate_perspective = ITEMS.registerSimpleItem("separate_perspective");
-
     public NewModelLoaderTest(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
@@ -109,9 +112,7 @@ public class NewModelLoaderTest {
                     obj_item_same_part_names,
                     custom_transforms,
                     custom_vanilla_loader,
-                    custom_loader,
-                    item_layers,
-                    separate_perspective).forEach(event::accept);
+                    custom_loader).forEach(event::accept);
         }
     }
 
@@ -181,68 +182,38 @@ public class NewModelLoaderTest {
         final PackOutput output = gen.getPackOutput();
 
         // Let blockstate provider see generated item models by passing its existing file helper
-        ItemModelProvider itemModels = new ItemModels(output, event.getExistingFileHelper());
-        gen.addProvider(true, itemModels);
-        gen.addProvider(true, new BlockStates(output, itemModels.existingFileHelper));
+        gen.addProvider(true, new ModelGen(output));
     }
 
-    public static class ItemModels extends ItemModelProvider {
-        public ItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
-            super(output, MODID, existingFileHelper);
+    private static class ModelGen extends ModelProvider {
+        public ModelGen(PackOutput output) {
+            super(output, MODID);
         }
 
         @Override
-        protected void registerModels() {
-            withExistingParent(NewModelLoaderTest.item_layers.getId().getPath(), "neoforge:item/default")
-                    .texture("particle", "minecraft:block/red_stained_glass")
-                    .texture("layer0", "minecraft:item/coal")
-                    .texture("layer1", "minecraft:item/stick")
-                    .customLoader(ItemLayerModelBuilder::begin)
-                    .emissive(15, 15, 1)
-                    .end();
-            withExistingParent(NewModelLoaderTest.separate_perspective.getId().getPath(), "neoforge:item/default")
-                    .customLoader(SeparateTransformsModelBuilder::begin)
-                    .base(nested().parent(getExistingFile(mcLoc("minecraft:item/coal"))))
-                    .perspective(ItemDisplayContext.GUI, nested().parent(getExistingFile(mcLoc("minecraft:item/snowball"))))
-                    .perspective(ItemDisplayContext.FIRST_PERSON_LEFT_HAND, nested().parent(getExistingFile(mcLoc("minecraft:item/bone"))))
-                    .end();
-        }
-    }
+        protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+            var qrTexture = TextureSlot.create("qr");
 
-    public static class BlockStates extends BlockStateProvider {
-        public BlockStates(PackOutput output, ExistingFileHelper exFileHelper) {
-            super(output, MODID, exFileHelper);
-        }
-
-        @Override
-        protected void registerStatesAndModels() {
-            createModelAndBlockState(obj_block, "sugar_glider");
-            createModelAndBlockState(obj_block_same_part_names, "sugar_glider_same_part_names");
-        }
-
-        private void createModelAndBlockState(DeferredBlock<Block> block, String objModel) {
-            BlockModelBuilder model = models()
-                    .getBuilder(block.getId().getPath())
+            blockModels.createHorizontallyRotatedBlock(obj_block.value(), TexturedModel.ORIENTABLE.updateTemplate(template -> template.extend()
                     .customLoader(ObjModelBuilder::begin)
                     .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
                     .flipV(true)
                     .end()
-                    .texture("qr", "minecraft:block/oak_planks")
-                    .texture("particle", "#qr");
-            getVariantBuilder(block.get())
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
-                    .addModels(new ConfiguredModel(model, 0, 90, false))
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST)
-                    .addModels(new ConfiguredModel(model, 0, 270, false))
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
-                    .addModels(new ConfiguredModel(model))
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
-                    .addModels(new ConfiguredModel(model, 0, 180, false))
-                    .partialState();
+                    .requiredTextureSlot(qrTexture)
+                    .build())
+                    .updateTexture(textures -> textures
+                            .put(qrTexture, TextureMapping.getBlockTexture(Blocks.OAK_PLANKS))
+                            .copySlot(qrTexture, TextureSlot.PARTICLE)));
+        }
+
+        @Override
+        protected Stream<? extends Holder<Block>> getKnownBlocks() {
+            return Stream.of(obj_block);
+        }
+
+        @Override
+        protected Stream<? extends Holder<Item>> getKnownItems() {
+            return Stream.empty();
         }
     }
 }
