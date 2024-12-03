@@ -19,30 +19,6 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
                             ResourceLocation.CODEC.xmap(loc -> TagKey.create(Registries.ITEM, loc), TagKey::location).fieldOf("tag").forGetter(TagEmptyCondition::tag))
                     .apply(builder, TagEmptyCondition::new));
 
-    /**
-     * @deprecated Use {@link IConditionBuilder}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    public TagEmptyCondition(String location) {
-        this(ResourceLocation.parse(location));
-    }
-
-    /**
-     * @deprecated Use {@link IConditionBuilder}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    public TagEmptyCondition(String namespace, String path) {
-        this(ResourceLocation.fromNamespaceAndPath(namespace, path));
-    }
-
-    /**
-     * @deprecated Use {@link IConditionBuilder}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    public TagEmptyCondition(ResourceLocation tag) {
-        this(TagKey.create(Registries.ITEM, tag));
-    }
-
     @Override
     public boolean test(ICondition.IContext context) {
         return !context.isTagLoaded(tag);

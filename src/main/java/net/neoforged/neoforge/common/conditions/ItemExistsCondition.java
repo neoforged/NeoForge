@@ -10,34 +10,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
-public class ItemExistsCondition implements ICondition {
+public record ItemExistsCondition(ResourceLocation item) implements ICondition {
     public static MapCodec<ItemExistsCondition> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            ResourceLocation.CODEC.fieldOf("item").forGetter(ItemExistsCondition::getItem))
+                            ResourceLocation.CODEC.fieldOf("item").forGetter(ItemExistsCondition::item))
                     .apply(builder, ItemExistsCondition::new));
-
-    private final ResourceLocation item;
-
-    /**
-     * @deprecated Use {@link IConditionBuilder}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    public ItemExistsCondition(String location) {
-        this(ResourceLocation.parse(location));
-    }
-
-    /**
-     * @deprecated Use {@link IConditionBuilder}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    public ItemExistsCondition(String namespace, String path) {
-        this(ResourceLocation.fromNamespaceAndPath(namespace, path));
-    }
-
-    public ItemExistsCondition(ResourceLocation item) {
-        this.item = item;
-    }
 
     @Override
     public boolean test(IContext context) {
@@ -47,10 +25,6 @@ public class ItemExistsCondition implements ICondition {
     @Override
     public MapCodec<? extends ICondition> codec() {
         return CODEC;
-    }
-
-    public ResourceLocation getItem() {
-        return item;
     }
 
     @Override

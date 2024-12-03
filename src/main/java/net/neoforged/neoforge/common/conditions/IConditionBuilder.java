@@ -23,24 +23,8 @@ public interface IConditionBuilder {
         return NeverCondition.INSTANCE;
     }
 
-    /**
-     * @deprecated To be replaced with {@link #never()}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    default ICondition FALSE() {
-        return FalseCondition.INSTANCE;
-    }
-
     default ICondition always() {
         return AlwaysCondition.INSTANCE;
-    }
-
-    /**
-     * @deprecated To be replaced with {@link #always()}
-     */
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    default ICondition TRUE() {
-        return TrueCondition.INSTANCE;
     }
 
     default ICondition not(ICondition value) {
