@@ -35,9 +35,9 @@ public interface VanillaDataGenTest {
         // item should appear as red/blue chessboard
         // when worn on head should be cyan/yellow chessboard
         var item = reg.items().registerSimpleItem("vanilla_model_gen_item", new Item.Properties()
-                        .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.HEAD)
-                                .setAsset(headModelName)
-                                .build()));
+                .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.HEAD)
+                        .setAsset(headModelName)
+                        .build()));
 
         // block should appear green/red chessboard
         var block = reg.blocks().registerSimpleBlock("vanilla_model_gen_block", BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));

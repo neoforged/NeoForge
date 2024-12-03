@@ -6,6 +6,9 @@
      private final PackOutput.PathProvider modelPathProvider;
 -
 -    public ModelProvider(PackOutput p_388260_) {
+-        this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+-        this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+-        this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +    public final String modId;
 +
 +    // NeoForge: Use the above constructor passing in their mod id
@@ -14,10 +17,10 @@
 +        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE);
 +    }
 +
-+    public ModelProvider(PackOutput p_388260_, String modId) {
-         this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
-         this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
-         this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++    public ModelProvider(PackOutput output, String modId) {
++        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
++        this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
++        this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +        this.modId = modId;
 +    }
 +
@@ -47,7 +50,14 @@
          modelprovider$blockstategeneratorcollector.validate();
          modelprovider$iteminfocollector.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -69,6 +_,15 @@
+@@ -63,12 +_,21 @@
+ 
+     @Override
+     public String getName() {
+-        return "Model Definitions";
++        return "Model Definitions - " + modId;
+     }
+ 
      @OnlyIn(Dist.CLIENT)
      static class BlockStateGeneratorCollector implements Consumer<BlockStateGenerator> {
          private final Map<Block, BlockStateGenerator> generators = new HashMap<>();
