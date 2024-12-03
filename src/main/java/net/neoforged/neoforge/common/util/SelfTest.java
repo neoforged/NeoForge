@@ -39,8 +39,10 @@ public final class SelfTest {
                 if (Minecraft.getInstance().getOverlay() instanceof LoadingOverlay) {
                     return;
                 }
-                writeSelfTestReport(clientSelfTestDestination);
-                Minecraft.getInstance().stop();
+                if (Minecraft.getInstance().isRunning()) {
+                    writeSelfTestReport(clientSelfTestDestination);
+                    Minecraft.getInstance().stop();
+                }
             });
         }
     }
@@ -53,8 +55,10 @@ public final class SelfTest {
                 System.exit(1);
             }
             NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre e) -> {
-                writeSelfTestReport(serverSelfTestDestination);
-                e.getServer().halt(false);
+                if (e.getServer().isRunning()) {
+                    writeSelfTestReport(serverSelfTestDestination);
+                    e.getServer().halt(false);
+                }
             });
         }
     }
@@ -66,11 +70,10 @@ public final class SelfTest {
     private static void writeSelfTestReport(String path) {
         try {
             Files.createFile(Paths.get(path));
+            LOGGER.info("Wrote self-test report to '{}'", path);
         } catch (IOException e) {
             LOGGER.error("Failed to write self-test to '{}'", path, e);
             System.exit(1);
         }
-
-        LOGGER.info("Write self-test report to '{}'", path);
     }
 }
