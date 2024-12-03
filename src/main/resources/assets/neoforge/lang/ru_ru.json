@@ -130,7 +130,7 @@
   "commands.config.noconfig": "Настройки для %s типа %s не найдены",
   "neoforge.update.beta.1": "%sВНИМАНИЕ: %sэто бета-версия NeoForge",
   "neoforge.update.beta.2": "Недоработки ожидаемы. Перед тем, как сообщить о проблеме, проверьте, не сообщали ли о ней.",
-  "neoforge.update.newversion": "Доступна новая версия NeoForge: %s",
+  "neoforge.update.newversion": "Вышла новая версия NeoForge: %s",
   "neoforge.menu.updatescreen.title": "Обновление мода",
   "neoforge.configuration.uitext.title": "Настройки %s",
   "neoforge.configuration.uitext.type.client": "Настройки клиента",
