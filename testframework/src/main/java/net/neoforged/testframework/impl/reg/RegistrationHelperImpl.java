@@ -27,7 +27,6 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
@@ -40,9 +39,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -81,19 +77,6 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         reg.register(LanguageProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
             @Override
             protected void addTranslations() {
-                consumers.forEach(c -> c.accept(this));
-            }
-        });
-        reg.register(BlockStateProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new BlockStateProvider(output, modId, existingFileHelper) {
-            @Override
-            protected void registerStatesAndModels() {
-                existingFileHelper.trackGenerated(ResourceLocation.fromNamespaceAndPath("testframework", "block/white"), ModelProvider.TEXTURE);
-                consumers.forEach(c -> c.accept(this));
-            }
-        });
-        reg.register(ItemModelProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new ItemModelProvider(output, modId, existingFileHelper) {
-            @Override
-            protected void registerModels() {
                 consumers.forEach(c -> c.accept(this));
             }
         });

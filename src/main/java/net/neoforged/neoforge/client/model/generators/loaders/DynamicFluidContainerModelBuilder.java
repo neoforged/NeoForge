@@ -11,48 +11,64 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
+import org.jetbrains.annotations.Nullable;
 
-public class DynamicFluidContainerModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
-    public static <T extends ModelBuilder<T>> DynamicFluidContainerModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new DynamicFluidContainerModelBuilder<>(parent, existingFileHelper);
+public class DynamicFluidContainerModelBuilder extends CustomLoaderBuilder {
+    public static DynamicFluidContainerModelBuilder begin(ExtendedModelTemplate.Builder parent) {
+        return new DynamicFluidContainerModelBuilder(parent);
     }
 
+    @Nullable
     private ResourceLocation fluid;
+    @Nullable
     private Boolean flipGas;
+    @Nullable
     private Boolean applyTint;
+    @Nullable
     private Boolean coverIsMask;
+    @Nullable
     private Boolean applyFluidLuminosity;
 
-    protected DynamicFluidContainerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "fluid_container"), parent, existingFileHelper, false);
+    protected DynamicFluidContainerModelBuilder(ExtendedModelTemplate.Builder parent) {
+        super(ResourceLocation.fromNamespaceAndPath("neoforge", "fluid_container"), parent, false);
     }
 
-    public DynamicFluidContainerModelBuilder<T> fluid(Fluid fluid) {
+    public DynamicFluidContainerModelBuilder fluid(Fluid fluid) {
         Preconditions.checkNotNull(fluid, "fluid must not be null");
         this.fluid = BuiltInRegistries.FLUID.getKey(fluid);
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> flipGas(boolean flip) {
+    public DynamicFluidContainerModelBuilder flipGas(boolean flip) {
         this.flipGas = flip;
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> applyTint(boolean tint) {
+    public DynamicFluidContainerModelBuilder applyTint(boolean tint) {
         this.applyTint = tint;
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> coverIsMask(boolean coverIsMask) {
+    public DynamicFluidContainerModelBuilder coverIsMask(boolean coverIsMask) {
         this.coverIsMask = coverIsMask;
         return this;
     }
 
-    public DynamicFluidContainerModelBuilder<T> applyFluidLuminosity(boolean applyFluidLuminosity) {
+    public DynamicFluidContainerModelBuilder applyFluidLuminosity(boolean applyFluidLuminosity) {
         this.applyFluidLuminosity = applyFluidLuminosity;
         return this;
+    }
+
+    @Override
+    protected CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner) {
+        DynamicFluidContainerModelBuilder builder = new DynamicFluidContainerModelBuilder(owner);
+        builder.fluid = this.fluid;
+        builder.flipGas = this.flipGas;
+        builder.applyTint = this.applyTint;
+        builder.coverIsMask = this.coverIsMask;
+        builder.applyFluidLuminosity = this.applyFluidLuminosity;
+        return builder;
     }
 
     @Override

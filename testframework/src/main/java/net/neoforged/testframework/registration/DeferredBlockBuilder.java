@@ -7,9 +7,21 @@ package net.neoforged.testframework.registration;
 
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,8 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.Nullable;
@@ -55,28 +66,65 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private boolean hasItem = false;
     private boolean hasColor = false;
 
-    public DeferredBlockBuilder<T> withDefaultWhiteModel() {
-        helper.clientProvider(BlockStateProvider.class, prov -> {
-            final BlockModelBuilder model;
-            if (hasColor) {
-                model = prov.models().getBuilder(key.location().getPath())
-                        .element()
-                        .from(0, 0, 0)
-                        .to(16, 16, 16)
-                        .allFaces((direction, faceBuilder) -> faceBuilder.uvs(0, 0, 16, 16).texture("#all").tintindex(0).cullface(direction))
-                        .end()
-                        .texture("all", ResourceLocation.fromNamespaceAndPath("testframework", "block/white"))
-                        .texture("particle", ResourceLocation.fromNamespaceAndPath("testframework", "block/white"));
-            } else {
-                model = prov.models().cubeAll(key.location().getPath(), ResourceLocation.fromNamespaceAndPath("testframework", "block/white"));
+    public DeferredBlockBuilder<T> withModel(BiConsumer<T, BlockModelGenerators> consumer) {
+        helper.addClientProvider(client -> new ModelProvider(client.getGenerator().getPackOutput(), helper.modId()) {
+            @Override
+            protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+                consumer.accept(value(), blockModels);
             }
-            if (hasItem) {
-                prov.simpleBlockWithItem(value(), model);
-            } else {
-                prov.simpleBlock(value(), model);
+
+            @Override
+            protected Stream<? extends Holder<Item>> getKnownItems() {
+                return hasItem ? Stream.of(helper.items().createHolder(Registries.ITEM, key.location())) : Stream.empty();
+            }
+
+            @Override
+            protected Stream<? extends Holder<Block>> getKnownBlocks() {
+                return Stream.of(DeferredBlockBuilder.this);
+            }
+
+            @Override
+            public String getName() {
+                return key.location().getPath() + "-model-generator";
             }
         });
         return this;
+    }
+
+    public DeferredBlockBuilder<T> withModel(TexturedModel.Provider model) {
+        return withModel((block, blockModels) -> blockModels.createTrivialBlock(block, model));
+    }
+
+    public DeferredBlockBuilder<T> withModel(TextureMapping textures, Consumer<ExtendedModelTemplate.Builder> modelConsumer) {
+        return withModel((block, blockModels) -> {
+            var builder = ExtendedModelTemplate.builder();
+            modelConsumer.accept(builder);
+            ;
+            var modelPath = builder.build().create(block, textures, blockModels.modelOutput);
+            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, modelPath));
+        });
+    }
+
+    public DeferredBlockBuilder<T> withDefaultWhiteModel() {
+        return withModel((block, blockModels) -> {
+            ModelTemplate template;
+
+            if (hasColor) {
+                template = ExtendedModelTemplate.builder()
+                        .element()
+                        .from(0, 0, 0)
+                        .to(16, 16, 16)
+                        .allFaces((direction, faceBuilder) -> faceBuilder.uvs(0, 0, 16, 16).texture(TextureSlot.ALL).tintindex(0).cullface(direction))
+                        .end()
+                        .requiredTextureSlot(TextureSlot.ALL)
+                        .build();
+            } else {
+                template = ModelTemplates.CUBE_ALL;
+            }
+
+            var modelPath = template.create(block, TextureMapping.cube(ResourceLocation.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
+            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, modelPath));
+        });
     }
 
     public DeferredBlockBuilder<T> withColor(int color) {

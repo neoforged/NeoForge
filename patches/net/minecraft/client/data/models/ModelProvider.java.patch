@@ -1,0 +1,115 @@
+--- a/net/minecraft/client/data/models/ModelProvider.java
++++ b/net/minecraft/client/data/models/ModelProvider.java
+@@ -34,20 +_,40 @@
+     private final PackOutput.PathProvider blockStatePathProvider;
+     private final PackOutput.PathProvider itemInfoPathProvider;
+     private final PackOutput.PathProvider modelPathProvider;
+-
+-    public ModelProvider(PackOutput p_388260_) {
++    public final String modId;
++
++    // NeoForge: Use the above constructor passing in their mod id
++    @Deprecated
++    public ModelProvider(PackOutput p_252226_) {
++        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE);
++    }
++
++    public ModelProvider(PackOutput p_388260_, String modId) {
+         this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+         this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+         this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++        this.modId = modId;
++    }
++
++    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
++        blockModels.run();
++        itemModels.run();
++    }
++
++    protected Stream<? extends Holder<Block>> getKnownBlocks() {
++        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.getKey().location().getNamespace().equals(modId));
++    }
++
++    protected Stream<? extends Holder<Item>> getKnownItems() {
++        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.getKey().location().getNamespace().equals(modId));
+     }
+ 
+     @Override
+     public CompletableFuture<?> run(CachedOutput p_387857_) {
+-        ModelProvider.ItemInfoCollector modelprovider$iteminfocollector = new ModelProvider.ItemInfoCollector();
+-        ModelProvider.BlockStateGeneratorCollector modelprovider$blockstategeneratorcollector = new ModelProvider.BlockStateGeneratorCollector();
++        ModelProvider.ItemInfoCollector modelprovider$iteminfocollector = new ModelProvider.ItemInfoCollector(this::getKnownItems);
++        ModelProvider.BlockStateGeneratorCollector modelprovider$blockstategeneratorcollector = new ModelProvider.BlockStateGeneratorCollector(this::getKnownBlocks);
+         ModelProvider.SimpleModelCollector modelprovider$simplemodelcollector = new ModelProvider.SimpleModelCollector();
+-        new BlockModelGenerators(modelprovider$blockstategeneratorcollector, modelprovider$iteminfocollector, modelprovider$simplemodelcollector).run();
+-        new ItemModelGenerators(modelprovider$iteminfocollector, modelprovider$simplemodelcollector).run();
++        registerModels(new BlockModelGenerators(modelprovider$blockstategeneratorcollector, modelprovider$iteminfocollector, modelprovider$simplemodelcollector), new ItemModelGenerators(modelprovider$iteminfocollector, modelprovider$simplemodelcollector));
+         modelprovider$blockstategeneratorcollector.validate();
+         modelprovider$iteminfocollector.finalizeAndValidate();
+         return CompletableFuture.allOf(
+@@ -69,6 +_,15 @@
+     @OnlyIn(Dist.CLIENT)
+     static class BlockStateGeneratorCollector implements Consumer<BlockStateGenerator> {
+         private final Map<Block, BlockStateGenerator> generators = new HashMap<>();
++        private final Supplier<Stream<? extends Holder<Block>>> knownBlocks;
++
++        public BlockStateGeneratorCollector(Supplier<Stream<? extends Holder<Block>>> knownBlocks) {
++            this.knownBlocks = knownBlocks;
++        }
++
++        public BlockStateGeneratorCollector() {
++            this(BuiltInRegistries.BLOCK::listElements);
++        }
+ 
+         public void accept(BlockStateGenerator p_388748_) {
+             Block block = p_388748_.getBlock();
+@@ -79,9 +_,9 @@
+         }
+ 
+         public void validate() {
+-            Stream<Holder.Reference<Block>> stream = BuiltInRegistries.BLOCK.listElements().filter(p_388333_ -> true);
++            Stream<? extends Holder<Block>> stream = knownBlocks.get();
+             List<ResourceLocation> list = stream.filter(p_386843_ -> !this.generators.containsKey(p_386843_.value()))
+-                .map(p_386823_ -> p_386823_.key().location())
++                .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().location())
+                 .toList();
+             if (!list.isEmpty()) {
+                 throw new IllegalStateException("Missing blockstate definitions for: " + list);
+@@ -97,6 +_,15 @@
+     static class ItemInfoCollector implements ItemModelOutput {
+         private final Map<Item, ClientItem> itemInfos = new HashMap<>();
+         private final Map<Item, Item> copies = new HashMap<>();
++        private final Supplier<Stream<? extends Holder<Item>>> knownItems;
++
++        public ItemInfoCollector(Supplier<Stream<? extends Holder<Item>>> knownItems) {
++            this.knownItems = knownItems;
++        }
++
++        public ItemInfoCollector() {
++            this(BuiltInRegistries.ITEM::listElements);
++        }
+ 
+         @Override
+         public void accept(Item p_387063_, ItemModel.Unbaked p_388578_) {
+@@ -116,7 +_,7 @@
+         }
+ 
+         public void finalizeAndValidate() {
+-            BuiltInRegistries.ITEM.forEach(p_388426_ -> {
++            knownItems.get().map(Holder::value).forEach(p_388426_ -> {
+                 if (!this.copies.containsKey(p_388426_)) {
+                     if (p_388426_ instanceof BlockItem blockitem && !this.itemInfos.containsKey(blockitem)) {
+                         ResourceLocation resourcelocation = ModelLocationUtils.getModelLocation(blockitem.getBlock());
+@@ -132,10 +_,9 @@
+                     this.register(p_386494_, clientitem);
+                 }
+             });
+-            List<ResourceLocation> list = BuiltInRegistries.ITEM
+-                .listElements()
++            List<ResourceLocation> list = knownItems.get()
+                 .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
+-                .map(p_388278_ -> p_388278_.key().location())
++                .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().location())
+                 .toList();
+             if (!list.isEmpty()) {
+                 throw new IllegalStateException("Missing item model definitions for: " + list);

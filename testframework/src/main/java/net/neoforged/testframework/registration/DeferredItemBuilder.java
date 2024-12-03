@@ -5,12 +5,22 @@
 
 package net.neoforged.testframework.registration;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -37,8 +47,42 @@ public class DeferredItemBuilder<I extends Item> extends DeferredItem<I> {
         return this;
     }
 
-    public DeferredItemBuilder<I> withModel(Consumer<ItemModelBuilder> modelConsumer) {
-        registrationHelper.clientProvider(ItemModelProvider.class, prov -> modelConsumer.accept(prov.getBuilder(key.location().toString())));
+    public DeferredItemBuilder<I> withModel(BiConsumer<I, ItemModelGenerators> consumer) {
+        registrationHelper.addClientProvider(client -> new ModelProvider(client.getGenerator().getPackOutput(), registrationHelper.modId()) {
+            @Override
+            protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+                consumer.accept(value(), itemModels);
+            }
+
+            @Override
+            protected Stream<? extends Holder<Item>> getKnownItems() {
+                return Stream.of(DeferredItemBuilder.this);
+            }
+
+            @Override
+            protected Stream<? extends Holder<Block>> getKnownBlocks() {
+                return Stream.empty();
+            }
+
+            @Override
+            public String getName() {
+                return key.location().getPath() + "-model-generator";
+            }
+        });
         return this;
+    }
+
+    public DeferredItemBuilder<I> withModel(ModelTemplate template) {
+        return withModel((item, itemModels) -> itemModels.generateFlatItem(item, template));
+    }
+
+    public DeferredItemBuilder<I> withModel(TextureMapping textures, Consumer<ExtendedModelTemplate.Builder> modelConsumer) {
+        return withModel((item, itemModels) -> {
+            var modelPath = ModelLocationUtils.getModelLocation(item);
+            var builder = ExtendedModelTemplate.builder();
+            modelConsumer.accept(builder);
+            itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(modelPath));
+            builder.build().create(item, textures, itemModels.modelOutput);
+        });
     }
 }

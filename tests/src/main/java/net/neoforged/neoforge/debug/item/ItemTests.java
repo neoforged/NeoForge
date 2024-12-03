@@ -17,7 +17,6 @@ import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -52,7 +51,6 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -141,7 +139,8 @@ public class ItemTests {
                 return sup;
             }
         })
-                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"))));
+                .tab(CreativeModeTabs.SPAWN_EGGS)
+                .withModel((item, itemModels) -> itemModels.generateSpawnEgg(item, 0xFFFFFF, 0xFFFFFF));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))

@@ -20,20 +20,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
 
-public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
-    public static <T extends ModelBuilder<T>> ItemLayerModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new ItemLayerModelBuilder<>(parent, existingFileHelper);
+public class ItemLayerModelBuilder extends CustomLoaderBuilder {
+    public static ItemLayerModelBuilder begin(ExtendedModelTemplate.Builder parent) {
+        return new ItemLayerModelBuilder(parent);
     }
 
     private final Int2ObjectMap<ExtraFaceData> faceData = new Int2ObjectOpenHashMap<>();
     private final Map<ResourceLocation, IntSet> renderTypes = new LinkedHashMap<>();
     private final IntSet layersWithRenderTypes = new IntOpenHashSet();
 
-    protected ItemLayerModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "item_layers"), parent, existingFileHelper, false);
+    protected ItemLayerModelBuilder(ExtendedModelTemplate.Builder parent) {
+        super(ResourceLocation.fromNamespaceAndPath("neoforge", "item_layers"), parent, false);
     }
 
     /**
@@ -47,7 +46,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * @throws IllegalArgumentException if {@code layers} is empty
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      */
-    public ItemLayerModelBuilder<T> emissive(int blockLight, int skyLight, int... layers) {
+    public ItemLayerModelBuilder emissive(int blockLight, int skyLight, int... layers) {
         Preconditions.checkNotNull(layers, "Layers must not be null");
         Preconditions.checkArgument(layers.length > 0, "At least one layer must be specified");
         Preconditions.checkArgument(Arrays.stream(layers).allMatch(i -> i >= 0), "All layers must be >= 0");
@@ -70,7 +69,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * @throws IllegalArgumentException if {@code layers} is empty
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      */
-    public ItemLayerModelBuilder<T> color(int color, int... layers) {
+    public ItemLayerModelBuilder color(int color, int... layers) {
         Preconditions.checkNotNull(layers, "Layers must not be null");
         Preconditions.checkArgument(layers.length > 0, "At least one layer must be specified");
         Preconditions.checkArgument(Arrays.stream(layers).allMatch(i -> i >= 0), "All layers must be >= 0");
@@ -96,14 +95,9 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      * @throws IllegalArgumentException if any entry in {@code layers} already has a render type
      */
-    public ItemLayerModelBuilder<T> renderType(String renderType, int... layers) {
+    public ItemLayerModelBuilder renderType(String renderType, int... layers) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
-        ResourceLocation asLoc;
-        if (renderType.contains(":"))
-            asLoc = ResourceLocation.parse(renderType);
-        else
-            asLoc = ResourceLocation.fromNamespaceAndPath(parent.getLocation().getNamespace(), renderType);
-        return renderType(asLoc, layers);
+        return renderType(ResourceLocation.parse(renderType), layers);
     }
 
     /**
@@ -119,7 +113,7 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
      * @throws IllegalArgumentException if any entry in {@code layers} is smaller than 0
      * @throws IllegalArgumentException if any entry in {@code layers} already has a render type
      */
-    public ItemLayerModelBuilder<T> renderType(ResourceLocation renderType, int... layers) {
+    public ItemLayerModelBuilder renderType(ResourceLocation renderType, int... layers) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
         Preconditions.checkNotNull(layers, "Layers must not be null");
         Preconditions.checkArgument(layers.length > 0, "At least one layer must be specified");
@@ -132,6 +126,15 @@ public class ItemLayerModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
             layersWithRenderTypes.add(layer);
         });
         return this;
+    }
+
+    @Override
+    protected CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner) {
+        ItemLayerModelBuilder builder = new ItemLayerModelBuilder(owner);
+        builder.faceData.putAll(this.faceData);
+        this.renderTypes.forEach((renderType, layers) -> builder.renderTypes.put(renderType, new IntOpenHashSet(layers)));
+        builder.layersWithRenderTypes.addAll(this.layersWithRenderTypes);
+        return builder;
     }
 
     @Override

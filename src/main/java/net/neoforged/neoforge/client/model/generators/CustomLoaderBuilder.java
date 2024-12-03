@@ -6,35 +6,38 @@
 package net.neoforged.neoforge.client.model.generators;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
-public abstract class CustomLoaderBuilder<T extends ModelBuilder<T>> {
+public abstract class CustomLoaderBuilder {
+    private static final ResourceLocation DUMMY = ResourceLocation.fromNamespaceAndPath("dummy", "dummy");
+
     protected final ResourceLocation loaderId;
-    protected final T parent;
-    protected final ExistingFileHelper existingFileHelper;
+    protected final ExtendedModelTemplate.Builder parent;
     protected final Map<String, Boolean> visibility = new LinkedHashMap<>();
     protected final boolean allowInlineElements;
     private boolean optional = false;
 
     /**
-     * @param loaderId            The ID of the associated {@link IGeometryLoader}
-     * @param parent              The parent {@link ModelBuilder}
-     * @param existingFileHelper  The {@link ExistingFileHelper}
+     * @param loaderId            The ID of the associated {@link UnbakedModelLoader}
+     * @param parent              The parent {@link ExtendedModelTemplate.Builder}
      * @param allowInlineElements Whether the loader supports inline vanilla elements and as such can fall back to vanilla loading
      *                            with some degradation if the loader does not exist and is marked as optional in the model
      */
-    protected CustomLoaderBuilder(ResourceLocation loaderId, T parent, ExistingFileHelper existingFileHelper, boolean allowInlineElements) {
+    protected CustomLoaderBuilder(ResourceLocation loaderId, ExtendedModelTemplate.Builder parent, boolean allowInlineElements) {
         this.loaderId = loaderId;
         this.parent = parent;
-        this.existingFileHelper = existingFileHelper;
         this.allowInlineElements = allowInlineElements;
     }
 
-    public CustomLoaderBuilder<T> visibility(String partName, boolean show) {
+    public CustomLoaderBuilder visibility(String partName, boolean show) {
         Preconditions.checkNotNull(partName, "partName must not be null");
         this.visibility.put(partName, show);
         return this;
@@ -44,13 +47,22 @@ public abstract class CustomLoaderBuilder<T extends ModelBuilder<T>> {
      * Mark the custom loader as optional for this model to allow it to be loaded through vanilla paths
      * if the loader is not present
      */
-    public CustomLoaderBuilder<T> optional() {
+    public CustomLoaderBuilder optional() {
         Preconditions.checkState(allowInlineElements, "Only loaders with support for inline elements can be marked as optional");
         this.optional = true;
         return this;
     }
 
-    public T end() {
+    public final CustomLoaderBuilder copy(ExtendedModelTemplate.Builder owner) {
+        CustomLoaderBuilder builder = copyInternal(owner);
+        builder.visibility.putAll(this.visibility);
+        builder.optional = this.optional;
+        return builder;
+    }
+
+    protected abstract CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner);
+
+    public ExtendedModelTemplate.Builder end() {
         return parent;
     }
 
@@ -64,7 +76,7 @@ public abstract class CustomLoaderBuilder<T extends ModelBuilder<T>> {
             json.addProperty("loader", loaderId.toString());
         }
 
-        if (visibility.size() > 0) {
+        if (!visibility.isEmpty()) {
             JsonObject visibilityObj = new JsonObject();
 
             for (Map.Entry<String, Boolean> entry : visibility.entrySet()) {
@@ -75,5 +87,9 @@ public abstract class CustomLoaderBuilder<T extends ModelBuilder<T>> {
         }
 
         return json;
+    }
+
+    protected static void serializeNestedTemplate(ModelTemplate template, TextureMapping textures, Consumer<JsonElement> consumer) {
+        template.create(DUMMY, textures, (id, jsonSup) -> consumer.accept(jsonSup.get()));
     }
 }

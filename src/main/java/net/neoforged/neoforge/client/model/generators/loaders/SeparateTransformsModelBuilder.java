@@ -9,51 +9,70 @@ import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
+import org.jetbrains.annotations.Nullable;
 
-public class SeparateTransformsModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
-    public static <T extends ModelBuilder<T>> SeparateTransformsModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new SeparateTransformsModelBuilder<>(parent, existingFileHelper);
+public class SeparateTransformsModelBuilder extends CustomLoaderBuilder {
+    public static SeparateTransformsModelBuilder begin(ExtendedModelTemplate.Builder parent) {
+        return new SeparateTransformsModelBuilder(parent);
     }
 
-    private T base;
-    private final Map<String, T> childModels = new LinkedHashMap<>();
+    @Nullable
+    private ModelTemplate base;
+    @Nullable
+    private TextureMapping baseTextures;
+    private final Map<String, ModelTemplate> childModels = new LinkedHashMap<>();
+    private final Map<String, TextureMapping> childTextures = new LinkedHashMap<>();
 
-    protected SeparateTransformsModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "separate_transforms"), parent, existingFileHelper, false);
+    protected SeparateTransformsModelBuilder(ExtendedModelTemplate.Builder parent) {
+        super(ResourceLocation.fromNamespaceAndPath("neoforge", "separate_transforms"), parent, false);
     }
 
-    public SeparateTransformsModelBuilder<T> base(T modelBuilder) {
+    public SeparateTransformsModelBuilder base(ModelTemplate modelBuilder, TextureMapping textures) {
         Preconditions.checkNotNull(modelBuilder, "modelBuilder must not be null");
+        Preconditions.checkNotNull(textures, "textures must not be null");
         base = modelBuilder;
+        baseTextures = textures;
         return this;
     }
 
-    public SeparateTransformsModelBuilder<T> perspective(ItemDisplayContext perspective, T modelBuilder) {
+    public SeparateTransformsModelBuilder perspective(ItemDisplayContext perspective, ModelTemplate modelBuilder, TextureMapping textures) {
         Preconditions.checkNotNull(perspective, "layer must not be null");
         Preconditions.checkNotNull(modelBuilder, "modelBuilder must not be null");
+        Preconditions.checkNotNull(textures, "textures must not be null");
         childModels.put(perspective.getSerializedName(), modelBuilder);
+        childTextures.put(perspective.getSerializedName(), textures);
         return this;
     }
 
     @Override
-    public JsonObject toJson(JsonObject json) {
-        json = super.toJson(json);
+    protected CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner) {
+        SeparateTransformsModelBuilder builder = new SeparateTransformsModelBuilder(owner);
+        builder.base = this.base;
+        builder.childModels.putAll(this.childModels);
+        this.childTextures.forEach((name, textures) -> builder.childTextures.put(name, textures.copy()));
+        return builder;
+    }
 
-        if (base != null) {
-            json.add("base", base.toJson());
+    @Override
+    public JsonObject toJson(JsonObject json) {
+        JsonObject root = super.toJson(json);
+
+        if (base != null && baseTextures != null) {
+            CustomLoaderBuilder.serializeNestedTemplate(base, baseTextures, baseJson -> root.add("bool", baseJson));
         }
 
         JsonObject parts = new JsonObject();
-        for (Map.Entry<String, T> entry : childModels.entrySet()) {
-            parts.add(entry.getKey(), entry.getValue().toJson());
+        for (Map.Entry<String, ModelTemplate> entry : childModels.entrySet()) {
+            CustomLoaderBuilder.serializeNestedTemplate(entry.getValue(), childTextures.get(entry.getKey()), child -> parts.add(entry.getKey(), child));
         }
-        json.add("perspectives", parts);
+        root.add("perspectives", parts);
 
-        return json;
+        return root;
     }
 }
