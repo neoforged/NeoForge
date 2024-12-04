@@ -81,10 +81,12 @@
          FramePass framepass = p_363357_.addPass("particles");
          if (this.targets.particles != null) {
              this.targets.particles = framepass.readsAndWrites(this.targets.particles);
-@@ -679,6 +_,7 @@
+@@ -678,7 +_,8 @@
+                 resourcehandle1.get().copyDepthFrom(resourcehandle.get());
              }
  
-             this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource());
+-            this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource());
++            this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource(), frustum, resourcehandle1 == null ? type -> type.translucent() : type -> true); // Neo: only render translucent particles here in Fast/Fancy
 +            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, this, null, modelViewMatrix, projectionMatrix, this.ticks, p_365299_, getFrustum());
          });
      }
