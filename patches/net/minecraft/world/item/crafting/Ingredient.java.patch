@@ -27,7 +27,7 @@
  
      private Ingredient(HolderSet<Item> p_365027_) {
          p_365027_.unwrap().ifRight(p_360057_ -> {
-@@ -45,12 +_,23 @@
+@@ -45,30 +_,96 @@
          this.values = p_365027_;
      }
  
@@ -43,15 +43,16 @@
      @Deprecated
      public Stream<Holder<Item>> items() {
 +        if (this.customIngredient != null) {
-+            if (this.customIngredientValues == null) {
-+                this.customIngredientValues = this.customIngredient.items().toList();
-+            }
-+            return this.customIngredientValues.stream();
++            return updateCustomIngredientValues().stream();
 +        }
          return this.values.stream();
      }
  
-@@ -59,16 +_,67 @@
+     public boolean isEmpty() {
++        if (this.customIngredient != null) {
++            return updateCustomIngredientValues().isEmpty();
++        }
+         return this.values.size() == 0;
      }
  
      public boolean test(ItemStack p_43914_) {
@@ -63,10 +64,7 @@
  
      public boolean acceptsItem(Holder<Item> p_389400_) {
 +        if (this.customIngredient != null) {
-+            if (this.customIngredientValues == null) {
-+                this.customIngredientValues = this.customIngredient.items().toList();
-+            }
-+            return this.customIngredientValues.contains(p_389400_);
++            return updateCustomIngredientValues().contains(p_389400_);
 +        }
          return this.values.contains(p_389400_);
      }
@@ -117,6 +115,13 @@
 +
 +    public boolean isCustom() {
 +        return this.customIngredient != null;
++    }
++
++    private List<Holder<Item>> updateCustomIngredientValues() {
++        if (this.customIngredientValues == null) {
++            this.customIngredientValues = this.customIngredient.items().toList();
++        }
++        return this.customIngredientValues;
      }
  
      public static Ingredient of(ItemLike p_364285_) {

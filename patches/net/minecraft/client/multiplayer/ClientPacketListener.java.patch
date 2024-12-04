@@ -143,6 +143,15 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
+@@ -2565,6 +_,8 @@
+     }
+ 
+     public boolean sendUnsignedCommand(String p_251509_) {
++        // Neo: Dispatch client commands for text component click actions.
++        if (net.neoforged.neoforge.client.ClientCommandHandler.runCommand(p_251509_)) return true;
+         if (!SignableCommand.hasSignableArguments(this.parseCommand(p_251509_))) {
+             this.send(new ServerboundChatCommandPacket(p_251509_));
+             return true;
 @@ -2640,6 +_,10 @@
  
      public Scoreboard scoreboard() {
