@@ -31,7 +31,7 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -136,12 +_,19 @@
+@@ -136,12 +_,20 @@
                          this.serverCookies,
                          this.chatState,
                          this.customReportDetails,
@@ -41,6 +41,7 @@
                      )
                  )
              );
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.TagsUpdatedEvent(registryaccess$frozen, true, this.connection.isMemoryConnection()));
 +        // Packets can only be sent after the outbound protocol is set up again
 +        if (!this.initializedConnection && this.connectionType.isOther()) {
 +            // Neo: Fallback detection for servers with a delayed brand payload (BungeeCord)
