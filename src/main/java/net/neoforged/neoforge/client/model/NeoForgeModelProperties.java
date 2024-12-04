@@ -6,12 +6,11 @@
 package net.neoforged.neoforge.client.model;
 
 import com.mojang.math.Transformation;
+import java.util.Map;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.neoforge.client.RenderTypeGroup;
-
-import java.util.Map;
 
 /**
  * Properties that NeoForge adds for {@link BlockModel}s and {@link UnbakedModel}s.

@@ -1,9 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.model;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.math.Transformation;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -12,9 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapper around all standard top-level model parameters added by vanilla and NeoForge except elements.
@@ -31,7 +35,6 @@ public record StandardModelParameters(
         @Nullable Transformation rootTransform,
         RenderTypeGroup renderTypeGroup,
         Map<String, Boolean> partVisibility) {
-
     public static StandardModelParameters parse(JsonObject jsonObject, JsonDeserializationContext context) {
         String parentName = GsonHelper.getAsString(jsonObject, "parent", "");
         ResourceLocation parent = parentName.isEmpty() ? null : ResourceLocation.parse(parentName);
