@@ -77,7 +77,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:true" }
+                            { "type": "neoforge:always" }
                         ],
                         "i": 1,
                         "s": "test"
@@ -91,7 +91,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:false" }
+                            { "type": "neoforge:never" }
                         ],
                         "i": 1,
                         "s": "test"
@@ -109,7 +109,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:true" }
+                            { "type": "neoforge:always" }
                         ],
                         "neoforge:value": {
                             "i": 1,
@@ -136,7 +136,7 @@ public class ConditionalCodecTest {
                     {
                       "neoforge:conditions": [
                         {
-                          "type": "neoforge:true"
+                          "type": "neoforge:always"
                         }
                       ],
                       "i": 1,
@@ -184,7 +184,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:true" }
+                            { "type": "neoforge:always" }
                         ],
                         "neoforge:value": 1
                     }
@@ -197,7 +197,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:false" }
+                            { "type": "neoforge:never" }
                         ],
                         "i": 1,
                         "s": "test"
@@ -219,7 +219,7 @@ public class ConditionalCodecTest {
                     {
                       "neoforge:conditions": [
                         {
-                          "type": "neoforge:true"
+                          "type": "neoforge:always"
                         }
                       ],
                       "neoforge:value": 1
