@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.client.buffer.param;
 
 import java.util.List;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.buffer.param.state.TextureState;
 
 public record TextureParam(List<TextureState> states) implements IBufferDefinitionParam<List<TextureState>> {
@@ -36,6 +36,6 @@ public record TextureParam(List<TextureState> states) implements IBufferDefiniti
     }
     public static final class Vanilla {
         public static final TextureParam EMPTY = new TextureParam();
-        public static final TextureParam BLOCK = new TextureParam(InventoryMenu.BLOCK_ATLAS, TriState.DEFAULT, false);
+        public static final TextureParam BLOCK = new TextureParam(TextureAtlas.LOCATION_BLOCKS, TriState.DEFAULT, false);
     }
 }

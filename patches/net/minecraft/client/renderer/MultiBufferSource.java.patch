@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/MultiBufferSource.java
++++ b/net/minecraft/client/renderer/MultiBufferSource.java
+@@ -14,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public interface MultiBufferSource {
++public interface MultiBufferSource extends net.neoforged.neoforge.client.extensions.IMultiBufferSourceExtension {
+     static MultiBufferSource.BufferSource immediate(ByteBufferBuilder p_350664_) {
+         return immediateWithBuffers(Object2ObjectSortedMaps.emptyMap(), p_350664_);
+     }
