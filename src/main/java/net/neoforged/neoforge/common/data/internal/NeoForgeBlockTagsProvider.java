@@ -144,6 +144,14 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.STORAGE_BLOCKS_REDSTONE).add(Blocks.REDSTONE_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_SLIME).add(Blocks.SLIME_BLOCK);
         tag(Tags.Blocks.STORAGE_BLOCKS_WHEAT).add(Blocks.HAY_BLOCK);
+        tag(Tags.Blocks.STRIPPED_LOGS).add(
+                Blocks.STRIPPED_ACACIA_LOG, Blocks.STRIPPED_BAMBOO_BLOCK, Blocks.STRIPPED_BIRCH_LOG,
+                Blocks.STRIPPED_CHERRY_LOG, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_JUNGLE_LOG,
+                Blocks.STRIPPED_MANGROVE_LOG, Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_SPRUCE_LOG);
+        tag(Tags.Blocks.STRIPPED_WOODS).add(
+                Blocks.STRIPPED_ACACIA_WOOD, Blocks.STRIPPED_BIRCH_WOOD, Blocks.STRIPPED_CHERRY_WOOD,
+                Blocks.STRIPPED_DARK_OAK_WOOD, Blocks.STRIPPED_JUNGLE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD,
+                Blocks.STRIPPED_OAK_WOOD, Blocks.STRIPPED_SPRUCE_WOOD);
         tag(Tags.Blocks.VILLAGER_JOB_SITES).add(
                 Blocks.BARREL, Blocks.BLAST_FURNACE, Blocks.BREWING_STAND, Blocks.CARTOGRAPHY_TABLE,
                 Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON,
@@ -151,6 +159,14 @@ public final class NeoForgeBlockTagsProvider extends BlockTagsProvider {
                 Blocks.LOOM, Blocks.SMITHING_TABLE, Blocks.SMOKER, Blocks.STONECUTTER);
 
         tag(Tags.Blocks.VILLAGER_FARMLANDS).add(Blocks.FARMLAND);
+
+        // Make our Needs Netherite Tool tag be functional.
+        tag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
+        tag(BlockTags.INCORRECT_FOR_WOODEN_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
+        tag(BlockTags.INCORRECT_FOR_STONE_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
+        tag(BlockTags.INCORRECT_FOR_IRON_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
+        tag(BlockTags.INCORRECT_FOR_GOLD_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
+        tag(BlockTags.INCORRECT_FOR_DIAMOND_TOOL).addTag(Tags.Blocks.NEEDS_NETHERITE_TOOL);
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22

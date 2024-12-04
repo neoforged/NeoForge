@@ -420,6 +420,8 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.FLUID, "milk", Tags.Fluids.MILK),
             createForgeMapEntry(Registries.FLUID, "gaseous", Tags.Fluids.GASEOUS),
             createForgeMapEntry(Registries.FLUID, "honey", Tags.Fluids.HONEY),
+            createForgeMapEntry(Registries.FLUID, "xp", Tags.Fluids.EXPERIENCE),
+            createForgeMapEntry(Registries.FLUID, "experience", Tags.Fluids.EXPERIENCE),
             createForgeMapEntry(Registries.FLUID, "potion", Tags.Fluids.POTION),
             createForgeMapEntry(Registries.FLUID, "plantoil", "plant_oil"),
 

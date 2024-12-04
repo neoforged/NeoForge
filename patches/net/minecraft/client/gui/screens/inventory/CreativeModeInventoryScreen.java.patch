@@ -40,7 +40,7 @@
 +            this.pages.clear();
 +            int tabIndex = 0;
 +            List<CreativeModeTab> currentPage = new java.util.ArrayList<>();
-+            for (CreativeModeTab sortedCreativeModeTab : net.neoforged.neoforge.common.CreativeModeTabRegistry.getSortedCreativeModeTabs()) {
++            for (CreativeModeTab sortedCreativeModeTab : net.neoforged.neoforge.common.CreativeModeTabRegistry.getSortedCreativeModeTabs().stream().filter(CreativeModeTab::hasAnyItems).toList()) {
 +                currentPage.add(sortedCreativeModeTab);
 +                tabIndex++;
 +                if (tabIndex == 10) {
