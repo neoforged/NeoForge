@@ -25,7 +25,7 @@
 +    private static <T> Registry<T> getSyncableRegistryOrThrow(RegistryFriendlyByteBuf buffer, ResourceKey<? extends Registry<T>> registryKey) {
 +        var registry = buffer.registryAccess().lookupOrThrow(registryKey);
 +        if (net.neoforged.neoforge.registries.RegistryManager.isNonSyncedBuiltInRegistry(registry)) {
-+            throw new IllegalStateException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
++            throw new io.netty.handler.codec.CodecException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
 +        }
 +        return registry;
 +    }
