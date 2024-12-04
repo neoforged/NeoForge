@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.resources.model.UnbakedModel;
@@ -69,7 +71,15 @@ public abstract class AbstractUnbakedModel implements ExtendedUnbakedModel {
             propertiesBuilder.withParameter(NeoForgeModelProperties.RENDER_TYPE, this.parameters.renderTypeGroup());
         }
         if (!this.parameters.partVisibility().isEmpty()) {
-            propertiesBuilder.withParameter(NeoForgeModelProperties.PART_VISIBILITY, this.parameters.partVisibility());
+            Map<String, Boolean> visibility = propertiesBuilder.getOptionalParameter(NeoForgeModelProperties.PART_VISIBILITY);
+            if (visibility != null) {
+                visibility = new HashMap<>(visibility);
+                visibility.putAll(this.parameters.partVisibility());
+                visibility = Map.copyOf(visibility);
+            } else {
+                visibility = this.parameters.partVisibility();
+            }
+            propertiesBuilder.withParameter(NeoForgeModelProperties.PART_VISIBILITY, visibility);
         }
     }
 }
