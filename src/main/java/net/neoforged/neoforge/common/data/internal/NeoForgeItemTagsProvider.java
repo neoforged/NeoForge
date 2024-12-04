@@ -222,8 +222,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.SEEDS_MELON).add(Items.MELON_SEEDS);
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
-        tag(Tags.Items.SLIMEBALLS).add(Items.SLIME_BALL); // Deprecated
-        tag(Tags.Items.SLIME_BALLS).add(Items.SLIME_BALL).addOptionalTag(Tags.Items.SLIMEBALLS);
+        tag(Tags.Items.SLIME_BALLS).add(Items.SLIME_BALL);
         tag(Tags.Items.SHULKER_BOXES)
                 .add(Items.SHULKER_BOX).add(Items.WHITE_SHULKER_BOX).add(Items.ORANGE_SHULKER_BOX)
                 .add(Items.MAGENTA_SHULKER_BOX).add(Items.LIGHT_BLUE_SHULKER_BOX).add(Items.YELLOW_SHULKER_BOX)

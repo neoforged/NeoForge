@@ -7,18 +7,17 @@ package net.neoforged.neoforge.oldtest.block;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverride;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.DelegateBakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
@@ -32,6 +31,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -60,12 +60,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import net.neoforged.neoforge.client.model.DelegateUnbakedModel;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import net.neoforged.neoforge.common.util.ConcatenatedListView;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -226,31 +224,30 @@ public class FullPotsAccessorDemo {
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     private static class ClientHandler {
         @SubscribeEvent
-        public static void registerLoader(final ModelEvent.RegisterGeometryLoaders event) {
+        public static void registerLoader(final ModelEvent.RegisterLoaders event) {
             event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diorite_pot"), new DioritePotGeometryLoader());
         }
 
-        private static class DioritePotGeometryLoader implements IGeometryLoader<DioritePotModelGeometry> {
+        private static class DioritePotGeometryLoader implements UnbakedModelLoader<DioritePotModelGeometry> {
             @Override
-            public DioritePotModelGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
+            public DioritePotModelGeometry read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
                 JsonObject wrappedModel = jsonObject.getAsJsonObject("model");
-                return new DioritePotModelGeometry(deserializationContext.deserialize(wrappedModel, BlockModel.class));
+                return new DioritePotModelGeometry(jsonDeserializationContext.deserialize(wrappedModel, UnbakedModel.class));
             }
         }
 
-        private record DioritePotModelGeometry(UnbakedModel wrappedModel) implements IUnbakedGeometry<DioritePotModelGeometry> {
-            @Override
-            public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
-                return new DioritePotModel(wrappedModel.bake(baker, spriteGetter, modelState));
+        private static final class DioritePotModelGeometry extends DelegateUnbakedModel {
+            private DioritePotModelGeometry(UnbakedModel wrappedModel) {
+                super(wrappedModel);
             }
 
             @Override
-            public void resolveDependencies(UnbakedModel.Resolver modelGetter, IGeometryBakingContext context) {
-                wrappedModel.resolveDependencies(modelGetter);
+            public BakedModel bake(TextureSlots p_386641_, ModelBaker p_250133_, ModelState p_119536_, boolean p_387129_, boolean p_388638_, ItemTransforms p_386911_, ContextMap additionalProperties) {
+                return new DioritePotModel(wrapped.bake(p_386641_, p_250133_, p_119536_, p_387129_, p_388638_, p_386911_, additionalProperties));
             }
         }
 
-        private static class DioritePotModel extends BakedModelWrapper<BakedModel> {
+        private static class DioritePotModel extends DelegateBakedModel {
             private static final ChunkRenderTypeSet CUTOUT = ChunkRenderTypeSet.of(RenderType.cutout());
             private static final ResourceLocation POT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/flower_pot");
             private static final ResourceLocation DIRT_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/dirt");
@@ -262,7 +259,7 @@ public class FullPotsAccessorDemo {
             @Override
             public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType) {
                 List<List<BakedQuad>> quads = new ArrayList<>();
-                quads.add(originalModel.getQuads(state, side, rand, extraData, renderType));
+                quads.add(parent.getQuads(state, side, rand, extraData, renderType));
 
                 Block plant = extraData.get(DioriteFlowerPotBlockEntity.PLANT_PROPERTY);
                 if (plant != null && plant != Blocks.AIR) {

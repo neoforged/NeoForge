@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -77,11 +_,11 @@
-         ParticleRenderType.TERRAIN_SHEET, ParticleRenderType.PARTICLE_SHEET_OPAQUE, ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT, ParticleRenderType.CUSTOM
+@@ -74,11 +_,11 @@
+         ParticleRenderType.TERRAIN_SHEET, ParticleRenderType.PARTICLE_SHEET_OPAQUE, ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT
      );
      protected ClientLevel level;
 -    private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
@@ -14,7 +14,7 @@
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
      private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
      private final TextureAtlas textureAtlas;
-@@ -214,10 +_,14 @@
+@@ -207,10 +_,14 @@
          this.register(ParticleTypes.BLOCK_CRUMBLE, new TerrainParticle.CrumblingProvider());
      }
  
@@ -30,7 +30,7 @@
      public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
          this.register(
              p_273423_,
-@@ -234,10 +_,12 @@
+@@ -227,10 +_,12 @@
          );
      }
  
@@ -44,7 +44,7 @@
      }
  
      @Override
-@@ -357,7 +_,7 @@
+@@ -350,7 +_,7 @@
      private <T extends ParticleOptions> Particle makeParticle(
          T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
      ) {
@@ -53,36 +53,81 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -433,17 +_,27 @@
+@@ -426,28 +_,48 @@
          }
      }
  
 +    @Deprecated
-     public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_) {
-+        render(p_107339_, p_107340_, p_107341_, null, type -> true);
+     public void render(Camera p_107340_, float p_107341_, MultiBufferSource.BufferSource p_383193_) {
+-        for (ParticleRenderType particlerendertype : RENDER_ORDER) {
++        render(p_107340_, p_107341_, p_383193_, null, type -> true);
 +    }
 +
-+    public void render(LightTexture p_107339_, Camera p_107340_, float p_107341_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
-         p_107339_.turnOnLightLayer();
-         RenderSystem.enableDepthTest();
++    public void render(Camera p_107340_, float p_107341_, MultiBufferSource.BufferSource p_383193_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
 +        //TODO porting: is this even needed with the particle render order fix???
-+        RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE2);
-+        RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE0);
- 
--        for (ParticleRenderType particlerendertype : RENDER_ORDER) {
++        com.mojang.blaze3d.systems.RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE2);
++        com.mojang.blaze3d.systems.RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE0);
 +        for (ParticleRenderType particlerendertype : this.particles.keySet()) { // Neo: allow custom IParticleRenderType's
-+            if (particlerendertype == ParticleRenderType.NO_RENDER || !renderTypePredicate.test(particlerendertype)) continue;
++            if (particlerendertype == ParticleRenderType.NO_RENDER || particlerendertype == ParticleRenderType.CUSTOM || !renderTypePredicate.test(particlerendertype)) continue;
              Queue<Particle> queue = this.particles.get(particlerendertype);
              if (queue != null && !queue.isEmpty()) {
-                 Tesselator tesselator = Tesselator.getInstance();
-                 BufferBuilder bufferbuilder = particlerendertype.begin(tesselator, this.textureManager);
-                 if (bufferbuilder != null) {
-                     for (Particle particle : queue) {
-+                        if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_107341_))) continue;
-                         try {
-                             particle.render(bufferbuilder, p_107340_, p_107341_);
-                         } catch (Throwable throwable) {
-@@ -475,7 +_,7 @@
+-                renderParticleType(p_107340_, p_107341_, p_383193_, particlerendertype, queue);
++                renderParticleType(p_107340_, p_107341_, p_383193_, particlerendertype, queue, frustum);
+             }
+         }
+ 
+         Queue<Particle> queue1 = this.particles.get(ParticleRenderType.CUSTOM);
+         if (queue1 != null && !queue1.isEmpty()) {
+-            renderCustomParticles(p_107340_, p_107341_, p_383193_, queue1);
++            renderCustomParticles(p_107340_, p_107341_, p_383193_, queue1, frustum);
+         }
+ 
+         p_383193_.endBatch();
+     }
+ 
+-    private static void renderParticleType(
+-        Camera p_382847_, float p_383032_, MultiBufferSource.BufferSource p_383105_, ParticleRenderType p_383179_, Queue<Particle> p_383046_
++    /**
++     * @deprecated Neo: use {@link #renderParticleType(Camera, float, MultiBufferSource.BufferSource, ParticleRenderType, Queue, net.minecraft.client.renderer.culling.Frustum)} instead
++     */
++    @Deprecated
++    private static void renderParticleType(
++            Camera p_382847_, float p_383032_, MultiBufferSource.BufferSource p_383105_, ParticleRenderType p_383179_, Queue<Particle> p_383046_
++    ) {
++        renderParticleType(p_382847_, p_383032_, p_383105_, p_383179_, p_383046_, null);
++    }
++
++    private static void renderParticleType(
++        Camera p_382847_, float p_383032_, MultiBufferSource.BufferSource p_383105_, ParticleRenderType p_383179_, Queue<Particle> p_383046_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum
+     ) {
+         VertexConsumer vertexconsumer = p_383105_.getBuffer(Objects.requireNonNull(p_383179_.renderType()));
+ 
+         for (Particle particle : p_383046_) {
++            if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_383032_))) continue;
+             try {
+                 particle.render(vertexconsumer, p_382847_, p_383032_);
+             } catch (Throwable throwable) {
+@@ -460,10 +_,19 @@
+         }
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #renderCustomParticles(Camera, float, MultiBufferSource.BufferSource, Queue, net.minecraft.client.renderer.culling.Frustum)} instead
++     */
++    @Deprecated
+     private static void renderCustomParticles(Camera p_383089_, float p_383167_, MultiBufferSource.BufferSource p_382990_, Queue<Particle> p_383010_) {
++        renderCustomParticles(p_383089_, p_383167_, p_382990_, p_383010_, null);
++    }
++
++    private static void renderCustomParticles(Camera p_383089_, float p_383167_, MultiBufferSource.BufferSource p_382990_, Queue<Particle> p_383010_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum) {
+         PoseStack posestack = new PoseStack();
+ 
+         for (Particle particle : p_383010_) {
++            if (frustum != null && !frustum.isVisible(particle.getRenderBoundingBox(p_383167_))) continue;
+             try {
+                 particle.renderCustom(posestack, p_382990_, p_383089_, p_383167_);
+             } catch (Throwable throwable) {
+@@ -483,7 +_,7 @@
      }
  
      public void destroy(BlockPos p_107356_, BlockState p_107357_) {
@@ -91,7 +136,7 @@
              VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
              double d0 = 0.25;
              voxelshape.forAllBoxes(
-@@ -507,7 +_,7 @@
+@@ -515,7 +_,7 @@
                                          d6 - 0.5,
                                          p_107357_,
                                          p_107356_
@@ -100,7 +145,7 @@
                                  );
                              }
                          }
-@@ -552,12 +_,28 @@
+@@ -560,12 +_,28 @@
                  d0 = (double)i + aabb.maxX + 0.1F;
              }
  

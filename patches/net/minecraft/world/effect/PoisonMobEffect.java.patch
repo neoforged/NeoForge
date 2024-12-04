@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/effect/PoisonMobEffect.java
 +++ b/net/minecraft/world/effect/PoisonMobEffect.java
-@@ -11,7 +_,12 @@
+@@ -13,7 +_,12 @@
      @Override
      public boolean applyEffectTick(ServerLevel p_376442_, LivingEntity p_296276_, int p_296233_) {
          if (p_296276_.getHealth() > 1.0F) {

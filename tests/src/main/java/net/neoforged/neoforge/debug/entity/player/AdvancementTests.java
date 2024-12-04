@@ -92,7 +92,7 @@ public class AdvancementTests {
         reg.registrar(Registries.ITEM_SUB_PREDICATE_TYPE)
                 .register("custom_name", () -> type);
 
-        reg.addProvider(event -> new AdvancementProvider(
+        reg.addClientProvider(event -> new AdvancementProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 event.getExistingFileHelper(),

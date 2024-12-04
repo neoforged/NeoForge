@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
+@@ -195,4 +_,13 @@
+             return ARGB.color(0, j, k, l);
+         }
+     }
++
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(SignBlockEntity blockEntity) {
++        if (blockEntity.getBlockState().getBlock() instanceof net.minecraft.world.level.block.StandingSignBlock) {
++            net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++            return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.125, pos.getZ() + 1.0);
++        }
++        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
++    }
+ }

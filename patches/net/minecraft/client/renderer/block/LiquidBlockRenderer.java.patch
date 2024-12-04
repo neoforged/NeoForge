@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
-@@ -37,6 +_,7 @@
+@@ -37,12 +_,17 @@
          this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).getParticleIcon();
          this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
          this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
@@ -8,8 +8,29 @@
      }
  
      private static boolean isNeighborSameFluid(FluidState p_203186_, FluidState p_203187_) {
-@@ -70,8 +_,9 @@
+         return p_203187_.getType().isSame(p_203186_.getType());
+     }
  
++    private static boolean isNeighborStateHidingOverlay(FluidState selfState, BlockState otherState, Direction neighborFace) {
++        return otherState.shouldHideAdjacentFluidFace(neighborFace, selfState);
++    }
++
+     private static boolean isFaceOccludedByState(Direction p_110980_, float p_110981_, BlockState p_110983_) {
+         VoxelShape voxelshape = p_110983_.getFaceOcclusionShape(p_110980_.getOpposite());
+         if (voxelshape == Shapes.empty()) {
+@@ -64,14 +_,20 @@
+         return isFaceOccludedByState(p_110963_.getOpposite(), 1.0F, p_110962_);
+     }
+ 
++    /** @deprecated Neo: use overload that accepts BlockState */
+     public static boolean shouldRenderFace(FluidState p_203169_, BlockState p_203170_, Direction p_203171_, FluidState p_203172_) {
+         return !isFaceOccludedBySelf(p_203170_, p_203171_) && !isNeighborSameFluid(p_203169_, p_203172_);
+     }
+ 
++    public static boolean shouldRenderFace(FluidState fluidState, BlockState selfState, Direction direction, BlockState otherState) {
++        return !isFaceOccludedBySelf(selfState, direction) && !isNeighborStateHidingOverlay(fluidState, otherState, direction.getOpposite());
++    }
++
      public void tesselate(BlockAndTintGetter p_234370_, BlockPos p_234371_, VertexConsumer p_234372_, BlockState p_234373_, FluidState p_234374_) {
          boolean flag = p_234374_.is(FluidTags.LAVA);
 -        TextureAtlasSprite[] atextureatlassprite = flag ? this.lavaIcons : this.waterIcons;
@@ -20,6 +41,25 @@
          float f = (float)(i >> 16 & 0xFF) / 255.0F;
          float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
          float f2 = (float)(i & 0xFF) / 255.0F;
+@@ -87,12 +_,12 @@
+         FluidState fluidstate4 = blockstate4.getFluidState();
+         BlockState blockstate5 = p_234370_.getBlockState(p_234371_.relative(Direction.EAST));
+         FluidState fluidstate5 = blockstate5.getFluidState();
+-        boolean flag1 = !isNeighborSameFluid(p_234374_, fluidstate1);
+-        boolean flag2 = shouldRenderFace(p_234374_, p_234373_, Direction.DOWN, fluidstate) && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockstate);
+-        boolean flag3 = shouldRenderFace(p_234374_, p_234373_, Direction.NORTH, fluidstate2);
+-        boolean flag4 = shouldRenderFace(p_234374_, p_234373_, Direction.SOUTH, fluidstate3);
+-        boolean flag5 = shouldRenderFace(p_234374_, p_234373_, Direction.WEST, fluidstate4);
+-        boolean flag6 = shouldRenderFace(p_234374_, p_234373_, Direction.EAST, fluidstate5);
++        boolean flag1 = !isNeighborStateHidingOverlay(p_234374_, blockstate1, Direction.DOWN);
++        boolean flag2 = shouldRenderFace(p_234374_, p_234373_, Direction.DOWN, blockstate) && !isFaceOccludedByNeighbor(Direction.DOWN, 0.8888889F, blockstate);
++        boolean flag3 = shouldRenderFace(p_234374_, p_234373_, Direction.NORTH, blockstate2);
++        boolean flag4 = shouldRenderFace(p_234374_, p_234373_, Direction.SOUTH, blockstate3);
++        boolean flag5 = shouldRenderFace(p_234374_, p_234373_, Direction.WEST, blockstate4);
++        boolean flag6 = shouldRenderFace(p_234374_, p_234373_, Direction.EAST, blockstate5);
+         if (flag1 || flag2 || flag6 || flag5 || flag3 || flag4) {
+             float f3 = p_234370_.getShade(Direction.DOWN, true);
+             float f4 = p_234370_.getShade(Direction.UP, true);
 @@ -180,15 +_,15 @@
                  float f57 = f4 * f;
                  float f29 = f4 * f1;

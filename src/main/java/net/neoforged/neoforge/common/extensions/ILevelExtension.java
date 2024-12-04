@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import java.util.Collection;
-import java.util.Collections;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +14,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.client.model.data.ModelDataManager;
-import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
 public interface ILevelExtension {
@@ -48,14 +45,6 @@ public interface ILevelExtension {
      * @return The new max radius
      */
     public double increaseMaxEntityRadius(double value);
-
-    /**
-     * All part entities in this world. Used when collecting entities in an AABB to fix parts being
-     * ignored whose parent entity is in a chunk that does not intersect with the AABB.
-     */
-    public default Collection<PartEntity<?>> getPartEntities() {
-        return Collections.emptyList();
-    }
 
     /**
      * Retrieves the model data manager for the given level. May be null on a server level.

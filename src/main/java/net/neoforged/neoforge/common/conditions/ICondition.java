@@ -19,7 +19,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public interface ICondition {
     Codec<ICondition> CODEC = NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()
@@ -91,5 +94,15 @@ public interface ICondition {
          * Returns {@code true} if the requested tag is available.
          */
         <T> boolean isTagLoaded(TagKey<T> key);
+
+        default FeatureFlagSet enabledFeatures() {
+            // returning the vanilla set causes reports false positives for flags outside of vanilla
+            // return FeatureFlags.VANILLA_SET;
+
+            // lookup the active enabledFeatures from the current server
+            // if no server exists, delegating back to 'VANILLA_SET' should be fine (should rarely ever happen)
+            var server = ServerLifecycleHooks.getCurrentServer();
+            return server == null ? FeatureFlags.VANILLA_SET : server.getWorldData().enabledFeatures();
+        }
     }
 }

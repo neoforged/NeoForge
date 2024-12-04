@@ -1,24 +1,36 @@
 --- a/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
 +++ b/net/minecraft/server/packs/resources/SimpleJsonResourceReloadListener.java
-@@ -41,13 +_,15 @@
+@@ -43,10 +_,21 @@
  
      protected Map<ResourceLocation, T> prepare(ResourceManager p_10771_, ProfilerFiller p_10772_) {
          Map<ResourceLocation, T> map = new HashMap<>();
--        scanDirectory(p_10771_, this.directory, this.ops, this.codec, map);
+-        scanDirectory(p_10771_, this.lister, this.ops, this.codec, map);
 +        // Neo: add condition context
-+        scanDirectory(p_10771_, this.directory, this.makeConditionalOps(), this.codec, map);
++        scanDirectory(p_10771_, this.lister, this.makeConditionalOps(this.ops), this.codec, map);
          return map;
      }
  
++    public static <T> void scanDirectoryWithOptionalValues(
++            ResourceManager p_386974_,
++            ResourceKey<? extends Registry<T>> p_388878_,
++            DynamicOps<JsonElement> p_388402_,
++            Codec<java.util.Optional<T>> p_387608_,
++            Map<ResourceLocation, java.util.Optional<T>> p_386495_
++    ) {
++        scanDirectory(p_386974_, FileToIdConverter.registry(p_388878_), p_388402_, p_387608_, p_386495_);
++    }
++
      public static <T> void scanDirectory(
-         ResourceManager p_279308_, String p_279131_, DynamicOps<JsonElement> p_371830_, Codec<T> p_371493_, Map<ResourceLocation, T> p_279404_
+         ResourceManager p_386974_,
+         ResourceKey<? extends Registry<T>> p_388878_,
+@@ -60,13 +_,16 @@
+     public static <T> void scanDirectory(
+         ResourceManager p_279308_, FileToIdConverter p_387906_, DynamicOps<JsonElement> p_371830_, Codec<T> p_371493_, Map<ResourceLocation, T> p_279404_
      ) {
 +        var conditionalCodec = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(p_371493_);
-         FileToIdConverter filetoidconverter = FileToIdConverter.json(p_279131_);
- 
-         for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_279308_).entrySet()) {
-@@ -55,8 +_,10 @@
-             ResourceLocation resourcelocation1 = filetoidconverter.fileToId(resourcelocation);
+         for (Entry<ResourceLocation, Resource> entry : p_387906_.listMatchingResources(p_279308_).entrySet()) {
+             ResourceLocation resourcelocation = entry.getKey();
+             ResourceLocation resourcelocation1 = p_387906_.fileToId(resourcelocation);
  
              try (Reader reader = entry.getValue().openAsReader()) {
 -                p_371493_.parse(p_371830_, JsonParser.parseReader(reader)).ifSuccess(p_371454_ -> {
@@ -30,13 +42,13 @@
                          throw new IllegalStateException("Duplicate data file ignored with ID " + resourcelocation1);
                      }
                  }).ifError(p_371566_ -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", resourcelocation1, resourcelocation, p_371566_));
-@@ -64,5 +_,9 @@
+@@ -74,5 +_,9 @@
                  LOGGER.error("Couldn't parse data file '{}' from '{}'", resourcelocation1, resourcelocation, jsonparseexception);
              }
          }
 +    }
 +
 +    protected ResourceLocation getPreparedPath(ResourceLocation rl) {
-+        return rl.withPath(this.directory + "/" + rl.getPath() + ".json");
++        return this.lister.idToFile(rl);
      }
  }

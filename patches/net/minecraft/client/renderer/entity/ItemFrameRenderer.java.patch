@@ -1,23 +1,23 @@
 --- a/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
-@@ -100,6 +_,7 @@
- 
-             int j = mapid != null ? p_364723_.rotation % 4 * 2 : p_364723_.rotation;
-             p_115079_.mulPose(Axis.ZP.rotationDegrees((float)j * 360.0F / 8.0F));
-+            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderItemInFrameEvent(p_364723_, this, p_115079_, p_115080_, p_115081_)).isCanceled()) {
-             if (mapid != null) {
-                 p_115079_.mulPose(Axis.ZP.rotationDegrees(180.0F));
-                 float f2 = 0.0078125F;
-@@ -113,6 +_,7 @@
-                 p_115079_.scale(0.5F, 0.5F, 0.5F);
-                 this.itemRenderer.render(itemstack, ItemDisplayContext.FIXED, false, p_115079_, p_115080_, k, OverlayTexture.NO_OVERLAY, p_364723_.itemModel);
-             }
-+            }
+@@ -95,6 +_,7 @@
+             p_115079_.translate(0.0F, 0.0F, 0.4375F);
          }
  
++        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderItemInFrameEvent(p_364723_, this, p_115079_, p_115080_, p_115081_)).isCanceled()) {
+         if (p_364723_.mapId != null) {
+             int j = p_364723_.rotation % 4 * 2;
+             p_115079_.mulPose(Axis.ZP.rotationDegrees((float)j * 360.0F / 8.0F));
+@@ -111,6 +_,7 @@
+             p_115079_.scale(0.5F, 0.5F, 0.5F);
+             p_364723_.item.render(p_115079_, p_115080_, k, OverlayTexture.NO_OVERLAY);
+         }
++        }
+ 
          p_115079_.popPose();
-@@ -161,7 +_,7 @@
-         if (!p_362907_.itemStack.isEmpty()) {
+     }
+@@ -154,7 +_,7 @@
+         if (!itemstack.isEmpty()) {
              MapId mapid = p_363125_.getFramedMapId(itemstack);
              if (mapid != null) {
 -                MapItemSavedData mapitemsaveddata = p_363125_.level().getMapData(mapid);

@@ -90,8 +90,8 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -322,7 +_,7 @@
-         return this.requiredFeatures;
+@@ -326,7 +_,7 @@
+         return false;
      }
  
 -    public static class Properties {
@@ -99,7 +99,7 @@
          private static final DependantName<Item, String> BLOCK_DESCRIPTION_ID = p_371954_ -> Util.makeDescriptionId("block", p_371954_.location());
          private static final DependantName<Item, String> ITEM_DESCRIPTION_ID = p_371511_ -> Util.makeDescriptionId("item", p_371511_.location());
          private final DataComponentMap.Builder components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
-@@ -438,6 +_,7 @@
+@@ -437,6 +_,7 @@
          }
  
          public <T> Item.Properties component(DataComponentType<T> p_330871_, T p_330323_) {
@@ -107,7 +107,7 @@
              this.components.set(p_330871_, p_330323_);
              return this;
          }
-@@ -448,6 +_,10 @@
+@@ -447,6 +_,10 @@
  
          DataComponentMap buildAndValidateComponents(Component p_371796_, ResourceLocation p_371450_) {
              DataComponentMap datacomponentmap = this.components.set(DataComponents.ITEM_NAME, p_371796_).set(DataComponents.ITEM_MODEL, p_371450_).build();
@@ -118,7 +118,7 @@
              if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
                  throw new IllegalStateException("Item cannot have both durability and be stackable");
              } else {
-@@ -484,6 +_,14 @@
+@@ -483,6 +_,14 @@
          @Nullable
          MapItemSavedData mapData(MapId p_339670_);
  
@@ -133,7 +133,7 @@
          static Item.TooltipContext of(@Nullable final Level p_339599_) {
              return p_339599_ == null ? EMPTY : new Item.TooltipContext() {
                  @Override
-@@ -499,6 +_,11 @@
+@@ -498,6 +_,11 @@
                  @Override
                  public MapItemSavedData mapData(MapId p_339628_) {
                      return p_339599_.getMapData(p_339628_);

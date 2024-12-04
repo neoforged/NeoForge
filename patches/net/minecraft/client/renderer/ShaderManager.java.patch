@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/renderer/ShaderManager.java
 +++ b/net/minecraft/client/renderer/ShaderManager.java
 @@ -169,7 +_,7 @@
+     protected void apply(ShaderManager.Configs p_366597_, ResourceManager p_366533_, ProfilerFiller p_366866_) {
          ShaderManager.CompilationCache shadermanager$compilationcache = new ShaderManager.CompilationCache(p_366597_);
          Map<ShaderProgram, ShaderManager.CompilationException> map = new HashMap<>();
+-        Set<ShaderProgram> set = new HashSet<>(CoreShaders.getProgramsToPreload());
++        Set<ShaderProgram> set = new HashSet<>(net.neoforged.neoforge.client.CoreShaderManager.getProgramsToPreload());
  
--        for (ShaderProgram shaderprogram : CoreShaders.getProgramsToPreload()) {
-+        for (ShaderProgram shaderprogram : net.neoforged.neoforge.client.CoreShaderManager.getProgramsToPreload()) {
-             try {
-                 shadermanager$compilationcache.programs.put(shaderprogram, Optional.of(shadermanager$compilationcache.compileProgram(shaderprogram)));
-             } catch (ShaderManager.CompilationException shadermanager$compilationexception) {
+         for (PostChainConfig postchainconfig : p_366597_.postChains.values()) {
+             for (PostChainConfig.Pass postchainconfig$pass : postchainconfig.passes()) {

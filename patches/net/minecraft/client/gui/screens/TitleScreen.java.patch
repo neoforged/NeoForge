@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -114,11 +_,17 @@
+@@ -110,11 +_,17 @@
          int i = this.font.width(COPYRIGHT_TEXT);
          int j = this.width - i - 2;
          int k = 24;
@@ -19,7 +19,7 @@
          }
  
          l = this.createTestWorldButton(l, 24);
-@@ -160,7 +_,7 @@
+@@ -156,7 +_,7 @@
          if (SharedConstants.IS_RUNNING_IN_IDE) {
              this.addRenderableWidget(
                  Button.builder(Component.literal("Create Test World"), p_372504_ -> CreateWorldScreen.testWorld(this.minecraft, this))
@@ -28,7 +28,7 @@
                      .build()
              );
          }
-@@ -304,6 +_,7 @@
+@@ -300,6 +_,7 @@
          if ((i & -67108864) != 0) {
              super.render(p_282860_, p_281753_, p_283539_, p_282628_);
              this.logoRenderer.renderLogo(p_282860_, this.width, f);
@@ -36,7 +36,7 @@
              if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
                  this.splash.render(p_282860_, this.width, this.font, i);
              }
-@@ -319,7 +_,13 @@
+@@ -315,7 +_,13 @@
                  s = s + I18n.get("menu.modded");
              }
  

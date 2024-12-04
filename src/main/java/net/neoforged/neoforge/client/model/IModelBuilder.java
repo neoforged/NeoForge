@@ -19,7 +19,10 @@ import net.neoforged.neoforge.client.RenderTypeGroup;
  * <p>
  * Provides a generic base implementation via {@link #of(boolean, boolean, boolean, ItemTransforms, TextureAtlasSprite, RenderTypeGroup)}
  * and a quad-collecting alternative via {@link #collecting(List)}.
+ *
+ * @deprecated Use {@link SimpleBakedModel.Builder} instead.
  */
+@Deprecated(forRemoval = true, since = "1.21.4")
 public interface IModelBuilder<T extends IModelBuilder<T>> {
     /**
      * Creates a new model builder that uses the provided attributes in the final baked model.
@@ -38,10 +41,28 @@ public interface IModelBuilder<T extends IModelBuilder<T>> {
         return new Collecting(quads);
     }
 
+    /**
+     * Adds a face to the model that will be culled based on the provided facing.
+     *
+     * @param facing The facing
+     * @param quad   The quad
+     * @return This builder
+     */
     T addCulledFace(Direction facing, BakedQuad quad);
 
+    /**
+     * Adds a face to the model that will not be culled.
+     *
+     * @param quad The quad
+     * @return This builder
+     */
     T addUnculledFace(BakedQuad quad);
 
+    /**
+     * Builds the model from the collected faces.
+     *
+     * @return The baked model
+     */
     BakedModel build();
 
     class Simple implements IModelBuilder<Simple> {

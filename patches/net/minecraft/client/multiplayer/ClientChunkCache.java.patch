@@ -8,7 +8,7 @@
                  this.storage.drop(i, levelchunk);
              }
          }
-@@ -125,6 +_,7 @@
+@@ -126,6 +_,7 @@
              }
  
              this.level.onChunkLoaded(chunkpos);

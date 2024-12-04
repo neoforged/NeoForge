@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
-@@ -375,7 +_,7 @@
+@@ -364,7 +_,7 @@
          Entity entity = this.getOwner();
          return entity instanceof Player
              ? entity.mayInteract(p_376318_, p_150168_)

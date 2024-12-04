@@ -1,6 +1,15 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -126,6 +_,7 @@
+@@ -115,7 +_,7 @@
+     private final TickRateManager tickRateManager;
+     private final Minecraft minecraft = Minecraft.getInstance();
+     final List<AbstractClientPlayer> players = Lists.newArrayList();
+-    final List<EnderDragonPart> dragonParts = Lists.newArrayList();
++    final List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts = Lists.newArrayList();
+     private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
+     private static final int CLOUD_COLOR = -1;
+     private int skyFlashTime;
+@@ -131,6 +_,7 @@
              p_194170_.put(
                  BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(p_194168_ -> this.calculateBlockTint(p_194168_, BiomeColors.WATER_COLOR_RESOLVER))
              );
@@ -8,16 +17,15 @@
          }
      );
      private final ClientChunkCache chunkSource;
-@@ -135,6 +_,8 @@
+@@ -140,6 +_,7 @@
      private final int seaLevel;
      private boolean tickDayTime;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
-+    private final it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.neoforged.neoforge.entity.PartEntity<?>> partEntities = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>();
 +    private final net.neoforged.neoforge.client.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager(this);
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
-@@ -164,10 +_,15 @@
+@@ -169,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, int p_233645_, int p_233646_) {
          if (this.blockStatePredictionHandler.isPredicting()) {
@@ -33,7 +41,7 @@
              }
  
              return flag;
-@@ -201,6 +_,7 @@
+@@ -206,6 +_,7 @@
          this.serverSimulationDistance = p_363776_;
          this.updateSkyBrightness();
          this.prepareWeather();
@@ -41,7 +49,7 @@
      }
  
      public void queueLightUpdate(Runnable p_194172_) {
-@@ -244,7 +_,7 @@
+@@ -249,7 +_,7 @@
      private void tickTime() {
          this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
          if (this.tickDayTime) {
@@ -50,7 +58,7 @@
          }
      }
  
-@@ -283,7 +_,11 @@
+@@ -288,7 +_,11 @@
          p_104640_.setOldPosAndRot();
          p_104640_.tickCount++;
          Profiler.get().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
@@ -63,7 +71,7 @@
          Profiler.get().pop();
  
          for (Entity entity : p_104640_.getPassengers()) {
-@@ -335,8 +_,10 @@
+@@ -339,8 +_,10 @@
      }
  
      public void addEntity(Entity p_104741_) {
@@ -74,7 +82,7 @@
      }
  
      public void removeEntity(int p_171643_, Entity.RemovalReason p_171644_) {
-@@ -507,6 +_,13 @@
+@@ -511,6 +_,13 @@
          float p_263349_,
          long p_263408_
      ) {
@@ -88,7 +96,7 @@
          if (p_263381_ == this.minecraft.player) {
              this.playSound(p_263372_, p_263404_, p_263365_, p_263335_.value(), p_263417_, p_263416_, p_263349_, false, p_263408_);
          }
-@@ -516,6 +_,12 @@
+@@ -520,6 +_,12 @@
      public void playSeededSound(
          @Nullable Player p_263514_, Entity p_263536_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
      ) {
@@ -101,7 +109,16 @@
          if (p_263514_ == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_263536_, p_263509_));
          }
-@@ -1045,6 +_,7 @@
+@@ -731,7 +_,7 @@
+         return this.players;
+     }
+ 
+-    public List<EnderDragonPart> dragonParts() {
++    public List<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts() {
+         return this.dragonParts;
+     }
+ 
+@@ -1056,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty p_104852_) {
@@ -109,38 +126,31 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1081,14 +_,75 @@
-             if (p_171712_ instanceof AbstractClientPlayer) {
-                 ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
+@@ -1098,6 +_,9 @@
+                     ClientLevel.this.dragonParts.addAll(Arrays.asList(enderdragon.getSubEntities()));
+                     break;
+                 default:
++                    if (p_171712_.isMultipartEntity()) {
++                        ClientLevel.this.dragonParts.addAll(Arrays.asList(p_171712_.getParts()));
++                    }
              }
-+            if (p_171712_.isMultipartEntity()) {
-+                for (net.neoforged.neoforge.entity.PartEntity<?> part : p_171712_.getParts()) {
-+                    ClientLevel.this.partEntities.put(part.getId(), part);
-+                }
-+            }
          }
  
-         public void onTrackingEnd(Entity p_171716_) {
-             p_171716_.unRide();
-             ClientLevel.this.players.remove(p_171716_);
+@@ -1112,10 +_,58 @@
+                     ClientLevel.this.dragonParts.removeAll(Arrays.asList(enderdragon.getSubEntities()));
+                     break;
+                 default:
++                    if (p_171716_.isMultipartEntity()) {
++                        ClientLevel.this.dragonParts.removeAll(Arrays.asList(p_171716_.getParts()));
++                    }
+             }
 +
 +            p_171716_.onRemovedFromLevel();
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent(p_171716_, ClientLevel.this));
-+
-+            if (p_171716_.isMultipartEntity()) {
-+                for (net.neoforged.neoforge.entity.PartEntity<?> part : p_171716_.getParts()) {
-+                    ClientLevel.this.partEntities.remove(part.getId());
-+                }
-+            }
          }
  
          public void onSectionChange(Entity p_233660_) {
          }
-+    }
-+
-+    @Override
-+    public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
-+        return this.partEntities.values();
 +    }
 +
 +    @Override

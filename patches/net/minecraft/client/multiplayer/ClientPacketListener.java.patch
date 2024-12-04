@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -367,6 +_,7 @@
+@@ -368,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final DebugSampleSubscriber debugSampleSubscriber;
@@ -8,7 +8,7 @@
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -388,7 +_,8 @@
+@@ -389,7 +_,8 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
@@ -18,7 +18,7 @@
          this.fuelValues = FuelValues.vanillaBurnTimes(p_295121_.receivedRegistries(), this.enabledFeatures);
      }
  
-@@ -451,12 +_,13 @@
+@@ -452,12 +_,13 @@
  
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
@@ -33,7 +33,7 @@
          this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
          this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
          this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
-@@ -900,7 +_,8 @@
+@@ -902,7 +_,8 @@
                          this.serverCookies,
                          chatcomponent$state,
                          this.customReportDetails,
@@ -126,7 +126,7 @@
      }
  
      @Override
-@@ -2526,6 +_,8 @@
+@@ -2540,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -135,7 +135,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2535,6 +_,7 @@
+@@ -2549,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -143,7 +143,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2622,6 +_,10 @@
+@@ -2640,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

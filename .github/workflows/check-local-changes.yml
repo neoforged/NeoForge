@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew generatePackageInfos
 
       - name: Gen patches
-        run: ./gradlew :neoforge:unpackSourcePatches
+        run: ./gradlew :neoforge:genPatches
 
       - name: Run datagen with Gradle
         run: ./gradlew :neoforge:runData :tests:runData

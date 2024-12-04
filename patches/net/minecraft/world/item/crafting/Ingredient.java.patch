@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/item/crafting/Ingredient.java
 +++ b/net/minecraft/world/item/crafting/Ingredient.java
-@@ -24,18 +_,20 @@
+@@ -23,16 +_,20 @@
  import net.minecraft.world.level.ItemLike;
  
- public final class Ingredient implements Predicate<ItemStack> {
+ public final class Ingredient implements StackedContents.IngredientInfo<Holder<Item>>, Predicate<ItemStack> {
 -    public static final StreamCodec<RegistryFriendlyByteBuf, Ingredient> CONTENTS_STREAM_CODEC = ByteBufCodecs.holderSet(Registries.ITEM)
 -        .map(Ingredient::new, p_360055_ -> p_360055_.values);
 -    public static final StreamCodec<RegistryFriendlyByteBuf, Optional<Ingredient>> OPTIONAL_CONTENTS_STREAM_CODEC = ByteBufCodecs.holderSet(Registries.ITEM)
@@ -20,14 +20,14 @@
 -    public static final Codec<Ingredient> CODEC = ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, p_360061_ -> p_360061_.values);
 +    public static final Codec<Ingredient> CODEC = net.neoforged.neoforge.common.crafting.IngredientCodecs.codec(ExtraCodecs.nonEmptyHolderSet(NON_AIR_HOLDER_SET_CODEC).xmap(Ingredient::new, p_360061_ -> p_360061_.values));
      private final HolderSet<Item> values;
-     @Nullable
-     private List<Holder<Item>> items;
-+    @Nullable
++    @org.jetbrains.annotations.Nullable
 +    private net.neoforged.neoforge.common.crafting.ICustomIngredient customIngredient = null;
++    @org.jetbrains.annotations.Nullable
++    private List<Holder<Item>> customIngredientValues;
  
      private Ingredient(HolderSet<Item> p_365027_) {
          p_365027_.unwrap().ifRight(p_360057_ -> {
-@@ -48,19 +_,31 @@
+@@ -45,12 +_,23 @@
          this.values = p_365027_;
      }
  
@@ -40,27 +40,36 @@
          return p_362504_.<Boolean>map(p_360060_ -> p_360060_.test(p_363604_)).orElseGet(p_363604_::isEmpty);
      }
  
-     public List<Holder<Item>> items() {
-         if (this.items == null) {
--            this.items = ImmutableList.copyOf(this.values);
-+            if (this.customIngredient != null) {
-+                this.items = this.customIngredient.items().toList();
-+            } else {
-+                this.items = ImmutableList.copyOf(this.values);
+     @Deprecated
+     public Stream<Holder<Item>> items() {
++        if (this.customIngredient != null) {
++            if (this.customIngredientValues == null) {
++                this.customIngredientValues = this.customIngredient.items().toList();
 +            }
-         }
++            return this.customIngredientValues.stream();
++        }
+         return this.values.stream();
+     }
  
-         return this.items;
+@@ -59,16 +_,67 @@
      }
  
      public boolean test(ItemStack p_43914_) {
 +        if (this.customIngredient != null) {
 +            return this.customIngredient.test(p_43914_);
 +        }
-         List<Holder<Item>> list = this.items();
+         return p_43914_.is(this.values);
+     }
  
-         for (int i = 0; i < list.size(); i++) {
-@@ -74,7 +_,49 @@
+     public boolean acceptsItem(Holder<Item> p_389400_) {
++        if (this.customIngredient != null) {
++            if (this.customIngredientValues == null) {
++                this.customIngredientValues = this.customIngredient.items().toList();
++            }
++            return this.customIngredientValues.contains(p_389400_);
++        }
+         return this.values.contains(p_389400_);
+     }
  
      @Override
      public boolean equals(Object p_301003_) {
@@ -92,7 +101,7 @@
 +     */
 +    private HolderSet<Item> getValuesForSync() {
 +        if (isCustom()) {
-+            return HolderSet.direct(this.items());
++            return HolderSet.direct(this.items().toList());
 +        }
 +        return this.values;
 +    }
@@ -101,7 +110,7 @@
 +        return this.customIngredient == null || this.customIngredient.isSimple();
 +    }
 +
-+    @Nullable
++    @org.jetbrains.annotations.Nullable
 +    public net.neoforged.neoforge.common.crafting.ICustomIngredient getCustomIngredient() {
 +        return this.customIngredient;
 +    }
@@ -111,7 +120,7 @@
      }
  
      public static Ingredient of(ItemLike p_364285_) {
-@@ -94,6 +_,9 @@
+@@ -88,6 +_,9 @@
      }
  
      public SlotDisplay display() {

@@ -1,19 +1,18 @@
 --- a/net/minecraft/server/ReloadableServerRegistries.java
 +++ b/net/minecraft/server/ReloadableServerRegistries.java
-@@ -61,8 +_,16 @@
+@@ -61,7 +_,15 @@
              () -> {
                  WritableRegistry<T> writableregistry = new MappedRegistry<>(p_335741_.registryKey(), Lifecycle.experimental());
                  Map<ResourceLocation, T> map = new HashMap<>();
+-                SimpleJsonResourceReloadListener.scanDirectory(p_335893_, p_335741_.registryKey(), p_336173_, p_335741_.codec(), map);
 +                Map<ResourceLocation, Optional<T>> optionalMap = new HashMap<>();
-                 String s = Registries.elementsDirPath(p_335741_.registryKey());
--                SimpleJsonResourceReloadListener.scanDirectory(p_335893_, s, p_336173_, p_335741_.codec(), map);
-+                SimpleJsonResourceReloadListener.scanDirectory(p_335893_, s, p_336173_, p_335741_.conditionalCodec(), optionalMap);
++                SimpleJsonResourceReloadListener.scanDirectoryWithOptionalValues(p_335893_, p_335741_.registryKey(), p_336173_, p_335741_.conditionalCodec(), optionalMap);
 +                optionalMap.forEach((rl, optionalEntry) -> {
 +                    optionalEntry.ifPresent(entry -> p_335741_.idSetter().accept(entry, rl));
 +                    T value = optionalEntry.orElse(p_335741_.defaultValue());
 +                    if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(rl, lootTable);
 +                    if (value != null)
-+                    map.put(rl, value);
++                        map.put(rl, value);
 +                });
                  map.forEach(
                      (p_335721_, p_335683_) -> writableregistry.register(

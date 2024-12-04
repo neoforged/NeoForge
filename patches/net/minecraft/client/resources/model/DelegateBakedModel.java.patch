@@ -28,7 +28,7 @@
      public boolean isGui3d() {
          return this.parent.isGui3d();
      }
-@@ -45,12 +_,44 @@
+@@ -40,12 +_,44 @@
      }
  
      @Override
@@ -64,8 +64,8 @@
 +    }
 +
 +    @Override
-+    public List<net.minecraft.client.renderer.RenderType> getRenderTypes(net.minecraft.world.item.ItemStack itemStack) {
-+        return this.parent.getRenderTypes(itemStack);
++    public net.minecraft.client.renderer.RenderType getRenderType(net.minecraft.world.item.ItemStack itemStack) {
++        return this.parent.getRenderType(itemStack);
 +    }
 +
 +    @Override

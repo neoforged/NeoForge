@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
-@@ -69,6 +_,7 @@
+@@ -73,6 +_,7 @@
      }
  
      public void render(S p_361886_, PoseStack p_115311_, MultiBufferSource p_115312_, int p_115313_) {
@@ -8,7 +8,7 @@
          p_115311_.pushPose();
          if (p_361886_.hasPose(Pose.SLEEPING)) {
              Direction direction = p_361886_.bedOrientation;
-@@ -104,6 +_,7 @@
+@@ -108,6 +_,7 @@
  
          p_115311_.popPose();
          super.render(p_361886_, p_115311_, p_115312_, p_115313_);
@@ -16,7 +16,7 @@
      }
  
      protected boolean shouldRenderLayers(S p_364697_) {
-@@ -201,7 +_,7 @@
+@@ -205,7 +_,7 @@
      protected boolean shouldShowName(T p_363517_, double p_365448_) {
          if (p_363517_.isDiscrete()) {
              float f = 32.0F;
@@ -25,12 +25,12 @@
                  return false;
              }
          }
-@@ -284,7 +_,7 @@
- 
-         p_360515_.isFullyFrozen = p_362733_.isFullyFrozen();
-         p_360515_.isBaby = p_362733_.isBaby();
--        p_360515_.isInWater = p_362733_.isInWater();
-+        p_360515_.isInWater = p_362733_.isInWater() || p_362733_.isInFluidType((fluidType, height) -> p_362733_.canSwimInFluidType(fluidType));
-         p_360515_.isAutoSpinAttack = p_362733_.isAutoSpinAttack();
-         p_360515_.hasRedOverlay = p_362733_.hurtTime > 0 || p_362733_.deathTime > 0;
-         ItemStack itemstack1 = p_362733_.getItemBySlot(EquipmentSlot.HEAD);
+@@ -289,7 +_,7 @@
+         label48: {
+             p_360515_.isFullyFrozen = p_362733_.isFullyFrozen();
+             p_360515_.isBaby = p_362733_.isBaby();
+-            p_360515_.isInWater = p_362733_.isInWater();
++            p_360515_.isInWater = p_362733_.isInWater() || p_362733_.isInFluidType((fluidType, height) -> p_362733_.canSwimInFluidType(fluidType));
+             p_360515_.isAutoSpinAttack = p_362733_.isAutoSpinAttack();
+             p_360515_.hasRedOverlay = p_362733_.hurtTime > 0 || p_362733_.deathTime > 0;
+             ItemStack itemstack = p_362733_.getItemBySlot(EquipmentSlot.HEAD);

@@ -81,7 +81,7 @@ public class BlockTests {
     static void woodlessFenceGate(final DynamicTest test, final RegistrationHelper reg) {
         final var gate = reg.blocks().registerBlock("gate", props -> new FenceGateBlock(props, SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE), BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE))
                 .withLang("Woodless Fence Gate").withBlockItem();
-        reg.provider(BlockStateProvider.class, prov -> prov.fenceGateBlock(gate.get(), ResourceLocation.withDefaultNamespace("block/iron_block")));
+        reg.clientProvider(BlockStateProvider.class, prov -> prov.fenceGateBlock(gate.get(), ResourceLocation.withDefaultNamespace("block/iron_block")));
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(() -> helper.setBlock(1, 1, 1, gate.get().defaultBlockState().setValue(FenceGateBlock.OPEN, true)))
 

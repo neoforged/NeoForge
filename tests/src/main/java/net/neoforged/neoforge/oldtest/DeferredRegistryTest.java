@@ -94,10 +94,10 @@ public class DeferredRegistryTest {
         //PLACED_FEATURE.get();
     }
 
-    public void gatherData(GatherDataEvent event) {
+    public void gatherData(GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
 
-        gen.addProvider(event.includeClient(), new BlockStateProvider(gen.getPackOutput(), MODID, event.getExistingFileHelper()) {
+        gen.addProvider(true, new BlockStateProvider(gen.getPackOutput(), MODID, event.getExistingFileHelper()) {
             @Override
             protected void registerStatesAndModels() {
                 simpleBlockWithItem(BLOCK.get(), models().cubeAll(BLOCK.getId().getPath(), mcLoc("block/furnace_top")));
