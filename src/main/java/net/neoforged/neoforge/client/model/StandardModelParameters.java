@@ -1,0 +1,84 @@
+package net.neoforged.neoforge.client.model;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.math.Transformation;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.client.RenderTypeGroup;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Wrapper around all standard top-level model parameters added by vanilla and NeoForge except elements.
+ * <p>
+ * For use in custom model loaders which want to respect these properties but create the quads from
+ * something other than the vanilla elements spec.
+ */
+public record StandardModelParameters(
+        @Nullable ResourceLocation parent,
+        TextureSlots.Data textures,
+        @Nullable ItemTransforms itemTransforms,
+        @Nullable Boolean ambientOcclusion,
+        @Nullable UnbakedModel.GuiLight guiLight,
+        @Nullable Transformation rootTransform,
+        RenderTypeGroup renderTypeGroup,
+        Map<String, Boolean> partVisibility) {
+
+    public static StandardModelParameters parse(JsonObject jsonObject, JsonDeserializationContext context) {
+        String parentName = GsonHelper.getAsString(jsonObject, "parent", "");
+        ResourceLocation parent = parentName.isEmpty() ? null : ResourceLocation.parse(parentName);
+
+        TextureSlots.Data textures = TextureSlots.Data.EMPTY;
+        if (jsonObject.has("textures")) {
+            JsonObject jsonobject = GsonHelper.getAsJsonObject(jsonObject, "textures");
+            textures = TextureSlots.parseTextureMap(jsonobject, TextureAtlas.LOCATION_BLOCKS);
+        }
+
+        ItemTransforms itemTransforms = null;
+        if (jsonObject.has("display")) {
+            JsonObject jsonobject1 = GsonHelper.getAsJsonObject(jsonObject, "display");
+            itemTransforms = context.deserialize(jsonobject1, ItemTransforms.class);
+        }
+
+        Boolean ambientOcclusion = null;
+        if (jsonObject.has("ambientocclusion")) {
+            ambientOcclusion = GsonHelper.getAsBoolean(jsonObject, "ambientocclusion");
+        }
+
+        UnbakedModel.GuiLight guiLight = null;
+        if (jsonObject.has("gui_light")) {
+            guiLight = UnbakedModel.GuiLight.getByName(GsonHelper.getAsString(jsonObject, "gui_light"));
+        }
+
+        Transformation rootTransform = null;
+        if (jsonObject.has("transform")) {
+            JsonElement transform = jsonObject.get("transform");
+            rootTransform = context.deserialize(transform, Transformation.class);
+        }
+
+        RenderTypeGroup renderTypeGroup = RenderTypeGroup.EMPTY;
+        if (jsonObject.has("render_type")) {
+            var renderTypeHintName = GsonHelper.getAsString(jsonObject, "render_type");
+            renderTypeGroup = net.neoforged.neoforge.client.NamedRenderTypeManager.get(ResourceLocation.parse(renderTypeHintName));
+        }
+
+        Map<String, Boolean> partVisibility = new HashMap<>();
+        if (jsonObject.has("visibility")) {
+            JsonObject visibility = GsonHelper.getAsJsonObject(jsonObject, "visibility");
+            for (Map.Entry<String, JsonElement> part : visibility.entrySet()) {
+                partVisibility.put(part.getKey(), part.getValue().getAsBoolean());
+            }
+        }
+        partVisibility = Map.copyOf(partVisibility);
+
+        return new StandardModelParameters(parent, textures, itemTransforms, ambientOcclusion, guiLight, rootTransform, renderTypeGroup, partVisibility);
+    }
+}

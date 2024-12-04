@@ -11,6 +11,8 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.util.context.ContextKey;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 
+import java.util.Map;
+
 /**
  * Properties that NeoForge adds for {@link BlockModel}s and {@link UnbakedModel}s.
  */
@@ -26,4 +28,9 @@ public final class NeoForgeModelProperties {
      * Render type to use. For block models, this can be specified under the {@code render_type} JSON key.
      */
     public static final ContextKey<RenderTypeGroup> RENDER_TYPE = ContextKey.vanilla("render_type");
+
+    /**
+     * Part visibilities. For models with named parts (i.e. OBJ and composite), this can be specified under the {@code visibility} JSON key
+     */
+    public static final ContextKey<Map<String, Boolean>> PART_VISIBILITY = ContextKey.vanilla("part_visibility");
 }
