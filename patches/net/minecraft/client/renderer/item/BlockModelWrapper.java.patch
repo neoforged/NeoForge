@@ -37,7 +37,7 @@
 +            int[] aint = itemstackrenderstate$layerrenderstate.prepareTintLayers(tints.length);
 +            System.arraycopy(tints, 0, aint, 0, tints.length);
 +
-+            itemstackrenderstate$layerrenderstate.setupBlockModel(this.model, pass.getRenderType(p_386443_));
++            itemstackrenderstate$layerrenderstate.setupBlockModel(pass, pass.getRenderType(p_386443_));
 +        });
      }
  
