@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -302,6 +_,7 @@
+@@ -307,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -8,7 +8,7 @@
          ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
-@@ -482,7 +_,14 @@
+@@ -487,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -24,43 +24,43 @@
      }
  
      @Override
-@@ -676,6 +_,7 @@
+@@ -680,6 +_,7 @@
+             && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
-         float f = (float)this.getAttributeValue(Attributes.SNEAKING_SPEED);
-         this.input.tick(this.isMovingSlowly(), f);
+         this.input.tick();
 +        net.neoforged.neoforge.client.ClientHooks.onMovementInputUpdate(this, this.input);
          this.minecraft.getTutorial().onInput(this.input);
-         if (this.isUsingItem() && !this.isPassenger()) {
-             this.input.leftImpulse *= 0.2F;
-@@ -704,7 +_,7 @@
-         boolean flag4 = this.canStartSprinting();
-         boolean flag5 = this.isPassenger() ? this.getVehicle().onGround() : this.onGround();
-         boolean flag6 = !flag1 && !flag2;
--        if ((flag5 || this.isUnderWater()) && flag6 && flag4) {
-+        if ((flag5 || this.isUnderWater() || this.canStartSwimming()) && flag6 && flag4) {
+         if (this.shouldStopSprinting()) {
+             this.setSprinting(false);
+@@ -718,7 +_,7 @@
+         boolean flag3 = this.canStartSprinting();
+         boolean flag4 = this.isPassenger() ? this.getVehicle().onGround() : this.onGround();
+         boolean flag5 = !flag1 && !flag2;
+-        if ((flag4 || this.isUnderWater()) && flag5 && flag3) {
++        if ((flag4 || this.isUnderWater() || this.canStartSwimming()) && flag5 && flag3) {
              if (this.sprintTriggerTime <= 0 && !this.minecraft.options.keySprint.isDown()) {
                  this.sprintTriggerTime = 7;
              } else {
-@@ -712,15 +_,15 @@
+@@ -726,15 +_,15 @@
              }
          }
  
--        if ((!this.isInWater() || this.isUnderWater()) && flag4 && this.minecraft.options.keySprint.isDown()) {
-+        if (!this.isSprinting() && (!(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) || (this.isUnderWater() || this.canStartSwimming())) && this.hasEnoughImpulseToStartSprinting() && flag4 && !this.isUsingItem() && !this.hasEffect(MobEffects.BLINDNESS) && this.minecraft.options.keySprint.isDown()) {
+-        if ((!this.isInWater() || this.isUnderWater()) && flag3 && this.minecraft.options.keySprint.isDown()) {
++        if (!this.isSprinting() && (!(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType))) || (this.isUnderWater() || this.canStartSwimming())) && this.hasEnoughImpulseToStartSprinting() && flag3 && !this.isUsingItem() && !this.hasEffect(MobEffects.BLINDNESS) && this.minecraft.options.keySprint.isDown()) {
              this.setSprinting(true);
          }
  
          if (this.isSprinting()) {
-             boolean flag7 = !this.input.hasForwardImpulse() || !this.hasEnoughFoodToStartSprinting();
--            boolean flag8 = flag7 || this.horizontalCollision && !this.minorHorizontalCollision || this.isInWater() && !this.isUnderWater();
-+            boolean flag8 = flag7 || this.horizontalCollision && !this.minorHorizontalCollision || this.isInWater() && !this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
+             boolean flag6 = !this.input.hasForwardImpulse() || !this.hasEnoughFoodToStartSprinting();
+-            boolean flag7 = flag6 || this.horizontalCollision && !this.minorHorizontalCollision || this.isInWater() && !this.isUnderWater();
++            boolean flag7 = flag6 || this.horizontalCollision && !this.minorHorizontalCollision || this.isInWater() && !this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
              if (this.isSwimming()) {
--                if (!this.onGround() && !this.input.keyPresses.shift() && flag7 || !this.isInWater()) {
-+                if (!this.onGround() && !this.input.keyPresses.shift() && flag7 || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)))) {
+-                if (!this.onGround() && !this.input.keyPresses.shift() && flag6 || !this.isInWater()) {
++                if (!this.onGround() && !this.input.keyPresses.shift() && flag6 || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)))) {
                      this.setSprinting(false);
                  }
-             } else if (flag8) {
-@@ -729,7 +_,7 @@
+             } else if (flag7) {
+@@ -743,7 +_,7 @@
          }
  
          boolean flag9 = false;
@@ -69,7 +69,7 @@
              if (this.minecraft.gameMode.isAlwaysFlying()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -866,6 +_,10 @@
+@@ -896,6 +_,10 @@
      @Override
      public void rideTick() {
          super.rideTick();
@@ -80,7 +80,7 @@
          this.handsBusy = false;
          if (this.getControlledVehicle() instanceof AbstractBoat abstractboat) {
              abstractboat.setInput(
-@@ -1063,7 +_,7 @@
+@@ -1094,7 +_,7 @@
      }
  
      private boolean hasEnoughFoodToStartSprinting() {

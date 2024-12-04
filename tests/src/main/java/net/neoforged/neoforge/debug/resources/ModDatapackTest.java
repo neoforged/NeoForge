@@ -31,7 +31,7 @@ public class ModDatapackTest {
     static void modDatapack(final DynamicTest test) {
         final ResourceLocation testAdvancement = ResourceLocation.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
-        test.registrationHelper().addProvider(event -> {
+        test.registrationHelper().addClientProvider(event -> {
             List<AdvancementProvider.AdvancementGenerator> generators = List.of((registries, saver, existingFileHelper) -> Advancement.Builder.recipeAdvancement()
                     .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
                     .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(

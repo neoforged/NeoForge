@@ -1,18 +1,10 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -71,18 +_,20 @@
-         TextureAtlas.LOCATION_BLOCKS,
-         ResourceLocation.withDefaultNamespace("blocks")
-     );
--    private Map<ModelResourceLocation, BakedModel> bakedRegistry;
-+    private Map<ModelResourceLocation, BakedModel> bakedRegistry = new java.util.HashMap<>();
-     private final AtlasSet atlases;
-     private final BlockModelShaper blockModelShaper;
-     private final BlockColors blockColors;
-     private int maxMipmapLevels;
+@@ -83,11 +_,13 @@
      private BakedModel missingModel;
-     private Object2IntMap<BlockState> modelGroups;
-+    private ModelBakery modelBakery;
+     private ItemModel missingItemModel;
+     private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
++    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
@@ -22,33 +14,62 @@
          this.atlases = new AtlasSet(VANILLA_ATLASES, p_119406_);
      }
  
-@@ -102,6 +_,7 @@
+@@ -115,6 +_,7 @@
      public final CompletableFuture<Void> reload(
          PreparableReloadListener.PreparationBarrier p_249079_, ResourceManager p_251134_, Executor p_250550_, Executor p_249221_
      ) {
-+        net.neoforged.neoforge.client.model.geometry.GeometryLoaderManager.init();
++        net.neoforged.neoforge.client.model.UnbakedModelParser.init();
          UnbakedModel unbakedmodel = MissingBlockModel.missingModel();
-         BlockStateModelLoader blockstatemodelloader = new BlockStateModelLoader(unbakedmodel);
-         CompletableFuture<Map<ResourceLocation, UnbakedModel>> completablefuture = loadBlockModels(p_251134_, p_250550_);
-@@ -258,6 +_,8 @@
-                             .collect(Collectors.joining("\n"))
+         CompletableFuture<EntityModelSet> completablefuture = CompletableFuture.supplyAsync(EntityModelSet::vanilla, p_250550_);
+         CompletableFuture<SpecialBlockModelRenderer> completablefuture1 = completablefuture.thenApplyAsync(SpecialBlockModelRenderer::vanilla, p_250550_);
+@@ -154,8 +_,10 @@
+                         completablefuture3.join().plainModels(),
+                         completablefuture4.join().contents(),
+                         modeldiscovery.getReferencedModels(),
+-                        unbakedmodel
++                        unbakedmodel,
++                        modeldiscovery.standaloneModels
+                     );
++                    this.modelBakery.set(modelbakery);
+                     return loadModels(Profiler.get(), map1, modelbakery, object2intmap, completablefuture.join(), completablefuture1.join());
+                 },
+                 p_250550_
+@@ -169,7 +_,7 @@
+         return CompletableFuture.<Map<ResourceLocation, Resource>>supplyAsync(() -> MODEL_LISTER.listMatchingResources(p_251361_), p_252189_)
+             .thenCompose(
+                 p_250597_ -> {
+-                    List<CompletableFuture<Pair<ResourceLocation, BlockModel>>> list = new ArrayList<>(p_250597_.size());
++                    List<CompletableFuture<Pair<ResourceLocation, UnbakedModel>>> list = new ArrayList<>(p_250597_.size());
+ 
+                     for (Entry<ResourceLocation, Resource> entry : p_250597_.entrySet()) {
+                         list.add(CompletableFuture.supplyAsync(() -> {
+@@ -178,7 +_,7 @@
+                             try {
+                                 Pair pair;
+                                 try (Reader reader = entry.getValue().openAsReader()) {
+-                                    pair = Pair.of(resourcelocation, BlockModel.fromStream(reader));
++                                    pair = Pair.of(resourcelocation, net.neoforged.neoforge.client.model.UnbakedModelParser.parse(reader));
+                                 }
+ 
+                                 return pair;
+@@ -261,6 +_,8 @@
+                         p_386267_.stream().sorted().map(p_386265_ -> "    " + p_386265_).collect(Collectors.joining("\n"))
                      )
              );
-+        p_252136_.popPush("forge_modify_baking_result");
-+        net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(p_248945_.getBakedTopLevelModels(), p_250646_, p_248945_);
++        p_252136_.push("neoforge_modify_baking_result");
++        net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(modelbakery$bakingresult, p_250646_, p_248945_);
          p_252136_.popPush("dispatch");
-         Map<ModelResourceLocation, BakedModel> map = p_248945_.getBakedTopLevelModels();
-         BakedModel bakedmodel = map.get(MissingBlockModel.VARIANT);
-@@ -289,6 +_,8 @@
-         this.bakedRegistry = modelbakery.getBakedTopLevelModels();
+         Map<BlockState, BakedModel> map = createBlockStateToModelDispatch(modelbakery$bakingresult.blockStateModels(), modelbakery$bakingresult.missingModel());
+         CompletableFuture<Void> completablefuture = CompletableFuture.allOf(
+@@ -304,6 +_,7 @@
          this.modelGroups = p_248996_.modelGroups;
-         this.missingModel = p_248996_.missingModel;
-+        this.modelBakery = modelbakery;
-+        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, this.bakedRegistry, modelbakery);
+         this.missingModel = modelbakery$bakingresult.missingModel();
+         this.missingItemModel = modelbakery$bakingresult.missingItemModel();
++        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, modelbakery$bakingresult, this.modelBakery.get());
          p_251960_.popPush("cache");
          this.blockModelShaper.replaceCache(p_248996_.modelCache);
-         p_251960_.pop();
-@@ -313,6 +_,7 @@
+         this.specialBlockModelRenderer = p_248996_.specialBlockModelRenderer;
+@@ -330,6 +_,7 @@
      }
  
      public TextureAtlas getAtlas(ResourceLocation p_119429_) {
@@ -56,14 +77,13 @@
          return this.atlases.getAtlas(p_119429_);
      }
  
-@@ -323,6 +_,10 @@
- 
-     public void updateMaxMipLevel(int p_119411_) {
-         this.maxMipmapLevels = p_119411_;
+@@ -360,5 +_,9 @@
+         SpecialBlockModelRenderer specialBlockModelRenderer,
+         CompletableFuture<Void> readyForUpload
+     ) {
 +    }
 +
 +    public ModelBakery getModelBakery() {
-+        return com.google.common.base.Preconditions.checkNotNull(modelBakery, "Attempted to query model bakery before it has been initialized.");
++        return this.modelBakery.get();
      }
- 
-     @OnlyIn(Dist.CLIENT)
+ }

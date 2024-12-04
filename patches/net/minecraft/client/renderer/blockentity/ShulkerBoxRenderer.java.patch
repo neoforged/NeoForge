@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -55,6 +_,12 @@
-         p_112480_.popPose();
+@@ -57,6 +_,12 @@
+         p_388735_.popPose();
      }
  
 +    @Override

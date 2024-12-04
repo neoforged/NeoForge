@@ -40,7 +40,7 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
     }
 
     public DeferredEntityTypeBuilder<E, T> withLang(String name) {
-        helper.provider(LanguageProvider.class, prov -> prov.add(value(), name));
+        helper.clientProvider(LanguageProvider.class, prov -> prov.add(value(), name));
         return this;
     }
 }

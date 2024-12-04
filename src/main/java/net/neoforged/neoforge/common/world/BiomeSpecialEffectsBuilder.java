@@ -9,6 +9,7 @@ import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.level.biome.AmbientAdditionsSettings;
 import net.minecraft.world.level.biome.AmbientMoodSettings;
 import net.minecraft.world.level.biome.AmbientParticleSettings;
@@ -88,7 +89,7 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
         return this.ambientAdditionsSettings;
     }
 
-    public Optional<Music> getBackgroundMusic() {
+    public Optional<SimpleWeightedRandomList<Music>> getBackgroundMusic() {
         return this.backgroundMusic;
     }
 }

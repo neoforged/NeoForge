@@ -1,3 +1,26 @@
 plugins {
+    id 'java-gradle-plugin'
     id 'groovy-gradle-plugin'
+}
+
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+    maven {
+        name = "NeoForged"
+        url = "https://maven.neoforged.net/releases"
+        content {
+            includeGroup "codechicken"
+            includeGroup "net.neoforged"
+        }
+    }
+}
+
+dependencies {
+    // buildSrc is an includedbuild of the parent directory (gradle.parent)
+    // ../settings.gradle sets these version properties accordingly
+    implementation "net.neoforged:moddev-gradle:${gradle.parent.ext.moddevgradle_plugin_version}"
+
+    implementation "com.google.code.gson:gson:${gradle.parent.ext.gson_version}"
+    implementation "io.codechicken:DiffPatch:${gradle.parent.ext.diffpatch_version}"
 }

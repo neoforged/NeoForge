@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/renderer/item/ItemStackRenderState.java
++++ b/net/minecraft/client/renderer/item/ItemStackRenderState.java
+@@ -72,7 +_,7 @@
+             return null;
+         } else {
+             BakedModel bakedmodel = this.layers[p_387539_.nextInt(this.activeLayerCount)].model;
+-            return bakedmodel == null ? null : bakedmodel.getParticleIcon();
++            return bakedmodel == null ? null : bakedmodel.getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
+         }
+     }
+ 
+@@ -149,6 +_,9 @@
+ 
+         void render(PoseStack p_387607_, MultiBufferSource p_386763_, int p_387589_, int p_388775_) {
+             p_387607_.pushPose();
++            if (model != null)
++                net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(p_387607_, model, displayContext, ItemStackRenderState.this.isLeftHand);
++            else
+             this.transform().apply(ItemStackRenderState.this.isLeftHand, p_387607_);
+             p_387607_.translate(-0.5F, -0.5F, -0.5F);
+             if (this.specialRenderer != null) {

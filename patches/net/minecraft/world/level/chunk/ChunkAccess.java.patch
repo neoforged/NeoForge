@@ -9,7 +9,7 @@
      public static final int NO_FILLED_SECTION = -1;
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
-@@ -324,10 +_,19 @@
+@@ -327,10 +_,19 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -30,7 +30,7 @@
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
          for (int i = this.getMinSectionY(); i <= this.getMaxSectionY(); i++) {
-@@ -339,8 +_,9 @@
+@@ -342,8 +_,9 @@
                      for (int k = 0; k < 16; k++) {
                          for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
@@ -42,7 +42,7 @@
                              }
                          }
                      }
-@@ -482,6 +_,74 @@
+@@ -485,6 +_,74 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }

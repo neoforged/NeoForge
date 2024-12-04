@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Ravager.java
 +++ b/net/minecraft/world/entity/monster/Ravager.java
-@@ -144,7 +_,7 @@
+@@ -141,7 +_,7 @@
  
              if (this.level() instanceof ServerLevel serverlevel
                  && this.horizontalCollision
@@ -9,7 +9,7 @@
                  boolean flag = false;
                  AABB aabb = this.getBoundingBox().inflate(0.2);
  
-@@ -227,7 +_,7 @@
+@@ -224,7 +_,7 @@
      private void roar() {
          if (this.isAlive()) {
              if (this.level() instanceof ServerLevel serverlevel) {

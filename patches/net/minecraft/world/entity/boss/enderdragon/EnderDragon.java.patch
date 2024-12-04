@@ -50,8 +50,8 @@
              }
  
              if (this.dragonDeathTime == 1 && !this.isSilent()) {
-@@ -549,7 +_,8 @@
-         this.move(MoverType.SELF, new Vec3(0.0, 0.1F, 0.0));
+@@ -556,7 +_,8 @@
+ 
          if (this.dragonDeathTime == 200 && this.level() instanceof ServerLevel serverlevel1) {
              if (serverlevel1.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
 -                ExperienceOrb.award(serverlevel1, this.position(), Mth.floor((float)i * 0.2F));
@@ -60,7 +60,7 @@
              }
  
              if (this.dragonFight != null) {
-@@ -860,8 +_,19 @@
+@@ -867,8 +_,19 @@
      }
  
      @Override

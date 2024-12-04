@@ -2,9 +2,14 @@ import java.util.regex.Matcher
 
 project.plugins.apply('com.diffplug.spotless')
 
-final generatePackageInfos = tasks.register('generatePackageInfos', Task) {
-    doLast {
-        fileTree('src/main/java').each { javaFile ->
+abstract class GeneratePackageInfos extends DefaultTask {
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract ConfigurableFileCollection getFiles();
+
+    @TaskAction
+    void generatePackageInfos() {
+        getFiles().each { javaFile ->
             def packageInfoFile = new File(javaFile.parent, 'package-info.java')
             if (!packageInfoFile.exists()) {
                 def pkgName = javaFile.toString().replaceAll(Matcher.quoteReplacement(File.separator), '/')
@@ -26,6 +31,9 @@ final generatePackageInfos = tasks.register('generatePackageInfos', Task) {
             }
         }
     }
+}
+final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePackageInfos) {
+    it.files.from fileTree("src/main/java")
 }
 
 spotless {

@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -150,10 +151,10 @@ public interface IClientFluidTypeExtensions {
      * @param mc        the client instance
      * @param poseStack the transformations representing the current rendering position
      */
-    default void renderOverlay(Minecraft mc, PoseStack poseStack) {
+    default void renderOverlay(Minecraft mc, PoseStack poseStack, MultiBufferSource buffers) {
         ResourceLocation texture = this.getRenderOverlayTexture(mc);
         if (texture != null)
-            ScreenEffectRenderer.renderFluid(mc, poseStack, texture);
+            ScreenEffectRenderer.renderFluid(mc, poseStack, buffers, texture);
     }
 
     /**

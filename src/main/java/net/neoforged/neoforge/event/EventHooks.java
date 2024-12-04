@@ -910,8 +910,8 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, crafted, craftMatrix));
     }
 
-    public static void firePlayerSmeltedEvent(Player player, ItemStack smelted) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
+    public static void firePlayerSmeltedEvent(Player player, ItemStack smelted, int amountRemoved) {
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, smelted, amountRemoved));
     }
 
     /**

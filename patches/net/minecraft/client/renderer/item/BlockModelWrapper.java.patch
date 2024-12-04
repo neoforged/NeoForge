@@ -1,0 +1,44 @@
+--- a/net/minecraft/client/renderer/item/BlockModelWrapper.java
++++ b/net/minecraft/client/renderer/item/BlockModelWrapper.java
+@@ -41,22 +_,25 @@
+         @Nullable LivingEntity p_387263_,
+         int p_388300_
+     ) {
+-        ItemStackRenderState.LayerRenderState itemstackrenderstate$layerrenderstate = p_386488_.newLayer();
+-        if (p_386443_.hasFoil()) {
+-            itemstackrenderstate$layerrenderstate.setFoilType(
+-                hasSpecialAnimatedTexture(p_386443_) ? ItemStackRenderState.FoilType.SPECIAL : ItemStackRenderState.FoilType.STANDARD
+-            );
+-        }
+-
+-        int i = this.tints.size();
+-        int[] aint = itemstackrenderstate$layerrenderstate.prepareTintLayers(i);
+-
+-        for (int j = 0; j < i; j++) {
+-            aint[j] = this.tints.get(j).calculate(p_386443_, p_387522_, p_387263_);
+-        }
+-
+-        RenderType rendertype = ItemBlockRenderTypes.getRenderType(p_386443_);
+-        itemstackrenderstate$layerrenderstate.setupBlockModel(this.model, rendertype);
++        final int[] tints = new int[this.tints.size()];
++        for (int j = 0; j < tints.length; j++) {
++            tints[j] = this.tints.get(j).calculate(p_386443_, p_387522_, p_387263_);
++        }
++        final ItemStackRenderState.FoilType foilType = hasSpecialAnimatedTexture(p_386443_) ? ItemStackRenderState.FoilType.SPECIAL : ItemStackRenderState.FoilType.STANDARD;
++
++        this.model.getRenderPasses(p_386443_).forEach(pass -> {
++            ItemStackRenderState.LayerRenderState itemstackrenderstate$layerrenderstate = p_386488_.newLayer();
++            if (p_386443_.hasFoil()) {
++                itemstackrenderstate$layerrenderstate.setFoilType(
++                    foilType
++                );
++            }
++
++            int[] aint = itemstackrenderstate$layerrenderstate.prepareTintLayers(tints.length);
++            System.arraycopy(tints, 0, aint, 0, tints.length);
++
++            itemstackrenderstate$layerrenderstate.setupBlockModel(this.model, pass.getRenderType(p_386443_));
++        });
+     }
+ 
+     private static boolean hasSpecialAnimatedTexture(ItemStack p_387217_) {

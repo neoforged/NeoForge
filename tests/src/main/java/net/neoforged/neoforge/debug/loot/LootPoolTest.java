@@ -46,7 +46,7 @@ public class LootPoolTest {
     @EmptyTemplate
     @TestHolder(description = "Tests if loading loot pools with custom names works")
     public static void testPoolLoading(DynamicTest test, RegistrationHelper reg) {
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -78,7 +78,7 @@ public class LootPoolTest {
     static void pinkConcreteLootTableCanceled(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_2;
 
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -117,7 +117,7 @@ public class LootPoolTest {
     static void orangeConcreteLootTableReplaced(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_3;
 
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -158,7 +158,7 @@ public class LootPoolTest {
     static void yellowConcreteLootTableAppended(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_4;
 
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(

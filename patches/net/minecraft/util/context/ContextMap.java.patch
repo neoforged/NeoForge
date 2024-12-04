@@ -1,5 +1,15 @@
 --- a/net/minecraft/util/context/ContextMap.java
 +++ b/net/minecraft/util/context/ContextMap.java
+@@ -9,6 +_,9 @@
+ import org.jetbrains.annotations.Contract;
+ 
+ public class ContextMap {
++    // Neo: Add EMPTY map for convenience.
++    public static final ContextMap EMPTY = new Builder().create(ContextKeySet.EMPTY);
++
+     private final Map<ContextKey<?>, Object> params;
+ 
+     ContextMap(Map<ContextKey<?>, Object> p_381157_) {
 @@ -73,7 +_,7 @@
  
          public ContextMap create(ContextKeySet p_381168_) {
