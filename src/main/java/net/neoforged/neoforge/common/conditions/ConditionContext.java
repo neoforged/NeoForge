@@ -13,8 +13,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.flag.FeatureFlags;
-import org.jetbrains.annotations.ApiStatus;
 
 public class ConditionContext implements ICondition.IContext {
     private final Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> pendingTags;
@@ -27,13 +25,6 @@ public class ConditionContext implements ICondition.IContext {
         for (var tags : pendingTags) {
             this.pendingTags.put(tags.key(), tags.lookup());
         }
-    }
-
-    // Use FeatureFlagSet sensitive constructor
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.21.4")
-    @Deprecated(forRemoval = true, since = "1.21.3")
-    public ConditionContext(List<Registry.PendingTags<?>> pendingTags) {
-        this(pendingTags, FeatureFlags.VANILLA_SET);
     }
 
     public void clear() {
