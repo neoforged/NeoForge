@@ -16,6 +16,7 @@ import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
@@ -23,17 +24,17 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         return new CompositeModelBuilder<>(parent, existingFileHelper);
     }
 
-    private final Map<String, T> childModels = new LinkedHashMap<>();
+    private final Map<String, ResourceLocation> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
     protected CompositeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
         super(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), parent, existingFileHelper, false);
     }
 
-    public CompositeModelBuilder<T> child(String name, T modelBuilder) {
+    public CompositeModelBuilder<T> child(String name, ModelFile model) {
         Preconditions.checkNotNull(name, "name must not be null");
-        Preconditions.checkNotNull(modelBuilder, "modelBuilder must not be null");
-        childModels.put(name, modelBuilder);
+        Preconditions.checkNotNull(model, "model must not be null");
+        childModels.put(name, model.getLocation());
         itemRenderOrder.add(name);
         return this;
     }
@@ -54,8 +55,8 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         json = super.toJson(json);
 
         JsonObject children = new JsonObject();
-        for (Map.Entry<String, T> entry : childModels.entrySet()) {
-            children.add(entry.getKey(), entry.getValue().toJson());
+        for (Map.Entry<String, ResourceLocation> entry : childModels.entrySet()) {
+            children.addProperty(entry.getKey(), entry.getValue().toString());
         }
         json.add("children", children);
 
