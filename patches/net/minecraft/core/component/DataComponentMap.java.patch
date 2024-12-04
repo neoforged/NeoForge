@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponentMap.java
 +++ b/net/minecraft/core/component/DataComponentMap.java
-@@ -126,7 +_,7 @@
+@@ -134,7 +_,7 @@
          };
      }
  

@@ -204,4 +204,9 @@ public abstract class CompositeHolderSet<T> implements ICustomHolderSet<T> {
 
         return true;
     }
+
+    @Override
+    public boolean isBound() {
+        return getComponents().stream().allMatch(HolderSet::isBound);
+    }
 }

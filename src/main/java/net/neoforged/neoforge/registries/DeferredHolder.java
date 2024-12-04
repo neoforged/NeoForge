@@ -134,7 +134,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Nullable
     @SuppressWarnings("unchecked")
     protected Registry<R> getRegistry() {
-        return (Registry<R>) BuiltInRegistries.REGISTRY.get(this.key.registry());
+        return (Registry<R>) BuiltInRegistries.REGISTRY.getValue(this.key.registry());
     }
 
     /**
@@ -150,7 +150,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
 
         Registry<R> registry = getRegistry();
         if (registry != null) {
-            this.holder = registry.getHolder(this.key).orElse(null);
+            this.holder = registry.get(this.key).orElse(null);
         } else if (throwOnMissingRegistry) {
             throw new IllegalStateException("Registry not present for " + this + ": " + this.key.registry());
         }
@@ -166,6 +166,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     /**
      * @return The ResourceKey of the object pointed to by this DeferredHolder.
      */
+    @Override
     public ResourceKey<R> getKey() {
         return this.key;
     }
@@ -173,7 +174,7 @@ public class DeferredHolder<R, T extends R> implements Holder<R>, Supplier<T> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.unwrapKey().orElseThrow() == this.key;
+        return obj instanceof Holder<?> h && h.kind() == Kind.REFERENCE && h.getKey() == this.key;
     }
 
     @Override

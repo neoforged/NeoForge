@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
 public record DataMapEntry<T>(T value, boolean replace) {
+
     private DataMapEntry(T value) {
         this(value, false);
     }
@@ -25,7 +26,6 @@ public record DataMapEntry<T>(T value, boolean replace) {
                         Codec.BOOL.optionalFieldOf("replace", false).forGetter(DataMapEntry::replace)).apply(i, DataMapEntry::new)),
                 type.codec()).xmap(e -> e.map(Function.identity(), DataMapEntry::new), entry -> entry.replace() ? Either.left(entry) : Either.right(entry.value()));
     }
-
     public record Removal<T, R>(Either<TagKey<R>, ResourceKey<R>> key,
             Optional<DataMapValueRemover<R, T>> remover) {
         private Removal(Either<TagKey<R>, ResourceKey<R>> key) {

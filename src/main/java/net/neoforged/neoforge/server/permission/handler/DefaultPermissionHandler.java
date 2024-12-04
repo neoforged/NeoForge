@@ -16,7 +16,7 @@ import net.neoforged.neoforge.server.permission.nodes.PermissionDynamicContext;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 
 public final class DefaultPermissionHandler implements IPermissionHandler {
-    public static final ResourceLocation IDENTIFIER = new ResourceLocation("neoforge", "default_handler");;
+    public static final ResourceLocation IDENTIFIER = ResourceLocation.fromNamespaceAndPath("neoforge", "default_handler");;
     private final Set<PermissionNode<?>> registeredNodes = new HashSet<>();
     private Set<PermissionNode<?>> immutableRegisteredNodes = Collections.unmodifiableSet(this.registeredNodes);
 

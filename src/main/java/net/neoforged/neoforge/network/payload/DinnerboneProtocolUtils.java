@@ -62,7 +62,7 @@ public final class DinnerboneProtocolUtils {
 
         final String channel = builder.toString();
         try {
-            channels.add(new ResourceLocation(channel));
+            channels.add(ResourceLocation.parse(channel));
         } catch (Exception e) {
             LOGGER.error("Invalid channel: {}", channel, e);
         } finally {

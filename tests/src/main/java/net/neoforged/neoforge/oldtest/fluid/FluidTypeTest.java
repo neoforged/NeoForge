@@ -6,13 +6,12 @@
 package net.neoforged.neoforge.oldtest.fluid;
 
 import com.mojang.blaze3d.shaders.FogShape;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -41,6 +40,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -54,7 +54,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * A test case used to define and test fluid type integration into fluids.
@@ -87,83 +87,14 @@ public class FluidTypeTest {
                 .bucket(TEST_FLUID_BUCKET);
     }
 
-    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create().supportsBoating(true).canHydrate(true).addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)) {
-        @Override
-        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-            consumer.accept(new IClientFluidTypeExtensions() {
-                private static final ResourceLocation STILL = new ResourceLocation("block/water_still"),
-                        FLOW = new ResourceLocation("block/water_flow"),
-                        OVERLAY = new ResourceLocation("block/obsidian"),
-                        VIEW_OVERLAY = new ResourceLocation("textures/block/obsidian.png");
-
-                @Override
-                public ResourceLocation getStillTexture() {
-                    return STILL;
-                }
-
-                @Override
-                public ResourceLocation getFlowingTexture() {
-                    return FLOW;
-                }
-
-                @Override
-                public ResourceLocation getOverlayTexture() {
-                    return OVERLAY;
-                }
-
-                @Override
-                public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
-                    return VIEW_OVERLAY;
-                }
-
-                @Override
-                public int getTintColor() {
-                    return 0xAF7FFFD4;
-                }
-
-                @Override
-                public Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor) {
-                    int color = this.getTintColor();
-                    return new Vector3f((color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F);
-                }
-
-                @Override
-                public void modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, float nearDistance, float farDistance, FogShape shape) {
-                    nearDistance = -8F;
-                    farDistance = 24F;
-
-                    if (farDistance > renderDistance) {
-                        farDistance = renderDistance;
-                        shape = FogShape.CYLINDER;
-                    }
-
-                    RenderSystem.setShaderFogStart(nearDistance);
-                    RenderSystem.setShaderFogEnd(farDistance);
-                    RenderSystem.setShaderFogShape(shape);
-                }
-
-                @Override
-                public boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
-                    // Flip RGB to BGR *only* for fluid blocks rendered at Y 100
-                    if (pos.getY() == 100) {
-                        vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
-                            @Override
-                            public VertexConsumer color(int r, int g, int b, int a) {
-                                return super.color(b, g, r, a);
-                            }
-                        };
-                    }
-                    // Replace vanilla fluid rendering
-                    Minecraft.getInstance().getBlockRenderer().getLiquidBlockRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
-                    return true;
-                }
-            });
-        }
-    });
+    private static final Holder<FluidType> TEST_FLUID_TYPE = FLUID_TYPES.register("test_fluid", () -> new FluidType(FluidType.Properties.create()
+            .supportsBoating(true)
+            .canHydrate(true)
+            .addDripstoneDripping(0.25F, ParticleTypes.SCULK_SOUL, Blocks.POWDER_SNOW_CAULDRON, SoundEvents.END_PORTAL_SPAWN)));
     private static final DeferredHolder<Fluid, FlowingFluid> TEST_FLUID = FLUIDS.register("test_fluid", () -> new BaseFlowingFluid.Source(fluidProperties()));
     private static final DeferredHolder<Fluid, Fluid> TEST_FLUID_FLOWING = FLUIDS.register("test_fluid_flowing", () -> new BaseFlowingFluid.Flowing(fluidProperties()));
-    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.register("test_fluid_block", () -> new LiquidBlock(TEST_FLUID.get(), BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable()));
-    private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.register("test_fluid_bucket", () -> new BucketItem(TEST_FLUID.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    private static final DeferredBlock<LiquidBlock> TEST_FLUID_BLOCK = BLOCKS.registerBlock("test_fluid_block", props -> new LiquidBlock(TEST_FLUID.get(), props), BlockBehaviour.Properties.of().noCollission().strength(100.0F).noLootTable());
+    private static final DeferredItem<Item> TEST_FLUID_BUCKET = ITEMS.registerItem("test_fluid_bucket", props -> new BucketItem(TEST_FLUID.get(), props.craftRemainder(Items.BUCKET).stacksTo(1)));
 
     public FluidTypeTest(IEventBus modEventBus) {
         if (ENABLE) {
@@ -202,6 +133,7 @@ public class FluidTypeTest {
         private FluidTypeTestClient(IEventBus modEventBus) {
             modEventBus.addListener(this::clientSetup);
             modEventBus.addListener(this::registerBlockColors);
+            modEventBus.addListener(this::registerClientExtensions);
         }
 
         private void clientSetup(FMLClientSetupEvent event) {
@@ -216,6 +148,76 @@ public class FluidTypeTest {
                     return IClientFluidTypeExtensions.of(fluidState).getTintColor(fluidState, getter, pos);
                 } else return 0xAF7FFFD4;
             }, TEST_FLUID_BLOCK.get());
+        }
+
+        private void registerClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerFluidType(new IClientFluidTypeExtensions() {
+                private static final ResourceLocation STILL = ResourceLocation.withDefaultNamespace("block/water_still"),
+                        FLOW = ResourceLocation.withDefaultNamespace("block/water_flow"),
+                        OVERLAY = ResourceLocation.withDefaultNamespace("block/obsidian"),
+                        VIEW_OVERLAY = ResourceLocation.withDefaultNamespace("textures/block/obsidian.png");
+
+                @Override
+                public ResourceLocation getStillTexture() {
+                    return STILL;
+                }
+
+                @Override
+                public ResourceLocation getFlowingTexture() {
+                    return FLOW;
+                }
+
+                @Override
+                public ResourceLocation getOverlayTexture() {
+                    return OVERLAY;
+                }
+
+                @Override
+                public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+                    return VIEW_OVERLAY;
+                }
+
+                @Override
+                public int getTintColor() {
+                    return 0xAF7FFFD4;
+                }
+
+                @Override
+                public Vector4f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f fluidFogColor) {
+                    int color = this.getTintColor();
+                    return new Vector4f((color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F, fluidFogColor.w);
+                }
+
+                @Override
+                public FogParameters modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, FogParameters parameters) {
+                    float nearDistance = -8F;
+                    float farDistance = 24F;
+                    FogShape shape = parameters.shape();
+
+                    if (farDistance > renderDistance) {
+                        farDistance = renderDistance;
+                        shape = FogShape.CYLINDER;
+                    }
+
+                    return new FogParameters(nearDistance, farDistance, shape, parameters.red(), parameters.green(), parameters.blue(), parameters.alpha());
+                }
+
+                @Override
+                public boolean renderFluid(FluidState fluidState, BlockAndTintGetter getter, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState) {
+                    // Flip RGB to BGR *only* for fluid blocks rendered at Y 100
+                    if (pos.getY() == 100) {
+                        vertexConsumer = new VertexConsumerWrapper(vertexConsumer) {
+                            @Override
+                            public VertexConsumer setColor(int r, int g, int b, int a) {
+                                return super.setColor(b, g, r, a);
+                            }
+                        };
+                    }
+                    // Replace vanilla fluid rendering
+                    Minecraft.getInstance().getBlockRenderer().getLiquidBlockRenderer().tesselate(getter, pos, vertexConsumer, blockState, fluidState);
+                    return true;
+                }
+            }, TEST_FLUID_TYPE.value());
         }
     }
 }

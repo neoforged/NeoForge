@@ -8,6 +8,7 @@ package net.neoforged.testframework.impl.test;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.neoforged.testframework.TestFramework;
@@ -38,6 +39,8 @@ public class MethodBasedGameTestTest extends AbstractTest.Dynamic {
         onGameTest(helperType, helper -> {
             try {
                 handle.invoke(helper);
+            } catch (GameTestAssertException exception) {
+                throw exception;
             } catch (Throwable exception) {
                 throw new RuntimeException("Encountered exception running method-based gametest test: " + method, exception);
             }

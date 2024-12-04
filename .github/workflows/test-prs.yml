@@ -28,20 +28,39 @@ jobs:
         run:
           git switch -C pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.ref }}
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v2
+      - name: Setup JDK 21
+        uses: neoforged/actions/setup-java@main
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
 
       - name: Setup with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: setup
-          cache-read-only: false
+        run: ./gradlew setup
 
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
+      - name: Run game tests with Gradle
+        run: ./gradlew :tests:runGameTestServer
+
+      - name: Run JUnit tests with Gradle
+        run: ./gradlew :tests:runUnitTests
+
+      - name: Install software OpenGL rendering
+        run: sudo apt-get install xvfb libgl1-mesa-dri
+
+      - name: Run production client self-test
+        run: xvfb-run ./gradlew :neoforge:testProductionClient
+
+      - name: Run production server self-test
+        run: ./gradlew :neoforge:testProductionServer
+
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
-          arguments: :tests:runGameTestServer
-          cache-read-only: false
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/

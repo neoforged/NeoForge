@@ -9,8 +9,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
-import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -30,19 +30,19 @@ import org.jetbrains.annotations.ApiStatus;
  * @see ItemFrameRenderer
  */
 public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
-    private final ItemStack itemStack;
-    private final ItemFrame itemFrameEntity;
+    private final ItemStackRenderState itemStack;
+    private final ItemFrameRenderState frameRenderState;
     private final ItemFrameRenderer<?> renderer;
     private final PoseStack poseStack;
     private final MultiBufferSource multiBufferSource;
     private final int packedLight;
 
     @ApiStatus.Internal
-    public RenderItemInFrameEvent(ItemFrame itemFrame, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
+    public RenderItemInFrameEvent(ItemFrameRenderState frameRenderState, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
             MultiBufferSource multiBufferSource, int packedLight) {
-        itemStack = itemFrame.getItem();
-        itemFrameEntity = itemFrame;
-        renderer = renderItemFrame;
+        this.itemStack = frameRenderState.item;
+        this.frameRenderState = frameRenderState;
+        this.renderer = renderItemFrame;
         this.poseStack = poseStack;
         this.multiBufferSource = multiBufferSource;
         this.packedLight = packedLight;
@@ -51,15 +51,15 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     /**
      * {@return the item stack being rendered}
      */
-    public ItemStack getItemStack() {
+    public ItemStackRenderState getItemStackRenderState() {
         return itemStack;
     }
 
     /**
      * {@return the item frame entity}
      */
-    public ItemFrame getItemFrameEntity() {
-        return itemFrameEntity;
+    public ItemFrameRenderState getItemFrameRenderState() {
+        return frameRenderState;
     }
 
     /**

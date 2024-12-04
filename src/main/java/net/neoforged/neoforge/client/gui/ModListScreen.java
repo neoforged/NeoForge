@@ -25,6 +25,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -40,13 +41,13 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.StringUtils;
-import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.client.gui.widget.ScrollPanel;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -65,7 +66,7 @@ public class ModListScreen extends Screen {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private enum SortType implements Comparator<IModInfo> {
+    private enum SortType implements Comparator<ModContainer> {
         NORMAL,
         A_TO_Z {
             @Override
@@ -87,9 +88,9 @@ public class ModListScreen extends Screen {
         }
 
         @Override
-        public int compare(IModInfo o1, IModInfo o2) {
-            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getDisplayName()));
-            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getDisplayName()));
+        public int compare(ModContainer o1, ModContainer o2) {
+            String name1 = StringUtils.toLowerCase(stripControlCodes(o1.getModInfo().getDisplayName()));
+            String name2 = StringUtils.toLowerCase(stripControlCodes(o2.getModInfo().getDisplayName()));
             return compare(name1, name2);
         }
 
@@ -106,8 +107,8 @@ public class ModListScreen extends Screen {
     private InfoPanel modInfo;
     private ModListWidget.ModEntry selected = null;
     private int listWidth;
-    private List<IModInfo> mods;
-    private final List<IModInfo> unsortedMods;
+    private List<ModContainer> mods;
+    private final List<ModContainer> unsortedMods;
     private Button configButton, openModsFolderButton, doneButton;
 
     private int buttonMargin = 1;
@@ -122,7 +123,7 @@ public class ModListScreen extends Screen {
     public ModListScreen(Screen parentScreen) {
         super(Component.translatable("fml.menu.mods.title"));
         this.parentScreen = parentScreen;
-        this.mods = Collections.unmodifiableList(ModList.get().getMods());
+        this.mods = Collections.unmodifiableList(ModList.get().getSortedMods());
         this.unsortedMods = Collections.unmodifiableList(this.mods);
     }
 
@@ -247,9 +248,9 @@ public class ModListScreen extends Screen {
 
     @Override
     public void init() {
-        for (IModInfo mod : mods) {
-            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getDisplayName()) + 10);
-            listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionTranslator.artifactVersionToString(mod.getVersion())) + 5);
+        for (var mod : mods) {
+            listWidth = Math.max(listWidth, getFontRenderer().width(mod.getModInfo().getDisplayName()) + 10);
+            listWidth = Math.max(listWidth, getFontRenderer().width(MavenVersionTranslator.artifactVersionToString(mod.getModInfo().getVersion())) + 5);
         }
         listWidth = Math.max(Math.min(listWidth, width / 3), 100);
         listWidth += listWidth % numButtons != 0 ? (numButtons - listWidth % numButtons) : 0;
@@ -295,7 +296,7 @@ public class ModListScreen extends Screen {
     private void displayModConfig() {
         if (selected == null) return;
         try {
-            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(this.minecraft, this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
+            IConfigScreenFactory.getForMod(selected.getInfo()).map(f -> f.createScreen(selected.getContainer(), this)).ifPresent(newScreen -> this.minecraft.setScreen(newScreen));
         } catch (final Exception e) {
             LOGGER.error("There was a critical issue trying to build the config GUI for {}", selected.getInfo().getModId(), e);
         }
@@ -322,12 +323,12 @@ public class ModListScreen extends Screen {
         }
     }
 
-    public <T extends ObjectSelectionList.Entry<T>> void buildModList(Consumer<T> modListViewConsumer, Function<IModInfo, T> newEntry) {
+    public <T extends ObjectSelectionList.Entry<T>> void buildModList(Consumer<T> modListViewConsumer, Function<ModContainer, T> newEntry) {
         mods.forEach(mod -> modListViewConsumer.accept(newEntry.apply(mod)));
     }
 
     private void reloadMods() {
-        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
+        this.mods = this.unsortedMods.stream().filter(mi -> StringUtils.toLowerCase(stripControlCodes(mi.getModInfo().getDisplayName())).contains(StringUtils.toLowerCase(search.getValue()))).collect(Collectors.toList());
         lastFilterText = search.getValue();
     }
 
@@ -358,7 +359,7 @@ public class ModListScreen extends Screen {
     }
 
     public void setSelected(ModListWidget.ModEntry entry) {
-        this.selected = entry == this.selected ? null : entry;
+        this.selected = entry;
         updateCache();
     }
 
@@ -374,46 +375,56 @@ public class ModListScreen extends Screen {
         VersionChecker.CheckResult vercheck = VersionChecker.getResult(selectedMod);
 
         @SuppressWarnings("resource")
-        Pair<ResourceLocation, Size2i> logoData = selectedMod.getLogoFile().map(logoFile -> {
-            TextureManager tm = this.minecraft.getTextureManager();
-            final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
-                    .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
-            try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod/" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
-                NativeImage logo = null;
-                IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
-                if (logoResource != null)
-                    logo = NativeImage.read(logoResource.get());
-                if (logo != null) {
+        Pair<ResourceLocation, Size2i> logoData;
 
-                    return Pair.of(tm.register("modlogo", new DynamicTexture(logo) {
-                        @Override
-                        public void upload() {
-                            this.bind();
-                            NativeImage td = this.getPixels();
-                            // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
-                            this.getPixels().upload(0, 0, 0, 0, 0, td.getWidth(), td.getHeight(), selectedMod.getLogoBlur(), false, false, false);
-                        }
-                    }), new Size2i(logo.getWidth(), logo.getHeight()));
-                }
-            } catch (IOException e) {}
-            return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
-        }).orElse(Pair.of(null, new Size2i(0, 0)));
+        if (selectedMod.getModId().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+            logoData = Pair.of(LogoRenderer.MINECRAFT_LOGO, new Size2i(LogoRenderer.LOGO_TEXTURE_WIDTH, LogoRenderer.LOGO_TEXTURE_HEIGHT));
+        } else {
+            logoData = selectedMod.getLogoFile().map(logoFile -> {
+                TextureManager tm = this.minecraft.getTextureManager();
+                final Pack.ResourcesSupplier resourcePack = ResourcePackLoader.getPackFor(selectedMod.getModId())
+                        .orElse(ResourcePackLoader.getPackFor("neoforge").orElseThrow(() -> new RuntimeException("Can't find neoforge, WHAT!")));
+                try (PackResources packResources = resourcePack.openPrimary(new PackLocationInfo("mod/" + selectedMod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty()))) {
+                    NativeImage logo = null;
+                    IoSupplier<InputStream> logoResource = packResources.getRootResource(logoFile.split("[/\\\\]"));
+                    if (logoResource != null)
+                        logo = NativeImage.read(logoResource.get());
+                    if (logo != null) {
+                        var textureId = ResourceLocation.fromNamespaceAndPath("neoforge", "modlogo");
+                        tm.register(textureId, new DynamicTexture(logo) {
+                            @Override
+                            public void upload() {
+                                this.bind();
+                                NativeImage td = this.getPixels();
+                                // Use custom "blur" value which controls texture filtering (nearest-neighbor vs linear)
+                                // TODO 1.21.4 restore selectedMod.getLogoBlur() check
+                                this.getPixels().upload(0, 0, 0, 0, 0, td.getWidth(), td.getHeight(), false);
+                            }
+                        });
+
+                        return Pair.of(textureId, new Size2i(logo.getWidth(), logo.getHeight()));
+                    }
+                } catch (IOException | IllegalArgumentException e) {}
+                return Pair.<ResourceLocation, Size2i>of(null, new Size2i(0, 0));
+            }).orElse(Pair.of(null, new Size2i(0, 0)));
+        }
 
         lines.add(selectedMod.getDisplayName());
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.version", MavenVersionTranslator.artifactVersionToString(selectedMod.getVersion())));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.idstate", selectedMod.getModId(), "LOADED")); // TODO: remove mod loading stages from here too
 
-        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits)));
-        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors)));
-        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL)));
+        // Normalizing line endings to LF because it is currently not automatically handled for us. Descriptions are already normalized.
+        selectedMod.getConfig().getConfigElement("credits").ifPresent(credits -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.credits", credits).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("authors").ifPresent(authors -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.authors", authors).replace("\r\n", "\n")));
+        selectedMod.getConfig().getConfigElement("displayURL").ifPresent(displayURL -> lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.displayurl", displayURL).replace("\r\n", "\n")));
         if (selectedMod.getOwningFile() == null || selectedMod.getOwningFile().getMods().size() == 1)
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.nochildmods"));
         else
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.childmods", selectedMod.getOwningFile().getMods().stream().map(IModInfo::getDisplayName).collect(Collectors.joining(","))));
 
         if (vercheck.status() == VersionChecker.Status.OUTDATED || vercheck.status() == VersionChecker.Status.BETA_OUTDATED)
-            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()));
-        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", ((ModFileInfo) selectedMod.getOwningFile()).getLicense()));
+            lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()).replace("\r\n", "\n"));
+        lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", selectedMod.getOwningFile().getLicense()).replace("\r\n", "\n"));
         lines.add(null);
         lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 

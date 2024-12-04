@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.oldtest.client.model;
 
+import static net.minecraft.client.data.models.model.ModelLocationUtils.getModelLocation;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
@@ -18,13 +20,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -35,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -58,8 +59,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -77,16 +76,11 @@ public class CustomItemDisplayContextTest {
 
     @EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     private static class RendererEvents {
-        public static final ItemDisplayContext HANGING = ItemDisplayContext.create("custom_transformtype_test_hanging", new ResourceLocation("custom_transformtype_test", "hanging"), null);
+        public static final ItemDisplayContext HANGING = ItemDisplayContext.valueOf("NEOTESTS_HANGING");
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ITEM_HANGER_BE.get(), ItemHangerBlockEntityRenderer::new);
-        }
-
-        @SubscribeEvent
-        public static void registerContext(final RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.DISPLAY_CONTEXTS, helper -> helper.register(new ResourceLocation(MODID, "hanging"), HANGING));
         }
 
         private static class ItemHangerBlockEntityRenderer
@@ -107,9 +101,7 @@ public class CustomItemDisplayContextTest {
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
-                var model = itemRenderer.getModel(blocken.heldItem, blocken.getLevel(), null, 0);
-
-                itemRenderer.render(blocken.heldItem, HANGING, false, poseStack, bufferSource, packedLight, overlayCoord, model);
+                itemRenderer.renderStatic(blocken.heldItem, HANGING, packedLight, overlayCoord, poseStack, bufferSource, blocken.getLevel(), 0);
 
                 poseStack.popPose();
             }
@@ -121,8 +113,8 @@ public class CustomItemDisplayContextTest {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
     public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable());
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
-    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> new BlockEntityType<>(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()));
+    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.registerItem("item_hanger", props -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), props));
 
     public CustomItemDisplayContextTest(IEventBus modBus) {
         modBus.addListener(this::gatherData);
@@ -137,12 +129,12 @@ public class CustomItemDisplayContextTest {
             event.accept(ITEM_HANGER_ITEM);
     }
 
-    public void gatherData(GatherDataEvent event) {
+    public void gatherData(GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
         final PackOutput output = gen.getPackOutput();
 
-        gen.addProvider(event.includeClient(), new ItemModels(output, event.getExistingFileHelper()));
-        gen.addProvider(event.includeClient(), new BlockStateModels(output, event.getExistingFileHelper()));
+        gen.addProvider(true, new ItemModels(output, event.getExistingFileHelper()));
+        gen.addProvider(true, new BlockStateModels(output, event.getExistingFileHelper()));
     }
 
     public static class BlockStateModels extends BlockStateProvider {
@@ -154,7 +146,7 @@ public class CustomItemDisplayContextTest {
         protected void registerStatesAndModels() {
             {
                 Block block = ITEM_HANGER_BLOCK.get();
-                horizontalBlock(block, models().getExistingFile(ModelLocationUtils.getModelLocation(block)));
+                horizontalBlock(block, models().getExistingFile(getModelLocation(block)));
             }
         }
     }
@@ -175,6 +167,12 @@ public class CustomItemDisplayContextTest {
                     .translation(-2.25f, 1.5f, -0.25f).scale(0.48f)
                     .end()
                     .end();
+
+            handheldItem(Items.WOODEN_SWORD);
+
+            spawnEggItem(Items.SHEEP_SPAWN_EGG);
+
+            simpleBlockItem(Blocks.ACACIA_PLANKS);
         }
     }
 
@@ -211,7 +209,7 @@ public class CustomItemDisplayContextTest {
         @Deprecated
         @Override
         public RenderShape getRenderShape(BlockState state) {
-            return RenderShape.ENTITYBLOCK_ANIMATED;
+            return RenderShape.MODEL;
         }
     }
 
@@ -245,10 +243,8 @@ public class CustomItemDisplayContextTest {
         @Override
         protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.saveAdditional(tag, holderLookup);
-            var c = new CompoundTag();
             if (heldItem != null) {
-                heldItem.save(holderLookup, c);
-                tag.put("item", c);
+                tag.put("item", heldItem.save(holderLookup, new CompoundTag()));
             }
         }
 

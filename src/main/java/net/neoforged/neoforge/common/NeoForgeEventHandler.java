@@ -57,7 +57,7 @@ public class NeoForgeEventHandler {
                     entity.discard();
                     event.setCanceled(true);
                     var executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
-                    executor.tell(new TickTask(0, () -> event.getLevel().addFreshEntity(newEntity)));
+                    executor.schedule(new TickTask(0, () -> event.getLevel().addFreshEntity(newEntity)));
                 }
             }
         }
@@ -110,7 +110,7 @@ public class NeoForgeEventHandler {
     public void onDpSync(final OnDatapackSyncEvent event) {
         RegistryManager.getDataMaps().forEach((registry, values) -> {
             final var regOpt = event.getPlayerList().getServer().overworld().registryAccess()
-                    .registry(registry);
+                    .lookup(registry);
             if (regOpt.isEmpty()) return;
             event.getRelevantPlayers().forEach(player -> {
                 if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {
@@ -120,7 +120,7 @@ public class NeoForgeEventHandler {
                     // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
                     return;
                 }
-                final var playerMaps = player.connection.connection.channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
+                final var playerMaps = player.connection.getConnection().channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
                 if (playerMaps == null) return; // Skip gametest players for instance
                 handleSync(player, regOpt.get(), playerMaps.getOrDefault(registry, List.of()));
             });

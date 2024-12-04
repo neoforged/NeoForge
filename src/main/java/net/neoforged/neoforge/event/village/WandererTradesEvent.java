@@ -6,11 +6,13 @@
 package net.neoforged.neoforge.event.village;
 
 import java.util.List;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * WandererTradesEvent is fired during reload by {@link TagsUpdatedEvent}. It is used to gather the trade lists for the wandering merchant.
@@ -21,10 +23,13 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 public class WandererTradesEvent extends Event {
     protected List<ItemListing> generic;
     protected List<ItemListing> rare;
+    private final HolderLookup.Provider registries;
 
-    public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare) {
+    @ApiStatus.Internal
+    public WandererTradesEvent(List<ItemListing> generic, List<ItemListing> rare, HolderLookup.Provider registries) {
         this.generic = generic;
         this.rare = rare;
+        this.registries = registries;
     }
 
     public List<ItemListing> getGenericTrades() {
@@ -33,5 +38,9 @@ public class WandererTradesEvent extends Event {
 
     public List<ItemListing> getRareTrades() {
         return rare;
+    }
+
+    public HolderLookup.Provider getRegistries() {
+        return registries;
     }
 }

@@ -1,0 +1,39 @@
+--- a/net/minecraft/client/multiplayer/prediction/BlockStatePredictionHandler.java
++++ b/net/minecraft/client/multiplayer/prediction/BlockStatePredictionHandler.java
+@@ -49,6 +_,15 @@
+                 p_233858_.syncBlockState(
+                     blockpos, blockstatepredictionhandler$serververifiedstate.blockState, blockstatepredictionhandler$serververifiedstate.playerPos
+                 );
++                // Neo: Restore the BlockEntity if one was present before the break was cancelled.
++                // Fixes MC-36093 and permits correct server-side only cancellation of block changes.
++                var verifiedState = blockstatepredictionhandler$serververifiedstate;
++                if (verifiedState.snapshot != null && verifiedState.blockState == verifiedState.snapshot.getState()) {
++                    if (verifiedState.snapshot.restoreBlockEntity(p_233858_, blockpos)) {
++                        // Attempt a re-render if BE data was loaded, since some blocks may depend on it.
++                        p_233858_.sendBlockUpdated(blockpos, verifiedState.blockState, verifiedState.blockState, 3);
++                    }
++                }
+             }
+         }
+     }
+@@ -72,8 +_,20 @@
+         return this.isPredicting;
+     }
+ 
++    /**
++     * Sets the stored BlockSnapshot on the ServerVerifiedState for the given position.
++     * This method is only called after {@link #retainKnownServerState}, so we are certain a map entry exists.
++     */
++    public void retainSnapshot(BlockPos pos, net.neoforged.neoforge.common.util.BlockSnapshot snapshot) {
++        this.serverVerifiedStates.get(pos.asLong()).snapshot = snapshot;
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     static class ServerVerifiedState {
++        /**
++         * Neo: Used to hold all data necessary for clientside restoration during break denial.
++         */
++        net.neoforged.neoforge.common.util.BlockSnapshot snapshot;
+         final Vec3 playerPos;
+         int sequence;
+         BlockState blockState;

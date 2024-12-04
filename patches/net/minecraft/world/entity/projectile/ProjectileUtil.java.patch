@@ -9,7 +9,7 @@
                          if (d0 == 0.0) {
                              entity = entity1;
                              vec3 = vec31;
-@@ -153,8 +_,13 @@
+@@ -155,8 +_,13 @@
          }
      }
  
@@ -22,4 +22,4 @@
 +        return itemPredicate.test(livingEntity.getMainHandItem().getItem()) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
      }
  
-     public static AbstractArrow getMobArrow(LivingEntity p_37301_, ItemStack p_37302_, float p_37303_) {
+     public static AbstractArrow getMobArrow(LivingEntity p_37301_, ItemStack p_37302_, float p_37303_, @Nullable ItemStack p_345078_) {

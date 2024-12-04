@@ -23,7 +23,7 @@ public class RegistrationEvents {
 
     private static boolean canModifyComponents;
 
-    private static void modifyComponents() {
+    public static void modifyComponents() {
         canModifyComponents = true;
         ModLoader.postEvent(new ModifyDefaultComponentsEvent());
         canModifyComponents = false;

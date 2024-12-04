@@ -30,20 +30,6 @@ public class ItemHandlerHelper {
         return stack;
     }
 
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public static boolean canItemStacksStack(ItemStack a, ItemStack b) {
-        return ItemStack.isSameItemSameComponents(a, b);
-    }
-
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public static ItemStack copyStackWithSize(ItemStack itemStack, int size) {
-        if (size == 0)
-            return ItemStack.EMPTY;
-        ItemStack copy = itemStack.copy();
-        copy.setCount(size);
-        return copy;
-    }
-
     /**
      * Inserts the ItemStack into the inventory, filling up already present stacks first.
      * This is equivalent to the behaviour of a player picking up an item.
@@ -63,7 +49,7 @@ public class ItemHandlerHelper {
         // go through the inventory and try to fill up already existing items
         for (int i = 0; i < sizeInventory; i++) {
             ItemStack slot = inventory.getStackInSlot(i);
-            if (canItemStacksStack(slot, stack)) {
+            if (ItemStack.isSameItemSameComponents(slot, stack)) {
                 stack = inventory.insertItem(i, stack, simulate);
 
                 if (stack.isEmpty()) {

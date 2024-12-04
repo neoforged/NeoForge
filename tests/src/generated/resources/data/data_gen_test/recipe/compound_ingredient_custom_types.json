@@ -1,0 +1,76 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "neoforge:ingredient_type": "neoforge:compound",
+      "children": [
+        "#minecraft:planks",
+        "#minecraft:logs",
+        {
+          "neoforge:ingredient_type": "neoforge:components",
+          "components": {
+            "minecraft:attribute_modifiers": {
+              "modifiers": [
+                {
+                  "type": "minecraft:attack_damage",
+                  "amount": 2.0,
+                  "id": "minecraft:base_attack_damage",
+                  "operation": "add_value",
+                  "slot": "mainhand"
+                },
+                {
+                  "type": "minecraft:attack_speed",
+                  "amount": -2.799999952316284,
+                  "id": "minecraft:base_attack_speed",
+                  "operation": "add_value",
+                  "slot": "mainhand"
+                }
+              ]
+            },
+            "minecraft:damage": 3,
+            "minecraft:enchantable": {
+              "value": 5
+            },
+            "minecraft:enchantments": {
+              "levels": {}
+            },
+            "minecraft:item_model": "minecraft:stone_pickaxe",
+            "minecraft:item_name": "{\"translate\":\"item.minecraft.stone_pickaxe\"}",
+            "minecraft:lore": [],
+            "minecraft:max_damage": 131,
+            "minecraft:max_stack_size": 1,
+            "minecraft:rarity": "common",
+            "minecraft:repair_cost": 0,
+            "minecraft:repairable": {
+              "items": "#minecraft:stone_tool_materials"
+            },
+            "minecraft:tool": {
+              "rules": [
+                {
+                  "blocks": "#minecraft:incorrect_for_stone_tool",
+                  "correct_for_drops": false
+                },
+                {
+                  "blocks": "#minecraft:mineable/pickaxe",
+                  "correct_for_drops": true,
+                  "speed": 4.0
+                }
+              ]
+            }
+          },
+          "items": "minecraft:stone_pickaxe",
+          "strict": true
+        }
+      ]
+    }
+  },
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:gold_block"
+  }
+}

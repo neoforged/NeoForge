@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.damagesource;
 
 import java.util.Set;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
@@ -14,6 +15,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageEffects;
@@ -31,6 +33,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.common.asm.enumextension.EnumProxy;
 import net.neoforged.neoforge.common.damagesource.IDeathMessageProvider;
 import net.neoforged.neoforge.common.damagesource.IScalingFunction;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
@@ -58,17 +61,27 @@ public class DamageTypeTests {
         return Component.literal(entity.getName().getString() + " was killed via test damage by " + dmgSrc.getDirectEntity().getName().getString());
     };
 
-    public static final DamageEffects EFFECTS = DamageEffects.create("TEST_EFFECTS", "test:effects", () -> SoundEvents.DONKEY_ANGRY);;
-    public static final DamageScaling SCALING = DamageScaling.create("TEST_SCALING", "test:scaling", SCALE_FUNC);
-    public static final DeathMessageType MSGTYPE = DeathMessageType.create("TEST_MSGTYPE", "test:msgtype", MSG_PROVIDER);
+    @SuppressWarnings("unused") // referenced by enumextender.json
+    public static final EnumProxy<DamageEffects> EFFECTS_ENUM_PARAMS = new EnumProxy<>(
+            DamageEffects.class, "neotests:effects", (Supplier<SoundEvent>) () -> SoundEvents.DONKEY_ANGRY);
+    @SuppressWarnings("unused") // referenced by enumextender.json
+    public static final EnumProxy<DamageScaling> SCALING_ENUM_PARAMS = new EnumProxy<>(
+            DamageScaling.class, "neotests:scaling", SCALE_FUNC);
+    @SuppressWarnings("unused") // referenced by enumextender.json
+    public static final EnumProxy<DeathMessageType> MSGTYPE_ENUM_PARAMS = new EnumProxy<>(
+            DeathMessageType.class, "neotests:msgtype", MSG_PROVIDER);
 
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if custom damage types function as expected")
     static void dmgTypeTests(final DynamicTest test, final RegistrationHelper reg) {
-        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(reg.modId(), "test"));
+        ResourceKey<DamageType> TEST_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "test"));
 
-        Holder<Item> customSword = reg.registrar(Registries.ITEM).register("custom_damage_sword", () -> new Item(new Item.Properties()) {
+        DamageEffects effects = EFFECTS_ENUM_PARAMS.getValue();
+        DamageScaling scaling = SCALING_ENUM_PARAMS.getValue();
+        DeathMessageType msgType = MSGTYPE_ENUM_PARAMS.getValue();
+
+        Holder<Item> customSword = reg.items().registerItem("custom_damage_sword", props -> new Item(props) {
             @Override
             public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
                 if (entity instanceof LivingEntity living) {
@@ -80,10 +93,10 @@ public class DamageTypeTests {
 
         RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder();
         registrySetBuilder.add(Registries.DAMAGE_TYPE, bootstrap -> {
-            bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", SCALING, 0.0f, EFFECTS, MSGTYPE));
+            bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
         });
 
-        reg.addProvider(event -> new DatapackBuiltinEntriesProvider(
+        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 registrySetBuilder,
@@ -98,7 +111,7 @@ public class DamageTypeTests {
 
             // Test that the damage type is used by the sword and set correctly.
             attacker.attack(target);
-            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().registry(Registries.DAMAGE_TYPE).get();
+            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
             helper.assertTrue(dTypeReg.getResourceKey(target.getLastDamageSource().type()).get() == TEST_DMG_TYPE, "Incorrect damage type used");
 
             // Test that the scaling function works correctly.

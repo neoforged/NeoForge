@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 class DumpCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation("root"));
+    private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("root"));
     private static final String ALPHABETICAL_SORT_PARAM = "alphabetical_sort";
     private static final String PRINT_NUMERIC_ID_PARAM = "print_numeric_ids";
 
@@ -62,7 +62,7 @@ class DumpCommand {
         final ResourceKey<? extends Registry<?>> registryKey = CommandUtils.getResourceKey(ctx, "registry", ROOT_REGISTRY_KEY)
                 .orElseThrow(); // Expect to always retrieve a resource key for the root registry (registry key)
 
-        final Registry<?> registry = ctx.getSource().getServer().registryAccess().registry(registryKey)
+        final Registry<?> registry = ctx.getSource().getServer().registryAccess().lookup(registryKey)
                 .orElseThrow(() -> UNKNOWN_REGISTRY.create(registryKey.location()));
 
         String fileLocationForErrorReporting = "";

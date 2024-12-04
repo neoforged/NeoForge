@@ -1,49 +1,84 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -164,6 +_,13 @@
-         p_252014_.popPush("special");
-         this.loadTopLevel(ItemRenderer.TRIDENT_IN_HAND_MODEL);
-         this.loadTopLevel(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
-+        Set<ResourceLocation> additionalModels = Sets.newHashSet();
-+        net.neoforged.neoforge.client.ClientHooks.onRegisterAdditionalModels(additionalModels);
-+        for (ResourceLocation rl : additionalModels) {
-+            UnbakedModel unbakedmodel = this.getModel(rl); // loadTopLevel(...), but w/o ModelResourceLocation limitation
-+            this.unbakedCache.put(rl, unbakedmodel);
-+            this.topLevelModels.put(rl, unbakedmodel);
-+        }
-         this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
-         p_252014_.pop();
+@@ -46,19 +_,36 @@
+     private final Map<ResourceLocation, ClientItem> clientInfos;
+     final Map<ResourceLocation, UnbakedModel> unbakedPlainModels;
+     final UnbakedModel missingModel;
++    private final Map<ResourceLocation, UnbakedModel> standaloneModels;
++
++    /**
++     * @deprecated Neo: use {@link #ModelBakery(EntityModelSet, Map, Map, Map, UnbakedModel, Map)} ModelBakery instead}
++     */
++    @Deprecated
++    public ModelBakery(
++            EntityModelSet p_388903_,
++            Map<ModelResourceLocation, UnbakedBlockStateModel> p_251087_,
++            Map<ResourceLocation, ClientItem> p_250416_,
++            Map<ResourceLocation, UnbakedModel> p_388404_,
++            UnbakedModel p_360944_
++    ) {
++        this(p_388903_, p_251087_, p_250416_, p_388404_, p_360944_, Map.of());
++    }
+ 
+     public ModelBakery(
+         EntityModelSet p_388903_,
+         Map<ModelResourceLocation, UnbakedBlockStateModel> p_251087_,
+         Map<ResourceLocation, ClientItem> p_250416_,
+         Map<ResourceLocation, UnbakedModel> p_388404_,
+-        UnbakedModel p_360944_
++        UnbakedModel p_360944_,
++        Map<ResourceLocation, UnbakedModel> standaloneModels
+     ) {
+         this.entityModelSet = p_388903_;
+         this.unbakedBlockStateModels = p_251087_;
+         this.clientInfos = p_250416_;
+         this.unbakedPlainModels = p_388404_;
+         this.missingModel = p_360944_;
++        this.standaloneModels = standaloneModels;
      }
-@@ -481,7 +_,17 @@
-         }
  
-         @Override
-+        public Function<Material, TextureAtlasSprite> getModelTextureGetter() {
-+            return this.modelTextureGetter;
-+        }
-+
-+        @Override
-         public BakedModel bake(ResourceLocation p_252176_, ModelState p_249765_) {
-+            return bake(p_252176_, p_249765_, this.modelTextureGetter);
-+        }
-+
-+        @Override
-+        public BakedModel bake(ResourceLocation p_252176_, ModelState p_249765_, Function<Material, TextureAtlasSprite> sprites) {
-             ModelBakery.BakedCacheKey modelbakery$bakedcachekey = new ModelBakery.BakedCacheKey(p_252176_, p_249765_.getRotation(), p_249765_.isUvLocked());
-             BakedModel bakedmodel = ModelBakery.this.bakedCache.get(modelbakery$bakedcachekey);
-             if (bakedmodel != null) {
-@@ -490,11 +_,11 @@
-                 UnbakedModel unbakedmodel = this.getModel(p_252176_);
-                 if (unbakedmodel instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
-                     return ModelBakery.ITEM_MODEL_GENERATOR
--                        .generateBlockModel(this.modelTextureGetter, blockmodel)
--                        .bake(this, blockmodel, this.modelTextureGetter, p_249765_, p_252176_, false);
-+                        .generateBlockModel(sprites, blockmodel)
-+                        .bake(this, blockmodel, sprites, p_249765_, p_252176_, false);
-                 }
- 
--                BakedModel bakedmodel1 = unbakedmodel.bake(this, this.modelTextureGetter, p_249765_, p_252176_);
-+                BakedModel bakedmodel1 = unbakedmodel.bake(this, sprites, p_249765_, p_252176_);
-                 ModelBakery.this.bakedCache.put(modelbakery$bakedcachekey, bakedmodel1);
-                 return bakedmodel1;
+     public ModelBakery.BakingResult bakeModels(ModelBakery.TextureGetter p_352431_) {
+@@ -92,7 +_,18 @@
+                 LOGGER.warn("Unable to bake item model: '{}'", p_390101_, exception);
              }
+         });
+-        return new ModelBakery.BakingResult(bakedmodel, map, itemmodel, map1, map2);
++        Map<ResourceLocation, BakedModel> bakedStandaloneModels = new HashMap<>(this.standaloneModels.size());
++        this.standaloneModels.forEach((location, model) -> {
++            try {
++                ModelDebugName debugName = () -> location + "#standalone";
++                ModelBakerImpl modelBaker = new ModelBakerImpl(p_352431_, debugName);
++                BakedModel bakedModel = UnbakedModel.bakeWithTopModelValues(model, modelBaker, BlockModelRotation.X0_Y0);
++                bakedStandaloneModels.put(location, bakedModel);
++            } catch (Exception exception) {
++                LOGGER.warn("Unable to bake standalone model: '{}': {}", location, exception);
++            }
++        });
++        return new ModelBakery.BakingResult(bakedmodel, map, itemmodel, map1, map2, bakedStandaloneModels);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+@@ -105,8 +_,22 @@
+         Map<ModelResourceLocation, BakedModel> blockStateModels,
+         ItemModel missingItemModel,
+         Map<ResourceLocation, ItemModel> itemStackModels,
+-        Map<ResourceLocation, ClientItem.Properties> itemProperties
++        Map<ResourceLocation, ClientItem.Properties> itemProperties,
++        Map<ResourceLocation, BakedModel> standaloneModels
+     ) {
++        /**
++         * @deprecated Neo: use {@link #BakingResult(BakedModel, Map, ItemModel, Map, Map, Map)}} instead
++         */
++        @Deprecated
++        public BakingResult(
++                BakedModel missingModel,
++                Map<ModelResourceLocation, BakedModel> blockStateModels,
++                ItemModel missingItemModel,
++                Map<ResourceLocation, ItemModel> itemStackModels,
++                Map<ResourceLocation, ClientItem.Properties> itemProperties
++        ) {
++            this(missingModel, blockStateModels, missingItemModel, itemStackModels, itemProperties, Map.of());
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

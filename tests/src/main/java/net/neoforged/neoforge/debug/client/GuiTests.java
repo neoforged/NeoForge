@@ -115,14 +115,14 @@ public class GuiTests {
     @TestHolder(description = "Checks that GUI layers can move hearts, air bubbles, etc")
     static void testGuiLayerLeftRightHeight(DynamicTest test) {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
-            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, new ResourceLocation(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
-            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, new ResourceLocation(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
-            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, new ResourceLocation(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
+            event.registerBelow(VanillaGuiLayers.PLAYER_HEALTH, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left1"), makeLeftOverlay(test, 3, 0x80FF0000));
+            event.registerBelow(VanillaGuiLayers.ARMOR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left2"), makeLeftOverlay(test, 3, 0x80CC0000));
+            event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "left3"), makeLeftOverlay(test, 3, 0x80990000));
 
-            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, new ResourceLocation(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
-            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, new ResourceLocation(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
-            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, new ResourceLocation(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
-            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, new ResourceLocation(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
+            event.registerBelow(VanillaGuiLayers.FOOD_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right1"), makeRightOverlay(test, 2, 0x8000FF00));
+            event.registerBelow(VanillaGuiLayers.VEHICLE_HEALTH, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right2"), makeRightOverlay(test, 2, 0x8000DD00));
+            event.registerBelow(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right3"), makeRightOverlay(test, 2, 0x8000BB00));
+            event.registerAbove(VanillaGuiLayers.AIR_LEVEL, ResourceLocation.fromNamespaceAndPath(test.createModId(), "right4"), makeRightOverlay(test, 2, 0x80009900));
         });
 
         test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
@@ -166,5 +166,28 @@ public class GuiTests {
                     color);
             gui.leftHeight += height + 1;
         };
+    }
+
+    @TestHolder(description = "Checks that the depth budget for GUI layers gets adjusted as necessary")
+    static void testGuiLayerDepthBudget(DynamicTest test) {
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            // Register some placeholder layers
+            for (int i = 0; i < 50; i++) {
+                event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "fake_" + i), (guiGraphics, deltaTracker) -> {});
+            }
+            // Register the real layer
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "high_depth_test"), (guiGraphics, deltaTracker) -> {
+                if (test.framework().tests().isEnabled(test.id())) {
+                    guiGraphics.fill(guiGraphics.guiWidth() - 50, 0, guiGraphics.guiWidth(), 50, 0xFFFF0000);
+                }
+            });
+        });
+
+        test.eventListeners().forge().addListener((ClientChatEvent chatEvent) -> {
+            if (chatEvent.getMessage().equalsIgnoreCase("gui layer depth test")) {
+                test.requestConfirmation(Minecraft.getInstance().player, Component.literal(
+                        "Do you see a red square in the top right corner of the screen?"));
+            }
+        });
     }
 }

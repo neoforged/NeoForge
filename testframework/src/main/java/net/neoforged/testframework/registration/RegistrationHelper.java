@@ -12,6 +12,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -58,13 +59,17 @@ public interface RegistrationHelper {
 
     String registerSubpack(String name);
 
-    void addProvider(Function<GatherDataEvent, DataProvider> provider);
+    void addClientProvider(Function<GatherDataEvent.Client, DataProvider> provider);
 
-    <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer);
+    void addServerProvider(Function<GatherDataEvent.Server, DataProvider> provider);
+
+    <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer);
+
+    <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer);
 
     Consumer<Consumer<? extends Event>> eventListeners();
 
-    void register(IEventBus bus);
+    void register(IEventBus bus, ModContainer container);
 
     static RegistrationHelper create(String modId) {
         return new RegistrationHelperImpl(modId);

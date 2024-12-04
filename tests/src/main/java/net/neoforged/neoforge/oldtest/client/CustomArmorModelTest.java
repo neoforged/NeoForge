@@ -5,30 +5,26 @@
 
 package net.neoforged.neoforge.oldtest.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.Holder;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -40,14 +36,23 @@ public class CustomArmorModelTest {
     static final String MOD_ID = "custom_armor_model_test";
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     // demonstrates custom non-humanoid model
-    private static final DeferredItem<Item> RED_LEGGINGS = ITEMS.register("red_leggings", () -> new TintedArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Properties().stacksTo(1)));
+    private static final DeferredItem<Item> RED_LEGGINGS = ITEMS.registerItem(
+            "red_leggings",
+            props -> new ArmorItem(
+                    ArmorMaterials.DIAMOND,
+                    ArmorType.LEGGINGS,
+                    props.stacksTo(1).component(DataComponents.DYED_COLOR, new DyedItemColor(0xFF0000, false))));
     // demonstrates the properties are copied from the vanilla model
-    private static final DeferredItem<Item> ENDERMAN_CHESTPLATE = ITEMS.register("enderman_chestplate", () -> new EndermanArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Properties().stacksTo(1)));
-    private static final DeferredItem<Item> ENDERMAN_BOOTS = ITEMS.register("enderman_boots", () -> new EndermanArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Properties().stacksTo(1)));
+    private static final DeferredItem<Item> ENDERMAN_CHESTPLATE = ITEMS.registerItem("enderman_chestplate", props -> new ArmorItem(ArmorMaterials.GOLD, ArmorType.CHESTPLATE, props.stacksTo(1)));
+    private static final DeferredItem<Item> ENDERMAN_BOOTS = ITEMS.registerItem("enderman_boots", props -> new ArmorItem(ArmorMaterials.GOLD, ArmorType.BOOTS, props.stacksTo(1)));
 
     public CustomArmorModelTest(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
+
+        if (FMLEnvironment.dist.isClient()) {
+            modBus.addListener(ClientEvents::onRegisterClientExtensions);
+        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -58,62 +63,23 @@ public class CustomArmorModelTest {
         }
     }
 
-    private static class TintedArmorItem extends ArmorItem {
-        public TintedArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
-            super(material, slot, props);
-        }
+    private static final class ClientEvents {
+        private static final ResourceLocation ARMOR_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/enderman/enderman.png");
+        private static final Lazy<HumanoidModel<HumanoidRenderState>> ENDERMAN = Lazy.of(() -> new HumanoidModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.ENDERMAN)));
 
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
+        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerItem(new IClientItemExtensions() {
                 @Override
-                public Model getGenericArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                    TintedArmorModel.INSTANCE.base = _default;
-                    return TintedArmorModel.INSTANCE;
+                public HumanoidModel<?> getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType armorSlot, Model _default) {
+                    return ENDERMAN.get();
                 }
-            });
-        }
-    }
 
-    private static class EndermanArmorItem extends ArmorItem {
-        private static final ResourceLocation ARMOR_TEXTURE = new ResourceLocation("textures/entity/enderman/enderman.png");
-
-        public EndermanArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type slot, Properties props) {
-            super(material, slot, props);
-        }
-
-        @Nullable
-        @Override
-        public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-            return ARMOR_TEXTURE;
-        }
-
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
+                @Nullable
                 @Override
-                public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                    return TintedArmorModel.ENDERMAN.get();
+                public ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
+                    return ARMOR_TEXTURE;
                 }
-            });
-        }
-    }
-
-    private static class TintedArmorModel extends Model {
-        private static final TintedArmorModel INSTANCE = new TintedArmorModel(RenderType::entityCutoutNoCull);
-        private static final Lazy<HumanoidModel<LivingEntity>> ENDERMAN = Lazy.of(() -> new HumanoidModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.ENDERMAN)));
-
-        private HumanoidModel<?> base;
-
-        private TintedArmorModel(Function<ResourceLocation, RenderType> renderTypeFunction) {
-            super(renderTypeFunction);
-        }
-
-        @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha) {
-            if (base != null) {
-                base.renderToBuffer(poseStack, consumer, light, overlay, red, 0, 0, alpha);
-            }
+            }, ENDERMAN_BOOTS.get(), ENDERMAN_CHESTPLATE.get());
         }
     }
 }

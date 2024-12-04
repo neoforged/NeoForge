@@ -13,7 +13,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -388,31 +387,6 @@ public abstract class PlayerEvent extends LivingEvent {
         }
     }
 
-    public static class ItemPickupEvent extends PlayerEvent {
-        /**
-         * Original EntityItem with current remaining stack size
-         */
-        private final ItemEntity originalEntity;
-        /**
-         * Clone item stack, containing the item and amount picked up
-         */
-        private final ItemStack stack;
-
-        public ItemPickupEvent(Player player, ItemEntity entPickedUp, ItemStack stack) {
-            super(player);
-            this.originalEntity = entPickedUp;
-            this.stack = stack;
-        }
-
-        public ItemStack getStack() {
-            return stack;
-        }
-
-        public ItemEntity getOriginalEntity() {
-            return originalEntity;
-        }
-    }
-
     public static class ItemCraftedEvent extends PlayerEvent {
         private final ItemStack crafting;
         private final Container craftMatrix;
@@ -434,14 +408,20 @@ public abstract class PlayerEvent extends LivingEvent {
 
     public static class ItemSmeltedEvent extends PlayerEvent {
         private final ItemStack smelting;
+        private final int amountRemoved;
 
-        public ItemSmeltedEvent(Player player, ItemStack crafting) {
+        public ItemSmeltedEvent(Player player, ItemStack crafting, int amountRemoved) {
             super(player);
             this.smelting = crafting;
+            this.amountRemoved = amountRemoved;
         }
 
         public ItemStack getSmelting() {
             return this.smelting;
+        }
+
+        public int getAmountRemoved() {
+            return this.amountRemoved;
         }
     }
 

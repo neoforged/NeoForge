@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
+@@ -255,7 +_,7 @@
+ 
+     @Override
+     public boolean shouldRenderFace(Direction p_59959_) {
+-        return Block.shouldRenderFace(this.getBlockState(), this.level.getBlockState(this.getBlockPos().relative(p_59959_)), p_59959_);
++        return Block.shouldRenderFace(this.level, this.worldPosition, this.getBlockState(), this.level.getBlockState(this.getBlockPos().relative(p_59959_)), p_59959_);
+     }
+ 
+     public int getParticleAmount() {

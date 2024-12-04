@@ -16,14 +16,14 @@
 +    @Deprecated //Forge: Use Player/Hand version
      public static boolean growCrop(ItemStack p_40628_, Level p_40629_, BlockPos p_40630_) {
 +        if (p_40629_ instanceof net.minecraft.server.level.ServerLevel)
-+            return applyBonemeal(p_40628_, p_40629_, p_40630_, net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft((net.minecraft.server.level.ServerLevel)p_40629_));
++            return applyBonemeal(p_40628_, p_40629_, p_40630_, null);
 +        return false;
 +    }
 +
-+    public static boolean applyBonemeal(ItemStack p_40628_, Level p_40629_, BlockPos p_40630_, net.minecraft.world.entity.player.Player player) {
++    public static boolean applyBonemeal(ItemStack p_40628_, Level p_40629_, BlockPos p_40630_, @Nullable net.minecraft.world.entity.player.Player player) {
          BlockState blockstate = p_40629_.getBlockState(p_40630_);
-+        int hook = net.neoforged.neoforge.event.EventHooks.onApplyBonemeal(player, p_40629_, p_40630_, blockstate, p_40628_);
-+        if (hook != 0) return hook > 0;
++        var event = net.neoforged.neoforge.event.EventHooks.fireBonemealEvent(player, p_40629_, p_40630_, blockstate, p_40628_);
++        if (event.isCanceled()) return event.isSuccessful();
          if (blockstate.getBlock() instanceof BonemealableBlock bonemealableblock && bonemealableblock.isValidBonemealTarget(p_40629_, p_40630_, blockstate)) {
              if (p_40629_ instanceof ServerLevel) {
                  if (bonemealableblock.isBonemealSuccess(p_40629_, p_40629_.random, p_40630_, blockstate)) {

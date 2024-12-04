@@ -1,10 +1,14 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -401,6 +_,7 @@
-                 ItemStack itemstack10 = this.getCarried();
-                 p_150434_.updateTutorialInventoryAction(itemstack10, slot7.getItem(), clickaction);
-                 if (!this.tryItemClickBehaviourOverride(p_150434_, clickaction, slot7, itemstack9, itemstack10)) {
-+                if (!net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(itemstack9, itemstack10, slot7, clickaction, p_150434_, createCarriedSlotAccess()))
-                     if (itemstack9.isEmpty()) {
-                         if (!itemstack10.isEmpty()) {
-                             int i3 = clickaction == ClickAction.PRIMARY ? itemstack10.getCount() : 1;
+@@ -559,6 +_,11 @@
+     }
+ 
+     private boolean tryItemClickBehaviourOverride(Player p_249615_, ClickAction p_250300_, Slot p_249384_, ItemStack p_251073_, ItemStack p_252026_) {
++        // Neo: Fire the ItemStackedOnOtherEvent, and return true if it was cancelled (meaning the event was handled). Returning true will trigger the container to stop processing further logic.
++        if (net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(p_251073_, p_252026_, p_249384_, p_250300_, p_249615_, createCarriedSlotAccess())) {
++            return true;
++        }
++
+         FeatureFlagSet featureflagset = p_249615_.level().enabledFeatures();
+         return p_252026_.isItemEnabled(featureflagset) && p_252026_.overrideStackedOnOther(p_249384_, p_250300_, p_249615_)
+             ? true

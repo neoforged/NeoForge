@@ -10,8 +10,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.commands.Commands;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,14 +34,18 @@ public final class ParticleBoundsDebugRenderer {
 
         PoseStack poseStack = event.getPoseStack();
         poseStack.pushPose();
-        poseStack.translate(-camPos.x, -camPos.y, -camPos.z);
 
         VertexConsumer consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
 
         Minecraft.getInstance().particleEngine.iterateParticles(particle -> {
-            var bb = particle.getRenderBoundingBox(event.getPartialTick());
+            var bb = particle.getRenderBoundingBox(event.getPartialTick().getGameTimeDeltaPartialTick(false));
             if (!bb.isInfinite() && event.getFrustum().isVisible(bb)) {
-                LevelRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
+                poseStack.pushPose();
+                var offset = particle.getPos().subtract(camPos);
+                poseStack.translate(offset.x, offset.y, offset.z);
+                bb = bb.move(-particle.getPos().x, -particle.getPos().y, -particle.getPos().z);
+                ShapeRenderer.renderLineBox(poseStack, consumer, bb, 1F, 0F, 0F, 1F);
+                poseStack.popPose();
             }
         });
 

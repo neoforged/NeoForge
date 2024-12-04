@@ -17,10 +17,10 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkMod;
 
 public record TestEnabledLootCondition(TestFramework framework, String testId) implements LootItemCondition {
-
     public static final MapCodec<TestEnabledLootCondition> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
             MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(TestEnabledLootCondition::framework),
             Codec.STRING.fieldOf("test").forGetter(TestEnabledLootCondition::testId)).apply(in, TestEnabledLootCondition::new));
+
     public TestEnabledLootCondition(DynamicTest test) {
         this(test.framework(), test.id());
     }

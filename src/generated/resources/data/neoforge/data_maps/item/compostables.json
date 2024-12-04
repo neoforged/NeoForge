@@ -28,6 +28,7 @@
       "chance": 0.65
     },
     "minecraft:beetroot_seeds": {
+      "can_villager_compost": true,
       "chance": 0.3
     },
     "minecraft:big_dripleaf": {
@@ -68,6 +69,9 @@
     },
     "minecraft:cherry_sapling": {
       "chance": 0.3
+    },
+    "minecraft:closed_eyeblossom": {
+      "chance": 0.65
     },
     "minecraft:cocoa_beans": {
       "chance": 0.65
@@ -183,11 +187,29 @@
     "minecraft:oak_sapling": {
       "chance": 0.3
     },
+    "minecraft:open_eyeblossom": {
+      "chance": 0.65
+    },
     "minecraft:orange_tulip": {
       "chance": 0.65
     },
     "minecraft:oxeye_daisy": {
       "chance": 0.65
+    },
+    "minecraft:pale_hanging_moss": {
+      "chance": 0.3
+    },
+    "minecraft:pale_moss_block": {
+      "chance": 0.65
+    },
+    "minecraft:pale_moss_carpet": {
+      "chance": 0.3
+    },
+    "minecraft:pale_oak_leaves": {
+      "chance": 0.3
+    },
+    "minecraft:pale_oak_sapling": {
+      "chance": 0.3
     },
     "minecraft:peony": {
       "chance": 0.65
@@ -295,6 +317,7 @@
       "chance": 0.65
     },
     "minecraft:wheat_seeds": {
+      "can_villager_compost": true,
       "chance": 0.3
     },
     "minecraft:white_tulip": {

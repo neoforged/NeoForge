@@ -1,59 +1,61 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -306,6 +_,8 @@
+@@ -253,6 +_,8 @@
              case BRUSH:
                  this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.rightArm.yRot = 0.0F;
 +            default:
-+                this.rightArmPose.applyTransform(this, p_102876_, net.minecraft.world.entity.HumanoidArm.RIGHT);
++                p_362238_.applyTransform(this, p_364666_, net.minecraft.world.entity.HumanoidArm.RIGHT);
          }
      }
  
-@@ -348,6 +_,8 @@
+@@ -295,6 +_,8 @@
              case BRUSH:
                  this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.leftArm.yRot = 0.0F;
 +            default:
-+                this.leftArmPose.applyTransform(this, p_102879_, net.minecraft.world.entity.HumanoidArm.LEFT);
++                p_361463_.applyTransform(this, p_361741_, net.minecraft.world.entity.HumanoidArm.LEFT);
          }
      }
  
-@@ -446,7 +_,7 @@
+@@ -372,7 +_,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
 -    public static enum ArmPose {
-+    public static enum ArmPose implements net.neoforged.neoforge.common.IExtensibleEnum {
++    public static enum ArmPose implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          EMPTY(false),
          ITEM(false),
          BLOCK(false),
-@@ -462,10 +_,29 @@
+@@ -385,13 +_,31 @@
+         BRUSH(false);
  
+         private final boolean twoHanded;
++        @org.jetbrains.annotations.Nullable
++        private final net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose;
+ 
++        @net.neoforged.fml.common.asm.enumextension.ReservedConstructor
          private ArmPose(boolean p_102896_) {
              this.twoHanded = p_102896_;
 +            this.forgeArmPose = null;
++        }
++
++        private ArmPose(boolean twoHanded, net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
++            this.twoHanded = twoHanded;
++            com.google.common.base.Preconditions.checkNotNull(forgeArmPose, "Cannot create new ArmPose with null transformer!");
++            this.forgeArmPose = forgeArmPose;
          }
  
          public boolean isTwoHanded() {
              return this.twoHanded;
-         }
-+        // FORGE START
-+        @javax.annotation.Nullable
-+        private final net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose;
-+
-+        private ArmPose(boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
-+            this.twoHanded = twoHanded;
-+            com.google.common.base.Preconditions.checkNotNull(forgeArmPose, "Cannot create new ArmPose with null transformer!");
-+            this.forgeArmPose = forgeArmPose;
 +        }
 +
-+        public static ArmPose create(String name, boolean twoHanded, @javax.annotation.Nonnull net.neoforged.neoforge.client.IArmPoseTransformer forgeArmPose) {
-+            throw new IllegalStateException("Enum not extended");
-+        }
-+
-+        public <T extends LivingEntity> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
++        public <T extends HumanoidRenderState> void applyTransform(HumanoidModel<T> model, T entity, net.minecraft.world.entity.HumanoidArm arm) {
 +            if (this.forgeArmPose != null) this.forgeArmPose.applyTransform(model, entity, arm);
 +        }
-+        // FORGE END
++
++        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(HumanoidModel.ArmPose.class);
+         }
      }
  }

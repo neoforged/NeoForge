@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -19,11 +20,9 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.SoundAction;
@@ -39,12 +38,24 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
         return (Entity) this;
     }
 
+    /**
+     * Deserialize from a compound tag.
+     * 
+     * @deprecated Use a data component/attachment to store info, or {@link Entity#load(CompoundTag)} as a replacement.
+     */
     @Override
+    @Deprecated(forRemoval = true, since = "21.0")
     default void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         self().load(nbt);
     }
 
+    /**
+     * Serialize metadata into a compound tag.
+     * 
+     * @deprecated Use a data component/attachment to store info. ({@link Entity#setData(AttachmentType, Object)})
+     */
     @Override
+    @Deprecated(forRemoval = true, since = "21.0")
     default CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag ret = new CompoundTag();
         String id = self().getEncodeId();
@@ -77,17 +88,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     }
 
     /**
-     * Called when a user uses the creative pick block button on this entity.
-     *
-     * @param target The full target the player is looking at
-     * @return A ItemStack to add to the player's inventory, null ItemStack if nothing should be added.
-     */
-    @Nullable
-    default ItemStack getPickedResult(HitResult target) {
-        return self().getPickResult();
-    }
-
-    /**
      * If a rider of this entity can interact with this entity. Should return true on the
      * ridden entity if so.
      *
@@ -116,7 +116,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @param fallDistance The fall distance
      * @return {@code true} if this entity can trample, {@code false} otherwise
      */
-    boolean canTrample(BlockState state, BlockPos pos, float fallDistance);
+    boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, float fallDistance);
 
     /**
      * Returns The classification of this entity
@@ -135,24 +135,17 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      *
      * @return True if this entity is being tracked by a world
      */
-    // TODO: rename in 1.19 to isAddedToLevel
-    boolean isAddedToWorld();
+    boolean isAddedToLevel();
 
     /**
-     * Called after the entity has been added to the world's
-     * ticking list. Can be overriden, but needs to call super
-     * to prevent MC-136995.
+     * Called after the entity has been added to the world's ticking list.
      */
-    // TODO: rename in 1.19 to onAddedToLevel
-    void onAddedToWorld();
+    void onAddedToLevel();
 
     /**
-     * Called after the entity has been removed to the world's
-     * ticking list. Can be overriden, but needs to call super
-     * to prevent MC-136995.
+     * Called after the entity has been removed to the world's ticking list.
      */
-    // TODO: rename in 1.19 to onRemovedFromLevel
-    void onRemovedFromWorld();
+    void onRemovedFromLevel();
 
     /**
      * Revives an entity that has been removed from a world.

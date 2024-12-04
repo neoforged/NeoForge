@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record AuxiliaryLightDataPayload(ChunkPos pos, Map<BlockPos, Byte> entries) implements CustomPacketPayload {
-    public static final Type<AuxiliaryLightDataPayload> TYPE = new Type<>(new ResourceLocation(NeoForgeVersion.MOD_ID, "auxiliary_light_data"));
+    public static final Type<AuxiliaryLightDataPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "auxiliary_light_data"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AuxiliaryLightDataPayload> STREAM_CODEC = StreamCodec.composite(
             NeoForgeStreamCodecs.CHUNK_POS,
             AuxiliaryLightDataPayload::pos,

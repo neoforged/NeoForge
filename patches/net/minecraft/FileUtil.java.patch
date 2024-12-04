@@ -14,20 +14,20 @@
 +    private static final Pattern RESERVED_WINDOWS_FILENAMES_NEOFORGE = Pattern.compile(".*\\.|(?:CON|PRN|AUX|NUL|CLOCK\\$|CONIN\\$|CONOUT\\$|(?:COM|LPT)[¹²³0-9])(?:\\..*)?", 2); // Neo: Fix MC-268617 - See PR #767
      private static final Pattern STRICT_PATH_SEGMENT_CHECK = Pattern.compile("[-._a-z0-9]+");
  
-     public static String findAvailableName(Path p_133731_, String p_133732_, String p_133733_) throws IOException {
-@@ -27,7 +_,7 @@
-         }
+     public static String sanitizeName(String p_352262_) {
+@@ -31,7 +_,7 @@
  
-         p_133732_ = p_133732_.replaceAll("[./\"]", "_");
+     public static String findAvailableName(Path p_133731_, String p_133732_, String p_133733_) throws IOException {
+         p_133732_ = sanitizeName(p_133732_);
 -        if (RESERVED_WINDOWS_FILENAMES.matcher(p_133732_).matches()) {
 +        if ((net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_133732_).matches()) {
              p_133732_ = "_" + p_133732_ + "_";
          }
  
-@@ -74,7 +_,7 @@
+@@ -78,7 +_,7 @@
  
      public static boolean isPathPortable(Path p_133735_) {
-         for(Path path : p_133735_) {
+         for (Path path : p_133735_) {
 -            if (RESERVED_WINDOWS_FILENAMES.matcher(path.toString()).matches()) {
 +            if ((net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(path.toString()).matches()) {
                  return false;

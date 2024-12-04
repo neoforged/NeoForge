@@ -5,14 +5,11 @@
 
 package net.neoforged.neoforge.client.gui;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Streams;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -24,13 +21,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.i18n.FMLTranslations;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.Internal
 public class LoadingErrorScreen extends ErrorScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Path modsDir;
@@ -39,11 +37,12 @@ public class LoadingErrorScreen extends ErrorScreen {
     private final List<FormattedIssue> modLoadWarnings;
     @Nullable
     private final Path dumpedLocation;
+    private final Runnable nextScreenTask;
     private LoadingEntryList entryList;
     private Component errorHeader;
     private Component warningHeader;
 
-    public LoadingErrorScreen(List<ModLoadingIssue> issues, @Nullable File dumpedLocation) {
+    public LoadingErrorScreen(List<ModLoadingIssue> issues, @Nullable File dumpedLocation, Runnable nextScreenTask) {
         super(Component.literal("Loading Error"), null);
         this.modLoadWarnings = issues.stream()
                 .filter(issue -> issue.severity() == ModLoadingIssue.Severity.WARNING)
@@ -56,6 +55,7 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.modsDir = FMLPaths.MODSDIR.get();
         this.logFile = FMLPaths.GAMEDIR.get().resolve(Paths.get("logs", "latest.log"));
         this.dumpedLocation = dumpedLocation != null ? dumpedLocation.toPath() : null;
+        this.nextScreenTask = nextScreenTask;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class LoadingErrorScreen extends ErrorScreen {
         this.addRenderableWidget(new ExtendedButton(this.width / 2 + 5, this.height - yOffset, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.log")), b -> Util.getPlatform().openFile(logFile.toFile())));
         if (this.modLoadErrors.isEmpty()) {
             this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.continue.launch")), b -> {
-                this.minecraft.setScreen(null);
+                this.nextScreenTask.run();
             }));
         } else {
             this.addRenderableWidget(new ExtendedButton(50, this.height - 24, this.width / 2 - 55, 20, Component.literal(FMLTranslations.parseMessage("fml.button.open.crashreport")), b -> Util.getPlatform().openFile(dumpedLocation.toFile())));
@@ -109,21 +109,19 @@ public class LoadingErrorScreen extends ErrorScreen {
                 addEntry(new LoadingMessageEntry(parent.errorHeader, true));
             errors.forEach(e -> addEntry(new LoadingMessageEntry(e.text)));
             if (both) {
-                int maxChars = (this.width - 10) / parent.minecraft.font.width("-");
-                addEntry(new LoadingMessageEntry(Component.literal("\n" + Strings.repeat("-", maxChars) + "\n")));
                 addEntry(new LoadingMessageEntry(parent.warningHeader, true));
             }
             warnings.forEach(w -> addEntry(new LoadingMessageEntry(w.text)));
         }
 
         @Override
-        protected int getScrollbarPosition() {
+        protected int scrollBarX() {
             return this.getRight() - 6;
         }
 
         @Override
         public int getRowWidth() {
-            return this.width;
+            return this.width - 15;
         }
 
         public class LoadingMessageEntry extends ObjectSelectionList.Entry<LoadingMessageEntry> {
@@ -151,7 +149,7 @@ public class LoadingErrorScreen extends ErrorScreen {
                 int y = top + 2;
                 for (FormattedCharSequence string : strings) {
                     if (center)
-                        guiGraphics.drawString(font, string, left + (width) - font.width(string) / 2F, (float) y, 0xFFFFFF, false);
+                        guiGraphics.drawString(font, string, left + (width - font.width(string)) / 2F, (float) y, 0xFFFFFF, false);
                     else
                         guiGraphics.drawString(font, string, left + 5, y, 0xFFFFFF, false);
                     y += font.lineHeight;
@@ -163,34 +161,8 @@ public class LoadingErrorScreen extends ErrorScreen {
     private record FormattedIssue(Component text, ModLoadingIssue issue) {
         public static FormattedIssue of(ModLoadingIssue issue) {
             return new FormattedIssue(
-                    Component.literal(FMLTranslations.parseMessage(issue.translationKey(), formatArgs(issue))),
+                    Component.literal(FMLTranslations.translateIssue(issue)),
                     issue);
-        }
-
-        private static Object[] formatArgs(ModLoadingIssue issue) {
-            var modInfo = issue.affectedMod();
-            if (modInfo == null && issue.affectedModFile() != null) {
-                if (!issue.affectedModFile().getModInfos().isEmpty()) {
-                    modInfo = issue.affectedModFile().getModInfos().getFirst();
-                }
-            }
-
-            return Streams.concat(Stream.of(modInfo, null), issue.translationArgs().stream())
-                    .map(FormattedIssue::formatArg)
-                    .toArray();
-        }
-
-        private static Object formatArg(Object arg) {
-            if (arg instanceof Path path) {
-                var gameDir = FMLLoader.getGamePath();
-                if (path.startsWith(gameDir)) {
-                    return gameDir.relativize(path).toString();
-                } else {
-                    return path.toString();
-                }
-            } else {
-                return arg;
-            }
         }
     }
 }

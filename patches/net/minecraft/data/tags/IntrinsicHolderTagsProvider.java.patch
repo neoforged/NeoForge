@@ -34,7 +34,7 @@
 +        CompletableFuture<HolderLookup.Provider> p_256488_,
 +        Function<T, ResourceKey<T>> p_256168_,
 +        String modId,
-+        @javax.annotation.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
++        @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
 +    ) {
 +        super(p_256164_, p_256155_, p_256488_, modId, existingFileHelper);
 +        this.keyExtractor = p_256168_;
@@ -47,7 +47,7 @@
 +        CompletableFuture<TagsProvider.TagLookup<T>> p_275311_,
 +        Function<T, ResourceKey<T>> p_275566_,
 +        String modId,
-+        @javax.annotation.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
++        @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper
 +    ) {
 +        super(p_275304_, p_275709_, p_275227_, p_275311_, modId, existingFileHelper);
          this.keyExtractor = p_275566_;

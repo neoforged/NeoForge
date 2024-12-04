@@ -1,0 +1,51 @@
+--- a/net/minecraft/client/model/Model.java
++++ b/net/minecraft/client/model/Model.java
+@@ -28,6 +_,10 @@
+         this.allParts = p_368583_.getAllParts().toList();
+     }
+ 
++    protected static net.neoforged.neoforge.client.entity.animation.json.AnimationHolder getAnimation(ResourceLocation key) {
++        return net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.INSTANCE.getAnimationHolder(key);
++    }
++
+     public final RenderType renderType(ResourceLocation p_103120_) {
+         return this.renderType.apply(p_103120_);
+     }
+@@ -64,12 +_,20 @@
+         this.animate(p_364820_, p_361968_, p_362503_, 1.0F);
+     }
+ 
++    protected void animate(AnimationState animationState, net.neoforged.neoforge.client.entity.animation.json.AnimationHolder animation, float ageInTicks) {
++        this.animate(animationState, animation.get(), ageInTicks);
++    }
++
+     protected void animateWalk(AnimationDefinition p_362453_, float p_365353_, float p_364840_, float p_362983_, float p_361956_) {
+         long i = (long)(p_365353_ * 50.0F * p_362983_);
+         float f = Math.min(p_364840_ * p_361956_, 1.0F);
+         KeyframeAnimations.animate(this, p_362453_, i, f, ANIMATION_VECTOR_CACHE);
+     }
+ 
++    protected void animateWalk(net.neoforged.neoforge.client.entity.animation.json.AnimationHolder animation, float limbSwing, float limbSwingAmount, float maxAnimationSpeed, float animationScaleFactor) {
++        this.animateWalk(animation.get(), limbSwing, limbSwingAmount, maxAnimationSpeed, animationScaleFactor);
++    }
++
+     protected void animate(AnimationState p_364413_, AnimationDefinition p_361459_, float p_361947_, float p_362164_) {
+         p_364413_.ifStarted(
+             p_361743_ -> KeyframeAnimations.animate(
+@@ -78,8 +_,16 @@
+         );
+     }
+ 
++    protected void animate(AnimationState animationState, net.neoforged.neoforge.client.entity.animation.json.AnimationHolder animation, float ageInTicks, float speed) {
++        this.animate(animationState, animation.get(), ageInTicks, speed);
++    }
++
+     protected void applyStatic(AnimationDefinition p_362055_) {
+         KeyframeAnimations.animate(this, p_362055_, 0L, 1.0F, ANIMATION_VECTOR_CACHE);
++    }
++
++    protected void applyStatic(net.neoforged.neoforge.client.entity.animation.json.AnimationHolder animation) {
++        this.applyStatic(animation.get());
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

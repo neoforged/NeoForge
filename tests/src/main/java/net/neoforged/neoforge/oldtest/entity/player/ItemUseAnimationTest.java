@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.oldtest.entity.player;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.function.Consumer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -16,10 +15,14 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.asm.enumextension.EnumProxy;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.IArmPoseTransformer;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -36,11 +39,15 @@ public class ItemUseAnimationTest {
 
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
 
-    private static final DeferredItem<Item> THING = ITEMS.register("thing", () -> new ThingItem(new Item.Properties().food(new FoodProperties.Builder().nutrition(4).alwaysEdible().build())));
+    private static final DeferredItem<Item> THING = ITEMS.registerItem("thing", props -> new ThingItem(props.food(new FoodProperties.Builder().nutrition(4).alwaysEdible().build())));
 
     public ItemUseAnimationTest(IEventBus modBus) {
         ITEMS.register(modBus);
         modBus.addListener(this::addCreative);
+
+        if (FMLEnvironment.dist.isClient()) {
+            modBus.addListener(ClientEvents::onRegisterClientExtensions);
+        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -48,26 +55,35 @@ public class ItemUseAnimationTest {
             event.accept(THING);
     }
 
-    private static class ThingItem extends Item {
-        public ThingItem(Item.Properties props) {
-            super(props);
-        }
-
-        @Override
-        public UseAnim getUseAnimation(ItemStack stack) {
-            return UseAnim.CUSTOM;
-        }
-
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                private static final HumanoidModel.ArmPose SWING_POSE = HumanoidModel.ArmPose.create("SWING", false, (model, entity, arm) -> {
+    @SuppressWarnings("unused") // Referenced by enumextender.json
+    public static final class EnumParams {
+        public static final EnumProxy<HumanoidModel.ArmPose> ARM_POSE_ENUM_PARAMS = new EnumProxy<>(
+                HumanoidModel.ArmPose.class, false, (IArmPoseTransformer) (model, entity, arm) -> {
                     if (arm == HumanoidArm.RIGHT) {
                         model.rightArm.xRot = (float) (Math.random() * Math.PI * 2);
                     } else {
                         model.leftArm.xRot = (float) (Math.random() * Math.PI * 2);
                     }
                 });
+    }
+
+    private static class ThingItem extends Item {
+        private static final ItemUseAnimation SWING_ANIM = ItemUseAnimation.valueOf("NEOTESTS_SWING");
+
+        public ThingItem(Item.Properties props) {
+            super(props);
+        }
+
+        @Override
+        public ItemUseAnimation getUseAnimation(ItemStack stack) {
+            return SWING_ANIM;
+        }
+    }
+
+    private static final class ClientEvents {
+        private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+            event.registerItem(new IClientItemExtensions() {
+                private static final HumanoidModel.ArmPose SWING_POSE = EnumParams.ARM_POSE_ENUM_PARAMS.getValue();
 
                 @Override
                 public HumanoidModel.ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
@@ -95,7 +111,7 @@ public class ItemUseAnimationTest {
                     int i = arm == HumanoidArm.RIGHT ? 1 : -1;
                     poseStack.translate(i * 0.56F, -0.52F, -0.72F);
                 }
-            });
+            }, THING.get());
         }
     }
 }

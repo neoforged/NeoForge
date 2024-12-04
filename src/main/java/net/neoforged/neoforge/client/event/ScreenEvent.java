@@ -13,12 +13,21 @@ import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.event.ScreenEvent.CharacterTyped;
+import net.neoforged.neoforge.client.event.ScreenEvent.Init;
+import net.neoforged.neoforge.client.event.ScreenEvent.KeyPressed;
+import net.neoforged.neoforge.client.event.ScreenEvent.KeyReleased;
+import net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonPressed;
+import net.neoforged.neoforge.client.event.ScreenEvent.MouseButtonReleased;
+import net.neoforged.neoforge.client.event.ScreenEvent.MouseDragged;
+import net.neoforged.neoforge.client.event.ScreenEvent.MouseScrolled;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -219,14 +228,17 @@ public abstract class ScreenEvent extends Event {
     }
 
     /**
-     * Fired directly after the background of the screen is drawn.
+     * Fired directly after the background of the screen is drawn. (Only when the screen calls {@link Screen#renderBackground})
      * Can be used for drawing above the background but below the tooltips.
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+     * 
+     * @deprecated Planned on being removed in 1.21.1 due to extreme maintenance burden to make this event fire consistently for most screens.
      */
+    @Deprecated(forRemoval = true, since = "21.0")
     public static class BackgroundRendered extends ScreenEvent {
         private final GuiGraphics guiGraphics;
 
@@ -245,7 +257,7 @@ public abstract class ScreenEvent extends Event {
     }
 
     /**
-     * Fired ahead of rendering any active mob effects in the {@link EffectRenderingInventoryScreen inventory screen}.
+     * Fired ahead of rendering any active mob effects in the {@link EffectsInInventory} held by a {@link AbstractContainerScreen}.
      * Can be used to select the size of the effects display (full or compact) or even hide or replace vanilla's rendering entirely.
      * This event can also be used to modify the horizontal position of the stack of effects being rendered.
      *
@@ -390,23 +402,14 @@ public abstract class ScreenEvent extends Event {
         }
 
         /**
-         * Fired <b>after</b> the mouse click is handled, if the corresponding {@link MouseButtonPressed.Pre} was not
+         * This event is fired <b>after</b> the mouse click is handled, if the corresponding {@link MouseButtonPressed.Pre} was not
          * cancelled.
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, {@linkplain HasResult has a result}.</p>
-         * <ul>
-         * <li>{@link Result#ALLOW} - forcibly sets the mouse click as handled</li>
-         * <li>{@link Result#DEFAULT} - defaults to the return value of
-         * {@link Screen#mouseClicked(double, double, int)} from the screen (see {@link #wasHandled()}.</li>
-         * <li>{@link Result#DENY} - forcibly sets the mouse click as not handled.</li>
-         * </ul>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         * <p>
+         * It is only fired on the {@linkplain Dist#CLIENT physical client}.
          */
-        @HasResult
         public static class Post extends MouseButtonPressed {
             private final boolean handled;
+            private Result result = Result.DEFAULT;
 
             @ApiStatus.Internal
             public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled) {
@@ -415,10 +418,55 @@ public abstract class ScreenEvent extends Event {
             }
 
             /**
-             * {@return {@code true} if the mouse click was already handled by its screen}
+             * {@return true if the mouse click was already handled by its screen}
              */
-            public boolean wasHandled() {
-                return handled;
+            public boolean wasClickHandled() {
+                return this.handled;
+            }
+
+            /**
+             * Changes the result of this event.
+             * 
+             * @see {@link Result} for the possible states.
+             */
+            public void setResult(Result result) {
+                this.result = result;
+            }
+
+            /**
+             * {@return the result of this event, which controls if the click will be treated as handled}
+             */
+            public Result getResult() {
+                return this.result;
+            }
+
+            /**
+             * {@return The (possibly event-modified) state of the click}
+             */
+            public boolean getClickResult() {
+                if (this.result == Result.FORCE_HANDLED) {
+                    return true;
+                }
+                return this.result == Result.DEFAULT && this.wasClickHandled();
+            }
+
+            public static enum Result {
+                /**
+                 * Forces the event to mark the click as handled by the screen.
+                 */
+                FORCE_HANDLED,
+
+                /**
+                 * The result of {@link Screen#mouseClicked(double, double, int)} will be used to determine if the click was handled.
+                 * 
+                 * @see {@link Post#wasClickHandled()}
+                 */
+                DEFAULT,
+
+                /**
+                 * Forces the event to mark the click as not handled by the screen.
+                 */
+                FORCE_UNHANDLED;
             }
         }
     }
@@ -467,23 +515,14 @@ public abstract class ScreenEvent extends Event {
         }
 
         /**
-         * Fired <b>after</b> the mouse release is handled, if the corresponding {@link MouseButtonReleased.Pre} was
+         * This event is fired <b>after</b> the mouse release is handled, if the corresponding {@link MouseButtonReleased.Pre} was
          * not cancelled.
-         *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, {@linkplain HasResult has a result}.</p>
-         * <ul>
-         * <li>{@link Result#ALLOW} - forcibly sets the mouse release as handled</li>
-         * <li>{@link Result#DEFAULT} - defaults to the return value of
-         * {@link Screen#mouseReleased(double, double, int)} from the screen (see {@link #wasHandled()}.</li>
-         * <li>{@link Result#DENY} - forcibly sets the mouse release as not handled.</li>
-         * </ul>
-         *
-         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         * <p>
+         * It is only fired on the {@linkplain Dist#CLIENT physical client}.
          */
-        @HasResult
         public static class Post extends MouseButtonReleased {
             private final boolean handled;
+            private Result result = Result.DEFAULT;
 
             @ApiStatus.Internal
             public Post(Screen screen, double mouseX, double mouseY, int button, boolean handled) {
@@ -492,10 +531,55 @@ public abstract class ScreenEvent extends Event {
             }
 
             /**
-             * @return {@code true} if the mouse release was already handled by its screen
+             * @return {@code true} if the mouse release was already handled by the screen
              */
-            public boolean wasHandled() {
+            public boolean wasReleaseHandled() {
                 return handled;
+            }
+
+            /**
+             * Changes the result of this event.
+             * 
+             * @see {@link Result} for the possible states.
+             */
+            public void setResult(Result result) {
+                this.result = result;
+            }
+
+            /**
+             * {@return the result of this event, which controls if the release will be treated as handled}
+             */
+            public Result getResult() {
+                return this.result;
+            }
+
+            /**
+             * {@return The (possibly event-modified) state of the release}
+             */
+            public boolean getReleaseResult() {
+                if (this.result == Result.FORCE_HANDLED) {
+                    return true;
+                }
+                return this.result == Result.DEFAULT && this.wasReleaseHandled();
+            }
+
+            public static enum Result {
+                /**
+                 * Forces the event to mark the release as handled by the screen.
+                 */
+                FORCE_HANDLED,
+
+                /**
+                 * The result of {@link Screen#mouseReleased(double, double, int)} will be used to determine if the click was handled.
+                 * 
+                 * @see {@link Post#wasReleaseHandled()}
+                 */
+                DEFAULT,
+
+                /**
+                 * Forces the event to mark the release as not handled by the screen.
+                 */
+                FORCE_UNHANDLED;
             }
         }
     }

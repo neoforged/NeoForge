@@ -29,6 +29,7 @@ import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -59,12 +60,16 @@ public class GameData {
 
     public static void unfreezeData() {
         LOGGER.debug(REGISTRIES, "Unfreezing registries");
-        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof BaseMappedRegistry).forEach(r -> ((BaseMappedRegistry<?>) r).unfreeze());
+        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof BaseMappedRegistry).forEach(r -> ((BaseMappedRegistry<?>) r).unfreeze(true));
     }
 
     public static void freezeData() {
         LOGGER.debug(REGISTRIES, "Freezing registries");
-        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> ((MappedRegistry<?>) r).freeze());
+        BuiltInRegistries.REGISTRY.stream().filter(r -> r instanceof MappedRegistry).forEach(r -> {
+            // HolderSet.Named may be used for registry objects, vanilla binds these tags so freeze doesn't throw for unbound tags
+            ((MappedRegistry<?>) r).bindAllTagsToEmpty();
+            ((MappedRegistry<?>) r).freeze();
+        });
 
         RegistryManager.takeFrozenSnapshot();
 
@@ -81,7 +86,7 @@ public class GameData {
         for (ResourceLocation rootRegistryName : ordered) {
             try {
                 ResourceKey<? extends Registry<?>> registryKey = ResourceKey.createRegistryKey(rootRegistryName);
-                Registry<?> registry = Objects.requireNonNull(BuiltInRegistries.REGISTRY.get(rootRegistryName));
+                Registry<?> registry = Objects.requireNonNull(BuiltInRegistries.REGISTRY.getValue(rootRegistryName));
                 RegisterEvent registerEvent = new RegisterEvent(registryKey, registry);
 
                 StartupNotificationManager.modLoaderMessage("REGISTERING " + registryKey.location());
@@ -99,6 +104,7 @@ public class GameData {
         } else {
             CommonHooks.modifyAttributes();
             SpawnPlacements.fireSpawnPlacementEvent();
+            ModLoader.postEvent(new BlockEntityTypeAddBlocksEvent());
             CreativeModeTabRegistry.sortTabs();
         }
     }
@@ -120,7 +126,6 @@ public class GameData {
         Set<ResourceLocation> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
         ordered.add(Registries.DATA_COMPONENT_TYPE.location()); // Vanilla order is incorrect, Item depends on data components at construction time.
-        ordered.add(Registries.ARMOR_MATERIAL.location()); // Vanilla order is incorrect, ArmorItem depends on armor materials at construction time.
         ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
         return ordered;

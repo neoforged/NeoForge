@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.capabilities;
 
 import java.util.List;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -23,6 +24,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.VanillaHopperItemHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.EntityArmorInvWrapper;
@@ -30,7 +32,6 @@ import net.neoforged.neoforge.items.wrapper.EntityHandsInvWrapper;
 import net.neoforged.neoforge.items.wrapper.ForwardingItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
-import net.neoforged.neoforge.items.wrapper.ShulkerItemStackInvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -103,7 +104,15 @@ public class CapabilityHooks {
 
         // Entities
         var containerEntities = List.of(
-                EntityType.CHEST_BOAT,
+                EntityType.ACACIA_CHEST_BOAT,
+                EntityType.BIRCH_CHEST_BOAT,
+                EntityType.CHERRY_CHEST_BOAT,
+                EntityType.DARK_OAK_CHEST_BOAT,
+                EntityType.JUNGLE_CHEST_BOAT,
+                EntityType.MANGROVE_CHEST_BOAT,
+                EntityType.OAK_CHEST_BOAT,
+                EntityType.SPRUCE_CHEST_BOAT,
+                EntityType.BAMBOO_CHEST_RAFT,
                 EntityType.CHEST_MINECART,
                 EntityType.HOPPER_MINECART);
         for (var entityType : containerEntities) {
@@ -111,27 +120,9 @@ public class CapabilityHooks {
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new InvWrapper(entity));
         }
         event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInvWrapper(player.getInventory()));
-        // Register to all entity types to make sure we support all living entity subclasses.
-        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
-                if (entity instanceof AbstractHorse horse)
-                    return new InvWrapper(horse.getInventory());
-                else if (entity instanceof LivingEntity livingEntity)
-                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
-
-                return null;
-            });
-        }
 
         // Items
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
-        }
-        if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
-        }
-        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ShulkerItemStackInvWrapper(stack),
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,
@@ -149,6 +140,32 @@ public class CapabilityHooks {
                 Items.RED_SHULKER_BOX,
                 Items.WHITE_SHULKER_BOX,
                 Items.YELLOW_SHULKER_BOX);
+    }
+
+    public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {
+        // Entities
+        // Register to all entity types to make sure we support all living entity subclasses.
+        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
+                if (entity instanceof AbstractHorse horse)
+                    return new InvWrapper(horse.getInventory());
+                else if (entity instanceof LivingEntity livingEntity)
+                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
+
+                return null;
+            });
+        }
+
+        // Items
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item.getClass() == BucketItem.class)
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
+        }
+
+        // We want mods to be able to override our milk cap by default
+        if (NeoForgeMod.MILK.isBound()) {
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
+        }
     }
 
     public static void invalidateCapsOnChunkLoad(ChunkEvent.Load event) {

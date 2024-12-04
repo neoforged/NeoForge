@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "has_named_item": {
+      "conditions": {
+        "items": [
+          {
+            "predicates": {
+              "neotests_custom_predicate_test:custom_name": {
+                "data1": 1,
+                "data2": 2
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": "Get a named item",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:anvil"
+    },
+    "title": "Named!"
+  },
+  "requirements": [
+    [
+      "has_named_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

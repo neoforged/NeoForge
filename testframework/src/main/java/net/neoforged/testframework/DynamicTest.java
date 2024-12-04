@@ -108,7 +108,7 @@ public interface DynamicTest extends Test {
      * @param builder the builder of the template
      */
     default void registerGameTestTemplate(StructureTemplateBuilder builder) {
-        framework().dynamicStructures().register(new ResourceLocation(asGameTest().structureName()), builder.build());
+        framework().dynamicStructures().register(ResourceLocation.parse(asGameTest().structureName()), builder.build());
     }
 
     /**
@@ -117,7 +117,7 @@ public interface DynamicTest extends Test {
      * @param builder a supplier of the builder of the template
      */
     default void registerGameTestTemplate(Supplier<StructureTemplateBuilder> builder) {
-        framework().dynamicStructures().register(new ResourceLocation(asGameTest().structureName()), () -> builder.get().build());
+        framework().dynamicStructures().register(ResourceLocation.parse(asGameTest().structureName()), () -> builder.get().build());
     }
 
     /**

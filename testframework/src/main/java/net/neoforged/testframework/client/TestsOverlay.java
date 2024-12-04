@@ -17,11 +17,13 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +33,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public final class TestsOverlay implements LayeredDraw.Layer {
     public static final int MAX_DISPLAYED = 5;
-    public static final ResourceLocation BG_TEXTURE = new ResourceLocation("testframework", "textures/gui/background.png");
+    public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/background.png");
 
     private final MutableTestFramework impl;
     private final BooleanSupplier enabled;
@@ -46,7 +48,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
     }
 
     @Override
-    public void render(GuiGraphics poseStack, float partialTick) {
+    public void render(GuiGraphics poseStack, DeltaTracker deltaTracker) {
         if (!enabled.getAsBoolean()) return;
 
         List<Test> enabled = impl.tests().enabled().collect(Collectors.toCollection(ArrayList::new));
@@ -182,9 +184,9 @@ public final class TestsOverlay implements LayeredDraw.Layer {
     }
 
     static final Map<Test.Result, ResourceLocation> ICON_BY_RESULT = new EnumMap<>(Map.of(
-            Test.Result.FAILED, new ResourceLocation("testframework", "textures/gui/test_failed.png"),
-            Test.Result.PASSED, new ResourceLocation("testframework", "textures/gui/test_passed.png"),
-            Test.Result.NOT_PROCESSED, new ResourceLocation("testframework", "textures/gui/test_not_processed.png")));
+            Test.Result.FAILED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_failed.png"),
+            Test.Result.PASSED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_passed.png"),
+            Test.Result.NOT_PROCESSED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_not_processed.png")));
 
     // TODO - maybe "group" together tests in the same group?
     private XY renderTest(Font font, Test test, GuiGraphics stack, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
@@ -193,7 +195,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
         rendering.add(withXY(x, y, (x$, y$) -> stack.drawString(font, bullet, x$, y$ - 1, colour)));
         x += font.width(bullet) + 1;
 
-        rendering.add(withXY(x, y, (x$, y$) -> stack.blit(ICON_BY_RESULT.get(status.result()), x$, y$, 0, 0, 9, 9, 9, 9)));
+        rendering.add(withXY(x, y, (x$, y$) -> stack.blit(RenderType::guiTextured, ICON_BY_RESULT.get(status.result()), x$, y$, 0, 0, 9, 9, 9, 9)));
         x += 11;
 
         final Component title = statusColoured(test.visuals().title(), status);
@@ -254,6 +256,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
         final var rightEdgeStart = leftEdgeEnd + centreWidth;
         final var topEdgeEnd = y + topHeight;
         final var bottomEdgeStart = topEdgeEnd + centerHeight;
+        pose.flush();
         RenderSystem.setShaderTexture(0, texture);
         ClientUtils.setupAlpha(alpha);
 
@@ -299,7 +302,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
             for (var tileY = 0; tileY < yTiles; tileY++) {
                 final var renderWidth = Math.min(drawWidth, textureDrawWidth);
                 final var renderHeight = Math.min(drawHeight, textureDrawHeight);
-                pose.blit(texture, x + textureDrawWidth * tileX, y + textureDrawHeight * tileY, u, v, renderWidth, renderHeight, textureWidth, textureHeight);
+                pose.blit(RenderType::guiTextured, texture, x + textureDrawWidth * tileX, y + textureDrawHeight * tileY, u, v, renderWidth, renderHeight, textureWidth, textureHeight);
                 // We rendered a tile
                 drawHeight -= textureDrawHeight;
             }

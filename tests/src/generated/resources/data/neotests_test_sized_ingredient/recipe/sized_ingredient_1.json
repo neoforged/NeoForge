@@ -1,0 +1,26 @@
+{
+  "type": "neotests_ingredients:compressed_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "count": 2,
+      "ingredient": {
+        "neoforge:ingredient_type": "testframework:test_enabled",
+        "base": "minecraft:diamond_pickaxe",
+        "framework": "neotests:tests",
+        "testId": "testSizedIngredient"
+      }
+    },
+    {
+      "count": 2,
+      "ingredient": [
+        "minecraft:coal",
+        "minecraft:charcoal"
+      ]
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:cherry_fence"
+  }
+}

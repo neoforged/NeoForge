@@ -20,5 +20,19 @@ public enum TriState {
     /**
      * Represents the boolean value {@code false}.
      */
-    FALSE
+    FALSE;
+
+    // Helper methods for use in patches
+
+    public boolean isTrue() {
+        return this == TRUE;
+    }
+
+    public boolean isDefault() {
+        return this == DEFAULT;
+    }
+
+    public boolean isFalse() {
+        return this == FALSE;
+    }
 }

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.BlockHitResult;
@@ -29,16 +30,16 @@ public abstract class RenderHighlightEvent extends Event {
     private final LevelRenderer levelRenderer;
     private final Camera camera;
     private final HitResult target;
-    private final float partialTick;
+    private final DeltaTracker deltaTracker;
     private final PoseStack poseStack;
     private final MultiBufferSource multiBufferSource;
 
     @ApiStatus.Internal
-    protected RenderHighlightEvent(LevelRenderer levelRenderer, Camera camera, HitResult target, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource) {
+    protected RenderHighlightEvent(LevelRenderer levelRenderer, Camera camera, HitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource multiBufferSource) {
         this.levelRenderer = levelRenderer;
         this.camera = camera;
         this.target = target;
-        this.partialTick = partialTick;
+        this.deltaTracker = deltaTracker;
         this.poseStack = poseStack;
         this.multiBufferSource = multiBufferSource;
     }
@@ -65,10 +66,10 @@ public abstract class RenderHighlightEvent extends Event {
     }
 
     /**
-     * {@return the partial tick}
+     * {@return the delta tracker}
      */
-    public float getPartialTick() {
-        return partialTick;
+    public DeltaTracker getDeltaTracker() {
+        return deltaTracker;
     }
 
     /**
@@ -95,9 +96,12 @@ public abstract class RenderHighlightEvent extends Event {
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class Block extends RenderHighlightEvent implements ICancellableEvent {
+        private final boolean forTranslucentBlocks;
+
         @ApiStatus.Internal
-        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
-            super(levelRenderer, camera, target, partialTick, poseStack, bufferSource);
+        public Block(LevelRenderer levelRenderer, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource, boolean forTranslucentBlocks) {
+            super(levelRenderer, camera, target, deltaTracker, poseStack, bufferSource);
+            this.forTranslucentBlocks = forTranslucentBlocks;
         }
 
         /**
@@ -106,6 +110,13 @@ public abstract class RenderHighlightEvent extends Event {
         @Override
         public BlockHitResult getTarget() {
             return (BlockHitResult) super.target;
+        }
+
+        /**
+         * {@return whether the event is fired for outlines on translucent or non-translucent blocks}
+         */
+        public boolean isForTranslucentBlocks() {
+            return forTranslucentBlocks;
         }
     }
 
@@ -117,10 +128,11 @@ public abstract class RenderHighlightEvent extends Event {
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
+    // TODO porting: reevaluate
     public static class Entity extends RenderHighlightEvent {
         @ApiStatus.Internal
-        public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource) {
-            super(levelRenderer, camera, target, partialTick, poseStack, bufferSource);
+        public Entity(LevelRenderer levelRenderer, Camera camera, EntityHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource) {
+            super(levelRenderer, camera, target, deltaTracker, poseStack, bufferSource);
         }
 
         /**

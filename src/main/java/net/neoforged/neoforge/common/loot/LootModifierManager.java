@@ -21,16 +21,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LootModifierManager extends SimpleJsonResourceReloadListener {
+public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonElement> {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     public static final Logger LOGGER = LogManager.getLogger();
 
@@ -38,14 +40,14 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener {
     private static final String folder = "loot_modifiers";
 
     public LootModifierManager() {
-        super(GSON, folder);
+        super(ExtraCodecs.JSON, FileToIdConverter.json(folder));
     }
 
     @Override
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         Map<ResourceLocation, JsonElement> map = super.prepare(resourceManager, profilerFiller);
         List<ResourceLocation> finalLocations = new ArrayList<>();
-        ResourceLocation resourceLocation = new ResourceLocation("neoforge", "loot_modifiers/global_loot_modifiers.json");
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath("neoforge", "loot_modifiers/global_loot_modifiers.json");
         //read in all data files from neoforge:loot_modifiers/global_loot_modifiers in order to do layering
         for (Resource resource : resourceManager.getResourceStack(resourceLocation)) {
             try (Reader reader = resource.openAsReader()) {
@@ -55,7 +57,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener {
                     finalLocations.clear();
                 JsonArray entries = GsonHelper.getAsJsonArray(jsonobject, "entries");
                 for (int i = 0; i < entries.size(); i++) {
-                    ResourceLocation loc = new ResourceLocation(GsonHelper.convertToString(entries.get(i), "entries[" + i + "]"));
+                    ResourceLocation loc = ResourceLocation.parse(GsonHelper.convertToString(entries.get(i), "entries[" + i + "]"));
                     finalLocations.remove(loc); //remove and re-add if needed, to update the ordering.
                     finalLocations.add(loc);
                 }

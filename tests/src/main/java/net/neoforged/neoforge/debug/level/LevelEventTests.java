@@ -26,7 +26,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.level.AlterGroundEvent;
-import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
+import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -39,7 +39,7 @@ public class LevelEventTests {
     @EmptyTemplate(value = "9x9x9", floor = true)
     @TestHolder(description = "Tests if the sapling grow tree event is fired, replacing spruce with birch")
     static void saplingGrowTreeEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final SaplingGrowTreeEvent event) -> {
+        test.eventListeners().forge().addListener((final BlockGrowFeatureEvent event) -> {
             if (event.getFeature() != null && event.getFeature().is(TreeFeatures.SPRUCE)) {
                 event.setFeature(TreeFeatures.BIRCH_BEES_005);
             }
@@ -73,7 +73,7 @@ public class LevelEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence(helper::makeMockPlayer)
-                .thenWaitUntil(player -> helper.boneMealUntilGrown(7, 2, 7, player))
+                .thenWaitUntil(player -> helper.boneMealUntilGrown(7, 1, 7, player))
                 .thenExecute(player -> helper.assertTrue(
                         helper.blocksBetween(0, 0, 0, 16, 1, 16).anyMatch(pos -> helper.getLevel().getBlockState(pos).is(Blocks.REDSTONE_BLOCK)),
                         "No redstone blocks have been placed!"))

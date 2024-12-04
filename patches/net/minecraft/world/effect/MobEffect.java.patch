@@ -1,48 +1,65 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -30,7 +_,7 @@
+@@ -36,7 +_,7 @@
  import net.minecraft.world.flag.FeatureFlagSet;
  import net.minecraft.world.flag.FeatureFlags;
  
 -public class MobEffect implements FeatureElement {
 +public class MobEffect implements FeatureElement, net.neoforged.neoforge.common.extensions.IMobEffectExtension {
+     public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
+     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
-     private final Map<Holder<Attribute>, MobEffect.AttributeTemplate> attributeModifiers = new Object2ObjectOpenHashMap<>();
-     private final MobEffectCategory category;
-@@ -49,6 +_,7 @@
-             int i = p_333517_.isAmbient() ? AMBIENT_ALPHA : 255;
-             return ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(i, p_19452_));
-         };
-+        initClient();
+@@ -65,6 +_,16 @@
+         this.particleFactory = p_333515_ -> p_333716_;
      }
  
-     protected MobEffect(MobEffectCategory p_333963_, int p_333864_, ParticleOptions p_333716_) {
-@@ -174,6 +_,28 @@
-     public FeatureFlagSet requiredFeatures() {
++    /**
++     * Neo: Constructor that can take in the particle factory as a function of the {@link MobEffectInstance}.
++     * This should be used if the desired {@link ParticleOptions} depends on the presence of other registry entries.
++     */
++    protected MobEffect(MobEffectCategory category, int color, Function<MobEffectInstance, ParticleOptions> particleFactory) {
++        this.category = category;
++        this.color = color;
++        this.particleFactory = particleFactory;
++    }
++
+     public int getBlendDurationTicks() {
+         return this.blendDurationTicks;
+     }
+@@ -133,6 +_,18 @@
+         return this;
+     }
+ 
++    /**
++     * Neo: attribute template with custom level curve, for mob effects providing non-linear attribute modifiers.
++     * @param attribute The attribute of the modifier
++     * @param id ID of the modifier
++     * @param operation Operation of the modifier
++     * @param curve A function mapping effect instance amplifier to modifier amount
++     */
++    public MobEffect addAttributeModifier(Holder<Attribute> attribute, ResourceLocation id, AttributeModifier.Operation operation, it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++        this.attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, curve.apply(0), operation, curve));
++        return this;
++    }
++
+     public MobEffect setBlendDuration(int p_316265_) {
+         this.blendDurationTicks = p_316265_;
+         return this;
+@@ -184,8 +_,16 @@
          return this.requiredFeatures;
      }
-+
-+    // NEO START
-+    private Object effectRenderer;
-+
-+    /*
-+     * DO NOT CALL, IT WILL DISAPPEAR IN THE FUTURE
-+     * Call RenderProperties.getEffectRenderer instead
-+     */
-+    public Object getEffectRendererInternal() {
-+        return effectRenderer;
-+    }
-+
-+    private void initClient() {
-+        // Minecraft instance isn't available in datagen, so don't call initializeClient if in datagen
-+        if (net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.CLIENT && !net.neoforged.neoforge.data.loading.DatagenModLoader.isRunningDataGen()) {
-+            initializeClient(properties -> this.effectRenderer = properties);
-+        }
-+    }
-+
-+    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
-+    }
-+    // END NEO
  
-     static record AttributeTemplate(UUID id, double amount, AttributeModifier.Operation operation) {
-         public AttributeModifier create(String p_316465_, int p_316614_) {
+-    public static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++    public static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++
++        public AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++            this(id, amount, operation, null);
++        }
++
+         public AttributeModifier create(int p_316614_) {
++            if (curve != null) { // Neo: Use the custom attribute value curve if one is present
++                return new AttributeModifier(this.id, this.curve.apply(p_316614_), this.operation);
++            }
+             return new AttributeModifier(this.id, this.amount * (double)(p_316614_ + 1), this.operation);
+         }
+     }

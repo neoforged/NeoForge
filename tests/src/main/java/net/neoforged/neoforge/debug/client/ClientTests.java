@@ -11,6 +11,8 @@ import java.util.concurrent.CompletableFuture;
 import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -26,6 +28,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -53,7 +56,7 @@ public class ClientTests {
         final KeyMapping stickKey = new KeyMapping("stick_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
         final KeyMapping rockKey = new KeyMapping("rock_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
 
-        test.registrationHelper().provider(LanguageProvider.class, lang -> {
+        test.registrationHelper().clientProvider(LanguageProvider.class, lang -> {
             lang.add(stickKey.getName(), "Stick key");
             lang.add(rockKey.getName(), "Rock key");
         });
@@ -67,23 +70,46 @@ public class ClientTests {
             if (stickKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.STICK)) {
-                    player.sendSystemMessage(Component.literal("stick found!"));
+                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal("stick found!"));
                     test.pass();
                 }
             }
             if (rockKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.COBBLESTONE)) {
-                    player.sendSystemMessage(Component.literal("rock found!"));
+                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal("rock found!"));
                     test.pass();
                 }
             }
         });
     }
 
+    @TestHolder(description = "Tests that the NamespacedDirectoryLister only collects resources from the specified namespace", enabledByDefault = true)
+    static void namespacedDirectoryListerTest(final DynamicTest test) {
+        final ResourceLocation MUST_BE_PRESENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_present", "test/dir_list_test_present");
+        final ResourceLocation MUST_BE_ABSENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_absent", "test/dir_list_test_absent");
+
+        test.framework().modEventBus().addListener((final TextureAtlasStitchedEvent event) -> {
+            if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+                return;
+            }
+
+            ResourceLocation missing = MissingTextureAtlasSprite.getLocation();
+            if (event.getAtlas().getSprite(MUST_BE_PRESENT).contents().name().equals(missing)) {
+                test.fail("dir_list_test_present.png must be present but returned the missing texture");
+                return;
+            }
+            if (!event.getAtlas().getSprite(MUST_BE_ABSENT).contents().name().equals(missing)) {
+                test.fail("dir_list_test_absent.png must be absent but returned something other than the missing texture");
+                return;
+            }
+            test.pass();
+        });
+    }
+
     private static final class SineSound extends AbstractSoundInstance {
         SineSound(Vec3 position) {
-            super(new ResourceLocation("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
+            super(ResourceLocation.fromNamespaceAndPath("neotests_audio_stream_test", "sine_wave"), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
             x = position.x;
             y = position.y;
             z = position.z;

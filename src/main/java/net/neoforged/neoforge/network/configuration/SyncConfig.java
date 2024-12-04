@@ -20,12 +20,12 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record SyncConfig(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
-    private static final ResourceLocation ID = new ResourceLocation(NeoForgeVersion.MOD_ID, "sync_config");
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "sync_config");
     public static Type TYPE = new Type(ID);
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {
-        ConfigSync.INSTANCE.syncConfigs().forEach(sender);
+        ConfigSync.syncConfigs().forEach(sender);
         listener().finishCurrentTask(type());
     }
 

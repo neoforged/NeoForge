@@ -18,7 +18,9 @@ import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class ServerModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean hasErrors = false;
@@ -29,7 +31,7 @@ public class ServerModLoader extends CommonModLoader {
         });
         LanguageHook.loadBuiltinLanguages();
         try {
-            begin(() -> {});
+            begin(() -> {}, false);
             load(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
             finish(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor());
         } catch (ModLoadingException error) {

@@ -1,24 +1,41 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -71,8 +_,10 @@
-     }
+@@ -105,6 +_,8 @@
+         }
  
-     public void render(T p_114485_, float p_114486_, float p_114487_, PoseStack p_114488_, MultiBufferSource p_114489_, int p_114490_) {
--        if (this.shouldShowName(p_114485_)) {
--            this.renderNameTag(p_114485_, p_114485_.getDisplayName(), p_114488_, p_114489_, p_114490_, p_114487_);
-+        var renderNameTagEvent = new net.neoforged.neoforge.client.event.RenderNameTagEvent(p_114485_, p_114485_.getDisplayName(), this, p_114488_, p_114489_, p_114490_, p_114487_);
-+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(renderNameTagEvent);
-+        if (renderNameTagEvent.getResult() != net.neoforged.bus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == net.neoforged.bus.api.Event.Result.ALLOW || this.shouldShowName(p_114485_))) {
-+            this.renderNameTag(p_114485_, renderNameTagEvent.getContent(), p_114488_, p_114489_, p_114490_, p_114487_);
+         if (p_364816_.nameTag != null) {
++            var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.DoRender(p_364816_, p_364816_.nameTag, this, p_114488_, p_114489_, p_114490_, p_364816_.partialTick);
++            if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled())
+             this.renderNameTag(p_364816_, p_364816_.nameTag, p_114488_, p_114489_, p_114490_);
          }
      }
+@@ -249,6 +_,7 @@
+     public final S createRenderState(T p_361382_, float p_360885_) {
+         S s = this.reusedState;
+         this.extractRenderState(p_361382_, s, p_360885_);
++        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateEntityRenderState(this, p_361382_, s);
+         return s;
+     }
  
-@@ -88,7 +_,7 @@
+@@ -274,9 +_,11 @@
+         }
  
-     protected void renderNameTag(T p_114498_, Component p_114499_, PoseStack p_114500_, MultiBufferSource p_114501_, int p_114502_, float p_316698_) {
-         double d0 = this.entityRenderDispatcher.distanceToSqr(p_114498_);
--        if (!(d0 > 4096.0)) {
-+        if (net.neoforged.neoforge.client.ClientHooks.isNameplateInRenderDistance(p_114498_, d0)) {
-             Vec3 vec3 = p_114498_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_114498_.getViewYRot(p_316698_));
-             if (vec3 != null) {
-                 boolean flag = !p_114498_.isDiscrete();
+         p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
+-        boolean flag = p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq);
++        var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(p_362104_, p_361028_, this.getNameTag(p_362104_), this, p_362204_);
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++        boolean flag = event.canRender().isTrue() || (event.canRender().isDefault() && p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq));
+         if (flag) {
+-            p_361028_.nameTag = this.getNameTag(p_362104_);
++            p_361028_.nameTag = event.getContent();
+             p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
+         } else {
+             p_361028_.nameTag = null;
+@@ -306,5 +_,7 @@
+         }
+ 
+         p_361028_.displayFireAnimation = p_362104_.displayFireAnimation();
++
++        p_361028_.partialTick = p_362204_;
+     }
+ }

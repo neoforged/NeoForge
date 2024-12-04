@@ -31,7 +31,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     private final GameTestHelper helper;
@@ -61,8 +62,8 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     public GameTestPlayer preventItemPickup() {
-        subscribe((final EntityItemPickupEvent event) -> {
-            if (event.getEntity() == this) event.setCanceled(true);
+        subscribe((ItemEntityPickupEvent.Pre event) -> {
+            if (event.getPlayer() == this) event.setCanPickup(TriState.FALSE);
         });
         return this;
     }
@@ -98,7 +99,7 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
 
     @SuppressWarnings("unchecked")
     private Stream<Packet<? extends ClientCommonPacketListener>> outboundPackets() {
-        return ((EmbeddedChannel) connection.connection.channel()).outboundMessages().stream()
+        return ((EmbeddedChannel) connection.getConnection().channel()).outboundMessages().stream()
                 .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
                 .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
                     if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);

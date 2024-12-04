@@ -1,0 +1,58 @@
+--- a/net/minecraft/client/renderer/chunk/SectionCompiler.java
++++ b/net/minecraft/client/renderer/chunk/SectionCompiler.java
+@@ -41,6 +_,10 @@
+     }
+ 
+     public SectionCompiler.Results compile(SectionPos p_350790_, RenderChunkRegion p_350782_, VertexSorting p_350635_, SectionBufferBuilderPack p_350612_) {
++        return compile(p_350790_, p_350782_, p_350635_, p_350612_, List.of());
++    }
++
++    public SectionCompiler.Results compile(SectionPos p_350790_, RenderChunkRegion p_350782_, VertexSorting p_350635_, SectionBufferBuilderPack p_350612_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
+         SectionCompiler.Results sectioncompiler$results = new SectionCompiler.Results();
+         BlockPos blockpos = p_350790_.origin();
+         BlockPos blockpos1 = blockpos.offset(15, 15, 15);
+@@ -71,7 +_,11 @@
+             }
+ 
+             if (blockstate.getRenderShape() == RenderShape.MODEL) {
+-                RenderType rendertype2 = ItemBlockRenderTypes.getChunkRenderType(blockstate);
++                var model = this.blockRenderer.getBlockModel(blockstate);
++                var modelData = p_350782_.getModelData(blockpos2);
++                modelData = model.getModelData(p_350782_, blockpos2, blockstate, modelData);
++                randomsource.setSeed(blockstate.getSeed(blockpos2));
++                for (RenderType rendertype2 : model.getRenderTypes(blockstate, randomsource, modelData)) {
+                 BufferBuilder bufferbuilder1 = this.getOrBeginLayer(map, p_350612_, rendertype2);
+                 posestack.pushPose();
+                 posestack.translate(
+@@ -79,11 +_,17 @@
+                     (float)SectionPos.sectionRelative(blockpos2.getY()),
+                     (float)SectionPos.sectionRelative(blockpos2.getZ())
+                 );
+-                this.blockRenderer.renderBatched(blockstate, blockpos2, p_350782_, posestack, bufferbuilder1, true, randomsource);
++                this.blockRenderer.renderBatched(blockstate, blockpos2, p_350782_, posestack, bufferbuilder1, true, randomsource, modelData, rendertype2);
+                 posestack.popPose();
++                }
+             }
+         }
+-
++        net.neoforged.neoforge.client.ClientHooks.addAdditionalGeometry(
++                additionalRenderers,
++                type -> this.getOrBeginLayer(map, p_350612_, type),
++                p_350782_,
++                posestack
++        );
+         for (Entry<RenderType, BufferBuilder> entry : map.entrySet()) {
+             RenderType rendertype1 = entry.getKey();
+             MeshData meshdata = entry.getValue().build();
+@@ -115,9 +_,10 @@
+     private <E extends BlockEntity> void handleBlockEntity(SectionCompiler.Results p_350754_, E p_350386_) {
+         BlockEntityRenderer<E> blockentityrenderer = this.blockEntityRenderer.getRenderer(p_350386_);
+         if (blockentityrenderer != null) {
+-            p_350754_.blockEntities.add(p_350386_);
+             if (blockentityrenderer.shouldRenderOffScreen(p_350386_)) {
+                 p_350754_.globalBlockEntities.add(p_350386_);
++            } else {
++                p_350754_.blockEntities.add(p_350386_); // Neo: Fix MC-112730
+             }
+         }
+     }

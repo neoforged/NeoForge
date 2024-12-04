@@ -14,20 +14,16 @@ import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class ConfigSync {
-    public static final ConfigSync INSTANCE = new ConfigSync(ConfigTracker.INSTANCE);
-    private final ConfigTracker tracker;
+public final class ConfigSync {
+    private ConfigSync() {}
 
-    private ConfigSync(final ConfigTracker tracker) {
-        this.tracker = tracker;
-    }
-
-    public List<ConfigFilePayload> syncConfigs() {
-        final Map<String, byte[]> configData = tracker.configSets().get(ModConfig.Type.SERVER).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
+    public static List<ConfigFilePayload> syncConfigs() {
+        final Map<String, byte[]> configData = ModConfigs.getConfigSet(ModConfig.Type.SERVER).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
             try {
                 return Files.readAllBytes(mc.getFullPath());
             } catch (IOException e) {
@@ -40,9 +36,9 @@ public class ConfigSync {
                 .toList();
     }
 
-    public void receiveSyncedConfig(final byte[] contents, final String fileName) {
+    public static void receiveSyncedConfig(final byte[] contents, final String fileName) {
         if (!Minecraft.getInstance().isLocalServer()) {
-            Optional.ofNullable(tracker.fileMap().get(fileName)).ifPresent(mc -> mc.acceptSyncedConfig(contents));
+            Optional.ofNullable(ModConfigs.getFileMap().get(fileName)).ifPresent(mc -> ConfigTracker.INSTANCE.acceptSyncedConfig(mc, contents));
         }
     }
 }

@@ -50,12 +50,12 @@ import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemConditi
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.common.ToolActions;
-import net.neoforged.neoforge.common.loot.CanToolPerformAction;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Currently used only for replacing shears item to shears_dig tool action
+ * Currently used only for replacing shears item to shears_dig item ability
  */
 public final class NeoForgeLootTableProvider extends LootTableProvider {
     private final List<Function<LootItemCondition, LootItemCondition.Builder>> conditionReplacers = new ArrayList<>();
@@ -73,18 +73,18 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
     public List<LootTableProvider.SubProviderEntry> getTables() {
         replaceLootItemCondition(condition -> {
             if (condition instanceof MatchTool matchTool && checkMatchTool(matchTool, Items.SHEARS)) {
-                return CanToolPerformAction.canToolPerformAction(ToolActions.SHEARS_DIG);
+                return CanItemPerformAbility.canItemPerformAbility(ItemAbilities.SHEARS_DIG);
             }
             return null;
         });
         return super.getTables().stream().map(entry -> {
             // Provides new sub provider with filtering only changed loot tables and replacing condition item to condition tag
-            return new LootTableProvider.SubProviderEntry(() -> replaceAndFilterChangesOnly(entry.provider().get()), entry.paramSet());
+            return new LootTableProvider.SubProviderEntry((provider) -> replaceAndFilterChangesOnly(entry.provider().apply(provider)), entry.paramSet());
         }).collect(Collectors.toList());
     }
 
     private LootTableSubProvider replaceAndFilterChangesOnly(LootTableSubProvider subProvider) {
-        return (lookupProvider, newConsumer) -> subProvider.generate(lookupProvider, (resourceLocation, builder) -> {
+        return (newConsumer) -> subProvider.generate((resourceLocation, builder) -> {
             LootTable.Builder newBuilder = findAndReplaceInLootTableBuilder(builder);
             if (newBuilder != null) {
                 newConsumer.accept(resourceLocation, newBuilder);

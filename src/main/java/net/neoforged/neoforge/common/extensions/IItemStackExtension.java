@@ -5,29 +5,25 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
@@ -39,12 +35,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,22 +55,13 @@ public interface IItemStackExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#getCraftingRemainingItem()}.
+     * ItemStack sensitive version of {@link Item#getCraftingRemainder()}.
      * Returns a full ItemStack instance of the result.
      *
      * @return The resulting ItemStack
      */
-    default ItemStack getCraftingRemainingItem() {
-        return self().getItem().getCraftingRemainingItem(self());
-    }
-
-    /**
-     * ItemStack sensitive version of {@link Item#hasCraftingRemainingItem()}.
-     *
-     * @return True if this item has a crafting remaining item
-     */
-    default boolean hasCraftingRemainingItem() {
-        return self().getItem().hasCraftingRemainingItem(self());
+    default ItemStack getCraftingRemainder() {
+        return self().getItem().getCraftingRemainder(self());
     }
 
     /**
@@ -85,15 +73,15 @@ public interface IItemStackExtension {
      * @apiNote This method by default returns the {@code burn_time} specified in
      *          the {@code furnace_fuels.json} file.
      */
-    default int getBurnTime(@Nullable RecipeType<?> recipeType) {
+    default int getBurnTime(@Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         if (self().isEmpty()) {
             return 0;
         }
-        int burnTime = self().getItem().getBurnTime(self(), recipeType);
+        int burnTime = self().getItem().getBurnTime(self(), recipeType, fuelValues);
         if (burnTime < 0) {
             throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
         }
-        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType, fuelValues);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
@@ -116,27 +104,13 @@ public interface IItemStackExtension {
 
     /**
      * Queries if an item can perform the given action.
-     * See {@link ToolActions} for a description of each stock action
+     * See {@link ItemAbilities} for a description of each stock action
      * 
-     * @param toolAction The action being queried
+     * @param itemAbility The action being queried
      * @return True if the stack can perform the action
      */
-    default boolean canPerformAction(ToolAction toolAction) {
-        return self().getItem().canPerformAction(self(), toolAction);
-    }
-
-    /**
-     * Called before a block is broken. Return true to prevent default block
-     * harvesting.
-     *
-     * Note: In SMP, this is called on both client and server sides!
-     *
-     * @param pos    Block's position in world
-     * @param player The Player that is wielding the item
-     * @return True to prevent harvesting, false to continue as normal
-     */
-    default boolean onBlockStartBreak(BlockPos pos, Player player) {
-        return !self().isEmpty() && self().getItem().onBlockStartBreak(self(), pos, player);
+    default boolean canPerformAction(ItemAbility itemAbility) {
+        return self().getItem().canPerformAction(self(), itemAbility);
     }
 
     /**
@@ -151,36 +125,31 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Checks whether an item can be enchanted with a certain enchantment. This
-     * applies specifically to enchanting an item in the enchanting table and is
-     * called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in
-     * {@link Enchantment#canApplyAtEnchantingTable(ItemStack)};
-     * check the individual implementation for reference. By default this will check
-     * if the enchantment type is valid for this item type.
-     *
-     * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
+     * @see {@link IItemExtension#isPrimaryItemFor(ItemStack, Holder)}
      */
-    default boolean canApplyAtEnchantingTable(Enchantment enchantment) {
-        return self().getItem().canApplyAtEnchantingTable(self(), enchantment);
+    default boolean isPrimaryItemFor(Holder<Enchantment> enchantment) {
+        return self().getItem().isPrimaryItemFor(self(), enchantment);
+    }
+
+    /**
+     * @see {@link IItemExtension#supportsEnchantment(ItemStack, Holder)}
+     */
+    default boolean supportsEnchantment(Holder<Enchantment> enchantment) {
+        return self().getItem().supportsEnchantment(self(), enchantment);
     }
 
     /**
      * Gets the gameplay level of the target enchantment on this stack.
      * <p>
-     * Equivalent to calling {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)}.
+     * Use in place of {@link EnchantmentHelper#getTagEnchantmentLevel} for gameplay logic.
      * <p>
-     * Use in place of {@link EnchantmentHelper#getItemEnchantmentLevel(Enchantment, ItemStack)} for gameplay logic.
-     * <p>
-     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
      * @param enchantment The enchantment being checked for.
      * @return The level of the enchantment, or 0 if not present.
-     * @see #getAllEnchantments()
-     * @see DataComponents#ENCHANTMENTS
+     * @see {@link #getAllEnchantments} to get all gameplay enchantments
      */
-    default int getEnchantmentLevel(Enchantment enchantment) {
+    default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
         int level = self().getItem().getEnchantmentLevel(self(), enchantment);
         return EventHooks.getEnchantmentLevelSpecific(level, self(), enchantment);
     }
@@ -188,26 +157,16 @@ public interface IItemStackExtension {
     /**
      * Gets the gameplay level of all enchantments on this stack.
      * <p>
-     * Use in place of {@link DataComponents#ENCHANTMENTS} for gameplay logic.
+     * Use in place of {@link ItemStack#getTagEnchantments()} for gameplay logic.
      * <p>
-     * Use {@link DataComponents#ENCHANTMENTS} instead when modifying the item's enchantments.
+     * Use {@link EnchantmentHelper#getEnchantmentsForCrafting} and {@link EnchantmentHelper#setEnchantments} when modifying the item's enchantments.
      *
      * @return Map of all enchantments on the stack, or an empty map if no enchantments are present.
-     * @see #getEnchantmentLevel(Enchantment)
-     * @see DataComponents#ENCHANTMENTS
+     * @see {@link #getEnchantmentLevel} to get the level of a single enchantment for gameplay purposes
      */
-    default ItemEnchantments getAllEnchantments() {
-        var enchantments = self().getItem().getAllEnchantments(self());
-        return EventHooks.getEnchantmentLevel(enchantments, self());
-    }
-
-    /**
-     * ItemStack sensitive version of {@link Item#getEnchantmentValue()}.
-     *
-     * @return the enchantment value of this ItemStack
-     */
-    default int getEnchantmentValue() {
-        return self().getItem().getEnchantmentValue(self());
+    default ItemEnchantments getAllEnchantments(RegistryLookup<Enchantment> lookup) {
+        var enchantments = self().getItem().getAllEnchantments(self(), lookup);
+        return EventHooks.getAllEnchantmentLevels(enchantments, self(), lookup);
     }
 
     /**
@@ -240,10 +199,11 @@ public interface IItemStackExtension {
      * Called when a entity tries to play the 'swing' animation.
      *
      * @param entity The entity swinging the item.
-     * @return True to cancel any further processing by EntityLiving
+     * @param hand   The hand the item is held in.
+     * @return True to cancel any further processing by {@link LivingEntity}
      */
-    default boolean onEntitySwing(LivingEntity entity) {
-        return self().getItem().onEntitySwing(self(), entity);
+    default boolean onEntitySwing(LivingEntity entity, InteractionHand hand) {
+        return self().getItem().onEntitySwing(self(), entity, hand);
     }
 
     /**
@@ -288,16 +248,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called to tick armor in the armor slot. Override to do something
-     * 
-     * @deprecated Use {@link Item#inventoryTick(ItemStack, Level, Entity, int, boolean)} by checking that the slot argument is an armor slot. Armor slots are 36, 37, 38 and 39.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.4")
-    default void onArmorTick(Level level, Player player) {
-        self().getItem().onArmorTick(self(), level, player);
-    }
-
-    /**
      * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor()} that can wear armor}.
      * <p>
      * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
@@ -317,7 +267,7 @@ public interface IItemStackExtension {
      * @param entity    The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
-    default boolean canEquip(EquipmentSlot armorType, Entity entity) {
+    default boolean canEquip(EquipmentSlot armorType, LivingEntity entity) {
         return self().getItem().canEquip(self(), armorType, entity);
     }
 
@@ -397,40 +347,14 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Whether this Item can be used to hide player head for enderman.
+     * Whether this {@link Item} can be used to hide player's gaze from Endermen and Creakings.
      *
-     * @param player         The player watching the enderman
-     * @param endermanEntity The enderman that the player look
-     * @return true if this Item can be used.
+     * @param player The player watching the entity
+     * @param entity The entity the player is looking at, may be null
+     * @return true if this {@link Item} hides the player's gaze from the given entity
      */
-    default boolean isEnderMask(Player player, EnderMan endermanEntity) {
-        return self().getItem().isEnderMask(self(), player, endermanEntity);
-    }
-
-    /**
-     * Used to determine if the player can use Elytra flight.
-     * This is called Client and Server side.
-     *
-     * @param entity The entity trying to fly.
-     * @return True if the entity can use Elytra flight.
-     */
-    default boolean canElytraFly(LivingEntity entity) {
-        return self().getItem().canElytraFly(self(), entity);
-    }
-
-    /**
-     * Used to determine if the player can continue Elytra flight,
-     * this is called each tick, and can be used to apply ItemStack damage,
-     * consume Energy, or what have you.
-     * For example the Vanilla implementation of this, applies damage to the
-     * ItemStack every 20 ticks.
-     *
-     * @param entity      The entity currently in Elytra flight.
-     * @param flightTicks The number of ticks the entity has been Elytra flying for.
-     * @return True if the entity should continue Elytra flight or False to stop.
-     */
-    default boolean elytraFlightTick(LivingEntity entity, int flightTicks) {
-        return self().getItem().elytraFlightTick(self(), entity, flightTicks);
+    default boolean isGazeDisguise(Player player, @Nullable LivingEntity entity) {
+        return self().getItem().isGazeDisguise(self(), player, entity);
     }
 
     /**
@@ -468,21 +392,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Get the food properties for this item.
-     * This is a bouncer for easier use of {@link IItemExtension#getFoodProperties(ItemStack, LivingEntity)}
-     *
-     * The @Nullable annotation was only added, due to the default method, also being @Nullable.
-     * Use this with a grain of salt, as if you return null here and true at {@link Item#isEdible()}, NPEs will occur!
-     *
-     * @param entity The entity which wants to eat the food. Be aware that this can be null!
-     * @return The current FoodProperties for the item.
-     */
-    @Nullable // read javadoc to find a potential problem
-    default FoodProperties getFoodProperties(@Nullable LivingEntity entity) {
-        return self().getItem().getFoodProperties(self(), entity);
-    }
-
-    /**
      * Whether this stack should be excluded (if possible) when selecting the target hotbar slot of a "pick" action.
      * By default, this returns true for enchanted stacks.
      *
@@ -503,30 +412,31 @@ public interface IItemStackExtension {
     }
 
     @Nullable
-    default <T, C> T getCapability(ItemCapability<T, C> capability, C context) {
+    default <T, C extends @Nullable Object> T getCapability(ItemCapability<T, C> capability, C context) {
         return capability.getCapability(self(), context);
     }
 
     @Nullable
-    default <T> T getCapability(ItemCapability<T, Void> capability) {
+    default <T> T getCapability(ItemCapability<T, @Nullable Void> capability) {
         return capability.getCapability(self(), null);
     }
 
     /**
-     * {@return the attribute modifiers for the given equipment slot}
+     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents.ATTRIBUTE_MODIFIERS}
+     * or {@link Item#getDefaultAttributeModifiers(ItemStack)} when querying attributes for gameplay purposes.
      * <p>
-     * Fires ItemAttributeModifierEvent to compute the final attribute modifiers.
-     * 
-     * @param equipmentSlot the equipment slot to get the attribute modifiers for
+     * This method first computes the default modifiers, using {@link DataComponents.ATTRIBUTE_MODIFIERS} if present, otherwise
+     * falling back to {@link Item#getDefaultAttributeModifiers(ItemStack)}.
+     * <p>
+     * The {@link ItemAttributeModifiersEvent} is then fired to allow external adjustments.
      */
-    default Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
-        ItemAttributeModifiers itemattributemodifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        Multimap<Holder<Attribute>, AttributeModifier> multimap = LinkedHashMultimap.create();
-        if (!itemattributemodifiers.modifiers().isEmpty()) {
-            itemattributemodifiers.forEach(equipmentSlot, multimap::put);
-        } else {
-            self().getItem().getAttributeModifiers(self()).forEach(equipmentSlot, multimap::put);
+    default ItemAttributeModifiers getAttributeModifiers() {
+        ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+
+        if (defaultModifiers.modifiers().isEmpty()) {
+            defaultModifiers = self().getItem().getDefaultAttributeModifiers(self());
         }
-        return CommonHooks.getAttributeModifiers(self(), equipmentSlot, multimap);
+
+        return CommonHooks.computeModifiedAttributes(self(), defaultModifiers);
     }
 }

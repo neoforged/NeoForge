@@ -44,7 +44,7 @@ public final class DataPackRegistriesHooks {
         DATA_PACK_REGISTRIES.add(loaderData);
         if (data.networkCodec() != null) {
             SYNCED_CUSTOM_REGISTRIES.add(loaderData.key());
-            NETWORKABLE_REGISTRIES.add(new RegistryDataLoader.RegistryData<T>(loaderData.key(), data.networkCodec()));
+            NETWORKABLE_REGISTRIES.add(new RegistryDataLoader.RegistryData<T>(loaderData.key(), data.networkCodec(), false));
         }
     }
 

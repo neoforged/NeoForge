@@ -1,15 +1,17 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -27,7 +_,7 @@
+@@ -26,8 +_,9 @@
  import net.minecraft.world.level.block.state.BlockState;
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity {
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
++    @Deprecated // Neo: always use getType()
      private final BlockEntityType<?> type;
      @Nullable
-@@ -36,6 +_,8 @@
+     protected Level level;
+@@ -35,6 +_,8 @@
      protected boolean remove;
      private BlockState blockState;
      private DataComponentMap components = DataComponentMap.EMPTY;
@@ -18,7 +20,16 @@
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
-@@ -61,6 +_,8 @@
+@@ -50,7 +_,7 @@
+     }
+ 
+     public boolean isValidBlockState(BlockState p_353131_) {
+-        return this.type.isValid(p_353131_);
++        return this.getType().isValid(p_353131_); // Neo: use getter so correct type is checked for modded subclasses
+     }
+ 
+     public static BlockPos getPosFromTag(CompoundTag p_187473_) {
+@@ -71,6 +_,8 @@
      }
  
      protected void loadAdditional(CompoundTag p_338466_, HolderLookup.Provider p_338445_) {
@@ -27,7 +38,7 @@
      }
  
      public final void loadWithComponents(CompoundTag p_338356_, HolderLookup.Provider p_338558_) {
-@@ -76,6 +_,9 @@
+@@ -86,6 +_,9 @@
      }
  
      protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
@@ -37,7 +48,7 @@
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
-@@ -205,10 +_,14 @@
+@@ -208,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -52,7 +63,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -231,6 +_,27 @@
+@@ -234,6 +_,27 @@
          return this.type;
      }
  
@@ -79,8 +90,8 @@
 +
      @Deprecated
      public void setBlockState(BlockState p_155251_) {
-         this.blockState = p_155251_;
-@@ -309,5 +_,15 @@
+         this.validateBlockState(p_155251_);
+@@ -314,5 +_,15 @@
          <T> T get(DataComponentType<T> p_338658_);
  
          <T> T getOrDefault(DataComponentType<? extends T> p_338573_, T p_338734_);

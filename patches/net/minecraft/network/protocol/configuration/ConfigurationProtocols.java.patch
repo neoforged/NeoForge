@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/protocol/configuration/ConfigurationProtocols.java
 +++ b/net/minecraft/network/protocol/configuration/ConfigurationProtocols.java
-@@ -27,7 +_,7 @@
+@@ -30,7 +_,7 @@
          ConnectionProtocol.CONFIGURATION,
          p_325554_ -> p_325554_.addPacket(CommonPacketTypes.SERVERBOUND_CLIENT_INFORMATION, ServerboundClientInformationPacket.STREAM_CODEC)
                  .addPacket(CookiePacketTypes.SERVERBOUND_COOKIE_RESPONSE, ServerboundCookieResponsePacket.STREAM_CODEC)

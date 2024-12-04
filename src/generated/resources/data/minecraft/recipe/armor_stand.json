@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "/": "#c:rods/wooden",
+    "_": "minecraft:smooth_stone_slab"
+  },
+  "pattern": [
+    "///",
+    " / ",
+    "/_/"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:armor_stand"
+  }
+}

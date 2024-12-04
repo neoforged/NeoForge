@@ -11,7 +11,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.common.EffectCure;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -42,21 +41,17 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     public static class Remove extends MobEffectEvent implements ICancellableEvent {
         private final Holder<MobEffect> effect;
-        @Nullable
-        private final EffectCure cure;
 
         @ApiStatus.Internal
-        public Remove(LivingEntity living, Holder<MobEffect> effect, @Nullable EffectCure cure) {
+        public Remove(LivingEntity living, Holder<MobEffect> effect) {
             super(living, living.getEffect(effect));
             this.effect = effect;
-            this.cure = cure;
         }
 
         @ApiStatus.Internal
-        public Remove(LivingEntity living, MobEffectInstance effectInstance, @Nullable EffectCure cure) {
+        public Remove(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
             this.effect = effectInstance.getEffect();
-            this.cure = cure;
         }
 
         /**
@@ -64,14 +59,6 @@ public abstract class MobEffectEvent extends LivingEvent {
          */
         public Holder<MobEffect> getEffect() {
             return this.effect;
-        }
-
-        /**
-         * {@return the {@link EffectCure} the effect is being cured by. Null if the effect is not removed due to being cured}
-         */
-        @Nullable
-        public EffectCure getCure() {
-            return cure;
         }
 
         /**
@@ -86,15 +73,14 @@ public abstract class MobEffectEvent extends LivingEvent {
 
     /**
      * This event is fired to check if a {@link MobEffectInstance} can be applied to an entity.
-     * This event is not {@link ICancellableEvent}.
-     * This event {@link HasResult has a result}.
      * <p>
-     * {@link Result#ALLOW ALLOW} will apply this mob effect.
-     * {@link Result#DENY DENY} will not apply this mob effect.
-     * {@link Result#DEFAULT DEFAULT} will run vanilla logic to determine if this mob effect is applicable in {@link LivingEntity#canBeAffected}.
+     * It will be fired whenever {@link LivingEntity#canBeAffected(MobEffectInstance)} would be invoked.
+     * <p>
+     * 
      */
-    @HasResult
     public static class Applicable extends MobEffectEvent {
+        protected Result result = Result.DEFAULT;
+
         @ApiStatus.Internal
         public Applicable(LivingEntity living, MobEffectInstance effectInstance) {
             super(living, effectInstance);
@@ -103,6 +89,52 @@ public abstract class MobEffectEvent extends LivingEvent {
         @Override
         public MobEffectInstance getEffectInstance() {
             return super.getEffectInstance();
+        }
+
+        /**
+         * Changes the result of this event.
+         * 
+         * @see {@link Result} for the possible states.
+         */
+        public void setResult(Result result) {
+            this.result = result;
+        }
+
+        /**
+         * {@return the result of this event, which controls if the mob effect will be applied}
+         */
+        public Result getResult() {
+            return this.result;
+        }
+
+        /**
+         * {@return If the mob effect should be applied or not, based on the current event result}
+         */
+        @SuppressWarnings("deprecation") // Expected as the single call site for canBeAffected
+        public boolean getApplicationResult() {
+            if (this.result == Result.APPLY) {
+                return true;
+            }
+            return this.result == Result.DEFAULT && this.getEntity().canBeAffected(this.getEffectInstance());
+        }
+
+        public static enum Result {
+            /**
+             * Forces the event to apply the mob effect to the target entity.
+             */
+            APPLY,
+
+            /**
+             * The result of {@link LivingEntity#canBeAffected(MobEffectInstance)} will be used to determine if the mob effect will be applied.
+             * 
+             * @see {@link Post#wasClickHandled()}
+             */
+            DEFAULT,
+
+            /**
+             * Forces the event to not apply the mob effect.
+             */
+            DO_NOT_APPLY;
         }
     }
 

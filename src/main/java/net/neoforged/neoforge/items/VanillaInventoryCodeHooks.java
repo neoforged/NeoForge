@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.items;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.FrontAndTop;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.item.ItemStack;
@@ -16,10 +18,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DropperBlock;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -43,7 +47,7 @@ public class VanillaInventoryCodeHooks {
                         if (!extractItem.isEmpty()) {
                             for (int j = 0; j < dest.getContainerSize(); j++) {
                                 ItemStack destStack = dest.getItem(j);
-                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemHandlerHelper.canItemStacksStack(extractItem, destStack))) {
+                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
                                     extractItem = handler.extractItem(i, 1, false);
                                     if (destStack.isEmpty())
                                         dest.setItem(j, extractItem);
@@ -120,6 +124,21 @@ public class VanillaInventoryCodeHooks {
                 .orElse(false);
     }
 
+    /**
+     * Added capability support for the Crafter dispensing the result
+     */
+    public static ItemStack insertCrafterOutput(Level level, BlockPos pos, CrafterBlockEntity crafterBlockEntity, ItemStack stack) {
+        FrontAndTop frontAndTop = level.getBlockState(pos).getValue(BlockStateProperties.ORIENTATION);
+        return getAttachedItemHandler(level, pos, frontAndTop.front())
+                .map(destinationResult -> {
+                    IItemHandler itemHandler = destinationResult.getKey();
+                    Object destination = destinationResult.getValue();
+                    ItemStack remainder = putStackInInventoryAllSlots(crafterBlockEntity, destination, itemHandler, stack);
+                    return remainder;
+                })
+                .orElse(stack);
+    }
+
     private static ItemStack putStackInInventoryAllSlots(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack) {
         for (int slot = 0; slot < destInventory.getSlots() && !stack.isEmpty(); slot++) {
             stack = insertStack(source, destination, destInventory, stack, slot);
@@ -141,7 +160,7 @@ public class VanillaInventoryCodeHooks {
                 destInventory.insertItem(slot, stack, false);
                 stack = ItemStack.EMPTY;
                 insertedItem = true;
-            } else if (ItemHandlerHelper.canItemStacksStack(itemstack, stack)) {
+            } else if (ItemStack.isSameItemSameComponents(itemstack, stack)) {
                 int originalSize = stack.getCount();
                 stack = destInventory.insertItem(slot, stack, false);
                 insertedItem = originalSize < stack.getCount();
@@ -209,10 +228,12 @@ public class VanillaInventoryCodeHooks {
         // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
         List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
         if (!list.isEmpty()) {
-            var entity = list.get(worldIn.random.nextInt(list.size()));
-            var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
-            if (entityCap != null)
-                return Optional.of(ImmutablePair.of(entityCap, entity));
+            Collections.shuffle(list);
+            for (Entity entity : list) {
+                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                if (entityCap != null)
+                    return Optional.of(ImmutablePair.of(entityCap, entity));
+            }
         }
 
         return Optional.empty();

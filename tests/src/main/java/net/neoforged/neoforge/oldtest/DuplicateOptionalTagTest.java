@@ -34,7 +34,7 @@ public class DuplicateOptionalTagTest {
     private static final Logger LOGGER = LogManager.getLogger();
 
     static final String MODID = "duplicate_optional_tag_test";
-    private static final ResourceLocation TAG_NAME = new ResourceLocation(MODID, "test_optional_tag");
+    private static final ResourceLocation TAG_NAME = ResourceLocation.fromNamespaceAndPath(MODID, "test_optional_tag");
 
     private static final Set<Block> TAG_A_DEFAULTS = Set.of(Blocks.BEDROCK);
     private static final Set<Block> TAG_B_DEFAULTS = Set.of(Blocks.WHITE_WOOL);
@@ -47,8 +47,8 @@ public class DuplicateOptionalTagTest {
     }
 
     private void onServerStarted(ServerStartedEvent event) {
-        Set<Block> tagAValues = BuiltInRegistries.BLOCK.getTag(TAG_A).map(tag -> tag.stream().map(Holder::value).collect(Collectors.toUnmodifiableSet())).orElse(TAG_A_DEFAULTS);
-        Set<Block> tagBValues = BuiltInRegistries.BLOCK.getTag(TAG_B).map(tag -> tag.stream().map(Holder::value).collect(Collectors.toUnmodifiableSet())).orElse(TAG_B_DEFAULTS);
+        Set<Block> tagAValues = BuiltInRegistries.BLOCK.get(TAG_A).map(tag -> tag.stream().map(Holder::value).collect(Collectors.toUnmodifiableSet())).orElse(TAG_A_DEFAULTS);
+        Set<Block> tagBValues = BuiltInRegistries.BLOCK.get(TAG_B).map(tag -> tag.stream().map(Holder::value).collect(Collectors.toUnmodifiableSet())).orElse(TAG_B_DEFAULTS);
 
         if (!tagAValues.equals(tagBValues)) {
             LOGGER.error("Values of both optional tag instances are not the same: first instance: {}, second instance: {}", tagAValues, tagBValues);

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Instances are automatically cleared by the garbage collector when they are no longer in use.
  */
-public final class BlockCapabilityCache<T, C> {
+public final class BlockCapabilityCache<T, C extends @Nullable Object> {
     /**
      * Creates a new cache instance and registers it to the level.
      *
@@ -28,7 +28,7 @@ public final class BlockCapabilityCache<T, C> {
      * @param pos        the position
      * @param context    extra context for the query
      */
-    public static <T, C> BlockCapabilityCache<T, C> create(BlockCapability<T, C> capability, ServerLevel level, BlockPos pos, C context) {
+    public static <T, C extends @Nullable Object> BlockCapabilityCache<T, C> create(BlockCapability<T, C> capability, ServerLevel level, BlockPos pos, C context) {
         return create(capability, level, pos, context, () -> true, () -> {});
     }
 
@@ -56,7 +56,7 @@ public final class BlockCapabilityCache<T, C> {
      *                             that should not receive invalidation notifications anymore once it is removed.
      * @param invalidationListener the invalidation listener. Will be called whenever the capability of the cache might have changed.
      */
-    public static <T, C> BlockCapabilityCache<T, C> create(BlockCapability<T, C> capability, ServerLevel level, BlockPos pos, C context, BooleanSupplier isValid, Runnable invalidationListener) {
+    public static <T, C extends @Nullable Object> BlockCapabilityCache<T, C> create(BlockCapability<T, C> capability, ServerLevel level, BlockPos pos, C context, BooleanSupplier isValid, Runnable invalidationListener) {
         Objects.requireNonNull(capability);
         Objects.requireNonNull(isValid);
         Objects.requireNonNull(invalidationListener);

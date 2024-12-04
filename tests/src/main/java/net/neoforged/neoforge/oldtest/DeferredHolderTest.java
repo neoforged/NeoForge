@@ -33,6 +33,6 @@ public class DeferredHolderTest {
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info("Stone 1: {}", DeferredHolder.create(Registries.BLOCK, new ResourceLocation("minecraft", "stone")).get());
+        LOGGER.info("Stone 1: {}", DeferredHolder.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "stone")).get());
     }
 }

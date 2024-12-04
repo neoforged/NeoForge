@@ -1,18 +1,24 @@
 --- a/net/minecraft/client/model/geom/ModelLayers.java
 +++ b/net/minecraft/client/model/geom/ModelLayers.java
-@@ -228,11 +_,13 @@
+@@ -308,15 +_,18 @@
      }
  
-     public static ModelLayerLocation createSignModelName(WoodType p_171292_) {
--        return createLocation("sign/" + p_171292_.name(), "main");
-+        ResourceLocation location = new ResourceLocation(p_171292_.name());
-+        return new ModelLayerLocation(location.withPrefix("sign/"), "main");
+     public static ModelLayerLocation createStandingSignModelName(WoodType p_171292_) {
+-        return createLocation("sign/standing/" + p_171292_.name(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_171292_.name());
++        return new ModelLayerLocation(location.withPrefix("sign/standing/"), "main");
      }
  
-     public static ModelLayerLocation createHangingSignModelName(WoodType p_252225_) {
--        return createLocation("hanging_sign/" + p_252225_.name(), "main");
-+        ResourceLocation location = new ResourceLocation(p_252225_.name());
-+        return new ModelLayerLocation(location.withPrefix("hanging_sign/"), "main");
+     public static ModelLayerLocation createWallSignModelName(WoodType p_360963_) {
+-        return createLocation("sign/wall/" + p_360963_.name(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_360963_.name());
++        return new ModelLayerLocation(location.withPrefix("sign/wall/"), "main");
+     }
+ 
+     public static ModelLayerLocation createHangingSignModelName(WoodType p_252225_, HangingSignRenderer.AttachmentType p_382987_) {
+-        return createLocation("hanging_sign/" + p_252225_.name() + "/" + p_382987_.getSerializedName(), "main");
++        ResourceLocation location = ResourceLocation.parse(p_252225_.name());
++        return new ModelLayerLocation(location.withPrefix("hanging_sign/").withSuffix("/" + p_382987_.getSerializedName()), "main");
      }
  
      public static Stream<ModelLayerLocation> getKnownLocations() {

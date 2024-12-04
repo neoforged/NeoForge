@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SpawnerBlock.java
 +++ b/net/minecraft/world/level/block/SpawnerBlock.java
-@@ -46,10 +_,12 @@
+@@ -46,10 +_,15 @@
      @Override
      protected void spawnAfterBreak(BlockState p_222477_, ServerLevel p_222478_, BlockPos p_222479_, ItemStack p_222480_, boolean p_222481_) {
          super.spawnAfterBreak(p_222477_, p_222478_, p_222479_, p_222480_, p_222481_);
@@ -8,12 +8,15 @@
 -            int i = 15 + p_222478_.random.nextInt(15) + p_222478_.random.nextInt(15);
 -            this.popExperience(p_222478_, p_222479_, i);
 -        }
-+
 +    }
 +
++    // Neo: Patch-in override for getExpDrop. Also fixes MC-273642 (Spawner XP drops bypass enchantments)
++    // Original vanilla logic passes 15 + p_222478_.random.nextInt(15) + p_222478_.random.nextInt(15) to popExperience, bypassing enchantments
 +    @Override
-+    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader world, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortune, int silktouch) {
-+        return 15 + randomSource.nextInt(15) + randomSource.nextInt(15);
++    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelAccessor level, BlockPos pos,
++            @org.jetbrains.annotations.Nullable net.minecraft.world.level.block.entity.BlockEntity blockEntity,
++            @org.jetbrains.annotations.Nullable net.minecraft.world.entity.Entity breaker, ItemStack tool) {
++        return 15 + level.getRandom().nextInt(15) + level.getRandom().nextInt(15);
      }
  
      @Override

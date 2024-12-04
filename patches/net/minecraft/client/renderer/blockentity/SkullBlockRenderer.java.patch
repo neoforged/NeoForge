@@ -1,18 +1,9 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
-@@ -55,6 +_,7 @@
-         builder.put(SkullBlock.Types.CREEPER, new SkullModel(p_173662_.bakeLayer(ModelLayers.CREEPER_HEAD)));
-         builder.put(SkullBlock.Types.DRAGON, new DragonHeadModel(p_173662_.bakeLayer(ModelLayers.DRAGON_SKULL)));
-         builder.put(SkullBlock.Types.PIGLIN, new PiglinHeadModel(p_173662_.bakeLayer(ModelLayers.PIGLIN_HEAD)));
-+        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.EntityRenderersEvent.CreateSkullModels(builder, p_173662_));
-         return builder.build();
+@@ -115,4 +_,14 @@
+             )
+             : RenderType.entityCutoutNoCullZOffset(p_389624_ != null ? p_389624_ : SKIN_BY_TYPE.get(p_389566_));
      }
- 
-@@ -108,5 +_,15 @@
-         } else {
-             return RenderType.entityCutoutNoCullZOffset(resourcelocation);
-         }
-+    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
@@ -22,5 +13,5 @@
 +            return new net.minecraft.world.phys.AABB(pos.getX() - .75, pos.getY() - .35, pos.getZ() - .75, pos.getX() + 1.75, pos.getY() + 1.0, pos.getZ() + 1.75);
 +        }
 +        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
-     }
++    }
  }

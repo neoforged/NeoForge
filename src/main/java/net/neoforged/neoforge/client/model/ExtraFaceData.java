@@ -12,9 +12,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds extra data that may be injected into a face.<p>

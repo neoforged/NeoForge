@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/special/SpecialModelRenderers.java
++++ b/net/minecraft/client/renderer/special/SpecialModelRenderers.java
+@@ -171,6 +_,8 @@
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("decorated_pot"), DecoratedPotSpecialRenderer.Unbaked.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("standing_sign"), StandingSignSpecialRenderer.Unbaked.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("hanging_sign"), HangingSignSpecialRenderer.Unbaked.MAP_CODEC);
++
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent(ID_MAPPER));
+     }
+ 
+     public static Map<Block, SpecialModelRenderer<?>> createBlockRenderers(EntityModelSet p_387779_) {

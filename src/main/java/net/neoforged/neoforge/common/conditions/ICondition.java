@@ -12,22 +12,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public interface ICondition {
     Codec<ICondition> CODEC = NeoForgeRegistries.CONDITION_SERIALIZERS.byNameCodec()
@@ -80,32 +75,34 @@ public interface ICondition {
 
     MapCodec<? extends ICondition> codec();
 
-    interface IContext {
+    interface IContext { // TODO 1.21.2: potentially remove since all the info is available via RegistryOps
         IContext EMPTY = new IContext() {
             @Override
-            public <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> registry) {
-                return Collections.emptyMap();
+            public <T> boolean isTagLoaded(TagKey<T> key) {
+                return false;
             }
         };
 
         IContext TAGS_INVALID = new IContext() {
             @Override
-            public <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> registry) {
+            public <T> boolean isTagLoaded(TagKey<T> key) {
                 throw new UnsupportedOperationException("Usage of tag-based conditions is not permitted in this context!");
             }
         };
 
         /**
-         * Return the requested tag if available, or an empty tag otherwise.
+         * Returns {@code true} if the requested tag is available.
          */
-        default <T> Collection<Holder<T>> getTag(TagKey<T> key) {
-            return getAllTags(key.registry()).getOrDefault(key.location(), Set.of());
-        }
+        <T> boolean isTagLoaded(TagKey<T> key);
 
-        /**
-         * Return all the loaded tags for the passed registry, or an empty map if none is available.
-         * Note that the map and the tags are unmodifiable.
-         */
-        <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> registry);
+        default FeatureFlagSet enabledFeatures() {
+            // returning the vanilla set causes reports false positives for flags outside of vanilla
+            // return FeatureFlags.VANILLA_SET;
+
+            // lookup the active enabledFeatures from the current server
+            // if no server exists, delegating back to 'VANILLA_SET' should be fine (should rarely ever happen)
+            var server = ServerLifecycleHooks.getCurrentServer();
+            return server == null ? FeatureFlags.VANILLA_SET : server.getWorldData().enabledFeatures();
+        }
     }
 }

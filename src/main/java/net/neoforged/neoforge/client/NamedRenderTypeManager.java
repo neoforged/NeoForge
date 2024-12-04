@@ -42,13 +42,13 @@ public final class NamedRenderTypeManager {
      * Pre-registers vanilla render types.
      */
     private static void preRegisterVanillaRenderTypes(Map<ResourceLocation, RenderTypeGroup> blockRenderTypes) {
-        blockRenderTypes.put(new ResourceLocation("solid"), new RenderTypeGroup(RenderType.solid(), NeoForgeRenderTypes.ITEM_LAYERED_SOLID.get()));
-        blockRenderTypes.put(new ResourceLocation("cutout"), new RenderTypeGroup(RenderType.cutout(), NeoForgeRenderTypes.ITEM_LAYERED_CUTOUT.get()));
+        blockRenderTypes.put(ResourceLocation.withDefaultNamespace("solid"), new RenderTypeGroup(RenderType.solid(), NeoForgeRenderTypes.ITEM_LAYERED_SOLID.get()));
+        blockRenderTypes.put(ResourceLocation.withDefaultNamespace("cutout"), new RenderTypeGroup(RenderType.cutout(), NeoForgeRenderTypes.ITEM_LAYERED_CUTOUT.get()));
         // Generally entity/item rendering shouldn't use mipmaps, so cutout_mipped has them off by default. To enforce them, use cutout_mipped_all.
-        blockRenderTypes.put(new ResourceLocation("cutout_mipped"), new RenderTypeGroup(RenderType.cutoutMipped(), NeoForgeRenderTypes.ITEM_LAYERED_CUTOUT.get()));
-        blockRenderTypes.put(new ResourceLocation("cutout_mipped_all"), new RenderTypeGroup(RenderType.cutoutMipped(), NeoForgeRenderTypes.ITEM_LAYERED_CUTOUT_MIPPED.get()));
-        blockRenderTypes.put(new ResourceLocation("translucent"), new RenderTypeGroup(RenderType.translucent(), NeoForgeRenderTypes.ITEM_LAYERED_TRANSLUCENT.get()));
-        blockRenderTypes.put(new ResourceLocation("tripwire"), new RenderTypeGroup(RenderType.tripwire(), NeoForgeRenderTypes.ITEM_LAYERED_TRANSLUCENT.get()));
+        blockRenderTypes.put(ResourceLocation.withDefaultNamespace("cutout_mipped"), new RenderTypeGroup(RenderType.cutoutMipped(), NeoForgeRenderTypes.ITEM_LAYERED_CUTOUT.get()));
+        blockRenderTypes.put(ResourceLocation.withDefaultNamespace("cutout_mipped_all"), new RenderTypeGroup(RenderType.cutoutMipped(), NeoForgeRenderTypes.ITEM_LAYERED_CUTOUT_MIPPED.get()));
+        blockRenderTypes.put(ResourceLocation.withDefaultNamespace("translucent"), new RenderTypeGroup(RenderType.translucent(), NeoForgeRenderTypes.ITEM_LAYERED_TRANSLUCENT.get()));
+        blockRenderTypes.put(ResourceLocation.withDefaultNamespace("tripwire"), new RenderTypeGroup(RenderType.tripwire(), NeoForgeRenderTypes.ITEM_LAYERED_TRANSLUCENT.get()));
     }
 
     private NamedRenderTypeManager() {}

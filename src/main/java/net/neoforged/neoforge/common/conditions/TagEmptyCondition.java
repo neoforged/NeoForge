@@ -20,11 +20,11 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
                     .apply(builder, TagEmptyCondition::new));
 
     public TagEmptyCondition(String location) {
-        this(new ResourceLocation(location));
+        this(ResourceLocation.parse(location));
     }
 
     public TagEmptyCondition(String namespace, String path) {
-        this(new ResourceLocation(namespace, path));
+        this(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 
     public TagEmptyCondition(ResourceLocation tag) {
@@ -33,7 +33,7 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
 
     @Override
     public boolean test(ICondition.IContext context) {
-        return context.getTag(tag).isEmpty();
+        return !context.isTagLoaded(tag);
     }
 
     @Override

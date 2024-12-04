@@ -29,6 +29,7 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.getId()).addOptional(NeoForgeMod.FLOWING_MILK.getId());
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);
+        tag(Fluids.EXPERIENCE);
         tag(Fluids.POTION);
         tag(Fluids.SUSPICIOUS_STEW);
         tag(Fluids.MUSHROOM_STEW);
@@ -50,7 +51,7 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
 
     private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
         IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(new ResourceLocation("forge", tag.location().getPath()));
+        tagAppender.addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath()));
         return tagAppender;
     }
 }

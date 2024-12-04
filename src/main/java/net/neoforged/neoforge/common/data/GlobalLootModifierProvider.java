@@ -36,14 +36,15 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 public abstract class GlobalLootModifierProvider implements DataProvider {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final PackOutput output;
-    private final CompletableFuture<HolderLookup.Provider> registries;
+    private final CompletableFuture<HolderLookup.Provider> registriesLookup;
+    protected HolderLookup.Provider registries;
     private final String modid;
     private final Map<String, WithConditions<IGlobalLootModifier>> toSerialize = new HashMap<>();
     private boolean replace = false;
 
     public GlobalLootModifierProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
         this.output = output;
-        this.registries = registries;
+        this.registriesLookup = registries;
         this.modid = modid;
     }
 
@@ -61,10 +62,11 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
 
     @Override
     public final CompletableFuture<?> run(CachedOutput cache) {
-        return this.registries.thenCompose(registries -> this.run(cache, registries));
+        return this.registriesLookup.thenCompose(registries -> this.run(cache, registries));
     }
 
     protected CompletableFuture<?> run(CachedOutput cache, HolderLookup.Provider registries) {
+        this.registries = registries;
         start();
 
         Path forgePath = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("neoforge").resolve("loot_modifiers").resolve("global_loot_modifiers.json");
@@ -76,7 +78,7 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
         for (var entry : toSerialize.entrySet()) {
             var name = entry.getKey();
             var lootModifier = entry.getValue();
-            entries.add(new ResourceLocation(modid, name));
+            entries.add(ResourceLocation.fromNamespaceAndPath(modid, name));
             Path modifierPath = modifierFolderPath.resolve(name + ".json");
             futuresBuilder.add(DataProvider.saveStable(cache, registries, IGlobalLootModifier.CONDITIONAL_CODEC, Optional.of(lootModifier), modifierPath));
         }

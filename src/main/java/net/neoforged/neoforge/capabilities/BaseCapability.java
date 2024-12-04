@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.capabilities;
 
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Base class to reuse code common between most/all {@code *Capability} implementation.
@@ -18,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
  * @param <T> Type of queried objects.
  * @param <C> Type of the additional context.
  */
-public abstract class BaseCapability<T, C> {
+public abstract class BaseCapability<T, C extends @Nullable Object> {
     private final ResourceLocation name;
     private final Class<T> typeClass;
     private final Class<C> contextClass;

@@ -1,0 +1,29 @@
+--- a/net/minecraft/resources/FileToIdConverter.java
++++ b/net/minecraft/resources/FileToIdConverter.java
+@@ -40,4 +_,26 @@
+     public Map<ResourceLocation, List<Resource>> listMatchingResourceStacks(ResourceManager p_249881_) {
+         return p_249881_.listResourceStacks(this.prefix, p_248700_ -> p_248700_.getPath().endsWith(this.extension));
+     }
++
++    /**
++     * List all resources under the given namespace which match this converter
++     *
++     * @param manager   The resource manager to collect the resources from
++     * @param namespace The namespace to search under
++     * @return All resources from the given namespace which match this converter
++     */
++    public Map<ResourceLocation, Resource> listMatchingResourcesFromNamespace(ResourceManager manager, String namespace) {
++        return manager.listResources(this.prefix, path -> path.getNamespace().equals(namespace) && path.getPath().endsWith(this.extension));
++    }
++
++    /**
++     * List all resource stacks under the given namespace which match this converter
++     *
++     * @param manager   The resource manager to collect the resources from
++     * @param namespace The namespace to search under
++     * @return All resource stacks from the given namespace which match this converter
++     */
++    public Map<ResourceLocation, List<Resource>> listMatchingResourceStacksFromNamespace(ResourceManager manager, String namespace) {
++        return manager.listResourceStacks(this.prefix, path -> path.getNamespace().equals(namespace) && path.getPath().endsWith(this.extension));
++    }
+ }

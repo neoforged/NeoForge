@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.neoforged.bus.api.Event;
 
@@ -19,16 +20,16 @@ import net.neoforged.bus.api.Event;
  * @see RenderFrameEvent.Post
  */
 public abstract class RenderFrameEvent extends Event {
-    protected final float partialTick;
+    protected final DeltaTracker partialTick;
 
-    protected RenderFrameEvent(float partialTick) {
+    protected RenderFrameEvent(DeltaTracker partialTick) {
         this.partialTick = partialTick;
     }
 
     /**
      * {@return the current partial tick, which is either the true partial tick or the pause partial tick, depending on if the game is paused}
      */
-    public float getPartialTick() {
+    public DeltaTracker getPartialTick() {
         return this.partialTick;
     }
 
@@ -38,7 +39,7 @@ public abstract class RenderFrameEvent extends Event {
      * This event only fires on the physical client.
      */
     public static class Pre extends RenderFrameEvent {
-        public Pre(float partialTick) {
+        public Pre(DeltaTracker partialTick) {
             super(partialTick);
         }
     }
@@ -49,7 +50,7 @@ public abstract class RenderFrameEvent extends Event {
      * This event only fires on the physical client.
      */
     public static class Post extends RenderFrameEvent {
-        public Post(float partialTick) {
+        public Post(DeltaTracker partialTick) {
             super(partialTick);
         }
     }

@@ -5,14 +5,15 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +26,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link FluidType}.
@@ -44,7 +45,7 @@ public interface IClientFluidTypeExtensions {
     }
 
     static IClientFluidTypeExtensions of(FluidType type) {
-        return type.getRenderPropertiesInternal() instanceof IClientFluidTypeExtensions props ? props : DEFAULT;
+        return ClientExtensionsManager.FLUID_TYPE_EXTENSIONS.getOrDefault(type, DEFAULT);
     }
 
     /* Default Accessors */
@@ -150,10 +151,10 @@ public interface IClientFluidTypeExtensions {
      * @param mc        the client instance
      * @param poseStack the transformations representing the current rendering position
      */
-    default void renderOverlay(Minecraft mc, PoseStack poseStack) {
+    default void renderOverlay(Minecraft mc, PoseStack poseStack, MultiBufferSource buffers) {
         ResourceLocation texture = this.getRenderOverlayTexture(mc);
         if (texture != null)
-            ScreenEffectRenderer.renderFluid(mc, poseStack, texture);
+            ScreenEffectRenderer.renderFluid(mc, poseStack, buffers, texture);
     }
 
     /**
@@ -167,10 +168,10 @@ public interface IClientFluidTypeExtensions {
      * @param level             the level the camera is located in
      * @param renderDistance    the render distance of the client
      * @param darkenWorldAmount the amount to darken the world by
-     * @param fluidFogColor     the current color of the fog
+     * @param fluidFogColor     the current RGBA color of the fog
      * @return the color of the fog
      */
-    default Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor) {
+    default Vector4f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f fluidFogColor) {
         return fluidFogColor;
     }
 
@@ -182,11 +183,12 @@ public interface IClientFluidTypeExtensions {
      * @param mode           the type of fog being rendered
      * @param renderDistance the render distance of the client
      * @param partialTick    the delta time of where the current frame is within a tick
-     * @param nearDistance   the near plane of where the fog starts to render
-     * @param farDistance    the far plane of where the fog ends rendering
-     * @param shape          the shape of the fog being rendered
+     * @param fogParameters  the parameters to use for rendering the fog
+     * @return the modified fog parameters
      */
-    default void modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, float nearDistance, float farDistance, FogShape shape) {}
+    default FogParameters modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, FogParameters fogParameters) {
+        return fogParameters;
+    }
 
     /* Level-Based Accessors */
 

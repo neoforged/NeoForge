@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -14,9 +_,9 @@
+@@ -15,9 +_,9 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -12,7 +12,7 @@
      private static final Set<String> CATEGORIES = Sets.newHashSet();
      public static final String CATEGORY_MOVEMENT = "key.categories.movement";
      public static final String CATEGORY_MISC = "key.categories.misc";
-@@ -42,17 +_,17 @@
+@@ -43,17 +_,17 @@
      private int clickCount;
  
      public static void click(InputConstants.Key p_90836_) {
@@ -35,7 +35,7 @@
      }
  
      public static void setAll() {
-@@ -100,7 +_,7 @@
+@@ -101,7 +_,7 @@
      }
  
      public boolean isDown() {
@@ -44,7 +44,7 @@
      }
  
      public String getCategory() {
-@@ -134,9 +_,13 @@
+@@ -135,9 +_,13 @@
      }
  
      public int compareTo(KeyMapping p_90841_) {
@@ -61,7 +61,7 @@
      }
  
      public static Supplier<Component> createNameSupplier(String p_90843_) {
-@@ -145,6 +_,20 @@
+@@ -146,6 +_,20 @@
      }
  
      public boolean same(KeyMapping p_90851_) {
@@ -82,7 +82,7 @@
          return this.key.equals(p_90851_.key);
      }
  
-@@ -163,11 +_,13 @@
+@@ -164,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -97,16 +97,18 @@
      }
  
      public String saveString() {
-@@ -177,4 +_,84 @@
-     public void setDown(boolean p_90846_) {
-         this.isDown = p_90846_;
-     }
+@@ -182,5 +_,86 @@
+     @Nullable
+     public static KeyMapping get(String p_389468_) {
+         return ALL.get(p_389468_);
++    }
 +
-+    /****************** Forge Start *****************************/
++    // Neo: Injected Key Mapping controls
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifierDefault = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.KeyModifier keyModifier = net.neoforged.neoforge.client.settings.KeyModifier.NONE;
 +    private net.neoforged.neoforge.client.settings.IKeyConflictContext keyConflictContext = net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL;
 +
++    // Neo: Injected Key Mapping constructors to assist modders
 +    /**
 +     * Convenience constructor for creating KeyBindings with keyConflictContext set.
 +     */
@@ -146,6 +148,7 @@
 +        CATEGORIES.add(category);
 +    }
 +
++    // Neo: Implemented IKeyMappingExtension methods into vanilla
 +    @Override
 +    public InputConstants.Key getKey() {
 +         return this.key;
@@ -179,6 +182,5 @@
 +         MAP.remove(this);
 +         this.keyModifier = keyModifier;
 +         MAP.put(keyCode, this);
-+    }
-+    /****************** Forge End *****************************/
+     }
  }

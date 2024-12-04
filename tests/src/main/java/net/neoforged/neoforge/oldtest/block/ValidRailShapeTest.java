@@ -48,7 +48,7 @@ public class ValidRailShapeTest {
 
     private static class RailSlopeBlock extends BaseRailBlock {
         public static final MapCodec<RailSlopeBlock> CODEC = simpleCodec(RailSlopeBlock::new);
-        private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isAscending);
+        private static final EnumProperty<RailShape> ASCENDING_RAIL_SHAPE = EnumProperty.create("shape", RailShape.class, RailShape::isSlope);
 
         protected RailSlopeBlock(Properties properties) {
             super(true, properties.noCollission().strength(0.7F).sound(SoundType.METAL));
@@ -101,7 +101,7 @@ public class ValidRailShapeTest {
 
         @Override
         public boolean isValidRailShape(RailShape shape) {
-            return shape.isAscending();
+            return shape.isSlope();
         }
 
         @Override

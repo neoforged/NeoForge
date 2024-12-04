@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -24,9 +25,9 @@ import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -35,6 +36,7 @@ import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.model.ExtraFaceData;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.util.TransformationHelper;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.joml.Quaternionf;
@@ -59,7 +61,8 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
     protected String renderType = null;
     protected boolean ambientOcclusion = true;
-    protected GuiLight guiLight = null;
+
+    protected UnbakedModel.GuiLight guiLight = null;
 
     protected final List<ElementBuilder> elements = new ArrayList<>();
 
@@ -118,9 +121,9 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         } else {
             ResourceLocation asLoc;
             if (texture.contains(":")) {
-                asLoc = new ResourceLocation(texture);
+                asLoc = ResourceLocation.parse(texture);
             } else {
-                asLoc = new ResourceLocation(getLocation().getNamespace(), texture);
+                asLoc = ResourceLocation.fromNamespaceAndPath(getLocation().getNamespace(), texture);
             }
             return texture(key, asLoc);
         }
@@ -157,7 +160,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
      */
     public T renderType(String renderType) {
         Preconditions.checkNotNull(renderType, "Render type must not be null");
-        return renderType(new ResourceLocation(renderType));
+        return renderType(ResourceLocation.parse(renderType));
     }
 
     /**
@@ -183,7 +186,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         return self();
     }
 
-    public T guiLight(GuiLight light) {
+    public T guiLight(UnbakedModel.GuiLight light) {
         this.guiLight = light;
         return self();
     }
@@ -327,21 +330,21 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     if (face == null) continue;
 
                     JsonObject faceObj = new JsonObject();
-                    faceObj.addProperty("texture", serializeLocOrKey(face.texture));
-                    if (!Arrays.equals(face.uv.uvs, part.uvsByFace(dir))) {
-                        faceObj.add("uv", new Gson().toJsonTree(face.uv.uvs));
+                    faceObj.addProperty("texture", serializeLocOrKey(face.texture()));
+                    if (!Arrays.equals(face.uv().uvs, part.uvsByFace(dir))) {
+                        faceObj.add("uv", new Gson().toJsonTree(face.uv().uvs));
                     }
-                    if (face.cullForDirection != null) {
-                        faceObj.addProperty("cullface", face.cullForDirection.getSerializedName());
+                    if (face.cullForDirection() != null) {
+                        faceObj.addProperty("cullface", face.cullForDirection().getSerializedName());
                     }
-                    if (face.uv.rotation != 0) {
-                        faceObj.addProperty("rotation", face.uv.rotation);
+                    if (face.uv().rotation != 0) {
+                        faceObj.addProperty("rotation", face.uv().rotation);
                     }
-                    if (face.tintIndex != -1) {
-                        faceObj.addProperty("tintindex", face.tintIndex);
+                    if (face.tintIndex() != -1) {
+                        faceObj.addProperty("tintindex", face.tintIndex());
                     }
-                    if (!face.getFaceData().equals(ExtraFaceData.DEFAULT)) {
-                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.getFaceData()).result().get());
+                    if (!face.faceData().equals(ExtraFaceData.DEFAULT)) {
+                        faceObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, face.faceData()).result().orElseThrow());
                     }
                     faces.add(dir.getSerializedName(), faceObj);
                 }
@@ -369,7 +372,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         if (tex.charAt(0) == '#') {
             return tex;
         }
-        return new ResourceLocation(tex).toString();
+        return ResourceLocation.parse(tex).toString();
     }
 
     private JsonArray serializeVector3f(Vector3f vec) {
@@ -393,6 +396,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         private final Map<Direction, FaceBuilder> faces = new LinkedHashMap<>();
         private RotationBuilder rotation;
         private boolean shade = true;
+        private int lightEmission = 0;
         private int color = 0xFFFFFFFF;
         private int blockLight = 0, skyLight = 0;
         private boolean hasAmbientOcclusion = true;
@@ -480,6 +484,20 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         }
 
         /**
+         * Creates <em>possible</em> faces for the model as needed, excluding those
+         * specified in the second argument, and then applies a function to modify added faces.
+         *
+         * @param action the function to apply to each direction
+         * @param exc    directions which will be excluded from adding to model file
+         * @return this builder
+         * @throws NullPointerException if {@code action} is {@code null}
+         */
+        public ElementBuilder allFacesExcept(BiConsumer<Direction, FaceBuilder> action, Set<Direction> exc) {
+            Arrays.stream(Direction.values()).filter(d -> !exc.contains(d)).forEach(d -> action.accept(d, face(d)));
+            return this;
+        }
+
+        /**
          * Modify all <em>existing</em> faces dynamically using a function.
          *
          * @param action the function to apply to each direction
@@ -543,6 +561,19 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         }
 
         /**
+         * Set the light emission of the element (0-15)
+         * <p>
+         * If block and sky light values should be different, use {@link #emissivity(int, int)} instead
+         *
+         * @param lightEmission the light value
+         * @return this builder
+         */
+        public ElementBuilder lightEmission(int lightEmission) {
+            this.lightEmission = lightEmission;
+            return this;
+        }
+
+        /**
          * Sets the color of the element.
          *
          * @param color the color in ARGB format.
@@ -573,7 +604,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
                         throw new IllegalArgumentException();
                     }, LinkedHashMap::new));
-            return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+            return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
         }
 
         public T end() {
@@ -675,7 +706,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
                 if (this.texture == null) {
                     throw new IllegalStateException("A model face must have a texture");
                 }
-                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
+                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion), new MutableObject<>());
             }
 
             public ElementBuilder end() {

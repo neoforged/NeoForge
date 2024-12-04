@@ -1,25 +1,25 @@
 --- a/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
 +++ b/net/minecraft/client/renderer/chunk/RenderChunkRegion.java
-@@ -20,12 +_,18 @@
-     private final int centerZ;
-     protected final RenderChunk[][] chunks;
+@@ -22,12 +_,18 @@
+     private final int minChunkZ;
+     protected final RenderChunk[] chunks;
      protected final Level level;
 +    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot;
  
 +    @Deprecated
-     RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_) {
-+        this(p_200456_, p_200457_, p_200458_, p_200459_, net.neoforged.neoforge.client.model.data.ModelDataManager.EMPTY_SNAPSHOT);
+     RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[] p_350680_) {
++        this(p_200456_, p_200457_, p_200458_, p_350680_, net.neoforged.neoforge.client.model.data.ModelDataManager.EMPTY_SNAPSHOT);
 +    }
-+    RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[][] p_200459_, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot) {
++    RenderChunkRegion(Level p_200456_, int p_200457_, int p_200458_, RenderChunk[] p_350680_, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.client.model.data.ModelData> modelDataSnapshot) {
          this.level = p_200456_;
-         this.centerX = p_200457_;
-         this.centerZ = p_200458_;
-         this.chunks = p_200459_;
+         this.minChunkX = p_200457_;
+         this.minChunkZ = p_200458_;
+         this.chunks = p_350680_;
 +        this.modelDataSnapshot = modelDataSnapshot;
      }
  
      @Override
-@@ -73,5 +_,22 @@
+@@ -75,6 +_,21 @@
      @Override
      public int getHeight() {
          return this.level.getHeight();
@@ -37,8 +37,7 @@
 +
 +    @Override
 +    public net.neoforged.neoforge.common.world.AuxiliaryLightManager getAuxLightManager(net.minecraft.world.level.ChunkPos pos) {
-+        int relX = pos.x - this.centerX;
-+        int relZ = pos.z - this.centerZ;
-+        return this.chunks[relX][relZ].wrapped.getAuxLightManager(pos);
++        return this.getChunk(pos.x, pos.z).wrapped.getAuxLightManager(pos);
      }
- }
+ 
+     public static int index(int p_350911_, int p_350842_, int p_350891_, int p_350833_) {

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record MinecraftUnregisterPayload(Set<ResourceLocation> forgottenChannels) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation("unregister");
+    public static final ResourceLocation ID = ResourceLocation.withDefaultNamespace("unregister");
     public static final Type<MinecraftUnregisterPayload> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, MinecraftUnregisterPayload> STREAM_CODEC = DinnerboneProtocolUtils.CHANNELS_CODEC.map(MinecraftUnregisterPayload::new, MinecraftUnregisterPayload::forgottenChannels);
 

@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "display": {
-    "custom_transformtype_test:hanging": {
+    "neotests:hanging": {
       "rotation": [
         62,
         147,

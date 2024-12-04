@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
-public interface ICapabilityProvider<O, C, T> {
+public interface ICapabilityProvider<O, C extends @Nullable Object, T> {
     /**
      * Returns the capability, or {@code null} if not available.
      *

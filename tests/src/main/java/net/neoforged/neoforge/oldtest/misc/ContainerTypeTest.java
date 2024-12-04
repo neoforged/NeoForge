@@ -33,7 +33,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod("containertypetest")
 public class ContainerTypeTest {
-    public static final DeferredHolder<MenuType<?>, MenuType<TestContainer>> TYPE = DeferredHolder.create(Registries.MENU, new ResourceLocation("containertypetest", "container"));
+    public static final DeferredHolder<MenuType<?>, MenuType<TestContainer>> TYPE = DeferredHolder.create(Registries.MENU, ResourceLocation.fromNamespaceAndPath("containertypetest", "container"));
 
     public static class TestContainer extends AbstractContainerMenu {
         private final String text;
@@ -79,7 +79,7 @@ public class ContainerTypeTest {
     }
 
     private void registerContainers(final RegisterEvent event) {
-        event.register(Registries.MENU, helper -> helper.register(new ResourceLocation("containertypetest", "container"), IMenuTypeExtension.create(TestContainer::new)));
+        event.register(Registries.MENU, helper -> helper.register(ResourceLocation.fromNamespaceAndPath("containertypetest", "container"), IMenuTypeExtension.create(TestContainer::new)));
     }
 
     private void registerMenuScreens(RegisterMenuScreensEvent event) {

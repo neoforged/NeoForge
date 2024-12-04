@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.oldtest.client.model;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -36,7 +36,7 @@ public class CompositeModelTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> composite_block = BLOCKS.register("composite_block", () -> new Block(Block.Properties.of().mapColor(MapColor.WOOD).strength(10)) {
+    public static DeferredBlock<Block> composite_block = BLOCKS.registerBlock("composite_block", props -> new Block(props) {
         @Override
         protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -62,11 +62,11 @@ public class CompositeModelTest {
                     box(0, 11.2, 11.2, 4.8, 16, 16),
                     box(11.2, 11.2, 11.2, 16, 16, 16));
         }
-    });
+    }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
-    public static DeferredItem<Item> composite_item = ITEMS.register("composite_block", () -> new BlockItem(composite_block.get(), new Item.Properties()) {
+    public static DeferredItem<Item> composite_item = ITEMS.registerItem("composite_block", props -> new BlockItem(composite_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
-        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
+        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
             return armorType == EquipmentSlot.HEAD;
         }
     });

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -50,7 +51,7 @@ public class GuiLayerManager {
         return this;
     }
 
-    public void render(GuiGraphics guiGraphics, float partialTick) {
+    public void render(GuiGraphics guiGraphics, DeltaTracker partialTick) {
         if (NeoForge.EVENT_BUS.post(new RenderGuiEvent.Pre(guiGraphics, partialTick)).isCanceled()) {
             return;
         }
@@ -60,7 +61,7 @@ public class GuiLayerManager {
         NeoForge.EVENT_BUS.post(new RenderGuiEvent.Post(guiGraphics, partialTick));
     }
 
-    private void renderInner(GuiGraphics guiGraphics, float partialTick) {
+    private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
         guiGraphics.pose().pushPose();
 
         for (var layer : this.layers) {
@@ -81,5 +82,9 @@ public class GuiLayerManager {
         }
         initialized = true;
         ModLoader.postEvent(new RegisterGuiLayersEvent(this.layers));
+    }
+
+    public int getLayerCount() {
+        return this.layers.size();
     }
 }

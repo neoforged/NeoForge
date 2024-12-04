@@ -11,6 +11,9 @@ import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -24,11 +27,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
@@ -41,9 +44,13 @@ import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.CandleBlock;
+import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.GrowingPlantHeadBlock;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LadderBlock;
@@ -58,6 +65,7 @@ import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.material.FluidState;
@@ -65,16 +73,16 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.IPlantable;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.DataMapHooks;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -205,21 +213,24 @@ public interface IBlockExtension {
      *
      * Return true if the block is actually destroyed.
      *
-     * Note: When used in multiplayer, this is called on both client and
-     * server sides!
+     * This function is called on both the logical client and logical server.
      *
      * @param state       The current state.
      * @param level       The current level
      * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
-     * @param willHarvest True if Block.harvestBlock will be called after this, if the return in true.
-     *                    Can be useful to delay the destruction of tile entities till after harvestBlock
+     * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid state at current position
      * @return True if the block is actually destroyed.
      */
     default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        self().playerWillDestroy(level, pos, state, player);
-        return level.setBlock(pos, fluid.createLegacyBlock(), level.isClientSide ? 11 : 3);
+        if (level.isClientSide()) {
+            // On the client, vanilla calls Level#setBlock, per MultiPlayerGameMode#destroyBlock
+            return level.setBlock(pos, fluid.createLegacyBlock(), 11);
+        } else {
+            // On the server, vanilla calls Level#removeBlock, per ServerPlayerGameMode#destroyBlock
+            return level.removeBlock(pos, false);
+        }
     }
 
     /**
@@ -243,36 +254,34 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block is classified as a Bed, Allowing
-     * players to sleep in it, though the block has to specifically
-     * perform the sleeping functionality in it's activated event.
+     * Determines if this block is classified as a bed, replacing <code>instanceof BedBlock</code> checks.
+     * <p>
+     * If true, players may sleep in it, though the block must manually put the player to sleep
+     * by calling {@link Player#startSleepInBed} from {@link BlockBehaviour#useWithoutItem} or similar.
+     * <p>
+     * If you want players to be able to respawn at your bed, you also need to override {@link #getRespawnPosition}.
      *
-     * @param state  The current state
-     * @param level  The current level
-     * @param pos    Block position in level
-     * @param player The player or camera entity, null in some cases.
+     * @param state   The current state
+     * @param level   The current level
+     * @param pos     Block position in level
+     * @param sleeper The sleeping entity.
      * @return True to treat this as a bed
      */
-    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, @Nullable Entity player) {
-        return self() instanceof BedBlock; //TODO: Forge: Keep isBed function?
+    default boolean isBed(BlockState state, BlockGetter level, BlockPos pos, LivingEntity sleeper) {
+        return self() instanceof BedBlock;
     }
 
     /**
-     * Returns the position that the entity is moved to upon
-     * respawning at this block.
+     * Returns the position that the entity is moved to upon respawning at this block.
      *
      * @param state       The current state
      * @param type        The entity type used when checking if a dismount blockstate is dangerous. Currently always PLAYER.
      * @param levelReader The current level
      * @param pos         Block position in level
      * @param orientation The angle the entity had when setting the respawn point
-     * @param entity      The entity respawning, often null
      * @return The spawn position or the empty optional if respawning here is not possible
      */
-    default Optional<Vec3> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation, @Nullable LivingEntity entity) {
-        if (isBed(state, levelReader, pos, entity) && levelReader instanceof Level level && BedBlock.canSetSpawn(level)) {
-            return BedBlock.findStandUpPosition(type, levelReader, pos, state.getValue(BedBlock.FACING), orientation);
-        }
+    default Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState state, EntityType<?> type, LevelReader levelReader, BlockPos pos, float orientation) {
         return Optional.empty();
     }
 
@@ -314,14 +323,12 @@ public interface IBlockExtension {
     }
 
     /**
-     *
      * Called when A user uses the creative pick block button on this block
      *
-     * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return self().getCloneItemStack(level, pos, state);
+    default ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
+        return state.getCloneItemStack(level, pos, includeData);
     }
 
     /**
@@ -357,24 +364,19 @@ public interface IBlockExtension {
     }
 
     /**
-     * Determines if this block can support the passed in plant, allowing it to be planted and grow.
-     * Some examples:
-     * Reeds check if its a reed, or if its sand/dirt/grass and adjacent to water
-     * Cacti checks if its a cacti, or if its sand
-     * Nether types check for soul sand
-     * Crops check for tilled soil
-     * Caves check if it's a solid surface
-     * Plains check if its grass or dirt
-     * Water check if its still water
+     * Determines if this block either force allow or force disallow a plant from being placed on it. (Or pass and let the plant's decision win)
+     * This will be called in plant's canSurvive method and/or mayPlace method.
      *
-     * @param state     The Current state
-     * @param level     The current level
-     *
-     * @param facing    The direction relative to the given position the plant wants to be, typically its UP
-     * @param plantable The plant that wants to check
-     * @return True to allow the plant to be planted/stay.
+     * @param state        The current state
+     * @param level        The current level
+     * @param soilPosition The current position of the block that will sustain the plant
+     * @param facing       The direction relative to the given position the plant wants to be, typically its UP
+     * @param plant        The plant that is checking survivability
+     * @return {@link TriState#TRUE} to allow the plant to be planted/stay. {@link TriState#FALSE} to disallow the plant from placing. {@link TriState#DEFAULT} to allow the plant to make the decision to stay or not.
      */
-    boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, IPlantable plantable);
+    default TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos soilPosition, Direction facing, BlockState plant) {
+        return TriState.DEFAULT;
+    }
 
     /**
      * Called when a tree grows on top of this block and tries to set it to dirt by the trunk placer.
@@ -409,7 +411,7 @@ public interface IBlockExtension {
      * @return True if the soil should be considered fertile.
      */
     default boolean isFertile(BlockState state, BlockGetter level, BlockPos pos) {
-        if (state.is(Blocks.FARMLAND))
+        if (state.getBlock() instanceof FarmBlock)
             return state.getValue(FarmBlock.MOISTURE) > 0;
 
         return false;
@@ -443,17 +445,17 @@ public interface IBlockExtension {
     }
 
     /**
-     * Gathers how much experience this block drops when broken.
+     * Returns how many experience points this block drops when broken, before application of {@linkplain EnchantmentEffectComponents#BLOCK_EXPERIENCE enchantments}.
      *
-     * @param state          The current state
-     * @param level          The level
-     * @param randomSource   Random source to use for experience randomness
-     * @param pos            Block position
-     * @param fortuneLevel   fortune enchantment level of tool being used
-     * @param silkTouchLevel silk touch enchantment level of tool being used
-     * @return Amount of XP from breaking this block.
+     * @param state       The state of the block being broken
+     * @param level       The level
+     * @param pos         The position of the block being broken
+     * @param blockEntity The block entity, if any
+     * @param breaker     The entity who broke the block, if known
+     * @param tool        The item stack used to break the block. May be empty
+     * @return The amount of experience points dropped by this block
      */
-    default int getExpDrop(BlockState state, LevelReader level, RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
+    default int getExpDrop(BlockState state, LevelAccessor level, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity breaker, ItemStack tool) {
         return 0;
     }
 
@@ -527,12 +529,12 @@ public interface IBlockExtension {
      * @param level     The level
      * @param pos       The position of this state
      * @param beaconPos The position of the beacon
-     * @return A float RGB [0.0, 1.0] array to be averaged with a beacon's existing beam color, or null to do nothing to the beam
+     * @return An Integer ARGB value to be averaged with a beacon's existing beam color, or null to do nothing to the beam
      */
     @Nullable
-    default float[] getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
+    default Integer getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
         if (self() instanceof BeaconBeamBlock)
-            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColors();
+            return ((BeaconBeamBlock) self()).getColor().getTextureDiffuseColor();
         return null;
     }
 
@@ -718,7 +720,7 @@ public interface IBlockExtension {
      * @param pos       Block position in level
      * @param explosion The explosion instance affecting the block
      */
-    default void onBlockExploded(BlockState state, Level level, BlockPos pos, Explosion explosion) {
+    default void onBlockExploded(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion) {
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
         self().wasExploded(level, pos, explosion);
     }
@@ -746,31 +748,32 @@ public interface IBlockExtension {
 
     /**
      * Returns the state that this block should transform into when right-clicked by a tool.
-     * For example: Used to determine if {@link ToolActions#AXE_STRIP an axe can strip},
-     * {@link ToolActions#SHOVEL_FLATTEN a shovel can path}, or {@link ToolActions#HOE_TILL a hoe can till}.
+     * For example: Used to determine if {@link ItemAbilities#AXE_STRIP an axe can strip},
+     * {@link ItemAbilities#SHOVEL_FLATTEN a shovel can path}, or {@link ItemAbilities#HOE_TILL a hoe can till}.
      * Returns {@code null} if nothing should happen.
      *
-     * @param state      The current state
-     * @param context    The use on context that the action was performed in
-     * @param toolAction The action being performed by the tool
-     * @param simulate   If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
+     * @param state       The current state
+     * @param context     The use on context that the action was performed in
+     * @param itemAbility The action being performed by the tool
+     * @param simulate    If {@code true}, no actions that modify the world in any way should be performed. If {@code false}, the world may be modified.
      * @return The resulting state after the action has been performed
      */
     @Nullable
-    default BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
+    default BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!itemStack.canPerformAction(itemAbility))
             return null;
 
-        if (ToolActions.AXE_STRIP == toolAction) {
+        if (ItemAbilities.AXE_STRIP == itemAbility) {
             return AxeItem.getAxeStrippingState(state);
-        } else if (ToolActions.AXE_SCRAPE == toolAction) {
+        } else if (ItemAbilities.AXE_SCRAPE == itemAbility) {
             return WeatheringCopper.getPrevious(state).orElse(null);
-        } else if (ToolActions.AXE_WAX_OFF == toolAction) {
-            return Optional.ofNullable(HoneycombItem.WAX_OFF_BY_BLOCK.get().get(state.getBlock())).map(block -> block.withPropertiesOf(state)).orElse(null);
-        } else if (ToolActions.SHOVEL_FLATTEN == toolAction) {
+        } else if (ItemAbilities.AXE_WAX_OFF == itemAbility) {
+            Block waxOffBlock = DataMapHooks.getBlockUnwaxed(state.getBlock());
+            return Optional.ofNullable(waxOffBlock).map(block -> block.withPropertiesOf(state)).orElse(null);
+        } else if (ItemAbilities.SHOVEL_FLATTEN == itemAbility) {
             return ShovelItem.getShovelPathingState(state);
-        } else if (ToolActions.HOE_TILL == toolAction) {
+        } else if (ItemAbilities.HOE_TILL == itemAbility) {
             // Logic copied from HoeItem#TILLABLES; needs to be kept in sync during updating
             Block block = state.getBlock();
             if (block == Blocks.ROOTED_DIRT) {
@@ -782,6 +785,23 @@ public interface IBlockExtension {
                     context.getLevel().getBlockState(context.getClickedPos().above()).isAir()) {
                         return block == Blocks.COARSE_DIRT ? Blocks.DIRT.defaultBlockState() : Blocks.FARMLAND.defaultBlockState();
                     }
+        } else if (ItemAbilities.SHEARS_TRIM == itemAbility) {
+            if (state.getBlock() instanceof GrowingPlantHeadBlock growingPlant && !growingPlant.isMaxAge(state)) {
+                if (!simulate)
+                    context.getLevel().playSound(context.getPlayer(), context.getClickedPos(), SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                return growingPlant.getMaxAgeState(state);
+            }
+        } else if (ItemAbilities.SHOVEL_DOUSE == itemAbility) {
+            if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {
+                if (!simulate) {
+                    CampfireBlock.dowse(context.getPlayer(), context.getLevel(), context.getClickedPos(), state);
+                }
+                return state.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
+            }
+        } else if (ItemAbilities.FIRESTARTER_LIGHT == itemAbility) {
+            if (CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state)) {
+                return state.setValue(BlockStateProperties.LIT, Boolean.valueOf(true));
+            }
         }
 
         return null;
@@ -980,7 +1000,7 @@ public interface IBlockExtension {
 
     /**
      * Determines if this block can spawn Bubble Columns and if so, what direction the column flows.
-     * <p></p>
+     * <p>
      * NOTE: The block itself will still need to call {@link net.minecraft.world.level.block.BubbleColumnBlock#updateColumn(LevelAccessor, BlockPos, BlockState)} in their tick method and schedule a block tick in the block's onPlace.
      * Also, schedule a fluid tick in updateShape method if update direction is up. Both are needed in order to get the Bubble Columns to function properly. See {@link net.minecraft.world.level.block.SoulSandBlock} and {@link net.minecraft.world.level.block.MagmaBlock} for example.
      *
@@ -995,5 +1015,17 @@ public interface IBlockExtension {
         } else {
             return BubbleColumnDirection.NONE;
         }
+    }
+
+    /**
+     * Determines if a fluid adjacent to the block on the given side should not be rendered.
+     * 
+     * @param state         the block state of the block
+     * @param selfFace      the face of this block that the fluid is adjacent to
+     * @param adjacentFluid the fluid that is touching that face
+     * @return true if this block should cause the fluid's face to not render
+     */
+    default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
+        return state.getFluidState().getType().isSame(adjacentFluid.getType());
     }
 }

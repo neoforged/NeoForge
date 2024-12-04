@@ -1,0 +1,53 @@
+name: Check PR local changes
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
+
+jobs:
+  check-local-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1000
+          fetch-tags: true
+
+      # GradleUtils will append the branch name to the version,
+      # but for that we need a properly checked out branch
+      - name: Create branch for commit
+        run:
+          git switch -C pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.ref }}
+
+      - name: Setup JDK 21
+        uses: neoforged/actions/setup-java@main
+        with:
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      - name: Setup with Gradle
+        run: ./gradlew :neoforge:setup
+
+      - name: Gen package infos
+        run: ./gradlew generatePackageInfos
+
+      - name: Gen patches
+        run: ./gradlew :neoforge:genPatches
+
+      - name: Run datagen with Gradle
+        run: ./gradlew :neoforge:runData :tests:runData
+
+      - name: Check no local changes are present
+        run: |
+          # Print status for easier debugging
+          git status
+          if [ -n "$(git status --porcelain)" ]; then exit 1; fi

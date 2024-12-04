@@ -9,7 +9,7 @@ NeoForge is a free, open-source, community-oriented modding API for Minecraft.
 
 | Version | Support |
 |---------|---------|
-| 1.20.x  | Active  |
+| 1.21.x  | Active  |
 
 * [Download]
 * [Discord]

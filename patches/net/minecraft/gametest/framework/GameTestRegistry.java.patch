@@ -1,5 +1,13 @@
 --- a/net/minecraft/gametest/framework/GameTestRegistry.java
 +++ b/net/minecraft/gametest/framework/GameTestRegistry.java
+@@ -15,6 +_,7 @@
+ import java.util.function.Consumer;
+ import java.util.function.Function;
+ import java.util.stream.Stream;
++
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.block.Rotation;
+ 
 @@ -25,21 +_,33 @@
      private static final Map<String, Consumer<ServerLevel>> AFTER_BATCH_FUNCTIONS = Maps.newHashMap();
      private static final Set<TestFunction> LAST_FAILED_TESTS = Sets.newHashSet();
@@ -31,7 +39,7 @@
 -            TEST_FUNCTIONS.addAll(useTestGeneratorMethod(p_177504_));
 +            Collection<TestFunction> testFunctions = new java.util.ArrayList<>(useTestGeneratorMethod(p_177504_));
 +            if (!allowedNamespaces.isEmpty())
-+                 testFunctions.removeIf(t -> !allowedNamespaces.contains(new net.minecraft.resources.ResourceLocation(t.structureName()).getNamespace()));
++                 testFunctions.removeIf(t -> !allowedNamespaces.contains(net.minecraft.resources.ResourceLocation.parse(t.structureName()).getNamespace()));
 +            TEST_FUNCTIONS.addAll(testFunctions);
              TEST_CLASS_NAMES.add(s);
          }

@@ -6,11 +6,11 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
@@ -19,7 +19,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -40,27 +40,27 @@ public abstract class ModelEvent extends Event {
      * must therefore not be accessed in this event.
      * </p>
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
-        private final Map<ResourceLocation, BakedModel> models;
+        private final ModelBakery.BakingResult bakingResult;
         private final Function<Material, TextureAtlasSprite> textureGetter;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public ModifyBakingResult(Map<ResourceLocation, BakedModel> models, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
-            this.models = models;
+        public ModifyBakingResult(ModelBakery.BakingResult bakingResult, Function<Material, TextureAtlasSprite> textureGetter, ModelBakery modelBakery) {
+            this.bakingResult = bakingResult;
             this.textureGetter = textureGetter;
             this.modelBakery = modelBakery;
         }
 
         /**
-         * @return the modifiable registry map of models and their model names
+         * @return The result of the model baking
          */
-        public Map<ResourceLocation, BakedModel> getModels() {
-            return models;
+        public ModelBakery.BakingResult getBakingResult() {
+            return bakingResult;
         }
 
         /**
@@ -88,19 +88,25 @@ public abstract class ModelEvent extends Event {
      * The model registry given by this event is unmodifiable. To modify the model registry, use
      * {@link ModelEvent.ModifyBakingResult} instead.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class BakingCompleted extends ModelEvent implements IModBusEvent {
         private final ModelManager modelManager;
-        private final Map<ResourceLocation, BakedModel> models;
+        private final ModelBakery.BakingResult bakingResult;
         private final ModelBakery modelBakery;
 
         @ApiStatus.Internal
-        public BakingCompleted(ModelManager modelManager, Map<ResourceLocation, BakedModel> models, ModelBakery modelBakery) {
+        public BakingCompleted(ModelManager modelManager, ModelBakery.BakingResult bakingResult, ModelBakery modelBakery) {
             this.modelManager = modelManager;
-            this.models = models;
+            this.bakingResult = new ModelBakery.BakingResult(
+                    bakingResult.missingModel(),
+                    Collections.unmodifiableMap(bakingResult.blockStateModels()),
+                    bakingResult.missingItemModel(),
+                    Collections.unmodifiableMap(bakingResult.itemStackModels()),
+                    Collections.unmodifiableMap(bakingResult.itemProperties()),
+                    Collections.unmodifiableMap(bakingResult.standaloneModels()));
             this.modelBakery = modelBakery;
         }
 
@@ -112,10 +118,10 @@ public abstract class ModelEvent extends Event {
         }
 
         /**
-         * @return an unmodifiable view of the registry map of models and their model names
+         * @return The result of the model baking
          */
-        public Map<ResourceLocation, BakedModel> getModels() {
-            return models;
+        public ModelBakery.BakingResult getBakingResult() {
+            return bakingResult;
         }
 
         /**
@@ -127,52 +133,52 @@ public abstract class ModelEvent extends Event {
     }
 
     /**
-     * Fired when the {@link net.minecraft.client.resources.model.ModelBakery} is notified of the resource manager reloading.
+     * Fired when the {@link net.minecraft.client.resources.model.ModelDiscovery} is notified of dependency discovery of its top models.
      * Allows developers to register models to be loaded, along with their dependencies.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class RegisterAdditional extends ModelEvent implements IModBusEvent {
-        private final Set<ResourceLocation> models;
+        private final Consumer<ResourceLocation> registrar;
 
         @ApiStatus.Internal
-        public RegisterAdditional(Set<ResourceLocation> models) {
-            this.models = models;
+        public RegisterAdditional(Consumer<ResourceLocation> registrar) {
+            this.registrar = registrar;
         }
 
         /**
          * Registers a model to be loaded, along with its dependencies.
          */
         public void register(ResourceLocation model) {
-            models.add(model);
+            registrar.accept(model);
         }
     }
 
     /**
-     * Allows users to register their own {@link IGeometryLoader geometry loaders} for use in block/item models.
+     * Allows users to register their own {@link UnbakedModelLoader unbaked model loaders} for use in block/item models.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class RegisterGeometryLoaders extends ModelEvent implements IModBusEvent {
-        private final Map<ResourceLocation, IGeometryLoader<?>> loaders;
+    public static class RegisterLoaders extends ModelEvent implements IModBusEvent {
+        private final Map<ResourceLocation, UnbakedModelLoader<?>> loaders;
 
         @ApiStatus.Internal
-        public RegisterGeometryLoaders(Map<ResourceLocation, IGeometryLoader<?>> loaders) {
+        public RegisterLoaders(Map<ResourceLocation, UnbakedModelLoader<?>> loaders) {
             this.loaders = loaders;
         }
 
         /**
-         * Registers a new geometry loader.
-         * 
+         * Registers a new unbaked model loader.
+         *
          * @param key    the ID of the loader
-         * @param loader the geometry loader to register
+         * @param loader the loader to register
          */
-        public void register(ResourceLocation key, IGeometryLoader<?> loader) {
-            Preconditions.checkArgument(!loaders.containsKey(key), "Geometry loader already registered: " + key);
+        public void register(ResourceLocation key, UnbakedModelLoader<?> loader) {
+            Preconditions.checkArgument(!loaders.containsKey(key), "Unbaked model loader already registered: " + key);
             loaders.put(key, loader);
         }
     }

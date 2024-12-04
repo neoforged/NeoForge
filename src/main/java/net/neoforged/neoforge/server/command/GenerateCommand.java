@@ -96,8 +96,10 @@ class GenerateCommand {
             double percent = (double) count / total * 100.0;
             source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.stopped", count, total, percent), true);
 
-            generationBar.close();
-            generationBar = null;
+            if (generationBar != null) {
+                generationBar.close();
+                generationBar = null;
+            }
             activeTask = null;
         } else {
             source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.not_running"), false);

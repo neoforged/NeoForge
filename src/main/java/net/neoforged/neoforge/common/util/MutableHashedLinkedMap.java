@@ -11,7 +11,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.function.BiPredicate;
+import net.neoforged.neoforge.common.util.strategy.BasicStrategy;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,19 +22,10 @@ import org.jetbrains.annotations.Nullable;
  * @param <V> the type of mapped values
  */
 public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
-    /**
-     * A strategy that uses {@link Objects#hashCode(Object)} and {@link Object#equals(Object)}.
-     */
-    public static final Strategy<? super Object> BASIC = new BasicStrategy();
-
-    /**
-     * A strategy that uses {@link System#identityHashCode(Object)} and {@code a == b} comparisons.
-     */
-    public static final Strategy<? super Object> IDENTITY = new IdentityStrategy();
-
     private final Strategy<? super K> strategy;
     private final Map<K, Entry> entries;
     private final MergeFunction<K, V> merge;
+    private final BiPredicate<K, V> insertTest;
     private Entry head = null;
     private Entry last = null;
     /*
@@ -43,10 +35,10 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     private transient int changes = 0;
 
     /**
-     * Creates a new instance using the {@link #BASIC} strategy.
+     * Creates a new instance using the {@link BasicStrategy#BASIC} strategy.
      */
     public MutableHashedLinkedMap() {
-        this(BASIC);
+        this(BasicStrategy.BASIC);
     }
 
     /**
@@ -59,15 +51,37 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     }
 
     /**
-     * Creates a mutable linked map with a custom merge function.
+     * Creates a mutable linked map with a default new-value-selecting merge function.
      *
      * @param strategy the hashing strategy
      * @param merge    the function used when merging an existing value and a new value
      */
     public MutableHashedLinkedMap(Strategy<? super K> strategy, MergeFunction<K, V> merge) {
+        this(strategy, merge, (k, v) -> true);
+    }
+
+    /**
+     * Creates a mutable linked map with a default new-value-selecting merge function.
+     *
+     * @param strategy   the hashing strategy
+     * @param insertTest the test to apply before inserting a key and value
+     */
+    public MutableHashedLinkedMap(Strategy<? super K> strategy, BiPredicate<K, V> insertTest) {
+        this(strategy, (k, v1, v2) -> v2, insertTest);
+    }
+
+    /**
+     * Creates a mutable linked map with a custom merge function.
+     *
+     * @param strategy   the hashing strategy
+     * @param merge      the function used when merging an existing value and a new value
+     * @param insertTest the test to apply before inserting a key and value
+     */
+    public MutableHashedLinkedMap(Strategy<? super K> strategy, MergeFunction<K, V> merge, BiPredicate<K, V> insertTest) {
         this.strategy = strategy;
         this.entries = new Object2ObjectOpenCustomHashMap<>(strategy);
         this.merge = merge;
+        this.insertTest = insertTest;
     }
 
     /**
@@ -84,6 +98,9 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
     @Nullable
     public V put(K key, V value) {
         var old = entries.get(key);
+        if (!insertTest.test(key, value)) {
+            return old == null ? null : old.value;
+        }
         if (old != null) {
             V ret = old.value;
             old.value = merge.apply(key, ret, value);
@@ -215,6 +232,9 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
 
         V ret = null;
         var entry = entries.get(key);
+        if (!insertTest.test(key, value)) {
+            return entry == null ? null : entry.value;
+        }
         if (entry != null) {
             ret = entry.value;
             entry.value = merge.apply(key, ret, value);
@@ -260,6 +280,9 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
 
         V ret = null;
         var entry = entries.get(key);
+        if (!insertTest.test(key, value)) {
+            return entry == null ? null : entry.value;
+        }
         if (entry != null) {
             ret = entry.value;
             entry.value = merge.apply(key, ret, value);
@@ -357,30 +380,6 @@ public class MutableHashedLinkedMap<K, V> implements Iterable<Map.Entry<K, V>> {
         public int hashCode() {
             return (key == null ? 0 : strategy.hashCode(key)) ^
                     (value == null ? 0 : value.hashCode());
-        }
-    }
-
-    private static class BasicStrategy implements Strategy<Object> {
-        @Override
-        public int hashCode(Object o) {
-            return Objects.hashCode(o);
-        }
-
-        @Override
-        public boolean equals(Object a, Object b) {
-            return Objects.equals(a, b);
-        }
-    }
-
-    private static class IdentityStrategy implements Strategy<Object> {
-        @Override
-        public int hashCode(Object o) {
-            return System.identityHashCode(o);
-        }
-
-        @Override
-        public boolean equals(Object a, Object b) {
-            return a == b;
         }
     }
 }

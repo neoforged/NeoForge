@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/storage/ServerLevelData.java
++++ b/net/minecraft/world/level/storage/ServerLevelData.java
+@@ -90,4 +_,10 @@
+     void setDayTime(long p_78624_);
+ 
+     GameRules getGameRules();
++
++    //Neo
++    float getDayTimeFraction();
++    float getDayTimePerTick();
++    void setDayTimeFraction(float dayTimeFraction);
++    void setDayTimePerTick(float dayTimePerTick);
+ }

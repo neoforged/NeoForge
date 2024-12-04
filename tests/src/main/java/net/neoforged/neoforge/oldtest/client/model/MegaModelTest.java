@@ -11,14 +11,16 @@ import java.util.Set;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.DelegateBakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -28,6 +30,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,7 +40,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
@@ -74,10 +76,10 @@ public class MegaModelTest {
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
 
     private static final String REG_NAME = "test_block";
-    public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.register(REG_NAME, TestBlock::new);
+    public static final DeferredBlock<Block> TEST_BLOCK = BLOCKS.registerBlock(REG_NAME, TestBlock::new, BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     public static final DeferredItem<BlockItem> TEST_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(TEST_BLOCK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> TEST_BLOCK_ENTITY = BLOCK_ENTITIES.register(REG_NAME, () -> new BlockEntityType<>(
-            TestBlock.Entity::new, Set.of(TEST_BLOCK.get()), null));
+            TestBlock.Entity::new, Set.of(TEST_BLOCK.get())));
 
     public MegaModelTest(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
@@ -95,14 +97,14 @@ public class MegaModelTest {
     public static class ClientEvents {
         @SubscribeEvent
         public static void onModelBakingCompleted(ModelEvent.ModifyBakingResult event) {
-            var name = new ModelResourceLocation(MOD_ID, REG_NAME, "");
-            event.getModels().computeIfPresent(name, (n, m) -> new TransformingModelWrapper(m));
+            var name = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, REG_NAME), "");
+            event.getBakingResult().blockStateModels().computeIfPresent(name, (n, m) -> new TransformingModelWrapper(m));
         }
     }
 
     private static class TestBlock extends Block implements EntityBlock {
-        public TestBlock() {
-            super(Properties.of().mapColor(MapColor.STONE));
+        public TestBlock(Properties props) {
+            super(props);
         }
 
         @Nullable
@@ -112,13 +114,13 @@ public class MegaModelTest {
         }
 
         @Override
-        protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
             var entity = level.getBlockEntity(pos);
             if (entity instanceof Entity e) {
                 e.y += Mth.sign(hit.getLocation().y - pos.getY() - 0.5);
                 e.requestModelDataUpdate();
                 level.sendBlockUpdated(pos, state, state, 8);
-                return ItemInteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS;
             }
             return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }
@@ -132,11 +134,11 @@ public class MegaModelTest {
 
             @Override
             public ModelData getModelData() {
-                return ModelData.builder().with(TestData.PROPERTY, new TestData(new Transformation(
+                return ModelData.of(TestData.PROPERTY, new TestData(new Transformation(
                         new Vector3f(0, y * 0.2f, 0),
                         new Quaternionf(1f, 1f, 1f, 1f),
                         Transformation.identity().getScale(),
-                        new Quaternionf(1f, 1f, 1f, 1f)))).build();
+                        new Quaternionf(1f, 1f, 1f, 1f))));
             }
         }
     }
@@ -145,7 +147,7 @@ public class MegaModelTest {
         public static final ModelProperty<TestData> PROPERTY = new ModelProperty<>();
     }
 
-    private static class TransformingModelWrapper extends BakedModelWrapper<BakedModel> {
+    private static class TransformingModelWrapper extends DelegateBakedModel {
         public TransformingModelWrapper(BakedModel originalModel) {
             super(originalModel);
         }

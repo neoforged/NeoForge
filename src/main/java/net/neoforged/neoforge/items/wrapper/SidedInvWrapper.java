@@ -13,7 +13,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class SidedInvWrapper implements IItemHandlerModifiable {
@@ -101,7 +100,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
-            if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+            if (!ItemStack.isSameItemSameComponents(stack, stackInSlot))
                 return stack;
 
             if (!inv.canPlaceItemThroughFace(slot1, stack, side) || !inv.canPlaceItem(slot1, stack))

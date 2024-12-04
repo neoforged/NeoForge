@@ -9,6 +9,7 @@ import java.util.Objects;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
@@ -16,9 +17,14 @@ import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,8 +33,11 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.event.StatAwardEvent;
+import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -82,7 +91,7 @@ public class PlayerEventTests {
                             context.getPlayer().displayClientMessage(Component.literal("Can't place dirt on dispenser"), false);
                         }
                         test.pass();
-                        event.cancelWithResult(ItemInteractionResult.sidedSuccess(level.isClientSide));
+                        event.cancelWithResult(InteractionResult.SUCCESS);
                     }
                 }
             }
@@ -123,11 +132,11 @@ public class PlayerEventTests {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if the ItemPickupEvent fires")
     public static void itemPickupEvent(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerEvent.ItemPickupEvent event) -> {
-            if (event.getStack().is(Items.MELON_SEEDS)) {
+        test.eventListeners().forge().addListener((ItemEntityPickupEvent.Post event) -> {
+            if (event.getOriginalStack().is(Items.MELON_SEEDS)) {
                 // If the event is fired and detects pickup of melon seeds, the test will be considered pass
                 // and the player will get pumpkin seeds too
-                event.getEntity().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
+                event.getPlayer().addItem(new ItemStack(Items.PUMPKIN_SEEDS));
                 test.pass();
             }
         });
@@ -231,6 +240,28 @@ public class PlayerEventTests {
 
     @GameTest
     @EmptyTemplate
+    @TestHolder(description = "Tests if ArmorHurtEvent fires and prevents armor damage.")
+    static void armorHurtEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final ArmorHurtEvent event) -> {
+            if (event.getEntity() instanceof Player player && player.getItemBySlot(EquipmentSlot.CHEST).getItem().equals(Items.DIAMOND_CHESTPLATE))
+                event.setNewDamage(EquipmentSlot.CHEST, 5);
+        });
+
+        test.onGameTest(helper -> {
+            DamageSource source = new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK));
+            helper.startSequence(() -> helper.makeMockPlayer(GameType.SURVIVAL))
+                    .thenExecute(player -> player.invulnerableTime = 0)
+                    .thenExecute(player -> player.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE)))
+                    .thenExecute(player -> player.hurt(source, 10F))
+                    .thenWaitUntil(player -> helper.assertTrue(player.getItemBySlot(EquipmentSlot.CHEST).getItem().equals(Items.DIAMOND_CHESTPLATE)
+                            && player.getItemBySlot(EquipmentSlot.CHEST).getDamageValue() == 5,
+                            "Armor hurt not applied. %s actual but expected 5f".formatted(player.getItemBySlot(EquipmentSlot.CHEST).getDamageValue())))
+                    .thenSucceed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests if the PlayerRespawnPositionEvent fires correctly and can change where the player respawns")
     static void playerRespawnPositionEvent(final DynamicTest test, final RegistrationHelper reg) {
         test.eventListeners().forge().addListener((final PlayerRespawnPositionEvent event) -> {
@@ -239,13 +270,23 @@ public class PlayerEventTests {
                 return;
             }
 
-            event.setRespawnPosition(event.getEntity().position().relative(Direction.SOUTH, 1));
+            var oldTransition = event.getTeleportTransition();
+            var newTransition = new TeleportTransition(oldTransition.newLevel(),
+                    event.getEntity().position().relative(Direction.SOUTH, 1),
+                    oldTransition.deltaMovement(),
+                    oldTransition.xRot(),
+                    oldTransition.yRot(),
+                    oldTransition.missingRespawnBlock(),
+                    oldTransition.asPassenger(),
+                    oldTransition.relatives(),
+                    oldTransition.postTeleportTransition());
+            event.setTeleportTransition(newTransition);
         });
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(player -> player.setCustomName(Component.literal("respawn-position-test")))
                 .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 0)), 0, false, true))
-                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false))
+                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
                 .thenSucceed());
     }
@@ -260,7 +301,7 @@ public class PlayerEventTests {
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 1)), 0, true, true))
-                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false))
+                .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityType.PLAYER, Items.APPLE))
                 .thenSucceed());
     }

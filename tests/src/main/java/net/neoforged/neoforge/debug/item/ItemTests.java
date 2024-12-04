@@ -5,19 +5,24 @@
 
 package net.neoforged.neoforge.debug.item;
 
+import java.util.EnumMap;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,15 +31,21 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -42,7 +53,7 @@ import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -59,11 +70,11 @@ public class ItemTests {
             "Tests if custom mob buckets work"
     })
     static void customMobBucket(final DynamicTest test, final RegistrationHelper reg) {
-        final var cowBucket = reg.items().register("cow_bucket", () -> new MobBucketItem(
+        final var cowBucket = reg.items().registerItem("cow_bucket", props -> new MobBucketItem(
                 EntityType.COW,
                 Fluids.WATER,
                 SoundEvents.BUCKET_EMPTY_FISH,
-                (new Item.Properties()).stacksTo(1)))
+                props.stacksTo(1)))
                 .withLang("Cow bucket");
         test.framework().modEventBus().addListener((final FMLCommonSetupEvent event) -> {
             DispenserBlock.registerBehavior(cowBucket, new DefaultDispenseItemBehavior() {
@@ -111,7 +122,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().register("test_spawn_egg", () -> new DeferredSpawnEggItem(testEntity, 0x0000FF, 0xFF0000, new Item.Properties()) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), props) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);
@@ -122,15 +133,15 @@ public class ItemTests {
             }
 
             @Override
-            public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+            public InteractionResult use(Level level, Player player, InteractionHand hand) {
                 final var sup = super.use(level, player, hand);
-                if (sup.getResult().consumesAction()) {
+                if (sup.consumesAction()) {
                     test.pass();
                 }
                 return sup;
             }
         })
-                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(new ResourceLocation("minecraft:item/template_spawn_egg"))));
+                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"))));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))
@@ -140,11 +151,21 @@ public class ItemTests {
                 .thenSucceed());
     }
 
+    @SuppressWarnings("unused") // Referenced by enumextender.json
+    public static Object getRarityEnumParameter(int idx, Class<?> type) {
+        return type.cast(switch (idx) {
+            case 0 -> -1;
+            case 1 -> "neotests:custom";
+            case 2 -> (UnaryOperator<Style>) style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA);
+            default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
+        });
+    }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if custom rarities (with custom styles) work on items")
     static void itemCustomRarity(final DynamicTest test, final RegistrationHelper reg) {
-        final Rarity rarity = Rarity.create(reg.modId() + "_CUSTOM", new ResourceLocation(reg.modId(), "custom"), style -> style.withItalic(true).withColor(ChatFormatting.DARK_AQUA));
+        final Rarity rarity = Rarity.valueOf("NEOTESTS_CUSTOM");
         final Supplier<Item> item = reg.items().registerSimpleItem("test", new Item.Properties().rarity(rarity))
                 .withLang("Custom rarity test");
 
@@ -164,22 +185,38 @@ public class ItemTests {
                 .fill(0, 0, 0, 2, 0, 2, Blocks.IRON_BLOCK)
                 .fill(0, 1, 0, 2, 1, 2, Blocks.POWDER_SNOW));
 
-        final var snowBoots = reg.items().register("snow_boots", () -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, (new Item.Properties())) {
+        final var snowBoots = reg.items().registerItem("snow_boots", props -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorType.BOOTS, props) {
             @Override
             public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
                 return wearer.getHealth() < wearer.getMaxHealth() / 2;
             }
         }).withLang("Snow Boots").tab(CreativeModeTabs.TOOLS_AND_UTILITIES);
 
-        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 3, 1))
+        test.onGameTest(helper -> helper.startSequence(() -> helper.spawnWithNoFreeWill(EntityType.PIG, 1, 2, 1))
                 .thenExecute(pig -> pig.setItemSlot(EquipmentSlot.FEET, snowBoots.get().getDefaultInstance()))
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth() / 2 - 1))
                 // Pig shouldn't have fallen
-                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 3, 1))
+                .thenExecuteAfter(20, () -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
 
                 // Back to max health so falling time
                 .thenExecute(pig -> pig.setHealth(pig.getMaxHealth()))
-                .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 2, 1))
+                .thenWaitUntil(() -> helper.assertEntityPresent(EntityType.PIG, 1, 1, 1))
                 .thenSucceed());
+    }
+
+    private static final ArmorMaterial NEO_MATERIAL = new ArmorMaterial(5, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BOOTS, 1);
+        map.put(ArmorType.LEGGINGS, 2);
+        map.put(ArmorType.CHESTPLATE, 3);
+        map.put(ArmorType.HELMET, 1);
+        map.put(ArmorType.BODY, 3);
+    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.Items.BARRELS, EquipmentAssets.LEATHER);
+
+    @TestHolder(description = "Tests that registries can correctly handle named holder set references.")
+    static void toolItem(final DynamicTest test, final RegistrationHelper reg) {
+        var material = new ToolMaterial(BlockTags.BAMBOO_BLOCKS, 160, 5.0F, 0.5F, 10, ItemTags.BEDS);
+        reg.items().registerItem("neo_pickaxe", properties -> new PickaxeItem(material, 1.0F, -2.8F, properties));
+        // This is invalid registration, but replicates an error suppression issue found in RegistryManager#applySnapshot
+//        reg.items().register("neo_helmet", () -> new ArmorItem(NEO_MATERIAL, ArmorType.HELMET, new Item.Properties()));
     }
 }

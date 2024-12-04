@@ -8,9 +8,18 @@
 +        if (true) {
              int i = p_221000_.getValue(AGE);
 -            if (i < 2) {
-+            if (i < 2 && net.neoforged.neoforge.common.CommonHooks.onCropsGrowPre(p_221001_, p_221002_, p_221000_, p_221001_.random.nextInt(5) == 0)) {
++            if (i < 2 && net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_221001_, p_221002_, p_221000_, p_221001_.random.nextInt(5) == 0)) {
                  p_221001_.setBlock(p_221002_, p_221000_.setValue(AGE, Integer.valueOf(i + 1)), 2);
-+                net.neoforged.neoforge.common.CommonHooks.onCropsGrowPost(p_221001_, p_221002_, p_221000_);
++                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_221001_, p_221002_, p_221000_);
              }
          }
      }
+@@ -75,6 +_,8 @@
+     @Override
+     protected boolean canSurvive(BlockState p_51767_, LevelReader p_51768_, BlockPos p_51769_) {
+         BlockState blockstate = p_51768_.getBlockState(p_51769_.relative(p_51767_.getValue(FACING)));
++        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_51768_, p_51769_.relative(p_51767_.getValue(FACING)), p_51767_.getValue(FACING).getOpposite(), p_51767_);
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
+         return blockstate.is(BlockTags.JUNGLE_LOGS);
+     }
+ 

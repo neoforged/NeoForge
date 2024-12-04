@@ -46,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> type of queried objects
  * @param <C> type of the additional context
  */
-public final class EntityCapability<T, C> extends BaseCapability<T, C> {
+public final class EntityCapability<T, C extends @Nullable Object> extends BaseCapability<T, C> {
     /**
      * Creates a new entity capability, or gets it if it already exists.
      *
@@ -54,7 +54,7 @@ public final class EntityCapability<T, C> extends BaseCapability<T, C> {
      * @param typeClass    type of the queried API
      * @param contextClass type of the additional context
      */
-    public static <T, C> EntityCapability<T, C> create(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
+    public static <T, C extends @Nullable Object> EntityCapability<T, C> create(ResourceLocation name, Class<T> typeClass, Class<C> contextClass) {
         return (EntityCapability<T, C>) registry.create(name, typeClass, contextClass);
     }
 
@@ -64,7 +64,7 @@ public final class EntityCapability<T, C> extends BaseCapability<T, C> {
      *
      * @see #create(ResourceLocation, Class, Class)
      */
-    public static <T> EntityCapability<T, Void> createVoid(ResourceLocation name, Class<T> typeClass) {
+    public static <T> EntityCapability<T, @Nullable Void> createVoid(ResourceLocation name, Class<T> typeClass) {
         return create(name, typeClass, void.class);
     }
 
