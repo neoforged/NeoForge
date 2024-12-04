@@ -23,6 +23,7 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -119,7 +120,7 @@ public class CustomFeatureFlagsTests {
                         shapeless(RecipeCategory.MISC, Items.DIAMOND)
                                 .requires(ItemTags.DIRT)
                                 .unlockedBy("has_dirt", has(ItemTags.DIRT))
-                                .save(output.withConditions(featureFlagsEnabled(flag)), enabledRecipeName);
+                                .save(output.withConditions(NeoForgeConditions.featureFlagsEnabled(flag)), enabledRecipeName);
                     }
                 };
             }

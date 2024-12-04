@@ -116,6 +116,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
@@ -162,13 +163,13 @@ public class DataGeneratorTest {
         PackOutput packOutput = gen.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        var metadata = gen.addProvider(true, new PackMetadataGenerator(packOutput));
-        metadata.add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
-                new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
+        gen.addProvider(true, new PackMetadataGenerator(packOutput)
+                .add(GeneratingOverlayMetadataSection.NEOFORGE_TYPE, new GeneratingOverlayMetadataSection(List.of(
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), metadata.modLoaded(NeoForgeVersion.MOD_ID)),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), metadata.modLoaded("does_not_exist")))))
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
@@ -218,10 +219,10 @@ public class DataGeneratorTest {
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             output.withConditions(
-                                    and(
-                                            not(modLoaded("minecraft")),
-                                            itemExists("minecraft", "dirt"),
-                                            never())),
+                                    NeoForgeConditions.and(
+                                            NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
+                                            NeoForgeConditions.itemExists("minecraft", "dirt"),
+                                            NeoForgeConditions.never())),
                             recipeKey("conditional"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
@@ -233,11 +234,11 @@ public class DataGeneratorTest {
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             output.withConditions(
-                                    not(
-                                            and(
-                                                    not(modLoaded("minecraft")),
-                                                    itemExists("minecraft", "dirt"),
-                                                    never()))),
+                                    NeoForgeConditions.not(
+                                            NeoForgeConditions.and(
+                                                    NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
+                                                    NeoForgeConditions.itemExists("minecraft", "dirt"),
+                                                    NeoForgeConditions.never()))),
                             recipeKey("conditional2"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
@@ -248,7 +249,7 @@ public class DataGeneratorTest {
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
                             output.withConditions(
-                                    tagEmpty(ItemTags.PLANKS)),
+                                    NeoForgeConditions.tagEmpty(ItemTags.PLANKS)),
                             recipeKey("conditional3"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
@@ -259,7 +260,7 @@ public class DataGeneratorTest {
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
                             output.withConditions(
-                                    not(tagEmpty(ItemTags.PLANKS))),
+                                    NeoForgeConditions.not(NeoForgeConditions.tagEmpty(ItemTags.PLANKS))),
                             recipeKey("conditional4"));
 
             // intersection - should match all non-flammable planks

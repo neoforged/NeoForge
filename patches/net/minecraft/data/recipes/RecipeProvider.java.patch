@@ -1,14 +1,5 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -51,7 +_,7 @@
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.SuspiciousEffectHolder;
- 
--public abstract class RecipeProvider {
-+public abstract class RecipeProvider implements net.neoforged.neoforge.common.conditions.IConditionBuilder {
-     protected final HolderLookup.Provider registries;
-     private final HolderGetter<Item> items;
-     protected final RecipeOutput output;
 @@ -566,8 +_,7 @@
      }
  
@@ -19,15 +10,6 @@
              .forEach(
                  (p_359424_, p_359425_) -> {
                      if (p_359425_.requiredFeatures().isSubsetOf(p_313879_)) {
-@@ -736,7 +_,7 @@
-         RecipeBuilder create(RecipeProvider p_363562_, ItemLike p_362052_, ItemLike p_363871_);
-     }
- 
--    public abstract static class Runner implements DataProvider {
-+    public abstract static class Runner implements DataProvider, net.neoforged.neoforge.common.conditions.IConditionBuilder {
-         private final PackOutput packOutput;
-         private final CompletableFuture<HolderLookup.Provider> registries;
- 
 @@ -756,13 +_,13 @@
                          final List<CompletableFuture<?>> list = new ArrayList<>();
                          RecipeOutput recipeoutput = new RecipeOutput() {

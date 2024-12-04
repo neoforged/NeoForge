@@ -28,7 +28,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ import org.slf4j.Logger;
  *
  * @param <T> the type of thing being generated.
  */
-public abstract class JsonCodecProvider<T> implements DataProvider, IConditionBuilder {
+public abstract class JsonCodecProvider<T> implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
     protected final ResourceType resourceType;
     protected final PackOutput.PathProvider pathProvider;

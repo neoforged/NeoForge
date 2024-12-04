@@ -14,64 +14,64 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import org.apache.commons.lang3.ArrayUtils;
 
-public interface IConditionBuilder {
-    default ICondition and(ICondition... values) {
+public interface NeoForgeConditions {
+    static ICondition and(ICondition... values) {
         return new AndCondition(List.of(values));
     }
 
-    default ICondition never() {
+    static ICondition never() {
         return NeverCondition.INSTANCE;
     }
 
-    default ICondition always() {
+    static ICondition always() {
         return AlwaysCondition.INSTANCE;
     }
 
-    default ICondition not(ICondition value) {
+    static ICondition not(ICondition value) {
         return new NotCondition(value);
     }
 
-    default ICondition or(ICondition... values) {
+    static ICondition or(ICondition... values) {
         return new OrCondition(List.of(values));
     }
 
-    default ICondition itemExists(ResourceLocation itemName) {
+    static ICondition itemExists(ResourceLocation itemName) {
         return new ItemExistsCondition(itemName);
     }
 
-    default ICondition itemExists(String namespace, String path) {
+    static ICondition itemExists(String namespace, String path) {
         return new ItemExistsCondition(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 
-    default ICondition itemExists(String itemName) {
+    static ICondition itemExists(String itemName) {
         return new ItemExistsCondition(ResourceLocation.parse(itemName));
     }
 
-    default ICondition modLoaded(String modid) {
+    static ICondition modLoaded(String modid) {
         return new ModLoadedCondition(modid);
     }
 
-    default ICondition tagEmpty(TagKey<Item> tag) {
+    static ICondition tagEmpty(TagKey<Item> tag) {
         return new TagEmptyCondition(tag);
     }
 
-    default ICondition tagEmpty(ResourceLocation itemTag) {
+    static ICondition tagEmpty(ResourceLocation itemTag) {
         return tagEmpty(ItemTags.create(itemTag));
     }
 
-    default ICondition tagEmpty(String namespace, String tagPath) {
+    static ICondition tagEmpty(String namespace, String tagPath) {
         return tagEmpty(ResourceLocation.fromNamespaceAndPath(namespace, tagPath));
     }
 
-    default ICondition tagEmpty(String tagPath) {
+    static ICondition tagEmpty(String tagPath) {
         return tagEmpty(ResourceLocation.parse(tagPath));
     }
 
-    default ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {
+    static ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {
         return new FeatureFlagsEnabledCondition(requiredFeatures);
     }
 
-    default ICondition featureFlagsEnabled(FeatureFlag... requiredFlags) {
+    static ICondition featureFlagsEnabled(FeatureFlag... requiredFlags) {
         if (requiredFlags.length == 0) {
             throw new IllegalArgumentException("FeatureFlagsEnabledCondition requires at least one feature flag.");
         }
@@ -80,9 +80,5 @@ public interface IConditionBuilder {
         } else {
             return new FeatureFlagsEnabledCondition(FeatureFlagSet.of(requiredFlags[0], ArrayUtils.remove(requiredFlags, 0)));
         }
-    }
-
-    static IConditionBuilder of() {
-        return new IConditionBuilder() {};
     }
 }

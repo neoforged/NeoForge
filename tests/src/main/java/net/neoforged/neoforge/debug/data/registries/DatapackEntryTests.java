@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageType;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -45,8 +45,8 @@ public class DatapackEntryTests {
                 event.getLookupProvider(),
                 builder,
                 conditions -> {
-                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, IConditionBuilder.of().never());
-                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, IConditionBuilder.of().always());
+                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, NeoForgeConditions.never());
+                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, NeoForgeConditions.always());
                 },
                 Set.of(reg.modId())));
 
