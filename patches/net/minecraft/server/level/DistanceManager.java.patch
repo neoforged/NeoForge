@@ -4,7 +4,7 @@
      final Executor mainThreadExecutor;
      private long ticketTickCounter;
      private int simulationDistance = 10;
-+    private final Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> forcedTickets = new Long2ObjectOpenHashMap<>();
++    final Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> forcedTickets = new Long2ObjectOpenHashMap<>();
  
      protected DistanceManager(Executor p_140774_, Executor p_140775_) {
          TaskScheduler<Runnable> taskscheduler = TaskScheduler.wrapExecutor("player ticket throttler", p_140775_);
@@ -13,8 +13,8 @@
              this.ticketTracker.update(p_140785_, p_140786_.getTicketLevel(), true);
          }
 +        if (p_140786_.isForceTicks()) {
-+             SortedArraySet<Ticket<?>> tickets = forcedTickets.computeIfAbsent(p_140785_, e -> SortedArraySet.create(4));
-+             tickets.addOrGet(ticket);
++            SortedArraySet<Ticket<?>> tickets = forcedTickets.computeIfAbsent(p_140785_, e -> SortedArraySet.create(4));
++            tickets.addOrGet(ticket);
 +        }
      }
  
@@ -25,10 +25,10 @@
          this.ticketTracker.update(p_140819_, getTicketLevelAt(sortedarrayset), false);
 +
 +        if (p_140820_.isForceTicks()) {
-+             SortedArraySet<Ticket<?>> tickets = forcedTickets.get(p_140819_);
-+             if (tickets != null) {
-+                  tickets.remove(p_140820_);
-+             }
++            SortedArraySet<Ticket<?>> tickets = forcedTickets.get(p_140819_);
++            if (tickets != null) {
++                tickets.remove(p_140820_);
++            }
 +        }
      }
  
@@ -63,8 +63,8 @@
 +    }
 +
 +    public boolean shouldForceTicks(long chunkPos) {
-+         SortedArraySet<Ticket<?>> tickets = forcedTickets.get(chunkPos);
-+         return tickets != null && !tickets.isEmpty();
++        SortedArraySet<Ticket<?>> tickets = forcedTickets.get(chunkPos);
++        return tickets != null && !tickets.isEmpty();
      }
  
      private void dumpTickets(String p_143208_) {
