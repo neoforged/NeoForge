@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.util.context.ContextMap;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +21,11 @@ import org.jetbrains.annotations.Nullable;
  * than the vanilla elements spec.
  */
 public abstract class AbstractUnbakedModel implements ExtendedUnbakedModel {
+    /**
+     * Holds the standard top-level model parameters except elements.
+     * {@link UnbakedModel#bake(TextureSlots, ModelBaker, ModelState, boolean, boolean, ItemTransforms, ContextMap)}
+     * must always use the values given as parameters instead of accessing this parameter directly.
+     */
     protected final StandardModelParameters parameters;
     private UnbakedModel parent;
 
