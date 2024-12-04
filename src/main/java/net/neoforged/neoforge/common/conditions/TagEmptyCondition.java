@@ -8,16 +8,19 @@ package net.neoforged.neoforge.common.conditions;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 
-public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
-    public static final MapCodec<TagEmptyCondition> CODEC = RecordCodecBuilder.mapCodec(
-            builder -> builder
-                    .group(
-                            ResourceLocation.CODEC.xmap(loc -> TagKey.create(Registries.ITEM, loc), TagKey::location).fieldOf("tag").forGetter(TagEmptyCondition::tag))
-                    .apply(builder, TagEmptyCondition::new));
+public record TagEmptyCondition<TRegistry>(TagKey<TRegistry> tag) implements ICondition {
+    public static final MapCodec<TagEmptyCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+            .group(ResourceLocation.CODEC.lenientOptionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.tag().registry().location()),
+                    ResourceLocation.CODEC.fieldOf("tag").forGetter(condition -> condition.tag().location()))
+            .apply(instance, TagEmptyCondition::new));
+
+    private TagEmptyCondition(ResourceLocation registryType, ResourceLocation tagName) {
+        this(TagKey.create(ResourceKey.createRegistryKey(registryType), tagName));
+    }
 
     @Override
     public boolean test(ICondition.IContext context) {
@@ -27,10 +30,5 @@ public record TagEmptyCondition(TagKey<Item> tag) implements ICondition {
     @Override
     public MapCodec<? extends ICondition> codec() {
         return CODEC;
-    }
-
-    @Override
-    public String toString() {
-        return "tag_empty(\"" + tag.location() + "\")";
     }
 }

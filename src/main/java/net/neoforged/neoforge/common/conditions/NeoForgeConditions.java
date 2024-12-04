@@ -6,12 +6,13 @@
 package net.neoforged.neoforge.common.conditions;
 
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.item.Item;
 import org.apache.commons.lang3.ArrayUtils;
 
 public interface NeoForgeConditions {
@@ -35,36 +36,52 @@ public interface NeoForgeConditions {
         return new OrCondition(List.of(values));
     }
 
+    static <TRegistry> ICondition elementExists(ResourceKey<TRegistry> registryKey) {
+        return new ElementExistsCondition<>(registryKey);
+    }
+
+    static <TRegistry> ICondition elementExists(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
+        return elementExists(ResourceKey.create(registryType, registryName));
+    }
+
+    static ICondition elementExists(ResourceLocation registryTypeName, ResourceLocation registryName) {
+        return elementExists(ResourceKey.createRegistryKey(registryTypeName), registryName);
+    }
+
     static ICondition itemExists(ResourceLocation itemName) {
-        return new ItemExistsCondition(itemName);
+        return elementExists(Registries.ITEM, itemName);
     }
 
     static ICondition itemExists(String namespace, String path) {
-        return new ItemExistsCondition(ResourceLocation.fromNamespaceAndPath(namespace, path));
+        return itemExists(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 
     static ICondition itemExists(String itemName) {
-        return new ItemExistsCondition(ResourceLocation.parse(itemName));
+        return itemExists(ResourceLocation.parse(itemName));
     }
 
     static ICondition modLoaded(String modid) {
         return new ModLoadedCondition(modid);
     }
 
-    static ICondition tagEmpty(TagKey<Item> tag) {
-        return new TagEmptyCondition(tag);
+    static <TRegistry> ICondition tagEmpty(TagKey<TRegistry> tag) {
+        return new TagEmptyCondition<>(tag);
     }
 
-    static ICondition tagEmpty(ResourceLocation itemTag) {
-        return tagEmpty(ItemTags.create(itemTag));
+    static <TRegistry> ICondition tagEmpty(ResourceKey<? extends Registry<TRegistry>> tagType, ResourceLocation tagName) {
+        return tagEmpty(TagKey.create(tagType, tagName));
     }
 
-    static ICondition tagEmpty(String namespace, String tagPath) {
-        return tagEmpty(ResourceLocation.fromNamespaceAndPath(namespace, tagPath));
+    static ICondition itemTagEmpty(ResourceLocation tagName) {
+        return tagEmpty(Registries.ITEM, tagName);
     }
 
-    static ICondition tagEmpty(String tagPath) {
-        return tagEmpty(ResourceLocation.parse(tagPath));
+    static ICondition itemTagEmpty(String namespace, String tagPath) {
+        return itemTagEmpty(ResourceLocation.fromNamespaceAndPath(namespace, tagPath));
+    }
+
+    static ICondition itemTagEmpty(String tagName) {
+        return itemTagEmpty(ResourceLocation.parse(tagName));
     }
 
     static ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {

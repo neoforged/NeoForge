@@ -11,8 +11,8 @@
           }
         },
         {
-          "type": "neoforge:item_exists",
-          "item": "minecraft:dirt"
+          "type": "neoforge:element_exists",
+          "element": "minecraft:dirt"
         },
         {
           "type": "neoforge:never"
