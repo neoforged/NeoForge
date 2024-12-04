@@ -7,40 +7,33 @@ package net.neoforged.neoforge.client.model.obj;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import joptsimple.internal.Strings;
+import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.phys.Vec2;
-import net.neoforged.neoforge.client.model.IModelBuilder;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.SimpleUnbakedGeometry;
-import net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper;
+import net.neoforged.neoforge.client.RenderTypeGroup;
+import net.neoforged.neoforge.client.model.ExtendedUnbakedModel;
+import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
-import net.neoforged.neoforge.client.model.renderable.CompositeRenderable;
-import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -52,7 +45,7 @@ import org.joml.Vector4f;
  * Supports positions, texture coordinates, normals and colors. The {@link ObjMaterialLibrary material library}
  * has support for numerous features, including support for {@link ResourceLocation} textures (non-standard).
  */
-public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
+public class ObjModel implements ExtendedUnbakedModel {
     private static final Vector4f COLOR_WHITE = new Vector4f(1, 1, 1, 1);
     private static final Vec2[] DEFAULT_COORDS = {
             new Vec2(0, 0),
@@ -62,8 +55,6 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
     };
 
     private final Map<String, ModelGroup> parts = Maps.newLinkedHashMap();
-    private final Set<String> rootComponentNames = Collections.unmodifiableSet(parts.keySet());
-    private Set<String> allComponentNames;
 
     private final List<Vector3f> positions = Lists.newArrayList();
     private final List<Vec2> texCoords = Lists.newArrayList();
@@ -78,6 +69,8 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
     public final String mtlOverride;
 
     public final ResourceLocation modelLocation;
+    public final Map<String, Boolean> partVisibility;
+    public final Transformation rootTransform;
 
     private ObjModel(ModelSettings settings) {
         this.modelLocation = settings.modelLocation;
@@ -86,6 +79,8 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
         this.flipV = settings.flipV;
         this.emissiveAmbient = settings.emissiveAmbient;
         this.mtlOverride = settings.mtlOverride;
+        this.partVisibility = settings.partVisibility;
+        this.rootTransform = settings.rootTransform;
     }
 
     public static ObjModel parse(ObjTokenizer tokenizer, ModelSettings settings) throws IOException {
@@ -292,26 +287,6 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
         };
     }
 
-    @Override
-    protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
-        parts.values().stream().filter(part -> owner.isComponentVisible(part.name(), true))
-                .forEach(part -> part.addQuads(owner, modelBuilder, baker, spriteGetter, modelTransform));
-    }
-
-    public Set<String> getRootComponentNames() {
-        return rootComponentNames;
-    }
-
-    @Override
-    public Set<String> getConfigurableComponentNames() {
-        if (allComponentNames != null)
-            return allComponentNames;
-        var names = new HashSet<String>();
-        for (var group : parts.values())
-            group.addNamesRecursively(names);
-        return allComponentNames = Collections.unmodifiableSet(names);
-    }
-
     private Pair<BakedQuad, Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, TextureAtlasSprite texture, Transformation transform) {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices) {
@@ -433,16 +408,22 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
         return Pair.of(quadBaker.bakeQuad(), cull);
     }
 
-    public CompositeRenderable bakeRenderable(IGeometryBakingContext configuration) {
-        var builder = CompositeRenderable.builder();
+    public boolean isComponentVisible(String part, boolean fallback) {
+        return partVisibility.getOrDefault(part, fallback);
+    }
 
-        for (var entry : parts.entrySet()) {
-            var name = entry.getKey();
-            var part = entry.getValue();
-            part.bake(builder.child(name), configuration);
-        }
+    @Override
+    public BakedModel bake(TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms, ContextMap additionalProperties) {
+        var builder = new SimpleBakedModel.Builder(useAmbientOcclusion, usesBlockLight, true, transforms);
+        builder.particle(baker.findSprite(slots, TextureSlot.PARTICLE.getId()));
+        parts.values().stream().filter(part -> isComponentVisible(part.name(), true))
+                .forEach(part -> part.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms));
+        return builder.build(additionalProperties.getOrDefault(NeoForgeModelProperties.RENDER_TYPE, RenderTypeGroup.EMPTY));
+    }
 
-        return builder.get();
+    @Override
+    public void resolveDependencies(Resolver resolver) {
+        // no dependencies
     }
 
     public class ModelObject {
@@ -458,24 +439,10 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
             return name;
         }
 
-        public void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
+        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms) {
             for (ModelMesh mesh : meshes) {
-                mesh.addQuads(owner, modelBuilder, spriteGetter, modelTransform);
+                mesh.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms);
             }
-        }
-
-        public void bake(CompositeRenderable.PartBuilder<?> builder, IGeometryBakingContext configuration) {
-            for (ModelMesh mesh : this.meshes) {
-                mesh.bake(builder, configuration);
-            }
-        }
-
-        public Collection<Material> getTextures(IGeometryBakingContext owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
-            return meshes.stream()
-                    .flatMap(mesh -> mesh.mat != null
-                            ? Stream.of(UnbakedGeometryHelper.resolveDirtyMaterial(mesh.mat.diffuseColorMap, owner))
-                            : Stream.of())
-                    .collect(Collectors.toSet());
         }
 
         protected void addNamesRecursively(Set<String> names) {
@@ -491,31 +458,11 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
         }
 
         @Override
-        public void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
-            super.addQuads(owner, modelBuilder, baker, spriteGetter, modelTransform);
+        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms) {
+            super.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms);
 
-            parts.values().stream().filter(part -> owner.isComponentVisible(part.name(), true))
-                    .forEach(part -> part.addQuads(owner, modelBuilder, baker, spriteGetter, modelTransform));
-        }
-
-        @Override
-        public void bake(CompositeRenderable.PartBuilder<?> builder, IGeometryBakingContext configuration) {
-            super.bake(builder, configuration);
-
-            for (var entry : parts.entrySet()) {
-                var name = entry.getKey();
-                var part = entry.getValue();
-                part.bake(builder.child(name), configuration);
-            }
-        }
-
-        @Override
-        public Collection<Material> getTextures(IGeometryBakingContext owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
-            Set<Material> combined = Sets.newHashSet();
-            combined.addAll(super.getTextures(owner, modelGetter, missingTextureErrors));
-            for (ModelObject part : parts.values())
-                combined.addAll(part.getTextures(owner, modelGetter, missingTextureErrors));
-            return combined;
+            parts.values().stream().filter(part -> isComponentVisible("%s.%s".formatted(name(), part.name()), true))
+                    .forEach(part -> part.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms));
         }
 
         @Override
@@ -538,46 +485,27 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
             this.smoothingGroup = currentSmoothingGroup;
         }
 
-        public void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
+        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms) {
             if (mat == null)
                 return;
-            TextureAtlasSprite texture = spriteGetter.apply(UnbakedGeometryHelper.resolveDirtyMaterial(mat.diffuseColorMap, owner));
+            TextureAtlasSprite texture = baker.findSprite(slots, mat.diffuseColorMap);
             int tintIndex = mat.diffuseTintIndex;
             Vector4f colorTint = mat.diffuseColor;
 
-            var rootTransform = owner.getRootTransform();
-            var transform = rootTransform.isIdentity() ? modelTransform.getRotation() : modelTransform.getRotation().compose(rootTransform);
+            var rootTransform = ObjModel.this.rootTransform;
+            var transform = rootTransform.isIdentity() ? state.getRotation() : state.getRotation().compose(rootTransform);
             for (int[][] face : faces) {
                 Pair<BakedQuad, Direction> quad = makeQuad(face, tintIndex, colorTint, mat.ambientColor, texture, transform);
                 if (quad.getRight() == null)
-                    modelBuilder.addUnculledFace(quad.getLeft());
+                    builder.addUnculledFace(quad.getLeft());
                 else
-                    modelBuilder.addCulledFace(quad.getRight(), quad.getLeft());
+                    builder.addCulledFace(quad.getRight(), quad.getLeft());
             }
-        }
-
-        public void bake(CompositeRenderable.PartBuilder<?> builder, IGeometryBakingContext configuration) {
-            ObjMaterialLibrary.Material mat = this.mat;
-            if (mat == null)
-                return;
-            int tintIndex = mat.diffuseTintIndex;
-            Vector4f colorTint = mat.diffuseColor;
-
-            final List<BakedQuad> quads = new ArrayList<>();
-
-            for (var face : this.faces) {
-                var pair = makeQuad(face, tintIndex, colorTint, mat.ambientColor, UnitTextureAtlasSprite.INSTANCE, Transformation.identity());
-                quads.add(pair.getLeft());
-            }
-
-            ResourceLocation textureLocation = UnbakedGeometryHelper.resolveDirtyMaterial(mat.diffuseColorMap, configuration).texture();
-            ResourceLocation texturePath = ResourceLocation.fromNamespaceAndPath(textureLocation.getNamespace(), "textures/" + textureLocation.getPath() + ".png");
-
-            builder.addMesh(texturePath, quads);
         }
     }
 
     public record ModelSettings(ResourceLocation modelLocation,
             boolean automaticCulling, boolean shadeQuads, boolean flipV,
-            boolean emissiveAmbient, @Nullable String mtlOverride) {}
+            boolean emissiveAmbient, @Nullable String mtlOverride,
+            Map<String, Boolean> partVisibility, Transformation rootTransform) {}
 }

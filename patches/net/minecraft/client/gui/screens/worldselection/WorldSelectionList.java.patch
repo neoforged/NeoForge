@@ -9,8 +9,8 @@
      static final Component FROM_NEWER_TOOLTIP_1 = Component.translatable("selectWorld.tooltip.fromNewerVersion1").withStyle(ChatFormatting.RED);
      static final Component FROM_NEWER_TOOLTIP_2 = Component.translatable("selectWorld.tooltip.fromNewerVersion2").withStyle(ChatFormatting.RED);
 @@ -403,6 +_,7 @@
-             p_281612_.drawString(this.minecraft.font, s1, p_282820_ + 32 + 3, p_283181_ + 9 + 3, -8355712, false);
-             p_281612_.drawString(this.minecraft.font, component, p_282820_ + 32 + 3, p_283181_ + 9 + 9 + 3, -8355712, false);
+             p_281612_.drawString(this.minecraft.font, s1, p_282820_ + 32 + 3, p_283181_ + 9 + 3, -8355712);
+             p_281612_.drawString(this.minecraft.font, component, p_282820_ + 32 + 3, p_283181_ + 9 + 9 + 3, -8355712);
              p_281612_.blit(RenderType::guiTextured, this.icon.textureLocation(), p_282820_, p_283181_, 0.0F, 0.0F, 32, 32, 32, 32);
 +            renderExperimentalWarning(p_281612_, p_283204_, p_283025_, p_283181_, p_282820_);
              if (this.minecraft.options.touchscreen().get() || p_283396_) {

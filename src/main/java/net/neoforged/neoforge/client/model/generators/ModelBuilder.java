@@ -25,9 +25,9 @@ import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -61,7 +61,8 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
 
     protected String renderType = null;
     protected boolean ambientOcclusion = true;
-    protected GuiLight guiLight = null;
+
+    protected UnbakedModel.GuiLight guiLight = null;
 
     protected final List<ElementBuilder> elements = new ArrayList<>();
 
@@ -185,7 +186,7 @@ public class ModelBuilder<T extends ModelBuilder<T>> extends ModelFile {
         return self();
     }
 
-    public T guiLight(GuiLight light) {
+    public T guiLight(UnbakedModel.GuiLight light) {
         this.guiLight = light;
         return self();
     }

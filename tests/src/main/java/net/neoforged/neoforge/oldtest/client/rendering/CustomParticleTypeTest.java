@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.oldtest.client.rendering;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
@@ -29,30 +28,8 @@ public class CustomParticleTypeTest {
 
     @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
     public static class ClientEvents {
-        private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType() {
-            @Override
-            public BufferBuilder begin(Tesselator tesselator, TextureManager texMgr) {
-                Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-                return ParticleRenderType.TERRAIN_SHEET.begin(tesselator, texMgr);
-            }
-
-            @Override
-            public String toString() {
-                return "CUSTOM_TYPE";
-            }
-        };
-        private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType() {
-            @Override
-            public BufferBuilder begin(Tesselator tesselator, TextureManager texMgr) {
-                Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
-                return ParticleRenderType.TERRAIN_SHEET.begin(tesselator, texMgr);
-            }
-
-            @Override
-            public String toString() {
-                return "CUSTOM_TYPE_TWO";
-            }
-        };
+        private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType("CUSTOM_TYPE", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));
+        private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType("CUSTOM_TYPE_TWO", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));
 
         private static class CustomParticle extends TerrainParticle {
             public CustomParticle(ClientLevel level, double x, double y, double z) {

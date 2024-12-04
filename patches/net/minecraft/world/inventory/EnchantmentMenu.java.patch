@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/EnchantmentMenu.java
 +++ b/net/minecraft/world/inventory/EnchantmentMenu.java
-@@ -63,7 +_,7 @@
+@@ -62,7 +_,7 @@
          this.addSlot(new Slot(this.enchantSlots, 1, 35, 47) {
              @Override
              public boolean mayPlace(ItemStack p_39517_) {
@@ -9,7 +9,7 @@
              }
  
              @Override
-@@ -91,23 +_,24 @@
+@@ -90,23 +_,24 @@
              if (!itemstack.isEmpty() && itemstack.isEnchantable()) {
                  this.access.execute((p_344366_, p_344367_) -> {
                      IdMap<Holder<Enchantment>> idmap = p_344366_.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).asHolderIdMap();
@@ -37,7 +37,7 @@
                      }
  
                      for (int l = 0; l < 3; l++) {
-@@ -153,14 +_,10 @@
+@@ -152,14 +_,10 @@
                              List<EnchantmentInstance> list = this.getEnchantmentList(p_347276_.registryAccess(), itemstack, p_39466_, this.costs[p_39466_]);
                              if (!list.isEmpty()) {
                                  p_39465_.onEnchantmentPerformed(itemstack, i);
@@ -56,7 +56,7 @@
  
                                  itemstack1.consume(i, p_39465_);
                                  if (itemstack1.isEmpty()) {
-@@ -239,7 +_,7 @@
+@@ -238,7 +_,7 @@
                  if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
                      return ItemStack.EMPTY;
                  }

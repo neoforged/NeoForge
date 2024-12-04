@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
-@@ -113,7 +_,8 @@
+@@ -114,7 +_,8 @@
          this.applyEffectsFromBlocks();
          float f = 0.98F;
          if (this.onGround()) {
@@ -10,7 +10,7 @@
          }
  
          this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -134,7 +_,7 @@
+@@ -135,7 +_,7 @@
  
      private void scanForEntities() {
          if (this.followingPlayer == null || this.followingPlayer.distanceToSqr(this) > 64.0) {
@@ -19,7 +19,7 @@
          }
  
          if (this.level() instanceof ServerLevel) {
-@@ -232,6 +_,7 @@
+@@ -233,6 +_,7 @@
      public void playerTouch(Player p_20792_) {
          if (p_20792_ instanceof ServerPlayer serverplayer) {
              if (p_20792_.takeXpDelay == 0) {
@@ -27,7 +27,7 @@
                  p_20792_.takeXpDelay = 2;
                  p_20792_.take(this, 1);
                  int i = this.repairPlayerItems(serverplayer, this.value);
-@@ -251,7 +_,7 @@
+@@ -252,7 +_,7 @@
          Optional<EnchantedItemInUse> optional = EnchantmentHelper.getRandomItemWith(EnchantmentEffectComponents.REPAIR_WITH_XP, p_344821_, ItemStack::isDamaged);
          if (optional.isPresent()) {
              ItemStack itemstack = optional.get().itemStack();

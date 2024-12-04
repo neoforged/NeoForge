@@ -41,7 +41,7 @@ public class DatapackEntryTests {
                     bootstrap.register(REGULAR_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING));
                 });
 
-        reg.addProvider(event -> new DatapackBuiltinEntriesProvider(
+        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 builder,

@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/entity/state/EntityRenderState.java
 +++ b/net/minecraft/client/renderer/entity/state/EntityRenderState.java
+@@ -7,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class EntityRenderState {
++public class EntityRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
+     public double x;
+     public double y;
+     public double z;
 @@ -27,6 +_,7 @@
      public Vec3 nameTagAttachment;
      @Nullable

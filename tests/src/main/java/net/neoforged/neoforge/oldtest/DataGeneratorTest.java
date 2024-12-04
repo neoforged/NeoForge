@@ -42,10 +42,10 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.resources.model.UnbakedModel.GuiLight;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -152,7 +152,7 @@ public class DataGeneratorTest {
             .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
 
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event) {
+    public static void gatherData(GatherDataEvent.Client event) {
         GSON = new GsonBuilder()
                 .registerTypeAdapter(Variant.class, new Variant.Deserializer())
                 .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
@@ -174,18 +174,18 @@ public class DataGeneratorTest {
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
-        gen.addProvider(event.includeClient(), new Lang(packOutput));
+        gen.addProvider(true, new Lang(packOutput));
         // Let blockstate provider see generated item models by passing its existing file helper
         ItemModelProvider itemModels = new ItemModels(packOutput, event.getExistingFileHelper());
-        gen.addProvider(event.includeClient(), itemModels);
-        gen.addProvider(event.includeClient(), new BlockStates(packOutput, itemModels.existingFileHelper));
-        gen.addProvider(event.includeClient(), new SoundDefinitions(packOutput, event.getExistingFileHelper()));
-        gen.addProvider(event.includeClient(), new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
+        gen.addProvider(true, itemModels);
+        gen.addProvider(true, new BlockStates(packOutput, itemModels.existingFileHelper));
+        gen.addProvider(true, new SoundDefinitions(packOutput, event.getExistingFileHelper()));
+        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
 
-        gen.addProvider(event.includeServer(), new Recipes.Runner(packOutput, lookupProvider));
-        gen.addProvider(event.includeServer(), new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
-        gen.addProvider(event.includeServer(), new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
-        gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
+        gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
+        gen.addProvider(true, new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
+        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
+        gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
     public static void levelStem(BootstrapContext<LevelStem> context) {

@@ -51,7 +51,7 @@ public class CustomPresetEditorTest {
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     public static class CommonModEvents {
         @SubscribeEvent
-        public static void onGatherData(GatherDataEvent event) {
+        public static void onGatherData(GatherDataEvent.Client event) {
             DataGenerator gen = event.getGenerator();
             PackOutput packOutput = gen.getPackOutput();
             CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
@@ -59,7 +59,7 @@ public class CustomPresetEditorTest {
             RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder()
                     .add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
 
-            gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID)) {
+            gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID)) {
                 @Override
                 public String getName() {
                     return MODID + ":" + super.getName(); // dataproviders must have unique names

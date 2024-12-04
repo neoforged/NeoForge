@@ -12,7 +12,7 @@
                  if (mapitemsaveddata != null) {
                      for (ServerPlayer serverplayer : this.level.players()) {
                          mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
-@@ -274,22 +_,25 @@
+@@ -273,22 +_,25 @@
      public void removePairing(ServerPlayer p_8535_) {
          this.entity.stopSeenByPlayer(p_8535_);
          p_8535_.connection.send(new ClientboundRemoveEntitiesPacket(this.entity.getId()));

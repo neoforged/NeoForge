@@ -6,7 +6,7 @@
          this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
 +        // Neo: Store registries and create context object
 +        this.registryLookup = p_361583_;
-+        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags);
++        this.context = new net.neoforged.neoforge.common.conditions.ConditionContext(this.postponedTags, p_250695_);
      }
  
      public ServerFunctionLibrary getFunctionLibrary() {

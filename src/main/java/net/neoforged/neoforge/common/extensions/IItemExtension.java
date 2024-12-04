@@ -13,13 +13,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
@@ -48,7 +48,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.item.equipment.EquipmentModel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.phys.AABB;
@@ -297,24 +296,6 @@ public interface IItemExtension {
     }
 
     /**
-     * Called by RenderBiped and RenderPlayer to determine the armor texture that
-     * should be used for the currently equipped item. This will be called on
-     * stacks with the {@link DataComponents#EQUIPPABLE} component.
-     *
-     * Returning null from this function will use the default value.
-     *
-     * @param stack    ItemStack for the equipped armor
-     * @param type     The layer type of the armor
-     * @param layer    The armor layer
-     * @param _default The default texture determined by the equipment renderer
-     * @return Path of texture to bind, or null to use default
-     */
-    @Nullable
-    default ResourceLocation getArmorTexture(ItemStack stack, EquipmentModel.LayerType type, EquipmentModel.Layer layer, ResourceLocation _default) {
-        return null;
-    }
-
-    /**
      * Called when a entity tries to play the 'swing' animation.
      *
      * @param entity The entity swinging the item.
@@ -550,8 +531,8 @@ public interface IItemExtension {
      *         associated mod and {@link net.minecraft.core.Registry#getKey(Object)} would return null.
      */
     @Nullable
-    default String getCreatorModId(ItemStack itemStack) {
-        return CommonHooks.getDefaultCreatorModId(itemStack);
+    default String getCreatorModId(HolderLookup.Provider registries, ItemStack itemStack) {
+        return CommonHooks.getDefaultCreatorModId(registries, itemStack);
     }
 
     /**

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
 +++ b/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
-@@ -76,7 +_,8 @@
+@@ -72,7 +_,8 @@
          if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
              HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
              Vec3 vec3;
@@ -10,7 +10,7 @@
                  vec3 = hitresult.getLocation();
              } else {
                  vec3 = this.position().add(this.getDeltaMovement());
-@@ -90,7 +_,7 @@
+@@ -86,7 +_,7 @@
                  this.igniteForSeconds(1.0F);
              }
  

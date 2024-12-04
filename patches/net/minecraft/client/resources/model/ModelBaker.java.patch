@@ -1,14 +1,11 @@
 --- a/net/minecraft/client/resources/model/ModelBaker.java
 +++ b/net/minecraft/client/resources/model/ModelBaker.java
-@@ -5,6 +_,10 @@
+@@ -6,7 +_,7 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
 -public interface ModelBaker {
 +public interface ModelBaker extends net.neoforged.neoforge.client.extensions.IModelBakerExtension {
-+    /**
-+     * @deprecated Forge: Use {@link #bake(ResourceLocation, ModelState, java.util.function.Function)} instead.
-+     */
-+    @Deprecated
      BakedModel bake(ResourceLocation p_250776_, ModelState p_251280_);
- }
+ 
+     SpriteGetter sprites();

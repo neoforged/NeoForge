@@ -46,9 +46,9 @@ public class ScaffoldingTest {
         modBus.addListener(this::gatherData);
     }
 
-    private void gatherData(final GatherDataEvent event) {
+    private void gatherData(final GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
-        gen.addProvider(event.includeClient(), new ScaffoldingBlockState(gen.getPackOutput(), MODID, event.getExistingFileHelper()));
+        event.addProvider(new ScaffoldingBlockState(gen.getPackOutput(), MODID, event.getExistingFileHelper()));
     }
 
     static class ScaffoldingBlockState extends BlockStateProvider {
