@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class TexturedModel {
-+public class TexturedModel implements net.neoforged.neoforge.common.extensions.ITexturedModelExtension {
++public class TexturedModel implements net.neoforged.neoforge.client.extensions.ITexturedModelExtension {
      public static final TexturedModel.Provider CUBE = createDefault(TextureMapping::cube, ModelTemplates.CUBE_ALL);
      public static final TexturedModel.Provider CUBE_INNER_FACES = createDefault(TextureMapping::cube, ModelTemplates.CUBE_ALL_INNER_FACES);
      public static final TexturedModel.Provider CUBE_MIRRORED = createDefault(TextureMapping::cube, ModelTemplates.CUBE_MIRRORED_ALL);
@@ -14,7 +14,7 @@
      @FunctionalInterface
      @OnlyIn(Dist.CLIENT)
 -    public interface Provider {
-+    public interface Provider extends net.neoforged.neoforge.common.extensions.ITexturedModelExtension.Provider {
++    public interface Provider extends net.neoforged.neoforge.client.extensions.ITexturedModelExtension.Provider {
          TexturedModel get(Block p_386689_);
  
          default ResourceLocation create(Block p_388828_, BiConsumer<ResourceLocation, ModelInstance> p_386557_) {

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.extensions;
+package net.neoforged.neoforge.client.extensions;
 
 import java.util.function.UnaryOperator;
 import net.minecraft.client.data.models.model.ModelTemplate;
