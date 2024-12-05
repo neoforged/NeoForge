@@ -58,7 +58,7 @@
      }
  
      protected void renderBlurredBackground(float p_330683_) {
-+        // Neo: fix blur effect rendered at high z with depth test breaking subsequent rendering of screen elements
++        // Neo: fix blur effect rendered at high z with depth test breaking subsequent rendering of screen elements (https://github.com/neoforged/NeoForge/issues/1504)
 +        RenderSystem.disableDepthTest();
          this.minecraft.gameRenderer.processBlurEffect(p_330683_);
          this.minecraft.getMainRenderTarget().bindWrite(false);
