@@ -24,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,8 +116,9 @@ public interface IClientItemExtensions {
     default Model getGenericArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
         Model replacement = getHumanoidArmorModel(itemStack, layerType, original);
         if (replacement != original) {
-            // FIXME: equipment rendering deals with a plain Model now
-            //ClientHooks.copyModelProperties(original, replacement);
+            if (original instanceof HumanoidModel<?> originalHumanoid && replacement instanceof HumanoidModel<?> replacementHumanoid) {
+                ClientHooks.copyModelProperties(originalHumanoid, replacementHumanoid);
+            }
             return replacement;
         }
         return original;
