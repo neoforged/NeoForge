@@ -6,10 +6,8 @@
 package net.neoforged.neoforge.client.model;
 
 import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.math.Transformation;
-import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
@@ -61,26 +59,9 @@ public record StandardModelParameters(
             guiLight = UnbakedModel.GuiLight.getByName(GsonHelper.getAsString(jsonObject, "gui_light"));
         }
 
-        Transformation rootTransform = null;
-        if (jsonObject.has("transform")) {
-            JsonElement transform = jsonObject.get("transform");
-            rootTransform = context.deserialize(transform, Transformation.class);
-        }
-
-        RenderTypeGroup renderTypeGroup = RenderTypeGroup.EMPTY;
-        if (jsonObject.has("render_type")) {
-            var renderTypeHintName = GsonHelper.getAsString(jsonObject, "render_type");
-            renderTypeGroup = net.neoforged.neoforge.client.NamedRenderTypeManager.get(ResourceLocation.parse(renderTypeHintName));
-        }
-
-        Map<String, Boolean> partVisibility = new HashMap<>();
-        if (jsonObject.has("visibility")) {
-            JsonObject visibility = GsonHelper.getAsJsonObject(jsonObject, "visibility");
-            for (Map.Entry<String, JsonElement> part : visibility.entrySet()) {
-                partVisibility.put(part.getKey(), part.getValue().getAsBoolean());
-            }
-        }
-        partVisibility = Map.copyOf(partVisibility);
+        Transformation rootTransform = NeoForgeModelProperties.deserializeRootTransform(jsonObject, context);
+        RenderTypeGroup renderTypeGroup = NeoForgeModelProperties.deserializeRenderType(jsonObject);
+        Map<String, Boolean> partVisibility = NeoForgeModelProperties.deserializePartVisibility(jsonObject);
 
         return new StandardModelParameters(parent, textures, itemTransforms, ambientOcclusion, guiLight, rootTransform, renderTypeGroup, partVisibility);
     }

@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.client.model;
 
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.resources.model.ModelBaker;
@@ -71,22 +69,8 @@ public abstract class AbstractUnbakedModel implements ExtendedUnbakedModel {
 
     @Override
     public void fillAdditionalProperties(ContextMap.Builder propertiesBuilder) {
-        if (this.parameters.rootTransform() != null) {
-            propertiesBuilder.withParameter(NeoForgeModelProperties.TRANSFORM, this.parameters.rootTransform());
-        }
-        if (!this.parameters.renderTypeGroup().isEmpty()) {
-            propertiesBuilder.withParameter(NeoForgeModelProperties.RENDER_TYPE, this.parameters.renderTypeGroup());
-        }
-        if (!this.parameters.partVisibility().isEmpty()) {
-            Map<String, Boolean> visibility = propertiesBuilder.getOptionalParameter(NeoForgeModelProperties.PART_VISIBILITY);
-            if (visibility != null) {
-                visibility = new HashMap<>(visibility);
-                visibility.putAll(this.parameters.partVisibility());
-                visibility = Map.copyOf(visibility);
-            } else {
-                visibility = this.parameters.partVisibility();
-            }
-            propertiesBuilder.withParameter(NeoForgeModelProperties.PART_VISIBILITY, visibility);
-        }
+        NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.parameters.rootTransform());
+        NeoForgeModelProperties.fillRenderTypeProperty(propertiesBuilder, this.parameters.renderTypeGroup());
+        NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.parameters.partVisibility());
     }
 }
