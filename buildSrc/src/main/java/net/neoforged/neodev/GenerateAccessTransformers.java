@@ -85,6 +85,15 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
                     // If there's neither a field nor a method predicate, this is a class AT
                     else if (!group.modifier.test(value.access().intValue())) {
                         groups[i].add(group.modifier.name + " " + value.name().replace('/', '.'));
+
+                        // If we AT a record we must ensure that its constructors have the same AT
+                        if (value.hasSuperclass("java/lang/Record")) {
+                            for (MethodInfo method : value.methods()) {
+                                if (method.name().equals("<init>")) {
+                                    groups[i].add(group.modifier.name + " " + value.name().replace('/', '.') + " " + method.name() + method.descriptor());
+                                }
+                            }
+                        }
                     }
                 }
             }

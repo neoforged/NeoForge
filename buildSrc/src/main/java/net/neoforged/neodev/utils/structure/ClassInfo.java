@@ -1,6 +1,5 @@
 package net.neoforged.neodev.utils.structure;
 
-import net.neoforged.neodev.GenerateAccessTransformers;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.gradle.api.Named;
 
