@@ -48,7 +48,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     @Nullable
     private final CustomLoaderBuilder customLoader;
     private final RootTransformsBuilder rootTransforms;
-    private final List<OverrideBuilder> overrides;
     @Nullable
     private final ResourceLocation renderType;
     @Nullable
@@ -62,7 +61,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         this.elements = List.copyOf(builder.elements);
         this.customLoader = builder.customLoader;
         this.rootTransforms = builder.rootTransforms;
-        this.overrides = List.copyOf(builder.overrides);
         this.renderType = builder.renderType;
         this.ambientOcclusion = builder.ambientOcclusion;
         this.guiLight = builder.guiLight;
@@ -82,7 +80,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         @Nullable
         private CustomLoaderBuilder customLoader = null;
         private final RootTransformsBuilder rootTransforms = new RootTransformsBuilder(this);
-        private final List<OverrideBuilder> overrides = new ArrayList<>();
         @Nullable
         private ResourceLocation renderType = null;
         @Nullable
@@ -100,7 +97,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                 ext.elements.forEach(elem -> builder.elements.add(elem.copy(builder)));
                 builder.customLoader = ext.customLoader != null ? ext.customLoader.copy(builder) : null;
                 builder.rootTransforms.copyFrom(ext.rootTransforms);
-                ext.overrides.forEach(override -> builder.overrides.add(override.copy(builder)));
                 builder.renderType = ext.renderType;
                 builder.ambientOcclusion = ext.ambientOcclusion;
                 builder.guiLight = ext.guiLight;
@@ -216,24 +212,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
 
         public RootTransformsBuilder rootTransforms() {
             return rootTransforms;
-        }
-
-        public OverrideBuilder override() {
-            OverrideBuilder ret = new OverrideBuilder(this);
-            overrides.add(ret);
-            return ret;
-        }
-
-        /**
-         * Get an existing override builder
-         *
-         * @param index the index of the existing override builder
-         * @return the override builder
-         * @throws IndexOutOfBoundsException if {@code} index is out of bounds
-         */
-        public OverrideBuilder override(int index) {
-            Preconditions.checkElementIndex(index, overrides.size(), "override");
-            return overrides.get(index);
         }
 
         public ExtendedModelTemplate build() {
@@ -1056,49 +1034,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         }
     }
 
-    public static final class OverrideBuilder {
-        private final Builder owner;
-        @Nullable
-        private ResourceLocation model;
-        private final Map<ResourceLocation, Float> predicates = new LinkedHashMap<>();
-
-        OverrideBuilder(ExtendedModelTemplate.Builder owner) {
-            this.owner = owner;
-        }
-
-        public OverrideBuilder model(ResourceLocation model) {
-            this.model = model;
-            return this;
-        }
-
-        public OverrideBuilder predicate(ResourceLocation key, float value) {
-            this.predicates.put(key, value);
-            return this;
-        }
-
-        public ExtendedModelTemplate.Builder end() {
-            return this.owner;
-        }
-
-        OverrideBuilder copy(Builder owner) {
-            OverrideBuilder builder = new OverrideBuilder(owner);
-            builder.model = model;
-            builder.predicates.putAll(this.predicates);
-            return builder;
-        }
-
-        JsonObject toJson() {
-            Preconditions.checkNotNull(model, "No model specified");
-
-            JsonObject ret = new JsonObject();
-            JsonObject predicatesJson = new JsonObject();
-            predicates.forEach((key, val) -> predicatesJson.addProperty(key.toString(), val));
-            ret.add("predicate", predicatesJson);
-            ret.addProperty("model", model.toString());
-            return ret;
-        }
-    }
-
     @Override
     public JsonObject createBaseTemplate(ResourceLocation modelPath, Map<TextureSlot, ResourceLocation> textureMap) {
         var root = super.createBaseTemplate(modelPath, textureMap);
@@ -1202,12 +1137,6 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         JsonObject transform = rootTransforms.toJson();
         if (!transform.isEmpty()) {
             root.add("transform", transform);
-        }
-
-        if (!overrides.isEmpty()) {
-            JsonArray overridesJson = new JsonArray();
-            overrides.stream().map(OverrideBuilder::toJson).forEach(overridesJson::add);
-            root.add("overrides", overridesJson);
         }
 
         if (customLoader != null)
