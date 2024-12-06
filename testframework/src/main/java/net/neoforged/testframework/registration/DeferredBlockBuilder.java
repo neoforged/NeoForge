@@ -99,7 +99,6 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
         return withModel((block, blockModels) -> {
             var builder = ExtendedModelTemplate.builder();
             modelConsumer.accept(builder);
-            ;
             var modelPath = builder.build().create(block, textures, blockModels.modelOutput);
             blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, modelPath));
         });
