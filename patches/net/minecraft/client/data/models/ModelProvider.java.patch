@@ -22,10 +22,10 @@
 +        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE);
 +    }
 +
-+    public ModelProvider(PackOutput output, String modId) {
-+        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
-+        this.itemInfoPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
-+        this.modelPathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++    public ModelProvider(PackOutput p_252226_, String modId) {
++        this.blockStatePathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
++        this.itemInfoPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
++        this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +        this.modId = modId;
 +    }
 +
