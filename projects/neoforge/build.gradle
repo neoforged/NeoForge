@@ -162,57 +162,63 @@ neoDev {
 }
 
 generateAccessTransformers {
+    // Make all state shards public
     classGroup(
             'render state shard classes', PUBLIC,
-            matchInnerClassesOf('net/minecraft/client/renderer/RenderStateShard')
+            innerClassesOf('net/minecraft/client/renderer/RenderStateShard')
     )
+    // Make all state shard fields public
     fieldGroup(
             'render state shards', PUBLIC,
-            matchClass('net/minecraft/client/renderer/RenderStateShard'),
-            matchFieldsOfType(matchClassesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
+            named('net/minecraft/client/renderer/RenderStateShard'),
+            fieldsOfType(classesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
     )
 
+    // Make all block constructors public so they can be used by mods
     methodGroup(
             'block constructors', PUBLIC,
-            matchClassesWithSuperclass('net/minecraft/world/level/block/Block'),
-            matchMethodsWithName('<init>')
+            classesWithSuperclass('net/minecraft/world/level/block/Block'),
+            named('<init>')
     )
+    // Make all particle constructors public so they can be used by mods
     methodGroup(
             'particle constructors', PUBLIC,
-            matchClassesWithSuperclass('net/minecraft/client/particle/Particle'),
-            matchMethodsWithName('<init>')
+            classesWithSuperclass('net/minecraft/client/particle/Particle'),
+            named('<init>')
     )
 
+    // Make all criteria methods in the recipe provider protected so mods can use them
     methodGroup(
             'recipe criteria', PROTECTED,
-            matchClass('net/minecraft/data/recipes/RecipeProvider'),
-            matchMethodsReturning('net/minecraft/advancements/Criterion')
+            named('net/minecraft/data/recipes/RecipeProvider'),
+            methodsReturning('net/minecraft/advancements/Criterion')
     )
 
     // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
     methodGroup(
             'skeleton step sound', PROTECTED,
-            matchClassesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
-            matchMethodsWithName('getStepSound')
+            classesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
+            named('getStepSound')
     )
 
     // Make all noise generator setting factories public so mods can use them for custom dimensions
     methodGroup(
             'noise generator', PUBLIC,
-            matchClass('net/minecraft/world/level/levelgen/NoiseGeneratorSettings'),
-            matchMethodsReturning('net/minecraft/world/level/levelgen/NoiseGeneratorSettings')
+            named('net/minecraft/world/level/levelgen/NoiseGeneratorSettings'),
+            methodsReturning('net/minecraft/world/level/levelgen/NoiseGeneratorSettings')
     )
 
     fieldGroup(
             'biome effects builder', PROTECTED,
-            matchClass('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
+            named('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
             matchAny()
     )
 
+    // Make all creative tab ids accessible
     fieldGroup(
             'creative tabs', PUBLIC,
-            matchClass('net/minecraft/world/item/CreativeModeTabs'),
-            matchFieldsOfType(matchClass('net/minecraft/resources/ResourceKey'))
+            named('net/minecraft/world/item/CreativeModeTabs'),
+            fieldsOfType(named('net/minecraft/resources/ResourceKey'))
     )
 }
 
