@@ -86,7 +86,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         var genAts = project.getRootProject().file("src/main/resources/META-INF/accesstransformergenerated.cfg");
 
-        tasks.register("generateAccessTransformers", GenerateAccessTransformers.class, task -> {
+        var genAtsTask = tasks.register("generateAccessTransformers", GenerateAccessTransformers.class, task -> {
             task.setGroup(GROUP);
             task.setDescription("Generate access transformers based on a set of rules defined in the buildscript");
             task.getInput().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
@@ -104,6 +104,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 createSourceArtifacts,
                 neoDevBuildDir,
                 atFiles);
+
+        applyAt.configure(task -> task.mustRunAfter(genAtsTask));
 
         // 3. Apply patches to the source jar from 2.
         var patchesFolder = project.getRootProject().file("patches");
