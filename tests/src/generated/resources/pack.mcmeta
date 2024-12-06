@@ -1,0 +1,58 @@
+{
+  "neoforge:overlays": {
+    "entries": [
+      {
+        "directory": "neoforge_overlays_test",
+        "formats": [
+          0,
+          2147483647
+        ]
+      }
+    ]
+  },
+  "overlays": {
+    "entries": [
+      {
+        "directory": "pack_overlays_test",
+        "formats": [
+          0,
+          2147483647
+        ]
+      },
+      {
+        "neoforge:conditions": [
+          {
+            "type": "neoforge:mod_loaded",
+            "modid": "neoforge"
+          }
+        ],
+        "directory": "conditional_overlays_enabled",
+        "formats": [
+          0,
+          2147483647
+        ]
+      },
+      {
+        "neoforge:conditions": [
+          {
+            "type": "neoforge:mod_loaded",
+            "modid": "does_not_exist"
+          }
+        ],
+        "directory": "conditional_overlays_enabled",
+        "formats": [
+          0,
+          2147483647
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "description": "NeoForge tests resource pack",
+    "pack_format": 46,
+    "supported_formats": [
+      0,
+      2147483647
+    ]
+  }
+}

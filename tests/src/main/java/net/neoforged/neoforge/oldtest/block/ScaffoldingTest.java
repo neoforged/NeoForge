@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ScaffoldingBlock;
@@ -26,6 +27,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -36,12 +38,15 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ScaffoldingTest {
     static final String MODID = "scaffolding_test";
     static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     static final TagKey<Block> SCAFFOLDING = BlockTags.create(ResourceLocation.fromNamespaceAndPath("neoforge", "scaffolding"));
 
     static final DeferredBlock<Block> SCAFFOLDING_METHOD_TEST = BLOCKS.registerBlock("scaffolding_method_test", ScaffoldingMethodTestBlock::new, Properties.of().mapColor(MapColor.SAND).noCollission().sound(SoundType.SCAFFOLDING).dynamicShape());
+    static final DeferredItem<BlockItem> SCAFFOLDING_METHOD_TEST_ITEM = ITEMS.registerSimpleBlockItem(SCAFFOLDING_METHOD_TEST);
 
     public ScaffoldingTest(IEventBus modBus) {
         BLOCKS.register(modBus);
+        ITEMS.register(modBus);
         modBus.addListener(this::gatherData);
     }
 

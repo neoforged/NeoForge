@@ -1,36 +1,26 @@
 --- a/net/minecraft/client/data/models/model/ModelTemplate.java
 +++ b/net/minecraft/client/data/models/model/ModelTemplate.java
-@@ -51,21 +_,27 @@
- 
+@@ -52,6 +_,12 @@
      public ResourceLocation create(ResourceLocation p_388380_, TextureMapping p_387099_, BiConsumer<ResourceLocation, ModelInstance> p_387748_) {
          Map<TextureSlot, ResourceLocation> map = this.createMap(p_387099_);
--        p_387748_.accept(p_388380_, () -> {
--            JsonObject jsonobject = new JsonObject();
--            this.model.ifPresent(p_388657_ -> jsonobject.addProperty("parent", p_388657_.toString()));
--            if (!map.isEmpty()) {
--                JsonObject jsonobject1 = new JsonObject();
--                map.forEach((p_387287_, p_386479_) -> jsonobject1.addProperty(p_387287_.getId(), p_386479_.toString()));
--                jsonobject.add("textures", jsonobject1);
--            }
--
--            return jsonobject;
--        });
-+        p_387748_.accept(p_388380_, () -> createBaseTemplate(p_388380_, map));
-         return p_388380_;
-     }
- 
-+    public JsonObject createBaseTemplate(ResourceLocation p_388380_, Map<TextureSlot, ResourceLocation> map) {
-+        JsonObject jsonobject = new JsonObject();
-+        this.model.ifPresent(p_388657_ -> jsonobject.addProperty("parent", p_388657_.toString()));
-+        if (!map.isEmpty()) {
-+            JsonObject jsonobject1 = new JsonObject();
-+            map.forEach((p_387287_, p_386479_) -> jsonobject1.addProperty(p_387287_.getId(), p_386479_.toString()));
-+            jsonobject.add("textures", jsonobject1);
-+        }
-+
-+        return jsonobject;
+         p_387748_.accept(p_388380_, () -> {
++            return createBaseTemplate(p_388380_, map);
++        });
++        return p_388380_;
 +    }
 +
++    public JsonObject createBaseTemplate(ResourceLocation p_388380_, Map<TextureSlot, ResourceLocation> map) {
+             JsonObject jsonobject = new JsonObject();
+             this.model.ifPresent(p_388657_ -> jsonobject.addProperty("parent", p_388657_.toString()));
+             if (!map.isEmpty()) {
+@@ -61,11 +_,13 @@
+             }
+ 
+             return jsonobject;
+-        });
+-        return p_388380_;
+     }
+ 
      private Map<TextureSlot, ResourceLocation> createMap(TextureMapping p_387972_) {
          return Streams.concat(this.requiredSlots.stream(), p_387972_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_387972_::get));
 +    }
