@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.util;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
 
@@ -35,6 +36,13 @@ public class FakePlayerFactory {
     }
 
     public static void unloadLevel(ServerLevel level) {
-        fakePlayers.entrySet().removeIf(entry -> entry.getValue().level() == level);
+        Set.copyOf(fakePlayers.keySet()).forEach(key -> {
+            if (key.level == level) {
+                var player = fakePlayers.remove(key);
+                if (player != null) {
+                    player.getAdvancements().stopListening();
+                }
+            }
+        });
     }
 }
