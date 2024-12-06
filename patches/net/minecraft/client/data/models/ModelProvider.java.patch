@@ -9,23 +9,18 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
--
--    public ModelProvider(PackOutput p_388260_) {
--        this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
--        this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
--        this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +    public final String modId;
-+
+ 
 +    // NeoForge: Use the above constructor passing in their mod id
 +    @Deprecated
-+    public ModelProvider(PackOutput p_252226_) {
-+        this(p_252226_, ResourceLocation.DEFAULT_NAMESPACE);
+     public ModelProvider(PackOutput p_388260_) {
++        this(p_388260_, ResourceLocation.DEFAULT_NAMESPACE);
 +    }
 +
-+    public ModelProvider(PackOutput p_252226_, String modId) {
-+        this.blockStatePathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
-+        this.itemInfoPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
-+        this.modelPathProvider = p_252226_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++    public ModelProvider(PackOutput p_388260_, String modId) {
+         this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+         this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+         this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
 +        this.modId = modId;
 +    }
 +
