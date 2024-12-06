@@ -88,6 +88,7 @@ public class NeoDevPlugin implements Plugin<Project> {
 
         tasks.register("generateAccessTransformers", GenerateAccessTransformers.class, task -> {
             task.setGroup(GROUP);
+            task.setDescription("Generate access transformers based on a set of rules defined in the buildscript");
             task.getInput().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
             task.getAccessTransformer().set(genAts);
         });

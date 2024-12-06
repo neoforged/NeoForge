@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 
+/**
+ * This task is used to generate access transformers based on a set of rules defined in the buildscript.
+ */
 public abstract class GenerateAccessTransformers extends DefaultTask {
     public static final Modifier PUBLIC = new Modifier("public", false, Opcodes.ACC_PUBLIC);
     public static final Modifier PROTECTED = new Modifier("protected", false, Opcodes.ACC_PUBLIC, Opcodes.ACC_PROTECTED);
