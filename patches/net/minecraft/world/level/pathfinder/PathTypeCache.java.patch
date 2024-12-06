@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/level/pathfinder/PathTypeCache.java
++++ b/net/minecraft/world/level/pathfinder/PathTypeCache.java
+@@ -11,11 +_,16 @@
+     private final long[] positions = new long[4096];
+     private final PathType[] pathTypes = new PathType[4096];
+ 
++    /** @deprecated NeoForge: use {@link #getOrCompute(BlockGetter, BlockPos, net.minecraft.world.entity.Mob) mob-sensitive version} */
++    @Deprecated
+     public PathType getOrCompute(BlockGetter p_330930_, BlockPos p_331162_) {
++        return getOrCompute(p_330930_, p_331162_, null);
++    }
++    public PathType getOrCompute(BlockGetter p_330930_, BlockPos p_331162_, @Nullable net.minecraft.world.entity.Mob mob) {
+         long i = p_331162_.asLong();
+         int j = index(i);
+         PathType pathtype = this.get(j, i);
+-        return pathtype != null ? pathtype : this.compute(p_330930_, p_331162_, j, i);
++        return pathtype != null ? pathtype : this.compute(p_330930_, p_331162_, j, i, mob);
+     }
+ 
+     @Nullable
+@@ -23,8 +_,13 @@
+         return this.positions[p_330588_] == p_331771_ ? this.pathTypes[p_330588_] : null;
+     }
+ 
++    /** @deprecated NeoForge: use {@link #compute(BlockGetter, BlockPos, int, long, net.minecraft.world.entity.Mob) mob-sensitive version} */
++    @Deprecated
+     private PathType compute(BlockGetter p_330773_, BlockPos p_330311_, int p_330671_, long p_332065_) {
+-        PathType pathtype = WalkNodeEvaluator.getPathTypeFromState(p_330773_, p_330311_);
++        return compute(p_330773_, p_330311_, p_330671_, p_332065_, null);
++    }
++    private PathType compute(BlockGetter p_330773_, BlockPos p_330311_, int p_330671_, long p_332065_, @Nullable net.minecraft.world.entity.Mob mob) {
++        PathType pathtype = WalkNodeEvaluator.getPathTypeFromState(p_330773_, p_330311_, mob);
+         this.positions[p_330671_] = p_332065_;
+         this.pathTypes[p_330671_] = pathtype;
+         return pathtype;

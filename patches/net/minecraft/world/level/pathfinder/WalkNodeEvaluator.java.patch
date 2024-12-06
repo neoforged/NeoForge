@@ -5,19 +5,27 @@
                      if (i != 0 || k != 0) {
                          PathType pathtype = p_331893_.getPathTypeFromState(p_332169_ + i, p_330433_ + j, p_331506_ + k);
 +                        BlockState blockState = p_331893_.level().getBlockState(p_331893_.currentEvalPos());
-+                        PathType blockPathType = blockState.getAdjacentBlockPathType(p_331893_.level(), p_331893_.currentEvalPos(), null, pathtype);
++                        PathType blockPathType = blockState.getAdjacentBlockPathType(p_331893_.level(), p_331893_.currentEvalPos(), p_331893_.mob, pathtype);
 +                        if (blockPathType != null) return blockPathType;
 +                        net.minecraft.world.level.material.FluidState fluidState = blockState.getFluidState();
-+                        PathType fluidPathType = fluidState.getAdjacentBlockPathType(p_331893_.level(), p_331893_.currentEvalPos(), null, pathtype);
++                        PathType fluidPathType = fluidState.getAdjacentBlockPathType(p_331893_.level(), p_331893_.currentEvalPos(), p_331893_.mob, pathtype);
 +                        if (fluidPathType != null) return fluidPathType;
                          if (pathtype == PathType.DAMAGE_OTHER) {
                              return PathType.DANGER_OTHER;
                          }
-@@ -496,6 +_,8 @@
+@@ -494,8 +_,16 @@
+         return p_326944_;
+     }
  
++    /** @deprecated NeoForge: use {@link #getPathTypeFromState(BlockGetter, BlockPos, Mob) the mob-sensitive version} */
++    @Deprecated
      protected static PathType getPathTypeFromState(BlockGetter p_77644_, BlockPos p_77645_) {
++        return getPathTypeFromState(p_77644_, p_77645_, null);
++    }
++
++    protected static PathType getPathTypeFromState(BlockGetter p_77644_, BlockPos p_77645_, @Nullable Mob mob) {
          BlockState blockstate = p_77644_.getBlockState(p_77645_);
-+        PathType type = blockstate.getBlockPathType(p_77644_, p_77645_, null);
++        PathType type = blockstate.getBlockPathType(p_77644_, p_77645_, mob);
 +        if (type != null) return type;
          Block block = blockstate.getBlock();
          if (blockstate.isAir()) {
@@ -26,7 +34,7 @@
              return PathType.COCOA;
          } else if (!blockstate.is(Blocks.WITHER_ROSE) && !blockstate.is(Blocks.POINTED_DRIPSTONE)) {
              FluidState fluidstate = blockstate.getFluidState();
-+            PathType nonLoggableFluidPathType = fluidstate.getBlockPathType(p_77644_, p_77645_, null, false);
++            PathType nonLoggableFluidPathType = fluidstate.getBlockPathType(p_77644_, p_77645_, mob, false);
 +            if (nonLoggableFluidPathType != null) return nonLoggableFluidPathType;
              if (fluidstate.is(FluidTags.LAVA)) {
                  return PathType.LAVA;
@@ -35,7 +43,7 @@
                  if (!blockstate.isPathfindable(PathComputationType.LAND)) {
                      return PathType.BLOCKED;
                  } else {
-+                    PathType loggableFluidPathType = fluidstate.getBlockPathType(p_77644_, p_77645_, null, true);
++                    PathType loggableFluidPathType = fluidstate.getBlockPathType(p_77644_, p_77645_, mob, true);
 +                    if (loggableFluidPathType != null) return loggableFluidPathType;
                      return fluidstate.is(FluidTags.WATER) ? PathType.WATER : PathType.OPEN;
                  }
