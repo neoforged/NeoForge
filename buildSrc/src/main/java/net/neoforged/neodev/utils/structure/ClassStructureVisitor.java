@@ -11,18 +11,22 @@ import org.objectweb.asm.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipFile;
 
 public final class ClassStructureVisitor extends ClassVisitor {
     private final Map<String, ClassInfo> classes;
+    ClassInfo current;
 
-    public ClassStructureVisitor(Map<String, ClassInfo> classes) {
+    private ClassStructureVisitor(Map<String, ClassInfo> classes) {
         super(Opcodes.ASM9);
         this.classes = classes;
     }
 
-    public void visit(File file) throws IOException {
+    public static Map<String, ClassInfo> readJar(File file) throws IOException {
+        var map = new HashMap<String, ClassInfo>();
+        var visitor = new ClassStructureVisitor(map);
         try (var zip = new ZipFile(file)) {
             var entries = zip.entries();
             while (entries.hasMoreElements()) {
@@ -31,13 +35,12 @@ public final class ClassStructureVisitor extends ClassVisitor {
 
                 try (var in = zip.getInputStream(next)) {
                     var reader = new ClassReader(in);
-                    reader.accept(this, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                    reader.accept(visitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                 }
             }
         }
+        return map;
     }
-
-    ClassInfo current;
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {

@@ -46,10 +46,8 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
 
     @TaskAction
     public void exec() throws IOException {
-        Map<String, ClassInfo> targets = new HashMap<>();
-
         // First we collect all classes
-        new ClassStructureVisitor(targets).visit(getInput().getAsFile().get());
+        var targets = ClassStructureVisitor.readJar(getInput().getAsFile().get());
 
         var groupList = getGroups().get();
 
@@ -104,6 +102,9 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
 
         // Dump the ATs
         var text = new StringBuilder();
+
+        text.append("# This file is generated based on the rules defined in the buildscript. DO NOT modify it manually.\n\n");
+
         for (int i = 0; i < groups.length; i++) {
             // Check if the group found no targets. If it didn't, there's probably an error in the test and it should be reported
             if (groups[i].isEmpty()) {
