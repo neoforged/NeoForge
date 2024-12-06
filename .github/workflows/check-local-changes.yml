@@ -40,8 +40,8 @@ jobs:
       - name: Gen package infos
         run: ./gradlew generatePackageInfos
 
-      - name: Gen patches
-        run: ./gradlew :neoforge:genPatches
+      - name: Gen patches and ATs
+        run: ./gradlew :neoforge:genPatches :neoforge:generateAccessTransformers
 
       - name: Run datagen with Gradle
         run: ./gradlew :neoforge:runData :tests:runData

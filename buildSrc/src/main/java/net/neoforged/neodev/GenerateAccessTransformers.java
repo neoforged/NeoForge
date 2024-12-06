@@ -2,8 +2,8 @@ package net.neoforged.neodev;
 
 import net.neoforged.neodev.utils.FileUtils;
 import net.neoforged.neodev.utils.SerializablePredicate;
-import net.neoforged.neodev.utils.structure.ClassStructureVisitor;
 import net.neoforged.neodev.utils.structure.ClassInfo;
+import net.neoforged.neodev.utils.structure.ClassStructureVisitor;
 import net.neoforged.neodev.utils.structure.FieldInfo;
 import net.neoforged.neodev.utils.structure.MethodInfo;
 import org.gradle.api.DefaultTask;
@@ -22,10 +22,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 
 /**
@@ -103,7 +100,7 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
         // Dump the ATs
         var text = new StringBuilder();
 
-        text.append("# This file is generated based on the rules defined in the buildscript. DO NOT modify it manually.\n\n");
+        text.append("# This file is generated based on the rules defined in the buildscript. DO NOT modify it manually.\n# Add more rules in the buildscript and then run the generateAccessTransformers task to update this file.\n\n");
 
         for (int i = 0; i < groups.length; i++) {
             // Check if the group found no targets. If it didn't, there's probably an error in the test and it should be reported
@@ -167,8 +164,7 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
                           @Nullable SerializablePredicate<MethodInfo> methodMatch, @Nullable SerializablePredicate<FieldInfo> fieldMatch) implements Serializable {
     }
 
-    public record Modifier(String name, boolean isFinal, int... validOpcodes) implements Serializable, IntPredicate {
-        @Override
+    public record Modifier(String name, boolean isFinal, int... validOpcodes) implements Serializable {
         public boolean test(int value) {
             if (isFinal && (value & Opcodes.ACC_FINAL) == 0) return false;
 
