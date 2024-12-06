@@ -110,7 +110,7 @@ public class CustomFeatureFlagsTests {
         var modId = reg.modId();
         var enabledRecipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(modId, "diamonds_from_dirt"));
 
-        reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
                 class Provider extends RecipeProvider implements IConditionBuilder {

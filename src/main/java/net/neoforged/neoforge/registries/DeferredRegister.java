@@ -170,21 +170,6 @@ public class DeferredRegister<T> {
         return new DataComponents(registryKey, modid);
     }
 
-    /**
-     * Factory for a specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
-     *
-     * @param modid The namespace for all objects registered to this DeferredRegister
-     * @see #create(Registry, String)
-     * @see #create(ResourceKey, String)
-     * @see #create(ResourceLocation, String)
-     * @see #createItems(String)
-     * @deprecated Scheduled for removal in 1.21.2; use {@link DeferredRegister#createDataComponents(ResourceKey, String)} with {@link Registries#DATA_COMPONENT_TYPE} instead
-     */
-    @Deprecated(since = "1.21.1", forRemoval = true)
-    public static DataComponents createDataComponents(String modid) {
-        return new DataComponents(modid);
-    }
-
     private final ResourceKey<? extends Registry<T>> registryKey;
     private final String namespace;
     private final Map<DeferredHolder<T, ? extends T>, Supplier<? extends T>> entries = new LinkedHashMap<>();
@@ -649,12 +634,6 @@ public class DeferredRegister<T> {
     public static class DataComponents extends DeferredRegister<DataComponentType<?>> {
         protected DataComponents(ResourceKey<Registry<DataComponentType<?>>> registryKey, String namespace) {
             super(registryKey, namespace);
-        }
-
-        /** @deprecated Scheduled for removal in 1.21.2; use {@link DataComponents#DataComponents(ResourceKey, String)} */
-        @Deprecated(since = "1.21.1", forRemoval = true)
-        protected DataComponents(String namespace) {
-            super(Registries.DATA_COMPONENT_TYPE, namespace);
         }
 
         /**

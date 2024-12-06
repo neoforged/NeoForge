@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
@@ -86,7 +87,7 @@ public interface IBakedModelExtension {
     }
 
     /**
-     * Gets an ordered list of {@link RenderType render types} to use when drawing this item.
+     * Gets the {@link RenderType render type} to use when drawing this item.
      * All render types using the {@link com.mojang.blaze3d.vertex.DefaultVertexFormat#NEW_ENTITY} format are supported.
      * <p>
      * This method will only be called on the models returned by {@link #getRenderPasses(ItemStack)}.
@@ -95,18 +96,20 @@ public interface IBakedModelExtension {
      *
      * @see #getRenderPasses(ItemStack)
      */
-    default List<RenderType> getRenderTypes(ItemStack itemStack) {
-        return List.of(RenderTypeHelper.getFallbackItemRenderType(itemStack, self()));
+    default RenderType getRenderType(ItemStack itemStack) {
+        return RenderTypeHelper.getFallbackItemRenderType(itemStack, self());
     }
 
     /**
      * Gets an ordered list of baked models used to render this model as an item.
-     * Each of those models' render types will be queried via {@link #getRenderTypes(ItemStack)}.
+     * Each of those models' render type will be queried via {@link #getRenderType(ItemStack)}.
      * <p>
      * By default, returns the model itself.
      *
-     * @see #getRenderTypes(ItemStack)
+     * @see #getRenderType(ItemStack)
+     * @deprecated Please migrate to {@link ItemModel}s, or if this is not possible contact us at NeoForge.
      */
+    @Deprecated(forRemoval = true, since = "1.21.4")
     default List<BakedModel> getRenderPasses(ItemStack itemStack) {
         return List.of(self());
     }

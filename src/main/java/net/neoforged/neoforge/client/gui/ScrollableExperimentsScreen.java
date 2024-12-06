@@ -81,7 +81,7 @@ public class ScrollableExperimentsScreen extends ExperimentsScreen {
         if (this.selectionList != null && this.listLayout != null) {
             this.selectionList.setHeight(this.layout.getContentHeight() - this.listLayout.getY());
             this.selectionList.setPosition(this.listLayout.getX(), this.listLayout.getY());
-            this.selectionList.clampScrollAmount();
+            this.selectionList.refreshScrollAmount();
         }
     }
 

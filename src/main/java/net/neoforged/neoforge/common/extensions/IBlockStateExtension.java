@@ -39,7 +39,6 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.ItemAbilities;
@@ -223,11 +222,10 @@ public interface IBlockStateExtension {
      *
      * Called when A user uses the creative pick block button on this block
      *
-     * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return self().getBlock().getCloneItemStack(self(), target, level, pos, player);
+    default ItemStack getCloneItemStack(BlockPos pos, LevelReader level, boolean includeData, Player player) {
+        return self().getBlock().getCloneItemStack(level, pos, self(), includeData, player);
     }
 
     /**

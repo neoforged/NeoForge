@@ -78,7 +78,7 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 "--fml.fmlVersion", getFmlVersion().get(),
                 "--fml.mcVersion", getMinecraftVersion().get(),
                 "--fml.neoFormVersion", getRawNeoFormVersion().get(),
-                "--launchTarget", "forgeclient"));
+                "--launchTarget", "neoforgeclient"));
 
         var jvmArguments = new ArrayList<>(List.of(
                 "-Djava.net.preferIPv6Addresses=system",

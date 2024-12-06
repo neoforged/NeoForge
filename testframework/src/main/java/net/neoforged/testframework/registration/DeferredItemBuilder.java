@@ -24,7 +24,7 @@ public class DeferredItemBuilder<I extends Item> extends DeferredItem<I> {
     }
 
     public DeferredItemBuilder<I> withLang(String name) {
-        registrationHelper.provider(LanguageProvider.class, prov -> prov.add(value(), name));
+        registrationHelper.clientProvider(LanguageProvider.class, prov -> prov.add(value(), name));
         return this;
     }
 
@@ -38,7 +38,7 @@ public class DeferredItemBuilder<I extends Item> extends DeferredItem<I> {
     }
 
     public DeferredItemBuilder<I> withModel(Consumer<ItemModelBuilder> modelConsumer) {
-        registrationHelper.provider(ItemModelProvider.class, prov -> modelConsumer.accept(prov.getBuilder(key.location().toString())));
+        registrationHelper.clientProvider(ItemModelProvider.class, prov -> modelConsumer.accept(prov.getBuilder(key.location().toString())));
         return this;
     }
 }

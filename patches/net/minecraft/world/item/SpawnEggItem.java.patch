@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -179,4 +_,45 @@
-             }
-         }
+@@ -190,4 +_,45 @@
+ 
+         return false;
      }
 +
 +    public static final net.minecraft.core.dispenser.DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = new net.minecraft.core.dispenser.DefaultDispenseItemBehavior() {
 +        @Override
 +        protected ItemStack execute(net.minecraft.core.dispenser.BlockSource source, ItemStack egg) {
 +            Direction direction = source.state().getValue(net.minecraft.world.level.block.DispenserBlock.FACING);
-+            EntityType<?> entitytype = ((SpawnEggItem)egg.getItem()).getType(egg);
++            EntityType<?> entitytype = ((SpawnEggItem)egg.getItem()).getType(source.level().registryAccess(), egg);
 +
 +            try {
 +                entitytype.spawn(

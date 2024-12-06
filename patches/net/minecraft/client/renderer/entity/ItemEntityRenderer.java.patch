@@ -1,24 +1,29 @@
 --- a/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
-@@ -54,7 +_,8 @@
-             this.random.setSeed((long)getSeedForItemStack(itemstack));
-             boolean flag = bakedmodel.isGui3d();
+@@ -38,6 +_,8 @@
+         super.extractRenderState(p_362393_, p_361441_, p_360849_);
+         p_361441_.ageInTicks = (float)p_362393_.getAge() + p_360849_;
+         p_361441_.bobOffset = p_362393_.bobOffs;
++        p_361441_.shouldBob = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_362393_.getItem()).shouldBobAsEntity(p_362393_.getItem());
++        p_361441_.shouldSpread = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_362393_.getItem()).shouldSpreadAsEntity(p_362393_.getItem());
+         p_361441_.extractItemGroupRenderState(p_362393_, p_362393_.getItem(), this.itemModelResolver);
+     }
+ 
+@@ -45,7 +_,7 @@
+         if (!p_362172_.item.isEmpty()) {
+             p_115030_.pushPose();
              float f = 0.25F;
 -            float f1 = Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F;
-+            boolean shouldBob = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).shouldBobAsEntity(itemstack);
-+            float f1 = shouldBob ? Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F : 0;
-             float f2 = bakedmodel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();
++            float f1 = p_362172_.shouldBob ? Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F : 0;
+             float f2 = p_362172_.item.transform().scale.y();
              p_115030_.translate(0.0F, f1 + 0.25F * f2, 0.0F);
              float f3 = ItemEntity.getSpin(p_362172_.ageInTicks, p_362172_.bobOffset);
-@@ -110,9 +_,10 @@
-             p_323733_.translate(f3, f4, f5);
-         }
+@@ -75,7 +_,7 @@
  
-+        boolean shouldSpread = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_323718_).shouldSpreadAsEntity(p_323718_);
          for (int j = 0; j < i; j++) {
-             p_323733_.pushPose();
+             p_323763_.pushPose();
 -            if (j > 0) {
-+            if (j > 0 && shouldSpread) {
-                 if (p_324462_) {
-                     float f7 = (p_324565_.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                     float f9 = (p_324565_.nextFloat() * 2.0F - 1.0F) * 0.15F;
++            if (j > 0 && p_388704_.shouldSpread) {
+                 if (flag) {
+                     float f7 = (p_324507_.nextFloat() * 2.0F - 1.0F) * 0.15F;
+                     float f9 = (p_324507_.nextFloat() * 2.0F - 1.0F) * 0.15F;

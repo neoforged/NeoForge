@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -69,7 +_,7 @@
+@@ -71,7 +_,7 @@
      protected RecipeMap prepare(ResourceManager p_379845_, ProfilerFiller p_380058_) {
          SortedMap<ResourceLocation, Recipe<?>> sortedmap = new TreeMap<>();
          SimpleJsonResourceReloadListener.scanDirectory(
--            p_379845_, Registries.elementsDirPath(Registries.RECIPE), this.registries.createSerializationContext(JsonOps.INSTANCE), Recipe.CODEC, sortedmap
-+            p_379845_, Registries.elementsDirPath(Registries.RECIPE), new net.neoforged.neoforge.common.conditions.ConditionalOps<>(this.registries.createSerializationContext(JsonOps.INSTANCE), getContext()), Recipe.CODEC, sortedmap // Neo: add condition context
+-            p_379845_, RECIPE_LISTER, this.registries.createSerializationContext(JsonOps.INSTANCE), Recipe.CODEC, sortedmap
++            p_379845_, RECIPE_LISTER, new net.neoforged.neoforge.common.conditions.ConditionalOps<>(this.registries.createSerializationContext(JsonOps.INSTANCE), getContext()), Recipe.CODEC, sortedmap // Neo: add condition context
          );
          List<RecipeHolder<?>> list = new ArrayList<>(sortedmap.size());
          sortedmap.forEach((p_379232_, p_379233_) -> {
-@@ -258,6 +_,11 @@
+@@ -260,6 +_,11 @@
          return p_380850_ -> p_380850_.getType() == p_381108_ && p_380850_ instanceof SingleItemRecipe singleitemrecipe
                  ? Optional.of(singleitemrecipe.input())
                  : Optional.empty();

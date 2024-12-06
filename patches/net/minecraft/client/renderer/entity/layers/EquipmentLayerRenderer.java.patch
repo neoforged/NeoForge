@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer.java
 +++ b/net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer.java
-@@ -65,21 +_,26 @@
+@@ -66,21 +_,26 @@
          int p_371309_,
-         @Nullable ResourceLocation p_371587_
+         @Nullable ResourceLocation p_371639_
      ) {
-+        p_371731_ = getArmorModelHook(p_371670_, p_371854_, p_371731_);
-         List<EquipmentModel.Layer> list = this.equipmentModels.get(p_371639_).getLayers(p_371854_);
++        p_371731_ = getArmorModelHook(p_371670_, p_387484_, p_371731_);
+         List<EquipmentClientInfo.Layer> list = this.equipmentAssets.get(p_387603_).getLayers(p_387484_);
          if (!list.isEmpty()) {
 -            int i = p_371670_.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(p_371670_, 0) : 0;
 +            net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_371670_);
@@ -13,14 +13,14 @@
              boolean flag = p_371670_.hasFoil();
  
 +            int idx = 0;
-             for (EquipmentModel.Layer equipmentmodel$layer : list) {
--                int j = getColorForLayer(equipmentmodel$layer, i);
-+                int j = extensions.getArmorLayerTintColor(p_371670_, equipmentmodel$layer, idx, i);
+             for (EquipmentClientInfo.Layer equipmentclientinfo$layer : list) {
+-                int j = getColorForLayer(equipmentclientinfo$layer, i);
++                int j = extensions.getArmorLayerTintColor(p_371670_, equipmentclientinfo$layer, idx, i);
                  if (j != 0) {
-                     ResourceLocation resourcelocation = equipmentmodel$layer.usePlayerTexture() && p_371587_ != null
-                         ? p_371587_
-                         : this.layerTextureLookup.apply(new EquipmentLayerRenderer.LayerTextureKey(p_371854_, equipmentmodel$layer));
-+                    resourcelocation = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_371670_, p_371854_, equipmentmodel$layer, resourcelocation);
+                     ResourceLocation resourcelocation = equipmentclientinfo$layer.usePlayerTexture() && p_371639_ != null
+                         ? p_371639_
+                         : this.layerTextureLookup.apply(new EquipmentLayerRenderer.LayerTextureKey(p_387484_, equipmentclientinfo$layer));
++                    resourcelocation = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_371670_, p_387484_, equipmentclientinfo$layer, resourcelocation);
                      VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(p_371286_, RenderType.armorCutoutNoCull(resourcelocation), flag);
                      p_371731_.renderToBuffer(p_371767_, vertexconsumer, p_371309_, OverlayTexture.NO_OVERLAY, j);
                      flag = false;
@@ -29,7 +29,7 @@
              }
  
              ArmorTrim armortrim = p_371670_.get(DataComponents.TRIM);
-@@ -99,6 +_,13 @@
+@@ -100,6 +_,13 @@
          } else {
              return -1;
          }
@@ -38,7 +38,7 @@
 +    /**
 +     * Hook to allow item-sensitive armor model. for HumanoidArmorLayer.
 +     */
-+    protected net.minecraft.client.model.Model getArmorModelHook(ItemStack itemStack, EquipmentModel.LayerType layerType, Model model) {
++    protected net.minecraft.client.model.Model getArmorModelHook(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model model) {
 +        return net.neoforged.neoforge.client.ClientHooks.getArmorModel(itemStack, layerType, model);
      }
  

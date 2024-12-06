@@ -6,21 +6,21 @@
  
 -public final class ItemStack implements DataComponentHolder {
 +public final class ItemStack implements DataComponentHolder, net.neoforged.neoforge.common.extensions.IItemStackExtension, net.neoforged.neoforge.common.MutableDataComponentHolder {
-     public static final Codec<ItemStack> CODEC = Codec.lazyInitialized(
-         () -> RecordCodecBuilder.create(
-                 p_381569_ -> p_381569_.group(
-@@ -233,6 +_,10 @@
-         return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
+     private static final List<Component> OP_NBT_WARNING = List.of(
+         Component.translatable("item.op_warning.line1").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
+         Component.translatable("item.op_warning.line2").withStyle(ChatFormatting.RED),
+@@ -242,6 +_,10 @@
+         return !this.isEmpty() && this.components.hasNonDefault(p_389426_);
      }
  
 +    public boolean isComponentsPatchEmpty() {
-+        return !this.isEmpty() ? this.components.isPatchEmpty() : true;
++        return this.isEmpty() || this.components.isPatchEmpty();
 +    }
 +
      public ItemStack(ItemLike p_41599_) {
          this(p_41599_, 1);
      }
-@@ -338,7 +_,7 @@
+@@ -347,7 +_,7 @@
      }
  
      public boolean is(Holder<Item> p_220166_) {
@@ -29,7 +29,7 @@
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
-@@ -350,13 +_,27 @@
+@@ -359,13 +_,27 @@
      }
  
      public InteractionResult useOn(UseOnContext p_41662_) {
@@ -58,7 +58,7 @@
              if (player != null
                  && interactionresult instanceof InteractionResult.Success interactionresult$success
                  && interactionresult$success.wasItemInteraction()) {
-@@ -410,7 +_,8 @@
+@@ -419,7 +_,8 @@
          if (this.isEmpty()) {
              throw new IllegalStateException("Cannot encode empty ItemStack");
          } else {
@@ -68,7 +68,7 @@
          }
      }
  
-@@ -418,7 +_,8 @@
+@@ -427,7 +_,8 @@
          if (this.isEmpty()) {
              throw new IllegalStateException("Cannot encode empty ItemStack");
          } else {
@@ -78,7 +78,7 @@
          }
      }
  
-@@ -427,7 +_,7 @@
+@@ -436,7 +_,7 @@
      }
  
      public int getMaxStackSize() {
@@ -87,7 +87,7 @@
      }
  
      public boolean isStackable() {
-@@ -439,19 +_,19 @@
+@@ -448,19 +_,19 @@
      }
  
      public boolean isDamaged() {
@@ -111,7 +111,7 @@
      }
  
      public boolean isBroken() {
-@@ -463,6 +_,11 @@
+@@ -472,6 +_,11 @@
      }
  
      public void hurtAndBreak(int p_220158_, ServerLevel p_346256_, @Nullable ServerPlayer p_220160_, Consumer<Item> p_348596_) {
@@ -123,7 +123,7 @@
          int i = this.processDurabilityChange(p_220158_, p_346256_, p_220160_);
          if (i != 0) {
              this.applyDamage(this.getDamageValue() + i, p_220160_, p_348596_);
-@@ -470,6 +_,10 @@
+@@ -479,6 +_,10 @@
      }
  
      private int processDurabilityChange(int p_361290_, ServerLevel p_361409_, @Nullable ServerPlayer p_364940_) {
@@ -134,7 +134,7 @@
          if (!this.isDamageableItem()) {
              return 0;
          } else if (p_364940_ != null && p_364940_.hasInfiniteMaterials()) {
-@@ -480,8 +_,12 @@
+@@ -489,8 +_,12 @@
      }
  
      private void applyDamage(int p_361754_, @Nullable ServerPlayer p_364853_, Consumer<Item> p_360895_) {
@@ -149,7 +149,7 @@
          }
  
          this.setDamageValue(p_361754_);
-@@ -510,7 +_,7 @@
+@@ -519,7 +_,7 @@
              this.hurtAndBreak(
                  p_41623_,
                  serverlevel,
@@ -158,7 +158,7 @@
                  p_348383_ -> p_41624_.onEquippedItemBroken(p_348383_, p_319898_)
              );
          }
-@@ -785,7 +_,7 @@
+@@ -800,7 +_,7 @@
      }
  
      public Component getStyledHoverName() {
@@ -167,7 +167,7 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              mutablecomponent.withStyle(ChatFormatting.ITALIC);
          }
-@@ -826,7 +_,9 @@
+@@ -842,7 +_,9 @@
              this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
@@ -178,8 +178,8 @@
              this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.OMINOUS_BOTTLE_AMPLIFIER, p_339637_, consumer, p_41653_);
              this.addToTooltip(DataComponents.SUSPICIOUS_STEW_EFFECTS, p_339637_, consumer, p_41653_);
-@@ -860,10 +_,15 @@
-                 list.add(DISABLED_ITEM_TOOLTIP);
+@@ -880,10 +_,15 @@
+                 list.addAll(OP_NBT_WARNING);
              }
  
 +            net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, p_41652_, list, p_41653_, p_339637_);
@@ -194,7 +194,7 @@
      private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
          ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
          if (itemattributemodifiers.showInTooltip()) {
-@@ -973,6 +_,17 @@
+@@ -993,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
@@ -212,7 +212,7 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -998,14 +_,26 @@
+@@ -1018,14 +_,26 @@
      }
  
      public void forEachModifier(EquipmentSlotGroup p_348610_, BiConsumer<Holder<Attribute>, AttributeModifier> p_348516_) {
@@ -239,7 +239,7 @@
          EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
      }
  
-@@ -1017,7 +_,7 @@
+@@ -1037,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
          if (!this.isEmpty()) {
@@ -248,7 +248,7 @@
                  .withStyle(p_220170_ -> p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this))));
          }
  
-@@ -1085,6 +_,8 @@
+@@ -1105,6 +_,8 @@
          this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
      }
  
@@ -257,7 +257,7 @@
      public void onDestroyed(ItemEntity p_150925_) {
          this.getItem().onDestroyed(p_150925_);
      }
-@@ -1094,6 +_,7 @@
+@@ -1114,6 +_,7 @@
      }
  
      public boolean canBeHurtBy(DamageSource p_335431_) {

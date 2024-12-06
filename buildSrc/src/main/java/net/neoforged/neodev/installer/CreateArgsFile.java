@@ -111,7 +111,7 @@ public abstract class CreateArgsFile extends DefaultTask {
         replacements.put("@PLUGIN_LAYER_LIBRARIES@", "");
         replacements.put("@GAME_LAYER_LIBRARIES@", "");
         replacements.put("@CLASS_PATH@", resolveClasspath());
-        replacements.put("@TASK@", "forgeserver");
+        replacements.put("@TASK@", "neoforgeserver");
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
         replacements.put("@FML_VERSION@", getFmlVersion().get());
         replacements.put("@MC_VERSION@", getMinecraftVersion().get());

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/worldselection/ExperimentsScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/ExperimentsScreen.java
-@@ -50,6 +_,11 @@
+@@ -62,6 +_,11 @@
  
      @Override
      protected void init() {

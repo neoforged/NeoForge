@@ -25,13 +25,12 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-public class GatherDataEvent extends Event implements IModBusEvent {
+public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
     private final DataGeneratorConfig config;
     private final ExistingFileHelper existingFileHelper;
@@ -64,14 +63,6 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         return this.config.lookupProvider;
     }
 
-    public boolean includeServer() {
-        return this.config.server;
-    }
-
-    public boolean includeClient() {
-        return this.config.client;
-    }
-
     public boolean includeDev() {
         return this.config.dev;
     }
@@ -84,13 +75,23 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         return this.config.validate;
     }
 
+    public static class Server extends GatherDataEvent {
+        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
+            super(mc, dataGenerator, dataGeneratorConfig, existingFileHelper);
+        }
+    }
+
+    public static class Client extends GatherDataEvent {
+        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
+            super(mc, dataGenerator, dataGeneratorConfig, existingFileHelper);
+        }
+    }
+
     public static class DataGeneratorConfig {
         private final Set<String> mods;
         private final Path path;
         private final Collection<Path> inputs;
         private final CompletableFuture<HolderLookup.Provider> lookupProvider;
-        private final boolean server;
-        private final boolean client;
         private final boolean dev;
         private final boolean reports;
         private final boolean validate;
@@ -98,17 +99,18 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         private final List<DataGenerator> generators = new ArrayList<>();
 
         public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
-                final boolean server, final boolean client, final boolean dev, final boolean reports, final boolean validate, final boolean flat) {
+                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
             this.lookupProvider = lookupProvider;
-            this.server = server;
-            this.client = client;
             this.dev = dev;
             this.reports = reports;
             this.validate = validate;
             this.flat = flat;
+            if (mods.contains("minecraft") || mods.isEmpty()) {
+                this.generators.add(vanillaGenerator);
+            }
         }
 
         public Collection<Path> getInputs() {
@@ -146,36 +148,29 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         }
     }
 
-    public boolean shouldRun(Dist dist) {
-        return switch (dist) {
-            case CLIENT -> includeClient();
-            case DEDICATED_SERVER -> includeServer();
-        };
+    public <T extends DataProvider> T addProvider(T provider) {
+        return dataGenerator.addProvider(true, provider);
     }
 
-    public <T extends DataProvider> T addProvider(boolean run, T provider) {
-        return dataGenerator.addProvider(run, provider);
+    public <T extends DataProvider> T createProvider(DataProviderFromOutput<T> builder) {
+        return addProvider(builder.create(dataGenerator.getPackOutput()));
     }
 
-    public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutput<T> builder) {
-        return addProvider(run, builder.create(dataGenerator.getPackOutput()));
+    public <T extends DataProvider> T createProvider(DataProviderFromOutputFileHelper<T> builder) {
+        return addProvider(builder.create(dataGenerator.getPackOutput(), existingFileHelper));
     }
 
-    public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutputFileHelper<T> builder) {
-        return addProvider(run, builder.create(dataGenerator.getPackOutput(), existingFileHelper));
+    public <T extends DataProvider> T createProvider(DataProviderFromOutputLookup<T> builder) {
+        return addProvider(builder.create(dataGenerator.getPackOutput(), config.lookupProvider));
     }
 
-    public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutputLookup<T> builder) {
-        return addProvider(run, builder.create(dataGenerator.getPackOutput(), config.lookupProvider));
-    }
-
-    public <T extends DataProvider> T createProvider(boolean run, DataProviderFromOutputLookupFileHelper<T> builder) {
-        return addProvider(run, builder.create(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
+    public <T extends DataProvider> T createProvider(DataProviderFromOutputLookupFileHelper<T> builder) {
+        return addProvider(builder.create(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
     }
 
     public void createBlockAndItemTags(DataProviderFromOutputLookupFileHelper<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
-        var blockTags = createProvider(includeServer(), blockTagsProvider);
-        addProvider(includeServer(), itemTagsProvider.create(dataGenerator.getPackOutput(), config.lookupProvider, blockTags.contentsGetter(), existingFileHelper));
+        var blockTags = createProvider(blockTagsProvider);
+        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter(), this.getExistingFileHelper()));
     }
 
     @FunctionalInterface
@@ -196,6 +191,11 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     @FunctionalInterface
     public interface DataProviderFromOutputLookupFileHelper<T extends DataProvider> {
         T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
+    }
+
+    @FunctionalInterface
+    public interface GatherDataEventGenerator {
+        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper);
     }
 
     @FunctionalInterface

@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/DataProvider.java
 +++ b/net/minecraft/data/DataProvider.java
-@@ -27,7 +_,15 @@
+@@ -28,7 +_,15 @@
  import org.slf4j.Logger;
  
  public interface DataProvider {
@@ -16,7 +16,7 @@
          p_236070_.put("type", 0);
          p_236070_.put("parent", 1);
          p_236070_.defaultReturnValue(2);
-@@ -72,7 +_,7 @@
+@@ -80,7 +_,7 @@
  
                  try (JsonWriter jsonwriter = new JsonWriter(new OutputStreamWriter(hashingoutputstream, StandardCharsets.UTF_8))) {
                      jsonwriter.setSerializeNulls(false);

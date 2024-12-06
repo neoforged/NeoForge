@@ -56,7 +56,7 @@ public record IntersectionIngredient(List<Ingredient> children) implements ICust
     @Override
     public Stream<Holder<Item>> items() {
         return children.stream()
-                .flatMap(child -> child.items().stream())
+                .flatMap(child -> child.items())
                 .filter(i -> test(i.value().getDefaultInstance()));
     }
 

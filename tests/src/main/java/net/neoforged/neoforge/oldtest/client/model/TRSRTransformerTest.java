@@ -7,9 +7,10 @@ package net.neoforged.neoforge.oldtest.client.model;
 
 import com.mojang.math.Transformation;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -61,9 +62,10 @@ public class TRSRTransformerTest {
     }
 
     public void onModelBake(ModelEvent.ModifyBakingResult e) {
-        for (ModelResourceLocation id : e.getModels().keySet()) {
+        Map<ModelResourceLocation, BakedModel> models = e.getBakingResult().blockStateModels();
+        for (ModelResourceLocation id : models.keySet()) {
             if (MODID.equals(id.id().getNamespace()) && "test".equals(id.id().getPath())) {
-                e.getModels().put(id, new MyBakedModel(e.getModels().get(id)));
+                models.put(id, new MyBakedModel(models.get(id)));
             }
         }
     }
@@ -102,18 +104,13 @@ public class TRSRTransformerTest {
         }
 
         @Override
-        public boolean isCustomRenderer() {
-            return base.isCustomRenderer();
-        }
-
-        @Override
         public TextureAtlasSprite getParticleIcon() {
             return base.getParticleIcon();
         }
 
         @Override
-        public BakedOverrides overrides() {
-            return base.overrides();
+        public ItemTransforms getTransforms() {
+            return base.getTransforms();
         }
     }
 }

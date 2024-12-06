@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "chest_boat",
+  "ingredients": [
+    {
+      "neoforge:ingredient_type": "neoforge:difference",
+      "base": "#c:chests/wooden",
+      "subtracted": "#c:chests/trapped"
+    },
+    "minecraft:pale_oak_boat"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:pale_oak_chest_boat"
+  }
+}

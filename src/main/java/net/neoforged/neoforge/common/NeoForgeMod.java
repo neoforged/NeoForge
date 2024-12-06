@@ -11,7 +11,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -27,16 +26,11 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.metadata.PackMetadataGenerator;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffects;
@@ -102,22 +96,6 @@ import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.data.internal.NeoForgeAdvancementProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeBiomeTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeDamageTypeTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeDataMapsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeEnchantmentTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeFluidTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeItemTagsProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
-import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
@@ -134,7 +112,6 @@ import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -545,7 +522,6 @@ public class NeoForgeMod {
             event.dataPackRegistry(NeoForgeRegistries.Keys.STRUCTURE_MODIFIERS, StructureModifier.DIRECT_CODEC);
         });
         modEventBus.addListener(this::preInit);
-        modEventBus.addListener(this::gatherData);
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
         modEventBus.addListener(this::registerLootData);
@@ -612,34 +588,6 @@ public class NeoForgeMod {
                 spec.resetCaches(ModConfigSpec.RestartType.WORLD);
             }
         });
-    }
-
-    public void gatherData(GatherDataEvent event) {
-        var includeServer = event.includeServer();
-        var includeClient = event.includeClient();
-
-        event.createProvider(true, output -> new PackMetadataGenerator(output)
-                .add(PackMetadataSection.TYPE, new PackMetadataSection(
-                        Component.translatable("pack.neoforge.description"),
-                        DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
-                        Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
-
-        event.createProvider(includeServer, NeoForgeAdvancementProvider::new);
-        event.createBlockAndItemTags(NeoForgeBlockTagsProvider::new, NeoForgeItemTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeEntityTypeTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeFluidTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeEnchantmentTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeRecipeProvider.Runner::new);
-        event.createProvider(includeServer, NeoForgeLootTableProvider::new);
-        event.createProvider(includeServer, NeoForgeBiomeTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeStructureTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeDamageTypeTagsProvider::new);
-        event.createProvider(includeServer, NeoForgeRegistryOrderReportProvider::new);
-        event.createProvider(includeServer, NeoForgeDataMapsProvider::new);
-
-        event.createProvider(includeClient, NeoForgeSpriteSourceProvider::new);
-        event.createProvider(includeClient, VanillaSoundDefinitionsProvider::new);
-        event.createProvider(includeClient, NeoForgeLanguageProvider::new);
     }
 
     // done in an event instead of deferred to only enable if a mod requests it

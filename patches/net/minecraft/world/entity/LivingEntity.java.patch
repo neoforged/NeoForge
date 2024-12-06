@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -137,7 +_,7 @@
+@@ -136,7 +_,7 @@
  import net.minecraft.world.scores.Scoreboard;
  import org.slf4j.Logger;
  
@@ -9,7 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final String TAG_ACTIVE_EFFECTS = "active_effects";
      private static final ResourceLocation SPEED_MODIFIER_POWDER_SNOW_ID = ResourceLocation.withDefaultNamespace("powder_snow");
-@@ -179,13 +_,18 @@
+@@ -178,13 +_,18 @@
      public static final float EXTRA_RENDER_CULLING_SIZE_WITH_BIG_HAT = 0.5F;
      public static final float DEFAULT_BABY_SCALE = 0.5F;
      public static final String ATTRIBUTES_FIELD = "attributes";
@@ -30,7 +30,7 @@
      };
      private final AttributeMap attributes;
      private final CombatTracker combatTracker = new CombatTracker(this);
-@@ -268,6 +_,14 @@
+@@ -266,6 +_,14 @@
          EquipmentSlot.class
      );
      protected float appliedScale = 1.0F;
@@ -45,7 +45,7 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
          super(p_20966_, p_20967_);
-@@ -334,7 +_,9 @@
+@@ -332,7 +_,9 @@
              .add(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE)
              .add(Attributes.WATER_MOVEMENT_EFFICIENCY)
              .add(Attributes.MOVEMENT_EFFICIENCY)
@@ -56,7 +56,7 @@
      }
  
      @Override
-@@ -362,7 +_,8 @@
+@@ -360,7 +_,8 @@
                  float f = (float)Mth.ceil((double)this.fallDistance - d7);
                  double d4 = Math.min((double)(0.2F + f / 15.0F), 2.5);
                  int i = (int)(150.0 * d4);
@@ -66,7 +66,7 @@
              }
          }
  
-@@ -372,6 +_,7 @@
+@@ -370,6 +_,7 @@
          }
      }
  
@@ -74,7 +74,7 @@
      public final boolean canBreatheUnderwater() {
          return this.getType().is(EntityTypeTags.CAN_BREATHE_UNDER_WATER);
      }
-@@ -418,6 +_,9 @@
+@@ -416,6 +_,9 @@
                  }
              }
  
@@ -258,22 +258,10 @@
              }
  
 +            p_376610_ = this.damageContainers.peek().getNewDamage(); //update local with container value
-             Entity entity = p_376460_.getEntity();
-             if (entity != null) {
-                 if (entity instanceof LivingEntity livingentity1
-@@ -1164,9 +_,9 @@
-                 if (entity instanceof Player player1) {
-                     this.lastHurtByPlayerTime = 100;
-                     this.lastHurtByPlayer = player1;
--                } else if (entity instanceof Wolf wolf && wolf.isTame()) {
-+                } else if (entity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame()) {
-                     this.lastHurtByPlayerTime = 100;
--                    if (wolf.getOwner() instanceof Player player) {
-+                    if (tamableAnimal.getOwner() instanceof Player player) {
-                         this.lastHurtByPlayer = player;
-                     } else {
-                         this.lastHurtByPlayer = null;
-@@ -1237,6 +_,7 @@
+             this.resolveMobResponsibleForDamage(p_376460_);
+             this.resolvePlayerResponsibleForDamage(p_376460_);
+             if (flag1) {
+@@ -1218,6 +_,7 @@
                  CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(serverplayer1, this, p_376460_, f, p_376610_, flag);
              }
  
@@ -281,7 +269,19 @@
              return flag2;
          }
      }
-@@ -1259,7 +_,7 @@
+@@ -1238,9 +_,9 @@
+             this.lastHurtByPlayer = player;
+             return player;
+         } else {
+-            if (entity instanceof Wolf wolf && wolf.isTame()) {
++            if (entity instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame()) {
+                 this.lastHurtByPlayerTime = 100;
+-                if (wolf.getOwner() instanceof Player player1) {
++                if (tamableAnimal.getOwner() instanceof Player player1) {
+                     this.lastHurtByPlayer = player1;
+                 } else {
+                     this.lastHurtByPlayer = null;
+@@ -1271,7 +_,7 @@
              for (InteractionHand interactionhand : InteractionHand.values()) {
                  ItemStack itemstack1 = this.getItemInHand(interactionhand);
                  deathprotection = itemstack1.get(DataComponents.DEATH_PROTECTION);
@@ -290,7 +290,7 @@
                      itemstack = itemstack1.copy();
                      itemstack1.shrink(1);
                      break;
-@@ -1309,7 +_,7 @@
+@@ -1321,7 +_,7 @@
          }
  
          ItemStack itemstack = this.getItemBlockingWith();
@@ -299,7 +299,7 @@
              Vec3 vec3 = p_21276_.getSourcePosition();
              if (vec3 != null) {
                  Vec3 vec31 = this.calculateViewVector(0.0F, this.getYHeadRot());
-@@ -1343,6 +_,7 @@
+@@ -1355,6 +_,7 @@
      }
  
      public void die(DamageSource p_21014_) {
@@ -307,7 +307,7 @@
          if (!this.isRemoved() && !this.dead) {
              Entity entity = p_21014_.getEntity();
              LivingEntity livingentity = this.getKillCredit();
-@@ -1378,7 +_,7 @@
+@@ -1390,7 +_,7 @@
          if (this.level() instanceof ServerLevel serverlevel) {
              boolean flag = false;
              if (p_21269_ instanceof WitherBoss) {
@@ -316,7 +316,7 @@
                      BlockPos blockpos = this.blockPosition();
                      BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
                      if (this.level().getBlockState(blockpos).isAir() && blockstate.canSurvive(this.level(), blockpos)) {
-@@ -1396,6 +_,7 @@
+@@ -1408,6 +_,7 @@
      }
  
      protected void dropAllDeathLoot(ServerLevel p_348524_, DamageSource p_21192_) {
@@ -324,7 +324,7 @@
          boolean flag = this.lastHurtByPlayerTime > 0;
          if (this.shouldDropLoot() && p_348524_.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
              this.dropFromLootTable(p_348524_, p_21192_, flag);
-@@ -1404,6 +_,10 @@
+@@ -1416,6 +_,10 @@
  
          this.dropEquipment(p_348524_);
          this.dropExperience(p_348524_, p_21192_.getEntity());
@@ -335,7 +335,7 @@
      }
  
      protected void dropEquipment(ServerLevel p_376330_) {
-@@ -1415,7 +_,8 @@
+@@ -1427,7 +_,8 @@
                  this.isAlwaysExperienceDropper()
                      || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && p_376909_.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)
              )) {
@@ -345,7 +345,7 @@
          }
      }
  
-@@ -1496,6 +_,11 @@
+@@ -1508,6 +_,11 @@
      }
  
      public void knockback(double p_147241_, double p_147242_, double p_147243_) {
@@ -357,7 +357,7 @@
          p_147241_ *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
          if (!(p_147241_ <= 0.0)) {
              this.hasImpulse = true;
-@@ -1569,15 +_,9 @@
+@@ -1585,15 +_,9 @@
          } else {
              BlockPos blockpos = this.blockPosition();
              BlockState blockstate = this.getInBlockState();
@@ -376,27 +376,7 @@
          }
      }
  
-@@ -1595,10 +_,18 @@
-         return !this.isRemoved() && this.getHealth() > 0.0F;
-     }
- 
-+    /** @deprecated Neo: use {@link #isLookingAtMe(LivingEntity, double, boolean, boolean, java.util.function.BiPredicate, DoubleSupplier...)} instead */
-+    @Deprecated
-     public boolean isLookingAtMe(
-         LivingEntity p_379420_, double p_379671_, boolean p_380253_, boolean p_380067_, Predicate<LivingEntity> p_380351_, DoubleSupplier... p_380073_
-     ) {
--        if (!p_380351_.test(p_379420_)) {
-+        return isLookingAtMe(p_379420_, p_379671_, p_380253_, p_380067_, (observer, target) -> p_380351_.test(observer), p_380073_);
-+    }
-+
-+    public boolean isLookingAtMe(
-+            LivingEntity p_379420_, double p_379671_, boolean p_380253_, boolean p_380067_, java.util.function.BiPredicate<LivingEntity, LivingEntity> p_380351_, DoubleSupplier... p_380073_
-+    ) {
-+        if (!p_380351_.test(p_379420_, this)) {
-             return false;
-         } else {
-             Vec3 vec3 = p_379420_.getViewVector(1.0F).normalize();
-@@ -1630,6 +_,11 @@
+@@ -1639,6 +_,11 @@
  
      @Override
      public boolean causeFallDamage(float p_147187_, float p_147188_, DamageSource p_147189_) {
@@ -408,7 +388,7 @@
          boolean flag = super.causeFallDamage(p_147187_, p_147188_, p_147189_);
          int i = this.calculateFallDamage(p_147187_, p_147188_);
          if (i > 0) {
-@@ -1657,9 +_,10 @@
+@@ -1666,9 +_,10 @@
              int i = Mth.floor(this.getX());
              int j = Mth.floor(this.getY() - 0.2F);
              int k = Mth.floor(this.getZ());
@@ -421,7 +401,7 @@
                  this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
              }
          }
-@@ -1688,6 +_,8 @@
+@@ -1697,6 +_,8 @@
          if (!(p_330394_ <= 0.0F)) {
              int i = (int)Math.max(1.0F, p_330394_ / 4.0F);
  
@@ -430,7 +410,7 @@
              for (EquipmentSlot equipmentslot : p_331314_) {
                  ItemStack itemstack = this.getItemBySlot(equipmentslot);
                  Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
-@@ -1721,6 +_,7 @@
+@@ -1730,6 +_,7 @@
                  p_21194_ = Math.max(f / 25.0F, 0.0F);
                  float f2 = f1 - p_21194_;
                  if (f2 > 0.0F && f2 < 3.4028235E37F) {
@@ -438,7 +418,7 @@
                      if (this instanceof ServerPlayer) {
                          ((ServerPlayer)this).awardStat(Stats.DAMAGE_RESISTED, Math.round(f2 * 10.0F));
                      } else if (p_21193_.getEntity() instanceof ServerPlayer) {
-@@ -1743,6 +_,7 @@
+@@ -1752,6 +_,7 @@
  
                  if (f3 > 0.0F) {
                      p_21194_ = CombatRules.getDamageAfterMagicAbsorb(p_21194_, f3);
@@ -446,7 +426,7 @@
                  }
  
                  return p_21194_;
-@@ -1752,11 +_,14 @@
+@@ -1761,11 +_,14 @@
  
      protected void actuallyHurt(ServerLevel p_376745_, DamageSource p_21240_, float p_21241_) {
          if (!this.isInvulnerableTo(p_376745_, p_21240_)) {
@@ -466,7 +446,7 @@
              if (f > 0.0F && f < 3.4028235E37F && p_21240_.getEntity() instanceof ServerPlayer serverplayer) {
                  serverplayer.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(f * 10.0F));
              }
-@@ -1764,9 +_,10 @@
+@@ -1773,9 +_,10 @@
              if (f1 != 0.0F) {
                  this.getCombatTracker().recordDamage(p_21240_, f1);
                  this.setHealth(this.getHealth() - f1);
@@ -478,7 +458,7 @@
          }
      }
  
-@@ -1820,6 +_,8 @@
+@@ -1829,6 +_,8 @@
      }
  
      public void swing(InteractionHand p_21012_, boolean p_21013_) {
@@ -487,7 +467,7 @@
          if (!this.swinging || this.swingTime >= this.getCurrentSwingDuration() / 2 || this.swingTime < 0) {
              this.swingTime = -1;
              this.swinging = true;
-@@ -1933,8 +_,10 @@
+@@ -1942,8 +_,10 @@
  
      private void swapHandItems() {
          ItemStack itemstack = this.getItemBySlot(EquipmentSlot.OFFHAND);
@@ -500,7 +480,7 @@
      }
  
      @Override
-@@ -2152,15 +_,18 @@
+@@ -2161,15 +_,18 @@
              }
  
              this.hasImpulse = true;
@@ -521,7 +501,7 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2196,7 +_,7 @@
+@@ -2205,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {
          BlockPos blockpos = this.getBlockPosBelowThatAffectsMyMovement();
@@ -530,7 +510,7 @@
          float f1 = f * 0.91F;
          Vec3 vec3 = this.handleRelativeFrictionAndCalculateMovement(p_362457_, f);
          double d0 = vec3.y;
-@@ -2219,11 +_,19 @@
+@@ -2228,11 +_,19 @@
          }
      }
  
@@ -551,7 +531,7 @@
              float f = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
              float f1 = 0.02F;
              float f2 = (float)this.getAttributeValue(Attributes.WATER_MOVEMENT_EFFICIENCY);
-@@ -2240,6 +_,7 @@
+@@ -2249,6 +_,7 @@
                  f = 0.96F;
              }
  
@@ -559,7 +539,7 @@
              this.moveRelative(f1, p_365480_);
              this.move(MoverType.SELF, this.getDeltaMovement());
              Vec3 vec3 = this.getDeltaMovement();
-@@ -2389,7 +_,7 @@
+@@ -2398,7 +_,7 @@
              double d0 = Mth.clamp(p_21298_.x, -0.15F, 0.15F);
              double d1 = Mth.clamp(p_21298_.z, -0.15F, 0.15F);
              double d2 = Math.max(p_21298_.y, -0.15F);
@@ -568,7 +548,7 @@
                  d2 = 0.0;
              }
  
-@@ -2574,6 +_,7 @@
+@@ -2583,6 +_,7 @@
              };
              ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
              if (this.equipmentHasChanged(itemstack, itemstack1)) {
@@ -576,7 +556,7 @@
                  if (map == null) {
                      map = Maps.newEnumMap(EquipmentSlot.class);
                  }
-@@ -2733,6 +_,9 @@
+@@ -2742,6 +_,9 @@
          profilerfiller.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double d3;
@@ -586,7 +566,7 @@
              if (this.isInLava()) {
                  d3 = this.getFluidHeight(FluidTags.LAVA);
              } else {
-@@ -2743,15 +_,17 @@
+@@ -2752,15 +_,17 @@
              double d4 = this.getFluidJumpThreshold();
              if (!flag || this.onGround() && !(d3 > d4)) {
                  if (!this.isInLava() || this.onGround() && !(d3 > d4)) {
@@ -606,7 +586,7 @@
              }
          } else {
              this.noJumpDelay = 0;
-@@ -3104,8 +_,11 @@
+@@ -3113,8 +_,11 @@
  
      private void updatingUsingItem() {
          if (this.isUsingItem()) {
@@ -620,7 +600,7 @@
                  this.updateUsingItem(this.useItem);
              } else {
                  this.stopUsingItem();
-@@ -3114,8 +_,11 @@
+@@ -3123,8 +_,11 @@
      }
  
      protected void updateUsingItem(ItemStack p_147201_) {
@@ -633,7 +613,7 @@
              this.completeUsingItem();
          }
      }
-@@ -3143,8 +_,10 @@
+@@ -3152,8 +_,10 @@
      public void startUsingItem(InteractionHand p_21159_) {
          ItemStack itemstack = this.getItemInHand(p_21159_);
          if (!itemstack.isEmpty() && !this.isUsingItem()) {
@@ -645,7 +625,7 @@
              if (!this.level().isClientSide) {
                  this.setLivingEntityFlag(1, true);
                  this.setLivingEntityFlag(2, p_21159_ == InteractionHand.OFF_HAND);
-@@ -3207,7 +_,8 @@
+@@ -3216,7 +_,8 @@
                  this.releaseUsingItem();
              } else {
                  if (!this.useItem.isEmpty() && this.isUsingItem()) {
@@ -655,7 +635,7 @@
                      if (itemstack != this.useItem) {
                          this.setItemInHand(interactionhand, itemstack);
                      }
-@@ -3235,7 +_,11 @@
+@@ -3244,7 +_,11 @@
  
      public void releaseUsingItem() {
          if (!this.useItem.isEmpty()) {
@@ -667,7 +647,7 @@
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
              }
-@@ -3245,6 +_,7 @@
+@@ -3254,6 +_,7 @@
      }
  
      public void stopUsingItem() {
@@ -675,7 +655,7 @@
          if (!this.level().isClientSide) {
              boolean flag = this.isUsingItem();
              this.setLivingEntityFlag(1, false);
-@@ -3265,7 +_,7 @@
+@@ -3274,7 +_,7 @@
      public ItemStack getItemBlockingWith() {
          if (this.isUsingItem() && !this.useItem.isEmpty()) {
              Item item = this.useItem.getItem();
@@ -684,7 +664,7 @@
                  return null;
              } else {
                  return item.getUseDuration(this.useItem, this) - this.useItemRemaining < 5 ? null : this.useItem;
-@@ -3410,8 +_,8 @@
+@@ -3419,8 +_,8 @@
          }
  
          BlockState blockstate = this.level().getBlockState(p_21141_);
@@ -695,11 +675,11 @@
          }
  
          this.setPose(Pose.SLEEPING);
-@@ -3426,15 +_,17 @@
+@@ -3435,15 +_,17 @@
      }
  
      private boolean checkBedExists() {
--        return this.getSleepingPos().map(p_381383_ -> this.level().getBlockState(p_381383_).getBlock() instanceof BedBlock).orElse(false);
+-        return this.getSleepingPos().map(p_390116_ -> this.level().getBlockState(p_390116_).getBlock() instanceof BedBlock).orElse(false);
 +        // Neo: Overwrite the vanilla instanceof BedBlock check with isBed and fire the CanContinueSleepingEvent.
 +        boolean hasBed = this.getSleepingPos().map(pos -> this.level().getBlockState(pos).isBed(this.level(), pos, this)).orElse(false);
 +        return net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, hasBed ? null : Player.BedSleepingProblem.NOT_POSSIBLE_HERE);
@@ -716,7 +696,7 @@
                  Vec3 vec31 = BedBlock.findStandUpPosition(this.getType(), this.level(), p_261435_, direction, this.getYRot()).orElseGet(() -> {
                      BlockPos blockpos = p_261435_.above();
                      return new Vec3((double)blockpos.getX() + 0.5, (double)blockpos.getY() + 0.1, (double)blockpos.getZ() + 0.5);
-@@ -3455,7 +_,9 @@
+@@ -3464,7 +_,9 @@
      @Nullable
      public Direction getBedOrientation() {
          BlockPos blockpos = this.getSleepingPos().orElse(null);
@@ -727,7 +707,7 @@
      }
  
      @Override
-@@ -3464,7 +_,7 @@
+@@ -3473,7 +_,7 @@
      }
  
      public ItemStack getProjectile(ItemStack p_21272_) {
@@ -736,7 +716,7 @@
      }
  
      private static byte entityEventForEquipmentBreak(EquipmentSlot p_21267_) {
-@@ -3519,6 +_,8 @@
+@@ -3528,6 +_,8 @@
      }
  
      public final EquipmentSlot getEquipmentSlotForItem(ItemStack p_147234_) {
@@ -745,7 +725,7 @@
          Equippable equippable = p_147234_.get(DataComponents.EQUIPPABLE);
          return equippable != null && this.canUseSlot(equippable.slot()) ? equippable.slot() : EquipmentSlot.MAINHAND;
      }
-@@ -3604,7 +_,7 @@
+@@ -3613,7 +_,7 @@
      }
  
      public boolean canDisableShield() {

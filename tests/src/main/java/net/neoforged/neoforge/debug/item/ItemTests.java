@@ -45,7 +45,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.world.item.equipment.EquipmentModels;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -122,7 +122,7 @@ public class ItemTests {
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), 0x0000FF, 0xFF0000, props) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), props) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);
@@ -210,7 +210,7 @@ public class ItemTests {
         map.put(ArmorType.CHESTPLATE, 3);
         map.put(ArmorType.HELMET, 1);
         map.put(ArmorType.BODY, 3);
-    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.Items.BARRELS, EquipmentModels.LEATHER);
+    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.Items.BARRELS, EquipmentAssets.LEATHER);
 
     @TestHolder(description = "Tests that registries can correctly handle named holder set references.")
     static void toolItem(final DynamicTest test, final RegistrationHelper reg) {

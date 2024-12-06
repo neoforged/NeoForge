@@ -1,11 +1,15 @@
 --- a/net/minecraft/client/renderer/texture/AbstractTexture.java
 +++ b/net/minecraft/client/renderer/texture/AbstractTexture.java
-@@ -15,9 +_,13 @@
+@@ -12,6 +_,8 @@
      public static final int NOT_ASSIGNED = -1;
      protected int id = -1;
      protected boolean defaultBlur;
 +    protected boolean blur;
 +    protected boolean mipmap;
+     private int wrapS = 10497;
+     private int wrapT = 10497;
+     private int minFilter = 9986;
+@@ -51,6 +_,8 @@
  
      public void setFilter(boolean p_117961_, boolean p_117962_) {
          RenderSystem.assertOnRenderThreadOrInit();
@@ -14,10 +18,10 @@
          int i;
          int j;
          if (p_117961_) {
-@@ -31,6 +_,20 @@
-         this.bind();
-         GlStateManager._texParameter(3553, 10241, i);
-         GlStateManager._texParameter(3553, 10240, j);
+@@ -75,6 +_,20 @@
+                 this.magFilter = j;
+             }
+         }
 +    }
 +
 +    // FORGE: This seems to have been stripped out, but we need it

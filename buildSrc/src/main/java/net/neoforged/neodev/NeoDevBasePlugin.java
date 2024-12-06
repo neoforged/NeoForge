@@ -19,6 +19,10 @@ public class NeoDevBasePlugin implements Plugin<Project> {
         var tasks = project.getTasks();
         var neoDevBuildDir = project.getLayout().getBuildDirectory().dir("neodev");
 
+        var rawNeoFormVersion = project.getProviders().gradleProperty("neoform_version");
+        var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
+        var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
+
         var extension = project.getExtensions().create(NeoDevExtension.NAME, NeoDevExtension.class);
 
         var createSources = NeoDevPlugin.configureMinecraftDecompilation(project);
@@ -54,7 +58,8 @@ public class NeoDevBasePlugin implements Plugin<Project> {
                 project.files(),
                 modulePath -> {},
                 legacyClasspath -> {},
-                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile)
+                downloadAssets.flatMap(DownloadAssets::getAssetPropertiesFile),
+                mcAndNeoFormVersion
         );
     }
 }

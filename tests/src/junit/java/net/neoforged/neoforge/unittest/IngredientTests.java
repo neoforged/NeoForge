@@ -32,7 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @ExtendWith(EphemeralTestServerProvider.class)
 public class IngredientTests {
     private static List<ItemStack> ingredientItemsAsStacks(Ingredient ingredient) {
-        return ingredient.items().stream().map(i -> i.value().getDefaultInstance()).toList();
+        return ingredient.items().map(i -> i.value().getDefaultInstance()).toList();
     }
 
     @ParameterizedTest
@@ -59,7 +59,7 @@ public class IngredientTests {
         final var second = Ingredient.of(Items.BIRCH_LOG, Items.SPRUCE_LOG, Items.DISPENSER);
         final var ingredient = IntersectionIngredient.of(Ingredient.of(server.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.LOGS)), second);
 
-        Assertions.assertThat(ingredient.items().stream().map(Holder::value).distinct())
+        Assertions.assertThat(ingredient.items().map(Holder::value).distinct())
                 .containsExactlyInAnyOrder(Items.BIRCH_LOG, Items.SPRUCE_LOG);
     }
 

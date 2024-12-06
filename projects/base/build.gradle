@@ -25,9 +25,14 @@ neoDev {
         server {
             server()
         }
-        // Generated files are in run/data/generated
-        data {
-            data()
+        // Generated files are in run/clientData/generated
+        clientData {
+            clientData()
+            programArgument "--all"
+        }
+        // Generated files are in run/serverData/generated
+        serverData {
+            serverData()
             programArgument "--all"
         }
     }

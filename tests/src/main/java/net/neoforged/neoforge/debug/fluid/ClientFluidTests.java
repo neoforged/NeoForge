@@ -50,7 +50,7 @@ public class ClientFluidTests {
     @TestHolder(description = "Tests if blocks can prevent neighboring fluids from rendering against them")
     static void testWaterGlassFaceRemoval(final DynamicTest test, final RegistrationHelper reg) {
         final var glass = reg.blocks().registerBlock("water_glass", WaterGlassBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)).withLang("Water Glass").withBlockItem();
-        reg.provider(BlockStateProvider.class, prov -> prov.simpleBlock(glass.get(), prov.models()
+        reg.clientProvider(BlockStateProvider.class, prov -> prov.simpleBlock(glass.get(), prov.models()
                 .cubeAll("water_glass", ResourceLocation.withDefaultNamespace("block/glass"))
                 .renderType("cutout")));
         final var waterPosition = new BlockPos(1, 1, 2);

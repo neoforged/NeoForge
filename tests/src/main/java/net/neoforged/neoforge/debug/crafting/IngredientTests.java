@@ -70,7 +70,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if BlockTagIngredient works")
     static void blockTagIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
                 return new RecipeProvider(registries, output) {
@@ -111,7 +111,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if partial NBT ingredients match the correct stacks")
     static void partialNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
                 return new RecipeProvider(registries, output) {
@@ -167,7 +167,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if strict NBT ingredients match the correct stacks")
     static void strictNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
                 return new RecipeProvider(registries, output) {
@@ -377,7 +377,7 @@ public class IngredientTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if sized ingredients serialize and deserialize correctly")
     static void testSizedIngredient(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
                 return new RecipeProvider(registries, output) {

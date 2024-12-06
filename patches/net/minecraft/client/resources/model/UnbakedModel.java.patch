@@ -1,0 +1,57 @@
+--- a/net/minecraft/client/resources/model/UnbakedModel.java
++++ b/net/minecraft/client/resources/model/UnbakedModel.java
+@@ -9,10 +_,14 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public interface UnbakedModel extends ResolvableModel {
++public interface UnbakedModel extends ResolvableModel, net.neoforged.neoforge.client.extensions.IUnbakedModelExtension {
+     boolean DEFAULT_AMBIENT_OCCLUSION = true;
+     UnbakedModel.GuiLight DEFAULT_GUI_LIGHT = UnbakedModel.GuiLight.SIDE;
+ 
++    /**
++     * @deprecated Neo: use {@link #bake(TextureSlots, ModelBaker, ModelState, boolean, boolean, ItemTransforms, net.minecraft.util.context.ContextMap)} instead
++     */
++    @Deprecated
+     BakedModel bake(TextureSlots p_386641_, ModelBaker p_250133_, ModelState p_119536_, boolean p_387129_, boolean p_388638_, ItemTransforms p_386911_);
+ 
+     @Nullable
+@@ -44,7 +_,8 @@
+         boolean flag = getTopAmbientOcclusion(p_388418_);
+         boolean flag1 = getTopGuiLight(p_388418_).lightLikeBlock();
+         ItemTransforms itemtransforms = getTopTransforms(p_388418_);
+-        return p_388418_.bake(textureslots, p_388525_, p_386740_, flag, flag1, itemtransforms);
++        var additionalProperties = net.neoforged.neoforge.client.extensions.IUnbakedModelExtension.getTopAdditionalProperties(p_388418_);
++        return p_388418_.bake(textureslots, p_388525_, p_386740_, flag, flag1, itemtransforms, additionalProperties);
+     }
+ 
+     static TextureSlots getTopTextureSlots(UnbakedModel p_387784_, ModelDebugName p_388419_) {
+@@ -109,7 +_,16 @@
+         ItemTransform itemtransform5 = getTopTransform(p_388720_, ItemDisplayContext.GUI);
+         ItemTransform itemtransform6 = getTopTransform(p_388720_, ItemDisplayContext.GROUND);
+         ItemTransform itemtransform7 = getTopTransform(p_388720_, ItemDisplayContext.FIXED);
+-        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7);
++        com.google.common.collect.ImmutableMap.Builder<ItemDisplayContext, ItemTransform> moddedTransforms = com.google.common.collect.ImmutableMap.builder();
++        for (ItemDisplayContext context : ItemDisplayContext.values()) {
++            if (context.isModded()) {
++                ItemTransform transform = getTopTransform(p_388720_, context);
++                if (transform != ItemTransform.NO_TRANSFORM) {
++                    moddedTransforms.put(context, transform);
++                }
++            }
++        }
++        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7, moddedTransforms.build());
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+@@ -135,6 +_,10 @@
+ 
+         public boolean lightLikeBlock() {
+             return this == SIDE;
++        }
++
++        public String getSerializedName() {
++            return name;
+         }
+     }
+ }

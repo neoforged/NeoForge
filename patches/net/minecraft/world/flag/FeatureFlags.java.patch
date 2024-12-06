@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/flag/FeatureFlags.java
 +++ b/net/minecraft/world/flag/FeatureFlags.java
-@@ -37,6 +_,7 @@
+@@ -35,6 +_,7 @@
          TRADE_REBALANCE = featureflagregistry$builder.createVanilla("trade_rebalance");
          REDSTONE_EXPERIMENTS = featureflagregistry$builder.createVanilla("redstone_experiments");
          MINECART_IMPROVEMENTS = featureflagregistry$builder.createVanilla("minecart_improvements");

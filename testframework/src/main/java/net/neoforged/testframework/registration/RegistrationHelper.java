@@ -59,9 +59,13 @@ public interface RegistrationHelper {
 
     String registerSubpack(String name);
 
-    void addProvider(Function<GatherDataEvent, DataProvider> provider);
+    void addClientProvider(Function<GatherDataEvent.Client, DataProvider> provider);
 
-    <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer);
+    void addServerProvider(Function<GatherDataEvent.Server, DataProvider> provider);
+
+    <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer);
+
+    <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer);
 
     Consumer<Consumer<? extends Event>> eventListeners();
 

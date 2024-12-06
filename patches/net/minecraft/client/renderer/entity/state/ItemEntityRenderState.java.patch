@@ -1,0 +1,8 @@
+--- a/net/minecraft/client/renderer/entity/state/ItemEntityRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/ItemEntityRenderState.java
+@@ -6,4 +_,5 @@
+ @OnlyIn(Dist.CLIENT)
+ public class ItemEntityRenderState extends ItemClusterRenderState {
+     public float bobOffset;
++    public boolean shouldBob;
+ }

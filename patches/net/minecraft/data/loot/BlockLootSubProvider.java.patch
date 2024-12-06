@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/BlockLootSubProvider.java
 +++ b/net/minecraft/data/loot/BlockLootSubProvider.java
-@@ -684,12 +_,16 @@
+@@ -709,12 +_,16 @@
  
      protected abstract void generate();
  

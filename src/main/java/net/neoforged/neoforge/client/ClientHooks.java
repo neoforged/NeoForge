@@ -17,16 +17,15 @@ import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -38,7 +37,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
@@ -85,11 +83,12 @@ import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.AtlasSet;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.sounds.MusicInfo;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -104,7 +103,6 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.sounds.Music;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.Profiler;
@@ -118,7 +116,6 @@ import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.equipment.EquipmentModel;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -180,6 +177,7 @@ import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
@@ -254,8 +252,8 @@ public class ClientHooks {
         return 11_000F + depth;
     }
 
-    public static ResourceLocation getArmorTexture(ItemStack armor, EquipmentModel.LayerType type, EquipmentModel.Layer layer, ResourceLocation _default) {
-        ResourceLocation result = armor.getItem().getArmorTexture(armor, type, layer, _default);
+    public static ResourceLocation getArmorTexture(ItemStack armor, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
+        ResourceLocation result = IClientItemExtensions.of(armor).getArmorTexture(armor, type, layer, _default);
         return result != null ? result : _default;
     }
 
@@ -302,11 +300,7 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterColorHandlersEvent.Block(blockColors));
     }
 
-    public static void onItemColorsInit(ItemColors itemColors, BlockColors blockColors) {
-        ModLoader.postEvent(new RegisterColorHandlersEvent.Item(itemColors, blockColors));
-    }
-
-    public static Model getArmorModel(ItemStack itemStack, EquipmentModel.LayerType layerType, Model _default) {
+    public static Model getArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model _default) {
         return IClientItemExtensions.of(itemStack).getGenericArmorModel(itemStack, layerType, _default);
     }
 
@@ -394,7 +388,7 @@ public class ClientHooks {
     }
 
     @Nullable
-    public static Music selectMusic(Music situational, @Nullable SoundInstance playing) {
+    public static MusicInfo selectMusic(MusicInfo situational, @Nullable SoundInstance playing) {
         SelectMusicEvent e = new SelectMusicEvent(situational, playing);
         NeoForge.EVENT_BUS.post(e);
         return e.getMusic();
@@ -451,7 +445,7 @@ public class ClientHooks {
         return fogParameters;
     }
 
-    public static void onModifyBakingResult(Map<ModelResourceLocation, BakedModel> models, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
+    public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
         Function<Material, TextureAtlasSprite> textureGetter = material -> {
             AtlasSet.StitchResult stitchResult = stitchResults.get(material.atlasLocation());
             TextureAtlasSprite sprite = stitchResult.getSprite(material.texture());
@@ -461,14 +455,14 @@ public class ClientHooks {
             LOGGER.warn("Failed to retrieve texture '{}' from atlas '{}'", material.texture(), material.atlasLocation(), new Throwable());
             return stitchResult.missing();
         };
-        ModLoader.postEvent(new ModelEvent.ModifyBakingResult(models, textureGetter, modelBakery));
+        ModLoader.postEvent(new ModelEvent.ModifyBakingResult(bakingResult, textureGetter, modelBakery));
     }
 
-    public static void onModelBake(ModelManager modelManager, Map<ModelResourceLocation, BakedModel> models, ModelBakery modelBakery) {
-        ModLoader.postEvent(new ModelEvent.BakingCompleted(modelManager, Collections.unmodifiableMap(models), modelBakery));
+    public static void onModelBake(ModelManager modelManager, ModelBakery.BakingResult bakingResult, ModelBakery modelBakery) {
+        ModLoader.postEvent(new ModelEvent.BakingCompleted(modelManager, bakingResult, modelBakery));
     }
 
-    public static BakedModel handleCameraTransforms(PoseStack poseStack, BakedModel model, ItemDisplayContext cameraTransformType, boolean applyLeftHandTransform) {
+    public static BakedModel handleCameraTransforms(PoseStack poseStack, @Nullable BakedModel model, ItemDisplayContext cameraTransformType, boolean applyLeftHandTransform) {
         model = model.applyTransform(cameraTransformType, poseStack, applyLeftHandTransform);
         return model;
     }
@@ -724,8 +718,8 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterKeyMappingsEvent(options));
     }
 
-    public static void onRegisterAdditionalModels(Set<ModelResourceLocation> additionalModels) {
-        ModLoader.postEvent(new ModelEvent.RegisterAdditional(additionalModels));
+    public static void onRegisterAdditionalModels(Consumer<ResourceLocation> registrar) {
+        ModLoader.postEvent(new ModelEvent.RegisterAdditional(registrar));
     }
 
     @Nullable
@@ -990,6 +984,7 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
+        ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         ClientHooks.onRegisterKeyMappings(mc.options);

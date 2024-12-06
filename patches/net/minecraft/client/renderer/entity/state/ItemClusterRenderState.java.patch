@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/entity/state/ItemClusterRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/ItemClusterRenderState.java
+@@ -14,6 +_,7 @@
+     public final ItemStackRenderState item = new ItemStackRenderState();
+     public int count;
+     public int seed;
++    public boolean shouldSpread;
+ 
+     public void extractItemGroupRenderState(Entity p_386526_, ItemStack p_386486_, ItemModelResolver p_387036_) {
+         p_387036_.updateForNonLiving(this.item, p_386486_, ItemDisplayContext.GROUND, p_386526_);

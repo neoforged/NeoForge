@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/SpriteContents.java
 +++ b/net/minecraft/client/renderer/texture/SpriteContents.java
-@@ -46,6 +_,10 @@
+@@ -47,6 +_,10 @@
          this.byMipLevel = new NativeImage[]{this.originalImage};
      }
  
@@ -11,18 +11,16 @@
      public void increaseMipLevel(int p_248864_) {
          try {
              this.byMipLevel = MipmapGenerator.generateMipLevels(this.byMipLevel, p_248864_);
-@@ -120,6 +_,10 @@
+@@ -130,6 +_,8 @@
  
      void upload(int p_248895_, int p_250245_, int p_250458_, int p_251337_, NativeImage[] p_248825_) {
          for (int i = 0; i < this.byMipLevel.length; i++) {
-+            // Forge: Skip uploading if the texture would be made invalid by mip level
-+            if ((this.width >> i) <= 0 || (this.height >> i) <= 0)
-+                break;
-+
-             p_248825_[i]
-                 .upload(i, p_248895_ >> i, p_250245_ >> i, p_250458_ >> i, p_251337_ >> i, this.width >> i, this.height >> i, this.byMipLevel.length > 1, false);
++            // NeoForge: Skip uploading if the texture would be made invalid by mip level
++            if ((this.width >> i) <= 0 || (this.height >> i) <= 0) break;
+             p_248825_[i].upload(i, p_248895_ >> i, p_250245_ >> i, p_250458_ >> i, p_251337_ >> i, this.width >> i, this.height >> i, false);
          }
-@@ -242,7 +_,8 @@
+     }
+@@ -244,7 +_,8 @@
              for (int i = 0; i < this.activeFrame.length; i++) {
                  int j = SpriteContents.this.width >> i;
                  int k = SpriteContents.this.height >> i;
@@ -32,7 +30,7 @@
              }
          }
  
-@@ -257,6 +_,9 @@
+@@ -259,6 +_,9 @@
                  for (int k = 0; k < this.activeFrame.length; k++) {
                      int l = SpriteContents.this.width >> k;
                      int i1 = SpriteContents.this.height >> k;

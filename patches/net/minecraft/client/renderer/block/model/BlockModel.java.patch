@@ -1,104 +1,119 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -72,9 +_,10 @@
-     public BlockModel parent;
+@@ -26,15 +_,17 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class BlockModel implements UnbakedModel {
++public class BlockModel implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
+     @VisibleForTesting
+     public static final Gson GSON = new GsonBuilder()
++        .registerTypeHierarchyAdapter(UnbakedModel.class, new net.neoforged.neoforge.client.model.UnbakedModelParser.Deserializer())
+         .registerTypeAdapter(BlockModel.class, new BlockModel.Deserializer())
+         .registerTypeAdapter(BlockElement.class, new BlockElement.Deserializer())
+         .registerTypeAdapter(BlockElementFace.class, new BlockElementFace.Deserializer())
+         .registerTypeAdapter(BlockFaceUV.class, new BlockFaceUV.Deserializer())
+         .registerTypeAdapter(ItemTransform.class, new ItemTransform.Deserializer())
+         .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
++        .registerTypeAdapter(com.mojang.math.Transformation.class, new net.neoforged.neoforge.common.util.TransformationHelper.Deserializer())
+         .create();
+     private final List<BlockElement> elements;
      @Nullable
-     protected ResourceLocation parentLocation;
-+    public final net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext customData = new net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext(this);
- 
-     public static BlockModel fromStream(Reader p_111462_) {
--        return GsonHelper.fromJson(GSON, p_111462_, BlockModel.class);
-+        return GsonHelper.fromJson(net.neoforged.neoforge.client.model.ExtendedBlockModelDeserializer.INSTANCE, p_111462_, BlockModel.class);
-     }
- 
-     public BlockModel(
-@@ -95,10 +_,15 @@
-         this.overrides = p_273099_;
-     }
- 
-+    @Deprecated
-     public List<BlockElement> getElements() {
-+        if (customData.hasCustomGeometry()) return java.util.Collections.emptyList();
-         return this.elements.isEmpty() && this.parent != null ? this.parent.getElements() : this.elements;
-     }
- 
+@@ -49,7 +_,14 @@
+     private UnbakedModel parent;
+     @Nullable
+     private final ResourceLocation parentLocation;
 +    @Nullable
-+    public ResourceLocation getParentLocation() { return parentLocation; }
-+
-     public boolean hasAmbientOcclusion() {
-         if (this.hasAmbientOcclusion != null) {
-             return this.hasAmbientOcclusion;
-@@ -132,10 +_,18 @@
++    private final com.mojang.math.Transformation transformation;
++    private final net.neoforged.neoforge.client.RenderTypeGroup renderTypeGroup;
  
-             this.parent = blockmodel;
-         }
++    /**
++     * @deprecated Neo: use {@link net.neoforged.neoforge.client.model.UnbakedModelParser#parse(Reader)} instead
++     */
++    @Deprecated
+     public static BlockModel fromStream(Reader p_111462_) {
+         return GsonHelper.fromJson(GSON, p_111462_, BlockModel.class);
+     }
+@@ -62,12 +_,27 @@
+         @Nullable UnbakedModel.GuiLight p_387948_,
+         @Nullable ItemTransforms p_273480_
+     ) {
++        this(p_273263_, p_272668_, p_386899_, p_272676_, p_387948_, p_273480_, null, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
++    }
 +
-+        if (customData.hasCustomGeometry()) {
-+            customData.getCustomGeometry().resolveDependencies(p_361203_, customData);
-+        }
++    public BlockModel(
++            @Nullable ResourceLocation p_273263_,
++            List<BlockElement> p_272668_,
++            TextureSlots.Data p_386899_,
++            @Nullable Boolean p_272676_,
++            @Nullable UnbakedModel.GuiLight p_387948_,
++            @Nullable ItemTransforms p_273480_,
++            @Nullable com.mojang.math.Transformation transformation,
++            net.neoforged.neoforge.client.RenderTypeGroup renderTypeGroup
++    ) {
+         this.elements = p_272668_;
+         this.hasAmbientOcclusion = p_272676_;
+         this.guiLight = p_387948_;
+         this.textureSlots = p_386899_;
+         this.parentLocation = p_273263_;
+         this.transforms = p_273480_;
++        this.transformation = transformation;
++        this.renderTypeGroup = renderTypeGroup;
+     }
+ 
+     @Nullable
+@@ -107,10 +_,12 @@
      }
  
      @Override
-     public BakedModel bake(ModelBaker p_252120_, Function<Material, TextureAtlasSprite> p_250023_, ModelState p_251130_) {
-+        var customGeometry = this.customData.getCustomGeometry();
-+        if (customGeometry != null) {
-+            return customGeometry.bake(this.customData, p_252120_, p_250023_, p_251130_, this.overrides);
-+        }
-         return this.bake(p_250023_, p_251130_, true);
+-    public BakedModel bake(TextureSlots p_387258_, ModelBaker p_388168_, ModelState p_111453_, boolean p_111455_, boolean p_387632_, ItemTransforms p_386577_) {
++    public BakedModel bake(TextureSlots p_387258_, ModelBaker p_388168_, ModelState p_111453_, boolean p_111455_, boolean p_387632_, ItemTransforms p_386577_, net.minecraft.util.context.ContextMap additionalProperties) {
+         return this.elements.isEmpty() && this.parent != null
+-            ? this.parent.bake(p_387258_, p_388168_, p_111453_, p_111455_, p_387632_, p_386577_)
+-            : SimpleBakedModel.bakeElements(this.elements, p_387258_, p_388168_.sprites(), p_111453_, p_111455_, p_387632_, true, p_386577_);
++            ? this.parent.bake(p_387258_, p_388168_, p_111453_, p_111455_, p_387632_, p_386577_, additionalProperties)
++            : SimpleBakedModel.bakeElements(this.elements, p_387258_, p_388168_.sprites(), p_111453_, p_111455_, p_387632_, true, p_386577_,
++                    additionalProperties.getOrDefault(net.neoforged.neoforge.client.model.NeoForgeModelProperties.TRANSFORM, com.mojang.math.Transformation.identity()),
++                    additionalProperties.getOrDefault(net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY));
      }
  
-@@ -146,6 +_,10 @@
-         } else {
-             SimpleBakedModel.Builder simplebakedmodel$builder = new SimpleBakedModel.Builder(this, p_111455_).particle(textureatlassprite);
+     @Nullable
+@@ -125,6 +_,16 @@
+         return this.parentLocation;
+     }
  
-+            if (!this.customData.getRootTransform().isIdentity()) {
-+                p_111453_ = net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper.composeRootTransformIntoModelState(p_111453_, this.customData.getRootTransform());
-+            }
++    @Override
++    public void fillAdditionalProperties(net.minecraft.util.context.ContextMap.Builder propertiesBuilder) {
++        if (this.transformation != null) {
++            propertiesBuilder.withParameter(net.neoforged.neoforge.client.model.NeoForgeModelProperties.TRANSFORM, this.transformation);
++        }
++        if (!this.renderTypeGroup.isEmpty()) {
++            propertiesBuilder.withParameter(net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE, this.renderTypeGroup);
++        }
++    }
 +
-             for (BlockElement blockelement : this.getElements()) {
-                 for (Direction direction : blockelement.faces.keySet()) {
-                     BlockElementFace blockelementface = blockelement.faces.get(direction);
-@@ -161,7 +_,11 @@
-                 }
+     @OnlyIn(Dist.CLIENT)
+     public static class Deserializer implements JsonDeserializer<BlockModel> {
+         public BlockModel deserialize(JsonElement p_111498_, Type p_111499_, JsonDeserializationContext p_111500_) throws JsonParseException {
+@@ -145,7 +_,20 @@
              }
  
--            return simplebakedmodel$builder.build();
-+            var renderTypes = net.neoforged.neoforge.client.RenderTypeGroup.EMPTY;
-+            if (this.customData.getRenderTypeHint() != null) {
-+                renderTypes = this.customData.getRenderType(this.customData.getRenderTypeHint());
+             ResourceLocation resourcelocation = s.isEmpty() ? null : ResourceLocation.parse(s);
+-            return new BlockModel(resourcelocation, list, textureslots$data, obool, unbakedmodel$guilight, itemtransforms);
++
++            com.mojang.math.Transformation rootTransform = null;
++            if (jsonobject.has("transform")) {
++                JsonElement transform = jsonobject.get("transform");
++                rootTransform = p_111500_.deserialize(transform, com.mojang.math.Transformation.class);
 +            }
-+            return simplebakedmodel$builder.build(renderTypes);
-         }
-     }
- 
-@@ -229,7 +_,18 @@
-         ItemTransform itemtransform5 = this.getTransform(ItemDisplayContext.GUI);
-         ItemTransform itemtransform6 = this.getTransform(ItemDisplayContext.GROUND);
-         ItemTransform itemtransform7 = this.getTransform(ItemDisplayContext.FIXED);
--        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7);
 +
-+        var builder = com.google.common.collect.ImmutableMap.<ItemDisplayContext, ItemTransform>builder();
-+        for(ItemDisplayContext type : ItemDisplayContext.values()) {
-+            if (type.isModded()) {
-+                var transform = this.getTransform(type);
-+                if (transform != ItemTransform.NO_TRANSFORM) {
-+                    builder.put(type, transform);
-+                }
++            var renderTypeGroup = net.neoforged.neoforge.client.RenderTypeGroup.EMPTY;
++            if (jsonobject.has("render_type")) {
++                var renderTypeHintName = GsonHelper.getAsString(jsonobject, "render_type");
++                renderTypeGroup = net.neoforged.neoforge.client.NamedRenderTypeManager.get(ResourceLocation.parse(renderTypeHintName));
 +            }
-+        }
 +
-+        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7, builder.build());
-     }
- 
-     private ItemTransform getTransform(ItemDisplayContext p_270662_) {
-@@ -347,6 +_,10 @@
- 
-         public boolean lightLikeBlock() {
-             return this == SIDE;
-+        }
-+
-+        public String getSerializedName() {
-+            return name;
++            return new BlockModel(resourcelocation, list, textureslots$data, obool, unbakedmodel$guilight, itemtransforms, rootTransform, renderTypeGroup);
          }
-     }
- }
+ 
+         private TextureSlots.Data getTextureMap(JsonObject p_111510_) {

@@ -27,7 +27,7 @@ public interface ConditionalRecipeTest {
         // name pointing to recipe which should never be enabled
         var recipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "always_disabled_recipe"));
 
-        reg.addProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
                 return new RecipeProvider(registries, output) {

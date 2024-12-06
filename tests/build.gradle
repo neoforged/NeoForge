@@ -75,7 +75,7 @@ neoDev {
             type = "gameTestServer"
         }
         data {
-            data()
+            clientData()
 
             programArguments.addAll '--flat', '--all', '--validate',
                     '--mod', 'data_gen_test',

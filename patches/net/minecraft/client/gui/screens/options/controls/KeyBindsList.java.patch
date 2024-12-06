@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
-@@ -158,6 +_,7 @@
+@@ -156,6 +_,7 @@
                  )
                  .build();
              this.resetButton = Button.builder(RESET_BUTTON_TITLE, p_359096_ -> {
@@ -8,7 +8,7 @@
                  p_345998_.setKey(p_345998_.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(p_344899_ -> Component.translatable("narrator.controls.reset", p_345196_)).build();
-@@ -210,7 +_,7 @@
+@@ -208,7 +_,7 @@
              MutableComponent mutablecomponent = Component.empty();
              if (!this.key.isUnbound()) {
                  for (KeyMapping keymapping : KeyBindsList.this.minecraft.options.keyMappings) {

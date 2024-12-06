@@ -9,7 +9,15 @@
              this.renderNameTag(p_364816_, p_364816_.nameTag, p_114488_, p_114489_, p_114490_);
          }
      }
-@@ -270,9 +_,11 @@
+@@ -249,6 +_,7 @@
+     public final S createRenderState(T p_361382_, float p_360885_) {
+         S s = this.reusedState;
+         this.extractRenderState(p_361382_, s, p_360885_);
++        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateEntityRenderState(this, p_361382_, s);
+         return s;
+     }
+ 
+@@ -274,9 +_,11 @@
          }
  
          p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
@@ -23,7 +31,7 @@
              p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
          } else {
              p_361028_.nameTag = null;
-@@ -302,5 +_,7 @@
+@@ -306,5 +_,7 @@
          }
  
          p_361028_.displayFireAnimation = p_362104_.displayFireAnimation();

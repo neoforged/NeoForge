@@ -29,7 +29,7 @@
                          d3 *= d6;
                          Vec3 vec3 = new Vec3(d1, d2, d3);
 +                        vec3 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec3, blocks);
-                         entity.setDeltaMovement(entity.getDeltaMovement().add(vec3));
+                         entity.push(vec3);
                          if (entity instanceof Player) {
                              Player player = (Player)entity;
 @@ -246,7 +_,7 @@
