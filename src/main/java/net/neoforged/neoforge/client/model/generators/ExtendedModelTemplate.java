@@ -28,8 +28,8 @@ import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -53,7 +53,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
     @Nullable
     private final Boolean ambientOcclusion;
     @Nullable
-    private final BlockModel.GuiLight guiLight;
+    private final UnbakedModel.GuiLight guiLight;
 
     private ExtendedModelTemplate(Builder builder) {
         super(builder.parent, builder.suffix, builder.requiredSlots.toArray(TextureSlot[]::new));
@@ -83,9 +83,9 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         @Nullable
         private ResourceLocation renderType = null;
         @Nullable
-        private Boolean ambientOcclusion = null; // BlockModel.DEFAULT_AMBIENT_OCCLUSION
+        private Boolean ambientOcclusion = null; // UnbakedModel.DEFAULT_AMBIENT_OCCLUSION
         @Nullable
-        private BlockModel.GuiLight guiLight = null;
+        private UnbakedModel.GuiLight guiLight = null;
 
         public static Builder of(ModelTemplate template) {
             Builder builder = new Builder();
@@ -155,7 +155,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
             return this;
         }
 
-        public Builder guiLight(BlockModel.GuiLight light) {
+        public Builder guiLight(UnbakedModel.GuiLight light) {
             this.guiLight = light;
             return this;
         }
