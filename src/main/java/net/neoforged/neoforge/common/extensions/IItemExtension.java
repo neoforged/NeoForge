@@ -129,9 +129,9 @@ public interface IItemExtension {
     }
 
     /**
-     * Called by CraftingManager and Grindstone to determine if an item is repairable by combining two damaged versions together.
+     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
      *
-     * @return True if reparable by combining
+     * @return True if repairable by combining
      */
     boolean isCombineRepairable(ItemStack stack);
 
