@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.model.generators;
+package net.neoforged.neoforge.client.model.generators.template;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
@@ -20,20 +20,17 @@ public abstract class CustomLoaderBuilder {
     private static final ResourceLocation DUMMY = ResourceLocation.fromNamespaceAndPath("dummy", "dummy");
 
     protected final ResourceLocation loaderId;
-    protected final ExtendedModelTemplate.Builder parent;
     protected final Map<String, Boolean> visibility = new LinkedHashMap<>();
     protected final boolean allowInlineElements;
     private boolean optional = false;
 
     /**
      * @param loaderId            The ID of the associated {@link UnbakedModelLoader}
-     * @param parent              The parent {@link ExtendedModelTemplate.Builder}
      * @param allowInlineElements Whether the loader supports inline vanilla elements and as such can fall back to vanilla loading
      *                            with some degradation if the loader does not exist and is marked as optional in the model
      */
-    protected CustomLoaderBuilder(ResourceLocation loaderId, ExtendedModelTemplate.Builder parent, boolean allowInlineElements) {
+    protected CustomLoaderBuilder(ResourceLocation loaderId, boolean allowInlineElements) {
         this.loaderId = loaderId;
-        this.parent = parent;
         this.allowInlineElements = allowInlineElements;
     }
 
@@ -53,18 +50,14 @@ public abstract class CustomLoaderBuilder {
         return this;
     }
 
-    public final CustomLoaderBuilder copy(ExtendedModelTemplate.Builder owner) {
-        CustomLoaderBuilder builder = copyInternal(owner);
+    public final CustomLoaderBuilder copy() {
+        CustomLoaderBuilder builder = copyInternal();
         builder.visibility.putAll(this.visibility);
         builder.optional = this.optional;
         return builder;
     }
 
-    protected abstract CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner);
-
-    public ExtendedModelTemplate.Builder end() {
-        return parent;
-    }
+    protected abstract CustomLoaderBuilder copyInternal();
 
     public JsonObject toJson(JsonObject json) {
         if (optional) {

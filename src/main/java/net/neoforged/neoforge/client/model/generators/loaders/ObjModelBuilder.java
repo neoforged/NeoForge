@@ -8,15 +8,11 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
+import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.Nullable;
 
 public class ObjModelBuilder extends CustomLoaderBuilder {
-    public static ObjModelBuilder begin(ExtendedModelTemplate.Builder parent) {
-        return new ObjModelBuilder(parent);
-    }
-
     @Nullable
     private ResourceLocation modelLocation;
     @Nullable
@@ -30,8 +26,8 @@ public class ObjModelBuilder extends CustomLoaderBuilder {
     @Nullable
     private ResourceLocation mtlOverride;
 
-    protected ObjModelBuilder(ExtendedModelTemplate.Builder parent) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "obj"), parent, false);
+    public ObjModelBuilder() {
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "obj"), false);
     }
 
     public ObjModelBuilder modelLocation(ResourceLocation modelLocation) {
@@ -67,8 +63,8 @@ public class ObjModelBuilder extends CustomLoaderBuilder {
     }
 
     @Override
-    protected CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner) {
-        ObjModelBuilder builder = new ObjModelBuilder(owner);
+    protected CustomLoaderBuilder copyInternal() {
+        ObjModelBuilder builder = new ObjModelBuilder();
         builder.modelLocation = this.modelLocation;
         builder.automaticCulling = this.automaticCulling;
         builder.shadeQuads = this.shadeQuads;

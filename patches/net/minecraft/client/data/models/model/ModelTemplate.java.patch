@@ -25,7 +25,7 @@
          return Streams.concat(this.requiredSlots.stream(), p_387972_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_387972_::get));
 +    }
 +
-+    public net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate.Builder extend() {
-+        return net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate.Builder.of(this);
++    public net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder extend() {
++        return net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder.of(this);
      }
  }

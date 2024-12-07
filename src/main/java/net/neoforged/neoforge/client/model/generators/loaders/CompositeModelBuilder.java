@@ -16,20 +16,16 @@ import java.util.Map;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
+import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public class CompositeModelBuilder extends CustomLoaderBuilder {
-    public static CompositeModelBuilder begin(ExtendedModelTemplate.Builder parent) {
-        return new CompositeModelBuilder(parent);
-    }
-
     private final Map<String, ModelTemplate> childModels = new LinkedHashMap<>();
     private final Map<String, TextureMapping> childTextures = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
-    protected CompositeModelBuilder(ExtendedModelTemplate.Builder parent) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), parent, false);
+    public CompositeModelBuilder() {
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "composite"), false);
     }
 
     public CompositeModelBuilder child(String name, ModelTemplate modelBuilder, TextureMapping textures) {
@@ -54,8 +50,8 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
     }
 
     @Override
-    protected CustomLoaderBuilder copyInternal(ExtendedModelTemplate.Builder owner) {
-        CompositeModelBuilder builder = new CompositeModelBuilder(owner);
+    protected CustomLoaderBuilder copyInternal() {
+        CompositeModelBuilder builder = new CompositeModelBuilder();
         builder.childModels.putAll(this.childModels);
         this.childTextures.forEach((name, textures) -> builder.childTextures.put(name, textures.copy()));
         builder.itemRenderOrder.addAll(this.itemRenderOrder);

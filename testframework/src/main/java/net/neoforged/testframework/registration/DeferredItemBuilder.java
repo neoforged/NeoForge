@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -76,10 +76,10 @@ public class DeferredItemBuilder<I extends Item> extends DeferredItem<I> {
         return withModel((item, itemModels) -> itemModels.generateFlatItem(item, template));
     }
 
-    public DeferredItemBuilder<I> withModel(TextureMapping textures, Consumer<ExtendedModelTemplate.Builder> modelConsumer) {
+    public DeferredItemBuilder<I> withModel(TextureMapping textures, Consumer<ExtendedModelTemplateBuilder> modelConsumer) {
         return withModel((item, itemModels) -> {
             var modelPath = ModelLocationUtils.getModelLocation(item);
-            var builder = ExtendedModelTemplate.builder();
+            var builder = ExtendedModelTemplateBuilder.builder();
             modelConsumer.accept(builder);
             itemModels.itemModelOutput.accept(item, ItemModelUtils.plainModel(modelPath));
             builder.build().create(item, textures, itemModels.modelOutput);

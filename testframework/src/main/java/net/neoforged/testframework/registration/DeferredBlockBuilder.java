@@ -31,7 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.Nullable;
@@ -95,9 +95,9 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
         return withModel((block, blockModels) -> blockModels.createTrivialBlock(block, model));
     }
 
-    public DeferredBlockBuilder<T> withModel(TextureMapping textures, Consumer<ExtendedModelTemplate.Builder> modelConsumer) {
+    public DeferredBlockBuilder<T> withModel(TextureMapping textures, Consumer<ExtendedModelTemplateBuilder> modelConsumer) {
         return withModel((block, blockModels) -> {
-            var builder = ExtendedModelTemplate.builder();
+            var builder = ExtendedModelTemplateBuilder.builder();
             modelConsumer.accept(builder);
             var modelPath = builder.build().create(block, textures, blockModels.modelOutput);
             blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, modelPath));
@@ -109,12 +109,11 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
             ModelTemplate template;
 
             if (hasColor) {
-                template = ExtendedModelTemplate.builder()
-                        .element()
-                        .from(0, 0, 0)
-                        .to(16, 16, 16)
-                        .allFaces((direction, faceBuilder) -> faceBuilder.uvs(0, 0, 16, 16).texture(TextureSlot.ALL).tintindex(0).cullface(direction))
-                        .end()
+                template = ExtendedModelTemplateBuilder.builder()
+                        .element(element -> element
+                                .from(0, 0, 0)
+                                .to(16, 16, 16)
+                                .allFaces((direction, faceBuilder) -> faceBuilder.uvs(0, 0, 16, 16).texture(TextureSlot.ALL).tintindex(0).cullface(direction)))
                         .requiredTextureSlot(TextureSlot.ALL)
                         .build();
             } else {

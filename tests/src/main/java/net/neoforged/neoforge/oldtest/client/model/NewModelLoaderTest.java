@@ -188,10 +188,9 @@ public class NewModelLoaderTest {
             var qrTexture = TextureSlot.create("qr");
 
             blockModels.createHorizontallyRotatedBlock(obj_block.value(), TexturedModel.ORIENTABLE.updateTemplate(template -> template.extend()
-                    .customLoader(ObjModelBuilder::begin)
-                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
-                    .flipV(true)
-                    .end()
+                    .customLoader(ObjModelBuilder::new, loader -> loader
+                            .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"))
+                            .flipV(true))
                     .requiredTextureSlot(qrTexture)
                     .build())
                     .updateTexture(textures -> textures

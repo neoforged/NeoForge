@@ -145,12 +145,11 @@ public class CustomItemDisplayContextTest {
             blockModels.createHorizontallyRotatedBlock(ITEM_HANGER_BLOCK.value(), TexturedModel.ORIENTABLE);
 
             ModelTemplates.FLAT_HANDHELD_ROD_ITEM.extend()
-                    .transforms()
-                    .transform(RendererEvents.HANGING)
-                    .rotation(62, 180 - 33, 40)
-                    .translation(-2.25f, 1.5f, -0.25f).scale(0.48f)
-                    .end()
-                    .end()
+                    .transforms(transforms -> transforms
+                            .transform(RendererEvents.HANGING, transform -> transform
+                                    .rotation(62, 180 - 33, 40)
+                                    .translation(-2.25f, 1.5f, -0.25f)
+                                    .scale(0.48f)))
                     .build()
                     .create(Items.STICK, TextureMapping.layer0(Items.STICK), itemModels.modelOutput);
         }
