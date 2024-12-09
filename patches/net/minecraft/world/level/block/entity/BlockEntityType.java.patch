@@ -12,7 +12,7 @@
  
      @Nullable
      public static ResourceLocation getKey(BlockEntityType<?> p_58955_) {
-@@ -250,8 +_,25 @@
+@@ -250,8 +_,21 @@
      }
  
      public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Set<Block> p_155260_) {
@@ -26,10 +26,6 @@
 +    }
 +
 +    // Neo: Additional constructor for convenience.
-+    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Block... p_155260_) {
-+        this(p_155259_, false, p_155260_);
-+    }
-+
 +    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, boolean onlyOpCanSetNbt, Block... p_155260_) {
 +        this(p_155259_, Set.of(p_155260_), onlyOpCanSetNbt);
 +        if (p_155260_.length == 0) {
