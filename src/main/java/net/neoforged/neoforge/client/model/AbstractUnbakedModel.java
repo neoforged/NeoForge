@@ -22,7 +22,8 @@ public abstract class AbstractUnbakedModel implements ExtendedUnbakedModel {
     /**
      * Holds the standard top-level model parameters except elements.
      * {@link UnbakedModel#bake(TextureSlots, ModelBaker, ModelState, boolean, boolean, ItemTransforms, ContextMap)}
-     * must always use the values given as parameters instead of accessing this parameter directly.
+     * must always use the values given as parameters instead of accessing this parameter directly in order to
+     * take values collected along the model's parent chain into account.
      */
     protected final StandardModelParameters parameters;
     private UnbakedModel parent;
