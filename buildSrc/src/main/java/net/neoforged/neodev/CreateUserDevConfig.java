@@ -29,12 +29,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
     @Inject
     public CreateUserDevConfig() {}
 
-    /**
-     * Toggles the launch type written to the userdev configuration between *dev and *userdev.
-     */
-    @Input
-    abstract Property<Boolean> getForNeoDev();
-
     @Input
     abstract Property<String> getFmlVersion();
 
@@ -85,11 +79,12 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
         for (var runType : RunType.values()) {
             var launchTarget = switch (runType) {
-                case CLIENT -> "forgeclient";
-                case DATA -> "forgedata";
-                case GAME_TEST_SERVER, SERVER -> "forgeserver";
-                case JUNIT -> "forgejunit";
-            } + (getForNeoDev().get() ? "dev" : "userdev");
+                case CLIENT -> "neoforgeclientdev";
+                case CLIENT_DATA -> "neoforgeclientdatadev";
+                case SERVER_DATA -> "neoforgeserverdatadev";
+                case GAME_TEST_SERVER, SERVER -> "neoforgeserverdev";
+                case JUNIT -> "neoforgejunitdev";
+            };
 
             List<String> args = new ArrayList<>();
             Collections.addAll(args,
@@ -101,7 +96,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                         "--version", getNeoForgeVersion().get());
             }
 
-            if (runType == RunType.CLIENT || runType == RunType.DATA || runType == RunType.JUNIT) {
+            if (runType == RunType.CLIENT || runType == RunType.CLIENT_DATA || runType == RunType.JUNIT) {
                 Collections.addAll(args,
                         "--assetIndex", "{asset_index}",
                         "--assetsDir", "{assets_root}");
@@ -138,9 +133,9 @@ abstract class CreateUserDevConfig extends DefaultTask {
                             "--add-opens", "java.base/java.lang.invoke=cpw.mods.securejarhandler",
                             "--add-exports", "java.base/sun.security.util=cpw.mods.securejarhandler",
                             "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"),
-                    runType == RunType.CLIENT || runType == RunType.JUNIT,
-                    runType == RunType.GAME_TEST_SERVER || runType == RunType.SERVER,
-                    runType == RunType.DATA,
+                    runType == RunType.CLIENT || runType == RunType.JUNIT || runType == RunType.CLIENT_DATA,
+                    runType == RunType.GAME_TEST_SERVER || runType == RunType.SERVER || runType == RunType.SERVER_DATA,
+                    runType == RunType.CLIENT_DATA || runType == RunType.SERVER_DATA,
                     runType == RunType.CLIENT || runType == RunType.GAME_TEST_SERVER,
                     runType == RunType.JUNIT,
                     Map.of(
@@ -158,7 +153,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
     private enum RunType {
         CLIENT("client"),
-        DATA("data"),
+        CLIENT_DATA("clientData"),
+        SERVER_DATA("serverData"),
         GAME_TEST_SERVER("gameTestServer"),
         SERVER("server"),
         JUNIT("junit");

@@ -1,54 +1,11 @@
 --- a/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -156,7 +_,7 @@
-         float p_371782_
-     ) {
-         p_371635_.pushPose();
--        p_371384_.getTransforms().getTransform(p_371250_).apply(p_371248_, p_371635_);
-+        p_371384_ = net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(p_371635_, p_371384_, p_371250_, p_371248_);
-         p_371635_.translate(-0.5F, -0.5F, p_371782_);
-         this.renderItem(p_371318_, p_371250_, p_371635_, p_371946_, p_371752_, p_371508_, p_371384_, p_371718_);
-         p_371635_.popPose();
-@@ -173,7 +_,8 @@
-         boolean p_364829_
-     ) {
-         if (!p_363970_.isCustomRenderer() && (!p_361397_.is(Items.TRIDENT) || p_364829_)) {
--            RenderType rendertype = ItemBlockRenderTypes.getRenderType(p_361397_);
-+            for (var model : p_363970_.getRenderPasses(p_361397_)) {
-+            for (var rendertype : model.getRenderTypes(p_361397_)) {
-             VertexConsumer vertexconsumer;
-             if (hasAnimatedTexture(p_361397_) && p_361397_.hasFoil()) {
-                 PoseStack.Pose posestack$pose = p_360423_.last().copy();
-@@ -188,9 +_,11 @@
-                 vertexconsumer = getFoilBuffer(p_360415_, rendertype, true, p_361397_.hasFoil());
+@@ -132,7 +_,7 @@
+                 f3 = 1.0F;
              }
  
--            this.renderModelLists(p_363970_, p_361397_, p_361265_, p_364771_, p_360423_, vertexconsumer);
-+            this.renderModelLists(model, p_361397_, p_361265_, p_364771_, p_360423_, vertexconsumer);
-+            }
-+            }
-         } else {
--            this.blockEntityRenderer.renderByItem(p_361397_, p_361627_, p_360423_, p_360415_, p_361265_, p_364771_);
-+            net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_361397_).getCustomRenderer().renderByItem(p_361397_, p_361627_, p_360423_, p_360415_, p_361265_, p_364771_);
-         }
-     }
- 
-@@ -238,7 +_,7 @@
-             float f1 = (float)ARGB.red(i) / 255.0F;
-             float f2 = (float)ARGB.green(i) / 255.0F;
-             float f3 = (float)ARGB.blue(i) / 255.0F;
 -            p_115164_.putBulkData(posestack$pose, bakedquad, f1, f2, f3, f, p_115167_, p_115168_);
-+            p_115164_.putBulkData(posestack$pose, bakedquad, f1, f2, f3, f, p_115167_, p_115168_, true); // Neo: pass readExistingColor=true
++            p_115164_.putBulkData(posestack$pose, bakedquad, f1, f2, f3, f, p_115167_, p_115168_, true);
          }
      }
  
-@@ -294,5 +_,9 @@
-         ClientLevel clientlevel = p_372942_ instanceof ClientLevel ? (ClientLevel)p_372942_ : null;
-         BakedModel bakedmodel = p_373094_.overrides().findOverride(p_372923_, clientlevel, p_373099_, p_372933_);
-         return bakedmodel == null ? p_373094_ : bakedmodel;
-+    }
-+
-+    public BlockEntityWithoutLevelRenderer getBlockEntityRenderer() {
-+        return blockEntityRenderer;
-     }
- }

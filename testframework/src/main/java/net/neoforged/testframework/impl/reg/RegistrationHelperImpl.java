@@ -108,8 +108,10 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private final String modId;
-    private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
-    private final List<Function<GatherDataEvent, DataProvider>> directProviders = new ArrayList<>();
+    private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> clientProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> serverProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final List<Function<GatherDataEvent.Client, DataProvider>> directClientProviders = new ArrayList<>();
+    private final List<Function<GatherDataEvent.Server, DataProvider>> directServerProviders = new ArrayList<>();
     private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
 
     @Override
@@ -199,13 +201,23 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     @Override
-    public <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer) {
-        providers.put(type, consumer);
+    public <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer) {
+        serverProviders.put(type, consumer);
     }
 
     @Override
-    public void addProvider(Function<GatherDataEvent, DataProvider> provider) {
-        directProviders.add(provider);
+    public <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer) {
+        clientProviders.put(type, consumer);
+    }
+
+    @Override
+    public void addClientProvider(Function<GatherDataEvent.Client, DataProvider> provider) {
+        directClientProviders.add(provider);
+    }
+
+    @Override
+    public void addServerProvider(Function<GatherDataEvent.Server, DataProvider> provider) {
+        directServerProviders.add(provider);
     }
 
     private IEventBus bus;
@@ -214,7 +226,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public void register(IEventBus bus, ModContainer container) {
         this.bus = bus;
         this.owner = container;
-        bus.addListener(this::gather);
+        bus.addListener(this::gatherServer);
+        bus.addListener(this::gatherClient);
         listeners.forEach(bus::addListener);
         registrars.values().forEach(r -> r.register(bus));
     }
@@ -226,7 +239,15 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return bus == null ? listeners::add : bus::addListener;
     }
 
-    private void gather(final GatherDataEvent event) {
+    private void gatherServer(final GatherDataEvent.Server event) {
+        gather(event, serverProviders, directServerProviders);
+    }
+
+    private void gatherClient(final GatherDataEvent.Client event) {
+        gather(event, clientProviders, directClientProviders);
+    }
+
+    private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
                 event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
 

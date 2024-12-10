@@ -80,8 +80,8 @@ public class CustomFeatureFlagsTest {
     @Order(5)
     void testFlagSetEqualsVanilla() {
         FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA);
-        FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.WINTER_DROP);
-        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.MINECART_IMPROVEMENTS);
+        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.MINECART_IMPROVEMENTS);
         FeatureFlagSet flagSetFour = FeatureFlagSet.of(FeatureFlags.VANILLA);
 
         assertThat(flagSetOne).isNotEqualTo(flagSetTwo);
@@ -113,8 +113,8 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(7)
     void testFlagSetIsSubsetOfVanilla() {
-        FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.WINTER_DROP, FeatureFlags.TRADE_REBALANCE);
-        FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.MINECART_IMPROVEMENTS, FeatureFlags.TRADE_REBALANCE);
+        FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.MINECART_IMPROVEMENTS);
         assertThat(flagSetTwo.isSubsetOf(flagSetOne)).isTrue();
         assertThat(flagSetOne.isSubsetOf(flagSetTwo)).isFalse();
     }
@@ -141,9 +141,9 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(9)
     void testFlagSetIntersectsVanilla() {
-        FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.MINECART_IMPROVEMENTS);
         FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.VANILLA);
-        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.MINECART_IMPROVEMENTS);
         assertThat(flagSetOne.intersects(flagSetTwo)).isTrue();
         assertThat(flagSetOne.intersects(flagSetThree)).isTrue();
         assertThat(flagSetTwo.intersects(flagSetThree)).isFalse();
@@ -171,8 +171,8 @@ public class CustomFeatureFlagsTest {
     @Order(11)
     void testFlagSetJoinVanilla() {
         FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA);
-        FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.WINTER_DROP);
-        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.MINECART_IMPROVEMENTS);
+        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.MINECART_IMPROVEMENTS);
 
         assertThat(flagSetOne.join(flagSetTwo)).isEqualTo(flagSetThree);
     }
@@ -198,9 +198,9 @@ public class CustomFeatureFlagsTest {
     @Test
     @Order(13)
     void testFlagSetSubtractVanilla() {
-        FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetOne = FeatureFlagSet.of(FeatureFlags.VANILLA, FeatureFlags.MINECART_IMPROVEMENTS);
         FeatureFlagSet flagSetTwo = FeatureFlagSet.of(FeatureFlags.VANILLA);
-        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.WINTER_DROP);
+        FeatureFlagSet flagSetThree = FeatureFlagSet.of(FeatureFlags.MINECART_IMPROVEMENTS);
 
         assertThat(flagSetOne.subtract(flagSetTwo)).isEqualTo(flagSetThree);
     }

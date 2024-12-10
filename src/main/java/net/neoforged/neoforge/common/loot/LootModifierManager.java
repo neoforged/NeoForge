@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -39,7 +40,7 @@ public class LootModifierManager extends SimpleJsonResourceReloadListener<JsonEl
     private static final String folder = "loot_modifiers";
 
     public LootModifierManager() {
-        super(ExtraCodecs.JSON, folder);
+        super(ExtraCodecs.JSON, FileToIdConverter.json(folder));
     }
 
     @Override

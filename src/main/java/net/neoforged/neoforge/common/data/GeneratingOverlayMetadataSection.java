@@ -22,6 +22,6 @@ public record GeneratingOverlayMetadataSection(List<WithConditions<OverlayMetada
             NeoForgeExtraCodecs.listWithOptionalElements(
                     ConditionalOps.createConditionalCodecWithConditions(OverlayMetadataSection.OverlayEntry.CODEC)).fieldOf("entries").forGetter(GeneratingOverlayMetadataSection::overlays))
             .apply(i, GeneratingOverlayMetadataSection::new));
-    public static final MetadataSectionType<GeneratingOverlayMetadataSection> TYPE = MetadataSectionType.fromCodec("overlays", CODEC);
-    public static final MetadataSectionType<GeneratingOverlayMetadataSection> NEOFORGE_TYPE = MetadataSectionType.fromCodec("neoforge:overlays", CODEC);
+    public static final MetadataSectionType<GeneratingOverlayMetadataSection> TYPE = new MetadataSectionType<>("overlays", CODEC);
+    public static final MetadataSectionType<GeneratingOverlayMetadataSection> NEOFORGE_TYPE = new MetadataSectionType<>("neoforge:overlays", CODEC);
 }

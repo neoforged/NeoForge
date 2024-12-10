@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/RenderType.java
 +++ b/net/minecraft/client/renderer/RenderType.java
-@@ -1623,4 +_,16 @@
+@@ -1847,4 +_,16 @@
              return this.name;
          }
      }

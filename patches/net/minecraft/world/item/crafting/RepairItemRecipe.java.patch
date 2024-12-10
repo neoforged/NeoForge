@@ -6,8 +6,8 @@
              && p_336139_.has(DataComponents.DAMAGE)
 -            && p_335795_.has(DataComponents.DAMAGE);
 +            && p_335795_.has(DataComponents.DAMAGE)
-+            && p_336139_.isRepairable()
-+            && p_335795_.isRepairable();
++            && p_336139_.isCombineRepairable()
++            && p_335795_.isCombineRepairable();
      }
  
      public boolean matches(CraftingInput p_345243_, Level p_44139_) {

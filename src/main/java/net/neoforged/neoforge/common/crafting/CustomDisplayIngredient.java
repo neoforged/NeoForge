@@ -37,7 +37,7 @@ public record CustomDisplayIngredient(Ingredient base, SlotDisplay display) impl
 
     @Override
     public Stream<Holder<Item>> items() {
-        return base.items().stream();
+        return base.items();
     }
 
     @Override

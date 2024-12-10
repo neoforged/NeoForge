@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/GuiGraphics.java
 +++ b/net/minecraft/client/gui/GuiGraphics.java
-@@ -53,7 +_,7 @@
+@@ -52,7 +_,7 @@
  import org.joml.Vector2ic;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
      public static final float MAX_GUI_Z = 10000.0F;
      public static final float MIN_GUI_Z = -10000.0F;
      private static final int EXTRA_SPACE_AFTER_FIRST_TOOLTIP_LINE = 2;
-@@ -227,6 +_,11 @@
+@@ -229,6 +_,11 @@
      }
  
      public int drawString(Font p_283343_, @Nullable String p_281896_, int p_283569_, int p_283418_, int p_281560_, boolean p_282130_) {
@@ -21,7 +21,7 @@
          return p_281896_ == null
              ? 0
              : p_283343_.drawInBatch(
-@@ -248,6 +_,11 @@
+@@ -250,6 +_,11 @@
      }
  
      public int drawString(Font p_282636_, FormattedCharSequence p_281596_, int p_281586_, int p_282816_, int p_281743_, boolean p_282394_) {
@@ -33,7 +33,7 @@
          return p_282636_.drawInBatch(
              p_281596_,
              (float)p_281586_,
-@@ -870,10 +_,15 @@
+@@ -859,10 +_,15 @@
              this.renderItemCount(p_282005_, p_283349_, p_282641_, p_282146_, p_282803_);
              this.renderItemCooldown(p_283349_, p_282641_, p_282146_);
              this.pose.popPose();
@@ -49,7 +49,7 @@
          this.renderTooltip(
              p_282308_,
              Screen.getTooltipFromItem(this.minecraft, p_282781_),
-@@ -882,6 +_,17 @@
+@@ -871,6 +_,17 @@
              p_282292_,
              p_282781_.get(DataComponents.TOOLTIP_STYLE)
          );
@@ -67,7 +67,7 @@
      }
  
      public void renderTooltip(Font p_283128_, List<Component> p_282716_, Optional<TooltipComponent> p_281682_, int p_283678_, int p_281696_) {
-@@ -891,11 +_,7 @@
+@@ -880,11 +_,7 @@
      public void renderTooltip(
          Font p_371715_, List<Component> p_371741_, Optional<TooltipComponent> p_371604_, int p_371500_, int p_371755_, @Nullable ResourceLocation p_371766_
      ) {
@@ -80,7 +80,7 @@
          this.renderTooltipInternal(p_371715_, list, p_371500_, p_371755_, DefaultTooltipPositioner.INSTANCE, p_371766_);
      }
  
-@@ -908,13 +_,14 @@
+@@ -897,13 +_,14 @@
      }
  
      public void renderComponentTooltip(Font p_282739_, List<Component> p_281832_, int p_282191_, int p_282446_) {
@@ -97,7 +97,7 @@
              p_371314_,
              p_371389_,
              DefaultTooltipPositioner.INSTANCE,
-@@ -922,6 +_,28 @@
+@@ -911,6 +_,28 @@
          );
      }
  
@@ -126,7 +126,7 @@
      public void renderTooltip(Font p_282192_, List<? extends FormattedCharSequence> p_282297_, int p_281680_, int p_283325_) {
          this.renderTooltip(p_282192_, p_282297_, p_281680_, p_283325_, null);
      }
-@@ -954,41 +_,45 @@
+@@ -943,41 +_,45 @@
          @Nullable ResourceLocation p_371327_
      ) {
          if (!p_282615_.isEmpty()) {

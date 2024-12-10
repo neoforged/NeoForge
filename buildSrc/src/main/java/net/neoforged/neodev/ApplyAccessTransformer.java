@@ -7,6 +7,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputFile;
@@ -17,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Runs <a href="https://github.com/neoforged/JavaSourceTransformer">JavaSourceTransformer</a> to apply
@@ -28,8 +31,8 @@ abstract class ApplyAccessTransformer extends JavaExec {
     @InputFile
     public abstract RegularFileProperty getInputJar();
 
-    @InputFile
-    public abstract RegularFileProperty getAccessTransformer();
+    @InputFiles
+    public abstract ConfigurableFileCollection getAccessTransformers();
 
     @Input
     public abstract Property<Boolean> getValidate();
@@ -59,13 +62,23 @@ abstract class ApplyAccessTransformer extends JavaExec {
             throw new UncheckedIOException("Failed to write libraries for JST.", exception);
         }
 
-        args(
+        var args = new ArrayList<>(Arrays.asList(
                 "--enable-accesstransformers",
-                "--access-transformer", getAccessTransformer().getAsFile().get().getAbsolutePath(),
                 "--access-transformer-validation", getValidate().get() ? "error" : "log",
-                "--libraries-list", getLibrariesFile().getAsFile().get().getAbsolutePath(),
+                "--libraries-list", getLibrariesFile().getAsFile().get().getAbsolutePath()
+        ));
+
+        for (var file : getAccessTransformers().getFiles()) {
+            args.addAll(Arrays.asList(
+                    "--access-transformer", file.getAbsolutePath()
+            ));
+        }
+
+        args.addAll(Arrays.asList(
                 getInputJar().getAsFile().get().getAbsolutePath(),
-                getOutputJar().getAsFile().get().getAbsolutePath());
+                getOutputJar().getAsFile().get().getAbsolutePath()));
+
+        args(args);
 
         super.exec();
     }

@@ -70,6 +70,9 @@
     "minecraft:cherry_sapling": {
       "chance": 0.3
     },
+    "minecraft:closed_eyeblossom": {
+      "chance": 0.65
+    },
     "minecraft:cocoa_beans": {
       "chance": 0.65
     },
@@ -183,6 +186,9 @@
     },
     "minecraft:oak_sapling": {
       "chance": 0.3
+    },
+    "minecraft:open_eyeblossom": {
+      "chance": 0.65
     },
     "minecraft:orange_tulip": {
       "chance": 0.65

@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/item/properties/conditional/ConditionalItemModelProperties.java
++++ b/net/minecraft/client/renderer/item/properties/conditional/ConditionalItemModelProperties.java
+@@ -25,5 +_,7 @@
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("extended_view"), ExtendedView.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("keybind_down"), IsKeybindDown.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("view_entity"), IsViewEntity.MAP_CODEC);
++
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent(ID_MAPPER));
+     }
+ }

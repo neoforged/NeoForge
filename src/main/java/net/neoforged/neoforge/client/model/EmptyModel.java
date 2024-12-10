@@ -5,13 +5,17 @@
 
 package net.neoforged.neoforge.client.model;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import java.lang.reflect.Type;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -20,34 +24,34 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.RenderTypeGroup;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import net.neoforged.neoforge.client.model.geometry.SimpleUnbakedGeometry;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 
 /**
  * A completely empty model with no quads or texture dependencies.
  * <p>
- * You can access it as a {@link BakedModel}, an {@link IUnbakedGeometry} or an {@link IGeometryLoader}.
+ * You can access it as a {@link BakedModel}.
  */
-public class EmptyModel extends SimpleUnbakedGeometry<EmptyModel> {
+public class EmptyModel implements UnbakedModel, JsonDeserializer<EmptyModel> {
     public static final BakedModel BAKED = new Baked();
     public static final EmptyModel INSTANCE = new EmptyModel();
-    public static final IGeometryLoader<EmptyModel> LOADER = (json, ctx) -> INSTANCE;
+    public static final UnbakedModelLoader<EmptyModel> LOADER = (object, context) -> INSTANCE;
 
     private EmptyModel() {}
 
     @Override
-    protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
-        // NO-OP
+    public BakedModel bake(TextureSlots p_386641_, ModelBaker p_250133_, ModelState p_119536_, boolean p_387129_, boolean p_388638_, ItemTransforms p_386911_) {
+        return BAKED;
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
-        return BAKED;
+    public void resolveDependencies(Resolver p_387087_) {}
+
+    @Override
+    public EmptyModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        return INSTANCE;
     }
 
     private static class Baked extends SimpleBakedModel {

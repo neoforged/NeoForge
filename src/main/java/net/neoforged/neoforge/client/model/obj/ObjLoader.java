@@ -17,7 +17,8 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.StandardModelParameters;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 /**
  * A loader for {@link ObjModel OBJ models}.
@@ -25,7 +26,7 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
  * Allows the user to enable automatic face culling, toggle quad shading, flip UVs, render emissively and specify a
  * {@link ObjMaterialLibrary material library} override.
  */
-public class ObjLoader implements IGeometryLoader<ObjModel>, ResourceManagerReloadListener {
+public class ObjLoader implements UnbakedModelLoader<ObjModel>, ResourceManagerReloadListener {
     public static ObjLoader INSTANCE = new ObjLoader();
 
     private final Map<ObjModel.ModelSettings, ObjModel> modelCache = Maps.newConcurrentMap();
@@ -40,7 +41,7 @@ public class ObjLoader implements IGeometryLoader<ObjModel>, ResourceManagerRelo
     }
 
     @Override
-    public ObjModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
+    public ObjModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         if (!jsonObject.has("model"))
             throw new JsonParseException("OBJ Loader requires a 'model' key that points to a valid .OBJ model.");
 
@@ -51,8 +52,9 @@ public class ObjLoader implements IGeometryLoader<ObjModel>, ResourceManagerRelo
         boolean flipV = GsonHelper.getAsBoolean(jsonObject, "flip_v", false);
         boolean emissiveAmbient = GsonHelper.getAsBoolean(jsonObject, "emissive_ambient", true);
         String mtlOverride = GsonHelper.getAsString(jsonObject, "mtl_override", null);
+        StandardModelParameters parameters = StandardModelParameters.parse(jsonObject, jsonDeserializationContext);
 
-        return loadModel(new ObjModel.ModelSettings(ResourceLocation.parse(modelLocation), automaticCulling, shadeQuads, flipV, emissiveAmbient, mtlOverride));
+        return loadModel(new ObjModel.ModelSettings(ResourceLocation.parse(modelLocation), automaticCulling, shadeQuads, flipV, emissiveAmbient, mtlOverride, parameters));
     }
 
     public ObjModel loadModel(ObjModel.ModelSettings settings) {

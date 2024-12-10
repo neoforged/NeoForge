@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/item/properties/select/SelectItemModelProperties.java
++++ b/net/minecraft/client/renderer/item/properties/select/SelectItemModelProperties.java
+@@ -21,5 +_,7 @@
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("local_time"), LocalTime.TYPE);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("context_entity_type"), ContextEntityType.TYPE);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("context_dimension"), ContextDimension.TYPE);
++
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterSelectItemModelPropertyEvent(ID_MAPPER));
+     }
+ }

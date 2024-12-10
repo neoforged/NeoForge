@@ -386,7 +386,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1319,8 +_,17 @@
+@@ -1321,8 +_,17 @@
          }
      }
  
@@ -405,7 +405,7 @@
          CONTAINER(
              ResourceLocation.withDefaultNamespace("hud/heart/container"),
              ResourceLocation.withDefaultNamespace("hud/heart/container_blinking"),
-@@ -1436,8 +_,13 @@
+@@ -1438,8 +_,13 @@
              } else {
                  gui$hearttype = NORMAL;
              }

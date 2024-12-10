@@ -192,6 +192,8 @@
   "neoforge.configuration.section.neoforge.server.toml.title": "Server settings",
   "neoforge.configgui.advertiseDedicatedServerToLan": "Advertise Dedicated Server To LAN",
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
+  "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.",
   "neoforge.configgui.fullBoundingBoxLadders": "Full Bounding Box Ladders",

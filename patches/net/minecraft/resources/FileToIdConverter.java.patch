@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/FileToIdConverter.java
 +++ b/net/minecraft/resources/FileToIdConverter.java
-@@ -34,4 +_,26 @@
+@@ -40,4 +_,26 @@
      public Map<ResourceLocation, List<Resource>> listMatchingResourceStacks(ResourceManager p_249881_) {
          return p_249881_.listResourceStacks(this.prefix, p_248700_ -> p_248700_.getPath().endsWith(this.extension));
      }

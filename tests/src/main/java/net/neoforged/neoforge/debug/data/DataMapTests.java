@@ -86,7 +86,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -104,7 +104,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -166,7 +166,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -186,7 +186,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -230,7 +230,7 @@ public class DataMapTests {
 
         test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(someData));
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -283,7 +283,7 @@ public class DataMapTests {
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build());
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(xpGrant)
@@ -315,7 +315,7 @@ public class DataMapTests {
                 Registries.LOOT_TABLE, MobEffectInstance.CODEC)
                 .build());
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(effectGrant)
@@ -344,7 +344,7 @@ public class DataMapTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom compostables work")
     static void compostablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.COMPOSTABLES)
@@ -367,7 +367,7 @@ public class DataMapTests {
                 ResourceLocation.fromNamespaceAndPath(reg.modId(), "weight"),
                 Registries.ITEM, Codec.INT)
                 .build());
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(dataMap)
@@ -413,7 +413,7 @@ public class DataMapTests {
 
         Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new, BlockBehaviour.Properties.of());
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.OXIDIZABLES)

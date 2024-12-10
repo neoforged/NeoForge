@@ -3,7 +3,7 @@
 @@ -19,4 +_,8 @@
                  .apply(p_337567_, PackMetadataSection::new)
      );
-     public static final MetadataSectionType<PackMetadataSection> TYPE = MetadataSectionType.fromCodec("pack", CODEC);
+     public static final MetadataSectionType<PackMetadataSection> TYPE = new MetadataSectionType<>("pack", CODEC);
 +
 +    public PackMetadataSection(Component description, int packVersion) {
 +        this(description, packVersion, Optional.empty());

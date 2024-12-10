@@ -11,6 +11,7 @@ import java.util.Set;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.DelegateBakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +40,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
@@ -98,7 +98,7 @@ public class MegaModelTest {
         @SubscribeEvent
         public static void onModelBakingCompleted(ModelEvent.ModifyBakingResult event) {
             var name = new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, REG_NAME), "");
-            event.getModels().computeIfPresent(name, (n, m) -> new TransformingModelWrapper(m));
+            event.getBakingResult().blockStateModels().computeIfPresent(name, (n, m) -> new TransformingModelWrapper(m));
         }
     }
 
@@ -147,7 +147,7 @@ public class MegaModelTest {
         public static final ModelProperty<TestData> PROPERTY = new ModelProperty<>();
     }
 
-    private static class TransformingModelWrapper extends BakedModelWrapper<BakedModel> {
+    private static class TransformingModelWrapper extends DelegateBakedModel {
         public TransformingModelWrapper(BakedModel originalModel) {
             super(originalModel);
         }

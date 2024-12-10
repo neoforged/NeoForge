@@ -8,10 +8,10 @@
 +        p_294898_ -> p_294898_.group(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(OverlayMetadataSection.OverlayEntry.CODEC).fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
                  .apply(p_294898_, OverlayMetadataSection::new)
      );
-     public static final MetadataSectionType<OverlayMetadataSection> TYPE = MetadataSectionType.fromCodec("overlays", CODEC);
+     public static final MetadataSectionType<OverlayMetadataSection> TYPE = new MetadataSectionType<>("overlays", CODEC);
 +    // Neo: alternative metadata section that will only be loaded on neoforged. Useful for making datapacks with special
 +    // logic on different modloaders, or when running on neo vs in vanilla, without having to invert the main pack and overlays
-+    public static final MetadataSectionType<OverlayMetadataSection> NEOFORGE_TYPE = MetadataSectionType.fromCodec("neoforge:overlays", CODEC);
++    public static final MetadataSectionType<OverlayMetadataSection> NEOFORGE_TYPE = new MetadataSectionType<>("neoforge:overlays", CODEC);
  
      private static DataResult<String> validateOverlayDir(String p_296447_) {
          return !DIR_VALIDATOR.matcher(p_296447_).matches()

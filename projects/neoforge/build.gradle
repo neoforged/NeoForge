@@ -18,7 +18,7 @@ evaluationDependsOn(":neoforge-coremods")
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '21.0'
+    from '21.3'
     disableAutomaticPublicationRegistration()
 }
 
@@ -138,6 +138,9 @@ dependencies {
 
 neoDev {
     runs {
+        configureEach {
+            gameDirectory = layout.projectDir.dir("run/$name")
+        }
         client {
             client()
         }
@@ -148,12 +151,75 @@ neoDev {
             type = "gameTestServer"
         }
         data {
-            data()
+            // We perform client and server datagen in a single clientData run to avoid
+            // having to juggle two generated resources folders and two runs for no additional benefit.
+            clientData()
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
         }
     }
+}
+
+generateAccessTransformers {
+    // Make all state shards public
+    classGroup(
+            'render state shard classes', PUBLIC,
+            innerClassesOf('net/minecraft/client/renderer/RenderStateShard')
+    )
+    // Make all state shard fields public
+    fieldGroup(
+            'render state shards', PUBLIC,
+            named('net/minecraft/client/renderer/RenderStateShard'),
+            fieldsOfType(classesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
+    )
+
+    // Make all block constructors public so they can be used by mods
+    methodGroup(
+            'block constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/level/block/Block'),
+            named('<init>')
+    )
+    // Make all particle constructors public so they can be used by mods
+    methodGroup(
+            'particle constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/client/particle/Particle'),
+            named('<init>')
+    )
+
+    // Make all criteria methods in the recipe provider protected so mods can use them
+    methodGroup(
+            'recipe criteria', PROTECTED,
+            named('net/minecraft/data/recipes/RecipeProvider'),
+            methodsReturning('net/minecraft/advancements/Criterion')
+    )
+
+    // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
+    methodGroup(
+            'skeleton step sound', PROTECTED,
+            classesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
+            named('getStepSound')
+    )
+
+    // Make all noise generator setting factories public so mods can use them for custom dimensions
+    methodGroup(
+            'noise generator', PUBLIC,
+            named('net/minecraft/world/level/levelgen/NoiseGeneratorSettings'),
+            methodsReturning('net/minecraft/world/level/levelgen/NoiseGeneratorSettings')
+    )
+
+    fieldGroup(
+            'biome effects builder', PROTECTED,
+            named('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
+            matchAny()
+    )
+
+    // Make all creative tab ids accessible
+    fieldGroup(
+            'creative tabs', PUBLIC,
+            named('net/minecraft/world/item/CreativeModeTabs'),
+            fieldsOfType(named('net/minecraft/resources/ResourceKey'))
+    )
 }
 
 tasks.withType(Javadoc.class).configureEach {

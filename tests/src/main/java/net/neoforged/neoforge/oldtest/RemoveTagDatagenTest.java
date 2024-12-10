@@ -32,7 +32,7 @@ public class RemoveTagDatagenTest {
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event) {
+    private void onGatherData(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper helper = event.getExistingFileHelper();
 
@@ -50,9 +50,9 @@ public class RemoveTagDatagenTest {
             }
         };
 
-        generator.addProvider(event.includeServer(), blocks);
+        generator.addProvider(true, blocks);
 
-        generator.addProvider(event.includeServer(), new ItemTagsProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID, helper) {
+        generator.addProvider(true, new ItemTagsProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID, helper) {
             @Override
             protected void addTags(HolderLookup.Provider provider) {
                 // This is for testing if it is functional, remove spruce_planks from planks, which makes us unable to craft beds with them.

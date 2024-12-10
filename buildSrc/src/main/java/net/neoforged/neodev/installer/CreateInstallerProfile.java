@@ -178,7 +178,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                 ))));
 
         var profile = new InstallerProfile(
-                "1",
+                1,
                 "NeoForge",
                 "neoforge-%s".formatted(getNeoForgeVersion().get()),
                 icon,
@@ -203,7 +203,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
 }
 
 record InstallerProfile(
-        String spec,
+        int spec,
         String profile,
         String version,
         String icon,

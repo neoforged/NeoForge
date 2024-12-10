@@ -37,7 +37,7 @@ public record CompoundIngredient(List<Ingredient> children) implements ICustomIn
 
     @Override
     public Stream<Holder<Item>> items() {
-        return children.stream().flatMap(child -> child.items().stream());
+        return children.stream().flatMap(Ingredient::items);
     }
 
     @Override

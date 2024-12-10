@@ -952,7 +952,7 @@ public class CommonHooks {
      * Used as the default implementation of {@link Item#getCreatorModId}. Call that method instead.
      */
     @Nullable
-    public static String getDefaultCreatorModId(ItemStack itemStack) {
+    public static String getDefaultCreatorModId(HolderLookup.Provider registries, ItemStack itemStack) {
         Item item = itemStack.getItem();
         ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();
@@ -974,7 +974,7 @@ public class CommonHooks {
                     return key.get().location().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(registries, itemStack));
                 if (key.isPresent()) {
                     return key.get().location().getNamespace();
                 }

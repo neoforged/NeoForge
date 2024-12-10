@@ -1,16 +1,16 @@
 --- a/net/minecraft/client/color/block/BlockColors.java
 +++ b/net/minecraft/client/color/block/BlockColors.java
-@@ -29,7 +_,8 @@
- @OnlyIn(Dist.CLIENT)
- public class BlockColors {
+@@ -30,7 +_,8 @@
      private static final int DEFAULT = -1;
+     public static final int LILY_PAD_IN_WORLD = -14647248;
+     public static final int LILY_PAD_DEFAULT = -9321636;
 -    private final IdMapper<BlockColor> blockColors = new IdMapper<>(32);
 +    // Neo: Use the block instance directly as non-Vanilla block ids are not constant
 +    private final java.util.Map<Block, BlockColor> blockColors = new java.util.IdentityHashMap<>();
      private final Map<Block, Set<Property<?>>> coloringStates = Maps.newHashMap();
  
      public static BlockColors createDefault() {
-@@ -94,11 +_,12 @@
+@@ -95,11 +_,12 @@
          }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
          blockcolors.addColoringState(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
          blockcolors.register((p_92596_, p_92597_, p_92598_, p_92599_) -> p_92597_ != null && p_92598_ != null ? -14647248 : -9321636, Blocks.LILY_PAD);
@@ -24,7 +24,7 @@
          if (blockcolor != null) {
              return blockcolor.getColor(p_92583_, null, null, 0);
          } else {
-@@ -108,13 +_,15 @@
+@@ -109,13 +_,15 @@
      }
  
      public int getColor(BlockState p_92578_, @Nullable BlockAndTintGetter p_92579_, @Nullable BlockPos p_92580_, int p_92581_) {

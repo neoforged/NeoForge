@@ -17,6 +17,16 @@
              p_78531_.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
              p_78531_.get("WasModded").asBoolean(false),
              new BlockPos(p_78531_.get("SpawnX").asInt(0), p_78531_.get("SpawnY").asInt(0), p_78531_.get("SpawnZ").asInt(0)),
+@@ -192,7 +_,8 @@
+                 .asStream()
+                 .flatMap(p_338118_ -> p_338118_.asString().result().stream())
+                 .collect(Collectors.toCollection(Sets::newLinkedHashSet)),
+-            p_78531_.get("removed_features").asStream().flatMap(p_338117_ -> p_338117_.asString().result().stream()).collect(Collectors.toSet()),
++            // Neo: Append removed modded feature flags
++            updateRemovedFeatureFlags(p_78531_.get("removed_features").asStream().flatMap(p_338117_ -> p_338117_.asString().result().stream()), p_78531_.get("enabled_features").asStream().flatMap(features -> features.asString().result().stream())).collect(Collectors.toSet()),
+             new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, p_78531_.get("ScheduledEvents").asStream()),
+             (CompoundTag)p_78531_.get("CustomBossEvents").orElseEmptyMap().getValue(),
+             p_78531_.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT),
 @@ -200,7 +_,11 @@
              p_251864_,
              p_250651_,
@@ -42,7 +52,7 @@
      }
  
      private static ListTag stringCollectionToTag(Set<String> p_277880_) {
-@@ -572,10 +_,44 @@
+@@ -572,10 +_,58 @@
          return this.settings.copy();
      }
  
@@ -85,5 +95,19 @@
 +    @Override
 +    public void setDayTimePerTick(float dayTimePerTick) {
 +        this.dayTimePerTick = dayTimePerTick;
++    }
++
++    private static java.util.stream.Stream<String> updateRemovedFeatureFlags(java.util.stream.Stream<String> removedFeatures, java.util.stream.Stream<String> enabledFeatures) {
++        var unknownFeatureFlags = new HashSet<net.minecraft.resources.ResourceLocation>();
++        // parses the incoming Stream<String> and spits out unknown flag names (ResourceLocation)
++        // we do not care about the returned FeatureFlagSet, only the flags which do not exist
++        net.minecraft.world.flag.FeatureFlags.REGISTRY.fromNames(enabledFeatures.map(net.minecraft.resources.ResourceLocation::parse).collect(Collectors.toSet()), unknownFeatureFlags::add);
++        // concat the received removed flags with our new additions
++        return java.util.stream.Stream.concat(removedFeatures, unknownFeatureFlags.stream()
++                // we only want modded flags, mojang has datafixers for vanilla flags
++                .filter(java.util.function.Predicate.not(name -> name.getNamespace().equals(net.minecraft.resources.ResourceLocation.DEFAULT_NAMESPACE)))
++                .map(net.minecraft.resources.ResourceLocation::toString))
++                // no duplicates should exist in this stream
++                .distinct();
      }
  }

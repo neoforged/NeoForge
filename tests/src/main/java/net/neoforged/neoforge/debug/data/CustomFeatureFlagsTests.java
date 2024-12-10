@@ -5,22 +5,32 @@
 
 package net.neoforged.neoforge.debug.data;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "data.feature_flags")
 public class CustomFeatureFlagsTests {
@@ -87,6 +97,62 @@ public class CustomFeatureFlagsTests {
             } else {
                 test.pass();
             }
+        });
+    }
+
+    @TestHolder(description = "Tests that elements can be toggled via conditions using the flag condition", enabledByDefault = true)
+    static void testFlagCondition(DynamicTest test, RegistrationHelper reg) {
+        // custom flag are provided by our other flag tests
+        // and enabled via our `custom featureflag test pack`
+        var flagName = ResourceLocation.fromNamespaceAndPath("custom_feature_flags_pack_test", "test_flag");
+        var flag = FeatureFlags.REGISTRY.getFlag(flagName);
+
+        var modId = reg.modId();
+        var enabledRecipeName = ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath(modId, "diamonds_from_dirt"));
+
+        reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
+                class Provider extends RecipeProvider implements IConditionBuilder {
+                    protected Provider(HolderLookup.Provider p_360573_, RecipeOutput p_360872_) {
+                        super(p_360573_, p_360872_);
+                    }
+
+                    @Override
+                    protected void buildRecipes() {
+                        // recipe available when above flag is enabled
+                        shapeless(RecipeCategory.MISC, Items.DIAMOND)
+                                .requires(ItemTags.DIRT)
+                                .unlockedBy("has_dirt", has(ItemTags.DIRT))
+                                .save(output.withConditions(featureFlagsEnabled(flag)), enabledRecipeName);
+                    }
+                }
+                return new Provider(registries, output);
+            }
+
+            @Override
+            public String getName() {
+                return "conditional_flag_recipes";
+            }
+        });
+
+        test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+            var server = event.getServer();
+            var isFlagEnabled = server.getWorldData().enabledFeatures().contains(flag);
+            var recipeMap = server.getRecipeManager().recipeMap();
+            var hasEnabledRecipe = recipeMap.byKey(enabledRecipeName) != null;
+
+            if (isFlagEnabled) {
+                if (!hasEnabledRecipe) {
+                    test.fail("Missing recipe '" + enabledRecipeName.location() + "', This should be enabled due to our flag '" + flagName + "' being enabled");
+                }
+            } else {
+                if (hasEnabledRecipe) {
+                    test.fail("Found recipe '" + enabledRecipeName.location() + "', This should be disabled due to our flag '" + flagName + "' being enabled");
+                }
+            }
+
+            test.pass();
         });
     }
 }

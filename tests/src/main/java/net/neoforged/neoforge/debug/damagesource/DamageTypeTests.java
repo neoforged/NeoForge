@@ -96,7 +96,7 @@ public class DamageTypeTests {
             bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
         });
 
-        reg.addProvider(event -> new DatapackBuiltinEntriesProvider(
+        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 registrySetBuilder,

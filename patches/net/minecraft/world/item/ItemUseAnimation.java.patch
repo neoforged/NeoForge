@@ -12,7 +12,7 @@
      NONE(0, "none"),
      EAT(1, "eat"),
      DRINK(2, "drink"),
-@@ -38,5 +_,9 @@
+@@ -39,5 +_,9 @@
      @Override
      public String getSerializedName() {
          return this.name;

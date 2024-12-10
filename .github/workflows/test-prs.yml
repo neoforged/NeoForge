@@ -47,6 +47,15 @@ jobs:
       - name: Run JUnit tests with Gradle
         run: ./gradlew :tests:runUnitTests
 
+      - name: Install software OpenGL rendering
+        run: sudo apt-get install xvfb libgl1-mesa-dri
+
+      - name: Run production client self-test
+        run: xvfb-run ./gradlew :neoforge:testProductionClient
+
+      - name: Run production server self-test
+        run: ./gradlew :neoforge:testProductionServer
+
       - name: Store reports
         if: failure()
         uses: actions/upload-artifact@v4
