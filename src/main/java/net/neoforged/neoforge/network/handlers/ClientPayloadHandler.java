@@ -38,6 +38,7 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.SyncEntityAttachmentsPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -154,5 +155,9 @@ public final class ClientPayloadHandler {
         level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
         level.setDayTimeFraction(payload.dayTimeFraction());
         level.setDayTimePerTick(payload.dayTimePerTick());
+    }
+
+    public static void handle(SyncEntityAttachmentsPayload payload, IPayloadContext context) {
+        // TODO
     }
 }

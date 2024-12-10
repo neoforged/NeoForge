@@ -51,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  * <h3>{@link ChunkAccess}-exclusive behavior:</h3>
  * <ul>
- * <li>Modifications to attachments should be followed by a call to {@link ChunkAccess#setUnsaved(boolean)}.</li>
+ * <li>Modifications to attachments should be followed by a call to {@link ChunkAccess#markUnsaved}.</li>
  * <li>Serializable attachments are copied from a {@link ProtoChunk} to a {@link LevelChunk} on promotion.</li>
  * </ul>
  */
@@ -61,12 +61,15 @@ public final class AttachmentType<T> {
     final IAttachmentSerializer<?, T> serializer;
     final boolean copyOnDeath;
     final IAttachmentCopyHandler<T> copyHandler;
+    @Nullable
+    IAttachmentSyncHandler<T> syncHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
         this.serializer = builder.serializer;
         this.copyOnDeath = builder.copyOnDeath;
         this.copyHandler = builder.copyHandler != null ? builder.copyHandler : defaultCopyHandler(serializer);
+        this.syncHandler = builder.syncHandler;
     }
 
     private static <T, H extends Tag> IAttachmentCopyHandler<T> defaultCopyHandler(@Nullable IAttachmentSerializer<H, T> serializer) {
@@ -152,6 +155,8 @@ public final class AttachmentType<T> {
         private boolean copyOnDeath;
         @Nullable
         private IAttachmentCopyHandler<T> copyHandler;
+        @Nullable
+        private IAttachmentSyncHandler<T> syncHandler;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -236,6 +241,15 @@ public final class AttachmentType<T> {
             if (this.serializer == null)
                 throw new IllegalStateException("copyHandler requires a serializer");
             this.copyHandler = cloner;
+            return this;
+        }
+
+        /**
+         * Requests that this attachment be synced to clients.
+         */
+        public Builder<T> syncHandler(IAttachmentSyncHandler<T> syncHandler) {
+            Objects.requireNonNull(syncHandler);
+            this.syncHandler = syncHandler;
             return this;
         }
 
