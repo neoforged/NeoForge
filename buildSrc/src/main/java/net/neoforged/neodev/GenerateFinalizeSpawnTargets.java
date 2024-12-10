@@ -44,37 +44,37 @@ public abstract class GenerateFinalizeSpawnTargets extends DefaultTask {
                 new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(classList),
                 StandardCharsets.UTF_8);
     }
-}
 
-class Visitor extends ClassVisitor {
-    final Set<String> matchedClasses = new TreeSet<>();
-    String currentClass = null;
+    static class Visitor extends ClassVisitor {
+        final Set<String> matchedClasses = new TreeSet<>();
+        String currentClass = null;
 
-    protected Visitor() {
-        super(Opcodes.ASM9);
-    }
-
-    @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        currentClass = name;
-    }
-
-    @Override
-    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        // Ignore this class as we special case it
-        if (currentClass.equals("net/minecraft/world/level/BaseSpawner")) {
-            return null;
+        protected Visitor() {
+            super(Opcodes.ASM9);
         }
 
-        return new MethodVisitor(api) {
-            @Override
-            public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                if (opcode == Opcodes.INVOKEVIRTUAL
-                        && name.equals("finalizeSpawn")
-                        && descriptor.equals("(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/EntitySpawnReason;Lnet/minecraft/world/entity/SpawnGroupData;)Lnet/minecraft/world/entity/SpawnGroupData;")) {
-                    matchedClasses.add(currentClass);
-                }
+        @Override
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            currentClass = name;
+        }
+
+        @Override
+        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+            // Ignore this class as we special case it
+            if (currentClass.equals("net/minecraft/world/level/BaseSpawner")) {
+                return null;
             }
-        };
+
+            return new MethodVisitor(api) {
+                @Override
+                public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+                    if (opcode == Opcodes.INVOKEVIRTUAL
+                            && name.equals("finalizeSpawn")
+                            && descriptor.equals("(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/world/DifficultyInstance;Lnet/minecraft/world/entity/EntitySpawnReason;Lnet/minecraft/world/entity/SpawnGroupData;)Lnet/minecraft/world/entity/SpawnGroupData;")) {
+                        matchedClasses.add(currentClass);
+                    }
+                }
+            };
+        }
     }
 }
