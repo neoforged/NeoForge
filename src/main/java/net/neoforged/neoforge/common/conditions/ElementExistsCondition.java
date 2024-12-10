@@ -12,7 +12,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public record ElementExistsCondition<TRegistry>(ResourceKey<TRegistry> registryKey) implements ICondition {
+public record ElementExistsCondition<T>(ResourceKey<T> registryKey) implements ICondition {
     public static final MapCodec<ElementExistsCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(ResourceLocation.CODEC.optionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.registryKey().registry()),
                     ResourceLocation.CODEC.fieldOf("element").forGetter(condition -> condition.registryKey().location()))

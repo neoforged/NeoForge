@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
-public record TagEmptyCondition<TRegistry>(TagKey<TRegistry> tag) implements ICondition {
+public record TagEmptyCondition<T>(TagKey<T> tag) implements ICondition {
     public static final MapCodec<TagEmptyCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(ResourceLocation.CODEC.optionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.tag().registry().location()),
                     ResourceLocation.CODEC.fieldOf("tag").forGetter(condition -> condition.tag().location()))
