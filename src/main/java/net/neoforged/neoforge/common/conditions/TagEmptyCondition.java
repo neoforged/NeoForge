@@ -14,7 +14,7 @@ import net.minecraft.tags.TagKey;
 
 public record TagEmptyCondition<TRegistry>(TagKey<TRegistry> tag) implements ICondition {
     public static final MapCodec<TagEmptyCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
-            .group(ResourceLocation.CODEC.lenientOptionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.tag().registry().location()),
+            .group(ResourceLocation.CODEC.optionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.tag().registry().location()),
                     ResourceLocation.CODEC.fieldOf("tag").forGetter(condition -> condition.tag().location()))
             .apply(instance, TagEmptyCondition::new));
 
