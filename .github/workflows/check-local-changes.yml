@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew generatePackageInfos
 
       - name: Gen patches and ATs
-        run: ./gradlew :neoforge:genPatches :neoforge:generateAccessTransformers
+        run: ./gradlew :neoforge:genPatches :neoforge:generateAccessTransformers :neoforge:generateFinalizeSpawnTargets
 
       - name: Run datagen with Gradle
         run: ./gradlew :neoforge:runData :tests:runData

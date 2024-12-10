@@ -1,5 +1,6 @@
 package net.neoforged.neodev.utils.structure;
 
+import net.neoforged.neodev.utils.AsmUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipFile;
 
 public final class ClassStructureVisitor extends ClassVisitor {
     private final Map<String, ClassInfo> classes;
@@ -26,19 +26,10 @@ public final class ClassStructureVisitor extends ClassVisitor {
 
     public static Map<String, ClassInfo> readJar(File file) throws IOException {
         var map = new HashMap<String, ClassInfo>();
-        var visitor = new ClassStructureVisitor(map);
-        try (var zip = new ZipFile(file)) {
-            var entries = zip.entries();
-            while (entries.hasMoreElements()) {
-                var next = entries.nextElement();
-                if (next.isDirectory() || !next.getName().endsWith(".class")) continue;
-
-                try (var in = zip.getInputStream(next)) {
-                    var reader = new ClassReader(in);
-                    reader.accept(visitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-                }
-            }
-        }
+        AsmUtils.visitAllClasses(
+                file,
+                new ClassStructureVisitor(map),
+                ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         return map;
     }
 

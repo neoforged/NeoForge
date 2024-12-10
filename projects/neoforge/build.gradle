@@ -1,6 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 
 plugins {
     id 'java-library'
@@ -220,6 +221,13 @@ generateAccessTransformers {
             named('net/minecraft/world/item/CreativeModeTabs'),
             fieldsOfType(named('net/minecraft/resources/ResourceKey'))
     )
+}
+
+tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
+    group generateAccessTransformers.group
+    description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
+    input = generateAccessTransformers.input
+    output = rootProject.file("coremods/src/main/resources/net/neoforged/neoforge/coremods/finalize_spawn_targets.json")
 }
 
 tasks.withType(Javadoc.class).configureEach {
