@@ -37,7 +37,7 @@ public interface NeoForgeConditions {
     }
 
     static <TRegistry> ICondition elementExists(ResourceKey<TRegistry> registryKey) {
-        return new ElementExistsCondition<>(registryKey);
+        return new RegisteredCondition<>(registryKey);
     }
 
     static <TRegistry> ICondition elementExists(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {

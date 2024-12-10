@@ -81,13 +81,13 @@ import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEn
 import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
 import net.neoforged.neoforge.common.conditions.AlwaysCondition;
 import net.neoforged.neoforge.common.conditions.AndCondition;
-import net.neoforged.neoforge.common.conditions.ElementExistsCondition;
 import net.neoforged.neoforge.common.conditions.FeatureFlagsEnabledCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.common.conditions.NeverCondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
+import net.neoforged.neoforge.common.conditions.RegisteredCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
@@ -358,7 +358,7 @@ public class NeoForgeMod {
     private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<NeverCondition>> NEVER_CONDITION = CONDITION_CODECS.register("never", () -> NeverCondition.CODEC);
-    public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<ElementExistsCondition<?>>> ELEMENT_EXISTS_CONDITION = CONDITION_CODECS.register("element_exists", () -> ElementExistsCondition.CODEC);
+    public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<RegisteredCondition<?>>> ELEMENT_EXISTS_CONDITION = CONDITION_CODECS.register("registered", () -> RegisteredCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<ModLoadedCondition>> MOD_LOADED_CONDITION = CONDITION_CODECS.register("mod_loaded", () -> ModLoadedCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<NotCondition>> NOT_CONDITION = CONDITION_CODECS.register("not", () -> NotCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<OrCondition>> OR_CONDITION = CONDITION_CODECS.register("or", () -> OrCondition.CODEC);

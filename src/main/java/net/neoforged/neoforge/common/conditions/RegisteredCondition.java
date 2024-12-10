@@ -12,13 +12,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public record ElementExistsCondition<T>(ResourceKey<T> registryKey) implements ICondition {
-    public static final MapCodec<ElementExistsCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
+public record RegisteredCondition<T>(ResourceKey<T> registryKey) implements ICondition {
+    public static final MapCodec<RegisteredCondition<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(ResourceLocation.CODEC.optionalFieldOf("registry", Registries.ITEM.location()).forGetter(condition -> condition.registryKey().registry()),
-                    ResourceLocation.CODEC.fieldOf("element").forGetter(condition -> condition.registryKey().location()))
-            .apply(instance, ElementExistsCondition::new));
+                    ResourceLocation.CODEC.fieldOf("value").forGetter(condition -> condition.registryKey().location()))
+            .apply(instance, RegisteredCondition::new));
 
-    private ElementExistsCondition(ResourceLocation registryType, ResourceLocation registryName) {
+    private RegisteredCondition(ResourceLocation registryType, ResourceLocation registryName) {
         this(ResourceKey.create(ResourceKey.createRegistryKey(registryType), registryName));
     }
 
