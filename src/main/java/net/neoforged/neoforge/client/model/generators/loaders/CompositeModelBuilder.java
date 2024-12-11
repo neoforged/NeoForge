@@ -13,27 +13,22 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.client.data.models.model.ModelTemplate;
-import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public class CompositeModelBuilder extends CustomLoaderBuilder {
-    private final Map<String, ModelTemplate> childModels = new LinkedHashMap<>();
-    private final Map<String, TextureMapping> childTextures = new LinkedHashMap<>();
+    private final Map<String, ResourceLocation> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
     public CompositeModelBuilder() {
         super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "composite"), false);
     }
 
-    public CompositeModelBuilder child(String name, ModelTemplate modelBuilder, TextureMapping textures) {
+    public CompositeModelBuilder child(String name, ResourceLocation model) {
         Preconditions.checkNotNull(name, "name must not be null");
-        Preconditions.checkNotNull(modelBuilder, "modelBuilder must not be null");
-        Preconditions.checkNotNull(textures, "textures must not be null");
-        childModels.put(name, modelBuilder);
-        childTextures.put(name, textures);
+        Preconditions.checkNotNull(model, "model must not be null");
+        childModels.put(name, model);
         itemRenderOrder.add(name);
         return this;
     }
@@ -53,7 +48,6 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
     protected CustomLoaderBuilder copyInternal() {
         CompositeModelBuilder builder = new CompositeModelBuilder();
         builder.childModels.putAll(this.childModels);
-        this.childTextures.forEach((name, textures) -> builder.childTextures.put(name, textures.copy()));
         builder.itemRenderOrder.addAll(this.itemRenderOrder);
         return builder;
     }
@@ -63,8 +57,8 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
         json = super.toJson(json);
 
         JsonObject children = new JsonObject();
-        for (Map.Entry<String, ModelTemplate> entry : childModels.entrySet()) {
-            CustomLoaderBuilder.serializeNestedTemplate(entry.getValue(), childTextures.get(entry.getKey()), child -> children.add(entry.getKey(), child));
+        for (Map.Entry<String, ResourceLocation> entry : childModels.entrySet()) {
+            children.addProperty(entry.getKey(), entry.getValue().toString());
         }
         json.add("children", children);
 
