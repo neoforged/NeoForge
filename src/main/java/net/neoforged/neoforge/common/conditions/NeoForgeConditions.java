@@ -36,20 +36,20 @@ public final class NeoForgeConditions {
         return new OrCondition(List.of(values));
     }
 
-    public static <TRegistry> ICondition isRegistered(ResourceKey<TRegistry> registryKey) {
+    public static <TRegistry> ICondition registered(ResourceKey<TRegistry> registryKey) {
         return new RegisteredCondition<>(registryKey);
     }
 
-    public static <TRegistry> ICondition isRegistered(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
-        return isRegistered(ResourceKey.create(registryType, registryName));
+    public static <TRegistry> ICondition registered(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
+        return registered(ResourceKey.create(registryType, registryName));
     }
 
-    public static ICondition isRegistered(ResourceLocation registryTypeName, ResourceLocation registryName) {
-        return isRegistered(ResourceKey.createRegistryKey(registryTypeName), registryName);
+    public static ICondition registered(ResourceLocation registryTypeName, ResourceLocation registryName) {
+        return registered(ResourceKey.createRegistryKey(registryTypeName), registryName);
     }
 
     public static ICondition itemRegistered(ResourceLocation itemName) {
-        return isRegistered(Registries.ITEM, itemName);
+        return registered(Registries.ITEM, itemName);
     }
 
     public static ICondition itemRegistered(String namespace, String path) {
