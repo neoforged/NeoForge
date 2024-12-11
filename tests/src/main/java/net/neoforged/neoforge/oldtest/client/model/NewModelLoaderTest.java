@@ -185,11 +185,16 @@ public class NewModelLoaderTest {
 
         @Override
         protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+            createModelAndBlockState(obj_block, "sugar_glider", blockModels);
+            createModelAndBlockState(obj_block_same_part_names, "sugar_glider_same_part_names", blockModels);
+        }
+
+        private void createModelAndBlockState(DeferredBlock<Block> block, String objModel, BlockModelGenerators blockModels) {
             var qrTexture = TextureSlot.create("qr");
 
-            blockModels.createHorizontallyRotatedBlock(obj_block.value(), TexturedModel.ORIENTABLE.updateTemplate(template -> template.extend()
+            blockModels.createHorizontallyRotatedBlock(block.value(), TexturedModel.ORIENTABLE.updateTemplate(template -> template.extend()
                     .customLoader(ObjModelBuilder::new, loader -> loader
-                            .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"))
+                            .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
                             .flipV(true))
                     .requiredTextureSlot(qrTexture)
                     .build())
@@ -200,12 +205,12 @@ public class NewModelLoaderTest {
 
         @Override
         protected Stream<? extends Holder<Block>> getKnownBlocks() {
-            return Stream.of(obj_block);
+            return Stream.of(obj_block, obj_block_same_part_names);
         }
 
         @Override
         protected Stream<? extends Holder<Item>> getKnownItems() {
-            return Stream.empty();
+            return Stream.of(obj_item, obj_item_same_part_names);
         }
     }
 }
