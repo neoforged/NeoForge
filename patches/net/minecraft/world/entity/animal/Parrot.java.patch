@@ -10,10 +10,10 @@
      };
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#PARROT_IMITATIONS data map} instead */
 +    @Deprecated
-     static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = Util.make(Maps.newHashMap(), p_379158_ -> {
-         p_379158_.put(EntityType.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
-         p_379158_.put(EntityType.BOGGED, SoundEvents.PARROT_IMITATE_BOGGED);
-@@ -261,7 +_,7 @@
+     static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = Util.make(Maps.newHashMap(), p_389382_ -> {
+         p_389382_.put(EntityType.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
+         p_389382_.put(EntityType.BOGGED, SoundEvents.PARROT_IMITATE_BOGGED);
+@@ -259,7 +_,7 @@
              }
  
              if (!this.level().isClientSide) {
@@ -22,7 +22,7 @@
                      this.tame(p_29414_);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
-@@ -325,7 +_,10 @@
+@@ -323,7 +_,10 @@
  
      public static SoundEvent getAmbient(Level p_218239_, RandomSource p_218240_) {
          if (p_218239_.getDifficulty() != Difficulty.PEACEFUL && p_218240_.nextInt(1000) == 0) {
@@ -34,7 +34,7 @@
              return getImitatedSound(list.get(p_218240_.nextInt(list.size())));
          } else {
              return SoundEvents.PARROT_AMBIENT;
-@@ -333,7 +_,9 @@
+@@ -331,7 +_,9 @@
      }
  
      private static SoundEvent getImitatedSound(EntityType<?> p_29409_) {

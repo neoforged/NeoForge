@@ -33,6 +33,8 @@ import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
@@ -43,12 +45,14 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.WeatheringCopperFullBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.common.DataMapHooks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.data.DataMapProvider;
 import net.neoforged.neoforge.debug.EventTests;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueMerger;
@@ -82,7 +86,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -100,7 +104,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -162,7 +166,7 @@ public class DataMapTests {
 
         final String subpackName = reg.registerSubpack("second_layer");
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -182,7 +186,7 @@ public class DataMapTests {
             }
         });
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(subpackName), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -226,7 +230,7 @@ public class DataMapTests {
 
         test.framework().modEventBus().addListener((final RegisterDataMapTypesEvent event) -> event.register(someData));
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(someData)
@@ -279,7 +283,7 @@ public class DataMapTests {
                 Registries.DAMAGE_TYPE, ExperienceGrant.CODEC)
                 .build());
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(xpGrant)
@@ -304,9 +308,43 @@ public class DataMapTests {
 
     @GameTest
     @EmptyTemplate
+    @TestHolder(description = "Tests if data maps can be successfully attached to reloadable registries")
+    static void reloadableRegDataMaps(final DynamicTest test, final RegistrationHelper reg) {
+        final DataMapType<LootTable, MobEffectInstance> effectGrant = reg.registerDataMap(DataMapType.builder(
+                ResourceLocation.fromNamespaceAndPath(reg.modId(), "effect_grant"),
+                Registries.LOOT_TABLE, MobEffectInstance.CODEC)
+                .build());
+
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+            @Override
+            protected void gather(HolderLookup.Provider provider) {
+                builder(effectGrant)
+                        .add(Blocks.COPPER_BLOCK.getLootTable().orElseThrow(), new MobEffectInstance(MobEffects.CONFUSION, 100), false);
+            }
+        });
+
+        test.eventListeners().forge().addListener((final BlockEvent.EntityPlaceEvent event) -> {
+            var table = event.getPlacedBlock().getBlock().getLootTable();
+            if (table.isEmpty()) return;
+            final var grant = event.getLevel().getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(table.get()).getData(effectGrant);
+            if (grant != null && event.getEntity() instanceof Player player) {
+                player.addEffect(grant);
+            }
+        });
+
+        test.onGameTest(helper -> {
+            final Player player = helper.makeMockPlayer();
+            helper.useBlock(new BlockPos(0, 1, 0), player, Blocks.COPPER_BLOCK.asItem().getDefaultInstance());
+            helper.assertMobEffectPresent(player, MobEffects.CONFUSION, "has confusion");
+            helper.succeed();
+        });
+    }
+
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests if custom compostables work")
     static void compostablesMapTest(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.COMPOSTABLES)
@@ -329,7 +367,7 @@ public class DataMapTests {
                 ResourceLocation.fromNamespaceAndPath(reg.modId(), "weight"),
                 Registries.ITEM, Codec.INT)
                 .build());
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(dataMap)
@@ -375,7 +413,7 @@ public class DataMapTests {
 
         Holder<Block> lightlyOxidizedWaxedIron = reg.blocks().registerBlock("lightly_oxidized_waxed_iron", Block::new, BlockBehaviour.Properties.of());
 
-        reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
+        reg.addClientProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(NeoForgeDataMaps.OXIDIZABLES)

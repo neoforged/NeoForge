@@ -112,18 +112,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -375,8 +_,10 @@
- 
-     public void updateEntityMovementAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
-         p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
-+        p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
-     }
- 
-+    @Deprecated //Forge: Use more sensitive version
-     public ItemStack getCloneItemStack(LevelReader p_304395_, BlockPos p_49824_, BlockState p_49825_) {
-         return new ItemStack(this);
-     }
-@@ -410,6 +_,7 @@
+@@ -406,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -131,7 +120,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -475,6 +_,35 @@
+@@ -471,6 +_,35 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  

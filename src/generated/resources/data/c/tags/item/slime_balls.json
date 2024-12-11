@@ -2,10 +2,6 @@
   "values": [
     "minecraft:slime_ball",
     {
-      "id": "#c:slimeballs",
-      "required": false
-    },
-    {
       "id": "#forge:slime_balls",
       "required": false
     }

@@ -19,7 +19,7 @@
      }
  
 @@ -139,7 +_,7 @@
-                 boolean flag = this.clicked(p_93641_, p_93642_);
+                 boolean flag = this.isMouseOver(p_93641_, p_93642_);
                  if (flag) {
                      this.playDownSound(Minecraft.getInstance().getSoundManager());
 -                    this.onClick(p_93641_, p_93642_);
@@ -27,7 +27,7 @@
                      return true;
                  }
              }
-@@ -257,6 +_,19 @@
+@@ -248,6 +_,19 @@
      @Override
      public void setFocused(boolean p_93693_) {
          this.focused = p_93693_;

@@ -50,6 +50,10 @@ public final class ItemDecoratorHandler {
     }
 
     public void render(GuiGraphics guiGraphics, Font font, ItemStack stack, int xOffset, int yOffset) {
+        if (itemDecorators.isEmpty()) {
+            return;
+        }
+
         RenderSystem.backupGlState(stateBackup);
 
         resetRenderState();

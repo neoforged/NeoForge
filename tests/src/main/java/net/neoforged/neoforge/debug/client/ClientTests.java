@@ -56,7 +56,7 @@ public class ClientTests {
         final KeyMapping stickKey = new KeyMapping("stick_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
         final KeyMapping rockKey = new KeyMapping("rock_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
 
-        test.registrationHelper().provider(LanguageProvider.class, lang -> {
+        test.registrationHelper().clientProvider(LanguageProvider.class, lang -> {
             lang.add(stickKey.getName(), "Stick key");
             lang.add(rockKey.getName(), "Rock key");
         });

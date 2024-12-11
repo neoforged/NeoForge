@@ -139,7 +139,7 @@
                  } else {
                      List<ResourceLocation> list1 = this.frozenTags
                          .entrySet()
-@@ -450,6 +_,54 @@
+@@ -450,6 +_,55 @@
                  }
              };
          }
@@ -157,6 +157,7 @@
 +            this.byKey.clear();
 +            this.byValue.clear();
 +            this.allTags = MappedRegistry.TagSet.unbound();
++            this.frozenTags.entrySet().removeIf(entry -> !entry.getValue().isBound());
 +            if (unregisteredIntrusiveHolders != null) {
 +                unregisteredIntrusiveHolders.clear();
 +                unregisteredIntrusiveHolders = null;

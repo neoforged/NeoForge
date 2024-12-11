@@ -8,7 +8,6 @@ package net.neoforged.neoforge.client.extensions;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
-import net.minecraft.client.renderer.LightTexture;
 import org.joml.Matrix4f;
 
 /**
@@ -42,7 +41,7 @@ public interface IDimensionSpecialEffectsExtension {
      *
      * @return true to prevent vanilla snow and rain rendering
      */
-    default boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, LightTexture lightTexture, double camX, double camY, double camZ) {
+    default boolean renderSnowAndRain(ClientLevel level, int ticks, float partialTick, double camX, double camY, double camZ) {
         return false;
     }
 

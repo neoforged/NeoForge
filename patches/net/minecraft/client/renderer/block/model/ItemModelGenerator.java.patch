@@ -1,21 +1,52 @@
 --- a/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
 +++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-@@ -32,13 +_,16 @@
+@@ -20,7 +_,7 @@
+ import org.joml.Vector3f;
  
-             Material material = p_111672_.getMaterial(s);
-             map.put(s, Either.left(material));
--            SpriteContents spritecontents = p_111671_.apply(material).contents();
+ @OnlyIn(Dist.CLIENT)
+-public class ItemModelGenerator implements UnbakedModel {
++public class ItemModelGenerator implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
+     public static final ResourceLocation GENERATED_ITEM_MODEL_ID = ResourceLocation.withDefaultNamespace("builtin/generated");
+     public static final List<String> LAYERS = List.of("layer0", "layer1", "layer2", "layer3", "layer4");
+     private static final float MIN_Z = 7.5F;
+@@ -43,13 +_,23 @@
+     }
+ 
+     @Override
+-    public BakedModel bake(TextureSlots p_386773_, ModelBaker p_386770_, ModelState p_386536_, boolean p_388612_, boolean p_387457_, ItemTransforms p_388565_) {
+-        return this.bake(p_386773_, p_386770_.sprites(), p_386536_, p_388612_, p_387457_, p_388565_);
++    public BakedModel bake(TextureSlots p_386773_, ModelBaker p_386770_, ModelState p_386536_, boolean p_388612_, boolean p_387457_, ItemTransforms p_388565_, net.minecraft.util.context.ContextMap additionalProperties) {
++        return this.bake(p_386773_, p_386770_.sprites(), p_386536_, p_388612_, p_387457_, p_388565_, additionalProperties.getOrDefault(net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY));
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #bake(TextureSlots, SpriteGetter, ModelState, boolean, boolean, ItemTransforms, net.neoforged.neoforge.client.RenderTypeGroup)} instead
++     */
++    @Deprecated
+     private BakedModel bake(
+         TextureSlots p_387202_, SpriteGetter p_387257_, ModelState p_387172_, boolean p_388328_, boolean p_387288_, ItemTransforms p_388238_
+     ) {
++        return this.bake(p_387202_, p_387257_, p_387172_, p_388328_, p_387288_, p_388238_, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
++    }
++
++    private BakedModel bake(
++        TextureSlots p_387202_, SpriteGetter p_387257_, ModelState p_387172_, boolean p_388328_, boolean p_387288_, ItemTransforms p_388238_, net.neoforged.neoforge.client.RenderTypeGroup renderTypes
++    ) {
+         TextureSlots.Data.Builder textureslots$data$builder = new TextureSlots.Data.Builder();
+         List<BlockElement> list = new ArrayList<>();
+ 
+@@ -61,11 +_,11 @@
+             }
+ 
+             textureslots$data$builder.addTexture(s, material);
+-            SpriteContents spritecontents = p_387257_.get(material).contents();
 -            list.addAll(this.processFrames(i, s, spritecontents));
-+            TextureAtlasSprite sprite = p_111671_.apply(material);
-+            // Neo: fix MC-73186 on generated item models
++            net.minecraft.client.renderer.texture.TextureAtlasSprite sprite = p_387257_.get(material);
 +            list.addAll(net.neoforged.neoforge.client.ClientHooks.fixItemModelSeams(this.processFrames(i, s, sprite.contents()), sprite));
          }
  
-         map.put("particle", p_111672_.hasTexture("particle") ? Either.left(p_111672_.getMaterial("particle")) : map.get("layer0"));
-         BlockModel blockmodel = new BlockModel(null, list, map, false, p_111672_.getGuiLight(), p_111672_.getTransforms(), p_111672_.getOverrides());
-         blockmodel.name = p_111672_.name;
-+        blockmodel.customData.copyFrom(p_111672_.customData);
-+        blockmodel.customData.setGui3d(false);
-         return blockmodel;
+-        return SimpleBakedModel.bakeElements(list, p_387202_, p_387257_, p_387172_, p_388328_, p_387288_, false, p_388238_);
++        return SimpleBakedModel.bakeElements(list, p_387202_, p_387257_, p_387172_, p_388328_, p_387288_, false, p_388238_, com.mojang.math.Transformation.identity(), renderTypes);
      }
  
+     public List<BlockElement> processFrames(int p_111639_, String p_111640_, SpriteContents p_251768_) {

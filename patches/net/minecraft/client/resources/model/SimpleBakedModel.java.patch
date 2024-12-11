@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/resources/model/SimpleBakedModel.java
 +++ b/net/minecraft/client/resources/model/SimpleBakedModel.java
-@@ -25,7 +_,11 @@
-     protected final boolean usesBlockLight;
-     protected final TextureAtlasSprite particleIcon;
-     protected final ItemTransforms transforms;
+@@ -29,7 +_,11 @@
+     private final boolean usesBlockLight;
+     private final TextureAtlasSprite particleIcon;
+     private final ItemTransforms transforms;
 +    @Nullable protected final net.neoforged.neoforge.client.ChunkRenderTypeSet blockRenderTypes;
-+    @Nullable protected final List<net.minecraft.client.renderer.RenderType> itemRenderTypes;
++    @Nullable protected final net.minecraft.client.renderer.RenderType itemRenderType;
  
 +    /** @deprecated Forge: Use {@linkplain #SimpleBakedModel(List, Map, boolean, boolean, boolean, TextureAtlasSprite, ItemTransforms, net.neoforged.neoforge.client.RenderTypeGroup) variant with RenderTypeGroup} **/
 +    @Deprecated
      public SimpleBakedModel(
          List<BakedQuad> p_119489_,
          Map<Direction, List<BakedQuad>> p_119490_,
-@@ -35,6 +_,19 @@
+@@ -39,6 +_,19 @@
          TextureAtlasSprite p_119494_,
          ItemTransforms p_119495_
      ) {
@@ -32,16 +32,61 @@
          this.unculledFaces = p_119489_;
          this.culledFaces = p_119490_;
          this.hasAmbientOcclusion = p_119491_;
-@@ -42,6 +_,8 @@
+@@ -46,8 +_,14 @@
          this.usesBlockLight = p_119492_;
          this.particleIcon = p_119494_;
          this.transforms = p_119495_;
 +        this.blockRenderTypes = !renderTypes.isEmpty() ? net.neoforged.neoforge.client.ChunkRenderTypeSet.of(renderTypes.block()) : null;
-+        this.itemRenderTypes = !renderTypes.isEmpty() ? List.of(renderTypes.entity()) : null;
++        this.itemRenderType = !renderTypes.isEmpty() ? renderTypes.entity() : null;
      }
  
-     @Override
-@@ -79,6 +_,20 @@
++    /**
++     * @deprecated Neo: Use {@linkplain #bakeElements(List, TextureSlots, SpriteGetter, ModelState, boolean, boolean, boolean, ItemTransforms, com.mojang.math.Transformation, net.neoforged.neoforge.client.RenderTypeGroup) variant with Transformation and RenderTypeGroup support}
++     */
++    @Deprecated
+     public static BakedModel bakeElements(
+         List<BlockElement> p_387963_,
+         TextureSlots p_388507_,
+@@ -58,10 +_,29 @@
+         boolean p_386706_,
+         ItemTransforms p_388032_
+     ) {
++        return bakeElements(p_387963_, p_388507_, p_387357_, p_388846_, p_386975_, p_388143_, p_386706_, p_388032_, com.mojang.math.Transformation.identity(), net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
++    }
++
++    public static BakedModel bakeElements(
++        List<BlockElement> p_387963_,
++        TextureSlots p_388507_,
++        SpriteGetter p_387357_,
++        ModelState p_388846_,
++        boolean p_386975_,
++        boolean p_388143_,
++        boolean p_386706_,
++        ItemTransforms p_388032_,
++        com.mojang.math.Transformation rootTransform,
++        net.neoforged.neoforge.client.RenderTypeGroup renderTypes
++    ) {
+         TextureAtlasSprite textureatlassprite = findSprite(p_387357_, p_388507_, "particle");
+         SimpleBakedModel.Builder simplebakedmodel$builder = new SimpleBakedModel.Builder(p_386975_, p_388143_, p_386706_, p_388032_)
+             .particle(textureatlassprite);
+ 
++        if (!rootTransform.isIdentity()) {
++            p_388846_ = net.neoforged.neoforge.client.model.UnbakedElementsHelper.composeRootTransformIntoModelState(p_388846_, rootTransform);
++        }
++
+         for (BlockElement blockelement : p_387963_) {
+             for (Direction direction : blockelement.faces.keySet()) {
+                 BlockElementFace blockelementface = blockelement.faces.get(direction);
+@@ -77,7 +_,7 @@
+             }
+         }
+ 
+-        return simplebakedmodel$builder.build();
++        return simplebakedmodel$builder.build(renderTypes);
+     }
+ 
+     public static BakedQuad bakeFace(
+@@ -123,6 +_,20 @@
          return this.transforms;
      }
  
@@ -53,16 +98,16 @@
 +    }
 +
 +    @Override
-+    public List<net.minecraft.client.renderer.RenderType> getRenderTypes(net.minecraft.world.item.ItemStack itemStack) {
-+        if (itemRenderTypes != null)
-+            return itemRenderTypes;
-+        return BakedModel.super.getRenderTypes(itemStack);
++    public net.minecraft.client.renderer.RenderType getRenderType(net.minecraft.world.item.ItemStack itemStack) {
++        if (itemRenderType != null)
++            return itemRenderType;
++        return BakedModel.super.getRenderType(itemStack);
 +    }
 +
      @OnlyIn(Dist.CLIENT)
      public static class Builder {
          private final ImmutableList.Builder<BakedQuad> unculledFaces = ImmutableList.builder();
-@@ -124,7 +_,13 @@
+@@ -164,7 +_,13 @@
              return this;
          }
  
@@ -76,7 +121,7 @@
              if (this.particleIcon == null) {
                  throw new RuntimeException("Missing particle!");
              } else {
-@@ -136,7 +_,8 @@
+@@ -176,7 +_,8 @@
                      this.usesBlockLight,
                      this.isGui3d,
                      this.particleIcon,

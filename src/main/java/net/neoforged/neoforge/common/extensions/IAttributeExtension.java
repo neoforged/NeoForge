@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.AttributeUtil;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +84,7 @@ public interface IAttributeExtension {
     default Component getDebugInfo(AttributeModifier modif, TooltipFlag flag) {
         Component debugInfo = CommonComponents.EMPTY;
 
-        if (flag.isAdvanced()) {
+        if (flag.isAdvanced() && NeoForgeConfig.COMMON.attributeAdvancedTooltipDebugInfo.get()) {
             // Advanced Tooltips show the underlying operation and the "true" value. We offset MULTIPLY_TOTAL by 1 due to how the operation is calculated.
             double advValue = (modif.operation() == Operation.ADD_MULTIPLIED_TOTAL ? 1 : 0) + modif.amount();
             String valueStr = FORMAT.format(advValue);

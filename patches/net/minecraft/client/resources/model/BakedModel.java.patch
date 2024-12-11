@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/resources/model/BakedModel.java
 +++ b/net/minecraft/client/resources/model/BakedModel.java
-@@ -13,7 +_,9 @@
+@@ -12,7 +_,9 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -11,18 +11,15 @@
      List<BakedQuad> getQuads(@Nullable BlockState p_235039_, @Nullable Direction p_235040_, RandomSource p_235041_);
  
      boolean useAmbientOcclusion();
-@@ -24,9 +_,13 @@
+@@ -21,7 +_,11 @@
  
-     boolean isCustomRenderer();
+     boolean usesBlockLight();
  
 +    /**@deprecated Forge: Use {@link #getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData)}*/
 +    @Deprecated
      TextureAtlasSprite getParticleIcon();
  
--    ItemTransforms getTransforms();
 +    /**@deprecated Forge: Use {@link #applyTransform(net.minecraft.world.item.ItemDisplayContext, com.mojang.blaze3d.vertex.PoseStack, boolean)} instead */
 +    @Deprecated
-+    default ItemTransforms getTransforms() { return ItemTransforms.NO_TRANSFORMS; }
- 
-     default BakedOverrides overrides() {
-         return BakedOverrides.EMPTY;
+     ItemTransforms getTransforms();
+ }

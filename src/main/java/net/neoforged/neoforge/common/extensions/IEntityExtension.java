@@ -20,11 +20,9 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.SoundAction;
@@ -87,17 +85,6 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      */
     default boolean shouldRiderSit() {
         return true;
-    }
-
-    /**
-     * Called when a user uses the creative pick block button on this entity.
-     *
-     * @param target The full target the player is looking at
-     * @return A ItemStack to add to the player's inventory, null ItemStack if nothing should be added.
-     */
-    @Nullable
-    default ItemStack getPickedResult(HitResult target) {
-        return self().getPickResult();
     }
 
     /**

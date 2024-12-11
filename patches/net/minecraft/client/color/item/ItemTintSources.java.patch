@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/color/item/ItemTintSources.java
++++ b/net/minecraft/client/color/item/ItemTintSources.java
+@@ -21,5 +_,7 @@
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("potion"), Potion.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("map_color"), MapColor.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("team"), TeamColor.MAP_CODEC);
++
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.ItemTintSources(ID_MAPPER));
+     }
+ }

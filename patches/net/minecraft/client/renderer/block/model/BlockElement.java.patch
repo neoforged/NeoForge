@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElement.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElement.java
-@@ -30,6 +_,7 @@
+@@ -31,6 +_,7 @@
      public final BlockElementRotation rotation;
      public final boolean shade;
      public final int lightEmission;
@@ -8,7 +8,7 @@
  
      public BlockElement(Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_) {
          this(p_253626_, p_254426_, p_254454_, null, true, 0);
-@@ -43,6 +_,10 @@
+@@ -44,6 +_,10 @@
          boolean p_361372_,
          int p_361908_
      ) {
@@ -19,7 +19,7 @@
          this.from = p_361324_;
          this.to = p_363867_;
          this.faces = p_362722_;
-@@ -50,6 +_,8 @@
+@@ -51,6 +_,8 @@
          this.shade = p_361372_;
          this.lightEmission = p_361908_;
          this.fillUvs();
@@ -28,7 +28,7 @@
      }
  
      private void fillUvs() {
-@@ -104,7 +_,8 @@
+@@ -98,7 +_,8 @@
                      }
                  }
  
@@ -38,7 +38,7 @@
              }
          }
  
-@@ -215,5 +_,13 @@
+@@ -209,5 +_,13 @@
                  return new Vector3f(afloat[0], afloat[1], afloat[2]);
              }
          }

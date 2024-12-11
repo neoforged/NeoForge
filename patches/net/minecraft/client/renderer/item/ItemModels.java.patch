@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/item/ItemModels.java
++++ b/net/minecraft/client/renderer/item/ItemModels.java
+@@ -21,5 +_,7 @@
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("bundle/selected_item"), BundleSelectedItemSpecialRenderer.Unbaked.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("select"), SelectItemModel.Unbaked.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("condition"), ConditionalItemModel.Unbaked.MAP_CODEC);
++
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterItemModelsEvent(ID_MAPPER));
+     }
+ }
