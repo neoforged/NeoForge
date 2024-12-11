@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.client.model.obj;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import java.io.IOException;
@@ -16,7 +17,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -61,7 +61,7 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
             new Vec2(1, 0),
     };
 
-    private final Map<String, ModelGroup> parts = Maps.newLinkedHashMap();
+    private final Multimap<String, ModelGroup> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
     private final Set<String> rootComponentNames = Collections.unmodifiableSet(parts.keySet());
     private Set<String> allComponentNames;
 
@@ -436,7 +436,7 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
     public CompositeRenderable bakeRenderable(IGeometryBakingContext configuration) {
         var builder = CompositeRenderable.builder();
 
-        for (var entry : parts.entrySet()) {
+        for (var entry : parts.entries()) {
             var name = entry.getKey();
             var part = entry.getValue();
             part.bake(builder.child(name), configuration);
@@ -484,7 +484,7 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
     }
 
     public class ModelGroup extends ModelObject {
-        final Map<String, ModelObject> parts = Maps.newLinkedHashMap();
+        final Multimap<String, ModelObject> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
 
         ModelGroup(String name) {
             super(name);
@@ -502,7 +502,7 @@ public class ObjModel extends SimpleUnbakedGeometry<ObjModel> {
         public void bake(CompositeRenderable.PartBuilder<?> builder, IGeometryBakingContext configuration) {
             super.bake(builder, configuration);
 
-            for (var entry : parts.entrySet()) {
+            for (var entry : parts.entries()) {
                 var name = entry.getKey();
                 var part = entry.getValue();
                 part.bake(builder.child(name), configuration);
