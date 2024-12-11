@@ -22,12 +22,13 @@ import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
-@ForEachTest(groups = "vanilla_data_gen")
+@ForEachTest(groups = "vanilla_data_gen", side = Dist.CLIENT)
 public interface VanillaDataGenTest {
     @TestHolder(description = "Tests the the patched vanilla model generators work for modded usages")
     static void testModelGenerators(DynamicTest test, RegistrationHelper reg) {

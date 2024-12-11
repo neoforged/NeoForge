@@ -6,8 +6,13 @@
 package net.neoforged.neoforge.debug.block;
 
 import java.util.Optional;
+import java.util.stream.Stream;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -22,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -36,6 +42,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -79,8 +86,29 @@ public class BlockTests {
     static void woodlessFenceGate(final DynamicTest test, final RegistrationHelper reg) {
         final var gate = reg.blocks().registerBlock("gate", props -> new FenceGateBlock(props, SoundEvents.BARREL_OPEN, SoundEvents.CHEST_CLOSE), BlockBehaviour.Properties.ofFullCopy(Blocks.ACACIA_FENCE_GATE))
                 .withLang("Woodless Fence Gate")
-                .withBlockItem()
-                .withModel((block, blockModels) -> blockModels.createFenceGate(block, Blocks.IRON_BLOCK));
+                .withBlockItem();
+
+        reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
+            @Override
+            protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+                blockModels.createFenceGate(gate.value(), Blocks.IRON_BLOCK);
+            }
+
+            @Override
+            protected Stream<? extends Holder<Item>> getKnownItems() {
+                return Stream.of(DeferredItem.createItem(gate.getId()));
+            }
+
+            @Override
+            protected Stream<? extends Holder<Block>> getKnownBlocks() {
+                return Stream.of(gate);
+            }
+
+            @Override
+            public String getName() {
+                return "test_woodless_fence_gate_model_generator";
+            }
+        }));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(() -> helper.setBlock(1, 1, 1, gate.get().defaultBlockState().setValue(FenceGateBlock.OPEN, true)))

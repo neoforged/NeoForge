@@ -7,7 +7,6 @@ package net.neoforged.testframework.registration;
 
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.client.color.item.ItemTintSource;
@@ -18,7 +17,6 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
-import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -66,11 +64,34 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
     private boolean hasItem = false;
     private boolean hasColor = false;
 
-    public DeferredBlockBuilder<T> withModel(BiConsumer<T, BlockModelGenerators> consumer) {
-        helper.addClientProvider(client -> new ModelProvider(client.getGenerator().getPackOutput(), helper.modId()) {
+    public DeferredBlockBuilder<T> withDefaultWhiteModel() {
+        if (!FMLLoader.getDist().isClient()) {
+            return this;
+        }
+
+        helper.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), helper.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-                consumer.accept(value(), blockModels);
+                ModelTemplate template;
+
+                if (hasColor) {
+                    template = ExtendedModelTemplateBuilder.builder()
+                            .element(element -> element
+                                    .from(0F, 0F, 0F)
+                                    .to(16F, 16F, 16F)
+                                    .allFaces((face, builder) -> builder
+                                            .uvs(0F, 0F, 16F, 16F)
+                                            .texture(TextureSlot.ALL)
+                                            .tintindex(0)
+                                            .cullface(face)))
+                            .requiredTextureSlot(TextureSlot.ALL)
+                            .build();
+                } else {
+                    template = ModelTemplates.CUBE_ALL;
+                }
+
+                var modelPath = template.create(value(), TextureMapping.cube(ResourceLocation.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
+                blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(value(), modelPath));
             }
 
             @Override
@@ -85,44 +106,10 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
 
             @Override
             public String getName() {
-                return key.location().getPath() + "-model-generator";
+                return key.location().toDebugFileName() + "-default-white-model-generator";
             }
-        });
+        }));
         return this;
-    }
-
-    public DeferredBlockBuilder<T> withModel(TexturedModel.Provider model) {
-        return withModel((block, blockModels) -> blockModels.createTrivialBlock(block, model));
-    }
-
-    public DeferredBlockBuilder<T> withModel(TextureMapping textures, Consumer<ExtendedModelTemplateBuilder> modelConsumer) {
-        return withModel((block, blockModels) -> {
-            var builder = ExtendedModelTemplateBuilder.builder();
-            modelConsumer.accept(builder);
-            var modelPath = builder.build().create(block, textures, blockModels.modelOutput);
-            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, modelPath));
-        });
-    }
-
-    public DeferredBlockBuilder<T> withDefaultWhiteModel() {
-        return withModel((block, blockModels) -> {
-            ModelTemplate template;
-
-            if (hasColor) {
-                template = ExtendedModelTemplateBuilder.builder()
-                        .element(element -> element
-                                .from(0, 0, 0)
-                                .to(16, 16, 16)
-                                .allFaces((direction, faceBuilder) -> faceBuilder.uvs(0, 0, 16, 16).texture(TextureSlot.ALL).tintindex(0).cullface(direction)))
-                        .requiredTextureSlot(TextureSlot.ALL)
-                        .build();
-            } else {
-                template = ModelTemplates.CUBE_ALL;
-            }
-
-            var modelPath = template.create(block, TextureMapping.cube(ResourceLocation.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
-            blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(block, modelPath));
-        });
     }
 
     public DeferredBlockBuilder<T> withColor(int color) {
