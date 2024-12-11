@@ -60,8 +60,9 @@ public abstract class GenerateFinalizeSpawnTargets extends DefaultTask {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-            // Ignore this class as we special case it
-            if (currentClass.equals("net/minecraft/world/level/BaseSpawner")) {
+            // Ignore these classes as we special case them
+            if (currentClass.equals("net/minecraft/world/level/BaseSpawner")
+                    || currentClass.equals("net/minecraft/world/level/block/entity/trialspawner/TrialSpawner")) {
                 return null;
             }
 
