@@ -221,7 +221,7 @@ public class DataGeneratorTest {
                             output.withConditions(
                                     NeoForgeConditions.and(
                                             NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
-                                            NeoForgeConditions.itemExists("minecraft", "dirt"),
+                                            NeoForgeConditions.itemRegistered("minecraft", "dirt"),
                                             NeoForgeConditions.never())),
                             recipeKey("conditional"));
 
@@ -237,7 +237,7 @@ public class DataGeneratorTest {
                                     NeoForgeConditions.not(
                                             NeoForgeConditions.and(
                                                     NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
-                                                    NeoForgeConditions.itemExists("minecraft", "dirt"),
+                                                    NeoForgeConditions.itemRegistered("minecraft", "dirt"),
                                                     NeoForgeConditions.never()))),
                             recipeKey("conditional2"));
 

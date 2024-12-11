@@ -36,28 +36,28 @@ public interface NeoForgeConditions {
         return new OrCondition(List.of(values));
     }
 
-    static <TRegistry> ICondition elementExists(ResourceKey<TRegistry> registryKey) {
+    static <TRegistry> ICondition isRegistered(ResourceKey<TRegistry> registryKey) {
         return new RegisteredCondition<>(registryKey);
     }
 
-    static <TRegistry> ICondition elementExists(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
-        return elementExists(ResourceKey.create(registryType, registryName));
+    static <TRegistry> ICondition isRegistered(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
+        return isRegistered(ResourceKey.create(registryType, registryName));
     }
 
-    static ICondition elementExists(ResourceLocation registryTypeName, ResourceLocation registryName) {
-        return elementExists(ResourceKey.createRegistryKey(registryTypeName), registryName);
+    static ICondition isRegistered(ResourceLocation registryTypeName, ResourceLocation registryName) {
+        return isRegistered(ResourceKey.createRegistryKey(registryTypeName), registryName);
     }
 
-    static ICondition itemExists(ResourceLocation itemName) {
-        return elementExists(Registries.ITEM, itemName);
+    static ICondition itemRegistered(ResourceLocation itemName) {
+        return isRegistered(Registries.ITEM, itemName);
     }
 
-    static ICondition itemExists(String namespace, String path) {
-        return itemExists(ResourceLocation.fromNamespaceAndPath(namespace, path));
+    static ICondition itemRegistered(String namespace, String path) {
+        return itemRegistered(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 
-    static ICondition itemExists(String itemName) {
-        return itemExists(ResourceLocation.parse(itemName));
+    static ICondition itemRegistered(String itemName) {
+        return itemRegistered(ResourceLocation.parse(itemName));
     }
 
     static ICondition modLoaded(String modid) {
