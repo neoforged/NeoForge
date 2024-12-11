@@ -68,24 +68,11 @@ public class NewModelLoaderTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", props -> new Block(props) {
-        @Override
-        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-            builder.add(BlockStateProperties.HORIZONTAL_FACING);
-        }
+    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
-        @Nullable
-        @Override
-        public BlockState getStateForPlacement(BlockPlaceContext context) {
-            return defaultBlockState().setValue(
-                    BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection());
-        }
-
-        @Override
-        public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-            return Block.box(2, 2, 2, 14, 14, 14);
-        }
-    }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    // Same at obj_block except all the parts in the obj model have the same name,
+    // this is a test for neoforged/NeoForge#1755 that was fixed by neoforged/NeoForge#1759
+    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
     public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
@@ -93,6 +80,8 @@ public class NewModelLoaderTest {
             return armorType == EquipmentSlot.HEAD;
         }
     });
+
+    public static DeferredItem<Item> obj_item_same_part_names = ITEMS.registerItem("obj_block_same_part_names", props -> new BlockItem(obj_block_same_part_names.get(), props));
 
     public static DeferredItem<Item> custom_transforms = ITEMS.registerSimpleItem("custom_transforms");
 
@@ -117,6 +106,7 @@ public class NewModelLoaderTest {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             Arrays.asList(
                     obj_item,
+                    obj_item_same_part_names,
                     custom_transforms,
                     custom_vanilla_loader,
                     custom_loader,
@@ -127,6 +117,29 @@ public class NewModelLoaderTest {
 
     public void modelRegistry(ModelEvent.RegisterLoaders event) {
         event.register(ResourceLocation.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
+    }
+
+    static class TestBlock extends Block {
+        public TestBlock(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(BlockStateProperties.HORIZONTAL_FACING);
+        }
+
+        @Nullable
+        @Override
+        public BlockState getStateForPlacement(BlockPlaceContext context) {
+            return defaultBlockState().setValue(
+                    BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection());
+        }
+
+        @Override
+        public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+            return Block.box(2, 2, 2, 14, 14, 14);
+        }
     }
 
     static class TestLoader implements UnbakedModelLoader<TestModel> {
@@ -203,15 +216,20 @@ public class NewModelLoaderTest {
 
         @Override
         protected void registerStatesAndModels() {
+            createModelAndBlockState(obj_block, "sugar_glider");
+            createModelAndBlockState(obj_block_same_part_names, "sugar_glider_same_part_names");
+        }
+
+        private void createModelAndBlockState(DeferredBlock<Block> block, String objModel) {
             BlockModelBuilder model = models()
-                    .getBuilder(NewModelLoaderTest.obj_block.getId().getPath())
+                    .getBuilder(block.getId().getPath())
                     .customLoader(ObjModelBuilder::begin)
-                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"))
+                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
                     .flipV(true)
                     .end()
                     .texture("qr", "minecraft:block/oak_planks")
                     .texture("particle", "#qr");
-            getVariantBuilder(NewModelLoaderTest.obj_block.get())
+            getVariantBuilder(block.get())
                     .partialState()
                     .with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
                     .addModels(new ConfiguredModel(model, 0, 90, false))

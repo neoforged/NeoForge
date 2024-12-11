@@ -230,6 +230,11 @@ tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.clas
     output = rootProject.file("coremods/src/main/resources/net/neoforged/neoforge/coremods/finalize_spawn_targets.json")
 }
 
+tasks.withType(JavaCompile.class).configureEach {
+    // Increase memory used during compilation, to avoid OutOfMemoryErrors
+    options.forkOptions.memoryMaximumSize = '2g'
+}
+
 tasks.withType(Javadoc.class).configureEach {
     options.tags = [
             'apiNote:a:<em>API Note:</em>',

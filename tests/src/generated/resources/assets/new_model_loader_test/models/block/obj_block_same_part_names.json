@@ -1,0 +1,9 @@
+{
+  "flip_v": true,
+  "loader": "neoforge:obj",
+  "model": "new_model_loader_test:models/item/sugar_glider_same_part_names.obj",
+  "textures": {
+    "particle": "#qr",
+    "qr": "minecraft:block/oak_planks"
+  }
+}

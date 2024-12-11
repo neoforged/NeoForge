@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.client.model.obj;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class ObjModel extends AbstractUnbakedModel {
             new Vec2(1, 0),
     };
 
-    private final Map<String, ModelGroup> parts = Maps.newLinkedHashMap();
+    private final Multimap<String, ModelGroup> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
 
     private final List<Vector3f> positions = Lists.newArrayList();
     private final List<Vec2> texCoords = Lists.newArrayList();
@@ -441,7 +442,7 @@ public class ObjModel extends AbstractUnbakedModel {
     }
 
     public class ModelGroup extends ModelObject {
-        final Map<String, ModelObject> parts = Maps.newLinkedHashMap();
+        final Multimap<String, ModelObject> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
 
         ModelGroup(String name) {
             super(name);
