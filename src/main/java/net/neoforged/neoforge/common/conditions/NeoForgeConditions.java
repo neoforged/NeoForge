@@ -15,80 +15,80 @@ import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
 import org.apache.commons.lang3.ArrayUtils;
 
-public interface NeoForgeConditions {
-    static ICondition and(ICondition... values) {
+public final class NeoForgeConditions {
+    public static ICondition and(ICondition... values) {
         return new AndCondition(List.of(values));
     }
 
-    static ICondition never() {
+    public static ICondition never() {
         return NeverCondition.INSTANCE;
     }
 
-    static ICondition always() {
+    public static ICondition always() {
         return AlwaysCondition.INSTANCE;
     }
 
-    static ICondition not(ICondition value) {
+    public static ICondition not(ICondition value) {
         return new NotCondition(value);
     }
 
-    static ICondition or(ICondition... values) {
+    public static ICondition or(ICondition... values) {
         return new OrCondition(List.of(values));
     }
 
-    static <TRegistry> ICondition isRegistered(ResourceKey<TRegistry> registryKey) {
+    public static <TRegistry> ICondition isRegistered(ResourceKey<TRegistry> registryKey) {
         return new RegisteredCondition<>(registryKey);
     }
 
-    static <TRegistry> ICondition isRegistered(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
+    public static <TRegistry> ICondition isRegistered(ResourceKey<? extends Registry<TRegistry>> registryType, ResourceLocation registryName) {
         return isRegistered(ResourceKey.create(registryType, registryName));
     }
 
-    static ICondition isRegistered(ResourceLocation registryTypeName, ResourceLocation registryName) {
+    public static ICondition isRegistered(ResourceLocation registryTypeName, ResourceLocation registryName) {
         return isRegistered(ResourceKey.createRegistryKey(registryTypeName), registryName);
     }
 
-    static ICondition itemRegistered(ResourceLocation itemName) {
+    public static ICondition itemRegistered(ResourceLocation itemName) {
         return isRegistered(Registries.ITEM, itemName);
     }
 
-    static ICondition itemRegistered(String namespace, String path) {
+    public static ICondition itemRegistered(String namespace, String path) {
         return itemRegistered(ResourceLocation.fromNamespaceAndPath(namespace, path));
     }
 
-    static ICondition itemRegistered(String itemName) {
+    public static ICondition itemRegistered(String itemName) {
         return itemRegistered(ResourceLocation.parse(itemName));
     }
 
-    static ICondition modLoaded(String modid) {
+    public static ICondition modLoaded(String modid) {
         return new ModLoadedCondition(modid);
     }
 
-    static <TRegistry> ICondition tagEmpty(TagKey<TRegistry> tag) {
+    public static <TRegistry> ICondition tagEmpty(TagKey<TRegistry> tag) {
         return new TagEmptyCondition<>(tag);
     }
 
-    static <TRegistry> ICondition tagEmpty(ResourceKey<? extends Registry<TRegistry>> tagType, ResourceLocation tagName) {
+    public static <TRegistry> ICondition tagEmpty(ResourceKey<? extends Registry<TRegistry>> tagType, ResourceLocation tagName) {
         return tagEmpty(TagKey.create(tagType, tagName));
     }
 
-    static ICondition itemTagEmpty(ResourceLocation tagName) {
+    public static ICondition itemTagEmpty(ResourceLocation tagName) {
         return tagEmpty(Registries.ITEM, tagName);
     }
 
-    static ICondition itemTagEmpty(String namespace, String tagPath) {
+    public static ICondition itemTagEmpty(String namespace, String tagPath) {
         return itemTagEmpty(ResourceLocation.fromNamespaceAndPath(namespace, tagPath));
     }
 
-    static ICondition itemTagEmpty(String tagName) {
+    public static ICondition itemTagEmpty(String tagName) {
         return itemTagEmpty(ResourceLocation.parse(tagName));
     }
 
-    static ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {
+    public static ICondition featureFlagsEnabled(FeatureFlagSet requiredFeatures) {
         return new FeatureFlagsEnabledCondition(requiredFeatures);
     }
 
-    static ICondition featureFlagsEnabled(FeatureFlag... requiredFlags) {
+    public static ICondition featureFlagsEnabled(FeatureFlag... requiredFlags) {
         if (requiredFlags.length == 0) {
             throw new IllegalArgumentException("FeatureFlagsEnabledCondition requires at least one feature flag.");
         }
@@ -97,5 +97,9 @@ public interface NeoForgeConditions {
         } else {
             return new FeatureFlagsEnabledCondition(FeatureFlagSet.of(requiredFlags[0], ArrayUtils.remove(requiredFlags, 0)));
         }
+    }
+
+    private NeoForgeConditions() {
+        // NOOP - Utility class, never to be constructed
     }
 }
