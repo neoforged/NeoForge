@@ -222,6 +222,11 @@ generateAccessTransformers {
     )
 }
 
+tasks.withType(JavaCompile.class).configureEach {
+    // Increase memory used during compilation, to avoid OutOfMemoryErrors
+    options.forkOptions.memoryMaximumSize = '2g'
+}
+
 tasks.withType(Javadoc.class).configureEach {
     options.tags = [
             'apiNote:a:<em>API Note:</em>',
