@@ -61,7 +61,7 @@ public class StructureModifierTest {
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event) {
+    private void onGatherData(GatherDataEvent.Client event) {
 /*   TODO: During the update to 1.19.3 data providers got partially turned into async executions. Creating a registry ops requires this.
 
      // Example of how to datagen datapack registry objects.

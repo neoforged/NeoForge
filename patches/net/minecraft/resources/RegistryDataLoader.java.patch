@@ -37,16 +37,16 @@
          }
      }
  
-@@ -264,7 +_,7 @@
+@@ -263,7 +_,7 @@
+         Map<ResourceKey<?>, Exception> p_321649_
      ) {
-         String s = Registries.elementsDirPath(p_321557_.key());
-         FileToIdConverter filetoidconverter = FileToIdConverter.json(s);
+         FileToIdConverter filetoidconverter = FileToIdConverter.registry(p_321557_.key());
 -        RegistryOps<JsonElement> registryops = RegistryOps.create(JsonOps.INSTANCE, p_321612_);
 +        RegistryOps<JsonElement> registryops = new net.neoforged.neoforge.common.conditions.ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, p_321612_), net.neoforged.neoforge.common.conditions.ICondition.IContext.TAGS_INVALID);
  
          for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
-@@ -354,13 +_,20 @@
+@@ -352,13 +_,20 @@
      public static record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
  

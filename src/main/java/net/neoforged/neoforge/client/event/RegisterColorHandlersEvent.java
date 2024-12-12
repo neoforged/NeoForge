@@ -6,13 +6,14 @@
 package net.neoforged.neoforge.client.event;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.color.item.ItemColor;
-import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -26,7 +27,8 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>These events are fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
  * @see RegisterColorHandlersEvent.Block
- * @see RegisterColorHandlersEvent.Item
+ * @see RegisterColorHandlersEvent.ItemTintSources
+ * @see RegisterColorHandlersEvent.ColorResolvers
  */
 public abstract class RegisterColorHandlersEvent extends Event implements IModBusEvent {
     @ApiStatus.Internal
@@ -35,7 +37,7 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
     /**
      * Fired for registering block color handlers.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
@@ -68,54 +70,6 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
     }
 
     /**
-     * Fired for registering item color handlers.
-     *
-     * <p>The block colors should only be used for referencing or delegating item colors to their respective block
-     * colors. Use {@link RegisterColorHandlersEvent.Block} for registering your block color handlers.</p>
-     *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
-     *
-     * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     */
-    public static class Item extends RegisterColorHandlersEvent {
-        private final ItemColors itemColors;
-        private final BlockColors blockColors;
-
-        @ApiStatus.Internal
-        public Item(ItemColors itemColors, BlockColors blockColors) {
-            this.itemColors = itemColors;
-            this.blockColors = blockColors;
-        }
-
-        /**
-         * {@return the item colors registry}
-         *
-         * @see ItemColors#register(ItemColor, ItemLike...)
-         */
-        public ItemColors getItemColors() {
-            return itemColors;
-        }
-
-        /**
-         * {@return the block colors registry}
-         * This should only be used for referencing or delegating item colors to their respective block colors.
-         */
-        public BlockColors getBlockColors() {
-            return blockColors;
-        }
-
-        /**
-         * Registers a {@link ItemColor} instance for a set of blocks.
-         *
-         * @param itemColor The color provider
-         * @param items     The items
-         */
-        public void register(ItemColor itemColor, ItemLike... items) {
-            itemColors.register(itemColor, items);
-        }
-    }
-
-    /**
      * Allows registration of custom {@link ColorResolver} implementations to be used with
      * {@link net.minecraft.world.level.BlockAndTintGetter#getBlockTint(BlockPos, ColorResolver)}.
      */
@@ -129,6 +83,27 @@ public abstract class RegisterColorHandlersEvent extends Event implements IModBu
 
         public void register(ColorResolver resolver) {
             this.builder.add(resolver);
+        }
+    }
+
+    /**
+     * Fired for registering item color handlers.
+     * <p>
+     * This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}
+     *
+     * @see ItemTintSource
+     * @see ItemTintSources
+     */
+    public static class ItemTintSources extends RegisterColorHandlersEvent {
+        private final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends ItemTintSource>> idMapper;
+
+        @ApiStatus.Internal
+        public ItemTintSources(ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends ItemTintSource>> idMapper) {
+            this.idMapper = idMapper;
+        }
+
+        public void register(ResourceLocation location, MapCodec<? extends ItemTintSource> source) {
+            this.idMapper.put(location, source);
         }
     }
 }

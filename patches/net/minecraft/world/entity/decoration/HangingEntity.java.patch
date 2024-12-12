@@ -4,8 +4,8 @@
          if (!this.level().noCollision(this)) {
              return false;
          } else {
--            boolean flag = BlockPos.betweenClosedStream(this.calculateSupportBox()).allMatch(p_381503_ -> {
-+            boolean flag = BlockPos.betweenClosedStream(this.calculateSupportBox()).filter(pos -> !net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.direction)).allMatch(p_381503_ -> {
-                 BlockState blockstate = this.level().getBlockState(p_381503_);
+-            boolean flag = BlockPos.betweenClosedStream(this.calculateSupportBox()).allMatch(p_390238_ -> {
++            boolean flag = BlockPos.betweenClosedStream(this.calculateSupportBox()).filter(pos -> !net.minecraft.world.level.block.Block.canSupportCenter(this.level(), pos, this.direction)).allMatch(p_390238_ -> {
+                 BlockState blockstate = this.level().getBlockState(p_390238_);
                  return blockstate.isSolid() || DiodeBlock.isDiode(blockstate);
              });

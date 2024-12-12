@@ -7,16 +7,22 @@ package net.neoforged.neoforge.oldtest.client.model;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import java.util.Arrays;
-import java.util.function.Function;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
@@ -35,8 +41,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.IModelBuilder;
+import net.neoforged.neoforge.client.model.ExtendedUnbakedModel;
+import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -44,9 +53,6 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.SimpleUnbakedGeometry;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -62,24 +68,11 @@ public class NewModelLoaderTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", props -> new Block(props) {
-        @Override
-        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-            builder.add(BlockStateProperties.HORIZONTAL_FACING);
-        }
+    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
-        @Nullable
-        @Override
-        public BlockState getStateForPlacement(BlockPlaceContext context) {
-            return defaultBlockState().setValue(
-                    BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection());
-        }
-
-        @Override
-        public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-            return Block.box(2, 2, 2, 14, 14, 14);
-        }
-    }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+    // Same at obj_block except all the parts in the obj model have the same name,
+    // this is a test for neoforged/NeoForge#1755 that was fixed by neoforged/NeoForge#1759
+    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
 
     public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
         @Override
@@ -87,6 +80,8 @@ public class NewModelLoaderTest {
             return armorType == EquipmentSlot.HEAD;
         }
     });
+
+    public static DeferredItem<Item> obj_item_same_part_names = ITEMS.registerItem("obj_block_same_part_names", props -> new BlockItem(obj_block_same_part_names.get(), props));
 
     public static DeferredItem<Item> custom_transforms = ITEMS.registerSimpleItem("custom_transforms");
 
@@ -111,6 +106,7 @@ public class NewModelLoaderTest {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             Arrays.asList(
                     obj_item,
+                    obj_item_same_part_names,
                     custom_transforms,
                     custom_vanilla_loader,
                     custom_loader,
@@ -119,21 +115,44 @@ public class NewModelLoaderTest {
         }
     }
 
-    public void modelRegistry(ModelEvent.RegisterGeometryLoaders event) {
+    public void modelRegistry(ModelEvent.RegisterLoaders event) {
         event.register(ResourceLocation.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
     }
 
-    static class TestLoader implements IGeometryLoader<TestModel> {
+    static class TestBlock extends Block {
+        public TestBlock(Properties properties) {
+            super(properties);
+        }
+
         @Override
-        public TestModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(BlockStateProperties.HORIZONTAL_FACING);
+        }
+
+        @Nullable
+        @Override
+        public BlockState getStateForPlacement(BlockPlaceContext context) {
+            return defaultBlockState().setValue(
+                    BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection());
+        }
+
+        @Override
+        public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+            return Block.box(2, 2, 2, 14, 14, 14);
+        }
+    }
+
+    static class TestLoader implements UnbakedModelLoader<TestModel> {
+        @Override
+        public TestModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return new TestModel();
         }
     }
 
-    static class TestModel extends SimpleUnbakedGeometry<TestModel> {
+    static class TestModel implements ExtendedUnbakedModel {
         @Override
-        protected void addQuads(IGeometryBakingContext owner, IModelBuilder<?> modelBuilder, ModelBaker baker, Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform) {
-            TextureAtlasSprite texture = spriteGetter.apply(owner.getMaterial("particle"));
+        public BakedModel bake(TextureSlots textures, ModelBaker baker, ModelState modelState, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms itemTransforms, ContextMap additionalProperties) {
+            TextureAtlasSprite texture = baker.findSprite(textures, TextureSlot.PARTICLE.getId());
 
             var quadBaker = new QuadBakingVertexConsumer();
 
@@ -145,18 +164,26 @@ public class NewModelLoaderTest {
             quadBaker.addVertex(1, 0, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(16), texture.getV(16)).setOverlay(0).setNormal(0, 0, 0);
             quadBaker.addVertex(1, 1, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(16), texture.getV(0)).setOverlay(0).setNormal(0, 0, 0);
 
-            modelBuilder.addUnculledFace(quadBaker.bakeQuad());
+            return new SimpleBakedModel.Builder(useAmbientOcclusion, usesBlockLight, true, itemTransforms)
+                    .particle(texture)
+                    .addUnculledFace(quadBaker.bakeQuad())
+                    .build(additionalProperties.getOrDefault(NeoForgeModelProperties.RENDER_TYPE, RenderTypeGroup.EMPTY));
+        }
+
+        @Override
+        public void resolveDependencies(Resolver p_387087_) {
+            // No dependencies
         }
     }
 
-    private void datagen(GatherDataEvent event) {
+    private void datagen(GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
         final PackOutput output = gen.getPackOutput();
 
         // Let blockstate provider see generated item models by passing its existing file helper
         ItemModelProvider itemModels = new ItemModels(output, event.getExistingFileHelper());
-        gen.addProvider(event.includeClient(), itemModels);
-        gen.addProvider(event.includeClient(), new BlockStates(output, itemModels.existingFileHelper));
+        gen.addProvider(true, itemModels);
+        gen.addProvider(true, new BlockStates(output, itemModels.existingFileHelper));
     }
 
     public static class ItemModels extends ItemModelProvider {
@@ -189,15 +216,20 @@ public class NewModelLoaderTest {
 
         @Override
         protected void registerStatesAndModels() {
+            createModelAndBlockState(obj_block, "sugar_glider");
+            createModelAndBlockState(obj_block_same_part_names, "sugar_glider_same_part_names");
+        }
+
+        private void createModelAndBlockState(DeferredBlock<Block> block, String objModel) {
             BlockModelBuilder model = models()
-                    .getBuilder(NewModelLoaderTest.obj_block.getId().getPath())
+                    .getBuilder(block.getId().getPath())
                     .customLoader(ObjModelBuilder::begin)
-                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"))
+                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
                     .flipV(true)
                     .end()
                     .texture("qr", "minecraft:block/oak_planks")
                     .texture("particle", "#qr");
-            getVariantBuilder(NewModelLoaderTest.obj_block.get())
+            getVariantBuilder(block.get())
                     .partialState()
                     .with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
                     .addModels(new ConfiguredModel(model, 0, 90, false))

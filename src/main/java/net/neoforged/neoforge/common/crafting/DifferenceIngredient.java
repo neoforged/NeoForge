@@ -25,7 +25,7 @@ public record DifferenceIngredient(Ingredient base, Ingredient subtracted) imple
 
     @Override
     public Stream<Holder<Item>> items() {
-        return base.items().stream().filter(i -> !subtracted.test(i.value().getDefaultInstance()));
+        return base.items().filter(i -> !subtracted.test(i.value().getDefaultInstance()));
     }
 
     @Override

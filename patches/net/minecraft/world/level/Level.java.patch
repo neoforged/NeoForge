@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -78,7 +_,7 @@
+@@ -79,7 +_,7 @@
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.scores.Scoreboard;
  
@@ -9,7 +9,7 @@
      public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
      public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("overworld"));
      public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("the_nether"));
-@@ -115,6 +_,11 @@
+@@ -116,6 +_,11 @@
      private final RegistryAccess registryAccess;
      private final DamageSources damageSources;
      private long subTickCount;
@@ -21,7 +21,7 @@
  
      protected Level(
          WritableLevelData p_270739_,
-@@ -215,11 +_,36 @@
+@@ -216,11 +_,36 @@
          } else {
              LevelChunk levelchunk = this.getChunkAt(p_46605_);
              Block block = p_46606_.getBlock();
@@ -58,7 +58,7 @@
                  if (blockstate1 == p_46606_) {
                      if (blockstate != blockstate1) {
                          this.setBlocksDirty(p_46605_, blockstate, blockstate1);
-@@ -246,9 +_,8 @@
+@@ -247,9 +_,8 @@
                      }
  
                      this.onBlockStateChange(p_46605_, blockstate, blockstate1);
@@ -69,7 +69,7 @@
              }
          }
      }
-@@ -300,6 +_,7 @@
+@@ -301,6 +_,7 @@
      }
  
      public void updateNeighborsAt(BlockPos p_46673_, Block p_46674_) {
@@ -77,7 +77,7 @@
      }
  
      public void updateNeighborsAt(BlockPos p_365514_, Block p_364886_, @Nullable Orientation p_363337_) {
-@@ -491,10 +_,26 @@
+@@ -500,10 +_,26 @@
          (this.tickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add(p_151526_);
      }
  
@@ -104,7 +104,7 @@
          if (!this.pendingBlockEntityTickers.isEmpty()) {
              this.blockEntityTickers.addAll(this.pendingBlockEntityTickers);
              this.pendingBlockEntityTickers.clear();
-@@ -518,12 +_,19 @@
+@@ -527,12 +_,19 @@
  
      public <T extends Entity> void guardEntityTick(Consumer<T> p_46654_, T p_46655_) {
          try {
@@ -124,7 +124,7 @@
          }
      }
  
-@@ -673,6 +_,7 @@
+@@ -682,6 +_,7 @@
          if (!this.isOutsideBuildHeight(p_46748_)) {
              this.getChunkAt(p_46748_).removeBlockEntity(p_46748_);
          }
@@ -132,27 +132,19 @@
      }
  
      public boolean isLoaded(BlockPos p_46750_) {
-@@ -751,6 +_,7 @@
-                 list.add(p_151522_);
-             }
- 
-+            if (false)
-             if (p_151522_ instanceof EnderDragon) {
-                 for (EnderDragonPart enderdragonpart : ((EnderDragon)p_151522_).getSubEntities()) {
-                     if (p_151522_ != p_46536_ && p_46538_.test(enderdragonpart)) {
-@@ -759,6 +_,11 @@
-                 }
+@@ -761,9 +_,9 @@
              }
          });
-+        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.getPartEntities()) {
-+            if (p != p_46536_ && p.getBoundingBox().intersects(p_46537_) && p_46538_.test(p)) {
-+                list.add(p);
-+            }
-+        }
-         return list;
-     }
  
-@@ -785,6 +_,8 @@
+-        for (EnderDragonPart enderdragonpart : this.dragonParts()) {
++        for (net.neoforged.neoforge.entity.PartEntity<?> enderdragonpart : this.dragonParts()) {
+             if (enderdragonpart != p_46536_
+-                && enderdragonpart.parentMob != p_46536_
++                && enderdragonpart.getParent() != p_46536_
+                 && p_46538_.test(enderdragonpart)
+                 && p_46537_.intersects(enderdragonpart.getBoundingBox())) {
+                 list.add(enderdragonpart);
+@@ -796,6 +_,8 @@
                  }
              }
  
@@ -161,11 +153,11 @@
              if (p_261454_ instanceof EnderDragon enderdragon) {
                  for (EnderDragonPart enderdragonpart : enderdragon.getSubEntities()) {
                      T t = p_261885_.tryCast(enderdragonpart);
-@@ -799,6 +_,15 @@
+@@ -810,12 +_,21 @@
  
              return AbortableIterationConsumer.Continuation.CONTINUE;
          });
-+        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.getPartEntities()) {
++        for (net.neoforged.neoforge.entity.PartEntity<?> p : this.dragonParts()) {
 +            T t = p_261885_.tryCast(p);
 +            if (t != null && t.getBoundingBox().intersects(p_262086_) && p_261688_.test(t)) {
 +                p_262071_.add(t);
@@ -177,7 +169,14 @@
      }
  
      @Nullable
-@@ -922,16 +_,15 @@
+     public abstract Entity getEntity(int p_46492_);
+ 
+-    public abstract Collection<EnderDragonPart> dragonParts();
++    public abstract Collection<net.neoforged.neoforge.entity.PartEntity<?>> dragonParts();
+ 
+     public void blockEntityChanged(BlockPos p_151544_) {
+         if (this.hasChunkAt(p_151544_)) {
+@@ -935,16 +_,15 @@
      public abstract Scoreboard getScoreboard();
  
      public void updateNeighbourForOutputSignal(BlockPos p_46718_, Block p_46719_) {
@@ -198,7 +197,7 @@
                          this.neighborChanged(blockstate, blockpos, p_46719_, null, false);
                      }
                  }
-@@ -1013,6 +_,18 @@
+@@ -1026,6 +_,18 @@
          return this.biomeManager;
      }
  
@@ -217,7 +216,7 @@
      public final boolean isDebug() {
          return this.isDebug;
      }
-@@ -1055,5 +_,38 @@
+@@ -1068,5 +_,38 @@
          public String getSerializedName() {
              return this.id;
          }

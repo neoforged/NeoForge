@@ -40,7 +40,7 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int scrollBarX() {
         return this.listWidth;
     }
 

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.oldtest.client.model;
 
+import static net.minecraft.client.data.models.model.ModelLocationUtils.getModelLocation;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
@@ -18,7 +20,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -100,9 +101,7 @@ public class CustomItemDisplayContextTest {
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
-                var model = itemRenderer.getModel(blocken.heldItem, blocken.getLevel(), null, 0);
-
-                itemRenderer.render(blocken.heldItem, HANGING, false, poseStack, bufferSource, packedLight, overlayCoord, model);
+                itemRenderer.renderStatic(blocken.heldItem, HANGING, packedLight, overlayCoord, poseStack, bufferSource, blocken.getLevel(), 0);
 
                 poseStack.popPose();
             }
@@ -130,12 +129,12 @@ public class CustomItemDisplayContextTest {
             event.accept(ITEM_HANGER_ITEM);
     }
 
-    public void gatherData(GatherDataEvent event) {
+    public void gatherData(GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
         final PackOutput output = gen.getPackOutput();
 
-        gen.addProvider(event.includeClient(), new ItemModels(output, event.getExistingFileHelper()));
-        gen.addProvider(event.includeClient(), new BlockStateModels(output, event.getExistingFileHelper()));
+        gen.addProvider(true, new ItemModels(output, event.getExistingFileHelper()));
+        gen.addProvider(true, new BlockStateModels(output, event.getExistingFileHelper()));
     }
 
     public static class BlockStateModels extends BlockStateProvider {
@@ -147,7 +146,7 @@ public class CustomItemDisplayContextTest {
         protected void registerStatesAndModels() {
             {
                 Block block = ITEM_HANGER_BLOCK.get();
-                horizontalBlock(block, models().getExistingFile(ModelLocationUtils.getModelLocation(block)));
+                horizontalBlock(block, models().getExistingFile(getModelLocation(block)));
             }
         }
     }
@@ -210,7 +209,7 @@ public class CustomItemDisplayContextTest {
         @Deprecated
         @Override
         public RenderShape getRenderShape(BlockState state) {
-            return RenderShape.ENTITYBLOCK_ANIMATED;
+            return RenderShape.MODEL;
         }
     }
 

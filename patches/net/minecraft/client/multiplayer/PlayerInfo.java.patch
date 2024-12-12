@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/PlayerInfo.java
 +++ b/net/minecraft/client/multiplayer/PlayerInfo.java
-@@ -86,6 +_,7 @@
+@@ -88,6 +_,7 @@
      }
  
      protected void setGameMode(GameType p_105318_) {

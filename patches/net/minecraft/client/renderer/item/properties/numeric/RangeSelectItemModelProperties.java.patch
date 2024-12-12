@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/item/properties/numeric/RangeSelectItemModelProperties.java
++++ b/net/minecraft/client/renderer/item/properties/numeric/RangeSelectItemModelProperties.java
+@@ -23,5 +_,7 @@
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("use_cycle"), UseCycle.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("use_duration"), UseDuration.MAP_CODEC);
+         ID_MAPPER.put(ResourceLocation.withDefaultNamespace("count"), Count.MAP_CODEC);
++
++        net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent(ID_MAPPER));
+     }
+ }

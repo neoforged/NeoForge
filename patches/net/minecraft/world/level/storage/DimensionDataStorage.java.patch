@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/DimensionDataStorage.java
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
-@@ -69,7 +_,7 @@
+@@ -73,7 +_,7 @@
      }
  
      @Nullable
@@ -9,7 +9,7 @@
          try {
              Path path = this.getDataFile(p_164870_);
              if (Files.exists(path)) {
-@@ -88,7 +_,7 @@
+@@ -92,7 +_,7 @@
          p_164857_.setDirty();
      }
  
@@ -18,7 +18,7 @@
          CompoundTag compoundtag1;
          try (
              InputStream inputstream = Files.newInputStream(this.getDataFile(p_78159_));
-@@ -103,9 +_,16 @@
+@@ -107,9 +_,16 @@
                  }
              }
  
@@ -37,16 +37,16 @@
  
          return compoundtag1;
      }
-@@ -156,7 +_,11 @@
-     private static CompletableFuture<Void> tryWriteAsync(Path p_364583_, CompoundTag p_363128_) {
-         return CompletableFuture.runAsync(() -> {
-             try {
--                NbtIo.writeCompressed(p_363128_, p_364583_);
-+                // Neo: ensure parent directories exist if the SavedData's path contains slashes
-+                if (!Files.exists(p_364583_)) {
-+                    Files.createDirectories(p_364583_.getParent());
-+                }
-+                net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(p_363128_, p_364583_);
-             } catch (IOException ioexception) {
-                 LOGGER.error("Could not save data to {}", p_364583_.getFileName(), ioexception);
-             }
+@@ -182,7 +_,11 @@
+ 
+     private static void tryWrite(Path p_390658_, CompoundTag p_390657_) {
+         try {
+-            NbtIo.writeCompressed(p_390657_, p_390658_);
++            // Neo: ensure parent directories exist if the SavedData's path contains slashes
++            if (!Files.exists(p_390658_)) {
++                Files.createDirectories(p_390658_.getParent());
++            }
++            net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(p_390657_, p_390658_);
+         } catch (IOException ioexception) {
+             LOGGER.error("Could not save data to {}", p_390658_.getFileName(), ioexception);
+         }

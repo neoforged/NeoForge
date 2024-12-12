@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import org.apache.commons.lang3.tuple.Pair;
@@ -64,7 +65,10 @@ public class NeoForgeConfig {
      */
     public static class Common {
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logUntranslatedItemTagWarnings;
+
         public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logLegacyTagWarnings;
+
+        public final BooleanValue attributeAdvancedTooltipDebugInfo;
 
         Common(ModConfigSpec.Builder builder) {
             logUntranslatedItemTagWarnings = builder
@@ -76,6 +80,11 @@ public class NeoForgeConfig {
                     .comment("A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.")
                     .translation("neoforge.configgui.logLegacyTagWarnings")
                     .defineEnum("logLegacyTagWarnings", TagConventionLogWarning.LogWarningMode.DEV_SHORT);
+
+            attributeAdvancedTooltipDebugInfo = builder
+                    .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
+                    .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
+                    .define("attributeAdvancedTooltipDebugInfo", true);
         }
     }
 
@@ -84,6 +93,7 @@ public class NeoForgeConfig {
      */
     public static class Client {
         public final BooleanValue experimentalForgeLightPipelineEnabled;
+        boolean experimentalPipelineActive;
 
         public final BooleanValue showLoadWarnings;
 
@@ -134,11 +144,23 @@ public class NeoForgeConfig {
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent.Loading configEvent) {
         LogManager.getLogger().debug(Logging.FORGEMOD, "Loaded NeoForge config file {}", configEvent.getConfig().getFileName());
+
+        if (configEvent.getConfig().getSpec() == clientSpec) {
+            CLIENT.experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+        }
     }
 
     @SubscribeEvent
     public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
         LogManager.getLogger().debug(Logging.FORGEMOD, "NeoForge config just got changed on the file system!");
+
+        if (configEvent.getConfig().getSpec() == clientSpec) {
+            boolean experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            if (experimentalPipelineActive != CLIENT.experimentalPipelineActive) {
+                CLIENT.experimentalPipelineActive = experimentalPipelineActive;
+                ClientHooks.reloadRenderer();
+            }
+        }
     }
 
     //General

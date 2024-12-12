@@ -1,0 +1,12 @@
+--- a/net/minecraft/util/context/ContextKeySet.java
++++ b/net/minecraft/util/context/ContextKeySet.java
+@@ -5,6 +_,9 @@
+ import java.util.Set;
+ 
+ public class ContextKeySet {
++    // Neo: Add EMPTY context set for convenience, since we disable the check for `required` keys in ContextMap.Builder.
++    public static final ContextKeySet EMPTY = new Builder().build();
++
+     private final Set<ContextKey<?>> required;
+     private final Set<ContextKey<?>> allowed;
+ 

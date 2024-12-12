@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -393,9 +_,10 @@
+@@ -399,9 +_,10 @@
  
          public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
              this.cancelTasks();
@@ -13,7 +13,7 @@
              return this.lastRebuildTask;
          }
  
-@@ -464,10 +_,17 @@
+@@ -470,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected volatile RenderChunkRegion region;
@@ -31,7 +31,7 @@
              }
  
              @Override
-@@ -498,7 +_,7 @@
+@@ -499,7 +_,7 @@
                              SectionCompiler.Results sectioncompiler$results;
                              try (Zone zone = Profiler.get().zone("Compile Section")) {
                                  sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler

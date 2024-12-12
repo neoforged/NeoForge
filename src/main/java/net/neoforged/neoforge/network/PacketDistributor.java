@@ -87,22 +87,24 @@ public final class PacketDistributor {
      * Send the given payload(s) to all players tracking the given entity
      */
     public static void sendToPlayersTrackingEntity(Entity entity, CustomPacketPayload payload, CustomPacketPayload... payloads) {
-        if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
-            chunkCache.broadcast(entity, makeClientboundPacket(payload, payloads));
-        } else {
+        if (entity.level().isClientSide()) {
             throw new IllegalStateException("Cannot send clientbound payloads on the client");
+        } else if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
+            chunkCache.broadcast(entity, makeClientboundPacket(payload, payloads));
         }
+        // Silently ignore custom Level implementations which may not return ServerChunkCache.
     }
 
     /**
      * Send the given payload(s) to all players tracking the given entity and the entity itself if it is a player
      */
     public static void sendToPlayersTrackingEntityAndSelf(Entity entity, CustomPacketPayload payload, CustomPacketPayload... payloads) {
-        if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
-            chunkCache.broadcastAndSend(entity, makeClientboundPacket(payload, payloads));
-        } else {
+        if (entity.level().isClientSide()) {
             throw new IllegalStateException("Cannot send clientbound payloads on the client");
+        } else if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
+            chunkCache.broadcastAndSend(entity, makeClientboundPacket(payload, payloads));
         }
+        // Silently ignore custom Level implementations which may not return ServerChunkCache.
     }
 
     /**

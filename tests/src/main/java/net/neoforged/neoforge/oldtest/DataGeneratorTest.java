@@ -42,10 +42,10 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.client.renderer.block.model.BlockModel.GuiLight;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.Variant;
+import net.minecraft.client.resources.model.UnbakedModel.GuiLight;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -116,8 +116,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
 import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
@@ -132,6 +131,7 @@ import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -152,7 +152,7 @@ public class DataGeneratorTest {
             .add(Registries.LEVEL_STEM, DataGeneratorTest::levelStem);
 
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event) {
+    public static void gatherData(GatherDataEvent.Client event) {
         GSON = new GsonBuilder()
                 .registerTypeAdapter(Variant.class, new Variant.Deserializer())
                 .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
@@ -168,24 +168,24 @@ public class DataGeneratorTest {
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("neoforge")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("does_not_exist")))))
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
-        gen.addProvider(event.includeClient(), new Lang(packOutput));
+        gen.addProvider(true, new Lang(packOutput));
         // Let blockstate provider see generated item models by passing its existing file helper
         ItemModelProvider itemModels = new ItemModels(packOutput, event.getExistingFileHelper());
-        gen.addProvider(event.includeClient(), itemModels);
-        gen.addProvider(event.includeClient(), new BlockStates(packOutput, itemModels.existingFileHelper));
-        gen.addProvider(event.includeClient(), new SoundDefinitions(packOutput, event.getExistingFileHelper()));
-        gen.addProvider(event.includeClient(), new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
+        gen.addProvider(true, itemModels);
+        gen.addProvider(true, new BlockStates(packOutput, itemModels.existingFileHelper));
+        gen.addProvider(true, new SoundDefinitions(packOutput, event.getExistingFileHelper()));
+        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
 
-        gen.addProvider(event.includeServer(), new Recipes.Runner(packOutput, lookupProvider));
-        gen.addProvider(event.includeServer(), new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
-        gen.addProvider(event.includeServer(), new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
-        gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
+        gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
+        gen.addProvider(true, new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
+        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
+        gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
     public static void levelStem(BootstrapContext<LevelStem> context) {
@@ -198,7 +198,7 @@ public class DataGeneratorTest {
         context.register(TEST_LEVEL_STEM, levelStem);
     }
 
-    public static class Recipes extends RecipeProvider implements IConditionBuilder {
+    public static class Recipes extends RecipeProvider {
         public Recipes(HolderLookup.Provider registries, RecipeOutput output) {
             super(registries, output);
         }
@@ -219,10 +219,10 @@ public class DataGeneratorTest {
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             output.withConditions(
-                                    and(
-                                            not(modLoaded("minecraft")),
-                                            itemExists("minecraft", "dirt"),
-                                            FALSE())),
+                                    NeoForgeConditions.and(
+                                            NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
+                                            NeoForgeConditions.itemRegistered("minecraft", "dirt"),
+                                            NeoForgeConditions.never())),
                             recipeKey("conditional"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
@@ -234,11 +234,11 @@ public class DataGeneratorTest {
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             output.withConditions(
-                                    not(
-                                            and(
-                                                    not(modLoaded("minecraft")),
-                                                    itemExists("minecraft", "dirt"),
-                                                    FALSE()))),
+                                    NeoForgeConditions.not(
+                                            NeoForgeConditions.and(
+                                                    NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
+                                                    NeoForgeConditions.itemRegistered("minecraft", "dirt"),
+                                                    NeoForgeConditions.never()))),
                             recipeKey("conditional2"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
@@ -249,7 +249,7 @@ public class DataGeneratorTest {
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
                             output.withConditions(
-                                    tagEmpty(ItemTags.PLANKS)),
+                                    NeoForgeConditions.tagEmpty(ItemTags.PLANKS)),
                             recipeKey("conditional3"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
@@ -260,7 +260,7 @@ public class DataGeneratorTest {
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
                             output.withConditions(
-                                    not(tagEmpty(ItemTags.PLANKS))),
+                                    NeoForgeConditions.not(NeoForgeConditions.tagEmpty(ItemTags.PLANKS))),
                             recipeKey("conditional4"));
 
             // intersection - should match all non-flammable planks

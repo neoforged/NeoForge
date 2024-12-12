@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -439,9 +_,11 @@
+@@ -441,9 +_,11 @@
                  }
  
                  entity.absMoveTo(d3, d4, d5, f, f1);
@@ -9,10 +9,18 @@
                  if (flag && (flag2 || !flag3)) {
                      entity.absMoveTo(d0, d1, d2, f, f1);
 +                    resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
-                     this.send(new ClientboundMoveVehiclePacket(entity));
+                     this.send(ClientboundMoveVehiclePacket.fromEntity(entity));
                      return;
                  }
-@@ -463,6 +_,23 @@
+@@ -455,6 +_,7 @@
+                 entity.setOnGroundWithMovement(p_9876_.onGround(), vec3);
+                 entity.doCheckFallDamage(vec3.x, vec3.y, vec3.z, p_9876_.onGround());
+                 this.player.checkMovementStatistics(vec3.x, vec3.y, vec3.z);
++                this.player.checkRidingStatistics(vec3.x, vec3.y, vec3.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
+                 this.clientVehicleIsFloating = d11 >= -0.03125
+                     && !flag1
+                     && !this.server.isFlightAllowed()
+@@ -467,6 +_,23 @@
          }
      }
  
@@ -36,7 +44,16 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -930,7 +_,7 @@
+@@ -646,7 +_,7 @@
+             if (serverlevel.isLoaded(blockpos)) {
+                 BlockState blockstate = serverlevel.getBlockState(blockpos);
+                 boolean flag = this.player.hasInfiniteMaterials() && p_382999_.includeData();
+-                ItemStack itemstack = blockstate.getCloneItemStack(serverlevel, blockpos, flag);
++                ItemStack itemstack = blockstate.getCloneItemStack(blockpos, serverlevel, flag, player);
+                 if (!itemstack.isEmpty()) {
+                     if (flag) {
+                         addBlockDataToItem(blockstate, serverlevel, blockpos, itemstack);
+@@ -990,7 +_,7 @@
                                      && !flag1
                                      && this.player.gameMode.getGameModeForPlayer() != GameType.SPECTATOR
                                      && !this.server.isFlightAllowed()
@@ -45,38 +62,39 @@
                                      && !this.player.hasEffect(MobEffects.LEVITATION)
                                      && !flag
                                      && !flag3
-@@ -1041,8 +_,10 @@
-             case SWAP_ITEM_WITH_OFFHAND:
-                 if (!this.player.isSpectator()) {
-                     ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
--                    this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
--                    this.player.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
-+                    var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
-+                    if (event.isCanceled()) return;
-+                    this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
-+                    this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
-                     this.player.stopUsingItem();
-                 }
+@@ -1101,9 +_,10 @@
+             switch (serverboundplayeractionpacket$action) {
+                 case SWAP_ITEM_WITH_OFFHAND:
+                     if (!this.player.isSpectator()) {
+-                        ItemStack itemstack = this.player.getItemInHand(InteractionHand.OFF_HAND);
+-                        this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
+-                        this.player.setItemInHand(InteractionHand.MAIN_HAND, itemstack);
++                        var event = net.neoforged.neoforge.common.CommonHooks.onLivingSwapHandItems(this.player);
++                        if (event.isCanceled()) return;
++                        this.player.setItemInHand(InteractionHand.OFF_HAND, event.getItemSwappedToOffHand());
++                        this.player.setItemInHand(InteractionHand.MAIN_HAND, event.getItemSwappedToMainHand());
+                         this.player.stopUsingItem();
+                     }
  
-@@ -1070,7 +_,7 @@
-                     .handleBlockBreakAction(
-                         blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxY(), p_9889_.getSequence()
-                     );
--                this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
-+                this.player.connection.ackBlockChangesUpTo =p_9889_.getSequence();
-                 return;
-             default:
-                 throw new IllegalArgumentException("Invalid player action");
-@@ -1089,7 +_,7 @@
-     @Override
+@@ -1131,7 +_,7 @@
+                         .handleBlockBreakAction(
+                             blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxY(), p_9889_.getSequence()
+                         );
+-                    this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
++                    this.player.connection.ackBlockChangesUpTo = p_9889_.getSequence();
+                     return;
+                 default:
+                     throw new IllegalArgumentException("Invalid player action");
+@@ -1152,7 +_,7 @@
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
          PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
--        this.player.connection.ackBlockChangesUpTo(p_9930_.getSequence());
-+        this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
-         ServerLevel serverlevel = this.player.serverLevel();
-         InteractionHand interactionhand = p_9930_.getHand();
-         ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1242,8 +_,9 @@
+         if (this.player.hasClientLoaded()) {
+-            this.player.connection.ackBlockChangesUpTo(p_9930_.getSequence());
++            this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
+             ServerLevel serverlevel = this.player.serverLevel();
+             InteractionHand interactionhand = p_9930_.getHand();
+             ItemStack itemstack = this.player.getItemInHand(interactionhand);
+@@ -1308,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
@@ -87,20 +105,20 @@
                      PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                      this.broadcastChatMessage(playerchatmessage1);
                  });
-@@ -1569,7 +_,11 @@
+@@ -1638,7 +_,11 @@
  
-                         @Override
-                         public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
--                            this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> p_143687_.interactAt(p_143686_, p_143683_, p_143688_));
-+                            this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
-+                                InteractionResult onInteractEntityAtResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, p_143683_, p_143682_);
-+                                if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
-+                                return p_143687_.interactAt(p_143686_, p_143683_, p_143688_);
-+                            });
-                         }
+                             @Override
+                             public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
+-                                this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> p_143687_.interactAt(p_143686_, p_143683_, p_143688_));
++                                this.performInteraction(p_143682_, (p_143686_, p_143687_, p_143688_) -> {
++                                    InteractionResult onInteractEntityAtResult = net.neoforged.neoforge.common.CommonHooks.onInteractEntityAt(player, entity, p_143683_, p_143682_);
++                                    if (onInteractEntityAtResult != null) return onInteractEntityAtResult;
++                                    return p_143687_.interactAt(p_143686_, p_143683_, p_143688_);
++                                });
+                             }
  
-                         @Override
-@@ -1785,13 +_,15 @@
+                             @Override
+@@ -1845,14 +_,16 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
          PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
@@ -111,13 +129,14 @@
      @Override
      public void handleClientInformation(ServerboundClientInformationPacket p_301979_) {
          PacketUtils.ensureRunningOnSameThread(p_301979_, this, this.player.serverLevel());
+         boolean flag = this.player.isModelPartShown(PlayerModelPart.HAT);
 +        net.minecraft.server.level.ClientInformation oldInfo = this.player.clientInformation();
          this.player.updateOptions(p_301979_.information());
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.ClientInformationUpdatedEvent(this.player, oldInfo, p_301979_.information()));
-     }
- 
-     @Override
-@@ -1844,7 +_,7 @@
+         if (this.player.isModelPartShown(PlayerModelPart.HAT) != flag) {
+             this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
+         }
+@@ -1908,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -126,7 +145,7 @@
                  );
          }
      }
-@@ -1879,6 +_,7 @@
+@@ -1943,6 +_,7 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {

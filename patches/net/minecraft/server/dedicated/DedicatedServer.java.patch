@@ -44,7 +44,7 @@
              return true;
          }
      }
-@@ -277,6 +_,10 @@
+@@ -277,6 +_,13 @@
          if (this.queryThreadGs4 != null) {
              this.queryThreadGs4.stop();
          }
@@ -52,6 +52,9 @@
 +            this.dediLanPinger.interrupt();
 +            this.dediLanPinger = null;
 +        }
++
++        // Neo: Forcibly stop the FileWatcher default instance, to prevent it from blocking normal JVM exit; see #1626
++        com.electronwill.nightconfig.core.file.FileWatcher.defaultInstance().stop();
      }
  
      @Override

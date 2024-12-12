@@ -73,7 +73,7 @@ public class BiomeModifierSyncTest {
     @WithListener(Listener.class)
     static void biomeModifierSync(final DynamicTest test) {
         ResourceKey<BiomeModifier> modifyTaigaModifier = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(HELPER.modId(), "modify_taiga"));
-        HELPER.addProvider(event -> new DatapackBuiltinEntriesProvider(
+        HELPER.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 new RegistrySetBuilder().add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, context -> {

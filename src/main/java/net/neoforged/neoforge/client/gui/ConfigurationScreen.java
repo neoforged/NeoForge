@@ -11,6 +11,7 @@ import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.UnmodifiableConfig.Entry;
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Function4;
 import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -53,8 +54,6 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.data.models.blockstates.PropertyDispatch.QuadFunction;
-import net.minecraft.data.models.blockstates.PropertyDispatch.TriFunction;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -87,9 +86,9 @@ import org.jetbrains.annotations.Nullable;
  * <li>As an entry point for your custom configuration screen that handles fetching your configs, matching {@link Type} to the current game, enforcing level and game restarts, etc.
  * <li>As a ready-made system but extensible that works out of the box with all configs that use the {@link ModConfigSpec} system and don't do anything overly weird with it.</ul>
  * 
- * For the former one, use the 3-argument constructor {@link #ConfigurationScreen(ModContainer, Screen, TriFunction)} and return your own screen from the TriFunction. For the latter,
+ * For the former one, use the 3-argument constructor {@link #ConfigurationScreen(ModContainer, Screen, Function4)} and return your own screen from the Function4. For the latter,
  * use either the 2-argument constructor {@link #ConfigurationScreen(ModContainer, Screen)} if you don't need to extend the system, or the 3-argument one and return a subclass of
- * {@link ConfigurationSectionScreen} from the TriFunction.<p>
+ * {@link ConfigurationSectionScreen} from the Function4.<p>
  * 
  * In any case, register your configuration screen in your client mod class like this:
  * 
@@ -260,7 +259,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
     protected static final TranslationChecker translationChecker = new TranslationChecker();
 
     protected final ModContainer mod;
-    private final QuadFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Component, Screen> sectionScreen;
+    private final Function4<ConfigurationScreen, ModConfig.Type, ModConfig, Component, Screen> sectionScreen;
 
     public RestartType needsRestart = RestartType.NONE;
     // If there is only one config type (and it can be edited, we show that instantly on the way "down" and want to close on the way "up".
@@ -275,8 +274,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         this(mod, parent, (a, b, c, d) -> new ConfigurationSectionScreen(a, b, c, d, filter));
     }
 
-    @SuppressWarnings("resource")
-    public ConfigurationScreen(final ModContainer mod, final Screen parent, QuadFunction<ConfigurationScreen, ModConfig.Type, ModConfig, Component, Screen> sectionScreen) {
+    public ConfigurationScreen(final ModContainer mod, final Screen parent, Function4<ConfigurationScreen, ModConfig.Type, ModConfig, Component, Screen> sectionScreen) {
         super(parent, Minecraft.getInstance().options, Component.translatable(translationChecker.check(mod.getModId() + ".configuration.title", LANG_PREFIX + "title"), mod.getModInfo().getDisplayName()));
         this.mod = mod;
         this.sectionScreen = sectionScreen;
@@ -1388,6 +1386,16 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             @Override
             protected void updateWidgetNarration(final NarrationElementOutput pNarrationElementOutput) {
                 // TODO I have no idea. Help?
+            }
+
+            @Override
+            protected int contentHeight() {
+                return 0; // TODO 1.21.4 no idea
+            }
+
+            @Override
+            protected double scrollRate() {
+                return 4.0; // TODO 1.21.4 no idea
             }
         }
     }

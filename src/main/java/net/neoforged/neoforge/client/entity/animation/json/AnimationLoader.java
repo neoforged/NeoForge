@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.animation.AnimationDefinition;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -31,7 +32,7 @@ public final class AnimationLoader extends SimpleJsonResourceReloadListener<Anim
     private final List<AnimationHolder> strongHolderReferences = new ArrayList<>();
 
     private AnimationLoader() {
-        super(AnimationParser.CODEC, "neoforge/animations/entity");
+        super(AnimationParser.CODEC, FileToIdConverter.json("neoforge/animations/entity"));
     }
 
     /**
