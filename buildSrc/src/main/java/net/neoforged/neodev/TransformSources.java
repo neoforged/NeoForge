@@ -38,10 +38,6 @@ abstract class TransformSources extends JavaExec {
     @InputFiles
     public abstract ConfigurableFileCollection getInterfaceInjectionData();
 
-    @Optional
-    @OutputFile
-    public abstract RegularFileProperty getInterfaceStubsJar();
-
     @InputFile
     public abstract RegularFileProperty getInputJar();
 
@@ -87,10 +83,7 @@ abstract class TransformSources extends JavaExec {
         }
 
         if (!getInterfaceInjectionData().isEmpty()) {
-            args.addAll(Arrays.asList(
-                    "--enable-interface-injection",
-                    "--interface-injection-stubs", getInterfaceStubsJar().get().getAsFile().getAbsolutePath()
-            ));
+            args.add("--enable-interface-injection");
 
             for (var file : getInterfaceInjectionData().getFiles()) {
                 args.addAll(Arrays.asList(
