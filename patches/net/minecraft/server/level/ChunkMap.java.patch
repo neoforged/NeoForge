@@ -59,7 +59,7 @@
 +            ChunkHolder holder = this.visibleChunkMap.get(entry.getLongKey());
 +            if (holder != null && !entry.getValue().isEmpty()) {
 +                var chunk = holder.getTickingChunk();
-+                if (chunk != null && !list.contains(chunk)) {
++                if (chunk != null) {
 +                    list.add(chunk);
 +                }
 +            }
