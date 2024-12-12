@@ -79,6 +79,7 @@ spotless {
             String oldInterfaces = ""
             interfaceChanges.each { String change ->
                 final match = change =~ interfaceChange
+                match.find()
                 final values = match.group(3)
                 if (change.startsWith('-')) {
                     oldInterfaces = values
@@ -150,6 +151,6 @@ spotless {
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
 
-        bumpThisNumberIfACustomStepChanges(5)
+        bumpThisNumberIfACustomStepChanges(6)
     }
 }

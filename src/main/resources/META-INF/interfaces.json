@@ -241,7 +241,7 @@
   "net/minecraft/world/item/ItemUseAnimation": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
-  "net/minecraft/world/level/biome/BiomeSpecialEffects": [
+  "net/minecraft/world/level/biome/BiomeSpecialEffects$GrassColorModifier": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/world/item/ItemDisplayContext": [
@@ -262,7 +262,7 @@
   "net/minecraft/world/item/Rarity": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
-  "net/minecraft/world/item/component/FireworkExplosion": [
+  "net/minecraft/world/item/component/FireworkExplosion$Shape": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/client/gui/font/providers/GlyphProviderType": [
