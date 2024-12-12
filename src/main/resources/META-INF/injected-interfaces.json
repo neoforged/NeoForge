@@ -88,7 +88,7 @@
     "net/neoforged/neoforge/common/extensions/ITransformationExtension"
   ],
   "net/minecraft/resources/ResourceKey": [
-    "Comparable<ResourceKey<?>>"
+    "java/lang/Comparable<ResourceKey<?>>"
   ],
   "net/minecraft/tags/TagBuilder": [
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
