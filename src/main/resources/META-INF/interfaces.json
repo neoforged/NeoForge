@@ -126,6 +126,9 @@
   "net/minecraft/server/packs/PackType": [
     "net/minecraft/util/StringRepresentable"
   ],
+  "net/minecraft/server/players/PlayerList": [
+    "net/neoforged/neoforge/common/extensions/IPlayerListExtension"
+  ],
   "net/minecraft/client/renderer/DimensionSpecialEffects": [
     "net/neoforged/neoforge/client/extensions/IDimensionSpecialEffectsExtension"
   ],
