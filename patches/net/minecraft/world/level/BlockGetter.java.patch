@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/BlockGetter.java
 +++ b/net/minecraft/world/level/BlockGetter.java
-@@ -20,7 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public interface BlockGetter extends LevelHeightAccessor {
-+public interface BlockGetter extends LevelHeightAccessor, net.neoforged.neoforge.common.extensions.IBlockGetterExtension {
-     int MAX_BLOCK_ITERATIONS_ALONG_TRAVEL = 16;
- 
-     @Nullable
 @@ -36,7 +_,7 @@
      FluidState getFluidState(BlockPos p_45569_);
  

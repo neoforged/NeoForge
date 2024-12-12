@@ -1,14 +1,5 @@
 --- a/net/minecraft/core/Registry.java
 +++ b/net/minecraft/core/Registry.java
-@@ -21,7 +_,7 @@
- import net.minecraft.util.ExtraCodecs;
- import net.minecraft.util.RandomSource;
- 
--public interface Registry<T> extends Keyable, HolderLookup.RegistryLookup<T>, IdMap<T> {
-+public interface Registry<T> extends Keyable, HolderLookup.RegistryLookup<T>, IdMap<T>, net.neoforged.neoforge.registries.IRegistryExtension<T> {
-     @Override
-     ResourceKey<? extends Registry<T>> key();
- 
 @@ -48,7 +_,7 @@
      }
  

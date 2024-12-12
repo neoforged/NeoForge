@@ -73,7 +73,7 @@ spotless {
         }
 
         def interfaceChange = Pattern.compile('^[-+].*(implements|(interface.*extends)).*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
-        custom 'noInterfaceRemoval', { String fileContents ->
+        custom 'noInterfaceModifications', { String fileContents ->
             def interfaceChanges = fileContents.findAll(interfaceChange)
             if (interfaceChanges.isEmpty()) return fileContents
             String removalChange = ""
@@ -85,14 +85,14 @@ spotless {
                     //It should never still be -1 based on our initial matching regex, but if it does fail so we can figure out why
                     if (implementsIndex == -1) implementsIndex = 1
                     removalChange = change.substring(implementsIndex, change.length() - 1).trim()
-                } else if (!removalChange.isEmpty() && !change.contains(removalChange)) {
-                    throw new GradleException("Removal of interfaces via patches is not allowed!")
+                } else if (!removalChange.isEmpty() && change != removalChange) {
+                    throw new GradleException("Modification of interfaces via patches is not allowed!")
                 } else {
                     removalChange = ""
                 }
             }
             if (!removalChange.isEmpty()) {
-                throw new GradleException("Removal of interfaces via patches is not allowed!")
+                throw new GradleException("Modification of interfaces via patches is not allowed!")
             }
             return fileContents
         }

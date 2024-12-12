@@ -1,11 +1,6 @@
 --- a/net/minecraft/client/resources/model/UnbakedModel.java
 +++ b/net/minecraft/client/resources/model/UnbakedModel.java
-@@ -9,10 +_,14 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
--public interface UnbakedModel extends ResolvableModel {
-+public interface UnbakedModel extends ResolvableModel, net.neoforged.neoforge.client.extensions.IUnbakedModelExtension {
+@@ -13,6 +_,10 @@
      boolean DEFAULT_AMBIENT_OCCLUSION = true;
      UnbakedModel.GuiLight DEFAULT_GUI_LIGHT = UnbakedModel.GuiLight.SIDE;
  
