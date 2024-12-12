@@ -3,10 +3,14 @@ package net.neoforged.neodev;
 import net.neoforged.neodev.utils.FileUtils;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -17,12 +21,27 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Runs <a href="https://github.com/neoforged/JavaSourceTransformer">JavaSourceTransformer</a> over the Minecraft source code.
  */
-abstract class ApplyJSTTransformer extends JavaExec {
+abstract class TransformSources extends JavaExec {
+    @Optional
+    @InputFiles
+    public abstract ConfigurableFileCollection getAccessTransformers();
+
+    @Input
+    @Optional
+    public abstract Property<Boolean> getValidateAccessTransformers();
+
+    @Optional
+    @InputFiles
+    public abstract ConfigurableFileCollection getInterfaceInjectionData();
+
+    @Optional
+    @OutputFile
+    public abstract RegularFileProperty getInterfaceStubsJar();
+
     @InputFile
     public abstract RegularFileProperty getInputJar();
 
@@ -37,9 +56,7 @@ abstract class ApplyJSTTransformer extends JavaExec {
     public abstract RegularFileProperty getLibrariesFile();
 
     @Inject
-    public ApplyJSTTransformer() {}
-
-    abstract void addArgs(List<String> arguments);
+    public TransformSources() {}
 
     @Override
     @TaskAction
@@ -57,7 +74,30 @@ abstract class ApplyJSTTransformer extends JavaExec {
                 "--libraries-list", getLibrariesFile().getAsFile().get().getAbsolutePath()
         ));
 
-        addArgs(args);
+        if (!getAccessTransformers().isEmpty()) {
+            args.addAll(Arrays.asList(
+                    "--enable-accesstransformers",
+                    "--access-transformer-validation", getValidateAccessTransformers().get() ? "error" : "log"
+            ));
+            for (var file : getAccessTransformers().getFiles()) {
+                args.addAll(Arrays.asList(
+                        "--access-transformer", file.getAbsolutePath()
+                ));
+            }
+        }
+
+        if (!getInterfaceInjectionData().isEmpty()) {
+            args.addAll(Arrays.asList(
+                    "--enable-interface-injection",
+                    "--interface-injection-stubs", getInterfaceStubsJar().get().getAsFile().getAbsolutePath()
+            ));
+
+            for (var file : getInterfaceInjectionData().getFiles()) {
+                args.addAll(Arrays.asList(
+                        "--interface-injection-data", file.getAbsolutePath()
+                ));
+            }
+        }
 
         args.addAll(Arrays.asList(
                 getInputJar().getAsFile().get().getAbsolutePath(),
