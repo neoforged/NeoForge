@@ -1,0 +1,4 @@
+{
+  "net/minecraft/world/item/ItemStack": ["net/neoforged/neoforge/common/extensions/IItemStackExtension", "net/neoforged/neoforge/common/MutableDataComponentHolder"],
+  "net/minecraft/world/entity/Entity": "net/neoforged/neoforge/common/extensions/IEntityExtension"
+}
