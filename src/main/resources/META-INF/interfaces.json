@@ -1,4 +1,64 @@
 {
-  "net/minecraft/world/item/ItemStack": ["net/neoforged/neoforge/common/extensions/IItemStackExtension", "net/neoforged/neoforge/common/MutableDataComponentHolder"],
+  "net/minecraft/world/entity/LivingEntity": [
+    "net/neoforged/neoforge/common/extensions/ILivingEntityExtension"
+  ],
+  "net/minecraft/world/level/block/LeavesBlock": [
+    "net/neoforged/neoforge/common/IShearable"
+  ],
+  "net/minecraft/world/level/block/TallGrassBlock": [
+    "net/neoforged/neoforge/common/IShearable"
+  ],
+  "net/minecraft/client/renderer/block/model/BlockModel": [
+    "net/neoforged/neoforge/client/model/ExtendedUnbakedModel"
+  ],
+  "net/minecraft/world/level/block/Block": [
+    "net/neoforged/neoforge/common/extensions/IBlockExtension"
+  ],
+  "net/minecraft/core/MappedRegistry": [],
+  "net/minecraft/network/protocol/status/ClientboundStatusResponsePacket": [],
+  "net/minecraft/world/level/block/BaseRailBlock": [
+    "net/neoforged/neoforge/common/extensions/IBaseRailBlockExtension"
+  ],
+  "net/minecraft/server/packs/resources/SimplePreparableReloadListener": [],
+  "net/minecraft/client/Minecraft": [
+    "net/neoforged/neoforge/client/extensions/IMinecraftExtension"
+  ],
+  "net/minecraft/world/level/block/SeagrassBlock": [
+    "net/neoforged/neoforge/common/IShearable"
+  ],
+  "net/minecraft/world/level/Level": [
+    "net/neoforged/neoforge/common/extensions/ILevelExtension"
+  ],
+  "net/minecraft/commands/CommandSourceStack": [
+    "net/neoforged/neoforge/common/extensions/ICommandSourceStackExtension"
+  ],
+  "net/minecraft/world/item/Item": [
+    "net/neoforged/neoforge/common/extensions/IItemExtension"
+  ],
+  "net/minecraft/world/level/chunk/ChunkAccess": [
+    "net/neoforged/neoforge/attachment/IAttachmentHolder"
+  ],
+  "net/minecraft/client/renderer/block/model/ItemModelGenerator": [
+    "net/neoforged/neoforge/client/model/ExtendedUnbakedModel"
+  ],
+  "net/minecraft/world/inventory/MenuType": [
+    "net/neoforged/neoforge/common/extensions/IMenuTypeExtension<T>"
+  ],
+  "net/minecraft/client/gui/components/AbstractWidget": [
+    "net/neoforged/neoforge/client/extensions/IAbstractWidgetExtension"
+  ],
+  "net/minecraft/world/entity/vehicle/AbstractBoat": [
+    "net/neoforged/neoforge/common/extensions/IAbstractBoatExtension"
+  ],
+  "net/minecraft/world/effect/MobEffect": [
+    "net/neoforged/neoforge/common/extensions/IMobEffectExtension"
+  ],
+  "net/minecraft/client/KeyMapping": [
+    "net/neoforged/neoforge/client/extensions/IKeyMappingExtension"
+  ],
+  "net/minecraft/world/item/ItemStack": [
+    "net/neoforged/neoforge/common/extensions/IItemStackExtension",
+    "net/neoforged/neoforge/common/MutableDataComponentHolder"
+  ],
   "net/minecraft/world/entity/Entity": "net/neoforged/neoforge/common/extensions/IEntityExtension"
 }
