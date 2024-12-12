@@ -110,7 +110,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         // this jar is only used for the patches in the repo
         var applyInterfaceInjection = project.getTasks().register("applyInterfaceInjection", TransformSources.class, task -> {
             task.getInputJar().set(applyAt.flatMap(TransformSources::getOutputJar));
-            task.getInterfaceInjectionData().from(project.getRootProject().file("src/main/resources/META-INF/interfaces.json"));
+            task.getInterfaceInjectionData().from(project.getRootProject().file("src/main/resources/META-INF/injected-interfaces.json"));
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/interface-injected-sources.jar")));
             task.getInterfaceStubsJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/interface-injection-stubs.jar")));
         });
