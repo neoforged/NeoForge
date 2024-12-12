@@ -82,8 +82,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
@@ -98,6 +97,7 @@ import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -134,8 +134,8 @@ public class DataGeneratorTest {
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "neoforge_overlays_test")))))
                 .add(GeneratingOverlayMetadataSection.TYPE, new GeneratingOverlayMetadataSection(List.of(
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "pack_overlays_test")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("neoforge")),
-                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), new ModLoadedCondition("does_not_exist")))))
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded(NeoForgeVersion.MOD_ID)),
+                        new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
@@ -160,7 +160,7 @@ public class DataGeneratorTest {
         context.register(TEST_LEVEL_STEM, levelStem);
     }
 
-    public static class Recipes extends RecipeProvider implements IConditionBuilder {
+    public static class Recipes extends RecipeProvider {
         public Recipes(HolderLookup.Provider registries, RecipeOutput output) {
             super(registries, output);
         }
@@ -181,10 +181,10 @@ public class DataGeneratorTest {
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             output.withConditions(
-                                    and(
-                                            not(modLoaded("minecraft")),
-                                            itemExists("minecraft", "dirt"),
-                                            FALSE())),
+                                    NeoForgeConditions.and(
+                                            NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
+                                            NeoForgeConditions.itemRegistered("minecraft", "dirt"),
+                                            NeoForgeConditions.never())),
                             recipeKey("conditional"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.DIAMOND_BLOCK, 64)
@@ -196,11 +196,11 @@ public class DataGeneratorTest {
                     .unlockedBy("has_dirt", has(Blocks.DIRT))
                     .save(
                             output.withConditions(
-                                    not(
-                                            and(
-                                                    not(modLoaded("minecraft")),
-                                                    itemExists("minecraft", "dirt"),
-                                                    FALSE()))),
+                                    NeoForgeConditions.not(
+                                            NeoForgeConditions.and(
+                                                    NeoForgeConditions.not(NeoForgeConditions.modLoaded("minecraft")),
+                                                    NeoForgeConditions.itemRegistered("minecraft", "dirt"),
+                                                    NeoForgeConditions.never()))),
                             recipeKey("conditional2"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 1)
@@ -211,7 +211,7 @@ public class DataGeneratorTest {
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
                             output.withConditions(
-                                    tagEmpty(ItemTags.PLANKS)),
+                                    NeoForgeConditions.tagEmpty(ItemTags.PLANKS)),
                             recipeKey("conditional3"));
 
             this.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHERITE_BLOCK, 9)
@@ -222,7 +222,7 @@ public class DataGeneratorTest {
                     .unlockedBy("has_diamond_block", has(Blocks.DIAMOND_BLOCK))
                     .save(
                             output.withConditions(
-                                    not(tagEmpty(ItemTags.PLANKS))),
+                                    NeoForgeConditions.not(NeoForgeConditions.tagEmpty(ItemTags.PLANKS))),
                             recipeKey("conditional4"));
 
             // intersection - should match all non-flammable planks
@@ -486,7 +486,7 @@ public class DataGeneratorTest {
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .addOptional(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw"))
-                    .addOptionalTag(ResourceLocation.fromNamespaceAndPath("neoforge", "storage_blocks/ruby"));
+                    .addOptionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "storage_blocks/ruby"));
 
             // Hopefully sorting issues
             tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/one")))
@@ -581,7 +581,7 @@ public class DataGeneratorTest {
                     false,
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-                    .parent(ResourceLocation.fromNamespaceAndPath("neoforge", "dummy_parent"))
+                    .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "dummy_parent"))
                     .save(saver, ResourceLocation.withDefaultNamespace("good_parent"), existingFileHelper);
         }
     }
