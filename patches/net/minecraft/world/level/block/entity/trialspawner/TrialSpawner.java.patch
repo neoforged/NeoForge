@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
 +++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
-@@ -44,7 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import net.minecraft.world.phys.shapes.CollisionContext;
- 
--public final class TrialSpawner {
-+public final class TrialSpawner implements net.neoforged.neoforge.common.extensions.IOwnedSpawner {
-     public static final String NORMAL_CONFIG_TAG_NAME = "normal_config";
-     public static final String OMINOUS_CONFIG_TAG_NAME = "ominous_config";
-     public static final int DETECT_PLAYER_SPAWN_BUFFER = 40;
 @@ -237,9 +_,9 @@
                                  }
  

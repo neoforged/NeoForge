@@ -1,16 +1,15 @@
 --- a/net/minecraft/world/damagesource/DeathMessageType.java
 +++ b/net/minecraft/world/damagesource/DeathMessageType.java
-@@ -3,20 +_,55 @@
+@@ -3,6 +_,8 @@
  import com.mojang.serialization.Codec;
  import net.minecraft.util.StringRepresentable;
  
--public enum DeathMessageType implements StringRepresentable {
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
-+public enum DeathMessageType implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum DeathMessageType implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      DEFAULT("default"),
      FALL_VARIANTS("fall_variants"),
-     INTENTIONAL_GAME_DESIGN("intentional_game_design");
+@@ -10,13 +_,46 @@
  
      public static final Codec<DeathMessageType> CODEC = StringRepresentable.fromEnum(DeathMessageType::values);
      private final String id;

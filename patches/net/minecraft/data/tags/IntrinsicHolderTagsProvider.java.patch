@@ -1,7 +1,7 @@
 --- a/net/minecraft/data/tags/IntrinsicHolderTagsProvider.java
 +++ b/net/minecraft/data/tags/IntrinsicHolderTagsProvider.java
 @@ -13,16 +_,17 @@
- public abstract class IntrinsicHolderTagsProvider<T> extends TagsProvider<T> {
+ public abstract class IntrinsicHolderTagsProvider<T> extends TagsProvider<T> implements net.neoforged.neoforge.common.extensions.IIntrinsicHolderTagAppenderExtension<T> {
      private final Function<T, ResourceKey<T>> keyExtractor;
  
 +    @Deprecated

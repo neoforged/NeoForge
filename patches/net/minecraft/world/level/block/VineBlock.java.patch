@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/VineBlock.java
 +++ b/net/minecraft/world/level/block/VineBlock.java
-@@ -25,7 +_,7 @@
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public class VineBlock extends Block {
-+public class VineBlock extends Block implements net.neoforged.neoforge.common.IShearable {
-     public static final MapCodec<VineBlock> CODEC = simpleCodec(VineBlock::new);
-     public static final BooleanProperty UP = PipeBlock.UP;
-     public static final BooleanProperty NORTH = PipeBlock.NORTH;
 @@ -192,7 +_,7 @@
      @Override
      protected void randomTick(BlockState p_222655_, ServerLevel p_222656_, BlockPos p_222657_, RandomSource p_222658_) {

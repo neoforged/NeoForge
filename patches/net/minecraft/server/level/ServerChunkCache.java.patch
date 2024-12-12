@@ -1,14 +1,5 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -52,7 +_,7 @@
- import net.minecraft.world.level.storage.LevelStorageSource;
- import org.slf4j.Logger;
- 
--public class ServerChunkCache extends ChunkSource {
-+public class ServerChunkCache extends ChunkSource implements net.neoforged.neoforge.common.extensions.IServerChunkCacheExtension {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private final DistanceManager distanceManager;
-     public final ServerLevel level;
 @@ -165,6 +_,10 @@
                  }
              }
