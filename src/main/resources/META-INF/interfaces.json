@@ -30,7 +30,9 @@
     "net/neoforged/neoforge/common/extensions/ICommandSourceStackExtension"
   ],
   "net/minecraft/world/item/Item": [
-    "net/neoforged/neoforge/common/extensions/IItemExtension",
+    "net/neoforged/neoforge/common/extensions/IItemExtension"
+  ],
+  "net/minecraft/world/item/Item$Properties": [
     "net/neoforged/neoforge/common/extensions/IItemPropertiesExtensions"
   ],
   "net/minecraft/world/level/chunk/ChunkAccess": [
@@ -61,7 +63,7 @@
   "net/minecraft/world/entity/Entity": [
     "net/neoforged/neoforge/common/extensions/IEntityExtension"
   ],
-  "net/minecraft/advancements/Advancement": [
+  "net/minecraft/advancements/Advancement$Builder": [
     "net/neoforged/neoforge/common/extensions/IAdvancementBuilderExtension"
   ],
   "net/minecraft/world/entity/ai/attributes/Attribute": [
@@ -115,7 +117,7 @@
   "net/minecraft/server/level/ServerChunkCache": [
     "net/neoforged/neoforge/common/extensions/IServerChunkCacheExtension"
   ],
-  "net/minecraft/data/tags/TagsProvider": [
+  "net/minecraft/data/tags/TagsProvider$TagAppender": [
     "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<T>"
   ],
   "net/minecraft/world/entity/player/Player": [
@@ -133,7 +135,7 @@
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
-  "net/minecraft/core/component/DataComponentMap": [
+  "net/minecraft/core/component/DataComponentMap$Builder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentMapBuilderExtensions"
   ],
   "net/minecraft/network/protocol/PacketFlow": [
@@ -145,7 +147,7 @@
   "net/minecraft/world/level/block/state/BlockState": [
     "net/neoforged/neoforge/common/extensions/IBlockStateExtension"
   ],
-  "net/minecraft/data/tags/IntrinsicHolderTagsProvider": [
+  "net/minecraft/data/tags/IntrinsicHolderTagsProvider$IntrinsicTagAppender": [
     "net/neoforged/neoforge/common/extensions/IIntrinsicHolderTagAppenderExtension<T>"
   ],
   "net/minecraft/world/MenuProvider": [
@@ -174,6 +176,9 @@
   ],
   "net/minecraft/core/HolderSet": [
     "net/neoforged/neoforge/common/extensions/IHolderSetExtension<T>"
+  ],
+  "net/minecraft/core/HolderLookup$Provider": [
+    "net/neoforged/neoforge/common/extensions/IHolderLookupProviderExtension"
   ],
   "net/minecraft/core/component/DataComponentHolder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentHolderExtension"
@@ -261,6 +266,15 @@
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/client/gui/font/providers/GlyphProviderType": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "net/minecraft/client/model/HumanoidModel$ArmPose": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "net/minecraft/client/gui/Gui$HeartType": [
+    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
+  ],
+  "com/mojang/blaze3d/vertex/VertexFormatElement$Usage": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ]
 }

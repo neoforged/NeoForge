@@ -16,16 +16,14 @@
      @OnlyIn(Dist.CLIENT)
      public static enum Type {
          FLOAT(4, "Float", 5126),
-@@ -113,7 +_,8 @@
+@@ -113,6 +_,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
--    public static enum Usage {
 +    @net.neoforged.fml.common.asm.enumextension.NamedEnum
-+    public static enum Usage implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+     public static enum Usage implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          POSITION(
              "Position",
-             (p_349733_, p_349734_, p_349735_, p_349736_, p_349737_) -> GlStateManager._vertexAttribPointer(
 @@ -163,6 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          public interface SetupState {

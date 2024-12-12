@@ -1,14 +1,5 @@
 --- a/net/minecraft/core/HolderLookup.java
 +++ b/net/minecraft/core/HolderLookup.java
-@@ -26,7 +_,7 @@
-         return this.listTags().map(HolderSet.Named::key);
-     }
- 
--    public interface Provider extends HolderGetter.Provider {
-+    public interface Provider extends HolderGetter.Provider, net.neoforged.neoforge.common.extensions.IHolderLookupProviderExtension {
-         Stream<ResourceKey<? extends Registry<?>>> listRegistryKeys();
- 
-         default Stream<HolderLookup.RegistryLookup<?>> listRegistries() {
 @@ -96,6 +_,18 @@
              };
          }

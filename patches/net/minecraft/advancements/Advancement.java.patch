@@ -8,12 +8,3 @@
  
      public Advancement(
          Optional<ResourceLocation> p_300893_,
-@@ -111,7 +_,7 @@
-         });
-     }
- 
--    public static class Builder {
-+    public static class Builder implements net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension {
-         private Optional<ResourceLocation> parent = Optional.empty();
-         private Optional<DisplayInfo> display = Optional.empty();
-         private AdvancementRewards rewards = AdvancementRewards.EMPTY;

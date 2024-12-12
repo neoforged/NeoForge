@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
+@@ -118,6 +_,7 @@
+ import org.slf4j.Logger;
+ 
+ public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IPlayerExtension {
++    public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final HumanoidArm DEFAULT_MAIN_HAND = HumanoidArm.RIGHT;
+     public static final int DEFAULT_MODEL_CUSTOMIZATION = 0;
 @@ -200,6 +_,10 @@
      public Entity currentExplosionCause;
      private boolean ignoreFallDamageFromCurrentImpulse;
