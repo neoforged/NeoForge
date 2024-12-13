@@ -32,6 +32,7 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
                         EntityType.JUNGLE_CHEST_BOAT,
                         EntityType.ACACIA_CHEST_BOAT,
                         EntityType.CHERRY_CHEST_BOAT,
+                        EntityType.PALE_OAK_CHEST_BOAT,
                         EntityType.DARK_OAK_CHEST_BOAT,
                         EntityType.MANGROVE_CHEST_BOAT,
                         EntityType.BAMBOO_CHEST_RAFT);
