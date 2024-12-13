@@ -3,7 +3,7 @@ import java.util.regex.Pattern
 
 plugins {
     id 'net.neoforged.gradleutils' version '3.0.0'
-    id 'com.diffplug.spotless' version '6.22.0' apply false
+    id 'dev.lukebemish.immaculate' version '0.1.6' apply false
     id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
     id 'neoforge.versioning'
@@ -56,14 +56,14 @@ license {
 }
 
 // Put spotless here because it wants the files to live inside the project root
-spotless {
-    java {
-        target rootProject.fileTree("src", {
+immaculate {
+    workflows.named("java") {
+        files.from rootProject.fileTree("src", {
             include "**/*.java"
         })
     }
-    format 'patches', {
-        target rootProject.fileTree("patches")
+    workflows.register("patches") {
+        files.from(rootProject.fileTree("patches"))
 
         custom 'noImportChanges', { String fileContents ->
             if (fileContents.contains('+import') || fileContents.contains('-import')) {
@@ -152,7 +152,5 @@ spotless {
         custom 'jetbrainsNullablePatches', { String fileContents ->
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
-
-        bumpThisNumberIfACustomStepChanges(5)
     }
 }

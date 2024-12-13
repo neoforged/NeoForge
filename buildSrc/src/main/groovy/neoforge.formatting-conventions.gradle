@@ -1,6 +1,6 @@
 import java.util.regex.Matcher
 
-project.plugins.apply('com.diffplug.spotless')
+project.plugins.apply('dev.lukebemish.immaculate')
 
 abstract class GeneratePackageInfos extends DefaultTask {
     @InputFiles
@@ -36,15 +36,19 @@ final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePack
     it.files.from fileTree("src/main/java")
 }
 
-spotless {
-    java {
-        endWithNewline()
-        indentWithSpaces()
-        removeUnusedImports()
-        toggleOffOn()
-        // Pin version to 4.31 because of a Spotless bug https://github.com/diffplug/spotless/issues/1992
-        eclipse('4.31').configFile rootProject.file('codeformat/formatter-config.xml')
-        importOrder()
+immaculate {
+    workflows.register('java') {
+        java()
+        trailingNewline()
+        noTabs()
+        googleFixImports()
+        toggleOff = 'spotless:off'
+        toggleOn = 'spotless:on'
+        eclipse {
+            version '3.37.0'
+            config = rootProject.file('codeformat/formatter-config.xml')
+        }
+
 
         // courtesy of diffplug/spotless#240
         // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
@@ -63,14 +67,13 @@ spotless {
         custom 'jetbrainsNullable', { String fileContents ->
             fileContents.replace('javax.annotation.Nullable', 'org.jetbrains.annotations.Nullable')
         }
-        bumpThisNumberIfACustomStepChanges(3)
     }
 }
 
 tasks.named('licenseFormat').configure {
     mustRunAfter generatePackageInfos
 }
-tasks.named('spotlessApply').configure {
+tasks.named('immaculateApply').configure {
     mustRunAfter generatePackageInfos
     mustRunAfter tasks.named('licenseFormat')
 }
@@ -78,13 +81,13 @@ tasks.named('spotlessApply').configure {
 tasks.register('applyAllFormatting', Task) {
     dependsOn generatePackageInfos
     dependsOn tasks.named('licenseFormat')
-    dependsOn tasks.named('spotlessApply')
+    dependsOn tasks.named('immaculateApply')
     group = 'verification'
 }
 
 tasks.register('checkFormatting', Task) {
     dependsOn 'licenseCheck'
-    dependsOn 'spotlessCheck'
+    dependsOn 'immaculateCheck'
     group = 'verification'
 }
 
