@@ -156,7 +156,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CHESTS_WOODEN, "Wooden Chests");
         add(Tags.Items.CLUSTERS, "Clusters");
         add(Tags.Items.CLUMPS, "Clumps");
-        add(Tags.Items.CLUMPS_RESIN, "Clumps Resin");
+        add(Tags.Items.CLUMPS_RESIN, "Resin Clumps");
         add(Tags.Items.COBBLESTONES, "Cobblestones");
         add(Tags.Items.COBBLESTONES_NORMAL, "Normal Cobblestones");
         add(Tags.Items.COBBLESTONES_INFESTED, "Infested Cobblestones");
