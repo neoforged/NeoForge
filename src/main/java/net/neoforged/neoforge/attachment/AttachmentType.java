@@ -15,7 +15,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -38,12 +37,6 @@ import org.jetbrains.annotations.Nullable;
  * <ul>
  * <li>Serializable entity attachments are not copied on death by default (but they are copied when returning from the end).</li>
  * <li>Serializable entity attachments can opt into copying on death via {@link Builder#copyOnDeath()}.</li>
- * </ul>
- * <h3>{@link ItemStack}-exclusive behavior:</h3>
- * <ul>
- * <li>Serializable item stack attachments are synced between the server and the client.</li>
- * <li>Serializable item stack attachments are copied when an item stack is copied.</li>
- * <li>Serializable item stack attachments must match for item stack comparison to succeed.</li>
  * </ul>
  * <h3>{@link Level}-exclusive behavior:</h3>
  * <ul>
@@ -179,9 +172,6 @@ public final class AttachmentType<T> {
         /**
          * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
          *
-         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
-         * for performance reasons. Prefer one of the other options.
-         *
          * <p>Codec-based attachments cannot capture a reference to their holder.
          *
          * @param codec The codec to use.
@@ -192,9 +182,6 @@ public final class AttachmentType<T> {
 
         /**
          * Requests that this attachment be persisted to disk (on the logical server side), using a {@link Codec}.
-         *
-         * <p>Using a {@link Codec} to serialize attachments is discouraged for item stack attachments,
-         * for performance reasons. Prefer one of the other options.
          *
          * <p>Codec-based attachments cannot capture a reference to their holder.
          *
@@ -252,6 +239,8 @@ public final class AttachmentType<T> {
             this.syncHandler = syncHandler;
             return this;
         }
+
+        // TODO: StreamCodec-based sync handler
 
         public AttachmentType<T> build() {
             return new AttachmentType<>(this);
