@@ -245,6 +245,7 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
+        public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
@@ -305,6 +306,7 @@ public class Tags {
         public static final TagKey<Item> BRICKS = tag("bricks");
         public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
         public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
+        public static final TagKey<Item> BRICKS_RESIN = tag("bricks/resin");
         public static final TagKey<Item> BUCKETS = tag("buckets");
         public static final TagKey<Item> BUCKETS_EMPTY = tag("buckets/empty");
         /**
@@ -346,6 +348,8 @@ public class Tags {
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
+        public static final TagKey<Item> CLUMPS = tag("clumps");
+        public static final TagKey<Item> CLUMPS_RESIN = tag("clumps/resin");
         /**
          * For raw materials harvested from growable plants. Crop items can be edible like carrots or
          * non-edible like wheat and cocoa beans.
@@ -664,6 +668,7 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
+        public static final TagKey<Item> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
@@ -1020,7 +1025,19 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_FOREST})
          */
         public static final TagKey<Biome> IS_FOREST = tag("is_forest");
+        /**
+         * For biomes that are a variant of Birch Forest (has mostly birch trees)
+         */
         public static final TagKey<Biome> IS_BIRCH_FOREST = tag("is_birch_forest");
+        /**
+         * For biomes that are a variant of Dark Forest. (Has roofed trees that are reminiscent of Dark Forest's style)
+         * Pale Gardens is included in this tag because according to Mojang's blog post, they state it is a variation of the Dark Forest biome.
+         * <a href="https://www.minecraft.net/en-us/article/minecraft-java-edition-1-21-4#pale_garden:~:text=The%20Pale%20Garden%20is%20a%20biome%20variation%20of%20Dark%20Forest">...</a>.
+         */
+        public static final TagKey<Biome> IS_DARK_FOREST = tag("is_dark_forest");
+        /**
+         * For biomes that are a variant of Flower Forest (Is very dense in variety of flowers)
+         */
         public static final TagKey<Biome> IS_FLOWER_FOREST = tag("is_flower_forest");
         /**
          * Biomes that spawn as a taiga.
@@ -1028,6 +1045,10 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_TAIGA})
          */
         public static final TagKey<Biome> IS_TAIGA = tag("is_taiga");
+        /**
+         * For biomes that are an "old growth" variant of a regular biome.
+         * Usually this includes taller or different tree styles as if the biome is older.
+         */
         public static final TagKey<Biome> IS_OLD_GROWTH = tag("is_old_growth");
         /**
          * Biomes that spawn as a hills biome. (Previously was called Extreme Hills biome in past)
@@ -1035,6 +1056,10 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_HILL})
          */
         public static final TagKey<Biome> IS_HILL = tag("is_hill");
+        /**
+         * For biomes that are a "windswept" variant of a regular biome.
+         * Usually these biomes includes fewer trees than normal and more exposed stone on hilly terrain.
+         */
         public static final TagKey<Biome> IS_WINDSWEPT = tag("is_windswept");
         /**
          * Biomes that spawn as a jungle.
@@ -1048,7 +1073,14 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_SAVANNA})
          */
         public static final TagKey<Biome> IS_SAVANNA = tag("is_savanna");
+        /**
+         * For biomes that are considered a swamp such as Swamp or Mangrove Swamp.
+         */
         public static final TagKey<Biome> IS_SWAMP = tag("is_swamp");
+        /**
+         * For biomes that are considered a regular desert.
+         * Badlands have their own tag to better separate them from this tag.
+         */
         public static final TagKey<Biome> IS_DESERT = tag("is_desert");
         /**
          * Biomes that spawn as a badlands.
@@ -1057,12 +1089,18 @@ public class Tags {
          */
         public static final TagKey<Biome> IS_BADLANDS = tag("is_badlands");
         /**
-         * Biomes that are dedicated to spawning on the shoreline of a body of water.
+         * Non-stony biomes that are dedicated to spawning on the shoreline of a body of water.
          * (This is for people who want to tag their biomes without getting
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_BEACH})
          */
         public static final TagKey<Biome> IS_BEACH = tag("is_beach");
+        /**
+         * Stony biomes that are dedicated to spawning on the shoreline of a body of water.
+         */
         public static final TagKey<Biome> IS_STONY_SHORES = tag("is_stony_shores");
+        /**
+         * For biomes that spawn primarily mushrooms.
+         */
         public static final TagKey<Biome> IS_MUSHROOM = tag("is_mushroom");
 
         /**
@@ -1083,9 +1121,18 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_DEEP_OCEAN})
          */
         public static final TagKey<Biome> IS_DEEP_OCEAN = tag("is_deep_ocean");
+        /**
+         * Biomes that spawn as part of the world's oceans that have shallow depth.
+         */
         public static final TagKey<Biome> IS_SHALLOW_OCEAN = tag("is_shallow_ocean");
 
+        /**
+         * Biomes that spawn primarily underground. (Not necessarily always a cave)
+         */
         public static final TagKey<Biome> IS_UNDERGROUND = tag("is_underground");
+        /**
+         * Biomes dedicated to decorating caves such as Lush Caves or Dripstone Caves.
+         */
         public static final TagKey<Biome> IS_CAVE = tag("is_cave");
 
         /**

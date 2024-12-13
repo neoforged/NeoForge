@@ -123,6 +123,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_RESIN, "Resin Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Blocks.STRIPPED_LOGS, "Stripped Logs");
@@ -138,6 +139,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.BRICKS, "Bricks");
         add(Tags.Items.BRICKS_NORMAL, "Normal Bricks");
         add(Tags.Items.BRICKS_NETHER, "Nether Bricks");
+        add(Tags.Items.BRICKS_RESIN, "Resin Bricks");
         add(Tags.Items.BUCKETS, "Buckets");
         add(Tags.Items.BUCKETS_EMPTY, "Empty Buckets");
         add(Tags.Items.BUCKETS_WATER, "Water Buckets");
@@ -153,6 +155,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CHESTS_TRAPPED, "Trapped Chests");
         add(Tags.Items.CHESTS_WOODEN, "Wooden Chests");
         add(Tags.Items.CLUSTERS, "Clusters");
+        add(Tags.Items.CLUMPS, "Clumps");
+        add(Tags.Items.CLUMPS_RESIN, "Clumps Resin");
         add(Tags.Items.COBBLESTONES, "Cobblestones");
         add(Tags.Items.COBBLESTONES_NORMAL, "Normal Cobblestones");
         add(Tags.Items.COBBLESTONES_INFESTED, "Infested Cobblestones");
@@ -323,6 +327,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_RESIN, "Resin Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
