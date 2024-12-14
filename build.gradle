@@ -77,20 +77,16 @@ immaculate {
             def interfaceChanges = fileContents.lines().filter { it.matches(interfaceChange) }.toList()
             if (interfaceChanges.isEmpty()) return fileContents
             String oldInterfaces = ""
+            // we expect interface additions/removals in pairs of - and then +
             interfaceChanges.each { String change ->
                 final match = change =~ interfaceChange
                 match.find()
-                final values = match.group(3)
+                final values = match.group(3).trim()
                 if (change.startsWith('-')) {
                     oldInterfaces = values
-                } else if (!oldInterfaces.isEmpty() && values != oldInterfaces) {
-                    throw new GradleException("Modification of interfaces via patches is not allowed: $change vs $oldInterfaces")
-                } else {
-                    oldInterfaces = ""
+                } else if (oldInterfaces != values) {
+                    throw new GradleException("Modification of interfaces via patches is not allowed!")
                 }
-            }
-            if (!oldInterfaces.isEmpty()) {
-                throw new GradleException("Modification of interfaces via patches is not allowed!")
             }
             return fileContents
         }

@@ -204,9 +204,6 @@
   "net/minecraft/data/recipes/RecipeOutput": [
     "net/neoforged/neoforge/common/extensions/IRecipeOutputExtension"
   ],
-  "net/minecraft/core/HolderLookup": [
-    "net/neoforged/neoforge/common/extensions/IHolderLookupProviderExtension"
-  ],
   "net/minecraft/client/resources/model/BakedModel": [
     "net/neoforged/neoforge/client/extensions/IBakedModelExtension"
   ],
@@ -238,9 +235,6 @@
   "net/minecraft/world/damagesource/DamageEffects": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
-  "com/mojang/blaze3d/vertex/VertexFormatElement": [
-    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
-  ],
   "net/minecraft/world/item/ItemUseAnimation": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
@@ -253,10 +247,7 @@
   "net/minecraft/world/damagesource/DamageScaling": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
-  "net/minecraft/world/entity/raid/Raid": [
-    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
-  ],
-  "net/minecraft/client/model/HumanoidModel": [
+  "net/minecraft/world/entity/raid/Raid$RaiderType": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/world/damagesource/DeathMessageType": [
