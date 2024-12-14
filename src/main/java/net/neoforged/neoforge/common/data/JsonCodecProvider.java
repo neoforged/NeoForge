@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 /**
  * <p>Dataprovider for using a Codec to generate jsons.
  * Path names for jsons are derived from the given registry folder and each entry's namespaced id, in the format:</p>
- * 
+ *
  * <pre>
  * {@code <assets/data>/entryid/registryfolder/entrypath.json }
  * </pre>
