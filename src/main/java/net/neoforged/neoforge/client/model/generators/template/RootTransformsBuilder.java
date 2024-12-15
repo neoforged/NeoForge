@@ -225,7 +225,7 @@ public class RootTransformsBuilder {
         return this;
     }
 
-    public JsonObject toJson() {
+    JsonObject toJson() {
         // Write the transform to an object
         JsonObject transform = new JsonObject();
 
@@ -271,7 +271,7 @@ public class RootTransformsBuilder {
         return array;
     }
 
-    public void copyFrom(RootTransformsBuilder other) {
+    void copyFrom(RootTransformsBuilder other) {
         this.translation.set(other.translation);
         this.leftRotation.set(other.leftRotation);
         this.rightRotation.set(other.rightRotation);
