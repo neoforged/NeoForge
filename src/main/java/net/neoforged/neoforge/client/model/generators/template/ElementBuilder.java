@@ -34,16 +34,6 @@ public final class ElementBuilder {
     private int skyLight = 0;
     private boolean hasAmbientOcclusion = true;
 
-    private static void validateCoordinate(float coord, char name) {
-        Preconditions.checkArgument(!(coord < -16.0F) && !(coord > 32.0F), "Position " + name + " out of range, must be within [-16, 32]. Found: %d", coord);
-    }
-
-    private static void validatePosition(Vector3f pos) {
-        validateCoordinate(pos.x(), 'x');
-        validateCoordinate(pos.y(), 'y');
-        validateCoordinate(pos.z(), 'z');
-    }
-
     /**
      * Set the "from" position for this element.
      *
@@ -231,6 +221,16 @@ public final class ElementBuilder {
 
     private static BiConsumer<Direction, FaceBuilder> addTexture(TextureSlot texture) {
         return ($, f) -> f.texture(texture);
+    }
+
+    private static void validateCoordinate(float coord, char name) {
+        Preconditions.checkArgument(!(coord < -16.0F) && !(coord > 32.0F), "Position " + name + " out of range, must be within [-16, 32]. Found: %d", coord);
+    }
+
+    private static void validatePosition(Vector3f pos) {
+        validateCoordinate(pos.x(), 'x');
+        validateCoordinate(pos.y(), 'y');
+        validateCoordinate(pos.z(), 'z');
     }
 
     BlockElement build() {
