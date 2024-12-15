@@ -126,16 +126,32 @@ public class ExtendedModelTemplateBuilder {
         return this;
     }
 
+    /**
+     * Sets whether or not this model should apply ambient occlusion.
+     */
     public ExtendedModelTemplateBuilder ambientOcclusion(boolean ambientOcclusion) {
         this.ambientOcclusion = ambientOcclusion;
         return this;
     }
 
+    /**
+     * Sets the gui light style for this model.
+     *
+     * <ul>
+     * <li>{@link UnbakedModel.GuiLight#FRONT} for head on light, commonly used for items.</li>
+     * <li>{@link UnbakedModel.GuiLight#SIDE} for the model to be side lit, commonly used for blocks.</li>
+     * </ul>
+     */
     public ExtendedModelTemplateBuilder guiLight(UnbakedModel.GuiLight light) {
         this.guiLight = light;
         return this;
     }
 
+    /**
+     * Creates a new element for this model while also allowing mutation.
+     *
+     * @throws IllegalStateException if {@code customLoader} does not allow inline elements.
+     */
     public ExtendedModelTemplateBuilder element(Consumer<ElementBuilder> action) {
         Preconditions.checkState(
                 customLoader == null || customLoader.allowInlineElements,
