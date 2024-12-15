@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public class BlockModelGenerators {
-+public class BlockModelGenerators implements net.neoforged.neoforge.client.extensions.IBlockModelGeneratorExtensions {
++public class BlockModelGenerators implements net.neoforged.neoforge.client.extensions.IBlockModelGeneratorsExtension {
      public final Consumer<BlockStateGenerator> blockStateOutput;
      public final ItemModelOutput itemModelOutput;
      public final BiConsumer<ResourceLocation, ModelInstance> modelOutput;

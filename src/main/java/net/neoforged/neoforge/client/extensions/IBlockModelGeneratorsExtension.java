@@ -14,7 +14,7 @@ import net.minecraft.data.BlockFamily;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-public interface IBlockModelGeneratorExtensions {
+public interface IBlockModelGeneratorsExtension {
     /**
      * Copied from {@link BlockModelGenerators.BlockFamilyProvider#button(Block)} to allow generation outside of the {@link BlockFamily} system.
      */
