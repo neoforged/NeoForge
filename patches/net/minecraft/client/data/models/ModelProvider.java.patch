@@ -11,7 +11,7 @@
      private final PackOutput.PathProvider modelPathProvider;
 +    public final String modId;
  
-+    // NeoForge: Use the above constructor passing in their mod id
++    // NeoForge: Use the below constructor passing in your mod id
 +    @Deprecated
      public ModelProvider(PackOutput p_388260_) {
 +        this(p_388260_, ResourceLocation.DEFAULT_NAMESPACE);
