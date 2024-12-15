@@ -52,7 +52,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.FENCE_GATES, "Fence Gates");
         add(Tags.Blocks.FENCE_GATES_WOODEN, "Wooden Fence Gates");
         add(Tags.Blocks.FENCES, "Fences");
-        add(Tags.Blocks.FENCES_NETHER_BRICK, "Fences Nether Brick");
+        add(Tags.Blocks.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Blocks.FENCES_WOODEN, "Wooden Fences");
         add(Tags.Blocks.GLASS_BLOCKS, "Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
@@ -281,7 +281,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
-        add(Tags.Items.POTION_BOTTLE, "Bottled Potions");
+        add(Tags.Items.POTIONS_BOTTLE, "Bottled Potions");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
