@@ -106,11 +106,11 @@ public final class FaceBuilder {
     /**
      * Set the ambient occlusion of the face.
      *
-     * @param ao the ambient occlusion
+     * @param ambientOcclusion the ambient occlusion
      * @return this builder
      */
-    public FaceBuilder ao(boolean ao) {
-        this.hasAmbientOcclusion = ao;
+    public FaceBuilder ambientOcclusion(boolean ambientOcclusion) {
+        this.hasAmbientOcclusion = ambientOcclusion;
         return this;
     }
 
