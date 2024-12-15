@@ -49,8 +49,8 @@
 +    }
 +
 +    @Override
-+    public BakedModel applyTransform(net.minecraft.world.item.ItemDisplayContext transformType, com.mojang.blaze3d.vertex.PoseStack poseStack, boolean applyLeftHandTransform) {
-+        return this.parent.applyTransform(transformType, poseStack, applyLeftHandTransform);
++    public void applyTransform(net.minecraft.world.item.ItemDisplayContext transformType, com.mojang.blaze3d.vertex.PoseStack poseStack, boolean applyLeftHandTransform) {
++        this.parent.applyTransform(transformType, poseStack, applyLeftHandTransform);
 +    }
 +
 +    @Override
