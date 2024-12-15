@@ -20,6 +20,9 @@ public final class RotationBuilder {
     private float angle;
     private boolean rescale;
 
+    /**
+     * Sets the origin point for this rotation.
+     */
     public RotationBuilder origin(float x, float y, float z) {
         this.origin = new Vector3f(x, y, z);
         return this;
