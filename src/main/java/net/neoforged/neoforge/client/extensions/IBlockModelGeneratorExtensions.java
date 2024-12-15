@@ -10,10 +10,14 @@ import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.data.BlockFamily;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public interface IBlockModelGeneratorExtensions {
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#button(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createButton(Block button, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var depressedModel = ModelTemplates.BUTTON.create(button, textures, self().modelOutput);
@@ -23,6 +27,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleItemModel(button, inventoryModel);
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#wall(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createWall(Block wall, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var postModel = ModelTemplates.WALL_POST.create(wall, textures, self().modelOutput);
@@ -33,6 +40,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleItemModel(wall, inventoryModel);
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#customFence(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createCustomFence(Block fence) {
         var textures = TextureMapping.customParticle(fence);
         var postModel = ModelTemplates.CUSTOM_FENCE_POST.create(fence, textures, self().modelOutput);
@@ -45,6 +55,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleItemModel(fence, inventoryModel);
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#fence(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createFence(Block fence, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var postModel = ModelTemplates.FENCE_POST.create(fence, textures, self().modelOutput);
@@ -54,6 +67,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleItemModel(fence, inventoryModel);
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#customFenceGate(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createCustomFenceGate(Block fenceGate) {
         var textures = TextureMapping.customParticle(fenceGate);
         var gateOpenModel = ModelTemplates.CUSTOM_FENCE_GATE_OPEN.create(fenceGate, textures, self().modelOutput);
@@ -63,6 +79,9 @@ public interface IBlockModelGeneratorExtensions {
         self().blockStateOutput.accept(BlockModelGenerators.createFenceGate(fenceGate, gateOpenModel, gateClosedModel, wallOpenModel, wallClosedModel, false));
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#fenceGate(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createFenceGate(Block fenceGate, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var gateOpenModel = ModelTemplates.FENCE_GATE_OPEN.create(fenceGate, textures, self().modelOutput);
@@ -72,6 +91,9 @@ public interface IBlockModelGeneratorExtensions {
         self().blockStateOutput.accept(BlockModelGenerators.createFenceGate(fenceGate, gateOpenModel, gateClosedModel, wallOpenModel, wallClosedModel, true));
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#pressurePlate(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createPressurePlate(Block pressurePlate, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var upModel = ModelTemplates.PRESSURE_PLATE_UP.create(pressurePlate, textures, self().modelOutput);
@@ -79,6 +101,9 @@ public interface IBlockModelGeneratorExtensions {
         self().blockStateOutput.accept(BlockModelGenerators.createPressurePlate(pressurePlate, upModel, downModel));
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#sign(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createSign(Block sign, Block wallSign, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var particle = ModelTemplates.PARTICLE_ONLY.create(sign, textures, self().modelOutput);
@@ -87,6 +112,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleFlatItemModel(sign.asItem());
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#slab(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createSlab(Block slab, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var slabBottom = ModelTemplates.SLAB_BOTTOM.create(slab, textures, self().modelOutput);
@@ -95,6 +123,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleItemModel(slab, slabBottom);
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators.BlockFamilyProvider#stairs(Block)} to allow generation outside of the {@link BlockFamily} system.
+     */
     default void createStairs(Block stairs, Block fullBlock) {
         var textures = TextureMapping.cube(fullBlock);
         var stairsInner = ModelTemplates.STAIRS_INNER.create(stairs, textures, self().modelOutput);
@@ -104,6 +135,9 @@ public interface IBlockModelGeneratorExtensions {
         self().registerSimpleItemModel(stairs, stairsStraight);
     }
 
+    /**
+     * Copied from {@link BlockModelGenerators#createScaffolding()} to allow generation for modded blocks.
+     */
     default void createScaffolding(Block scaffolding) {
         var stableModel = ModelLocationUtils.getModelLocation(scaffolding, "_stable");
         var unstableModel = ModelLocationUtils.getModelLocation(scaffolding, "_unstable");
