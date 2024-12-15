@@ -217,11 +217,11 @@ public final class ElementBuilder {
     /**
      * Set the ambient occlusion of the element.
      *
-     * @param ao the ambient occlusion
+     * @param ambientOcclusion the ambient occlusion
      * @return this builder
      */
-    public ElementBuilder ao(boolean ao) {
-        this.hasAmbientOcclusion = ao;
+    public ElementBuilder ambientOcclusion(boolean ambientOcclusion) {
+        this.hasAmbientOcclusion = ambientOcclusion;
         return this;
     }
 
