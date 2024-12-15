@@ -205,11 +205,17 @@ public class ExtendedModelTemplateBuilder {
         return this;
     }
 
+    /**
+     * Modifies the transformation applied right before item display transformations and rotations specified in block states.
+     */
     public ExtendedModelTemplateBuilder rootTransforms(Consumer<RootTransformsBuilder> action) {
         action.accept(rootTransforms);
         return this;
     }
 
+    /**
+     * Finalizes this builder into a compiled {@link ModelTemplate}.
+     */
     public ExtendedModelTemplate build() {
         return new ExtendedModelTemplate(this);
     }
