@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -30,24 +_,44 @@
+@@ -30,24 +_,62 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -29,10 +29,28 @@
 +        itemModels.run();
 +    }
 +
++    /**
++     * Returns a {@link Stream stream} containing all {@link Block blocks} which must have their models/block states generated or {@link Stream#empty() empty} if none are desired.
++     * <p>
++     * When using providers for specific {@link Block block} usages, it is best to override this method returning the exact {@link Block blocks} which must be generated,
++     * or {@link Stream#empty() empty} if generating only {@link Item item} models.
++     * <p>
++     * Default implementation generates models for {@link Block blocks} matching the given {@code modId}.
++     * @see #getKnownItems()
++     */
 +    protected Stream<? extends Holder<Block>> getKnownBlocks() {
 +        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.getKey().location().getNamespace().equals(modId));
 +    }
 +
++    /**
++     * Returns a {@link Stream stream} containing all {@link Item items} which must have their models/client items generated or {@link Stream#empty() empty} if none are desired.
++     * <p>
++     * When using providers for specific {@link Item item} usages, it is best to override this method returning the exact {@link Item items} which must be generated,
++     * or {@link Stream#empty() empty} if generating only {@link Block block} models (which have no respective {@link Item item}).
++     * <p>
++     * Default implementation generates models for {@link Item items} matching the given {@code modId}.
++     * @see #getKnownBlocks()
++     */
 +    protected Stream<? extends Holder<Item>> getKnownItems() {
 +        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.getKey().location().getNamespace().equals(modId));
      }
