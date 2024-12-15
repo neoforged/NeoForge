@@ -50,7 +50,7 @@
          modelprovider$blockstategeneratorcollector.validate();
          modelprovider$iteminfocollector.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -63,12 +_,21 @@
+@@ -63,12 +_,22 @@
  
      @Override
      public String getName() {
@@ -67,6 +67,7 @@
 +            this.knownBlocks = knownBlocks;
 +        }
 +
++        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility, use above constructor
 +        public BlockStateGeneratorCollector() {
 +            this(BuiltInRegistries.BLOCK::listElements);
 +        }
@@ -85,7 +86,7 @@
                  .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing blockstate definitions for: " + list);
-@@ -97,6 +_,15 @@
+@@ -97,6 +_,16 @@
      static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
@@ -95,6 +96,7 @@
 +            this.knownItems = knownItems;
 +        }
 +
++        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility, use above constructor
 +        public ItemInfoCollector() {
 +            this(BuiltInRegistries.ITEM::listElements);
 +        }
