@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public final class ExtendedModelTemplate extends ModelTemplate {
-    final TransformsBuilder transforms;
+    final Map<ItemDisplayContext, TransformVecBuilder> transforms;
     final List<ElementBuilder> elements;
     @Nullable
     final CustomLoaderBuilder customLoader;
@@ -39,7 +39,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
 
     ExtendedModelTemplate(ExtendedModelTemplateBuilder builder) {
         super(builder.parent, builder.suffix, builder.requiredSlots.toArray(TextureSlot[]::new));
-        this.transforms = builder.transforms;
+        this.transforms = Map.copyOf(builder.transforms);
         this.elements = List.copyOf(builder.elements);
         this.customLoader = builder.customLoader;
         this.rootTransforms = builder.rootTransforms;
@@ -64,22 +64,21 @@ public final class ExtendedModelTemplate extends ModelTemplate {
             root.addProperty("render_type", this.renderType.toString());
         }
 
-        Map<ItemDisplayContext, ItemTransform> transforms = this.transforms.build();
-        if (!transforms.isEmpty()) {
+        if (!this.transforms.isEmpty()) {
             JsonObject display = new JsonObject();
-            for (Map.Entry<ItemDisplayContext, ItemTransform> e : transforms.entrySet()) {
+            for (Map.Entry<ItemDisplayContext, TransformVecBuilder> e : this.transforms.entrySet()) {
                 JsonObject transform = new JsonObject();
-                ItemTransform vec = e.getValue();
+                ItemTransform vec = e.getValue().build();
                 if (vec.equals(ItemTransform.NO_TRANSFORM)) continue;
                 var hasRightRotation = !vec.rightRotation.equals(ItemTransform.Deserializer.DEFAULT_ROTATION);
                 if (!vec.translation.equals(ItemTransform.Deserializer.DEFAULT_TRANSLATION)) {
-                    transform.add("translation", serializeVector3f(e.getValue().translation));
+                    transform.add("translation", serializeVector3f(vec.translation));
                 }
                 if (!vec.rotation.equals(ItemTransform.Deserializer.DEFAULT_ROTATION)) {
                     transform.add(hasRightRotation ? "left_rotation" : "rotation", serializeVector3f(vec.rotation));
                 }
                 if (!vec.scale.equals(ItemTransform.Deserializer.DEFAULT_SCALE)) {
-                    transform.add("scale", serializeVector3f(e.getValue().scale));
+                    transform.add("scale", serializeVector3f(vec.scale));
                 }
                 if (hasRightRotation) {
                     transform.add("right_rotation", serializeVector3f(vec.rightRotation));

@@ -8,7 +8,9 @@ package net.neoforged.neoforge.client.model.generators.template;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -18,6 +20,7 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +28,7 @@ public class ExtendedModelTemplateBuilder {
     Optional<ResourceLocation> parent = Optional.empty();
     Optional<String> suffix = Optional.empty();
     final Set<TextureSlot> requiredSlots = new HashSet<>();
-    final TransformsBuilder transforms = new TransformsBuilder();
+    final Map<ItemDisplayContext, TransformVecBuilder> transforms = new LinkedHashMap<>();
     final List<ElementBuilder> elements = new ArrayList<>();
     @Nullable
     CustomLoaderBuilder customLoader = null;
@@ -43,7 +46,7 @@ public class ExtendedModelTemplateBuilder {
         builder.suffix = template.suffix;
         builder.requiredSlots.addAll(template.requiredSlots);
         if (template instanceof ExtendedModelTemplate ext) {
-            builder.transforms.copyFrom(ext.transforms);
+            ext.transforms.forEach((ctx, vecBuilder) -> builder.transforms.put(ctx, vecBuilder.copy()));
             ext.elements.forEach(elem -> builder.elements.add(elem.copy()));
             builder.customLoader = ext.customLoader != null ? ext.customLoader.copy() : null;
             builder.rootTransforms.copyFrom(ext.rootTransforms);
@@ -109,8 +112,17 @@ public class ExtendedModelTemplateBuilder {
         return this;
     }
 
-    public ExtendedModelTemplateBuilder transforms(Consumer<TransformsBuilder> action) {
-        action.accept(transforms);
+    /**
+     * Begin building a new transform for the given perspective.
+     *
+     * @param type the perspective to create or return the builder for
+     * @return the builder for the given perspective
+     * @throws NullPointerException if {@code type} is {@code null}
+     */
+    public ExtendedModelTemplateBuilder transform(ItemDisplayContext type, Consumer<TransformVecBuilder> action) {
+        Preconditions.checkNotNull(type, "Perspective cannot be null");
+        var builder = transforms.computeIfAbsent(type, TransformVecBuilder::new);
+        action.accept(builder);
         return this;
     }
 
