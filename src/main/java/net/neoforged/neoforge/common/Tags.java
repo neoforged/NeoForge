@@ -596,7 +596,7 @@ public class Tags {
          * Examples are splash and lingering potions from vanilla.
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
-        public static final TagKey<Item> POTION_BOTTLE = tag("potions/bottle");
+        public static final TagKey<Item> POTIONS_BOTTLE = tag("potions/bottle");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
