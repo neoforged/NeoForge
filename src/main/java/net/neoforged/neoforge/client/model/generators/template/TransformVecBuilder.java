@@ -19,25 +19,46 @@ public class TransformVecBuilder {
         // param unused for functional match
     }
 
+    /**
+     * Sets the rotation for this transformation.
+     * <p>
+     * This is rotation is considered the "left rotation" when also using {@linkplain #rightRotation(float, float, float)}.
+     */
     public TransformVecBuilder rotation(float x, float y, float z) {
         this.rotation = new Vector3f(x, y, z);
         return this;
     }
 
+    /**
+     * Sets the translation for this transformation.
+     */
     public TransformVecBuilder translation(float x, float y, float z) {
         this.translation = new Vector3f(x, y, z);
         return this;
     }
 
+    /**
+     * Sets the scale for this transformation, scaling all axis by the same amount.
+     *
+     * @see #scale(float, float, float)
+     */
     public TransformVecBuilder scale(float sc) {
         return scale(sc, sc, sc);
     }
 
+    /**
+     * Sets the scale for this transformation.
+     */
     public TransformVecBuilder scale(float x, float y, float z) {
         this.scale = new Vector3f(x, y, z);
         return this;
     }
 
+    /**
+     * Sets the right rotation for this transformation.
+     * <p>
+     * To set the left rotation use {@linkplain #rotation(float, float, float)}.
+     */
     public TransformVecBuilder rightRotation(float x, float y, float z) {
         this.rightRotation = new Vector3f(x, y, z);
         return this;
