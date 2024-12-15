@@ -59,7 +59,7 @@ public final class RotationBuilder {
         return new BlockElementRotation(origin, axis, angle, rescale);
     }
 
-    public RotationBuilder copy() {
+    RotationBuilder copy() {
         RotationBuilder builder = new RotationBuilder();
         builder.origin = this.origin != null ? new Vector3f(this.origin) : null;
         builder.axis = this.axis;
