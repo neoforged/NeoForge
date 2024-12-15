@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -57,16 +58,25 @@ public class ExtendedModelTemplateBuilder {
         return new ExtendedModelTemplateBuilder();
     }
 
+    /**
+     * Parent model which this template will inherit its properties from.
+     */
     public ExtendedModelTemplateBuilder parent(ResourceLocation parent) {
         this.parent = Optional.of(parent);
         return this;
     }
 
+    /**
+     * Suffix appended onto the models file path.
+     */
     public ExtendedModelTemplateBuilder suffix(String suffix) {
         this.suffix = Optional.of(suffix);
         return this;
     }
 
+    /**
+     * Marks the given {@link TextureSlot slot} as required, meaning that it must be specified in the given {@link TextureMapping texture mappings}.
+     */
     public ExtendedModelTemplateBuilder requiredTextureSlot(TextureSlot slot) {
         this.requiredSlots.add(slot);
         return this;
