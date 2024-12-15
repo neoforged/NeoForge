@@ -82,6 +82,9 @@ public final class ElementBuilder {
         return this;
     }
 
+    /**
+     * Allows modifying the rotation for this element.
+     */
     public ElementBuilder rotation(Consumer<RotationBuilder> action) {
         if (this.rotation == null) {
             this.rotation = new RotationBuilder();
@@ -90,6 +93,9 @@ public final class ElementBuilder {
         return this;
     }
 
+    /**
+     * Sets whether or not this element should be shaded.
+     */
     public ElementBuilder shade(boolean shade) {
         this.shade = shade;
         return this;
