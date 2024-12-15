@@ -24,10 +24,6 @@ public class TransformVecBuilder {
         return this;
     }
 
-    public TransformVecBuilder leftRotation(float x, float y, float z) {
-        return rotation(x, y, z);
-    }
-
     public TransformVecBuilder translation(float x, float y, float z) {
         this.translation = new Vector3f(x, y, z);
         return this;
