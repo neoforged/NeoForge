@@ -28,11 +28,17 @@ public final class FaceBuilder {
     private int skyLight = 0;
     private boolean hasAmbientOcclusion = true;
 
+    /**
+     * Sets which direction should cull this face when fully occluded, or null to never cull.
+     */
     public FaceBuilder cullface(@Nullable Direction dir) {
         this.cullface = dir;
         return this;
     }
 
+    /**
+     * Sets the color index used when attempting to tint this face.
+     */
     public FaceBuilder tintindex(int index) {
         this.tintindex = index;
         return this;
@@ -51,6 +57,9 @@ public final class FaceBuilder {
         return this;
     }
 
+    /**
+     * Sets the texture uv mapping for this face.
+     */
     public FaceBuilder uvs(float u1, float v1, float u2, float v2) {
         this.uvs = new float[] { u1, v1, u2, v2 };
         return this;
