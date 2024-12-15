@@ -126,8 +126,8 @@ public class ExtendedModelTemplateBuilder {
         return this;
     }
 
-    public ExtendedModelTemplateBuilder ao(boolean ao) {
-        this.ambientOcclusion = ao;
+    public ExtendedModelTemplateBuilder ambientOcclusion(boolean ambientOcclusion) {
+        this.ambientOcclusion = ambientOcclusion;
         return this;
     }
 
