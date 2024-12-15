@@ -1,14 +1,5 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -52,7 +_,7 @@
- import net.minecraft.world.level.storage.LevelStorageSource;
- import org.slf4j.Logger;
- 
--public class ServerChunkCache extends ChunkSource {
-+public class ServerChunkCache extends ChunkSource implements net.neoforged.neoforge.common.extensions.IServerChunkCacheExtension {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private final DistanceManager distanceManager;
-     public final ServerLevel level;
 @@ -165,6 +_,10 @@
                  }
              }
@@ -28,15 +19,19 @@
                  ChunkAccess chunkaccess1 = chunkholder.getChunkIfPresent(ChunkStatus.FULL);
                  if (chunkaccess1 != null) {
                      this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
-@@ -384,7 +_,7 @@
+@@ -384,10 +_,11 @@
      private void collectTickingChunks(List<LevelChunk> p_363421_) {
          this.chunkMap.forEachSpawnCandidateChunk(p_381767_ -> {
              LevelChunk levelchunk = p_381767_.getTickingChunk();
 -            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos())) {
-+            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos()) || this.distanceManager.shouldForceTicks(p_381767_.getPos().toLong())) {
++            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos()) && !this.distanceManager.shouldForceTicks(p_381767_.getPos().toLong())) { // Neo: we add force ticked chunks in the list below
                  p_363421_.add(levelchunk);
              }
          });
++        chunkMap.collectForceTickingChunks(p_363421_);
+     }
+ 
+     private void tickChunks(ProfilerFiller p_364065_, long p_361343_, List<LevelChunk> p_360873_) {
 @@ -480,11 +_,17 @@
      }
  

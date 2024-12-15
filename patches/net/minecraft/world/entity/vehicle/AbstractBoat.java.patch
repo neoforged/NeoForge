@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractBoat.java
-@@ -45,7 +_,7 @@
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public abstract class AbstractBoat extends VehicleEntity implements Leashable {
-+public abstract class AbstractBoat extends VehicleEntity implements Leashable, net.neoforged.neoforge.common.extensions.IAbstractBoatExtension {
-     private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_LEFT = SynchedEntityData.defineId(AbstractBoat.class, EntityDataSerializers.BOOLEAN);
-     private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_RIGHT = SynchedEntityData.defineId(AbstractBoat.class, EntityDataSerializers.BOOLEAN);
-     private static final EntityDataAccessor<Integer> DATA_ID_BUBBLE_TIME = SynchedEntityData.defineId(AbstractBoat.class, EntityDataSerializers.INT);
 @@ -478,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(l1, k1, i2);

@@ -13,7 +13,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.conditions.FalseCondition;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -38,7 +38,7 @@ public interface ConditionalRecipeTest {
                                 .requires(Items.STONE)
                                 .unlockedBy("has_stone", has(Items.STONE))
                                 // false condition to have this recipe always disabled
-                                .save(output.withConditions(FalseCondition.INSTANCE), recipeName);
+                                .save(output.withConditions(NeoForgeConditions.never()), recipeName);
                     }
                 };
             }

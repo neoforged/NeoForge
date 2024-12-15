@@ -23,7 +23,7 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.conditions.IConditionBuilder;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -113,21 +113,16 @@ public class CustomFeatureFlagsTests {
         reg.addClientProvider(event -> new RecipeProvider.Runner(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-                class Provider extends RecipeProvider implements IConditionBuilder {
-                    protected Provider(HolderLookup.Provider p_360573_, RecipeOutput p_360872_) {
-                        super(p_360573_, p_360872_);
-                    }
-
+                return new RecipeProvider(registries, output) {
                     @Override
                     protected void buildRecipes() {
                         // recipe available when above flag is enabled
                         shapeless(RecipeCategory.MISC, Items.DIAMOND)
                                 .requires(ItemTags.DIRT)
                                 .unlockedBy("has_dirt", has(ItemTags.DIRT))
-                                .save(output.withConditions(featureFlagsEnabled(flag)), enabledRecipeName);
+                                .save(output.withConditions(NeoForgeConditions.featureFlagsEnabled(flag)), enabledRecipeName);
                     }
-                }
-                return new Provider(registries, output);
+                };
             }
 
             @Override

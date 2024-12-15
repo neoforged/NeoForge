@@ -1,14 +1,5 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -13,7 +_,7 @@
- import org.lwjgl.system.MemoryStack;
- 
- @OnlyIn(Dist.CLIENT)
--public interface VertexConsumer {
-+public interface VertexConsumer extends net.neoforged.neoforge.client.extensions.IVertexConsumerExtension {
-     VertexConsumer addVertex(float p_350761_, float p_350704_, float p_350711_);
- 
-     VertexConsumer setColor(int p_350535_, int p_350875_, int p_350886_, int p_350775_);
 @@ -131,11 +_,14 @@
                      f5 = p_331397_[i1] * p_85992_ * 255.0F;
                  }

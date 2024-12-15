@@ -129,11 +129,11 @@ public interface IItemExtension {
     }
 
     /**
-     * Called by CraftingManager to determine if an item is reparable.
+     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
      *
-     * @return True if reparable
+     * @return True if repairable by combining
      */
-    boolean isRepairable(ItemStack stack);
+    boolean isCombineRepairable(ItemStack stack);
 
     /**
      * Determines the amount of durability the mending enchantment

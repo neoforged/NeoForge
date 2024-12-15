@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -70,7 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
- 
--public class Item implements FeatureElement, ItemLike {
-+public class Item implements FeatureElement, ItemLike, net.neoforged.neoforge.common.extensions.IItemExtension {
-     public static final Codec<Holder<Item>> CODEC = BuiltInRegistries.ITEM
-         .holderByNameCodec()
-         .validate(
 @@ -79,7 +_,7 @@
                      : DataResult.success(p_381630_)
          );
@@ -18,7 +9,7 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -110,7 +_,7 @@
+@@ -110,12 +_,13 @@
          this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -27,6 +18,12 @@
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
                  LOGGER.error("Item classes should end with Item and {} doesn't.", s);
+             }
+         }
++        this.canCombineRepair = p_41383_.canCombineRepair;
+     }
+ 
+     @Deprecated
 @@ -127,6 +_,15 @@
          return this.components;
      }
@@ -76,7 +73,7 @@
      public final ItemStack getCraftingRemainder() {
          return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
      }
-@@ -302,7 +_,12 @@
+@@ -302,7 +_,14 @@
      }
  
      public boolean useOnRelease(ItemStack p_41464_) {
@@ -84,21 +81,27 @@
 +        return p_41464_.getItem() == Items.CROSSBOW;
 +    }
 +
++    protected final boolean canCombineRepair;
++
 +    @Override
-+    public boolean isRepairable(ItemStack stack) {
-+        return stack.has(DataComponents.REPAIRABLE) && isDamageable(stack);
++    public boolean isCombineRepairable(ItemStack stack) {
++        return canCombineRepair && isDamageable(stack);
      }
  
      public ItemStack getDefaultInstance() {
-@@ -326,7 +_,7 @@
-         return false;
-     }
+@@ -337,6 +_,12 @@
+         private ResourceKey<Item> id;
+         private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;
+         private DependantName<Item, ResourceLocation> model = ResourceKey::location;
++        private boolean canCombineRepair = true;
++
++        public Item.Properties setNoCombineRepair() {
++            canCombineRepair = false;
++            return this;
++        }
  
--    public static class Properties {
-+    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
-         private static final DependantName<Item, String> BLOCK_DESCRIPTION_ID = p_371954_ -> Util.makeDescriptionId("block", p_371954_.location());
-         private static final DependantName<Item, String> ITEM_DESCRIPTION_ID = p_371511_ -> Util.makeDescriptionId("item", p_371511_.location());
-         private final DataComponentMap.Builder components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
+         public Item.Properties food(FoodProperties p_41490_) {
+             return this.food(p_41490_, Consumables.DEFAULT_FOOD);
 @@ -437,6 +_,7 @@
          }
  

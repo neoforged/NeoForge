@@ -249,7 +249,7 @@ public interface IBlockExtension {
      * @param fluid         The current fluid state at current position
      */
     default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid) {
-        level.setBlock(pos, Blocks.AIR.defaultBlockState(), level.isClientSide ? 11 : 3);
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS);
         level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
     }
 
