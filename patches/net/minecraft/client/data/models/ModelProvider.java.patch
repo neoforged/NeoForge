@@ -1,11 +1,6 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -30,24 +_,62 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
--public class ModelProvider implements DataProvider {
-+public class ModelProvider implements DataProvider, net.neoforged.neoforge.common.extensions.IModelProviderExtension {
+@@ -34,26 +_,64 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
@@ -68,6 +63,15 @@
          modelprovider$blockstategeneratorcollector.validate();
          modelprovider$iteminfocollector.finalizeAndValidate();
          return CompletableFuture.allOf(
+-            modelprovider$blockstategeneratorcollector.save(p_387857_, this.blockStatePathProvider),
+-            modelprovider$simplemodelcollector.save(p_387857_, this.modelPathProvider),
+-            modelprovider$iteminfocollector.save(p_387857_, this.itemInfoPathProvider)
++                modelprovider$blockstategeneratorcollector.save(p_387857_, this.blockStatePathProvider),
++                modelprovider$simplemodelcollector.save(p_387857_, this.modelPathProvider),
++                modelprovider$iteminfocollector.save(p_387857_, this.itemInfoPathProvider)
+         );
+     }
+ 
 @@ -63,12 +_,22 @@
  
      @Override
@@ -92,7 +96,7 @@
  
          public void accept(BlockStateGenerator p_388748_) {
              Block block = p_388748_.getBlock();
-@@ -79,9 +_,9 @@
+@@ -79,10 +_,10 @@
          }
  
          public void validate() {
@@ -100,10 +104,12 @@
 +            Stream<? extends Holder<Block>> stream = knownBlocks.get();
              List<ResourceLocation> list = stream.filter(p_386843_ -> !this.generators.containsKey(p_386843_.value()))
 -                .map(p_386823_ -> p_386823_.key().location())
-+                .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().location())
-                 .toList();
+-                .toList();
++                    .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().location())
++                    .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing blockstate definitions for: " + list);
+             }
 @@ -97,6 +_,16 @@
      static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
@@ -130,16 +136,28 @@
                  if (!this.copies.containsKey(p_388426_)) {
                      if (p_388426_ instanceof BlockItem blockitem && !this.itemInfos.containsKey(blockitem)) {
                          ResourceLocation resourcelocation = ModelLocationUtils.getModelLocation(blockitem.getBlock());
-@@ -132,10 +_,9 @@
+@@ -132,11 +_,10 @@
                      this.register(p_386494_, clientitem);
                  }
              });
 -            List<ResourceLocation> list = BuiltInRegistries.ITEM
 -                .listElements()
-+            List<ResourceLocation> list = knownItems.get()
-                 .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
+-                .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
 -                .map(p_388278_ -> p_388278_.key().location())
-+                .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().location())
-                 .toList();
+-                .toList();
++            List<ResourceLocation> list = knownItems.get()
++                    .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
++                    .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().location())
++                    .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing item model definitions for: " + list);
+             }
+@@ -144,7 +_,7 @@
+ 
+         public CompletableFuture<?> save(CachedOutput p_387552_, PackOutput.PathProvider p_388501_) {
+             return DataProvider.saveAll(
+-                p_387552_, ClientItem.CODEC, p_388594_ -> p_388501_.json(p_388594_.builtInRegistryHolder().key().location()), this.itemInfos
++                    p_387552_, ClientItem.CODEC, p_388594_ -> p_388501_.json(p_388594_.builtInRegistryHolder().key().location()), this.itemInfos
+             );
+         }
+     }
