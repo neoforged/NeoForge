@@ -14,7 +14,7 @@
              JsonObject jsonobject = new JsonObject();
              this.model.ifPresent(p_388657_ -> jsonobject.addProperty("parent", p_388657_.toString()));
              if (!map.isEmpty()) {
-@@ -61,11 +_,13 @@
+@@ -61,11 +_,14 @@
              }
  
              return jsonobject;
@@ -26,6 +26,7 @@
          return Streams.concat(this.requiredSlots.stream(), p_387972_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_387972_::get));
 +    }
 +
++    // Neo: Allows modders to modify this template by adding new elements, custom loader, render types and other modifiers
 +    public net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder extend() {
 +        return net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder.of(this);
      }
