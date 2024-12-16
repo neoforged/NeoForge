@@ -5,7 +5,7 @@
  
      void copy(Item p_387316_, Item p_387995_);
 +
-+    // Neo: Pulled up from 'ModelProvider.ItemInfoCollector' to give modders full control over the 'ClientItem' over the 'ItemModel.Unbacked' in '#accept'
++    // Neo: Pulled up from 'ModelProvider.ItemInfoCollector' to give modders full control over the 'ClientItem' instead of just the 'ItemModel.Unbacked' in '#accept'
 +    default void register(Item item, net.minecraft.client.renderer.item.ClientItem clientItem) {
 +    }
  }
