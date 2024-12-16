@@ -87,7 +87,7 @@
  
          public void accept(BlockStateGenerator p_388748_) {
              Block block = p_388748_.getBlock();
-@@ -79,10 +_,10 @@
+@@ -79,9 +_,9 @@
          }
  
          public void validate() {
@@ -95,12 +95,10 @@
 +            Stream<? extends Holder<Block>> stream = knownBlocks.get();
              List<ResourceLocation> list = stream.filter(p_386843_ -> !this.generators.containsKey(p_386843_.value()))
 -                .map(p_386823_ -> p_386823_.key().location())
--                .toList();
-+                    .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().location())
-+                    .toList();
++                .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().location())
+                 .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing blockstate definitions for: " + list);
-             }
 @@ -97,6 +_,16 @@
      static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
@@ -127,28 +125,16 @@
                  if (!this.copies.containsKey(p_388426_)) {
                      if (p_388426_ instanceof BlockItem blockitem && !this.itemInfos.containsKey(blockitem)) {
                          ResourceLocation resourcelocation = ModelLocationUtils.getModelLocation(blockitem.getBlock());
-@@ -132,11 +_,10 @@
+@@ -132,10 +_,9 @@
                      this.register(p_386494_, clientitem);
                  }
              });
 -            List<ResourceLocation> list = BuiltInRegistries.ITEM
 -                .listElements()
--                .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
--                .map(p_388278_ -> p_388278_.key().location())
--                .toList();
 +            List<ResourceLocation> list = knownItems.get()
-+                    .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
-+                    .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().location())
-+                    .toList();
+                 .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
+-                .map(p_388278_ -> p_388278_.key().location())
++                .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().location())
+                 .toList();
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing item model definitions for: " + list);
-             }
-@@ -144,7 +_,7 @@
- 
-         public CompletableFuture<?> save(CachedOutput p_387552_, PackOutput.PathProvider p_388501_) {
-             return DataProvider.saveAll(
--                p_387552_, ClientItem.CODEC, p_388594_ -> p_388501_.json(p_388594_.builtInRegistryHolder().key().location()), this.itemInfos
-+                    p_387552_, ClientItem.CODEC, p_388594_ -> p_388501_.json(p_388594_.builtInRegistryHolder().key().location()), this.itemInfos
-             );
-         }
-     }
