@@ -22,7 +22,7 @@ public class TransformVecBuilder {
     /**
      * Sets the rotation for this transformation.
      * <p>
-     * This is rotation is considered the "left rotation" when also using {@linkplain #rightRotation(float, float, float)}.
+     * This rotation is considered the "left rotation" when also using {@linkplain #rightRotation(float, float, float)}.
      */
     public TransformVecBuilder rotation(float x, float y, float z) {
         this.rotation = new Vector3f(x, y, z);
