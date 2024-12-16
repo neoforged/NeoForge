@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -34,26 +_,64 @@
+@@ -34,20 +_,58 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
@@ -63,15 +63,6 @@
          modelprovider$blockstategeneratorcollector.validate();
          modelprovider$iteminfocollector.finalizeAndValidate();
          return CompletableFuture.allOf(
--            modelprovider$blockstategeneratorcollector.save(p_387857_, this.blockStatePathProvider),
--            modelprovider$simplemodelcollector.save(p_387857_, this.modelPathProvider),
--            modelprovider$iteminfocollector.save(p_387857_, this.itemInfoPathProvider)
-+                modelprovider$blockstategeneratorcollector.save(p_387857_, this.blockStatePathProvider),
-+                modelprovider$simplemodelcollector.save(p_387857_, this.modelPathProvider),
-+                modelprovider$iteminfocollector.save(p_387857_, this.itemInfoPathProvider)
-         );
-     }
- 
 @@ -63,12 +_,22 @@
  
      @Override
