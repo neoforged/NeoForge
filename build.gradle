@@ -27,11 +27,6 @@ if (isPreReleaseVersion) {
         }
     }
 
-    changelog {
-        from '20.6'
-        disableAutomaticPublicationRegistration()
-    }
-
     project.version = gradleutils.version.toString()
 }
 
