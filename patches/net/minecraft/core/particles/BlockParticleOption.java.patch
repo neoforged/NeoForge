@@ -1,18 +1,57 @@
 --- a/net/minecraft/core/particles/BlockParticleOption.java
 +++ b/net/minecraft/core/particles/BlockParticleOption.java
-@@ -37,4 +_,15 @@
+@@ -15,18 +_,39 @@
+     );
+     private final ParticleType<BlockParticleOption> type;
+     private final BlockState state;
++    /** Neo: Position of the block this particle was spawned for, if available, to provide model data for the particle texture selection */
++    @org.jetbrains.annotations.Nullable
++    private final net.minecraft.core.BlockPos pos;
+ 
+     public static MapCodec<BlockParticleOption> codec(ParticleType<BlockParticleOption> p_123635_) {
+         return BLOCK_STATE_CODEC.xmap(p_123638_ -> new BlockParticleOption(p_123635_, p_123638_), p_123633_ -> p_123633_.state).fieldOf("block_state");
+     }
+ 
+     public static StreamCodec<? super RegistryFriendlyByteBuf, BlockParticleOption> streamCodec(ParticleType<BlockParticleOption> p_320740_) {
+-        return ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY).map(p_319424_ -> new BlockParticleOption(p_320740_, p_319424_), p_319425_ -> p_319425_.state);
++        return StreamCodec.composite(
++                ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
++                option -> option.state,
++                net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.connectionAware(
++                        ByteBufCodecs.optional(net.minecraft.core.BlockPos.STREAM_CODEC),
++                        net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs.uncheckedUnit(java.util.Optional.empty())
++                ),
++                option -> java.util.Optional.ofNullable(option.pos),
++                (state, pos) -> new BlockParticleOption(p_320740_, state, pos.orElse(null))
++        );
+     }
+ 
+     public BlockParticleOption(ParticleType<BlockParticleOption> p_123629_, BlockState p_123630_) {
++        this(p_123629_, p_123630_, null);
++    }
++
++    /**
++     * Neo: construct a {@link BlockParticleOption} for the given type and {@link BlockState} and optionally the position
++     * of the block this particle is being spawned for
++     */
++    public BlockParticleOption(ParticleType<BlockParticleOption> p_123629_, BlockState p_123630_, @org.jetbrains.annotations.Nullable net.minecraft.core.BlockPos pos) {
+         this.type = p_123629_;
+         this.state = p_123630_;
++        this.pos = pos;
+     }
+ 
+     @Override
+@@ -36,5 +_,13 @@
+ 
      public BlockState getState() {
          return this.state;
-     }
-+
-+    //FORGE: Add a source pos property, so we can provide models with additional model data
-+    private net.minecraft.core.BlockPos pos;
-+    public BlockParticleOption setPos(net.minecraft.core.BlockPos pos) {
-+        this.pos = pos;
-+        return this;
 +    }
 +
++    /**
++     * Neo: returns the position of the block this particle was spawned for, if available
++     */
++    @org.jetbrains.annotations.Nullable
 +    public net.minecraft.core.BlockPos getPos() {
 +        return pos;
-+    }
+     }
  }
