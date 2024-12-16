@@ -52,7 +52,7 @@ public final class RotationBuilder {
     }
 
     /**
-     * Sets whether or not to scale the faces across the whole model when rotation has been applied.
+     * Sets whether or not the quad should be scaled after rotation to maintain its relative size.
      */
     public RotationBuilder rescale(boolean rescale) {
         this.rescale = rescale;
