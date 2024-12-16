@@ -24,7 +24,9 @@ public class FluidIngredientCodecs {
     static Codec<FluidIngredient> codec() {
         return Codec.xor(
                 NeoForgeRegistries.FLUID_INGREDIENT_TYPES.byNameCodec().<FluidIngredient>dispatch("neoforge:ingredient_type", FluidIngredient::getType, FluidIngredientType::codec),
-                SimpleFluidIngredient.CODEC).xmap(either -> either.map(i -> i, i -> i), ingredient -> switch (ingredient) {
+                // Use lazy: SimpleFluidIngredient.CODEC is initialized after FluidIngredient.CODEC which lives in a superclass.
+                Codec.lazyInitialized(() -> SimpleFluidIngredient.CODEC))
+                .xmap(either -> either.map(i -> i, i -> i), ingredient -> switch (ingredient) {
                     case SimpleFluidIngredient simple -> Either.right(simple);
                     default -> Either.left(ingredient);
                 });
