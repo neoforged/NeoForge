@@ -51,6 +51,9 @@ public final class RotationBuilder {
         return this;
     }
 
+    /**
+     * Sets whether or not to scale the the faces across the whole when rotation has been applied.
+     */
     public RotationBuilder rescale(boolean rescale) {
         this.rescale = rescale;
         return this;
