@@ -1,11 +1,7 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -26,15 +_,17 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
--public class BlockModel implements UnbakedModel {
-+public class BlockModel implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
+@@ -29,12 +_,14 @@
+ public class BlockModel implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
      @VisibleForTesting
      public static final Gson GSON = new GsonBuilder()
 +        .registerTypeHierarchyAdapter(UnbakedModel.class, new net.neoforged.neoforge.client.model.UnbakedModelParser.Deserializer())
@@ -19,13 +15,14 @@
          .create();
      private final List<BlockElement> elements;
      @Nullable
-@@ -49,7 +_,14 @@
+@@ -49,7 +_,15 @@
      private UnbakedModel parent;
      @Nullable
      private final ResourceLocation parentLocation;
 +    @Nullable
-+    private final com.mojang.math.Transformation transformation;
++    private final com.mojang.math.Transformation rootTransform;
 +    private final net.neoforged.neoforge.client.RenderTypeGroup renderTypeGroup;
++    private final java.util.Map<String, Boolean> partVisibility;
  
 +    /**
 +     * @deprecated Neo: use {@link net.neoforged.neoforge.client.model.UnbakedModelParser#parse(Reader)} instead
@@ -34,11 +31,11 @@
      public static BlockModel fromStream(Reader p_111462_) {
          return GsonHelper.fromJson(GSON, p_111462_, BlockModel.class);
      }
-@@ -62,12 +_,27 @@
+@@ -62,12 +_,29 @@
          @Nullable UnbakedModel.GuiLight p_387948_,
          @Nullable ItemTransforms p_273480_
      ) {
-+        this(p_273263_, p_272668_, p_386899_, p_272676_, p_387948_, p_273480_, null, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY);
++        this(p_273263_, p_272668_, p_386899_, p_272676_, p_387948_, p_273480_, null, net.neoforged.neoforge.client.RenderTypeGroup.EMPTY, java.util.Map.of());
 +    }
 +
 +    public BlockModel(
@@ -48,8 +45,9 @@
 +            @Nullable Boolean p_272676_,
 +            @Nullable UnbakedModel.GuiLight p_387948_,
 +            @Nullable ItemTransforms p_273480_,
-+            @Nullable com.mojang.math.Transformation transformation,
-+            net.neoforged.neoforge.client.RenderTypeGroup renderTypeGroup
++            @Nullable com.mojang.math.Transformation rootTransform,
++            net.neoforged.neoforge.client.RenderTypeGroup renderTypeGroup,
++            java.util.Map<String, Boolean> partVisibility
 +    ) {
          this.elements = p_272668_;
          this.hasAmbientOcclusion = p_272676_;
@@ -57,8 +55,9 @@
          this.textureSlots = p_386899_;
          this.parentLocation = p_273263_;
          this.transforms = p_273480_;
-+        this.transformation = transformation;
++        this.rootTransform = rootTransform;
 +        this.renderTypeGroup = renderTypeGroup;
++        this.partVisibility = partVisibility;
      }
  
      @Nullable
@@ -78,42 +77,31 @@
      }
  
      @Nullable
-@@ -125,6 +_,16 @@
+@@ -125,6 +_,13 @@
          return this.parentLocation;
      }
  
 +    @Override
 +    public void fillAdditionalProperties(net.minecraft.util.context.ContextMap.Builder propertiesBuilder) {
-+        if (this.transformation != null) {
-+            propertiesBuilder.withParameter(net.neoforged.neoforge.client.model.NeoForgeModelProperties.TRANSFORM, this.transformation);
-+        }
-+        if (!this.renderTypeGroup.isEmpty()) {
-+            propertiesBuilder.withParameter(net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE, this.renderTypeGroup);
-+        }
++        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRootTransformProperty(propertiesBuilder, this.rootTransform);
++        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillRenderTypeProperty(propertiesBuilder, this.renderTypeGroup);
++        net.neoforged.neoforge.client.model.NeoForgeModelProperties.fillPartVisibilityProperty(propertiesBuilder, this.partVisibility);
 +    }
 +
      @OnlyIn(Dist.CLIENT)
      public static class Deserializer implements JsonDeserializer<BlockModel> {
          public BlockModel deserialize(JsonElement p_111498_, Type p_111499_, JsonDeserializationContext p_111500_) throws JsonParseException {
-@@ -145,7 +_,20 @@
+@@ -145,7 +_,12 @@
              }
  
              ResourceLocation resourcelocation = s.isEmpty() ? null : ResourceLocation.parse(s);
 -            return new BlockModel(resourcelocation, list, textureslots$data, obool, unbakedmodel$guilight, itemtransforms);
 +
-+            com.mojang.math.Transformation rootTransform = null;
-+            if (jsonobject.has("transform")) {
-+                JsonElement transform = jsonobject.get("transform");
-+                rootTransform = p_111500_.deserialize(transform, com.mojang.math.Transformation.class);
-+            }
++            var rootTransform = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRootTransform(jsonobject, p_111500_);
++            var renderTypeGroup = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializeRenderType(jsonobject);
++            var partVisibility = net.neoforged.neoforge.client.model.NeoForgeModelProperties.deserializePartVisibility(jsonobject);
 +
-+            var renderTypeGroup = net.neoforged.neoforge.client.RenderTypeGroup.EMPTY;
-+            if (jsonobject.has("render_type")) {
-+                var renderTypeHintName = GsonHelper.getAsString(jsonobject, "render_type");
-+                renderTypeGroup = net.neoforged.neoforge.client.NamedRenderTypeManager.get(ResourceLocation.parse(renderTypeHintName));
-+            }
-+
-+            return new BlockModel(resourcelocation, list, textureslots$data, obool, unbakedmodel$guilight, itemtransforms, rootTransform, renderTypeGroup);
++            return new BlockModel(resourcelocation, list, textureslots$data, obool, unbakedmodel$guilight, itemtransforms, rootTransform, renderTypeGroup, partVisibility);
          }
  
          private TextureSlots.Data getTextureMap(JsonObject p_111510_) {

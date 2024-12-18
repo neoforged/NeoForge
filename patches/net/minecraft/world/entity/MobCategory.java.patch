@@ -1,15 +1,13 @@
 --- a/net/minecraft/world/entity/MobCategory.java
 +++ b/net/minecraft/world/entity/MobCategory.java
-@@ -3,7 +_,8 @@
+@@ -3,6 +_,7 @@
  import com.mojang.serialization.Codec;
  import net.minecraft.util.StringRepresentable;
  
--public enum MobCategory implements StringRepresentable {
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum
-+public enum MobCategory implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum MobCategory implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      MONSTER("monster", 70, false, false, 128),
      CREATURE("creature", 10, true, true, 128),
-     AMBIENT("ambient", 15, true, false, 128),
 @@ -56,5 +_,9 @@
  
      public int getNoDespawnDistance() {

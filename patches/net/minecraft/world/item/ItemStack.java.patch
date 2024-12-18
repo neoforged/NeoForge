@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -97,7 +_,7 @@
- import org.apache.commons.lang3.mutable.MutableBoolean;
- import org.slf4j.Logger;
- 
--public final class ItemStack implements DataComponentHolder {
-+public final class ItemStack implements DataComponentHolder, net.neoforged.neoforge.common.extensions.IItemStackExtension, net.neoforged.neoforge.common.MutableDataComponentHolder {
-     private static final List<Component> OP_NBT_WARNING = List.of(
-         Component.translatable("item.op_warning.line1").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
-         Component.translatable("item.op_warning.line2").withStyle(ChatFormatting.RED),
 @@ -242,6 +_,10 @@
          return !this.isEmpty() && this.components.hasNonDefault(p_389426_);
      }

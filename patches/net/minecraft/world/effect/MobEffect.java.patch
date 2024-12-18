@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/effect/MobEffect.java
 +++ b/net/minecraft/world/effect/MobEffect.java
-@@ -36,7 +_,7 @@
- import net.minecraft.world.flag.FeatureFlagSet;
- import net.minecraft.world.flag.FeatureFlags;
- 
--public class MobEffect implements FeatureElement {
-+public class MobEffect implements FeatureElement, net.neoforged.neoforge.common.extensions.IMobEffectExtension {
-     public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
-     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
-     private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
 @@ -65,6 +_,16 @@
          this.particleFactory = p_333515_ -> p_333716_;
      }

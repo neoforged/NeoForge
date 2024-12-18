@@ -426,7 +426,7 @@ public class ModListScreen extends Screen {
             lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.updateavailable", vercheck.url() == null ? "" : vercheck.url()).replace("\r\n", "\n"));
         lines.add(FMLTranslations.parseMessage("fml.menu.mods.info.license", selectedMod.getOwningFile().getLicense()).replace("\r\n", "\n"));
         lines.add(null);
-        lines.add(FMLTranslations.parseMessageWithFallback("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
+        lines.add(FMLTranslations.getPattern("fml.menu.mods.info.description." + selectedMod.getModId(), selectedMod::getDescription));
 
         /* Removed because people bitched that this information was misleading.
         lines.add(null);

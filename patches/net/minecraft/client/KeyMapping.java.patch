@@ -1,11 +1,8 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -15,9 +_,9 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
+@@ -17,7 +_,7 @@
  @OnlyIn(Dist.CLIENT)
--public class KeyMapping implements Comparable<KeyMapping> {
-+public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
+ public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
      private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -    private static final Map<InputConstants.Key, KeyMapping> MAP = Maps.newHashMap();
 +    private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();

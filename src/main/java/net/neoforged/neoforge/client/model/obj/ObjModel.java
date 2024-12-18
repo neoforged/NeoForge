@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.client.model.obj;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.mojang.math.Transformation;
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,8 +32,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.RenderTypeGroup;
-import net.neoforged.neoforge.client.model.ExtendedUnbakedModel;
+import net.neoforged.neoforge.client.model.AbstractUnbakedModel;
 import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
+import net.neoforged.neoforge.client.model.StandardModelParameters;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +47,7 @@ import org.joml.Vector4f;
  * Supports positions, texture coordinates, normals and colors. The {@link ObjMaterialLibrary material library}
  * has support for numerous features, including support for {@link ResourceLocation} textures (non-standard).
  */
-public class ObjModel implements ExtendedUnbakedModel {
+public class ObjModel extends AbstractUnbakedModel {
     private static final Vector4f COLOR_WHITE = new Vector4f(1, 1, 1, 1);
     private static final Vec2[] DEFAULT_COORDS = {
             new Vec2(0, 0),
@@ -54,7 +56,7 @@ public class ObjModel implements ExtendedUnbakedModel {
             new Vec2(1, 0),
     };
 
-    private final Map<String, ModelGroup> parts = Maps.newLinkedHashMap();
+    private final Multimap<String, ModelGroup> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
 
     private final List<Vector3f> positions = Lists.newArrayList();
     private final List<Vec2> texCoords = Lists.newArrayList();
@@ -69,18 +71,15 @@ public class ObjModel implements ExtendedUnbakedModel {
     public final String mtlOverride;
 
     public final ResourceLocation modelLocation;
-    public final Map<String, Boolean> partVisibility;
-    public final Transformation rootTransform;
 
     private ObjModel(ModelSettings settings) {
+        super(settings.parameters);
         this.modelLocation = settings.modelLocation;
         this.automaticCulling = settings.automaticCulling;
         this.shadeQuads = settings.shadeQuads;
         this.flipV = settings.flipV;
         this.emissiveAmbient = settings.emissiveAmbient;
         this.mtlOverride = settings.mtlOverride;
-        this.partVisibility = settings.partVisibility;
-        this.rootTransform = settings.rootTransform;
     }
 
     public static ObjModel parse(ObjTokenizer tokenizer, ModelSettings settings) throws IOException {
@@ -408,22 +407,14 @@ public class ObjModel implements ExtendedUnbakedModel {
         return Pair.of(quadBaker.bakeQuad(), cull);
     }
 
-    public boolean isComponentVisible(String part, boolean fallback) {
-        return partVisibility.getOrDefault(part, fallback);
-    }
-
     @Override
     public BakedModel bake(TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms, ContextMap additionalProperties) {
+        Map<String, Boolean> partVisibility = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
         var builder = new SimpleBakedModel.Builder(useAmbientOcclusion, usesBlockLight, true, transforms);
         builder.particle(baker.findSprite(slots, TextureSlot.PARTICLE.getId()));
-        parts.values().stream().filter(part -> isComponentVisible(part.name(), true))
-                .forEach(part -> part.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms));
+        parts.values().stream().filter(part -> partVisibility.getOrDefault(part.name(), true))
+                .forEach(part -> part.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms, additionalProperties));
         return builder.build(additionalProperties.getOrDefault(NeoForgeModelProperties.RENDER_TYPE, RenderTypeGroup.EMPTY));
-    }
-
-    @Override
-    public void resolveDependencies(Resolver resolver) {
-        // no dependencies
     }
 
     public class ModelObject {
@@ -439,9 +430,9 @@ public class ObjModel implements ExtendedUnbakedModel {
             return name;
         }
 
-        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms) {
+        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms, ContextMap additionalProperties) {
             for (ModelMesh mesh : meshes) {
-                mesh.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms);
+                mesh.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms, additionalProperties);
             }
         }
 
@@ -451,18 +442,19 @@ public class ObjModel implements ExtendedUnbakedModel {
     }
 
     public class ModelGroup extends ModelObject {
-        final Map<String, ModelObject> parts = Maps.newLinkedHashMap();
+        final Multimap<String, ModelObject> parts = MultimapBuilder.linkedHashKeys().arrayListValues().build();
 
         ModelGroup(String name) {
             super(name);
         }
 
         @Override
-        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms) {
-            super.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms);
+        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms, ContextMap additionalProperties) {
+            super.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms, additionalProperties);
 
-            parts.values().stream().filter(part -> isComponentVisible("%s.%s".formatted(name(), part.name()), true))
-                    .forEach(part -> part.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms));
+            Map<String, Boolean> partVisibility = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
+            parts.values().stream().filter(part -> partVisibility.getOrDefault("%s.%s".formatted(name(), part.name()), true))
+                    .forEach(part -> part.addQuads(builder, slots, baker, state, useAmbientOcclusion, usesBlockLight, transforms, additionalProperties));
         }
 
         @Override
@@ -485,14 +477,14 @@ public class ObjModel implements ExtendedUnbakedModel {
             this.smoothingGroup = currentSmoothingGroup;
         }
 
-        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms) {
+        public void addQuads(SimpleBakedModel.Builder builder, TextureSlots slots, ModelBaker baker, ModelState state, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms transforms, ContextMap additionalProperties) {
             if (mat == null)
                 return;
             TextureAtlasSprite texture = baker.findSprite(slots, mat.diffuseColorMap);
             int tintIndex = mat.diffuseTintIndex;
             Vector4f colorTint = mat.diffuseColor;
 
-            var rootTransform = ObjModel.this.rootTransform;
+            var rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.identity());
             var transform = rootTransform.isIdentity() ? state.getRotation() : state.getRotation().compose(rootTransform);
             for (int[][] face : faces) {
                 Pair<BakedQuad, Direction> quad = makeQuad(face, tintIndex, colorTint, mat.ambientColor, texture, transform);
@@ -507,5 +499,5 @@ public class ObjModel implements ExtendedUnbakedModel {
     public record ModelSettings(ResourceLocation modelLocation,
             boolean automaticCulling, boolean shadeQuads, boolean flipV,
             boolean emissiveAmbient, @Nullable String mtlOverride,
-            Map<String, Boolean> partVisibility, Transformation rootTransform) {}
+            StandardModelParameters parameters) {}
 }

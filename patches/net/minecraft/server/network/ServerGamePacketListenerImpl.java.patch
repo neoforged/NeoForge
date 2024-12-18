@@ -12,6 +12,14 @@
                      this.send(ClientboundMoveVehiclePacket.fromEntity(entity));
                      return;
                  }
+@@ -455,6 +_,7 @@
+                 entity.setOnGroundWithMovement(p_9876_.onGround(), vec3);
+                 entity.doCheckFallDamage(vec3.x, vec3.y, vec3.z, p_9876_.onGround());
+                 this.player.checkMovementStatistics(vec3.x, vec3.y, vec3.z);
++                this.player.checkRidingStatistics(vec3.x, vec3.y, vec3.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
+                 this.clientVehicleIsFloating = d11 >= -0.03125
+                     && !flag1
+                     && !this.server.isFlightAllowed()
 @@ -467,6 +_,23 @@
          }
      }

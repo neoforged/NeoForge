@@ -1,10 +1,11 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -83,11 +_,13 @@
+@@ -83,11 +_,14 @@
      private BakedModel missingModel;
      private ItemModel missingItemModel;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
 +    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
++    private Map<ResourceLocation, BakedModel> bakedStandaloneModels = Map.of();
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
@@ -61,10 +62,11 @@
          p_252136_.popPush("dispatch");
          Map<BlockState, BakedModel> map = createBlockStateToModelDispatch(modelbakery$bakingresult.blockStateModels(), modelbakery$bakingresult.missingModel());
          CompletableFuture<Void> completablefuture = CompletableFuture.allOf(
-@@ -304,6 +_,7 @@
+@@ -304,6 +_,8 @@
          this.modelGroups = p_248996_.modelGroups;
          this.missingModel = modelbakery$bakingresult.missingModel();
          this.missingItemModel = modelbakery$bakingresult.missingItemModel();
++        this.bakedStandaloneModels = modelbakery$bakingresult.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, modelbakery$bakingresult, this.modelBakery.get());
          p_251960_.popPush("cache");
          this.blockModelShaper.replaceCache(p_248996_.modelCache);
@@ -77,7 +79,7 @@
          return this.atlases.getAtlas(p_119429_);
      }
  
-@@ -360,5 +_,9 @@
+@@ -360,5 +_,13 @@
          SpecialBlockModelRenderer specialBlockModelRenderer,
          CompletableFuture<Void> readyForUpload
      ) {
@@ -85,5 +87,9 @@
 +
 +    public ModelBakery getModelBakery() {
 +        return this.modelBakery.get();
++    }
++
++    public BakedModel getStandaloneModel(ResourceLocation location) {
++        return this.bakedStandaloneModels.getOrDefault(location, this.missingModel);
      }
  }

@@ -7,20 +7,17 @@ package net.neoforged.neoforge.client.model.obj;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.math.Transformation;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.client.model.StandardModelParameters;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 /**
@@ -55,22 +52,9 @@ public class ObjLoader implements UnbakedModelLoader<ObjModel>, ResourceManagerR
         boolean flipV = GsonHelper.getAsBoolean(jsonObject, "flip_v", false);
         boolean emissiveAmbient = GsonHelper.getAsBoolean(jsonObject, "emissive_ambient", true);
         String mtlOverride = GsonHelper.getAsString(jsonObject, "mtl_override", null);
+        StandardModelParameters parameters = StandardModelParameters.parse(jsonObject, jsonDeserializationContext);
 
-        final Map<String, Boolean> partVisibility = new HashMap<>();
-        if (jsonObject.has("visibility")) {
-            JsonObject visibility = GsonHelper.getAsJsonObject(jsonObject, "visibility");
-            for (Map.Entry<String, JsonElement> part : visibility.entrySet()) {
-                partVisibility.put(part.getKey(), part.getValue().getAsBoolean());
-            }
-        }
-
-        Transformation transformation = Transformation.identity();
-        if (jsonObject.has("transform")) {
-            JsonElement transform = jsonObject.get("transform");
-            transformation = BlockModel.GSON.fromJson(transform, Transformation.class);
-        }
-
-        return loadModel(new ObjModel.ModelSettings(ResourceLocation.parse(modelLocation), automaticCulling, shadeQuads, flipV, emissiveAmbient, mtlOverride, partVisibility, transformation));
+        return loadModel(new ObjModel.ModelSettings(ResourceLocation.parse(modelLocation), automaticCulling, shadeQuads, flipV, emissiveAmbient, mtlOverride, parameters));
     }
 
     public ObjModel loadModel(ObjModel.ModelSettings settings) {

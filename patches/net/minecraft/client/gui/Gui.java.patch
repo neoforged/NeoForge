@@ -386,7 +386,7 @@
                  this.toolHighlightTimer = (int)(40.0 * this.minecraft.options.notificationDisplayTime().get());
              } else if (this.toolHighlightTimer > 0) {
                  this.toolHighlightTimer--;
-@@ -1321,8 +_,17 @@
+@@ -1321,6 +_,15 @@
          }
      }
  
@@ -400,11 +400,8 @@
 +    }
 +
      @OnlyIn(Dist.CLIENT)
--    public static enum HeartType {
-+    public static enum HeartType implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+     public static enum HeartType implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          CONTAINER(
-             ResourceLocation.withDefaultNamespace("hud/heart/container"),
-             ResourceLocation.withDefaultNamespace("hud/heart/container_blinking"),
 @@ -1438,8 +_,13 @@
              } else {
                  gui$hearttype = NORMAL;
