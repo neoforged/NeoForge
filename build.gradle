@@ -148,7 +148,7 @@ immaculate {
                 if (!it.startsWith("+")) return
                 if (it.contains('@NotNull') || it.contains('@Nonnull')
                         || it.contains('@org.jetbrains.annotations.NotNull')
-                        || it.contains('@javax.annotation.Nullable')) {
+                        || it.contains('@javax.annotation.Nonnull')) {
                     throw new GradleException('@NotNull and @Nonnull are disallowed.')
                 }
             }
