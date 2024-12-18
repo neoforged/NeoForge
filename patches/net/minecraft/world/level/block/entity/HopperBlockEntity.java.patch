@@ -1,22 +1,25 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -137,6 +_,7 @@
-     }
- 
+@@ -139,7 +_,7 @@
      private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, HopperBlockEntity p_326256_) {
-+        if (net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_)) return true;
          Container container = getAttachedContainer(p_155563_, p_155564_, p_326256_);
          if (container == null) {
+-            return false;
++            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_);
+         } else {
+             Direction direction = p_326256_.facing.getOpposite();
+             if (isFullContainer(container, direction)) {
+@@ -226,6 +_,10 @@
+ 
              return false;
-@@ -214,6 +_,8 @@
-     public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
-         BlockPos blockpos = BlockPos.containing(p_155554_.getLevelX(), p_155554_.getLevelY() + 1.0, p_155554_.getLevelZ());
-         BlockState blockstate = p_155553_.getBlockState(blockpos);
-+        Boolean ret = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155553_, p_155554_);
-+        if (ret != null) return ret;
-         Container container = getSourceContainer(p_155553_, p_155554_, blockpos, blockstate);
-         if (container != null) {
-             Direction direction = Direction.DOWN;
+         } else {
++            if (net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155553_, p_155554_)) {
++                return true;
++            }
++
+             boolean flag = p_155554_.isGridAligned()
+                 && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
+                 && !blockstate.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
 @@ -470,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
