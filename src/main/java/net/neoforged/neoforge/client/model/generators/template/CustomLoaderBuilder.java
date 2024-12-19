@@ -6,19 +6,13 @@
 package net.neoforged.neoforge.client.model.generators.template;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
-import net.minecraft.client.data.models.model.ModelTemplate;
-import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 public abstract class CustomLoaderBuilder {
-    private static final ResourceLocation DUMMY = ResourceLocation.fromNamespaceAndPath("dummy", "dummy");
-
     protected final ResourceLocation loaderId;
     protected final Map<String, Boolean> visibility = new LinkedHashMap<>();
     protected final boolean allowInlineElements;
@@ -80,9 +74,5 @@ public abstract class CustomLoaderBuilder {
         }
 
         return json;
-    }
-
-    protected static void serializeNestedTemplate(ModelTemplate template, TextureMapping textures, Consumer<JsonElement> consumer) {
-        template.create(DUMMY, textures, (id, jsonSup) -> consumer.accept(jsonSup.get()));
     }
 }
