@@ -45,6 +45,7 @@ import org.jetbrains.annotations.VisibleForTesting;
  * extra resource packs passed in via the {@code --existing} argument,
  * or mod resources via the {@code --existing-mod} argument.
  */
+@Deprecated(forRemoval = true, since = "1.21.4")
 public class ExistingFileHelper {
     public interface IResourceType {
         PackType getPackType();
@@ -91,7 +92,7 @@ public class ExistingFileHelper {
      * <p>
      * Only create a new helper if you intentionally want to ignore the existence of
      * other generated files.
-     * 
+     *
      * @param existingPacks a collection of paths to existing packs
      * @param existingMods  a set of mod IDs for existing mods
      * @param enable        {@code true} if validation is enabled
