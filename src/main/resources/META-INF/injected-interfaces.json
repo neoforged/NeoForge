@@ -32,9 +32,6 @@
   "net/minecraft/client/renderer/block/model/BlockModel": [
     "net/neoforged/neoforge/client/model/ExtendedUnbakedModel"
   ],
-  "net/minecraft/client/data/models/BlockModelGenerators": [
-    "net/neoforged/neoforge/client/extensions/IBlockModelGeneratorsExtension"
-  ],
   "net/minecraft/client/renderer/block/model/ItemModelGenerator": [
     "net/neoforged/neoforge/client/model/ExtendedUnbakedModel"
   ],

@@ -8,6 +8,8 @@ package net.neoforged.neoforge.oldtest.block;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -22,6 +24,7 @@ import net.minecraft.world.level.block.ScaffoldingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -62,7 +65,10 @@ public class ScaffoldingTest {
 
         @Override
         protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-            blockModels.createScaffolding(SCAFFOLDING_METHOD_TEST.value());
+            var stableModel = ModelLocationUtils.getModelLocation(SCAFFOLDING_METHOD_TEST.value(), "_stable");
+            var unstableModel = ModelLocationUtils.getModelLocation(SCAFFOLDING_METHOD_TEST.value(), "_unstable");
+            blockModels.registerSimpleItemModel(SCAFFOLDING_METHOD_TEST.value(), stableModel);
+            blockModels.blockStateOutput.accept(MultiVariantGenerator.multiVariant(SCAFFOLDING_METHOD_TEST.value()).with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.BOTTOM, unstableModel, stableModel)));
         }
     }
 

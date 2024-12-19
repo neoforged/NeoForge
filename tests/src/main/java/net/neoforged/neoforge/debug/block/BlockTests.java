@@ -10,10 +10,12 @@ import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.BlockFamily;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceKey;
@@ -91,7 +93,9 @@ public class BlockTests {
         reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-                blockModels.createFenceGate(gate.value(), Blocks.IRON_BLOCK);
+                var family = new BlockFamily.Builder(Blocks.IRON_BLOCK).fenceGate(gate.value()).getFamily();
+                var textureModel = TexturedModel.CUBE.get(Blocks.IRON_BLOCK);
+                blockModels.new BlockFamilyProvider(textureModel.getMapping()).generateFor(family);
             }
 
             @Override
