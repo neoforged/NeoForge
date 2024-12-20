@@ -49,7 +49,6 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -297,10 +296,6 @@ public class ClientHooks {
 
     public static void onBlockColorsInit(BlockColors blockColors) {
         ModLoader.postEvent(new RegisterColorHandlersEvent.Block(blockColors));
-    }
-
-    public static Model getArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model _default) {
-        return IClientItemExtensions.of(itemStack).getGenericArmorModel(itemStack, layerType, _default);
     }
 
     /** Copies humanoid model properties from the original model to another, used for armor models */
