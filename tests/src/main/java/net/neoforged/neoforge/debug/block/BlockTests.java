@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -94,8 +93,7 @@ public class BlockTests {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
                 var family = new BlockFamily.Builder(Blocks.IRON_BLOCK).fenceGate(gate.value()).getFamily();
-                var textureModel = TexturedModel.CUBE.get(Blocks.IRON_BLOCK);
-                blockModels.new BlockFamilyProvider(textureModel.getMapping()).generateFor(family);
+                blockModels.familyWithExistingFullBlock(family.getBaseBlock()).generateFor(family);
             }
 
             @Override
