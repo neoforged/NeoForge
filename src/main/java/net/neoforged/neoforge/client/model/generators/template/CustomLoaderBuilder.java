@@ -82,6 +82,9 @@ public abstract class CustomLoaderBuilder {
         return json;
     }
 
+    /**
+     * Serializes the given {@link ModelTemplate}/{@link TextureMapping} pair inline using the provided {@code consumer}
+     */
     protected static void serializeNestedTemplate(ModelTemplate template, TextureMapping textures, Consumer<JsonElement> consumer) {
         template.create(DUMMY, textures, (id, jsonSup) -> consumer.accept(jsonSup.get()));
     }
