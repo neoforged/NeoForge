@@ -124,6 +124,7 @@ public final class FaceBuilder {
     FaceBuilder copy() {
         FaceBuilder builder = new FaceBuilder();
         builder.texture = this.texture;
+        builder.color = this.color;
         builder.cullface = this.cullface;
         builder.tintindex = this.tintindex;
         builder.uvs = this.uvs != null ? Arrays.copyOf(this.uvs, this.uvs.length) : null;
