@@ -50,13 +50,16 @@ public abstract class CustomLoaderBuilder {
         return this;
     }
 
-    public final CustomLoaderBuilder copy() {
+    final CustomLoaderBuilder copy() {
         CustomLoaderBuilder builder = copyInternal();
         builder.visibility.putAll(this.visibility);
         builder.optional = this.optional;
         return builder;
     }
 
+    /**
+     * Returns a deep-copy of this builder in order to maintain the immutability nature of {@link ModelTemplate}.
+     */
     protected abstract CustomLoaderBuilder copyInternal();
 
     public JsonObject toJson(JsonObject json) {
