@@ -46,7 +46,12 @@ public class RemoveTagDatagenTest {
                         .remove(key(Blocks.ANVIL))
                         .remove(key(Blocks.BASALT), key(Blocks.POLISHED_ANDESITE))
                         .remove(BlockTags.BEEHIVES)
-                        .remove(BlockTags.BANNERS, BlockTags.BEDS);
+                        .remove(BlockTags.BANNERS, BlockTags.BEDS)
+                        .removeOptional(key(Blocks.GRANITE))
+                        .removeOptional(key(Blocks.DIORITE))
+                        .removeOptional(ResourceLocation.withDefaultNamespace("dacite"))
+                        .removeOptionalTag(BlockTags.SNOW)
+                        .removeOptionalTag(ResourceLocation.withDefaultNamespace("igneous_rocks"));
             }
         };
 

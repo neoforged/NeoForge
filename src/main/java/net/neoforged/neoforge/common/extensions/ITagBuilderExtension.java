@@ -52,6 +52,16 @@ public interface ITagBuilderExtension {
     }
 
     /**
+     * Adds an optional single-element entry to the remove list.
+     *
+     * @param elementID The ID of the element to add to the remove list
+     * @return The builder for chaining purposes
+     */
+    default TagBuilder removeOptionalElement(final ResourceLocation elementID) {
+        return this.getRawBuilder().remove(TagEntry.optionalElement(elementID));
+    }
+
+    /**
      * Adds a tag to the remove list.
      * 
      * @param tagID  The ID of the tag to add to the remove list
@@ -72,5 +82,15 @@ public interface ITagBuilderExtension {
      */
     default TagBuilder removeTag(final ResourceLocation tagID) {
         return this.getRawBuilder().remove(TagEntry.tag(tagID));
+    }
+
+    /**
+     * Adds an optional tag to the remove list.
+     *
+     * @param tagID The ID of the tag to add to the remove list
+     * @return The builder for chaining purposes
+     */
+    default TagBuilder removeOptionalTag(final ResourceLocation tagID) {
+        return this.getRawBuilder().remove(TagEntry.optionalTag(tagID));
     }
 }

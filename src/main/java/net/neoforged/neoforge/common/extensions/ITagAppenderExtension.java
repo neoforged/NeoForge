@@ -59,6 +59,19 @@ public interface ITagAppenderExtension<T> {
     }
 
     /**
+     * Optionally adds a single element's ID to the tag json's remove list. If the added ID is not present, it will be
+     * ignored and the containing tag will continue to be loaded as normal. Callable during datageneration.
+     *
+     * @param location The ID of the element to remove
+     * @return The builder for chaining
+     */
+    default TagsProvider.TagAppender<T> removeOptional(final ResourceLocation location) {
+        TagsProvider.TagAppender<T> builder = self();
+        builder.getInternalBuilder().removeOptionalElement(location);
+        return builder;
+    }
+
+    /**
      * Adds multiple elements' IDs to the tag json's remove list. Callable during datageneration.
      * 
      * @param locations The IDs of the elements to remove
@@ -80,6 +93,18 @@ public interface ITagAppenderExtension<T> {
      */
     default TagsProvider.TagAppender<T> remove(final ResourceKey<T> resourceKey) {
         this.remove(resourceKey.location());
+        return self();
+    }
+
+    /**
+     * Optionally adds a resource key to the tag json's remove list. If the added key is not present, it will be
+     * ignored and the containing tag will continue to be loaded as normal. Callable during datageneration.
+     *
+     * @param resourceKey The resource key of the element to remove
+     * @return The appender for chaining
+     */
+    default TagsProvider.TagAppender<T> removeOptional(final ResourceKey<T> resourceKey) {
+        this.removeOptional(resourceKey.location());
         return self();
     }
 
@@ -107,6 +132,31 @@ public interface ITagAppenderExtension<T> {
     default TagsProvider.TagAppender<T> remove(TagKey<T> tag) {
         TagsProvider.TagAppender<T> builder = self();
         builder.getInternalBuilder().removeTag(tag.location());
+        return builder;
+    }
+
+    /**
+     * Optionally adds a tag to the tag json's remove list. If the added tag is not present, it will be
+     * ignored and the containing tag will continue to be loaded as normal. Callable during datageneration.
+     *
+     * @param tag The ID of the tag to remove
+     * @return The builder for chaining
+     */
+    default TagsProvider.TagAppender<T> removeOptionalTag(TagKey<T> tag) {
+        this.removeOptionalTag(tag.location());
+        return self();
+    }
+
+    /**
+     * Optionally adds a tag to the tag json's remove list. If the added tag is not present, it will be
+     * ignored and the containing tag will continue to be loaded as normal. Callable during datageneration.
+     *
+     * @param location The ID of the tag to remove
+     * @return The builder for chaining
+     */
+    default TagsProvider.TagAppender<T> removeOptionalTag(ResourceLocation location) {
+        TagsProvider.TagAppender<T> builder = self();
+        builder.getInternalBuilder().removeOptionalTag(location);
         return builder;
     }
 

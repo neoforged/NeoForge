@@ -73,6 +73,12 @@ public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExt
     }
 
     @Override
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> removeOptional(final ResourceLocation location) {
+        ITagAppenderExtension.super.removeOptional(location);
+        return self();
+    }
+
+    @Override
     default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(final ResourceKey<T> resourceKey) {
         ITagAppenderExtension.super.remove(resourceKey);
         return self();
@@ -86,6 +92,12 @@ public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExt
     }
 
     @Override
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> removeOptional(final ResourceKey<T> resourceKey) {
+        ITagAppenderExtension.super.removeOptional(resourceKey);
+        return self();
+    }
+
+    @Override
     default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(TagKey<T> tag) {
         ITagAppenderExtension.super.remove(tag);
         return self();
@@ -95,6 +107,18 @@ public interface IIntrinsicHolderTagAppenderExtension<T> extends ITagAppenderExt
     @SuppressWarnings("unchecked")
     default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> remove(TagKey<T> first, TagKey<T>... tags) {
         ITagAppenderExtension.super.remove(first, tags);
+        return self();
+    }
+
+    @Override
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> removeOptionalTag(ResourceLocation location) {
+        ITagAppenderExtension.super.removeOptionalTag(location);
+        return self();
+    }
+
+    @Override
+    default IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> removeOptionalTag(TagKey<T> tag) {
+        ITagAppenderExtension.super.removeOptionalTag(tag);
         return self();
     }
 }

@@ -8,7 +8,27 @@
     "minecraft:polished_andesite",
     "#minecraft:beehives",
     "#minecraft:banners",
-    "#minecraft:beds"
+    "#minecraft:beds",
+    {
+      "id": "minecraft:granite",
+      "required": false
+    },
+    {
+      "id": "minecraft:diorite",
+      "required": false
+    },
+    {
+      "id": "minecraft:dacite",
+      "required": false
+    },
+    {
+      "id": "#minecraft:snow",
+      "required": false
+    },
+    {
+      "id": "#minecraft:igneous_rocks",
+      "required": false
+    }
   ],
   "values": []
 }
