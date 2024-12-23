@@ -30,7 +30,7 @@ import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "vanilla_data_gen", side = Dist.CLIENT)
 public interface VanillaDataGenTest {
-    @TestHolder(description = "Tests the the patched vanilla model generators work for modded usages")
+    @TestHolder(description = "Tests the patched vanilla model generators work for modded usages")
     static void testModelGenerators(DynamicTest test, RegistrationHelper reg) {
         var headModelName = ResourceKey.create(EquipmentAssets.ROOT_ID, ResourceLocation.fromNamespaceAndPath(reg.modId(), "vanilla_model_gen_item_head"));
         // item should appear as red/blue chessboard
