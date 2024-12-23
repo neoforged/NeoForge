@@ -44,6 +44,8 @@ import org.jetbrains.annotations.VisibleForTesting;
  * resources (via {@link VanillaPackResources}), forge's resources, as well as any
  * extra resource packs passed in via the {@code --existing} argument,
  * or mod resources via the {@code --existing-mod} argument.
+ *
+ * @deprecated To be removed without replacement.
  */
 @Deprecated(forRemoval = true, since = "1.21.4")
 public class ExistingFileHelper {
