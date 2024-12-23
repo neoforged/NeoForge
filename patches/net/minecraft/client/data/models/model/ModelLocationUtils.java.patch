@@ -5,13 +5,13 @@
      @Deprecated
      public static ResourceLocation decorateBlockModelLocation(String p_388520_) {
 -        return ResourceLocation.withDefaultNamespace("block/" + p_388520_);
-+        // NeoForge: Use ResourceLocation.parse to support modded paths
++        // Neo: Use ResourceLocation.parse to support modded paths
 +        return ResourceLocation.parse(p_388520_).withPrefix("block/");
      }
  
      public static ResourceLocation decorateItemModelLocation(String p_387226_) {
 -        return ResourceLocation.withDefaultNamespace("item/" + p_387226_);
-+        // NeoForge: Use ResourceLocation.parse to support modded paths
++        // Neo: Use ResourceLocation.parse to support modded paths
 +        return ResourceLocation.parse(p_387226_).withPrefix("item/");
      }
  

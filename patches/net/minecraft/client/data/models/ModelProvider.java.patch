@@ -6,7 +6,7 @@
      private final PackOutput.PathProvider modelPathProvider;
 +    public final String modId;
  
-+    // NeoForge: Use the below constructor passing in your mod id
++    // Neo: Use the constructor which accepts a mod ID.
 +    @Deprecated
      public ModelProvider(PackOutput p_388260_) {
 +        this(p_388260_, ResourceLocation.DEFAULT_NAMESPACE);
@@ -80,7 +80,7 @@
 +            this.knownBlocks = knownBlocks;
 +        }
 +
-+        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility, use above constructor
++        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility. Use constructor with Supplier parameter.
 +        public BlockStateGeneratorCollector() {
 +            this(BuiltInRegistries.BLOCK::listElements);
 +        }
@@ -109,7 +109,7 @@
 +            this.knownItems = knownItems;
 +        }
 +
-+        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility, use above constructor
++        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility. Use constructor with Supplier parameter.
 +        public ItemInfoCollector() {
 +            this(BuiltInRegistries.ITEM::listElements);
 +        }
