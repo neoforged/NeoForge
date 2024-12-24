@@ -46,7 +46,9 @@ public class RemoveTagDatagenTest {
                         .remove(key(Blocks.ANVIL))
                         .remove(key(Blocks.BASALT), key(Blocks.POLISHED_ANDESITE))
                         .remove(BlockTags.BEEHIVES)
-                        .remove(BlockTags.BANNERS, BlockTags.BEDS);
+                        .remove(BlockTags.BANNERS, BlockTags.BEDS)
+                        // test removing optional IDs not present at run-time
+                        .remove(ResourceLocation.withDefaultNamespace("dacite"));
             }
         };
 
