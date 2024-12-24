@@ -690,7 +690,7 @@ public class EventHooks {
      */
     @Nullable
     @ApiStatus.Internal
-    public static LootTable loadLootTable(ResourceLocation name, LootTable table, HolderLookup.Provider registries) {
+    public static LootTable loadLootTable(HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
             return null;
         LootTableLoadEvent event = new LootTableLoadEvent(registries, name, table);
