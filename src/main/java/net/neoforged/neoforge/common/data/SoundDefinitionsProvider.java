@@ -21,6 +21,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.sounds.SoundEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Data provider for the {@code sounds.json} file, which identifies sound definitions
@@ -30,6 +31,8 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
     private static final Logger LOGGER = LogManager.getLogger();
     private final PackOutput output;
     private final String modId;
+    @Nullable
+    @Deprecated(forRemoval = true, since = "1.21.4")
     private final ExistingFileHelper helper;
 
     private final Map<String, SoundDefinition> sounds = new LinkedHashMap<>();
@@ -41,10 +44,21 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param modId  The mod ID of the current mod.
      * @param helper The existing file helper provided by the event you are initializing this provider in.
      */
-    protected SoundDefinitionsProvider(final PackOutput output, final String modId, final ExistingFileHelper helper) {
+    @Deprecated(forRemoval = true, since = "1.21.4")
+    protected SoundDefinitionsProvider(final PackOutput output, final String modId, final @Nullable ExistingFileHelper helper) {
         this.output = output;
         this.modId = modId;
         this.helper = helper;
+    }
+
+    /**
+     * Creates a new instance of this data provider.
+     *
+     * @param output The {@linkplain PackOutput} instance provided by the data generator.
+     * @param modId  The mod ID of the current mod.
+     */
+    protected SoundDefinitionsProvider(final PackOutput output, final String modId) {
+        this(output, modId, null);
     }
 
     /**
@@ -212,6 +226,10 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
     }
 
     private boolean validateSound(final String soundName, final ResourceLocation name) {
+        if (this.helper == null) {
+            return true;
+        }
+
         final boolean valid = this.helper.exists(name, PackType.CLIENT_RESOURCES, ".ogg", "sounds");
         if (!valid) {
             final String path = name.getNamespace() + ":sounds/" + name.getPath() + ".ogg";

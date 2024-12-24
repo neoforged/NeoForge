@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/FlatLevelGeneratorPresetTagsProvider.java
 +++ b/net/minecraft/data/tags/FlatLevelGeneratorPresetTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,17 @@
  import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorPresets;
  
  public class FlatLevelGeneratorPresetTagsProvider extends TagsProvider<FlatLevelGeneratorPreset> {
@@ -9,8 +9,12 @@
      public FlatLevelGeneratorPresetTagsProvider(PackOutput p_256604_, CompletableFuture<HolderLookup.Provider> p_255962_) {
          super(p_256604_, Registries.FLAT_LEVEL_GENERATOR_PRESET, p_255962_);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public FlatLevelGeneratorPresetTagsProvider(PackOutput p_256604_, CompletableFuture<HolderLookup.Provider> p_255962_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256604_, Registries.FLAT_LEVEL_GENERATOR_PRESET, p_255962_, modId, existingFileHelper);
++    }
++    public FlatLevelGeneratorPresetTagsProvider(PackOutput p_256604_, CompletableFuture<HolderLookup.Provider> p_255962_, String modId) {
++        this(p_256604_, p_255962_, modId, null);
      }
  
      @Override

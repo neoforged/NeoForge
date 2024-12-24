@@ -14,6 +14,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An extension of the vanilla {@code AdvancementProvider} to provide a feature-complete
@@ -29,8 +30,21 @@ public class AdvancementProvider extends net.minecraft.data.advancements.Advance
      * @param existingFileHelper a helper used to find whether a file exists
      * @param subProviders       the generators used to create the advancements
      */
-    public AdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, ExistingFileHelper existingFileHelper, List<AdvancementGenerator> subProviders) {
+    @Deprecated(forRemoval = true, since = "1.21.4")
+    public AdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, @Nullable ExistingFileHelper existingFileHelper, List<AdvancementGenerator> subProviders) {
         super(output, registries, subProviders.stream().map(generator -> generator.toSubProvider(existingFileHelper)).toList());
+    }
+
+    /**
+     * Constructs an advancement provider using the generators to write the
+     * advancements to a file.
+     *
+     * @param output       the target directory of the data generator
+     * @param registries   a future of a lookup for registries and their objects
+     * @param subProviders the generators used to create the advancements
+     */
+    public AdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, List<AdvancementGenerator> subProviders) {
+        this(output, registries, null, subProviders);
     }
 
     /**
@@ -48,7 +62,7 @@ public class AdvancementProvider extends net.minecraft.data.advancements.Advance
          * @param saver              a consumer used to write advancements to a file
          * @param existingFileHelper a helper used to find whether a file exists
          */
-        void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper);
+        void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, @Nullable ExistingFileHelper existingFileHelper);
 
         /**
          * Creates an {@link AdvancementSubProvider} from this generator.
@@ -56,7 +70,7 @@ public class AdvancementProvider extends net.minecraft.data.advancements.Advance
          * @param existingFileHelper a helper used to find whether a file exists
          * @return a sub provider wrapping this generator
          */
-        default AdvancementSubProvider toSubProvider(ExistingFileHelper existingFileHelper) {
+        default AdvancementSubProvider toSubProvider(@Nullable ExistingFileHelper existingFileHelper) {
             return (registries, saver) -> this.generate(registries, saver, existingFileHelper);
         }
     }

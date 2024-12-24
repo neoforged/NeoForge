@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/InstrumentTagsProvider.java
 +++ b/net/minecraft/data/tags/InstrumentTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,17 @@
  import net.minecraft.world.item.Instruments;
  
  public class InstrumentTagsProvider extends TagsProvider<Instrument> {
@@ -9,8 +9,12 @@
      public InstrumentTagsProvider(PackOutput p_256418_, CompletableFuture<HolderLookup.Provider> p_256038_) {
          super(p_256418_, Registries.INSTRUMENT, p_256038_);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public InstrumentTagsProvider(PackOutput p_256418_, CompletableFuture<HolderLookup.Provider> p_256038_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256418_, Registries.INSTRUMENT, p_256038_, modId, existingFileHelper);
++    }
++    public InstrumentTagsProvider(PackOutput p_256418_, CompletableFuture<HolderLookup.Provider> p_256038_, String modId) {
++        this(p_256418_, p_256038_, modId, null);
      }
  
      @Override

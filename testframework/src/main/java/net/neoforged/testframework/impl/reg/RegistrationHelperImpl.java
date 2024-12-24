@@ -52,6 +52,7 @@ import net.neoforged.testframework.registration.DeferredBlocks;
 import net.neoforged.testframework.registration.DeferredEntityTypes;
 import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.jetbrains.annotations.Nullable;
 
 public class RegistrationHelperImpl implements RegistrationHelper {
     private ModContainer owner;
@@ -61,7 +62,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private interface DataGenProvider<T extends DataProvider> {
-        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, @Nullable ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
     }
 
     private static final Map<Class<?>, DataGenProvider<?>> PROVIDERS;

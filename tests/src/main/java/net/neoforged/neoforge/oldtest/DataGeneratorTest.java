@@ -145,8 +145,8 @@ public class DataGeneratorTest {
         gen.addProvider(true, new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
 
         gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
-        gen.addProvider(true, new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
-        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
+        gen.addProvider(true, new Tags(packOutput, lookupProvider));
+        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, List.of(new Advancements())));
         gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
@@ -352,7 +352,13 @@ public class DataGeneratorTest {
             return super.run(cache).thenRun(this::test);
         }
 
+        // This is safe to be removed when we drop ExistingFileHelper
+        @Deprecated(forRemoval = true, since = "1.21.4")
         private void test() {
+            if (this.helper == null) {
+                return;
+            }
+
             final JsonObject generated;
             try {
                 generated = reflect();
@@ -475,8 +481,8 @@ public class DataGeneratorTest {
     }
 
     public static class Tags extends BlockTagsProvider {
-        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-            super(output, lookupProvider, MODID, existingFileHelper);
+        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+            super(output, lookupProvider, MODID);
         }
 
         @Override
@@ -624,7 +630,13 @@ public class DataGeneratorTest {
             return super.run(cache).thenRun(this::validateResults);
         }
 
+        // This is safe to be removed when we drop ExistingFileHelper
+        @Deprecated(forRemoval = true, since = "1.21.4")
         private void validateResults() {
+            if (this.fileHelper == null) {
+                return;
+            }
+
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
                     .map(BuiltInRegistries.PARTICLE_TYPE::getKey).map(particle -> {
                         try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader()) {

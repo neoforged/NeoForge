@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/PoiTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/PoiTypeTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,17 @@
  import net.minecraft.world.entity.ai.village.poi.PoiTypes;
  
  public class PoiTypeTagsProvider extends TagsProvider<PoiType> {
@@ -9,8 +9,12 @@
      public PoiTypeTagsProvider(PackOutput p_256012_, CompletableFuture<HolderLookup.Provider> p_256617_) {
          super(p_256012_, Registries.POINT_OF_INTEREST_TYPE, p_256617_);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public PoiTypeTagsProvider(PackOutput p_256012_, CompletableFuture<HolderLookup.Provider> p_256617_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256012_, Registries.POINT_OF_INTEREST_TYPE, p_256617_, modId, existingFileHelper);
++    }
++    public PoiTypeTagsProvider(PackOutput p_256012_, CompletableFuture<HolderLookup.Provider> p_256617_, String modId) {
++        this(p_256012_, p_256617_, modId, null);
      }
  
      @Override

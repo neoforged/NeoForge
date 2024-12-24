@@ -1,13 +1,16 @@
 --- a/net/minecraft/data/tags/TagsProvider.java
 +++ b/net/minecraft/data/tags/TagsProvider.java
-@@ -32,26 +_,54 @@
+@@ -32,26 +_,67 @@
      private final CompletableFuture<TagsProvider.TagLookup<T>> parentProvider;
      protected final ResourceKey<? extends Registry<T>> registryKey;
      protected final Map<ResourceLocation, TagBuilder> builders = Maps.newLinkedHashMap();
 +    protected final String modId;
 +    @org.jetbrains.annotations.Nullable
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    protected final net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper;
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    private final net.neoforged.neoforge.common.data.ExistingFileHelper.IResourceType resourceType;
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    private final net.neoforged.neoforge.common.data.ExistingFileHelper.IResourceType elementResourceType; // FORGE: Resource type for validating required references to datapack registry elements.
  
 +    /**
@@ -15,12 +18,19 @@
 +     */
      protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_) {
 -        this(p_256596_, p_255886_, p_256513_, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()));
+-    }
+-
 +        this(p_256596_, p_255886_, p_256513_, "vanilla", null);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        this(p_256596_, p_255886_, p_256513_, CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()), modId, existingFileHelper);
-     }
- 
++    }
++
++    protected TagsProvider(PackOutput p_256596_, ResourceKey<? extends Registry<T>> p_255886_, CompletableFuture<HolderLookup.Provider> p_256513_, String modId) {
++        this(p_256596_, p_255886_, p_256513_, modId, null);
++    }
++
 +    /**
 +     * @deprecated Forge: Use the {@linkplain #TagsProvider(PackOutput, ResourceKey, CompletableFuture, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant}
 +     */
@@ -33,6 +43,7 @@
      ) {
 +        this(p_275432_, p_275476_, p_275222_, p_275565_, "vanilla", null);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    protected TagsProvider(PackOutput p_275432_, ResourceKey<? extends Registry<T>> p_275476_, CompletableFuture<HolderLookup.Provider> p_275222_, CompletableFuture<TagsProvider.TagLookup<T>> p_275565_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
          this.pathProvider = p_275432_.createRegistryTagsPathProvider(p_275476_);
          this.registryKey = p_275476_;
@@ -42,6 +53,10 @@
 +        this.existingFileHelper = existingFileHelper;
 +        this.resourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.minecraft.core.registries.Registries.tagsDirPath(p_275476_));
 +        this.elementResourceType = new net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType(net.minecraft.server.packs.PackType.SERVER_DATA, ".json", net.neoforged.neoforge.common.CommonHooks.prefixNamespace(p_275476_.location()));
++    }
++
++    protected TagsProvider(PackOutput p_275432_, ResourceKey<? extends Registry<T>> p_275476_, CompletableFuture<HolderLookup.Provider> p_275222_, CompletableFuture<TagsProvider.TagLookup<T>> p_275565_, String modId) {
++        this(p_275432_, p_275476_, p_275222_, p_275565_, modId, null);
 +    }
 +
 +    // Forge: Allow customizing the path for a given tag or returning null
@@ -89,8 +104,8 @@
 +    private boolean missing(TagEntry reference) {
 +        // Optional tags should not be validated
 +
-+        if (reference.isRequired()) {
-+            return existingFileHelper == null || !existingFileHelper.exists(reference.getId(), reference.isTag() ? resourceType : elementResourceType);
++        if (reference.isRequired() && existingFileHelper != null) {
++            return !existingFileHelper.exists(reference.getId(), reference.isTag() ? resourceType : elementResourceType);
 +        }
 +        return false;
 +    }

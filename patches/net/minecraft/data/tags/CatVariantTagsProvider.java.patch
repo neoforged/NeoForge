@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/CatVariantTagsProvider.java
 +++ b/net/minecraft/data/tags/CatVariantTagsProvider.java
-@@ -8,8 +_,13 @@
+@@ -8,8 +_,17 @@
  import net.minecraft.world.entity.animal.CatVariant;
  
  public class CatVariantTagsProvider extends TagsProvider<CatVariant> {
@@ -9,8 +9,12 @@
      public CatVariantTagsProvider(PackOutput p_256547_, CompletableFuture<HolderLookup.Provider> p_256090_) {
          super(p_256547_, Registries.CAT_VARIANT, p_256090_);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public CatVariantTagsProvider(PackOutput p_256547_, CompletableFuture<HolderLookup.Provider> p_256090_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256547_, Registries.CAT_VARIANT, p_256090_, modId, existingFileHelper);
++    }
++    public CatVariantTagsProvider(PackOutput p_256547_, CompletableFuture<HolderLookup.Provider> p_256090_, String modId) {
++        this(p_256547_, p_256090_, modId, null);
      }
  
      @Override

@@ -14,8 +14,12 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockTagsProvider extends IntrinsicHolderTagsProvider<Block> {
-    @SuppressWarnings("deprecation")
+    @Deprecated(forRemoval = true, since = "1.21.4")
     public BlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, Registries.BLOCK, lookupProvider, block -> block.builtInRegistryHolder().key(), modId, existingFileHelper);
+    }
+
+    public BlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
+        this(output, lookupProvider, modId, null);
     }
 }

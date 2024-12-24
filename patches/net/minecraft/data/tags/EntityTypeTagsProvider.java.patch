@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/EntityTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/EntityTypeTagsProvider.java
-@@ -8,8 +_,13 @@
+@@ -8,8 +_,17 @@
  import net.minecraft.world.entity.EntityType;
  
  public class EntityTypeTagsProvider extends IntrinsicHolderTagsProvider<EntityType<?>> {
@@ -10,8 +10,12 @@
 -        super(p_256095_, Registries.ENTITY_TYPE, p_256572_, p_256665_ -> p_256665_.builtInRegistryHolder().key());
 +        this(p_256095_, p_256572_, "vanilla", null);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public EntityTypeTagsProvider(PackOutput p_256095_, CompletableFuture<HolderLookup.Provider> p_256572_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256095_, Registries.ENTITY_TYPE, p_256572_, p_256665_ -> p_256665_.builtInRegistryHolder().key(), modId, existingFileHelper);
++    }
++    public EntityTypeTagsProvider(PackOutput p_256095_, CompletableFuture<HolderLookup.Provider> p_256572_, String modId) {
++        this(p_256095_, p_256572_, modId, null);
      }
  
      @Override

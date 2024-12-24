@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/StructureTagsProvider.java
 +++ b/net/minecraft/data/tags/StructureTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,17 @@
  import net.minecraft.world.level.levelgen.structure.Structure;
  
  public class StructureTagsProvider extends TagsProvider<Structure> {
@@ -9,8 +9,12 @@
      public StructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_) {
          super(p_256522_, Registries.STRUCTURE, p_256661_);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public StructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256522_, Registries.STRUCTURE, p_256661_, modId, existingFileHelper);
++    }
++    public StructureTagsProvider(PackOutput p_256522_, CompletableFuture<HolderLookup.Provider> p_256661_, String modId) {
++        this(p_256522_, p_256661_, modId, null);
      }
  
      @Override

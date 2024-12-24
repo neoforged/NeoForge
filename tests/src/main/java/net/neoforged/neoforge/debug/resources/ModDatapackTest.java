@@ -40,7 +40,7 @@ public class ModDatapackTest {
                                             ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
                     .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
                     .save(saver, testAdvancement, existingFileHelper));
-            return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper(), generators);
+            return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), generators);
         });
 
         test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {

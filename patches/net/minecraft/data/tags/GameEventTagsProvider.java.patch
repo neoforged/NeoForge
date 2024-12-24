@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/GameEventTagsProvider.java
 +++ b/net/minecraft/data/tags/GameEventTagsProvider.java
-@@ -55,8 +_,14 @@
+@@ -55,8 +_,19 @@
          GameEvent.UNEQUIP.key()
      );
  
@@ -11,8 +11,13 @@
 +        this(p_256060_, p_255621_, "vanilla", null);
 +    }
 +
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256060_, Registries.GAME_EVENT, p_255621_, modId, existingFileHelper);
++    }
++
++    public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_, String modId) {
++        this(p_256060_, p_255621_, modId, null);
      }
  
      @Override

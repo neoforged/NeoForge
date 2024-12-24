@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/BannerPatternTagsProvider.java
 +++ b/net/minecraft/data/tags/BannerPatternTagsProvider.java
-@@ -9,8 +_,13 @@
+@@ -9,8 +_,17 @@
  import net.minecraft.world.level.block.entity.BannerPatterns;
  
  public class BannerPatternTagsProvider extends TagsProvider<BannerPattern> {
@@ -9,8 +9,12 @@
      public BannerPatternTagsProvider(PackOutput p_256451_, CompletableFuture<HolderLookup.Provider> p_256420_) {
          super(p_256451_, Registries.BANNER_PATTERN, p_256420_);
 +    }
++    @Deprecated(forRemoval = true, since = "1.21.4")
 +    public BannerPatternTagsProvider(PackOutput p_256451_, CompletableFuture<HolderLookup.Provider> p_256420_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
 +        super(p_256451_, Registries.BANNER_PATTERN, p_256420_, modId, existingFileHelper);
++    }
++    public BannerPatternTagsProvider(PackOutput p_256451_, CompletableFuture<HolderLookup.Provider> p_256420_, String modId) {
++        this(p_256451_, p_256420_, modId, null);
      }
  
      @Override

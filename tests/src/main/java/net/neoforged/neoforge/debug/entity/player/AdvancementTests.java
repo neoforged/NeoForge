@@ -95,7 +95,6 @@ public class AdvancementTests {
         reg.addClientProvider(event -> new AdvancementProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
-                event.getExistingFileHelper(),
                 List.of((registries, saver, existingFileHelper) -> {
                     Advancement.Builder.advancement()
                             .parent(ResourceLocation.withDefaultNamespace("story/root"))
