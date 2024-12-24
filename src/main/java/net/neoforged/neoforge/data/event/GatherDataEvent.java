@@ -28,20 +28,16 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
     private final DataGeneratorConfig config;
-    private final ExistingFileHelper existingFileHelper;
     private final ModContainer modContainer;
 
-    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
+    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig) {
         this.modContainer = mc;
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
-        this.existingFileHelper = existingFileHelper;
     }
 
     public ModContainer getModContainer() {
@@ -54,11 +50,6 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
     public DataGenerator getGenerator() {
         return this.dataGenerator;
-    }
-
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public ExistingFileHelper getExistingFileHelper() {
-        return existingFileHelper;
     }
 
     public CompletableFuture<HolderLookup.Provider> getLookupProvider() {
@@ -78,14 +69,14 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     public static class Server extends GatherDataEvent {
-        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
-            super(mc, dataGenerator, dataGeneratorConfig, existingFileHelper);
+        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig) {
+            super(mc, dataGenerator, dataGeneratorConfig);
         }
     }
 
     public static class Client extends GatherDataEvent {
-        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
-            super(mc, dataGenerator, dataGeneratorConfig, existingFileHelper);
+        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig) {
+            super(mc, dataGenerator, dataGeneratorConfig);
         }
     }
 
@@ -158,27 +149,11 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         return addProvider(builder.create(dataGenerator.getPackOutput()));
     }
 
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public <T extends DataProvider> T createProvider(DataProviderFromOutputFileHelper<T> builder) {
-        return addProvider(builder.create(dataGenerator.getPackOutput(), existingFileHelper));
-    }
-
     public <T extends DataProvider> T createProvider(DataProviderFromOutputLookup<T> builder) {
         return addProvider(builder.create(dataGenerator.getPackOutput(), config.lookupProvider));
     }
 
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public <T extends DataProvider> T createProvider(DataProviderFromOutputLookupFileHelper<T> builder) {
-        return addProvider(builder.create(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
-    }
-
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public void createBlockAndItemTags(DataProviderFromOutputLookupFileHelper<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
-        var blockTags = createProvider(blockTagsProvider);
-        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter(), this.getExistingFileHelper()));
-    }
-
-    public void createBlockAndItemTags(DataProviderFromOutputLookup<TagsProvider<Block>> blockTagsProvider, ItemTagsProviderNew itemTagsProvider) {
+    public void createBlockAndItemTags(DataProviderFromOutputLookup<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
         var blockTags = createProvider(blockTagsProvider);
         addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter()));
     }
@@ -193,31 +168,13 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider);
     }
 
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    @FunctionalInterface
-    public interface DataProviderFromOutputFileHelper<T extends DataProvider> {
-        T create(PackOutput output, @Nullable ExistingFileHelper existingFileHelper);
-    }
-
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    @FunctionalInterface
-    public interface DataProviderFromOutputLookupFileHelper<T extends DataProvider> {
-        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper);
-    }
-
     @FunctionalInterface
     public interface GatherDataEventGenerator {
-        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper);
+        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig);
     }
 
-    @Deprecated(forRemoval = true, since = "1.21.4")
     @FunctionalInterface
     public interface ItemTagsProvider {
-        TagsProvider<Item> create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter, @Nullable ExistingFileHelper existingFileHelper);
-    }
-
-    @FunctionalInterface
-    public interface ItemTagsProviderNew { // TODO: come up with better name for this
         TagsProvider<Item> create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter);
     }
 }

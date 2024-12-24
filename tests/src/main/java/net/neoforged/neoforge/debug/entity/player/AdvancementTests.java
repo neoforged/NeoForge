@@ -95,12 +95,12 @@ public class AdvancementTests {
         reg.addClientProvider(event -> new AdvancementProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
-                List.of((registries, saver, existingFileHelper) -> {
+                List.of((registries, saver) -> {
                     Advancement.Builder.advancement()
                             .parent(ResourceLocation.withDefaultNamespace("story/root"))
                             .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, AdvancementType.TASK, true, true, false)
                             .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withSubPredicate(type, new CustomNamePredicate(1, 2))))
-                            .save(saver, ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"), existingFileHelper);
+                            .save(saver, ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"));
                 })));
 
         test.onGameTest(helper -> {

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.data.loading;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
@@ -16,7 +15,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.server.Bootstrap;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.internal.RegistrationEvents;
@@ -27,7 +25,6 @@ import org.jetbrains.annotations.ApiStatus;
 public class DatagenModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static GatherDataEvent.DataGeneratorConfig dataGeneratorConfig;
-    private static ExistingFileHelper existingFileHelper;
     private static boolean runningDataGen;
 
     public static boolean isRunningDataGen() {
@@ -35,9 +32,9 @@ public class DatagenModLoader extends CommonModLoader {
     }
 
     @ApiStatus.Internal
-    public static void begin(final Set<String> mods, final Path path, final Collection<Path> inputs, Collection<Path> existingPacks,
-            Set<String> existingMods, final boolean devToolGenerators, final boolean reportsGenerator,
-            final boolean structureValidator, final boolean flat, final String assetIndex, final File assetsDir, Runnable setup, GatherDataEvent.GatherDataEventGenerator eventGenerator,
+    public static void begin(final Set<String> mods, final Path path, final Collection<Path> inputs,
+            final boolean devToolGenerators, final boolean reportsGenerator,
+            final boolean structureValidator, final boolean flat, Runnable setup, GatherDataEvent.GatherDataEventGenerator eventGenerator,
             DataGenerator vanillaGenerator) {
         if (mods.contains("minecraft") && mods.size() == 1)
             return;
@@ -49,14 +46,9 @@ public class DatagenModLoader extends CommonModLoader {
         RegistrationEvents.modifyComponents();
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator);
-        if (!mods.contains("neoforge")) {
-            // If we aren't generating data for forge, automatically add forge as an existing so mods can access forge's data
-            existingMods.add("neoforge");
-        }
         setup.run();
-        existingFileHelper = new ExistingFileHelper(existingPacks, existingMods, structureValidator, assetIndex, assetsDir);
         ModLoader.runEventGenerator(mc -> eventGenerator.create(mc, dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mc.getModId()),
-                dataGeneratorConfig.getMods().contains(mc.getModId())), dataGeneratorConfig, existingFileHelper));
+                dataGeneratorConfig.getMods().contains(mc.getModId())), dataGeneratorConfig));
         dataGeneratorConfig.runAll();
     }
 }

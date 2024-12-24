@@ -47,7 +47,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         super.addTags(lookupProvider);
         inVanilla = false;
 
-        tag(NeoForgeMod.POISON_DAMAGE, Tags.DamageTypes.IS_POISON);
+        tag(Tags.DamageTypes.IS_POISON).addOptional(NeoForgeMod.POISON_DAMAGE.location());
 
         tag(DamageTypes.WITHER, Tags.DamageTypes.IS_WITHER);
         tag(DamageTypes.WITHER_SKULL, Tags.DamageTypes.IS_WITHER);

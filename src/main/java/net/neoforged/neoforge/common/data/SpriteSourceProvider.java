@@ -15,8 +15,6 @@ import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * <p>Data provider for atlas configuration files.<br>
@@ -39,13 +37,8 @@ public abstract class SpriteSourceProvider extends JsonCodecProvider<List<Sprite
 
     private final Map<ResourceLocation, SourceList> atlases = new HashMap<>();
 
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public SpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, PackOutput.Target.RESOURCE_PACK, "atlases", PackType.CLIENT_RESOURCES, SpriteSources.FILE_CODEC, lookupProvider, modId, existingFileHelper);
-    }
-
     public SpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
-        this(output, lookupProvider, modId, null);
+        super(output, PackOutput.Target.RESOURCE_PACK, "atlases", SpriteSources.FILE_CODEC, lookupProvider, modId);
     }
 
     /**

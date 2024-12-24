@@ -1,20 +1,16 @@
 --- a/net/minecraft/data/tags/DamageTypeTagsProvider.java
 +++ b/net/minecraft/data/tags/DamageTypeTagsProvider.java
-@@ -9,8 +_,17 @@
+@@ -9,8 +_,13 @@
  import net.minecraft.world.damagesource.DamageTypes;
  
  public class DamageTypeTagsProvider extends TagsProvider<DamageType> {
-+    /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
++    /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {
          super(p_270719_, Registries.DAMAGE_TYPE, p_270256_);
 +    }
-+    @Deprecated(forRemoval = true, since = "1.21.4")
-+    public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-+        super(p_270719_, Registries.DAMAGE_TYPE, p_270256_, modId, existingFileHelper);
-+    }
 +    public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_, String modId) {
-+        this(p_270719_, p_270256_, modId, null);
++        super(p_270719_, Registries.DAMAGE_TYPE, p_270256_, modId);
      }
  
      @Override

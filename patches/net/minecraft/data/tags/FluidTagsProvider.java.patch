@@ -1,21 +1,17 @@
 --- a/net/minecraft/data/tags/FluidTagsProvider.java
 +++ b/net/minecraft/data/tags/FluidTagsProvider.java
-@@ -9,8 +_,17 @@
+@@ -9,8 +_,13 @@
  import net.minecraft.world.level.material.Fluids;
  
  public class FluidTagsProvider extends IntrinsicHolderTagsProvider<Fluid> {
-+    /** @deprecated Forge: Use the {@linkplain #FluidTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
++    /** @deprecated Forge: Use the {@linkplain #FluidTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public FluidTagsProvider(PackOutput p_255941_, CompletableFuture<HolderLookup.Provider> p_256600_) {
 -        super(p_255941_, Registries.FLUID, p_256600_, p_256474_ -> p_256474_.builtInRegistryHolder().key());
-+        this(p_255941_, p_256600_, "vanilla", null);
-+    }
-+    @Deprecated(forRemoval = true, since = "1.21.4")
-+    public FluidTagsProvider(PackOutput p_255941_, CompletableFuture<HolderLookup.Provider> p_256600_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-+        super(p_255941_, Registries.FLUID, p_256600_, p_256474_ -> p_256474_.builtInRegistryHolder().key(), modId, existingFileHelper);
++        this(p_255941_, p_256600_, "vanilla");
 +    }
 +    public FluidTagsProvider(PackOutput p_255941_, CompletableFuture<HolderLookup.Provider> p_256600_, String modId) {
-+        this(p_255941_, p_256600_, modId, null);
++        super(p_255941_, Registries.FLUID, p_256600_, p_256474_ -> p_256474_.builtInRegistryHolder().key(), modId);
      }
  
      @Override

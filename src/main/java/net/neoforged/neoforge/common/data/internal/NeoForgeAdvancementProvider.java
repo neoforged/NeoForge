@@ -60,7 +60,6 @@ import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPr
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class NeoForgeAdvancementProvider extends AdvancementProvider {
@@ -249,7 +248,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
 
     private record NeoForgeAdvancementGenerator(AdvancementSubProvider vanillaProvider, List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers) implements AdvancementGenerator {
         @Override
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
+        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             // Warning: ugly code here.
             // Wrap the registries to allow using any tag. This is used to make decoding using the codec work in `replacePlayerPredicate`.
             var registriesWithAnyTag = new HolderLookup.Provider() {
@@ -298,7 +297,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             vanillaProvider.generate(registriesWithAnyTag, advancementHolder -> {
                 Advancement.Builder newBuilder = findAndReplaceInHolder(advancementHolder, registriesWithAnyTag);
                 if (newBuilder != null) {
-                    newBuilder.save(saver, advancementHolder.id(), existingFileHelper);
+                    newBuilder.save(saver, advancementHolder.id());
                 }
             });
         }

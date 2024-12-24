@@ -14,7 +14,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.extensions.IAdvancementBuilderExtension;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An extension of the vanilla {@code AdvancementProvider} to provide a feature-complete
@@ -25,53 +24,37 @@ public class AdvancementProvider extends net.minecraft.data.advancements.Advance
      * Constructs an advancement provider using the generators to write the
      * advancements to a file.
      *
-     * @param output             the target directory of the data generator
-     * @param registries         a future of a lookup for registries and their objects
-     * @param existingFileHelper a helper used to find whether a file exists
-     * @param subProviders       the generators used to create the advancements
-     */
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public AdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, @Nullable ExistingFileHelper existingFileHelper, List<AdvancementGenerator> subProviders) {
-        super(output, registries, subProviders.stream().map(generator -> generator.toSubProvider(existingFileHelper)).toList());
-    }
-
-    /**
-     * Constructs an advancement provider using the generators to write the
-     * advancements to a file.
-     *
      * @param output       the target directory of the data generator
      * @param registries   a future of a lookup for registries and their objects
      * @param subProviders the generators used to create the advancements
      */
     public AdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, List<AdvancementGenerator> subProviders) {
-        this(output, registries, null, subProviders);
+        super(output, registries, subProviders.stream().map(AdvancementGenerator::toSubProvider).toList());
     }
 
     /**
      * An interface used to generated modded advancements. This is parallel to
-     * vanilla's {@link AdvancementSubProvider} with access to the {@link ExistingFileHelper}.
+     * vanilla's {@link AdvancementSubProvider}.
      *
      * @see AdvancementSubProvider
      */
     public interface AdvancementGenerator {
         /**
          * A method used to generate advancements for a mod. Advancements should be
-         * built via {@link IAdvancementBuilderExtension#save(Consumer, ResourceLocation, ExistingFileHelper)}.
+         * built via {@link IAdvancementBuilderExtension#save(Consumer, ResourceLocation)}.
          *
-         * @param registries         a lookup for registries and their objects
-         * @param saver              a consumer used to write advancements to a file
-         * @param existingFileHelper a helper used to find whether a file exists
+         * @param registries a lookup for registries and their objects
+         * @param saver      a consumer used to write advancements to a file
          */
-        void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, @Nullable ExistingFileHelper existingFileHelper);
+        void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver);
 
         /**
          * Creates an {@link AdvancementSubProvider} from this generator.
          *
-         * @param existingFileHelper a helper used to find whether a file exists
          * @return a sub provider wrapping this generator
          */
-        default AdvancementSubProvider toSubProvider(@Nullable ExistingFileHelper existingFileHelper) {
-            return (registries, saver) -> this.generate(registries, saver, existingFileHelper);
+        default AdvancementSubProvider toSubProvider() {
+            return this::generate;
         }
     }
 }

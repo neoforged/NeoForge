@@ -1,23 +1,18 @@
 --- a/net/minecraft/data/tags/GameEventTagsProvider.java
 +++ b/net/minecraft/data/tags/GameEventTagsProvider.java
-@@ -55,8 +_,19 @@
+@@ -55,8 +_,14 @@
          GameEvent.UNEQUIP.key()
      );
  
-+    /** @deprecated Neo: Use the {@linkplain #GameEventTagsProvider(PackOutput, CompletableFuture, String, net.neoforged.neoforge.common.data.ExistingFileHelper) mod id variant} */
++    /** @deprecated Neo: Use the {@linkplain #GameEventTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_) {
 -        super(p_256060_, Registries.GAME_EVENT, p_255621_);
-+        this(p_256060_, p_255621_, "vanilla", null);
-+    }
-+
-+    @Deprecated(forRemoval = true, since = "1.21.4")
-+    public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_, String modId, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.common.data.ExistingFileHelper existingFileHelper) {
-+        super(p_256060_, Registries.GAME_EVENT, p_255621_, modId, existingFileHelper);
++        this(p_256060_, p_255621_, "vanilla");
 +    }
 +
 +    public GameEventTagsProvider(PackOutput p_256060_, CompletableFuture<HolderLookup.Provider> p_255621_, String modId) {
-+        this(p_256060_, p_255621_, modId, null);
++        super(p_256060_, Registries.GAME_EVENT, p_255621_, modId);
      }
  
      @Override

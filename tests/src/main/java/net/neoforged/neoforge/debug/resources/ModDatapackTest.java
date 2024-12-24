@@ -32,14 +32,14 @@ public class ModDatapackTest {
         final ResourceLocation testAdvancement = ResourceLocation.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
         test.registrationHelper().addClientProvider(event -> {
-            List<AdvancementProvider.AdvancementGenerator> generators = List.of((registries, saver, existingFileHelper) -> Advancement.Builder.recipeAdvancement()
+            List<AdvancementProvider.AdvancementGenerator> generators = List.of((registries, saver) -> Advancement.Builder.recipeAdvancement()
                     .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
                     .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
                             new InventoryChangeTrigger.TriggerInstance(
                                     Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
                                             ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
                     .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
-                    .save(saver, testAdvancement, existingFileHelper));
+                    .save(saver, testAdvancement));
             return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), generators);
         });
 
