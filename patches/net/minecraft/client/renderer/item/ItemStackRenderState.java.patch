@@ -14,7 +14,7 @@
          void render(PoseStack p_387607_, MultiBufferSource p_386763_, int p_387589_, int p_388775_) {
              p_387607_.pushPose();
 +            if (model != null)
-+                net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(p_387607_, model, displayContext, ItemStackRenderState.this.isLeftHand);
++                model.applyTransform(displayContext, p_387607_, ItemStackRenderState.this.isLeftHand);
 +            else
              this.transform().apply(ItemStackRenderState.this.isLeftHand, p_387607_);
              p_387607_.translate(-0.5F, -0.5F, -0.5F);

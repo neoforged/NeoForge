@@ -15,12 +15,14 @@ import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.state.HoglinRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.hoglin.HoglinBase;
@@ -150,7 +152,8 @@ public class ClientEventTests {
                 renderState.setRenderData(numRenderAttachmentKey, entity.getData(testAttachment));
             });
             // Test other type parameters for safety
-            event.registerEntityModifier(new TypeToken<AbstractHoglinRenderer<?>>() {}, (entity, renderState) -> {});
+            // This call requires explicit typing to satisfy ECJ. Without it, the wildcard on AbstractHoglinRenderer is invalid.
+            event.<Entity, HoglinRenderState>registerEntityModifier(new TypeToken<AbstractHoglinRenderer<?>>() {}, (entity, renderState) -> {});
             event.registerEntityModifier(new TypeToken<MobRenderer<Mob, LivingEntityRenderState, ?>>() {}, (entity, renderState) -> {});
             try {
                 class TestBrokenHoglinRendererTypeToken<T extends Mob & HoglinBase> extends TypeToken<AbstractHoglinRenderer<T>> {}

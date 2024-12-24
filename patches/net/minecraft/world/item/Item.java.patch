@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -70,7 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
- 
--public class Item implements FeatureElement, ItemLike {
-+public class Item implements FeatureElement, ItemLike, net.neoforged.neoforge.common.extensions.IItemExtension {
-     public static final Codec<Holder<Item>> CODEC = BuiltInRegistries.ITEM
-         .holderByNameCodec()
-         .validate(
 @@ -79,7 +_,7 @@
                      : DataResult.success(p_381630_)
          );
@@ -98,15 +89,6 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -326,7 +_,7 @@
-         return false;
-     }
- 
--    public static class Properties {
-+    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
-         private static final DependantName<Item, String> BLOCK_DESCRIPTION_ID = p_371954_ -> Util.makeDescriptionId("block", p_371954_.location());
-         private static final DependantName<Item, String> ITEM_DESCRIPTION_ID = p_371511_ -> Util.makeDescriptionId("item", p_371511_.location());
-         private final DataComponentMap.Builder components = DataComponentMap.builder().addAll(DataComponents.COMMON_ITEM_COMPONENTS);
 @@ -337,6 +_,12 @@
          private ResourceKey<Item> id;
          private DependantName<Item, String> descriptionId = ITEM_DESCRIPTION_ID;

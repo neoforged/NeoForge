@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -23,7 +_,7 @@
- import net.minecraft.world.phys.shapes.CollisionContext;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public abstract class BaseRailBlock extends Block implements SimpleWaterloggedBlock {
-+public abstract class BaseRailBlock extends Block implements SimpleWaterloggedBlock, net.neoforged.neoforge.common.extensions.IBaseRailBlockExtension {
-     protected static final VoxelShape FLAT_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-     protected static final VoxelShape HALF_BLOCK_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 @@ -51,7 +_,7 @@
  
      @Override

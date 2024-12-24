@@ -18,15 +18,6 @@
                      Raider raider1 = null;
                      if (i == this.getNumGroups(Difficulty.NORMAL)) {
                          raider1 = EntityType.PILLAGER.create(this.level, EntitySpawnReason.EVENT);
-@@ -828,7 +_,7 @@
-         }
-     }
- 
--    public static enum RaiderType {
-+    public static enum RaiderType implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
-         VINDICATOR(EntityType.VINDICATOR, new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
-         EVOKER(EntityType.EVOKER, new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
-         PILLAGER(EntityType.PILLAGER, new int[]{0, 4, 3, 3, 4, 4, 4, 2}),
 @@ -836,12 +_,26 @@
          RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  

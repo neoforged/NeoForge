@@ -1,14 +1,56 @@
 --- a/net/minecraft/client/gui/screens/worldselection/ExperimentsScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/ExperimentsScreen.java
-@@ -62,6 +_,11 @@
+@@ -156,6 +_,8 @@
+             p_387127_.pose().pushPose();
+             p_387127_.pose().translate(0.0, -this.scrollAmount(), 0.0);
  
-     @Override
-     protected void init() {
-+        if (net.minecraft.world.flag.FeatureFlags.REGISTRY.hasAnyModdedFlags()) {
-+            this.minecraft.setScreen(new net.neoforged.neoforge.client.gui.ScrollableExperimentsScreen(this.parent, this.packRepository, this.output));
-+            return;
++            // Neo: work around interaction "hitbox" of buttons not moving when scrolling
++            p_386932_ = (int) (p_386932_ + this.scrollAmount());
+             for (AbstractWidget abstractwidget : this.children) {
+                 abstractwidget.render(p_387127_, p_388038_, p_386932_, p_388026_);
+             }
+@@ -188,6 +_,44 @@
+                     this.setScrollAmount(this.scrollAmount() + (double)j + 14.0);
+                 }
+             }
 +        }
 +
-         this.layout.addTitleHeader(TITLE, this.font);
-         LinearLayout linearlayout = this.layout.addToContents(LinearLayout.vertical());
-         linearlayout.addChild(new MultiLineTextWidget(INFO, this.font).setMaxWidth(310), p_293611_ -> p_293611_.paddingBottom(15));
++        // Neo: work around interaction "hitbox" of buttons not moving when scrolling
++        @Override
++        public java.util.Optional<GuiEventListener> getChildAt(double p_94730_, double p_94731_) {
++            return super.getChildAt(p_94730_, p_94731_ + this.scrollAmount());
++        }
++
++        // Neo: work around interaction "hitbox" of buttons not moving when scrolling
++        @Override
++        public boolean mouseClicked(double p_313764_, double p_313832_, int p_313688_) {
++            java.util.Optional<GuiEventListener> optional = this.getChildAt(p_313764_, p_313832_);
++            if (optional.isEmpty()) {
++                return false;
++            } else {
++                GuiEventListener guieventlistener = optional.get();
++                if (guieventlistener.mouseClicked(p_313764_, p_313832_ + this.scrollAmount(), p_313688_)) {
++                    this.setFocused(guieventlistener);
++                    if (p_313688_ == 0) {
++                        this.setDragging(true);
++                    }
++                }
++
++                return true;
++            }
++        }
++
++        // Neo: work around interaction "hitbox" of buttons not moving when scrolling
++        @Override
++        public boolean mouseReleased(double p_313886_, double p_313935_, int p_313751_) {
++            if (p_313751_ == 0 && this.isDragging()) {
++                this.setDragging(false);
++                if (this.getFocused() != null) {
++                    return this.getFocused().mouseReleased(p_313886_, p_313935_ + this.scrollAmount(), p_313751_);
++                }
++            }
++
++            return this.getChildAt(p_313886_, p_313935_).filter(p_94708_ -> p_94708_.mouseReleased(p_313886_, p_313935_ + this.scrollAmount(), p_313751_)).isPresent();
+         }
+ 
+         @Override

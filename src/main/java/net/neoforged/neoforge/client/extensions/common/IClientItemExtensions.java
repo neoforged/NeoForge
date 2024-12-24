@@ -15,7 +15,6 @@ import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ARGB;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -25,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,8 +116,9 @@ public interface IClientItemExtensions {
     default Model getGenericArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
         Model replacement = getHumanoidArmorModel(itemStack, layerType, original);
         if (replacement != original) {
-            // FIXME: equipment rendering deals with a plain Model now
-            //ClientHooks.copyModelProperties(original, replacement);
+            if (original instanceof HumanoidModel<?> originalHumanoid && replacement instanceof HumanoidModel<?> replacementHumanoid) {
+                ClientHooks.copyModelProperties(originalHumanoid, replacementHumanoid);
+            }
             return replacement;
         }
         return original;
@@ -203,7 +204,7 @@ public interface IClientItemExtensions {
      * @return a default color for the layer, in ARGB format
      */
     default int getDefaultDyeColor(ItemStack stack) {
-        return stack.is(ItemTags.DYEABLE) ? ARGB.opaque(DyedItemColor.getOrDefault(stack, 0)) : 0;
+        return stack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(stack, 0) : 0;
     }
 
     /**

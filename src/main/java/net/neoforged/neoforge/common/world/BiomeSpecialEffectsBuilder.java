@@ -30,6 +30,7 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
         baseEffects.getAmbientMoodSettings().ifPresent(builder::ambientMoodSound);
         baseEffects.getAmbientAdditionsSettings().ifPresent(builder::ambientAdditionsSound);
         baseEffects.getBackgroundMusic().ifPresent(builder::backgroundMusic);
+        builder.backgroundMusicVolume = baseEffects.getBackgroundMusicVolume();
         return builder;
     }
 

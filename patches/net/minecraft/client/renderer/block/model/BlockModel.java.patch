@@ -1,11 +1,7 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModel.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModel.java
-@@ -26,15 +_,17 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
--public class BlockModel implements UnbakedModel {
-+public class BlockModel implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
+@@ -29,12 +_,14 @@
+ public class BlockModel implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
      @VisibleForTesting
      public static final Gson GSON = new GsonBuilder()
 +        .registerTypeHierarchyAdapter(UnbakedModel.class, new net.neoforged.neoforge.client.model.UnbakedModelParser.Deserializer())

@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/gui/Font.java
 +++ b/net/minecraft/client/gui/Font.java
-@@ -32,7 +_,7 @@
- import org.joml.Matrix4f;
- 
- @OnlyIn(Dist.CLIENT)
--public class Font {
-+public class Font implements net.neoforged.neoforge.client.extensions.IFontExtension {
-     private static final float EFFECT_DEPTH = 0.01F;
-     public static final float SHADOW_DEPTH = 0.03F;
-     public static final int NO_SHADOW = 0;
 @@ -42,6 +_,8 @@
      private final Function<ResourceLocation, FontSet> fonts;
      final boolean filterFishyGlyphs;

@@ -6,6 +6,12 @@
 package net.neoforged.neoforge.oldtest;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,11 +24,11 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.templatesystem.PosRuleTestType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -97,10 +103,10 @@ public class DeferredRegistryTest {
     public void gatherData(GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
 
-        gen.addProvider(true, new BlockStateProvider(gen.getPackOutput(), MODID, event.getExistingFileHelper()) {
+        gen.addProvider(true, new ModelProvider(gen.getPackOutput(), MODID) {
             @Override
-            protected void registerStatesAndModels() {
-                simpleBlockWithItem(BLOCK.get(), models().cubeAll(BLOCK.getId().getPath(), mcLoc("block/furnace_top")));
+            protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+                blockModels.createTrivialBlock(BLOCK.value(), TexturedModel.CUBE.updateTexture(textures -> textures.put(TextureSlot.ALL, TextureMapping.getBlockTexture(Blocks.FURNACE, "_top"))));
             }
         });
     }

@@ -14,32 +14,26 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
-    public static <T extends ModelBuilder<T>> CompositeModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new CompositeModelBuilder<>(parent, existingFileHelper);
-    }
-
+public class CompositeModelBuilder extends CustomLoaderBuilder {
     private final Map<String, ResourceLocation> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
-    protected CompositeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), parent, existingFileHelper, false);
+    public CompositeModelBuilder() {
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "composite"), false);
     }
 
-    public CompositeModelBuilder<T> child(String name, ModelFile model) {
+    public CompositeModelBuilder child(String name, ResourceLocation model) {
         Preconditions.checkNotNull(name, "name must not be null");
         Preconditions.checkNotNull(model, "model must not be null");
-        childModels.put(name, model.getLocation());
+        childModels.put(name, model);
         itemRenderOrder.add(name);
         return this;
     }
 
-    public CompositeModelBuilder<T> itemRenderOrder(String... names) {
+    public CompositeModelBuilder itemRenderOrder(String... names) {
         Preconditions.checkNotNull(names, "names must not be null");
         Preconditions.checkArgument(names.length > 0, "names must contain at least one element");
         for (String name : names)
@@ -48,6 +42,14 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
         itemRenderOrder.clear();
         itemRenderOrder.addAll(Arrays.asList(names));
         return this;
+    }
+
+    @Override
+    protected CustomLoaderBuilder copyInternal() {
+        CompositeModelBuilder builder = new CompositeModelBuilder();
+        builder.childModels.putAll(this.childModels);
+        builder.itemRenderOrder.addAll(this.itemRenderOrder);
+        return builder;
     }
 
     @Override
