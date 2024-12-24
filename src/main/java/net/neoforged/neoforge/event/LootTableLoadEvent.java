@@ -49,11 +49,11 @@ public class LootTableLoadEvent extends Event implements ICancellableEvent {
      * {@return a lookup provider that can be used to access registries}
      */
     public HolderLookup.Provider getRegistries() {
-        return registries;
+        return this.registries;
     }
 
     public ResourceLocation getName() {
-        return name;
+        return this.name;
     }
 
     public ResourceKey<LootTable> getKey() {
