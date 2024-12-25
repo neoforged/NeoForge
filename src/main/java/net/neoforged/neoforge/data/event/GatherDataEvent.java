@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.data.event;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -23,12 +24,14 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.data.DataResourceManager;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
@@ -45,8 +48,11 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         return this.modContainer;
     }
 
-    public DataResourceManager getResourceManager() {
-        return config.resourceManager;
+    public DataResourceManager getResourceManager(PackType packType) {
+        return switch (packType) {
+            case CLIENT_RESOURCES -> config.clientResourceManager;
+            case SERVER_DATA -> config.serverResourceManager;
+        };
     }
 
     public Collection<Path> getInputs() {
@@ -95,10 +101,11 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final boolean validate;
         private final boolean flat;
         private final List<DataGenerator> generators = new ArrayList<>();
-        private final DataResourceManager resourceManager;
+        private final DataResourceManager clientResourceManager;
+        private final DataResourceManager serverResourceManager;
 
         public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
-                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final DataResourceManager resourceManager) {
+                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final @Nullable String assetIndex, final @Nullable File assetsDir) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
@@ -107,7 +114,10 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.reports = reports;
             this.validate = validate;
             this.flat = flat;
-            this.resourceManager = resourceManager;
+
+            clientResourceManager = DataResourceManager.forClient(assetIndex, assetsDir);
+            serverResourceManager = new DataResourceManager(PackType.SERVER_DATA);
+
             if (mods.contains("minecraft") || mods.isEmpty()) {
                 this.generators.add(vanillaGenerator);
             }

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.data;
 
+import com.google.common.collect.Lists;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,21 +14,26 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.client.resources.ClientPackSource;
 import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.ServerPacksSource;
-import net.minecraft.server.packs.resources.FallbackResourceManager;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
+import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,69 +46,88 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see ResourceManager
  */
-public final class DataResourceManager {
-    private final FallbackResourceManager client = new FallbackResourceManager(PackType.CLIENT_RESOURCES, "minecraft");
-    private final FallbackResourceManager server = new FallbackResourceManager(PackType.SERVER_DATA, "minecraft");
+public final class DataResourceManager implements ResourceManager {
+    private final ResourceManager delegate;
+    private final PackType packType;
 
-    @ApiStatus.Internal
-    public DataResourceManager(@Nullable String assetIndex, @Nullable File assetsDir) {
-        if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
-            client.push(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
+    private DataResourceManager(PackType packType, Consumer<Consumer<PackResources>> consumer) {
+        this.packType = packType;
 
-        server.push(ServerPacksSource.createVanillaPackSource());
+        var packs = Lists.<PackResources>newArrayList();
+        consumer.accept(packs::add);
+        packs.add(ServerPacksSource.createVanillaPackSource());
 
         ModList.get().forEachModInOrder(mod -> {
             var packInfo = new PackLocationInfo("mod/" + mod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
             var modPack = ResourcePackLoader.createPackForMod(mod.getModInfo().getOwningFile()).openPrimary(packInfo);
-
-            client.push(modPack);
-            server.push(modPack);
+            packs.add(modPack);
         });
+
+        delegate = new MultiPackResourceManager(packType, packs);
     }
 
-    private ResourceManager manager(PackType packType) {
-        return switch (packType) {
-            case CLIENT_RESOURCES -> client;
-            case SERVER_DATA -> server;
-        };
+    @ApiStatus.Internal
+    public DataResourceManager(PackType packType) {
+        this(packType, Consumers.nop());
     }
 
-    public Optional<Resource> getResource(PackType packType, ResourceLocation path) {
-        return manager(packType).getResource(path);
+    public PackType packType() {
+        return packType;
     }
 
-    public boolean exists(PackType packType, ResourceLocation path) {
-        return getResource(packType, path).isPresent();
+    public boolean exists(ResourceLocation path) {
+        return getResource(path).isPresent();
     }
 
-    public Resource getResourceOrThrow(PackType packType, ResourceLocation path) throws FileNotFoundException {
-        return getResource(packType, path).orElseThrow(() -> new FileNotFoundException("Missing " + name(packType) + " resource " + path));
+    @Override
+    public Optional<Resource> getResource(ResourceLocation path) {
+        return delegate.getResource(path);
     }
 
-    public InputStream open(PackType packType, ResourceLocation path) throws IOException {
-        return getResourceOrThrow(packType, path).open();
+    @Override
+    public Resource getResourceOrThrow(ResourceLocation path) throws FileNotFoundException {
+        return delegate.getResourceOrThrow(path);
     }
 
-    public BufferedReader openAsReader(PackType packType, ResourceLocation path) throws IOException {
-        return getResourceOrThrow(packType, path).openAsReader();
+    @Override
+    public InputStream open(ResourceLocation path) throws IOException {
+        return delegate.open(path);
     }
 
-    public List<Resource> getResourceStack(PackType packType, ResourceLocation path) {
-        return manager(packType).getResourceStack(path);
+    @Override
+    public BufferedReader openAsReader(ResourceLocation path) throws IOException {
+        return delegate.openAsReader(path);
     }
 
-    public Map<ResourceLocation, Resource> listResources(PackType packType, String path, Predicate<ResourceLocation> filter) {
-        return manager(packType).listResources(path, filter);
+    @Override
+    public List<Resource> getResourceStack(ResourceLocation path) {
+        return delegate.getResourceStack(path);
     }
 
-    public Map<ResourceLocation, List<Resource>> listResourceStacks(PackType packType, String path, Predicate<ResourceLocation> filter) {
-        return manager(packType).listResourceStacks(path, filter);
+    @Override
+    public Map<ResourceLocation, Resource> listResources(String path, Predicate<ResourceLocation> filter) {
+        return delegate.listResources(path, filter);
     }
 
-    private static String name(PackType packType) {
-        return switch (packType) {
-            case CLIENT_RESOURCES -> "client";
-            case SERVER_DATA -> "server";
-        };
+    @Override
+    public Map<ResourceLocation, List<Resource>> listResourceStacks(String path, Predicate<ResourceLocation> filter) {
+        return delegate.listResourceStacks(path, filter);
+    }
+
+    @Override
+    public Set<String> getNamespaces() {
+        return delegate.getNamespaces();
+    }
+
+    @Override
+    public Stream<PackResources> listPacks() {
+        return delegate.listPacks();
+    }
+
+    public static DataResourceManager forClient(@Nullable String assetIndex, @Nullable File assetsDir) {
+        return new DataResourceManager(PackType.CLIENT_RESOURCES, consumer -> {
+            if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
+                consumer.accept(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
+        });
     }
 }

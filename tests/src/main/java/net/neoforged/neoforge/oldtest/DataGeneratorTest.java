@@ -141,8 +141,8 @@ public class DataGeneratorTest {
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
-        gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager()));
-        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager()));
+        gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
+        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
         gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
         gen.addProvider(true, new Tags(packOutput, lookupProvider));
@@ -363,7 +363,7 @@ public class DataGeneratorTest {
             }
             final JsonObject actual;
             try {
-                List<Resource> resourceStack = this.resourceManager.getResourceStack(PackType.CLIENT_RESOURCES, ResourceLocation.withDefaultNamespace("sounds.json"));
+                List<Resource> resourceStack = this.resourceManager.getResourceStack(ResourceLocation.withDefaultNamespace("sounds.json"));
                 // Get the first resource in the stack
                 // This guarantees vanilla even when a forge sounds.json is present because getResourceStack reverses the list
                 // so that the lower priority resources are first (to allow overwriting data in later entries)
@@ -633,7 +633,7 @@ public class DataGeneratorTest {
         private void validateResults() {
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
                     .map(BuiltInRegistries.PARTICLE_TYPE::getKey).map(particle -> {
-                        try (var resource = this.resourceManager.openAsReader(PackType.CLIENT_RESOURCES, particle.withPath(path -> "particles/" + path + ".json"))) {
+                        try (var resource = this.resourceManager.openAsReader(particle.withPath(path -> "particles/" + path + ".json"))) {
                             var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
                             var generatedTextures = this.descriptions.get(particle);
 
