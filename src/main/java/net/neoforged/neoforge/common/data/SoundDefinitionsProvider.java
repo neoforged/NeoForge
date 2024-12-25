@@ -190,31 +190,15 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
     }
 
     private boolean validate(final String name, final SoundDefinition def) {
-        return def.soundList().stream().allMatch(it -> this.validate(name, it));
-    }
-
-    private boolean validate(final String name, final SoundDefinition.Sound sound) {
-        switch (sound.type()) {
-            case SOUND:
-                // used to validate .ogg file existence but no longer possible due to removal of ExistingFileHelper
-                // assume all .ogg files exist
-                return true;
-            case EVENT:
-                return this.validateEvent(name, sound.name());
-        }
-        // Differently from all the other errors, this is not a 'missing sound' but rather something completely different
-        // that has broken the invariants of this sound definition's provider. In fact, a sound may only be either of
-        // SOUND or EVENT type. Any other values is somebody messing with the internals, reflectively adding something
-        // to an enum or passing `null` to a parameter that isn't annotated with `@Nullable`.
-        throw new IllegalArgumentException("The given sound '" + sound.name() + "' does not have a valid type: expected either SOUND or EVENT, but found " + sound.type());
-    }
-
-    private boolean validateEvent(final String soundName, final ResourceLocation name) {
-        final boolean valid = this.sounds.containsKey(soundName) || BuiltInRegistries.SOUND_EVENT.containsKey(name);
-        if (!valid) {
-            LOGGER.warn("Unable to find event '{}' referenced from '{}'", name, soundName);
-        }
-        return valid;
+        return def.soundList().stream()
+                .filter(it -> it.type() == SoundDefinition.SoundType.EVENT)
+                .allMatch(it -> {
+                    final boolean valid = this.sounds.containsKey(name) || BuiltInRegistries.SOUND_EVENT.containsKey(it.name());
+                    if (!valid) {
+                        LOGGER.warn("Unable to find event '{}' referenced from '{}'", it.name(), name);
+                    }
+                    return valid;
+                });
     }
 
     private CompletableFuture<?> save(final CachedOutput cache, final Path targetFile) {
