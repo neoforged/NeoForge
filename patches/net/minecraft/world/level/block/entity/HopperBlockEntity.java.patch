@@ -1,25 +1,91 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -139,7 +_,7 @@
+@@ -137,10 +_,11 @@
+     }
+ 
      private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, HopperBlockEntity p_326256_) {
-         Container container = getAttachedContainer(p_155563_, p_155564_, p_326256_);
-         if (container == null) {
--            return false;
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_);
-         } else {
+-        Container container = getAttachedContainer(p_155563_, p_155564_, p_326256_);
+-        if (container == null) {
++        var inventory = getInventoryAt(p_155563_, p_155564_.relative(p_326256_.facing), p_326256_.facing.getOpposite());
++        if (inventory == null) {
+             return false;
+-        } else {
++        } else if (inventory.container() != null) {
++            Container container = inventory.container();
              Direction direction = p_326256_.facing.getOpposite();
              if (isFullContainer(container, direction)) {
-@@ -226,6 +_,10 @@
+                 return false;
+@@ -164,6 +_,8 @@
+ 
+                 return false;
+             }
++        } else {
++            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, inventory.itemHandler());
+         }
+     }
+ 
+@@ -214,8 +_,9 @@
+     public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
+         BlockPos blockpos = BlockPos.containing(p_155554_.getLevelX(), p_155554_.getLevelY() + 1.0, p_155554_.getLevelZ());
+         BlockState blockstate = p_155553_.getBlockState(blockpos);
+-        Container container = getSourceContainer(p_155553_, p_155554_, blockpos, blockstate);
+-        if (container != null) {
++        var inventory = getSourceInventory(p_155553_, p_155554_, blockpos, blockstate);
++        if (inventory != null && inventory.container() != null) {
++            Container container = inventory.container();
+             Direction direction = Direction.DOWN;
+ 
+             for (int i : getSlots(container, direction)) {
+@@ -225,6 +_,8 @@
+             }
  
              return false;
++        } else if (inventory != null) {
++            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, inventory.itemHandler());
          } else {
-+            if (net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155553_, p_155554_)) {
-+                return true;
-+            }
-+
              boolean flag = p_155554_.isGridAligned()
                  && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
-                 && !blockstate.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
+@@ -368,6 +_,8 @@
+         return p_155590_.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
+     }
+ 
++    /** @deprecated Use IItemHandler capability instead. To preserve Container-specific interactions, use {@link #getInventoryAt} and handle both cases. */
++    @Deprecated
+     @Nullable
+     public static Container getContainerAt(Level p_59391_, BlockPos p_59392_) {
+         return getContainerAt(
+@@ -411,6 +_,31 @@
+         return !list.isEmpty() ? (Container)list.get(p_326325_.random.nextInt(list.size())) : null;
+     }
+ 
++    @Nullable
++    private static net.neoforged.neoforge.items.ContainerOrHandler getSourceInventory(Level p_155597_, Hopper p_155598_, BlockPos p_326315_, BlockState p_326093_) {
++        return getInventoryAt(p_155597_, p_326315_, p_326093_, p_155598_.getLevelX(), p_155598_.getLevelY() + 1.0, p_155598_.getLevelZ(), Direction.DOWN);
++    }
++
++    @Nullable
++    public static net.neoforged.neoforge.items.ContainerOrHandler getInventoryAt(Level level, BlockPos pos, @Nullable Direction side) {
++        return getInventoryAt(
++                level, pos, level.getBlockState(pos), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, side
++        );
++    }
++
++    @Nullable
++    private static net.neoforged.neoforge.items.ContainerOrHandler getInventoryAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, @Nullable Direction side) {
++        Container container = getBlockContainer(level, pos, state);
++        if (container != null) {
++            return new net.neoforged.neoforge.items.ContainerOrHandler(container, null);
++        }
++        var blockItemHandler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, pos, state, null, side);
++        if (blockItemHandler != null) {
++            return new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
++        }
++        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.getEntityInventory(level, x, y, z, side);
++    }
++
+     private static boolean canMergeItems(ItemStack p_59345_, ItemStack p_59346_) {
+         return p_59345_.getCount() <= p_59345_.getMaxStackSize() && ItemStack.isSameItemSameComponents(p_59345_, p_59346_);
+     }
 @@ -470,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {

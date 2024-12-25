@@ -1,17 +1,22 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -61,7 +_,13 @@
-                     Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
+@@ -58,12 +_,16 @@
+                 ItemStack itemstack = dispenserblockentity.getItem(i);
+                 if (!itemstack.isEmpty()) {
+                     Direction direction = p_52944_.getBlockState(p_52945_).getValue(FACING);
+-                    Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
++                    var inventory = HopperBlockEntity.getInventoryAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
                      ItemStack itemstack1;
-                     if (container == null) {
--                        itemstack1 = DISPENSE_BEHAVIOUR.dispense(blocksource, itemstack);
-+                        var leftover = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertNeighbor(p_52944_, p_52945_, direction, itemstack.copyWithCount(1));
-+                        if (leftover.isEmpty()) {
-+                            itemstack1 = itemstack.copy();
-+                            itemstack1.shrink(1);
-+                        } else {
-+                            itemstack1 = DISPENSE_BEHAVIOUR.dispense(blocksource, itemstack);
-+                        }
+-                    if (container == null) {
++                    if (inventory == null) {
+                         itemstack1 = DISPENSE_BEHAVIOUR.dispense(blocksource, itemstack);
                      } else {
-                         itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, container, itemstack.copyWithCount(1), direction.getOpposite());
+-                        itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, container, itemstack.copyWithCount(1), direction.getOpposite());
++                        if (inventory.container() != null) {
++                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, inventory.container(), itemstack.copyWithCount(1), direction.getOpposite());
++                        } else {
++                            itemstack1 = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(inventory.itemHandler(), itemstack.copyWithCount(1), false);
++                        }
                          if (itemstack1.isEmpty()) {
+                             itemstack1 = itemstack.copy();
+                             itemstack1.shrink(1);
