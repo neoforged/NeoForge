@@ -40,14 +40,6 @@ class LibraryCollector {
         var result = collector.libraries.stream().map(future -> {
             try {
                 return future.get();
-            } catch (ExecutionException e) {
-                if (e.getCause() instanceof RuntimeException re) {
-                    throw re;
-                } else if (e.getCause() instanceof IOException re) {
-                    throw new UncheckedIOException(re);
-                } else {
-                    throw new RuntimeException(e);
-                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
