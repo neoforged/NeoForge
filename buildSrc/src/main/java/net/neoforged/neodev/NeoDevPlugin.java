@@ -24,6 +24,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
+import org.gradle.api.internal.GradleInternal;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -271,6 +272,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
         );
 
+        var installerRepositoryUrls = getInstallerRepositoryUrls(project);
         // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.setGroup(INTERNAL_GROUP);
@@ -279,17 +281,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
             task.setLibraries(configurations.launcherProfileClasspath);
-            task.getRepositoryURLs().set(project.provider(() -> {
-                List<URI> repos = new ArrayList<>();
-                for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
-                    var uri = repo.getUrl();
-                    if (!uri.toString().endsWith("/")) {
-                        uri = URI.create(uri + "/");
-                    }
-                    repos.add(uri);
-                }
-                return repos;
-            }));
+            task.getRepositoryURLs().set(installerRepositoryUrls);
             // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
             task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
             task.setModules(configurations.modulePath);
@@ -308,17 +300,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.addLibraries(configurations.launcherProfileClasspath);
             // We need the NeoForm zip for the SRG mappings.
             task.addLibraries(configurations.neoFormDataOnly);
-            task.getRepositoryURLs().set(project.provider(() -> {
-                List<URI> repos = new ArrayList<>();
-                for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
-                    var uri = repo.getUrl();
-                    if (!uri.toString().endsWith("/")) {
-                        uri = URI.create(uri + "/");
-                    }
-                    repos.add(uri);
-                }
-                return repos;
-            }));
+            task.getRepositoryURLs().set(installerRepositoryUrls);
             task.getUniversalJar().set(universalJar.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getInstallerProfile().set(neoDevBuildDir.map(dir -> dir.file("installer-profile.json")));
 
@@ -465,6 +447,29 @@ public class NeoDevPlugin implements Plugin<Project> {
                 createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar)
         );
         setupProductionServerTest(project, installerJar);
+    }
+
+    /**
+     * Get the list of Maven repositories that may contain artifacts for the installer.
+     */
+    private static Provider<List<URI>> getInstallerRepositoryUrls(Project project) {
+        return project.provider(() -> {
+            List<URI> repos = new ArrayList<>();
+            var repositories = project.getRepositories();
+            if (repositories.isEmpty()) {
+                // If no project repos are defined, check dependency management on the settings plugin,
+                // which sadly is inaccessible without internals: https://github.com/gradle/gradle/issues/27260
+                repositories = ((GradleInternal) project.getGradle()).getSettings().getDependencyResolutionManagement().getRepositories();
+            }
+            for (var repo : repositories.withType(MavenArtifactRepository.class)) {
+                var uri = repo.getUrl();
+                if (!uri.toString().endsWith("/")) {
+                    uri = URI.create(uri + "/");
+                }
+                repos.add(uri);
+            }
+            return repos;
+        });
     }
 
     private static TaskProvider<TransformSources> configureAccessTransformer(
