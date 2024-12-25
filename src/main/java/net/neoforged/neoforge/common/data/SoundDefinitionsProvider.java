@@ -38,7 +38,6 @@ public abstract class SoundDefinitionsProvider implements DataProvider {
      * @param output The {@linkplain PackOutput} instance provided by the data generator.
      * @param modId  The mod ID of the current mod.
      */
-    @Deprecated(forRemoval = true, since = "1.21.4")
     protected SoundDefinitionsProvider(final PackOutput output, final String modId) {
         this.output = output;
         this.modId = modId;
