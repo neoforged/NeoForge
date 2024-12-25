@@ -60,6 +60,7 @@ import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -89,7 +90,6 @@ import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.DataResourceManager;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -284,9 +284,9 @@ public class DataGeneratorTest {
     public static class SoundDefinitions extends SoundDefinitionsProvider {
         private static final Logger LOGGER = LogManager.getLogger();
 
-        private final DataResourceManager resourceManager;
+        private final ResourceManager resourceManager;
 
-        public SoundDefinitions(final PackOutput output, final DataResourceManager resourceManager) {
+        public SoundDefinitions(final PackOutput output, final ResourceManager resourceManager) {
             super(output, MODID);
 
             this.resourceManager = resourceManager;
@@ -589,9 +589,9 @@ public class DataGeneratorTest {
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-        private final DataResourceManager resourceManager;
+        private final ResourceManager resourceManager;
 
-        public ParticleDescriptions(PackOutput output, DataResourceManager resourceManager) {
+        public ParticleDescriptions(PackOutput output, ResourceManager resourceManager) {
             super(output);
 
             this.resourceManager = resourceManager;
