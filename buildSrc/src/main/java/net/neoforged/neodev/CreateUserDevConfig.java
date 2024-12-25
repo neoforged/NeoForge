@@ -96,7 +96,7 @@ abstract class CreateUserDevConfig extends DefaultTask {
                         "--version", getNeoForgeVersion().get());
             }
 
-            if (runType == RunType.CLIENT || runType == RunType.JUNIT) {
+            if (runType == RunType.CLIENT || runType == RunType.CLIENT_DATA || runType == RunType.JUNIT) {
                 Collections.addAll(args,
                         "--assetIndex", "{asset_index}",
                         "--assetsDir", "{assets_root}");

@@ -7,12 +7,28 @@ package net.neoforged.neoforge.oldtest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
@@ -27,7 +43,9 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.metadata.PackMetadataGenerator;
@@ -41,6 +59,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -70,6 +89,7 @@ import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.DataResourceManager;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -78,6 +98,10 @@ import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.apache.commons.lang3.tuple.Triple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Mod(DataGeneratorTest.MODID)
 @EventBusSubscriber(bus = Bus.MOD)
@@ -117,8 +141,8 @@ public class DataGeneratorTest {
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
-        gen.addProvider(true, new SoundDefinitions(packOutput));
-        gen.addProvider(true, new ParticleDescriptions(packOutput));
+        gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager()));
+        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager()));
 
         gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
         gen.addProvider(true, new Tags(packOutput, lookupProvider));
@@ -258,8 +282,14 @@ public class DataGeneratorTest {
     }
 
     public static class SoundDefinitions extends SoundDefinitionsProvider {
-        public SoundDefinitions(final PackOutput output) {
+        private static final Logger LOGGER = LogManager.getLogger();
+
+        private final DataResourceManager resourceManager;
+
+        public SoundDefinitions(final PackOutput output, final DataResourceManager resourceManager) {
             super(output, MODID);
+
+            this.resourceManager = resourceManager;
         }
 
         @Override
@@ -317,6 +347,132 @@ public class DataGeneratorTest {
 
             //music_disc.blocks
             this.add(SoundEvents.MUSIC_DISC_BLOCKS.value(), definition().with(sound("records/blocks").stream()));
+        }
+
+        @Override
+        public CompletableFuture<?> run(CachedOutput cache) {
+            return super.run(cache).thenRun(this::test);
+        }
+
+        private void test() {
+            final JsonObject generated;
+            try {
+                generated = reflect();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Unable to test for errors due to reflection error", e);
+            }
+            final JsonObject actual;
+            try {
+                List<Resource> resourceStack = this.resourceManager.getResourceStack(PackType.CLIENT_RESOURCES, ResourceLocation.withDefaultNamespace("sounds.json"));
+                // Get the first resource in the stack
+                // This guarantees vanilla even when a forge sounds.json is present because getResourceStack reverses the list
+                // so that the lower priority resources are first (to allow overwriting data in later entries)
+                Resource vanillaSoundResource = resourceStack.get(0);
+                actual = GSON.fromJson(
+                        vanillaSoundResource.openAsReader(),
+                        JsonObject.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to test for errors due to missing sounds.json", e);
+            }
+
+            final JsonObject filtered = new JsonObject();
+            generated.entrySet().forEach(it -> filtered.add(it.getKey(), Optional.ofNullable(actual.get(it.getKey())).orElseGet(JsonNull::new)));
+
+            final List<String> errors = this.compareObjects(filtered, generated);
+
+            if (!errors.isEmpty()) {
+                LOGGER.error("Found {} discrepancies between generated and vanilla sound definitions: ", errors.size());
+                for (String s : errors) {
+                    LOGGER.error("    {}", s);
+                }
+                throw new RuntimeException("Generated sounds.json differed from vanilla equivalent, check above errors.");
+            }
+        }
+
+        private JsonObject reflect() throws ReflectiveOperationException {
+            // This is not supposed to be done by client code, so we just run with reflection to avoid exposing
+            // something that shouldn't be exposed in the first place
+            final Method mapToJson = this.getClass().getSuperclass().getDeclaredMethod("mapToJson", Map.class);
+            mapToJson.setAccessible(true);
+            final Field map = this.getClass().getSuperclass().getDeclaredField("sounds");
+            map.setAccessible(true);
+            //noinspection JavaReflectionInvocation
+            return (JsonObject) mapToJson.invoke(this, map.get(this));
+        }
+
+        private List<String> compareAndGatherErrors(final Triple<String, JsonElement, JsonElement> triple) {
+            return this.compare(triple.getMiddle(), triple.getRight()).stream().map(it -> triple.getLeft() + ": " + it).collect(Collectors.toList());
+        }
+
+        private List<String> compare(final JsonElement vanilla, @Nullable final JsonElement generated) {
+            if (generated == null) {
+                return Collections.singletonList("vanilla element has no generated counterpart");
+            } else if (vanilla.isJsonPrimitive()) {
+                return this.comparePrimitives(vanilla.getAsJsonPrimitive(), generated);
+            } else if (vanilla.isJsonObject()) {
+                return this.compareObjects(vanilla.getAsJsonObject(), generated);
+            } else if (vanilla.isJsonArray()) {
+                return this.compareArrays(vanilla.getAsJsonArray(), generated);
+            } else if (vanilla.isJsonNull() && !generated.isJsonNull()) {
+                return Collections.singletonList("null value in vanilla doesn't match non-null value in generated");
+            }
+            throw new RuntimeException("Unable to match " + vanilla + " to any JSON type");
+        }
+
+        private List<String> comparePrimitives(final JsonPrimitive vanilla, final JsonElement generated) {
+            if (!generated.isJsonPrimitive()) return Collections.singletonList("Primitive in vanilla isn't matched by generated " + generated);
+
+            final JsonPrimitive generatedPrimitive = generated.getAsJsonPrimitive();
+
+            if (vanilla.isBoolean()) {
+                if (!generatedPrimitive.isBoolean()) return Collections.singletonList("Boolean in vanilla isn't matched by non-boolean " + generatedPrimitive);
+
+                if (vanilla.getAsBoolean() != generated.getAsBoolean()) {
+                    return Collections.singletonList("Boolean '" + vanilla.getAsBoolean() + "' does not match generated '" + generatedPrimitive.getAsBoolean() + "'");
+                }
+            } else if (vanilla.isNumber()) {
+                if (!generatedPrimitive.isNumber()) return Collections.singletonList("Number in vanilla isn't matched by non-number " + generatedPrimitive);
+
+                // Handle numbers via big decimal so we are sure there isn't any sort of errors due to float/long
+                final BigDecimal vanillaNumber = vanilla.getAsBigDecimal();
+                final BigDecimal generatedNumber = vanilla.getAsBigDecimal();
+
+                if (vanillaNumber.compareTo(generatedNumber) != 0) {
+                    return Collections.singletonList("Number '" + vanillaNumber + "' does not match generated '" + generatedNumber + "'");
+                }
+            } else if (vanilla.isString()) {
+                if (!generatedPrimitive.isString()) return Collections.singletonList("String in vanilla isn't matched by non-string " + generatedPrimitive);
+
+                if (!vanilla.getAsString().equals(generatedPrimitive.getAsString())) {
+                    return Collections.singletonList("String '" + vanilla.getAsString() + "' does not match generated '" + generatedPrimitive.getAsString() + "'");
+                }
+            }
+
+            return new ArrayList<>();
+        }
+
+        private List<String> compareObjects(final JsonObject vanilla, final JsonElement generated) {
+            if (!generated.isJsonObject()) return Collections.singletonList("Object in vanilla isn't matched by generated " + generated);
+
+            final JsonObject generatedObject = generated.getAsJsonObject();
+
+            return vanilla.entrySet().stream()
+                    .map(it -> Triple.of(it.getKey(), it.getValue(), generatedObject.get(it.getKey())))
+                    .map(this::compareAndGatherErrors)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+        }
+
+        private List<String> compareArrays(final JsonArray vanilla, final JsonElement generated) {
+            if (!generated.isJsonArray()) return Collections.singletonList("Array in vanilla isn't matched by generated " + generated);
+
+            final JsonArray generatedArray = generated.getAsJsonArray();
+
+            return IntStream.range(0, vanilla.size())
+                    .mapToObj(it -> Triple.of("[" + it + "]", vanilla.get(it), generatedArray.get(it)))
+                    .map(this::compareAndGatherErrors)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
         }
     }
 
@@ -433,8 +589,12 @@ public class DataGeneratorTest {
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-        public ParticleDescriptions(PackOutput output) {
+        private final DataResourceManager resourceManager;
+
+        public ParticleDescriptions(PackOutput output, DataResourceManager resourceManager) {
             super(output);
+
+            this.resourceManager = resourceManager;
         }
 
         @Override
@@ -463,6 +623,43 @@ public class DataGeneratorTest {
                     return this.base.withSuffix("_" + this.suffix++);
                 }
             });
+        }
+
+        @Override
+        public CompletableFuture<?> run(CachedOutput cache) {
+            return super.run(cache).thenRun(this::validateResults);
+        }
+
+        private void validateResults() {
+            var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
+                    .map(BuiltInRegistries.PARTICLE_TYPE::getKey).map(particle -> {
+                        try (var resource = this.resourceManager.openAsReader(PackType.CLIENT_RESOURCES, particle.withPath(path -> "particles/" + path + ".json"))) {
+                            var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
+                            var generatedTextures = this.descriptions.get(particle);
+
+                            // Check texture size
+                            if (existingTextures.size() != generatedTextures.size()) {
+                                LOGGER.error("{} had a different number of sprites, expected {}, actual {}", particle, existingTextures.size(), generatedTextures.size());
+                                return particle;
+                            }
+
+                            boolean error = false;
+                            for (int i = 0; i < generatedTextures.size(); ++i) {
+                                if (!existingTextures.get(i).getAsString().equals(generatedTextures.get(i))) {
+                                    LOGGER.error("{} index {}: expected {}, actual {}", particle, i, existingTextures.get(i).getAsString(), generatedTextures.get(i));
+                                    error = true;
+                                }
+                            }
+
+                            return error ? particle : null;
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).filter(Objects::nonNull).toList();
+
+            if (!errors.isEmpty()) {
+                throw new AssertionError(String.format("Validation errors found in %s; see above for details", errors.stream().reduce("", (str, rl) -> str + ", " + rl, (str1, str2) -> str1 + ", " + str2)));
+            }
         }
     }
 }

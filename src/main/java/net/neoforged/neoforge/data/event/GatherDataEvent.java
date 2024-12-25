@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.common.data.DataResourceManager;
 
 public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
@@ -42,6 +43,10 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
     public ModContainer getModContainer() {
         return this.modContainer;
+    }
+
+    public DataResourceManager getResourceManager() {
+        return config.resourceManager;
     }
 
     public Collection<Path> getInputs() {
@@ -90,9 +95,10 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final boolean validate;
         private final boolean flat;
         private final List<DataGenerator> generators = new ArrayList<>();
+        private final DataResourceManager resourceManager;
 
         public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
-                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator) {
+                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final DataResourceManager resourceManager) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
@@ -101,6 +107,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.reports = reports;
             this.validate = validate;
             this.flat = flat;
+            this.resourceManager = resourceManager;
             if (mods.contains("minecraft") || mods.isEmpty()) {
                 this.generators.add(vanillaGenerator);
             }
