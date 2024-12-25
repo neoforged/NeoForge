@@ -10,4 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 public record ContainerOrHandler(
         @Nullable Container container,
-        @Nullable IItemHandler itemHandler) {}
+        @Nullable IItemHandler itemHandler) {
+    public static final ContainerOrHandler EMPTY = new ContainerOrHandler(null, null);
+
+    public boolean isEmpty() {
+        return container == null && itemHandler == null;
+    }
+}

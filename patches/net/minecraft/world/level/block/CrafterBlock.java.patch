@@ -5,8 +5,8 @@
      ) {
          Direction direction = p_307501_.getValue(ORIENTATION).front();
 -        Container container = HopperBlockEntity.getContainerAt(p_335887_, p_307620_.relative(direction));
-+        var inventory = HopperBlockEntity.getInventoryAt(p_335887_, p_307620_.relative(direction), direction.getOpposite());
-+        Container container = inventory == null ? null : inventory.container();
++        var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_335887_, p_307620_.relative(direction), direction.getOpposite());
++        Container container = containerOrHandler.container();
          ItemStack itemstack = p_307296_.copy();
          if (container != null && (container instanceof CrafterBlockEntity || p_307296_.getCount() > container.getMaxStackSize(p_307296_))) {
              while (!itemstack.isEmpty()) {
@@ -15,14 +15,14 @@
                  itemstack.shrink(1);
              }
 -        } else if (container != null) {
-+        } else if (inventory != null) {
++        } else if (!containerOrHandler.isEmpty()) {
              while (!itemstack.isEmpty()) {
                  int i = itemstack.getCount();
 -                itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
 +                if (container != null) {
 +                    itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
 +                } else {
-+                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(inventory.itemHandler(), itemstack, false);
++                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack, false);
 +                }
                  if (i == itemstack.getCount()) {
                      break;

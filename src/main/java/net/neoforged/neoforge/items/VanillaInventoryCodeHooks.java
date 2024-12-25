@@ -88,8 +88,7 @@ public class VanillaInventoryCodeHooks {
         return true;
     }
 
-    @Nullable
-    public static ContainerOrHandler getEntityInventory(Level level, double x, double y, double z, @Nullable Direction side) {
+    public static ContainerOrHandler getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
         // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
         List<Entity> list = level.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
         if (!list.isEmpty()) {
@@ -104,6 +103,6 @@ public class VanillaInventoryCodeHooks {
                 }
             }
         }
-        return null;
+        return ContainerOrHandler.EMPTY;
     }
 }
