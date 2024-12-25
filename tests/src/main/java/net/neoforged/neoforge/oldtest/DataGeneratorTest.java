@@ -48,6 +48,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -88,7 +90,6 @@ import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
@@ -521,7 +522,7 @@ public class DataGeneratorTest {
         }
     }
 
-    private static class Advancements implements AdvancementProvider.AdvancementGenerator {
+    private static class Advancements implements AdvancementSubProvider {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             var obtainDirt = Advancement.Builder.advancement()
