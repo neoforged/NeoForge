@@ -24,7 +24,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
-import org.gradle.api.internal.GradleInternal;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -38,6 +37,7 @@ import org.gradle.api.tasks.bundling.Zip;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -455,19 +455,20 @@ public class NeoDevPlugin implements Plugin<Project> {
     private static Provider<List<URI>> getInstallerRepositoryUrls(Project project) {
         return project.provider(() -> {
             List<URI> repos = new ArrayList<>();
-            var repositories = project.getRepositories();
-            if (repositories.isEmpty()) {
-                // If no project repos are defined, check dependency management on the settings plugin,
-                // which sadly is inaccessible without internals: https://github.com/gradle/gradle/issues/27260
-                repositories = ((GradleInternal) project.getGradle()).getSettings().getDependencyResolutionManagement().getRepositories();
-            }
-            for (var repo : repositories.withType(MavenArtifactRepository.class)) {
-                var uri = repo.getUrl();
-                if (!uri.toString().endsWith("/")) {
-                    uri = URI.create(uri + "/");
+            var projectRepos = project.getRepositories();
+            if (!projectRepos.isEmpty()) {
+                for (var repo : projectRepos.withType(MavenArtifactRepository.class)) {
+                    repos.add(repo.getUrl());
                 }
-                repos.add(uri);
+            } else {
+                // If no project repos are defined, use the repository list we exposed in settings.gradle via an extension
+                // See the end of settings.gradle for details
+                Collections.addAll(repos, (URI[]) project.getGradle().getExtensions().getByName("repositoryBaseUrls"));
             }
+
+            // Ensure all base urls end with a slash
+            repos.replaceAll(uri -> uri.toString().endsWith("/") ? uri : URI.create(uri + "/"));
+
             return repos;
         });
     }
