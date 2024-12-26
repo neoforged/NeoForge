@@ -156,6 +156,7 @@ neoDev {
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
+                    '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
         }
     }

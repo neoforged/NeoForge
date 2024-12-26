@@ -34,7 +34,7 @@ public class DatagenModLoader extends CommonModLoader {
     }
 
     @ApiStatus.Internal
-    public static void begin(final Set<String> mods, final Path path, final Collection<Path> inputs,
+    public static void begin(final Set<String> mods, final Path path, final Collection<Path> inputs, Collection<Path> existingPacks,
             final boolean devToolGenerators, final boolean reportsGenerator,
             final boolean structureValidator, final boolean flat, @Nullable final String assetIndex, @Nullable final File assetsDir, Runnable setup, GatherDataEvent.GatherDataEventGenerator eventGenerator,
             DataGenerator vanillaGenerator) {
@@ -47,7 +47,7 @@ public class DatagenModLoader extends CommonModLoader {
         // Modify components as the (modified) defaults may be required in datagen, i.e. stack size
         RegistrationEvents.modifyComponents();
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
-        dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, assetIndex, assetsDir);
+        dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, assetIndex, assetsDir, existingPacks);
         setup.run();
         ModLoader.runEventGenerator(mc -> eventGenerator.create(mc, dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mc.getModId()),
                 dataGeneratorConfig.getMods().contains(mc.getModId())), dataGeneratorConfig));

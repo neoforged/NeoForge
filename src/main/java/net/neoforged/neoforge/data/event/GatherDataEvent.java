@@ -34,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
@@ -120,7 +121,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final ResourceManager serverResourceManager;
 
         public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
-                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final @Nullable String assetIndex, final @Nullable File assetsDir) {
+                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final @Nullable String assetIndex, final @Nullable File assetsDir, Collection<Path> existingPacks) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
@@ -130,12 +131,12 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.validate = validate;
             this.flat = flat;
 
-            clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, consumer -> {
+            clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, consumer -> {
                 if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
                     consumer.accept(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
             });
 
-            serverResourceManager = createResourceManager(PackType.SERVER_DATA, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));
+            serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));
 
             if (mods.contains("minecraft") || mods.isEmpty()) {
                 this.generators.add(vanillaGenerator);
@@ -176,13 +177,24 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             });
         }
 
-        private static ResourceManager createResourceManager(PackType packType, Consumer<Consumer<PackResources>> consumer) {
+        private static ResourceManager createResourceManager(PackType packType, Predicate<String> isGeneratedMod, Collection<Path> existingPacks, Consumer<Consumer<PackResources>> consumer) {
             var packs = Lists.<PackResources>newArrayList();
+            // include vanilla resource packs first
             consumer.accept(packs::add);
 
+            // include existing packs
+            existingPacks.forEach(path -> {
+                var packInfo = new PackLocationInfo(path.getFileName().toString(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
+                packs.add(new PathPackResources(packInfo, path));
+            });
+
+            // include mod resources last
             ModList.get().getSortedMods().stream()
                     // ignore 'minecraft' mod, this is added via `[Server|Client]PackSource`
                     .filter(Predicate.not(mod -> mod.getModId().equals("minecraft")))
+                    // ignore actively generated models, their resource packs should be included using `--existing <packPath>`
+                    // this is to workaround accidentally including resources being actively generated
+                    .filter(Predicate.not(mod -> isGeneratedMod.test(mod.getModId())))
                     .map(mod -> {
                         var owningFile = mod.getModInfo().getOwningFile();
                         var packInfo = new PackLocationInfo("mod/" + mod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
