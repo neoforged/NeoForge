@@ -8,27 +8,52 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public class CompositeModelBuilder extends CustomLoaderBuilder {
-    private final Map<String, ResourceLocation> childModels = new LinkedHashMap<>();
+    private final Map<String, Either<ResourceLocation, InlineChild>> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
     public CompositeModelBuilder() {
         super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "composite"), false);
     }
 
+    /**
+     * Add a child model by reference. The child model will be loaded from a separate file at the given location
+     * 
+     * @param name  The part name of the child
+     * @param model The child model's path relative to the models folder
+     */
     public CompositeModelBuilder child(String name, ResourceLocation model) {
         Preconditions.checkNotNull(name, "name must not be null");
         Preconditions.checkNotNull(model, "model must not be null");
-        childModels.put(name, model);
+        childModels.put(name, Either.left(model));
+        itemRenderOrder.add(name);
+        return this;
+    }
+
+    /**
+     * Add an inline child model. The child model will be loaded from a nested object in the same JSON file
+     *
+     * @param name     The part name of the child
+     * @param template The {@link ModelTemplate} to create the child model from
+     * @param textures The {@link TextureMapping} this child model uses
+     */
+    public CompositeModelBuilder inlineChild(String name, ModelTemplate template, TextureMapping textures) {
+        Preconditions.checkNotNull(name, "name must not be null");
+        Preconditions.checkNotNull(template, "model template must not be null");
+        Preconditions.checkNotNull(textures, "textures must not be null");
+        childModels.put(name, Either.right(new InlineChild(template, textures)));
         itemRenderOrder.add(name);
         return this;
     }
@@ -57,8 +82,10 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
         json = super.toJson(json);
 
         JsonObject children = new JsonObject();
-        for (Map.Entry<String, ResourceLocation> entry : childModels.entrySet()) {
-            children.addProperty(entry.getKey(), entry.getValue().toString());
+        for (Map.Entry<String, Either<ResourceLocation, InlineChild>> entry : childModels.entrySet()) {
+            entry.getValue()
+                    .ifLeft(reference -> children.addProperty(entry.getKey(), reference.toString()))
+                    .ifRight(inline -> serializeNestedTemplate(inline.template, inline.textures, inlineJson -> children.add(entry.getKey(), inlineJson)));
         }
         json.add("children", children);
 
@@ -70,4 +97,6 @@ public class CompositeModelBuilder extends CustomLoaderBuilder {
 
         return json;
     }
+
+    private record InlineChild(ModelTemplate template, TextureMapping textures) {}
 }
