@@ -317,8 +317,10 @@ public class DataMapTests {
         reg.addProvider(event -> new DataMapProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void gather() {
+                var effect = new MobEffectInstance(MobEffects.CONFUSION, 100);
+                effect.getCures().clear(); // Cures use a hash set (not linked) meaning that their serialization is not deterministic
                 builder(effectGrant)
-                        .add(Blocks.COPPER_BLOCK.getLootTable(), new MobEffectInstance(MobEffects.CONFUSION, 100), false);
+                        .add(Blocks.COPPER_BLOCK.getLootTable(), effect, false);
             }
         });
 
