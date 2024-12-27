@@ -4,8 +4,8 @@
       "duration": 100,
       "id": "minecraft:nausea",
       "neoforge:cures": [
-        "protected_by_totem",
-        "milk"
+        "milk",
+        "protected_by_totem"
       ],
       "show_icon": true
     }
