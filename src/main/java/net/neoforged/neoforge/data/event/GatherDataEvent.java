@@ -29,6 +29,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.ApiStatus;
 
 public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
@@ -87,6 +88,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         }
     }
 
+    @ApiStatus.Internal
     public static class DataGeneratorConfig {
         private final Set<String> mods;
         private final Path path;
@@ -125,10 +127,9 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             return flat || getMods().size() == 1;
         }
 
-        public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer, final boolean shouldExecute) {
-            final DataGenerator generator = new DataGenerator(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), shouldExecute);
-            if (shouldExecute)
-                generators.add(generator);
+        public DataGenerator makeGenerator(final Function<Path, Path> pathEnhancer) {
+            final DataGenerator generator = new DataGenerator(pathEnhancer.apply(path), DetectedVersion.tryDetectVersion(), true);
+            generators.add(generator);
             return generator;
         }
 
