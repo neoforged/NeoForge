@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.extensions;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -19,5 +21,15 @@ public interface IBlockEntityRendererExtension<T extends BlockEntity> {
      */
     default AABB getRenderBoundingBox(T blockEntity) {
         return new AABB(blockEntity.getBlockPos());
+    }
+
+    default void renderCached(
+        T blockEntity,
+        PoseStack poseStack,
+        MultiBufferSource.BufferSource bufferSource,
+        float partialTick,
+        int packedLight,
+        int packedOverlay
+    ) {
     }
 }

@@ -137,6 +137,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
+import net.neoforged.neoforge.client.cached.CacheableBERenderingPipeline;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
@@ -789,6 +790,10 @@ public class ClientHooks {
                 rendertypeEntityTranslucentUnlitShader = p_172645_;
             });
         }
+    }
+
+    public static void onBlockEntityRemoved(BlockEntity blockEntity) {
+        CacheableBERenderingPipeline.getInstance().blockRemoved(blockEntity);
     }
 
     public static Font getTooltipFont(ItemStack stack, Font fallbackFont) {

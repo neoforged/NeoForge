@@ -78,7 +78,15 @@
          } else {
              CompoundTag compoundtag = this.pendingBlockEntities.get(p_62932_);
              if (compoundtag != null) {
-@@ -436,6 +_,7 @@
+@@ -431,11 +_,15 @@
+         if (this.isInLevel()) {
+             BlockEntity blockentity = this.blockEntities.remove(p_62919_);
+             if (blockentity != null) {
++                if (this.level.isClientSide) {
++                    net.neoforged.neoforge.client.ClientHooks.onBlockEntityRemoved(blockentity);
++                }
+                 if (this.level instanceof ServerLevel serverlevel) {
+                     this.removeGameEventListener(blockentity, serverlevel);
                  }
  
                  blockentity.setRemoved();
