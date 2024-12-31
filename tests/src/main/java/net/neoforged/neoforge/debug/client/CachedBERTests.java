@@ -42,9 +42,9 @@ import java.util.function.Supplier;
 
 @ForEachTest(side = Dist.CLIENT, groups = {"client.event", "event"})
 public class CachedBERTests {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.Blocks.createBlocks("neotests");
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.Blocks.createBlocks("neotests_cached_ber");
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
-        DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "neotests");
+        DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "neotests_cached_ber");
 
     public static final DeferredBlock<Block> THE_BLOCK = BLOCKS.register(
         "not_enough_vertexes",
@@ -144,19 +144,20 @@ public class CachedBERTests {
             BlockPos pos = blockEntity.getBlockPos();
             if (level == null) return;
             BlockState blockState = level.getBlockState(pos);
+            if (!blockState.is(THE_BLOCK.get())) return;
             if (blockState.getValue(BlockStateProperties.ENABLED)) return;
             renderManyTorches(poseStack, bufferSource, packedLight, packedOverlay);
-            if (bufferSource instanceof MultiBufferSource.BufferSource buffer){
+            if (bufferSource instanceof MultiBufferSource.BufferSource buffer) {
                 buffer.endLastBatch();
             }
         }
 
         private void renderManyTorches(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
             BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
-            for (int dx = 1; dx <= 32; dx++) {
-                for (int dz = 1; dz <= 32; dz++) {
+            for (int dx = 0; dx < 32; dx++) {
+                for (int dz = 0; dz < 32; dz++) {
                     poseStack.pushPose();
-                    poseStack.translate(dx * 1f / 16f * 4, 1, dz);
+                    poseStack.translate(dx * 0.25, 1, dz * 0.25);
                     dispatcher.renderSingleBlock(
                         Blocks.TORCH.defaultBlockState(),
                         poseStack,
@@ -184,6 +185,7 @@ public class CachedBERTests {
             BlockPos pos = blockEntity.getBlockPos();
             if (level == null) return;
             BlockState blockState = level.getBlockState(pos);
+            if (!blockState.is(THE_BLOCK.get())) return;
             if (!blockState.getValue(BlockStateProperties.ENABLED)) return;
             renderManyTorches(poseStack, bufferSource, packedLight, packedOverlay);
         }

@@ -3,9 +3,12 @@ package net.neoforged.neoforge.client.cached;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -13,6 +16,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -20,23 +24,23 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.FullyBufferedBufferSource;
-import net.neoforged.neoforge.client.extensions.IBlockEntityRendererExtension;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CachedRegion {
     private final ChunkPos chunkPos;
-    private final Map<RenderType, VertexBuffer> buffers = new HashMap<>();
+    private Map<RenderType, VertexBuffer> buffers = new HashMap<>();
+    private final Map<RenderType, ByteBufferBuilder> sortBuffers = new HashMap<>();
+    private Map<RenderType, MeshData.SortState> meshSortings = new HashMap<>();
     private Reference2IntMap<RenderType> indexCountMap = new Reference2IntOpenHashMap<>();
-    private final List<BlockEntity> blockEntityList = new ArrayList<>();
+    private final Set<BlockEntity> blockEntities = new HashSet<>();
     private final CacheableBERenderingPipeline pipeline;
     private final Minecraft minecraft = Minecraft.getInstance();
     @Nullable
@@ -53,13 +57,13 @@ public class CachedRegion {
         if (lastRebuildTask != null) {
             lastRebuildTask.cancel();
         }
-        blockEntityList.removeIf(BlockEntity::isRemoved);
+        blockEntities.removeIf(BlockEntity::isRemoved);
         if (be.isRemoved()) {
-            blockEntityList.remove(be);
+            blockEntities.remove(be);
             pipeline.submitCompileTask(new RebuildTask());
             return;
         }
-        blockEntityList.add(be);
+        blockEntities.add(be);
         pipeline.submitCompileTask(new RebuildTask());
     }
 
@@ -67,8 +71,8 @@ public class CachedRegion {
         if (lastRebuildTask != null) {
             lastRebuildTask.cancel();
         }
-        blockEntityList.remove(be);
-        blockEntityList.removeIf(BlockEntity::isRemoved);
+        blockEntities.remove(be);
+        blockEntities.removeIf(BlockEntity::isRemoved);
         pipeline.submitCompileTask(new RebuildTask());
     }
 
@@ -83,6 +87,15 @@ public class CachedRegion {
         VertexBuffer vb = new VertexBuffer(VertexBuffer.Usage.STATIC);
         buffers.put(renderType, vb);
         return vb;
+    }
+
+    private ByteBufferBuilder requestSortBuffer(RenderType renderType) {
+        if (sortBuffers.containsKey(renderType)) {
+            return sortBuffers.get(renderType);
+        }
+        ByteBufferBuilder builder = new ByteBufferBuilder(4096);
+        sortBuffers.put(renderType, builder);
+        return builder;
     }
 
     private void renderInternal(
@@ -107,6 +120,7 @@ public class CachedRegion {
 
     public void releaseBuffers() {
         buffers.values().forEach(VertexBuffer::close);
+        sortBuffers.values().forEach(ByteBufferBuilder::close);
     }
 
     private void renderLayer(
@@ -122,7 +136,6 @@ public class CachedRegion {
         renderType.setupRenderState();
         ShaderInstance shader = RenderSystem.getShader();
         shader.setDefaultUniforms(VertexFormat.Mode.QUADS, frustumMatrix, projectionMatrix, window);
-        shader.apply();
         Uniform uniform = shader.CHUNK_OFFSET;
         if (uniform != null) {
             uniform.set(
@@ -130,10 +143,21 @@ public class CachedRegion {
                 (float) -cameraPosition.y,
                 (float) -cameraPosition.z
             );
-            uniform.upload();
         }
         vertexBuffer.bind();
-        GL11.glDrawElements(GL15.GL_TRIANGLES, indexCount, vertexBuffer.sequentialIndices.type().asGLType, 0L);
+        if (renderType.sortOnUpload) {
+            MeshData.SortState sortState = this.meshSortings.get(renderType);
+            if (sortState != null) {
+                ByteBufferBuilder.Result result = sortState.buildSortedIndexBuffer(
+                    this.requestSortBuffer(renderType),
+                    VertexSorting.byDistance(cameraPosition.toVector3f())
+                );
+                if (result != null) {
+                    vertexBuffer.uploadIndexBuffer(result);
+                }
+            }
+        }
+        vertexBuffer.drawWithShader(frustumMatrix, projectionMatrix, shader);
         VertexBuffer.unbind();
         if (uniform != null) {
             uniform.set(0.0F, 0.0F, 0.0F);
@@ -151,12 +175,12 @@ public class CachedRegion {
             CachedRegion.this.isEmpty = true;
             FullyBufferedBufferSource bufferSource = new FullyBufferedBufferSource();
             float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
-            for (BlockEntity be : new ArrayList<>(blockEntityList)) {
+            for (BlockEntity be : new ArrayList<>(blockEntities)) {
                 if (cancelled) {
                     bufferSource.close();
                     return;
                 }
-                IBlockEntityRendererExtension renderer = Minecraft.getInstance()
+                BlockEntityRenderer renderer = Minecraft.getInstance()
                     .getBlockEntityRenderDispatcher()
                     .getRenderer(be);
                 if (renderer == null) continue;
@@ -187,8 +211,11 @@ public class CachedRegion {
             CachedRegion.this.isEmpty = bufferSource.isEmpty();
             bufferSource.upload(
                 CachedRegion.this::getBuffer,
+                CachedRegion.this::requestSortBuffer,
                 pipeline::submitUploadTask
             );
+
+            CachedRegion.this.meshSortings = bufferSource.getMeshSorts();
             CachedRegion.this.indexCountMap = bufferSource.getIndexCountMap();
             lastRebuildTask = null;
         }
