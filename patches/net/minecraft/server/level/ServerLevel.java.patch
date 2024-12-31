@@ -242,7 +242,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1783,24 +_,101 @@
+@@ -1783,24 +_,109 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -271,7 +271,7 @@
          public void onSectionChange(Entity p_215086_) {
              p_215086_.updateDynamicGameEventListener(DynamicGameEventListener::move);
          }
-     }
++    }
 +
 +    private final net.neoforged.neoforge.capabilities.CapabilityListenerHolder capListenerHolder = new net.neoforged.neoforge.capabilities.CapabilityListenerHolder();
 +
@@ -338,7 +338,6 @@
 +     * While this still technically works when vanilla clients are connected, those will desync and
 +     * experience a time jump once per second.
 +     */
-+    @Override
 +    public void setDayTimePerTick(float dayTimePerTick) {
 +        if (dayTimePerTick != getDayTimePerTick() && dayTimePerTick != 0f) {
 +            serverLevelData.setDayTimePerTick(dayTimePerTick);
@@ -346,4 +345,13 @@
 +        }
 +    }
 +
++    protected long advanceDaytime() {
++        if (serverLevelData.getDayTimePerTick() < 0) {
++            return 1L; // avoid doing math (and rounding errors) if no speed has been set
++        }
++        float dayTimeStep = serverLevelData.getDayTimeFraction() + serverLevelData.getDayTimePerTick();
++        long result = (long)dayTimeStep;
++        serverLevelData.setDayTimeFraction(dayTimeStep - result);
++        return result;
+     }
  }
