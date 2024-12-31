@@ -214,7 +214,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1733,24 +_,106 @@
+@@ -1733,24 +_,115 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(
@@ -243,7 +243,7 @@
          public void onSectionChange(Entity p_215086_) {
              p_215086_.updateDynamicGameEventListener(DynamicGameEventListener::move);
          }
-     }
++    }
 +
 +    @Override
 +    public java.util.Collection<net.neoforged.neoforge.entity.PartEntity<?>> getPartEntities() {
@@ -295,6 +295,7 @@
 +     * Returns the current ratio between game ticks and clock ticks. If this value is negative, no
 +     * speed has been set and those two are coupled 1:1 (i.e. vanilla mode).
 +     */
++    @Override
 +    public float getDayTimePerTick() {
 +        return serverLevelData.getDayTimePerTick();
 +    }
@@ -315,7 +316,6 @@
 +     * While this still technically works when vanilla clients are connected, those will desync and
 +     * experience a time jump once per second.
 +     */
-+    @Override
 +    public void setDayTimePerTick(float dayTimePerTick) {
 +        if (dayTimePerTick != getDayTimePerTick() && dayTimePerTick != 0f) {
 +            serverLevelData.setDayTimePerTick(dayTimePerTick);
@@ -323,4 +323,13 @@
 +        }
 +    }
 +
++    protected long advanceDaytime() {
++        if (serverLevelData.getDayTimePerTick() < 0) {
++            return 1L; // avoid doing math (and rounding errors) if no speed has been set
++        }
++        float dayTimeStep = serverLevelData.getDayTimeFraction() + serverLevelData.getDayTimePerTick();
++        long result = (long)dayTimeStep;
++        serverLevelData.setDayTimeFraction(dayTimeStep - result);
++        return result;
+     }
  }

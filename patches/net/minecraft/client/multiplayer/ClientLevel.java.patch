@@ -109,7 +109,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1069,14 +_,75 @@
+@@ -1069,14 +_,74 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }
@@ -163,25 +163,24 @@
 +
 +    // Neo: Variable day time code
 +
-+    private float dayTimeFraction = 0.0f;
-+    private float dayTimePerTick = -1.0f;
++    public float dayTimeFraction = 0.0f;
++    public float dayTimePerTick = -1.0f;
 +
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void setDayTimeFraction(float dayTimeFraction) {
-+        this.dayTimeFraction = dayTimeFraction;
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public float getDayTimeFraction() {
-+        return dayTimeFraction;
-+    }
-+
++    /**
++     * @deprecated Read from the field instead
++     */
++    @Deprecated(forRemoval = true, since = "1.21.1")
 +    public float getDayTimePerTick() {
 +        return dayTimePerTick;
 +    }
 +
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void setDayTimePerTick(float dayTimePerTick) {
-+        this.dayTimePerTick = dayTimePerTick;
++    protected long advanceDaytime() {
++        if (dayTimePerTick < 0) {
++            return 1L; // avoid doing math (and rounding errors) if no speed has been set
++        }
++        float dayTimeStep = dayTimeFraction + dayTimePerTick;
++        long result = (long)dayTimeStep;
++        dayTimeFraction = dayTimeStep - result;
++        return result;
      }
  }

@@ -155,7 +155,7 @@ public final class ClientPayloadHandler {
         level.setGameTime(payload.gameTime());
         level.setDayTime(payload.dayTime());
         level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(payload.gameRule(), null);
-        level.setDayTimeFraction(payload.dayTimeFraction());
-        level.setDayTimePerTick(payload.dayTimePerTick());
+        level.dayTimeFraction = payload.dayTimeFraction();
+        level.dayTimePerTick = payload.dayTimePerTick();
     }
 }
