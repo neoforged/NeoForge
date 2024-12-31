@@ -46,13 +46,21 @@
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
-@@ -298,7 +_,11 @@
+@@ -298,7 +_,19 @@
              }
  
              if (!this.isSleeping()) {
 -                this.awardStat(Stats.TIME_SINCE_REST);
++                float dayTimeFraction;
++
++                if (level().isClientSide) {
++                    dayTimeFraction = ((net.minecraft.client.multiplayer.ClientLevel) level()).dayTimeFraction;
++                } else {
++                    dayTimeFraction = ((ServerLevel) level()).getDayTimeFraction();
++                }
++
 +                // Neo: Advance TIME_SINCE_REST if (a) vanilla daytime handling in effect, or (b) days are shorter, or (c) dayTime has ticked, or (d) dayTime advances are off and we need to ignore day length
-+                if (level().getDayTimeFraction() < 0 || level().getDayTimeFraction() >= 1 || lastDayTimeTick != level().getDayTime() || !serverplayer.serverLevel().getGameRules().getRule(GameRules.RULE_DAYLIGHT).get()) {
++                if (dayTimeFraction < 0 || dayTimeFraction >= 1 || lastDayTimeTick != level().getDayTime() || !serverplayer.serverLevel().getGameRules().getRule(GameRules.RULE_DAYLIGHT).get()) {
 +                    lastDayTimeTick = level().getDayTime();
 +                    this.awardStat(Stats.TIME_SINCE_REST);
 +                }

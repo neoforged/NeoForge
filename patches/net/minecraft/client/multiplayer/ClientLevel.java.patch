@@ -136,7 +136,7 @@
              }
          }
  
-@@ -1112,10 +_,58 @@
+@@ -1112,10 +_,49 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -173,25 +173,16 @@
 +
 +    // Neo: Variable day time code
 +
-+    private float dayTimeFraction = 0.0f;
-+    private float dayTimePerTick = -1.0f;
++    public float dayTimeFraction = 0.0f;
++    public float dayTimePerTick = -1.0f;
 +
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void setDayTimeFraction(float dayTimeFraction) {
-+        this.dayTimeFraction = dayTimeFraction;
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public float getDayTimeFraction() {
-+        return dayTimeFraction;
-+    }
-+
-+    public float getDayTimePerTick() {
-+        return dayTimePerTick;
-+    }
-+
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public void setDayTimePerTick(float dayTimePerTick) {
-+        this.dayTimePerTick = dayTimePerTick;
++    protected long advanceDaytime() {
++        if (dayTimePerTick < 0) {
++            return 1L; // avoid doing math (and rounding errors) if no speed has been set
++        }
++        float dayTimeStep = dayTimeFraction + dayTimePerTick;
++        long result = (long)dayTimeStep;
++        dayTimeFraction = dayTimeStep - result;
++        return result;
      }
  }

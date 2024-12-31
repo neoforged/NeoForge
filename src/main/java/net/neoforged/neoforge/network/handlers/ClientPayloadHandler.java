@@ -152,7 +152,7 @@ public final class ClientPayloadHandler {
         @SuppressWarnings("resource")
         final ClientLevel level = Minecraft.getInstance().level;
         level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
-        level.setDayTimeFraction(payload.dayTimeFraction());
-        level.setDayTimePerTick(payload.dayTimePerTick());
+        level.dayTimeFraction = payload.dayTimeFraction();
+        level.dayTimePerTick = payload.dayTimePerTick();
     }
 }
