@@ -29,6 +29,14 @@
          float f = this.minecraft.level.getRainLevel(1.0F) / (Minecraft.useFancyGraphics() ? 1.0F : 2.0F);
          if (!(f <= 0.0F)) {
              RandomSource randomsource = RandomSource.create((long)this.ticks * 312987231L);
+@@ -666,6 +_,7 @@
+     }
+ 
+     public void setLevel(@Nullable ClientLevel p_109702_) {
++        net.neoforged.neoforge.client.ClientHooks.onUpdateLevel(p_109702_);
+         this.lastCameraSectionX = Integer.MIN_VALUE;
+         this.lastCameraSectionY = Integer.MIN_VALUE;
+         this.lastCameraSectionZ = Integer.MIN_VALUE;
 @@ -942,18 +_,23 @@
          RenderSystem.clear(16640, Minecraft.ON_OSX);
          float f1 = p_109605_.getRenderDistance();
