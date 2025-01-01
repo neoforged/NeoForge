@@ -87,6 +87,13 @@ dependencies {
     installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
+    // In 1.20.4, we are accidentally upgrading SLF4J to a newer version than what Minecraft ships.
+    // We need to override the strict version to keep MDG consumers working.
+    installer("org.slf4j:slf4j-api") {
+        version {
+            strictly project.slf4j_api_version
+        }
+    }
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 
