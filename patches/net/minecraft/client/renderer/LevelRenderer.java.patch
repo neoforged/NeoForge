@@ -43,10 +43,10 @@
          profilerfiller.popPush("terrain_setup");
          this.setupRender(p_109604_, frustum, flag, this.minecraft.player.isSpectator());
          profilerfiller.popPush("compile_sections");
-+        net.neoforged.neoforge.client.cached.CacheableBERenderingPipeline.getInstance().runTasks();
++        net.neoforged.neoforge.client.ClientHooks.onCompileSectionsPre();
          this.compileSections(p_109604_);
          profilerfiller.popPush("terrain");
-+        net.neoforged.neoforge.client.cached.CacheableBERenderingPipeline.getInstance().render(p_254120_, p_323920_);
++        net.neoforged.neoforge.client.ClientHooks.onRenderTerrainPre(p_254120_, p_323920_);
          this.renderSectionLayer(RenderType.solid(), d0, d1, d2, p_254120_, p_323920_);
 +        this.minecraft.getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).setBlurMipmap(false, this.minecraft.options.mipmapLevels().get() > 0); // Neo: fix flickering leaves when mods mess up the blurMipmap settings
          this.renderSectionLayer(RenderType.cutoutMipped(), d0, d1, d2, p_254120_, p_323920_);

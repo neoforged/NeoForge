@@ -137,7 +137,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
-import net.neoforged.neoforge.client.cached.CacheableBERenderingPipeline;
+import net.neoforged.neoforge.client.block.CacheableBERenderingPipeline;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
@@ -794,6 +794,18 @@ public class ClientHooks {
 
     public static void onBlockEntityRemoved(BlockEntity blockEntity) {
         CacheableBERenderingPipeline.getInstance().blockRemoved(blockEntity);
+    }
+
+    public static void onRenderTranslucentPre(Matrix4f frustumMatrix, Matrix4f projectionMatrix) {
+        CacheableBERenderingPipeline.getInstance().render(frustumMatrix, projectionMatrix);
+    }
+
+    public static void onCompileSectionsPre() {
+        CacheableBERenderingPipeline.getInstance().runTasks();
+    }
+
+    public static void onUpdateLevel(ClientLevel level) {
+        CacheableBERenderingPipeline.updateLevel(level);
     }
 
     public static Font getTooltipFont(ItemStack stack, Font fallbackFont) {

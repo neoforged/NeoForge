@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -20,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -29,7 +36,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.cached.CacheableBERenderingPipeline;
+import net.neoforged.neoforge.client.block.CacheableBERenderingPipeline;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,32 +45,25 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
-@ForEachTest(side = Dist.CLIENT, groups = {"client.event", "event"})
+@ForEachTest(side = Dist.CLIENT, groups = { "client.event", "event" })
 public class CachedBERTests {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.Blocks.createBlocks("neotests_cached_ber");
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
-        DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "neotests_cached_ber");
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "neotests_cached_ber");
 
     public static final DeferredBlock<Block> THE_BLOCK = BLOCKS.register(
-        "not_enough_vertexes",
-        () -> new TheBlock(
-            BlockBehaviour.Properties.of()
-                .noCollission()
-                .noOcclusion()
-                .lightLevel(state -> 15)
-        )
-    );
+            "not_enough_vertexes",
+            () -> new TheBlock(
+                    BlockBehaviour.Properties.of()
+                            .noCollission()
+                            .noOcclusion()
+                            .lightLevel(state -> 15)));
 
     public static final Supplier<BlockEntityType<TheBlockEntity>> THE_BE = BLOCK_ENTITY_TYPES.register(
-        "not_enough_vertexes",
-        () -> BlockEntityType.Builder.of(
-                TheBlockEntity::new,
-                THE_BLOCK.get()
-            )
-            .build(null)
-    );
+            "not_enough_vertexes",
+            () -> BlockEntityType.Builder.of(
+                    TheBlockEntity::new,
+                    THE_BLOCK.get())
+                    .build(null));
 
     @TestHolder(description = "Register a block with cached BER which adds lots of vertexes")
     static void registerBlock(final DynamicTest test) {
@@ -77,7 +77,6 @@ public class CachedBERTests {
     }
 
     public static class TheBlock extends BaseEntityBlock {
-
         protected TheBlock(Properties p_49224_) {
             super(p_49224_);
             registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.ENABLED, false));
@@ -91,9 +90,8 @@ public class CachedBERTests {
         @Override
         protected ItemInteractionResult useItemOn(ItemStack p_316304_, BlockState state, Level level, BlockPos pos, Player p_316132_, InteractionHand p_316595_, BlockHitResult p_316140_) {
             level.setBlockAndUpdate(
-                pos,
-                state.setValue(BlockStateProperties.ENABLED, !state.getValue(BlockStateProperties.ENABLED))
-            );
+                    pos,
+                    state.setValue(BlockStateProperties.ENABLED, !state.getValue(BlockStateProperties.ENABLED)));
             if (!level.isClientSide) return ItemInteractionResult.SUCCESS;
             BlockEntity be = level.getBlockEntity(pos);
             if (be == null) return ItemInteractionResult.SUCCESS;
@@ -108,6 +106,11 @@ public class CachedBERTests {
         }
 
         @Override
+        protected RenderShape getRenderShape(BlockState p_49232_) {
+            return RenderShape.MODEL;
+        }
+
+        @Override
         protected MapCodec<? extends BaseEntityBlock> codec() {
             return Block.simpleCodec(TheBlock::new);
         }
@@ -119,54 +122,60 @@ public class CachedBERTests {
     }
 
     public static class TheBlockEntity extends BlockEntity {
-
         public TheBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
             super(THE_BE.get(), p_155229_, p_155230_);
         }
     }
 
     public static class TheRenderer implements BlockEntityRenderer<TheBlockEntity> {
-
-        public TheRenderer(BlockEntityRendererProvider.Context ctx) {
-
-        }
+        public TheRenderer(BlockEntityRendererProvider.Context ctx) {}
 
         @Override
         public void render(
-            TheBlockEntity blockEntity,
-            float partialTick,
-            PoseStack poseStack,
-            MultiBufferSource bufferSource,
-            int packedLight,
-            int packedOverlay
-        ) {
+                TheBlockEntity blockEntity,
+                float partialTick,
+                PoseStack poseStack,
+                MultiBufferSource bufferSource,
+                int packedLight,
+                int packedOverlay) {
             Level level = blockEntity.getLevel();
             BlockPos pos = blockEntity.getBlockPos();
             if (level == null) return;
             BlockState blockState = level.getBlockState(pos);
             if (!blockState.is(THE_BLOCK.get())) return;
             if (blockState.getValue(BlockStateProperties.ENABLED)) return;
-            renderManyTorches(poseStack, bufferSource, packedLight, packedOverlay);
-            if (bufferSource instanceof MultiBufferSource.BufferSource buffer) {
-                buffer.endLastBatch();
-            }
+            renderManyBlocks(poseStack, bufferSource, packedLight, packedOverlay);
         }
 
-        private void renderManyTorches(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        private void renderManyBlocks(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
             BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
             for (int dx = 0; dx < 32; dx++) {
                 for (int dz = 0; dz < 32; dz++) {
                     poseStack.pushPose();
-                    poseStack.translate(dx * 0.25, 1, dz * 0.25);
+                    poseStack.translate(dx, 2, dz);
                     dispatcher.renderSingleBlock(
-                        Blocks.TORCH.defaultBlockState(),
-                        poseStack,
-                        bufferSource,
-                        packedLight,
-                        packedOverlay,
-                        ModelData.EMPTY,
-                        RenderType.cutout()
-                    );
+                            Blocks.TORCH.defaultBlockState(),
+                            poseStack,
+                            bufferSource,
+                            packedLight,
+                            packedOverlay,
+                            ModelData.EMPTY,
+                            RenderType.cutout());
+                    poseStack.popPose();
+                }
+            }
+            for (int dx = 0; dx < 32; dx++) {
+                for (int dz = 0; dz < 32; dz++) {
+                    poseStack.pushPose();
+                    poseStack.translate(dx, 1, dz);
+                    dispatcher.renderSingleBlock(
+                            Blocks.BLACK_STAINED_GLASS.defaultBlockState(),
+                            poseStack,
+                            bufferSource,
+                            packedLight,
+                            packedOverlay,
+                            ModelData.EMPTY,
+                            RenderType.translucent());
                     poseStack.popPose();
                 }
             }
@@ -174,20 +183,19 @@ public class CachedBERTests {
 
         @Override
         public void renderCached(
-            TheBlockEntity blockEntity,
-            PoseStack poseStack,
-            MultiBufferSource.BufferSource bufferSource,
-            float partialTick,
-            int packedLight,
-            int packedOverlay
-        ) {
+                TheBlockEntity blockEntity,
+                PoseStack poseStack,
+                MultiBufferSource.BufferSource bufferSource,
+                float partialTick,
+                int packedLight,
+                int packedOverlay) {
             Level level = blockEntity.getLevel();
             BlockPos pos = blockEntity.getBlockPos();
             if (level == null) return;
             BlockState blockState = level.getBlockState(pos);
             if (!blockState.is(THE_BLOCK.get())) return;
             if (!blockState.getValue(BlockStateProperties.ENABLED)) return;
-            renderManyTorches(poseStack, bufferSource, packedLight, packedOverlay);
+            renderManyBlocks(poseStack, bufferSource, packedLight, packedOverlay);
         }
     }
 }

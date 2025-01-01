@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -6,19 +11,16 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.types.Func;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import org.lwjgl.system.MemoryUtil;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -39,9 +41,8 @@ public class FullyBufferedBufferSource extends MultiBufferSource.BufferSource im
     @Override
     public VertexConsumer getBuffer(RenderType renderType) {
         return bufferBuilders.computeIfAbsent(
-            renderType,
-            it -> new BufferBuilder(getByteBuffer(it), it.mode, it.format)
-        );
+                renderType,
+                it -> new BufferBuilder(getByteBuffer(it), it.mode, it.format));
     }
 
     public boolean isEmpty() {
@@ -49,22 +50,18 @@ public class FullyBufferedBufferSource extends MultiBufferSource.BufferSource im
     }
 
     @Override
-    public void endBatch(RenderType renderType) {
-    }
+    public void endBatch(RenderType renderType) {}
 
     @Override
-    public void endLastBatch() {
-    }
+    public void endLastBatch() {}
 
     @Override
-    public void endBatch() {
-    }
+    public void endBatch() {}
 
     public void upload(
-        Function<RenderType, VertexBuffer> vertexBufferGetter,
-        Function<RenderType, ByteBufferBuilder> byteBufferSupplier,
-        Consumer<Runnable> runner
-    ) {
+            Function<RenderType, VertexBuffer> vertexBufferGetter,
+            Function<RenderType, ByteBufferBuilder> byteBufferSupplier,
+            Consumer<Runnable> runner) {
         for (RenderType renderType : bufferBuilders.keySet()) {
             runner.accept(() -> {
                 BufferBuilder bufferBuilder = bufferBuilders.get(renderType);
@@ -76,13 +73,11 @@ public class FullyBufferedBufferSource extends MultiBufferSource.BufferSource im
                     if (mesh != null) {
                         if (renderType.sortOnUpload) {
                             MeshData.SortState sortState = mesh.sortQuads(
-                                byteBufferSupplier.apply(renderType),
-                                RenderSystem.getVertexSorting()
-                            );
+                                    byteBufferSupplier.apply(renderType),
+                                    RenderSystem.getVertexSorting());
                             meshSorts.put(
-                                renderType,
-                                sortState
-                            );
+                                    renderType,
+                                    sortState);
                         }
                         VertexBuffer vertexBuffer = vertexBufferGetter.apply(renderType);
                         vertexBuffer.bind();

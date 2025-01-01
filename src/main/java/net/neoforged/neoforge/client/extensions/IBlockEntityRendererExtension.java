@@ -24,12 +24,10 @@ public interface IBlockEntityRendererExtension<T extends BlockEntity> {
     }
 
     default void renderCached(
-        T blockEntity,
-        PoseStack poseStack,
-        MultiBufferSource.BufferSource bufferSource,
-        float partialTick,
-        int packedLight,
-        int packedOverlay
-    ) {
-    }
+            T blockEntity,
+            PoseStack poseStack,
+            MultiBufferSource.BufferSource bufferSource,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {}
 }

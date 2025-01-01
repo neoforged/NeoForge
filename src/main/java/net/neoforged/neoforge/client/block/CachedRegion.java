@@ -1,4 +1,9 @@
-package net.neoforged.neoforge.client.cached;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.client.block;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.Uniform;
@@ -11,6 +16,14 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -26,13 +39,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.FullyBufferedBufferSource;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class CachedRegion {
     private final ChunkPos chunkPos;
@@ -53,6 +59,13 @@ public class CachedRegion {
         this.pipeline = pipeline;
     }
 
+    /**
+     * Updates the block entities collection and triggers a rebuild of the region.
+     * <p>
+     * 
+     * @see CacheableBERenderingPipeline#update(BlockEntity)
+     * @param be The block entity to update.
+     */
     public void update(BlockEntity be) {
         if (lastRebuildTask != null) {
             lastRebuildTask.cancel();
@@ -67,6 +80,16 @@ public class CachedRegion {
         pipeline.submitCompileTask(new RebuildTask());
     }
 
+    /**
+     * Handles the removal of a block entity from the system and initiates a cache rebuild.
+     * <p>
+     * When a block entity is removed, this method is called to update the internal state of the system.
+     * It cancels any ongoing rebuild tasks, removes the specified block entity from the collection,
+     * cleans up any other removed block entities, and then submits a new rebuild task to the pipeline.
+     *
+     * @see CacheableBERenderingPipeline#blockRemoved(BlockEntity)
+     * @param be The block entity that has been removed.
+     */
     public void blockRemoved(BlockEntity be) {
         if (lastRebuildTask != null) {
             lastRebuildTask.cancel();
@@ -99,10 +122,9 @@ public class CachedRegion {
     }
 
     private void renderInternal(
-        Matrix4f frustumMatrix,
-        Matrix4f projectionMatrix,
-        Collection<RenderType> renderTypes
-    ) {
+            Matrix4f frustumMatrix,
+            Matrix4f projectionMatrix,
+            Collection<RenderType> renderTypes) {
         if (isEmpty) return;
         RenderSystem.enableBlend();
         Window window = Minecraft.getInstance().getWindow();
@@ -111,7 +133,9 @@ public class CachedRegion {
         if (cameraPosition.distanceTo(new Vec3(chunkPos.x * 16, cameraPosition.y, chunkPos.z * 16)) > renderDistance) {
             return;
         }
-        for (RenderType renderType : renderTypes) {
+        List<RenderType> renderingOrders = new ArrayList<>(renderTypes);
+        renderingOrders.sort(Comparator.comparingInt(a -> (a.sortOnUpload ? 1 : 0)));
+        for (RenderType renderType : renderingOrders) {
             VertexBuffer vb = buffers.get(renderType);
             if (vb == null) continue;
             renderLayer(renderType, vb, frustumMatrix, projectionMatrix, cameraPosition, window);
@@ -124,13 +148,12 @@ public class CachedRegion {
     }
 
     private void renderLayer(
-        RenderType renderType,
-        VertexBuffer vertexBuffer,
-        Matrix4f frustumMatrix,
-        Matrix4f projectionMatrix,
-        Vec3 cameraPosition,
-        Window window
-    ) {
+            RenderType renderType,
+            VertexBuffer vertexBuffer,
+            Matrix4f frustumMatrix,
+            Matrix4f projectionMatrix,
+            Vec3 cameraPosition,
+            Window window) {
         int indexCount = indexCountMap.getInt(renderType);
         if (indexCount <= 0) return;
         renderType.setupRenderState();
@@ -139,19 +162,17 @@ public class CachedRegion {
         Uniform uniform = shader.CHUNK_OFFSET;
         if (uniform != null) {
             uniform.set(
-                (float) -cameraPosition.x,
-                (float) -cameraPosition.y,
-                (float) -cameraPosition.z
-            );
+                    (float) -cameraPosition.x,
+                    (float) -cameraPosition.y,
+                    (float) -cameraPosition.z);
         }
         vertexBuffer.bind();
         if (renderType.sortOnUpload) {
             MeshData.SortState sortState = this.meshSortings.get(renderType);
             if (sortState != null) {
                 ByteBufferBuilder.Result result = sortState.buildSortedIndexBuffer(
-                    this.requestSortBuffer(renderType),
-                    VertexSorting.byDistance(cameraPosition.toVector3f())
-                );
+                        this.requestSortBuffer(renderType),
+                        VertexSorting.byDistance(cameraPosition.toVector3f()));
                 if (result != null) {
                     vertexBuffer.uploadIndexBuffer(result);
                 }
@@ -181,8 +202,8 @@ public class CachedRegion {
                     return;
                 }
                 BlockEntityRenderer renderer = Minecraft.getInstance()
-                    .getBlockEntityRenderDispatcher()
-                    .getRenderer(be);
+                        .getBlockEntityRenderDispatcher()
+                        .getRenderer(be);
                 if (renderer == null) continue;
                 Level level = be.getLevel();
                 int packedLight;
@@ -194,26 +215,23 @@ public class CachedRegion {
                 poseStack.pushPose();
                 BlockPos pos = be.getBlockPos();
                 poseStack.translate(
-                    pos.getX(),
-                    pos.getY(),
-                    pos.getZ()
-                );
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ());
                 renderer.renderCached(
-                    be,
-                    poseStack,
-                    bufferSource,
-                    partialTick,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY
-                );
+                        be,
+                        poseStack,
+                        bufferSource,
+                        partialTick,
+                        packedLight,
+                        OverlayTexture.NO_OVERLAY);
                 poseStack.popPose();
             }
             CachedRegion.this.isEmpty = bufferSource.isEmpty();
             bufferSource.upload(
-                CachedRegion.this::getBuffer,
-                CachedRegion.this::requestSortBuffer,
-                pipeline::submitUploadTask
-            );
+                    CachedRegion.this::getBuffer,
+                    CachedRegion.this::requestSortBuffer,
+                    pipeline::submitUploadTask);
 
             CachedRegion.this.meshSortings = bufferSource.getMeshSorts();
             CachedRegion.this.indexCountMap = bufferSource.getIndexCountMap();
@@ -224,6 +242,4 @@ public class CachedRegion {
             cancelled = true;
         }
     }
-
-
 }
