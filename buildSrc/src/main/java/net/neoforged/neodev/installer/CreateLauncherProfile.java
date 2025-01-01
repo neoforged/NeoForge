@@ -57,10 +57,17 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     public abstract ListProperty<String> getIgnoreList();
 
     @Input
-    protected abstract Property<String> getModulePath();
+    protected abstract ListProperty<String> getModulePath();
+
+    @Input
+    protected abstract ListProperty<String> getJavaAgentsClasspath();
 
     public void setModules(Configuration modules) {
-        getModulePath().set(DependencyUtils.configurationToClasspath(modules, "${library_directory}/", "${classpath_separator}"));
+        getModulePath().set(DependencyUtils.configurationToClasspathItems(modules, "${library_directory}/"));
+    }
+
+    public void setJavaAgents(Configuration javaAgents) {
+        getJavaAgentsClasspath().set(DependencyUtils.configurationToClasspathItems(javaAgents, "${library_directory}/"));
     }
 
     @OutputFile
@@ -82,17 +89,26 @@ public abstract class CreateLauncherProfile extends DefaultTask {
 
         var jvmArguments = new ArrayList<>(List.of(
                 "-Djava.net.preferIPv6Addresses=system",
-                "-DignoreList=" + String.join(",", getIgnoreList().get()),
                 "-DlibraryDirectory=${library_directory}"));
+        if (!getIgnoreList().get().isEmpty()) {
+            jvmArguments.add("-DignoreList=" + String.join(",", getIgnoreList().get()));
+        }
 
-        jvmArguments.add("-p");
-        jvmArguments.add(getModulePath().get());
+        var modulePath = getModulePath().get();
+        if (!modulePath.isEmpty()) {
+            jvmArguments.add("-p");
+            jvmArguments.add(String.join("${classpath_separator}", modulePath));
+        }
+
+        var javaAgents = getJavaAgentsClasspath().get();
+        for (var javaAgent : javaAgents) {
+            jvmArguments.add("-javaagent:" + javaAgent);
+        }
 
         jvmArguments.addAll(List.of(
-                "--add-modules", "ALL-MODULE-PATH",
-                "--add-opens", "java.base/java.util.jar=cpw.mods.securejarhandler",
-                "--add-opens", "java.base/java.lang.invoke=cpw.mods.securejarhandler",
-                "--add-exports", "java.base/sun.security.util=cpw.mods.securejarhandler",
+                "--add-opens", "java.base/java.util.jar=ALL-UNNAMED",
+                "--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED",
+                "--add-exports", "java.base/sun.security.util=ALL-UNNAMED",
                 "--add-exports", "jdk.naming.dns/com.sun.jndi.dns=java.naming"));
 
         var arguments = new LinkedHashMap<String, List<String>>();
@@ -104,7 +120,7 @@ public abstract class CreateLauncherProfile extends DefaultTask {
                 time,
                 time,
                 "release",
-                "cpw.mods.bootstraplauncher.BootstrapLauncher",
+                "net.neoforged.fml.startup.Client",
                 getMinecraftVersion().get(),
                 arguments,
                 libraries

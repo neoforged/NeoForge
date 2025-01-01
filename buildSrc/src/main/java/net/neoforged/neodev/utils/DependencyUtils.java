@@ -68,17 +68,17 @@ public final class DependencyUtils {
     }
 
     /**
-     * Turns a configuration into a classpath string,
+     * Turns a configuration into a list of classpath items,
      * assuming that the contents of the configuration are installed following the Maven directory layout.
      *
      * @param prefix string to add in front of each classpath entry
-     * @param separator separator to add between each classpath entry
      */
-    public static Provider<String> configurationToClasspath(Configuration configuration, String prefix, String separator) {
+    public static Provider<List<String>> configurationToClasspathItems(Configuration configuration, String prefix) {
         return configuration.getIncoming().getArtifacts().getResolvedArtifacts().map(
                 results -> results.stream()
                     .map(artifact -> prefix + guessMavenIdentifier(artifact).repositoryPath())
-                    .collect(Collectors.joining(separator))
+                    .distinct()
+                    .toList()
         );
     }
 }

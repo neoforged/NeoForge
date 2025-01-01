@@ -112,15 +112,15 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
                 task.getLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevClasspath));
                 task.getModules().addAll(DependencyUtils.configurationToGavList(configurations.modulePath));
-                task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
-                task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
-                task.getIgnoreList().addAll(configurations.userdevCompileOnlyClasspath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
-                    return results.stream().map(r -> r.getFile().getName()).toList();
-                }));
-                task.getIgnoreList().addAll("client-extra", "neoforge-");
-                task.getBinpatcherGav().set(Tools.BINPATCHER.asGav(project));
-            });
-        }
+                task.getJavaAgents().addAll(DependencyUtils.configurationToGavList(configurations.javaAgentsClasspath));
+            task.getTestLibraries().addAll(DependencyUtils.configurationToGavList(configurations.userdevTestClasspath));
+            task.getTestLibraries().add(neoForgeVersion.map(v -> "net.neoforged:testframework:" + v));
+            task.getIgnoreList().addAll(configurations.userdevCompileOnlyClasspath.getIncoming().getArtifacts().getResolvedArtifacts().map(results -> {
+                return results.stream().map(r -> r.getFile().getName()).toList();
+            }));
+            task.getIgnoreList().addAll("client-extra", "neoforge-");
+            task.getBinpatcherGav().set(Tools.BINPATCHER.asGav(project));
+        });}
 
         // 2. Task to download assets.
         var downloadAssets = tasks.register("downloadAssets", DownloadAssets.class, task -> {
@@ -246,6 +246,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
             task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
             task.setModules(configurations.modulePath);
+            task.setJavaAgents(configurations.javaAgentsClasspath);
             task.getLauncherProfile().set(neoDevBuildDir.map(dir -> dir.file("launcher-profile.json")));
         });
 
@@ -277,11 +278,11 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         var createWindowsServerArgsFile = tasks.register("createWindowsServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(";", configurations.launcherProfileClasspath, configurations.modulePath);
+            task.getPathSeparator().set(";");
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("windows-server-args.txt")));
         });
         var createUnixServerArgsFile = tasks.register("createUnixServerArgsFile", CreateArgsFile.class, task -> {
-            task.setLibraries(":", configurations.launcherProfileClasspath, configurations.modulePath);
+            task.getPathSeparator().set(":");
             task.getArgsFile().set(neoDevBuildDir.map(dir -> dir.file("unix-server-args.txt")));
         });
 
@@ -300,6 +301,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                     return results.stream().map(r -> r.getFile().getName()).toList();
                 }));
                 task.getRawServerJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawServerJar));
+                task.setLibraries(configurations.launcherProfileClasspath, configurations.modulePath, configurations.javaAgentsClasspath);
             });
         }
 

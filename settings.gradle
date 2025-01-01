@@ -22,6 +22,15 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         mavenLocal()
+        maven {
+            name 'Maven for PR #232' // https://github.com/neoforged/FancyModLoader/pull/232
+            url 'https://prmaven.neoforged.net/FancyModLoader/pr232'
+            content {
+                includeModule('net.neoforged.fancymodloader', 'junit-fml')
+                includeModule('net.neoforged.fancymodloader', 'loader')
+                includeModule('net.neoforged.fancymodloader', 'earlydisplay')
+            }
+        }
     }
 }
 

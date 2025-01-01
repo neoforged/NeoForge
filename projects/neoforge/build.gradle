@@ -80,9 +80,8 @@ dependencies {
         endorseStrictVersions()
     }
 
-    moduleLibraries "cpw.mods:securejarhandler:${project.securejarhandler_version}"
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
-        moduleLibraries(asmModule) {
+        libraries(asmModule) {
             // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
             // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
             version {
@@ -90,8 +89,7 @@ dependencies {
             }
         }
     }
-    moduleLibraries "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
-    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+    libraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
 
     libraries ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
@@ -102,10 +100,12 @@ dependencies {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
     }
+    javaAgents ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
+        transitive = false
+    }
     libraries "net.neoforged:accesstransformers:${project.accesstransformers_version}"
     libraries "net.neoforged:bus:${project.eventbus_version}"
     libraries "net.neoforged:coremods:${project.coremods_version}"
-    libraries "cpw.mods:modlauncher:${project.modlauncher_version}"
     libraries "net.neoforged:mergetool:${project.mergetool_version}:api"
     libraries "com.electronwill.night-config:core:${project.nightconfig_version}"
     libraries "com.electronwill.night-config:toml:${project.nightconfig_version}"
@@ -134,6 +134,11 @@ dependencies {
     // Must be implementation instead of compileOnly so that running dependent projects such as tests will trigger (re)compilation of coremods.
     // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
     implementation(jarJar(project(":neoforge-coremods")))
+}
+
+configurations.configureEach {
+    exclude(group: "cpw.mods", module: "modlauncher")
+    exclude(group: "cpw.mods", module: "securejarhandler")
 }
 
 neoDev {
@@ -249,7 +254,7 @@ configurations {
     modDevApiElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, userdevCompileOnly, neoFormDependencies
+        extendsFrom libraries, userdevCompileOnly, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -263,7 +268,7 @@ configurations {
     modDevRuntimeElements {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom libraries, moduleLibraries, neoFormDependencies
+        extendsFrom libraries, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -277,7 +282,6 @@ configurations {
     modDevModulePath {
         canBeDeclared = false
         canBeResolved = false
-        extendsFrom moduleLibraries
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))

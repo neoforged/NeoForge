@@ -45,6 +45,10 @@ class NeoDevConfigurations {
      */
     final Configuration moduleLibraries;
     /**
+     * The Java Agents to attach to the running JVM when running the game.
+     */
+    final Configuration javaAgents;
+    /**
      * Libraries that should be accessible in mod development environments at compilation time only.
      * Currently, this is only used for MixinExtras, which is already available at runtime via JiJ in the NeoForge universal jar.
      */
@@ -73,6 +77,10 @@ class NeoDevConfigurations {
      * Resolvable {@link #moduleLibraries}.
      */
     final Configuration modulePath;
+    /**
+     * Resolvable {@link #javaAgents}.
+     */
+    final Configuration javaAgentsClasspath;
     /**
      * Userdev dependencies (written to a json file in the userdev jar).
      * This should contain all of NeoForge's additional dependencies for userdev,
@@ -125,12 +133,14 @@ class NeoDevConfigurations {
         neoFormDependencies = dependencyScope(configurations, "neoFormDependencies");
         libraries = dependencyScope(configurations, "libraries");
         moduleLibraries = dependencyScope(configurations, "moduleLibraries");
+        javaAgents = dependencyScope(configurations, "javaAgents");
         userdevCompileOnly = dependencyScope(configurations, "userdevCompileOnly");
         userdevTestFixtures = dependencyScope(configurations, "userdevTestFixtures");
 
         neoFormDataOnly = resolvable(configurations, "neoFormDataOnly");
         neoFormClasspath = resolvable(configurations, "neoFormClasspath");
         modulePath = resolvable(configurations, "modulePath");
+        javaAgentsClasspath = resolvable(configurations, "javaAgentsClasspath");
         userdevClasspath = resolvable(configurations, "userdevClasspath");
         userdevCompileOnlyClasspath = resolvable(configurations, "userdevCompileOnlyClasspath");
         userdevTestClasspath = resolvable(configurations, "userdevTestClasspath");
@@ -151,6 +161,9 @@ class NeoDevConfigurations {
 
         modulePath.extendsFrom(moduleLibraries);
         modulePath.shouldResolveConsistentlyWith(runtimeClasspath);
+
+        javaAgentsClasspath.extendsFrom(javaAgents);
+        javaAgentsClasspath.shouldResolveConsistentlyWith(runtimeClasspath);
 
         userdevClasspath.extendsFrom(libraries, moduleLibraries, userdevCompileOnly);
         userdevClasspath.shouldResolveConsistentlyWith(runtimeClasspath);

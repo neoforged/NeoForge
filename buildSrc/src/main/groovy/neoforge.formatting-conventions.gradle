@@ -49,7 +49,6 @@ immaculate {
             config = rootProject.file('codeformat/formatter-config.xml')
         }
 
-
         // courtesy of diffplug/spotless#240
         // https://github.com/diffplug/spotless/issues/240#issuecomment-385206606
         custom 'noWildcardImports', { String fileContents ->

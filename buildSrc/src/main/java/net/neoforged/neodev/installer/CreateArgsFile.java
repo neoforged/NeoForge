@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,21 +45,24 @@ public abstract class CreateArgsFile extends DefaultTask {
     public abstract Property<String> getRawNeoFormVersion();
 
     @Input
-    protected abstract Property<String> getPathSeparator();
+    public abstract Property<String> getPathSeparator();
 
     @Input
-    protected abstract Property<String> getModules();
+    protected abstract ListProperty<String> getModules();
+
+    @Input
+    protected abstract ListProperty<String> getJavaAgents();
 
     @Input
     public abstract ListProperty<String> getIgnoreList();
 
     @Input
-    protected abstract Property<String> getClasspath();
+    protected abstract ListProperty<String> getClasspath();
 
-    public void setLibraries(String separator, Configuration classpath, Configuration modulePath) {
-        getPathSeparator().set(separator);
-        getClasspath().set(DependencyUtils.configurationToClasspath(classpath, "libraries/", separator));
-        getModules().set(DependencyUtils.configurationToClasspath(modulePath, "libraries/", separator));
+    public void setLibraries(Configuration classpath, Configuration modulePath, Configuration javaAgents) {
+        getClasspath().set(DependencyUtils.configurationToClasspathItems(classpath, "libraries/"));
+        getModules().set(DependencyUtils.configurationToClasspathItems(modulePath, "libraries/"));
+        getJavaAgents().set(DependencyUtils.configurationToClasspathItems(javaAgents, "libraries/"));
     }
 
     @InputFile
@@ -71,13 +75,17 @@ public abstract class CreateArgsFile extends DefaultTask {
     protected abstract ArchiveOperations getArchiveOperations();
 
     private String resolveClasspath() throws IOException {
-        var ourClasspath = getClasspath().get() + getPathSeparator().get()
-                + "libraries/net/minecraft/server/%s/server-%s-extra.jar".formatted(
-                        getRawNeoFormVersion().get(), getRawNeoFormVersion().get());
+        String pathSeparator = getPathSeparator().get();
+        var classpathItems = new ArrayList<>(getClasspath().get());
+        classpathItems.add("libraries/net/minecraft/server/%s/server-%s-extra.jar".formatted(
+                getRawNeoFormVersion().get(), getRawNeoFormVersion().get()));
+
+        // Remove any java agents, since they automatically are on the classpath
+        classpathItems.removeAll(getJavaAgents().get());
 
         // The raw server jar also contains its own classpath.
         // We want to make sure that our versions of the libraries are used when there is a conflict.
-        var ourClasspathEntries = Stream.of(ourClasspath.split(getPathSeparator().get()))
+        var ourClasspathEntries = classpathItems.stream()
                 .map(CreateArgsFile::stripVersionSuffix)
                 .collect(Collectors.toSet());
 
@@ -89,9 +97,10 @@ public abstract class CreateArgsFile extends DefaultTask {
                 .filter(path -> !ourClasspathEntries.contains(stripVersionSuffix(path)))
                 // Exclude the actual MC server jar, which is under versions/
                 .filter(path -> path.startsWith("libraries/"))
-                .collect(Collectors.joining(getPathSeparator().get()));
+                .collect(Collectors.joining(pathSeparator));
 
-        return ourClasspath + getPathSeparator().get() + filteredServerClasspath;
+        classpathItems.add(filteredServerClasspath);
+        return String.join(pathSeparator, classpathItems);
     }
 
     // Example:
@@ -104,14 +113,18 @@ public abstract class CreateArgsFile extends DefaultTask {
 
     @TaskAction
     public void createArgsFile() throws IOException {
+        var pathSeparator = getPathSeparator().get();
+
+        var jvmOptions = new ArrayList<String>();
+        for (var javaAgent : getJavaAgents().get()) {
+            jvmOptions.add("-javaagent:" + javaAgent);
+        }
+
+        jvmOptions.add("-cp");
+        jvmOptions.add(resolveClasspath());
+
         var replacements = new HashMap<String, String>();
-        replacements.put("@MODULE_PATH@", getModules().get());
-        replacements.put("@MODULES@", "ALL-MODULE-PATH");
-        replacements.put("@IGNORE_LIST@", String.join(",", getIgnoreList().get()));
-        replacements.put("@PLUGIN_LAYER_LIBRARIES@", "");
-        replacements.put("@GAME_LAYER_LIBRARIES@", "");
-        replacements.put("@CLASS_PATH@", resolveClasspath());
-        replacements.put("@TASK@", "forgeserver");
+        replacements.put("@JVM_OPTIONS@", String.join("\n", jvmOptions));
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
         replacements.put("@FML_VERSION@", getFmlVersion().get());
         replacements.put("@MC_VERSION@", getMinecraftVersion().get());
