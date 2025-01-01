@@ -29,7 +29,7 @@
          float f = this.minecraft.level.getRainLevel(1.0F) / (Minecraft.useFancyGraphics() ? 1.0F : 2.0F);
          if (!(f <= 0.0F)) {
              RandomSource randomsource = RandomSource.create((long)this.ticks * 312987231L);
-@@ -942,18 +_,24 @@
+@@ -942,18 +_,23 @@
          RenderSystem.clear(16640, Minecraft.ON_OSX);
          float f1 = p_109605_.getRenderDistance();
          boolean flag1 = this.minecraft.level.effects().isFoggyAt(Mth.floor(d0), Mth.floor(d1)) || this.minecraft.gui.getBossOverlay().shouldCreateWorldFog();
@@ -46,7 +46,6 @@
 +        net.neoforged.neoforge.client.ClientHooks.onCompileSectionsPre();
          this.compileSections(p_109604_);
          profilerfiller.popPush("terrain");
-+        net.neoforged.neoforge.client.ClientHooks.onRenderTranslucentPre(p_254120_, p_323920_);
          this.renderSectionLayer(RenderType.solid(), d0, d1, d2, p_254120_, p_323920_);
 +        this.minecraft.getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS).setBlurMipmap(false, this.minecraft.options.mipmapLevels().get() > 0); // Neo: fix flickering leaves when mods mess up the blurMipmap settings
          this.renderSectionLayer(RenderType.cutoutMipped(), d0, d1, d2, p_254120_, p_323920_);
@@ -73,13 +72,13 @@
                          multibuffersource = multibuffersource$buffersource;
                      }
  
-@@ -1027,12 +_,14 @@
+@@ -1027,12 +_,13 @@
          multibuffersource$buffersource.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
          multibuffersource$buffersource.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
          multibuffersource$buffersource.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
 +        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES, this, posestack, p_254120_, p_323920_, this.ticks, p_109604_, frustum);
          profilerfiller.popPush("blockentities");
- 
+-
          for (SectionRenderDispatcher.RenderSection sectionrenderdispatcher$rendersection : this.visibleSections) {
              List<BlockEntity> list = sectionrenderdispatcher$rendersection.getCompiled().getRenderableBlockEntities();
              if (!list.isEmpty()) {
@@ -156,6 +155,14 @@
          }
  
          this.minecraft.debugRenderer.render(posestack, multibuffersource$buffersource, d0, d1, d2);
+@@ -1133,6 +_,7 @@
+         multibuffersource$buffersource.endBatch(RenderType.entityGlint());
+         multibuffersource$buffersource.endBatch(RenderType.entityGlintDirect());
+         multibuffersource$buffersource.endBatch(RenderType.waterMask());
++        net.neoforged.neoforge.client.ClientHooks.onRenderTranslucentPre(p_254120_, p_323920_);
+         this.renderBuffers.crumblingBufferSource().endBatch();
+         if (this.transparencyChain != null) {
+             multibuffersource$buffersource.endBatch(RenderType.lines());
 @@ -1147,9 +_,13 @@
              this.particlesTarget.copyDepthFrom(this.minecraft.getMainRenderTarget());
              RenderStateShard.PARTICLES_TARGET.setupRenderState();
