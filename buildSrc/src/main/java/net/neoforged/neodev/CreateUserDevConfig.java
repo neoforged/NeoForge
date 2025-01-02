@@ -71,7 +71,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
     @TaskAction
     public void writeUserDevConfig() throws IOException {
         var config = new UserDevConfig(
-                3,
+                // TODO: Technically new field... backwards compatible?
+                2,
                 "net.neoforged:neoform:%s-%s@zip".formatted(getMinecraftVersion().get(), getRawNeoFormVersion().get()),
                 "ats/",
                 "joined.lzma",
