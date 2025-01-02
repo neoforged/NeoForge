@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Internal
 public class VanillaInventoryCodeHooks {
     /**
-     * Copied from TileEntityHopper#captureDroppedItems and added capability support
+     * Tries to extract items from an item handler and insert them in the hopper.
      *
      * @param handler target item handler
      * @return {@code true} if we moved an item, {@code false} if we moved no items
@@ -52,7 +52,7 @@ public class VanillaInventoryCodeHooks {
     }
 
     /**
-     * Copied from TileEntityHopper#transferItemsOut and added capability support
+     * Tries to insert a hopper's items into an item handler.
      *
      * @param itemHandler target item handler
      * @return {@code true} if we moved an item, {@code false} if we moved no items
