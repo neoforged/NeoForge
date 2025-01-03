@@ -36,9 +36,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
     abstract Property<Boolean> getForNeoDev();
 
     @Input
-    abstract Property<String> getFmlVersion();
-
-    @Input
     abstract Property<String> getMinecraftVersion();
 
     @Input
@@ -110,7 +107,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
             Collections.addAll(args,
                     "--gameDir", ".",
-                    "--fml.fmlVersion", getFmlVersion().get(),
                     "--fml.mcVersion", getMinecraftVersion().get(),
                     "--fml.neoForgeVersion", getNeoForgeVersion().get(),
                     "--fml.neoFormVersion", getRawNeoFormVersion().get());

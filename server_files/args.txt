@@ -7,6 +7,5 @@
 -DlibraryDirectory=libraries
 net.neoforged.fml.startup.Server
 --fml.neoForgeVersion @FORGE_VERSION@
---fml.fmlVersion @FML_VERSION@
 --fml.mcVersion @MC_VERSION@
 --fml.neoFormVersion @MCP_VERSION@

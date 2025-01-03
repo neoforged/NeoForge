@@ -33,9 +33,6 @@ public abstract class CreateArgsFile extends DefaultTask {
     public abstract RegularFileProperty getTemplate();
 
     @Input
-    public abstract Property<String> getFmlVersion();
-
-    @Input
     public abstract Property<String> getMinecraftVersion();
 
     @Input
@@ -126,7 +123,6 @@ public abstract class CreateArgsFile extends DefaultTask {
         var replacements = new HashMap<String, String>();
         replacements.put("@JVM_OPTIONS@", String.join("\n", jvmOptions));
         replacements.put("@FORGE_VERSION@", getNeoForgeVersion().get());
-        replacements.put("@FML_VERSION@", getFmlVersion().get());
         replacements.put("@MC_VERSION@", getMinecraftVersion().get());
         replacements.put("@MCP_VERSION@", getRawNeoFormVersion().get());
 

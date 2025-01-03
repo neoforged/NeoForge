@@ -47,7 +47,6 @@ public class NeoDevPlugin implements Plugin<Project> {
         var neoDevBuildDir = project.getLayout().getBuildDirectory().dir("neodev");
 
         var rawNeoFormVersion = project.getProviders().gradleProperty("neoform_version");
-        var fmlVersion = project.getProviders().gradleProperty("fancy_mod_loader_version");
         var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
         var neoForgeVersion = project.provider(() -> project.getVersion().toString());
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
@@ -106,7 +105,6 @@ public class NeoDevPlugin implements Plugin<Project> {
         for (var taskProvider : List.of(writeNeoDevConfig, writeUserDevConfig)) {
             taskProvider.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
-                task.getFmlVersion().set(fmlVersion);
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);
@@ -237,7 +235,6 @@ public class NeoDevPlugin implements Plugin<Project> {
         // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.setGroup(INTERNAL_GROUP);
-            task.getFmlVersion().set(fmlVersion);
             task.getMinecraftVersion().set(minecraftVersion);
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
@@ -290,7 +287,6 @@ public class NeoDevPlugin implements Plugin<Project> {
             taskProvider.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
                 task.getTemplate().set(project.getRootProject().file("server_files/args.txt"));
-                task.getFmlVersion().set(fmlVersion);
                 task.getMinecraftVersion().set(minecraftVersion);
                 task.getNeoForgeVersion().set(neoForgeVersion);
                 task.getRawNeoFormVersion().set(rawNeoFormVersion);

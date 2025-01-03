@@ -32,9 +32,6 @@ public abstract class CreateLauncherProfile extends DefaultTask {
     public CreateLauncherProfile() {}
 
     @Input
-    public abstract Property<String> getFmlVersion();
-
-    @Input
     public abstract Property<String> getMinecraftVersion();
 
     @Input
@@ -82,10 +79,9 @@ public abstract class CreateLauncherProfile extends DefaultTask {
 
         var gameArguments = new ArrayList<>(List.of(
                 "--fml.neoForgeVersion", getNeoForgeVersion().get(),
-                "--fml.fmlVersion", getFmlVersion().get(),
                 "--fml.mcVersion", getMinecraftVersion().get(),
-                "--fml.neoFormVersion", getRawNeoFormVersion().get(),
-                "--launchTarget", "forgeclient"));
+                "--fml.neoFormVersion", getRawNeoFormVersion().get()
+        ));
 
         var jvmArguments = new ArrayList<>(List.of(
                 "-Djava.net.preferIPv6Addresses=system",
