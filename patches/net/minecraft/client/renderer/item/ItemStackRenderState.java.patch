@@ -20,7 +20,7 @@
 +                        Only the NEW_ENTITY vertex format is supported.
 +                        Chunk render types are not supported, and the equivalent render types from the Sheets class should be used.
 +                        Model: %s.
-+                        """.formatted(p_386829_, p_386829_));
++                        """.formatted(p_387529_, p_386829_));
 +            }
              this.model = p_386829_;
              this.renderType = p_387529_;
