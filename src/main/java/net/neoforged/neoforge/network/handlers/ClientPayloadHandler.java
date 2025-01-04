@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -158,6 +159,11 @@ public final class ClientPayloadHandler {
     }
 
     public static void handle(SyncEntityAttachmentsPayload payload, IPayloadContext context) {
-        // TODO
+        var entity = context.player().level().getEntity(payload.entity());
+        if (entity == null) {
+            LOGGER.warn("Received synced attachments from unknown entity");
+        } else {
+            AttachmentInternals.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
+        }
     }
 }

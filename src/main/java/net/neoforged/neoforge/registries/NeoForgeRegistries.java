@@ -40,7 +40,8 @@ public class NeoForgeRegistries {
     public static final Registry<IngredientType<?>> INGREDIENT_TYPES = new RegistryBuilder<>(Keys.INGREDIENT_TYPES).sync(true).create();
     public static final Registry<FluidIngredientType<?>> FLUID_INGREDIENT_TYPES = new RegistryBuilder<>(Keys.FLUID_INGREDIENT_TYPES).sync(true).create();
     public static final Registry<MapCodec<? extends ICondition>> CONDITION_SERIALIZERS = new RegistryBuilder<>(Keys.CONDITION_CODECS).create();
-    public static final Registry<AttachmentType<?>> ATTACHMENT_TYPES = new RegistryBuilder<>(Keys.ATTACHMENT_TYPES).create();
+    // TODO: enabling sync is potentially a breaking change, problematic for a 1.21.1 backport
+    public static final Registry<AttachmentType<?>> ATTACHMENT_TYPES = new RegistryBuilder<>(Keys.ATTACHMENT_TYPES).sync(true).create();
 
     // Reminder: If you add a registry to NeoForge itself, remember to add it to NeoForgeRegistriesSetup#registerRegistries.
 

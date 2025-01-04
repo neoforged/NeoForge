@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import io.netty.buffer.Unpooled;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,7 +26,10 @@ import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.payload.SyncEntityAttachmentsPayload;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,6 +80,26 @@ public final class AttachmentInternals {
         event.getOutcome().copyAttachmentsFrom(event.getEntity(), true);
     }
 
+    public static <T> void syncEntityAttachment(Entity entity, AttachmentType<T> type, T value, AttachmentSyncReason reason) {
+        if (type.syncHandler == null || !(entity.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        for (var player : serverLevel.players()) {
+            List<AttachmentType<?>> syncedTypes = new ArrayList<>(1);
+            var data = FriendlyByteBufUtil.writeCustomData(buf -> {
+                int indexBefore = buf.writerIndex();
+                type.syncHandler.write(buf, value, player, reason);
+                if (indexBefore < buf.writerIndex()) {
+                    // Actually wrote something
+                    syncedTypes.add(type);
+                }
+            }, entity.registryAccess());
+            if (!syncedTypes.isEmpty()) {
+                PacketDistributor.sendToPlayer(player, new SyncEntityAttachmentsPayload(entity.getId(), syncedTypes, data));
+            }
+        }
+    }
+
     @Nullable
     private static SyncEntityAttachmentsPayload syncEntityAttachments(Entity entity, ServerPlayer to, AttachmentSyncReason reason) {
         var holder = (AttachmentHolder) entity;
@@ -101,6 +129,32 @@ public final class AttachmentInternals {
         var packet = syncEntityAttachments(entity, to, AttachmentSyncReason.NEW_ENTITY);
         if (packet != null) {
             packetConsumer.accept(packet.toVanillaClientbound());
+        }
+    }
+
+    public static void receiveSyncedDataAttachments(AttachmentHolder holder, RegistryAccess registryAccess, List<AttachmentType<?>> types, byte[] bytes) {
+        var buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(bytes), registryAccess, ConnectionType.NEOFORGE);
+        try {
+            for (var type : types) {
+                @SuppressWarnings("unchecked")
+                var syncHandler = (IAttachmentSyncHandler<Object>) type.syncHandler;
+                if (syncHandler == null) {
+                    throw new IllegalArgumentException("Received synced attachment type without a sync handler registered: " + NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type));
+                }
+                // TODO: need to be careful that the right holder is passed! (when delegating!)
+                var result = syncHandler.read(holder.getExposedHolder(), buf);
+                if (result == null) {
+                    if (holder.attachments != null) {
+                        holder.attachments.remove(type);
+                    }
+                } else {
+                    holder.getAttachmentMap().put(type, result);
+                }
+            }
+        } catch (Exception exception) {
+            throw new RuntimeException("Encountered exception when reading synced data attachments: " + types, exception);
+        } finally {
+            buf.release();
         }
     }
 

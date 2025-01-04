@@ -33,6 +33,8 @@ license="LGPL v2.1"
     modId="custom_preset_editor_test"
 
 [[mods]]
+    modId="attachment_sync_test"
+[[mods]]
     modId="custom_break_sound_test"
 
 [[mods]]
