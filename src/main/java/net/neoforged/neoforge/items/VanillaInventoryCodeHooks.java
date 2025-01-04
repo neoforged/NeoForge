@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.items;
 
-import java.util.Collections;
 import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.Hopper;
@@ -89,18 +87,24 @@ public class VanillaInventoryCodeHooks {
     }
 
     public static ContainerOrHandler getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
-        // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
-        List<Entity> list = level.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
+        List<Entity> list = level.getEntities(
+                (Entity) null,
+                new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D),
+                entity -> {
+                    // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
+                    if (!entity.isAlive()) {
+                        return false;
+                    }
+                    return entity instanceof Container || entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side) != null;
+                });
         if (!list.isEmpty()) {
-            Collections.shuffle(list);
-            for (Entity entity : list) {
-                if (entity instanceof Container container) {
-                    return new ContainerOrHandler(container, null);
-                }
-                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
-                if (entityCap != null) {
-                    return new ContainerOrHandler(null, entityCap);
-                }
+            var entity = list.get(level.random.nextInt(list.size()));
+            if (entity instanceof Container container) {
+                return new ContainerOrHandler(container, null);
+            }
+            IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            if (entityCap != null) { // Could be null even if it wasn't in the entity predicate above.
+                return new ContainerOrHandler(null, entityCap);
             }
         }
         return ContainerOrHandler.EMPTY;
