@@ -11,12 +11,10 @@ import com.mojang.serialization.Codec;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.ChunkPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,9 +31,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 @Mod(AttachmentSyncTest.MOD_ID)
 public class AttachmentSyncTest {
@@ -44,7 +40,8 @@ public class AttachmentSyncTest {
     private static final Supplier<AttachmentType<Integer>> ATTACHMENT_TYPE = ATTACHMENT_TYPES.register("test",
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT)
-                    .syncHandler(new IAttachmentSyncHandler<Integer>() {
+                    // TODO: use streamcodec version at some point
+                    .sync(new IAttachmentSyncHandler<Integer>() {
                         @Override
                         public void write(RegistryFriendlyByteBuf buf, Integer attachment, ServerPlayer to, AttachmentSyncReason reason) {
                             buf.writeInt(attachment);

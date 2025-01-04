@@ -14,6 +14,9 @@ import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -234,13 +237,27 @@ public final class AttachmentType<T> {
         /**
          * Requests that this attachment be synced to clients.
          */
-        public Builder<T> syncHandler(IAttachmentSyncHandler<T> syncHandler) {
+        public Builder<T> sync(IAttachmentSyncHandler<T> syncHandler) {
             Objects.requireNonNull(syncHandler);
             this.syncHandler = syncHandler;
             return this;
         }
 
-        // TODO: StreamCodec-based sync handler
+        // TODO: Predicate<ServerPlayer> version too? Some data is not relevant to other players.
+        public Builder<T> sync(StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+            Objects.requireNonNull(streamCodec);
+            return sync(new IAttachmentSyncHandler<>() {
+                @Override
+                public void write(RegistryFriendlyByteBuf buf, T attachment, ServerPlayer to, AttachmentSyncReason reason) {
+                    streamCodec.encode(buf, attachment);
+                }
+
+                @Override
+                public T read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf) {
+                    return streamCodec.decode(buf);
+                }
+            });
+        }
 
         public AttachmentType<T> build() {
             return new AttachmentType<>(this);
