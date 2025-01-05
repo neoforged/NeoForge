@@ -438,7 +438,7 @@
      }
  
      public void checkDespawn() {
-@@ -3627,6 +_,130 @@
+@@ -3627,6 +_,135 @@
  
      public boolean mayInteract(ServerLevel p_376870_, BlockPos p_146844_) {
          return true;
@@ -551,10 +551,15 @@
 +    @Override
 +    @Nullable
 +    public final <T> T setData(net.neoforged.neoforge.attachment.AttachmentType<T> type, T data) {
-+        T previousData = super.setData(type, data);
-+        net.neoforged.neoforge.attachment.AttachmentInternals.syncEntityAttachment(this, type, data, net.neoforged.neoforge.attachment.AttachmentSyncReason.ENTITY_SYNC_REQUESTED);
 +        // Entities are always saved, no setChanged() call is necessary.
-+        return previousData;
++        return super.setData(type, data);
++    }
++
++    @Override
++    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        if (level instanceof ServerLevel serverLevel) {
++            net.neoforged.neoforge.attachment.AttachmentInternals.syncAttachmentUpdate(this, serverLevel, type);
++        }
 +    }
 +
 +    // Neo: Hookup Capabilities getters to entities

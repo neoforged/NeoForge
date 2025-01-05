@@ -22,6 +22,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
@@ -101,30 +104,47 @@ public final class AttachmentInternals {
         }
     };
 
-    public static <T> void syncEntityAttachment(Entity entity, AttachmentType<T> type, T value, AttachmentSyncReason reason) {
-        if (type.syncHandler == null || !(entity.level() instanceof ServerLevel serverLevel)) {
+    static SyncAttachmentsPayload.Target syncTarget(AttachmentHolder holder) {
+        return switch (holder) {
+            case BlockEntity blockEntity -> new SyncAttachmentsPayload.BlockEntityTarget(blockEntity.getBlockPos());
+            case AttachmentHolder.AsField asField when asField.getExposedHolder() instanceof LevelChunk chunk -> new SyncAttachmentsPayload.ChunkTarget(chunk.getPos());
+            case Entity entity -> new SyncAttachmentsPayload.EntityTarget(entity.getId());
+            case Level ignored -> new SyncAttachmentsPayload.LevelTarget();
+            default -> throw new UnsupportedOperationException("Attachment holder class is not supported: " + holder);
+        };
+    }
+
+    public static <T> void syncAttachmentUpdate(AttachmentHolder holder, ServerLevel level, AttachmentType<T> type) {
+        if (type.syncHandler == null) {
             return;
         }
-        for (var player : serverLevel.players()) {
+        var value = holder.getData(type); // TODO: what if data is missing?
+        for (var player : level.players()) { // TODO: only sync to relevant players? e.g. only players that see a specific chunk
             List<AttachmentType<?>> syncedTypes = new ArrayList<>(1);
             var data = FriendlyByteBufUtil.writeCustomData(buf -> {
                 int indexBefore = buf.writerIndex();
-                type.syncHandler.write(buf, value, player, reason);
+                type.syncHandler.write(buf, value, player, AttachmentSyncReason.ENTITY_SYNC_REQUESTED);
                 if (indexBefore < buf.writerIndex()) {
                     // Actually wrote something
                     syncedTypes.add(type);
                 }
-            }, entity.registryAccess());
+            }, level.registryAccess());
             if (!syncedTypes.isEmpty()) {
-                PacketDistributor.sendToPlayer(player, new SyncAttachmentsPayload(new SyncAttachmentsPayload.EntityTarget(entity.getId()), syncedTypes, data));
+                PacketDistributor.sendToPlayer(player, new SyncAttachmentsPayload(syncTarget(holder), syncedTypes, data));
             }
         }
     }
 
     @Nullable
-    private static SyncAttachmentsPayload syncEntityAttachments(Entity entity, ServerPlayer to, AttachmentSyncReason reason) {
-        var holder = (AttachmentHolder) entity;
+    private static SyncAttachmentsPayload syncInitialAttachments(AttachmentHolder holder, ServerPlayer to) {
         if (holder.attachments == null) {
+            return null;
+        }
+        boolean anySyncableAttachment = false;
+        for (var attachment : holder.attachments.keySet()) {
+            anySyncableAttachment = anySyncableAttachment | attachment.syncHandler != null;
+        }
+        if (!anySyncableAttachment) {
             return null;
         }
         List<AttachmentType<?>> syncedTypes = new ArrayList<>();
@@ -135,19 +155,19 @@ public final class AttachmentInternals {
                 var syncHandler = (IAttachmentSyncHandler<Object>) type.syncHandler;
                 if (syncHandler != null) {
                     int indexBefore = buf.writerIndex();
-                    syncHandler.write(buf, entry.getValue(), to, reason);
+                    syncHandler.write(buf, entry.getValue(), to, AttachmentSyncReason.NEW_ENTITY);
                     if (indexBefore < buf.writerIndex()) {
                         // Actually wrote something
                         syncedTypes.add(type);
                     }
                 }
             }
-        }, entity.registryAccess());
-        return new SyncAttachmentsPayload(new SyncAttachmentsPayload.EntityTarget(entity.getId()), syncedTypes, data);
+        }, to.registryAccess());
+        return new SyncAttachmentsPayload(syncTarget(holder), syncedTypes, data);
     }
 
     public static void sendEntityPairingData(Entity entity, ServerPlayer to, Consumer<Packet<? super ClientGamePacketListener>> packetConsumer) {
-        var packet = syncEntityAttachments(entity, to, AttachmentSyncReason.NEW_ENTITY);
+        var packet = syncInitialAttachments(entity, to);
         if (packet != null) {
             packetConsumer.accept(packet.toVanillaClientbound());
         }

@@ -42,7 +42,7 @@
                              }
                          }
                      }
-@@ -485,6 +_,74 @@
+@@ -485,6 +_,79 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
@@ -104,6 +104,11 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
 +        getAttachmentHolder().deserializeInternal(provider, tag);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public final void receiveSyncedAttachments(List<net.neoforged.neoforge.attachment.AttachmentType<?>> types, byte[] bytes) {
++        net.neoforged.neoforge.attachment.AttachmentInternals.receiveSyncedDataAttachments(getAttachmentHolder(), getLevel().registryAccess(), types, bytes);
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal

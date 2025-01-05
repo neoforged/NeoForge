@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
@@ -160,6 +161,23 @@ public final class ClientPayloadHandler {
 
     public static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
         switch (payload.target()) {
+            case SyncAttachmentsPayload.BlockEntityTarget target -> {
+                var blockEntity = context.player().level().getBlockEntity(target.pos());
+                if (blockEntity == null) {
+                    LOGGER.warn("Received synced attachments from unknown block entity");
+                } else {
+                    AttachmentInternals.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
+                }
+            }
+            case SyncAttachmentsPayload.ChunkTarget target -> {
+                var pos = target.pos();
+                var chunk = context.player().level().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
+                if (chunk == null) {
+                    LOGGER.warn("Received synced attachments from unknown chunk");
+                } else {
+                    chunk.receiveSyncedAttachments(payload.types(), payload.syncPayload());
+                }
+            }
             case SyncAttachmentsPayload.EntityTarget target -> {
                 var entity = context.player().level().getEntity(target.entity());
                 if (entity == null) {
@@ -167,6 +185,9 @@ public final class ClientPayloadHandler {
                 } else {
                     AttachmentInternals.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
                 }
+            }
+            case SyncAttachmentsPayload.LevelTarget ignored -> {
+                AttachmentInternals.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
             }
         }
     }

@@ -95,4 +95,24 @@ public interface IAttachmentHolder {
     default <T> @Nullable T removeData(Supplier<AttachmentType<T>> type) {
         return removeData(type.get());
     }
+
+    /**
+     * Syncs a data attachment of the given type with all relevant clients.
+     *
+     * @see IAttachmentSyncHandler
+     */
+    // TODO: what happens if there is no such data?
+    // TODO: auto sync on getData, removeData, other modifications
+    default void syncData(AttachmentType<?> type) {
+        // TODO: do nothing by default?
+    }
+
+    /**
+     * Syncs a data attachment of the given type with all relevant clients.
+     *
+     * @see IAttachmentSyncHandler
+     */
+    default void syncData(Supplier<? extends AttachmentType<?>> type) {
+        syncData(type.get());
+    }
 }
