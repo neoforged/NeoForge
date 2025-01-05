@@ -12,15 +12,20 @@ import java.util.function.Predicate;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
@@ -30,6 +35,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.payload.SyncEntityAttachmentsPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.callback.AddCallback;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,6 +86,22 @@ public final class AttachmentInternals {
     public static void onLivingConvert(LivingConversionEvent.Post event) {
         event.getOutcome().copyAttachmentsFrom(event.getEntity(), true);
     }
+
+    /**
+     * Contains all entries added to {@link NeoForgeRegistries#ATTACHMENT_TYPES} with a sync handler.
+     * Should never be registered against directly.
+     */
+    public static final Registry<AttachmentType<?>> SYNCED_ATTACHMENT_TYPES = new RegistryBuilder<>(
+            ResourceKey.<AttachmentType<?>>createRegistryKey(
+                    ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "synced_attachment_types")))
+            .sync(true)
+            .create();
+
+    public static final AddCallback<AttachmentType<?>> ATTACHMENT_TYPE_ADD_CALLBACK = (registry, id, key, value) -> {
+        if (value.syncHandler != null) {
+            Registry.register(SYNCED_ATTACHMENT_TYPES, key.location(), value);
+        }
+    };
 
     public static <T> void syncEntityAttachment(Entity entity, AttachmentType<T> type, T value, AttachmentSyncReason reason) {
         if (type.syncHandler == null || !(entity.level() instanceof ServerLevel serverLevel)) {

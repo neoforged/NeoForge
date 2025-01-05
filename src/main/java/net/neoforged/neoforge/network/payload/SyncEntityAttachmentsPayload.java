@@ -5,6 +5,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -23,7 +24,7 @@ public record SyncEntityAttachmentsPayload(
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncEntityAttachmentsPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             SyncEntityAttachmentsPayload::entity,
-            ByteBufCodecs.registry(NeoForgeRegistries.Keys.ATTACHMENT_TYPES).apply(ByteBufCodecs.list()),
+            ByteBufCodecs.registry(AttachmentInternals.SYNCED_ATTACHMENT_TYPES.key()).apply(ByteBufCodecs.list()),
             SyncEntityAttachmentsPayload::types,
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
             SyncEntityAttachmentsPayload::syncPayload,

@@ -9,6 +9,7 @@ import java.util.Set;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentInternals;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -71,6 +72,7 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.FLUID_INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
+        event.register(AttachmentInternals.SYNCED_ATTACHMENT_TYPES);
     }
 
     private static void modifyRegistries(ModifyRegistriesEvent event) {
@@ -82,5 +84,6 @@ public class NeoForgeRegistriesSetup {
         BuiltInRegistries.ITEM.addCallback(NeoForgeRegistryCallbacks.ItemCallbacks.INSTANCE);
         BuiltInRegistries.ATTRIBUTE.addCallback(NeoForgeRegistryCallbacks.AttributeCallbacks.INSTANCE);
         BuiltInRegistries.POINT_OF_INTEREST_TYPE.addCallback(NeoForgeRegistryCallbacks.PoiTypeCallbacks.INSTANCE);
+        NeoForgeRegistries.ATTACHMENT_TYPES.addCallback(AttachmentInternals.ATTACHMENT_TYPE_ADD_CALLBACK);
     }
 }
