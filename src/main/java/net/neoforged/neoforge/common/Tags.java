@@ -114,6 +114,21 @@ public class Tags {
         public static final TagKey<Block> FENCES = tag("fences");
         public static final TagKey<Block> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
+        /**
+         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
+         * Equivalent to the "minecraft:small_flowers" block tag.
+         */
+        public static final TagKey<Block> FLOWERS_SMALL = tag("flowers/small");
+        /**
+         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
+         * Equivalent to the "minecraft:tall_flowers" block tag in past Minecraft version.
+         */
+        public static final TagKey<Block> FLOWERS_TALL = tag("flowers/tall");
+        /**
+         * Contains any living plant block that contains flowers or is a flower itself.
+         * Equivalent to the "minecraft:flowers" block tag.
+         */
+        public static final TagKey<Block> FLOWERS = tag("flowers");
 
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
         public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
@@ -435,6 +450,21 @@ public class Tags {
          * (Note: Could include durability-based modded bonemeal-like items. Check for durability {@link net.minecraft.core.component.DataComponents#DAMAGE} DataComponent to handle them properly)
          */
         public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
+        /**
+         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
+         * Equivalent to the "minecraft:small_flowers" item tag.
+         */
+        public static final TagKey<Item> FLOWERS_SMALL = tag("flowers/small");
+        /**
+         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
+         * Equivalent to the "minecraft:tall_flowers" item tag in past Minecraft version.
+         */
+        public static final TagKey<Item> FLOWERS_TALL = tag("flowers/tall");
+        /**
+         * Contains any living plant block that contains flowers or is a flower itself.
+         * Equivalent to the "minecraft:flowers" item tag in past minecraft versions.
+         */
+        public static final TagKey<Item> FLOWERS = tag("flowers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.

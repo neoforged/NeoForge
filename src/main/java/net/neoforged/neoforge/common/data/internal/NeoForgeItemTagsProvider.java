@@ -112,6 +112,9 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
         tag(Tags.Items.FERTILIZERS).add(Items.BONE_MEAL);
+        copy(Tags.Blocks.FLOWERS_SMALL, Tags.Items.FLOWERS_SMALL);
+        copy(Tags.Blocks.FLOWERS_TALL, Tags.Items.FLOWERS_TALL);
+        copy(Tags.Blocks.FLOWERS, Tags.Items.FLOWERS);
         tag(Tags.Items.FOODS_FRUIT).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.CHORUS_FRUIT, Items.MELON_SLICE);
         tag(Tags.Items.FOODS_VEGETABLE).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.BEETROOT);
         tag(Tags.Items.FOODS_BERRY).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);

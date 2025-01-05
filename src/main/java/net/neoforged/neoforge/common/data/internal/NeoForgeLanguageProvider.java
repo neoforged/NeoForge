@@ -54,6 +54,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.FENCES, "Fences");
         add(Tags.Blocks.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Blocks.FENCES_WOODEN, "Wooden Fences");
+        add(Tags.Blocks.FLOWERS_SMALL, "Small Flowers");
+        add(Tags.Blocks.FLOWERS_TALL, "Tall Flowers");
+        add(Tags.Blocks.FLOWERS, "Flowers");
         add(Tags.Blocks.GLASS_BLOCKS, "Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_CHEAP, "Silica Glass Blocks");
@@ -208,6 +211,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
         add(Tags.Items.FERTILIZERS, "Fertilizers");
+        add(Tags.Items.FLOWERS_SMALL, "Small Flowers");
+        add(Tags.Items.FLOWERS_TALL, "Tall Flowers");
+        add(Tags.Items.FLOWERS, "Flowers");
         add(Tags.Items.FOODS, "Foods");
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");

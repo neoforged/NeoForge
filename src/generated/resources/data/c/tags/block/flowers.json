@@ -1,0 +1,16 @@
+{
+  "values": [
+    "minecraft:flowering_azalea_leaves",
+    "minecraft:flowering_azalea",
+    "minecraft:mangrove_propagule",
+    "minecraft:pink_petals",
+    "minecraft:chorus_flower",
+    "minecraft:spore_blossom",
+    "#c:flowers/small",
+    "#c:flowers/tall",
+    {
+      "id": "#minecraft:flowers",
+      "required": false
+    }
+  ]
+}
