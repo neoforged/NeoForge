@@ -24,8 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
@@ -33,7 +31,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.connection.ConnectionType;
-import net.neoforged.neoforge.network.payload.SyncEntityAttachmentsPayload;
+import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.neoforged.neoforge.registries.callback.AddCallback;
@@ -118,13 +116,13 @@ public final class AttachmentInternals {
                 }
             }, entity.registryAccess());
             if (!syncedTypes.isEmpty()) {
-                PacketDistributor.sendToPlayer(player, new SyncEntityAttachmentsPayload(entity.getId(), syncedTypes, data));
+                PacketDistributor.sendToPlayer(player, new SyncAttachmentsPayload(new SyncAttachmentsPayload.EntityTarget(entity.getId()), syncedTypes, data));
             }
         }
     }
 
     @Nullable
-    private static SyncEntityAttachmentsPayload syncEntityAttachments(Entity entity, ServerPlayer to, AttachmentSyncReason reason) {
+    private static SyncAttachmentsPayload syncEntityAttachments(Entity entity, ServerPlayer to, AttachmentSyncReason reason) {
         var holder = (AttachmentHolder) entity;
         if (holder.attachments == null) {
             return null;
@@ -145,7 +143,7 @@ public final class AttachmentInternals {
                 }
             }
         }, entity.registryAccess());
-        return new SyncEntityAttachmentsPayload(entity.getId(), syncedTypes, data);
+        return new SyncAttachmentsPayload(new SyncAttachmentsPayload.EntityTarget(entity.getId()), syncedTypes, data);
     }
 
     public static void sendEntityPairingData(Entity entity, ServerPlayer to, Consumer<Packet<? super ClientGamePacketListener>> packetConsumer) {

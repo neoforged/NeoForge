@@ -39,7 +39,7 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
-import net.neoforged.neoforge.network.payload.SyncEntityAttachmentsPayload;
+import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -158,12 +158,16 @@ public final class ClientPayloadHandler {
         level.setDayTimePerTick(payload.dayTimePerTick());
     }
 
-    public static void handle(SyncEntityAttachmentsPayload payload, IPayloadContext context) {
-        var entity = context.player().level().getEntity(payload.entity());
-        if (entity == null) {
-            LOGGER.warn("Received synced attachments from unknown entity");
-        } else {
-            AttachmentInternals.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
+    public static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
+        switch (payload.target()) {
+            case SyncAttachmentsPayload.EntityTarget target -> {
+                var entity = context.player().level().getEntity(target.entity());
+                if (entity == null) {
+                    LOGGER.warn("Received synced attachments from unknown entity");
+                } else {
+                    AttachmentInternals.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
+                }
+            }
         }
     }
 }
