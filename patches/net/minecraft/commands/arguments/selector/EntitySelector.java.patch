@@ -1,5 +1,24 @@
 --- a/net/minecraft/commands/arguments/selector/EntitySelector.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelector.java
+@@ -10,15 +_,18 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.Util;
+ import net.minecraft.advancements.critereon.MinMaxBounds;
++import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.commands.CommandSourceStack;
+ import net.minecraft.commands.arguments.EntityArgument;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.ComponentUtils;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
++import net.minecraft.util.AbortableIterationConsumer;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.flag.FeatureFlagSet;
++import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.entity.EntityTypeTest;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
 @@ -105,7 +_,7 @@
      }
  
@@ -7,5 +26,40 @@
 -        if (this.usesSelector && !p_121169_.hasPermission(2)) {
 +        if (this.usesSelector && !net.neoforged.neoforge.common.CommonHooks.canUseEntitySelectors(p_121169_)) {
              throw EntityArgument.ERROR_SELECTORS_NOT_ALLOWED.create();
+         }
+     }
+@@ -150,8 +_,9 @@
+             } else {
+                 Predicate<Entity> predicate = this.getPredicate(vec3, aabb, p_121161_.enabledFeatures());
+                 List<Entity> list = new ObjectArrayList<>();
++                // TODO: remove all this messy temp stuff
+                 if (this.isWorldLimited()) {
+-                    this.addEntities(list, p_121161_.getLevel(), aabb, predicate);
++                    this.addEntities(list, p_121161_.getUnsidedLevel(), aabb, predicate);
+                 } else {
+                     for (ServerLevel serverlevel : p_121161_.getServer().getAllLevels()) {
+                         this.addEntities(list, serverlevel, aabb, predicate);
+@@ -163,13 +_,21 @@
+         }
+     }
+ 
+-    private void addEntities(List<Entity> p_121155_, ServerLevel p_121156_, @Nullable AABB p_352947_, Predicate<Entity> p_121158_) {
++    private void addEntities(List<Entity> p_121155_, Level p_121156_, @Nullable AABB p_352947_, Predicate<Entity> p_121158_) {
+         int i = this.getResultLimit();
+         if (p_121155_.size() < i) {
+             if (p_352947_ != null) {
+                 p_121156_.getEntities(this.type, p_352947_, p_121158_, p_121155_, i);
+             } else {
+-                p_121156_.getEntities(this.type, p_121158_, p_121155_, i);
++                if (p_121156_ instanceof ServerLevel serverLevel) {
++                    serverLevel.getEntities(this.type, p_121158_, p_121155_, i);
++                } else {
++                    ((ClientLevel) p_121156_).entitiesForRendering().forEach(entity -> {
++                        if (p_121158_.test(entity) && p_121155_.size() < i) {
++                            p_121155_.add(entity);
++                        }
++                    });
++                }
+             }
          }
      }

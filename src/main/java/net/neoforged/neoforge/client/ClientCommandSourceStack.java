@@ -27,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -93,6 +94,11 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     @Override
     public RegistryAccess registryAccess() {
         return Minecraft.getInstance().getConnection().registryAccess();
+    }
+
+    @Override
+    public FeatureFlagSet enabledFeatures() {
+        return Minecraft.getInstance().getConnection().enabledFeatures();
     }
 
     /**
