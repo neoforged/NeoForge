@@ -86,5 +86,6 @@ public record SyncAttachmentsPayload(
     public record BlockEntityTarget(BlockPos pos) implements Target {}
     public record ChunkTarget(ChunkPos pos) implements Target {}
     public record EntityTarget(int entity) implements Target {}
+    // TODO: Should there be a way to sync overworld data while the player is in another level? (For "global" data).
     public record LevelTarget() implements Target {}
 }

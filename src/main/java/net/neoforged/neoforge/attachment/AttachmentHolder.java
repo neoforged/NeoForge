@@ -184,5 +184,10 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         public void deserializeInternal(HolderLookup.Provider provider, CompoundTag tag) {
             deserializeAttachments(provider, tag);
         }
+
+        @Override
+        public void syncData(AttachmentType<?> type) {
+            exposedHolder.syncData(type);
+        }
     }
 }
