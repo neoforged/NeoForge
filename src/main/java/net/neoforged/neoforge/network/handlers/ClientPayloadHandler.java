@@ -24,8 +24,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
+import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -166,7 +168,7 @@ public final class ClientPayloadHandler {
                 if (blockEntity == null) {
                     LOGGER.warn("Received synced attachments from unknown block entity");
                 } else {
-                    AttachmentInternals.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
+                    AttachmentSync.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
             case SyncAttachmentsPayload.ChunkTarget target -> {
@@ -175,7 +177,7 @@ public final class ClientPayloadHandler {
                 if (chunk == null) {
                     LOGGER.warn("Received synced attachments from unknown chunk");
                 } else {
-                    chunk.receiveSyncedAttachments(payload.types(), payload.syncPayload());
+                    AttachmentSync.receiveSyncedDataAttachments(chunk.getAttachmentHolder(), chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
             case SyncAttachmentsPayload.EntityTarget target -> {
@@ -183,11 +185,11 @@ public final class ClientPayloadHandler {
                 if (entity == null) {
                     LOGGER.warn("Received synced attachments from unknown entity");
                 } else {
-                    AttachmentInternals.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
+                    AttachmentSync.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
             case SyncAttachmentsPayload.LevelTarget ignored -> {
-                AttachmentInternals.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
+                AttachmentSync.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
             }
         }
     }

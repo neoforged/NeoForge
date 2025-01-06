@@ -44,7 +44,7 @@
              p_289563_.accept(new ClientboundSetEntityLinkPacket(this.entity, leashable.getLeashHolder()));
          }
 +
-+        net.neoforged.neoforge.attachment.AttachmentInternals.sendEntityPairingData(this.entity, p_289562_, p_289563_);
++        net.neoforged.neoforge.attachment.AttachmentSync.sendEntityPairingData(this.entity, p_289562_, p_289563_);
      }
  
      public Vec3 getPositionBase() {

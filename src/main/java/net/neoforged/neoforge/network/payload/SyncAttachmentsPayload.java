@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
+import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -31,7 +32,7 @@ public record SyncAttachmentsPayload(
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncAttachmentsPayload> STREAM_CODEC = StreamCodec.composite(
             Target.STREAM_CODEC,
             SyncAttachmentsPayload::target,
-            ByteBufCodecs.registry(AttachmentInternals.SYNCED_ATTACHMENT_TYPES.key()).apply(ByteBufCodecs.list()),
+            ByteBufCodecs.registry(AttachmentSync.SYNCED_ATTACHMENT_TYPES.key()).apply(ByteBufCodecs.list()),
             SyncAttachmentsPayload::types,
             NeoForgeStreamCodecs.UNBOUNDED_BYTE_ARRAY,
             SyncAttachmentsPayload::syncPayload,

@@ -120,7 +120,7 @@
  
          p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
          this.server.tickRateManager().updateJoiningPlayer(p_11230_);
-+        net.neoforged.neoforge.attachment.AttachmentInternals.sendLevelInfo(p_11231_, p_11230_);
++        net.neoforged.neoforge.attachment.AttachmentSync.sendLevelInfo(p_11231_, p_11230_);
      }
  
      public void sendAllPlayerInfo(ServerPlayer p_11293_) {
