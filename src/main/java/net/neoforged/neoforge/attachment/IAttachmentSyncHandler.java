@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.attachment;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -9,10 +14,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Sync is handled automatically in the following cases:
  * <ul>
- *     <li>A client is receiving initial data for this attachment holder.</li>
- *     <li>An attachment is default-created through {@link IAttachmentHolder#getData(AttachmentType)}.</li>
- *     <li>An attachment is updated through {@link IAttachmentHolder#setData(AttachmentType, Object)}.</li>
- *     <li>An attachment is removed through {@link IAttachmentHolder#removeData(AttachmentType)}.</li>
+ * <li>A client is receiving initial data for this attachment holder.</li>
+ * <li>An attachment is default-created through {@link IAttachmentHolder#getData(AttachmentType)}.</li>
+ * <li>An attachment is updated through {@link IAttachmentHolder#setData(AttachmentType, Object)}.</li>
+ * <li>An attachment is removed through {@link IAttachmentHolder#removeData(AttachmentType)}.</li>
  * </ul>
  *
  * <p>For other cases such as modifications to mutable synced attachments,
@@ -28,7 +33,7 @@ public interface IAttachmentSyncHandler<T> {
      * <p>The returned value should be consistent for a given holder and player.
      *
      * @param holder the holder for the attachment, can be cast if the subtype is known
-     * @param to the player that might receive the data
+     * @param to     the player that might receive the data
      * @return {@code true} to send data to the player, {@code false} otherwise
      */
     default boolean sendToPlayer(IAttachmentHolder holder, ServerPlayer to) {
@@ -51,7 +56,7 @@ public interface IAttachmentSyncHandler<T> {
     /**
      * Reads attachment data on the client side.
      *
-     * @param holder the attachment holder, can be cast if the subtype is known
+     * @param holder        the attachment holder, can be cast if the subtype is known
      * @param previousValue the previous value of the attachment, or {@code null} if there was no previous value
      * @return the new value of the attachment, or {@code null} if the attachment should be removed
      */

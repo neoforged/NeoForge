@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.attachment;
 
 import io.netty.buffer.Unpooled;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -30,10 +38,6 @@ import net.neoforged.neoforge.registries.callback.AddCallback;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 @ApiStatus.Internal
 @EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
 public final class AttachmentSync {
@@ -44,8 +48,8 @@ public final class AttachmentSync {
     public static final Registry<AttachmentType<?>> SYNCED_ATTACHMENT_TYPES = new RegistryBuilder<>(
             ResourceKey.<AttachmentType<?>>createRegistryKey(
                     ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "synced_attachment_types")))
-            .sync(true)
-            .create();
+                            .sync(true)
+                            .create();
 
     public static final AddCallback<AttachmentType<?>> ATTACHMENT_TYPE_ADD_CALLBACK = (registry, id, key, value) -> {
         if (value.syncHandler != null) {

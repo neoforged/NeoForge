@@ -9,7 +9,6 @@ import java.util.Set;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentSync;
 import org.jetbrains.annotations.ApiStatus;
 

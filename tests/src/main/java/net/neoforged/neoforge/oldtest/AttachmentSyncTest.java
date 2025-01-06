@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.oldtest;
 
 import com.mojang.brigadier.Command;
@@ -8,6 +13,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -28,8 +34,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 @Mod(AttachmentSyncTest.MOD_ID)
 public class AttachmentSyncTest {
@@ -97,8 +101,7 @@ public class AttachmentSyncTest {
                         .then(
                                 addGetSet(
                                         Commands.argument("entity", EntityArgument.entity()),
-                                        context -> EntityArgument.getEntity(context, "entity")
-                                )))
+                                        context -> EntityArgument.getEntity(context, "entity"))))
                 .then(
                         addGetSet(
                                 Commands.literal("level"),
