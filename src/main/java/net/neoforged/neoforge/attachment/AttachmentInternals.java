@@ -158,7 +158,15 @@ public final class AttachmentInternals {
         if (type.syncHandler == null || !(entity.level() instanceof ServerLevel serverLevel)) {
             return;
         }
-        syncUpdate(entity, type, serverLevel.getChunkSource().chunkMap.getPlayersWatching(entity));
+        var players = serverLevel.getChunkSource().chunkMap.getPlayersWatching(entity);
+        if (entity instanceof ServerPlayer serverPlayer) {
+            // Players do not track themselves
+            var newPlayers = new ArrayList<ServerPlayer>(players.size() + 1);
+            newPlayers.addAll(players);
+            newPlayers.add(serverPlayer);
+            players = newPlayers;
+        }
+        syncUpdate(entity, type, players);
     }
 
     public static void syncLevelUpdate(ServerLevel level, AttachmentType<?> type) {
@@ -199,6 +207,9 @@ public final class AttachmentInternals {
         return new SyncAttachmentsPayload(syncTarget(holder), syncedTypes, data);
     }
 
+    /**
+     * Handles initial syncing of block entity and chunk attachments.
+     */
     @SubscribeEvent
     public static void onChunkSent(ChunkWatchEvent.Sent event) {
         List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
@@ -217,10 +228,35 @@ public final class AttachmentInternals {
         }
     }
 
+    /**
+     * Handles initial syncing of entity attachments, except for a player's own attachments.
+     */
     public static void sendEntityPairingData(Entity entity, ServerPlayer to, Consumer<Packet<? super ClientGamePacketListener>> packetConsumer) {
         var packet = syncInitialAttachments(entity, to);
         if (packet != null) {
             packetConsumer.accept(packet.toVanillaClientbound());
+        }
+    }
+
+    /**
+     * Handles initial syncing of a player's own attachments.
+     */
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        var player = (ServerPlayer) event.getEntity();
+        var packet = syncInitialAttachments(event.getEntity(), player);
+        if (packet != null) {
+            player.connection.send(packet.toVanillaClientbound());
+        }
+    }
+
+    /**
+     * Handles initial syncing of level attachments. Needs to be called for login, respawn and teleports.
+     */
+    public static void sendLevelInfo(ServerLevel level, ServerPlayer to) {
+        var packet = syncInitialAttachments(level, to);
+        if (packet != null) {
+            to.connection.send(packet.toVanillaClientbound());
         }
     }
 
