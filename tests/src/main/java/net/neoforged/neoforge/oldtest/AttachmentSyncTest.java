@@ -46,7 +46,7 @@ public class AttachmentSyncTest {
                         }
 
                         @Override
-                        public @Nullable Integer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf) {
+                        public Integer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable Integer previousValue) {
                             return buf.readInt();
                         }
                     })

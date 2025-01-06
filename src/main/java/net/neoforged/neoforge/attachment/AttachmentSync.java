@@ -216,8 +216,8 @@ public final class AttachmentSync {
                 if (syncHandler == null) {
                     throw new IllegalArgumentException("Received synced attachment type without a sync handler registered: " + NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type));
                 }
-                // TODO: need to be careful that the right holder is passed! (when delegating!)
-                var result = syncHandler.read(holder.getExposedHolder(), buf);
+                var previousValue = holder.attachments == null ? null : holder.attachments.get(type);
+                var result = syncHandler.read(holder.getExposedHolder(), buf, previousValue);
                 if (result == null) {
                     if (holder.attachments != null) {
                         holder.attachments.remove(type);

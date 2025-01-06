@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An object that can hold data attachments.
  */
-// TODO: needs a method to force re-sync an attachment
 public interface IAttachmentHolder {
     /**
      * Returns {@code true} if there is any data attachments, {@code false} otherwise.

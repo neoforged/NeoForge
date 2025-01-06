@@ -252,7 +252,7 @@ public final class AttachmentType<T> {
                 }
 
                 @Override
-                public T read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf) {
+                public T read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable T previousValue) {
                     return streamCodec.decode(buf);
                 }
             });
