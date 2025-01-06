@@ -4,8 +4,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * Manages how data attachments are written (on the server) and read (on the client) from packets.
  *
@@ -21,8 +19,11 @@ import java.util.function.Supplier;
  * {@link IAttachmentHolder#syncData(AttachmentType)} can be called to trigger syncing.
  */
 public interface IAttachmentSyncHandler<T> {
-    // TODO: pass target player
-    void write(RegistryFriendlyByteBuf buf, T attachment, ServerPlayer to, AttachmentSyncReason reason);
+    default boolean sendToPlayer(IAttachmentHolder holder, ServerPlayer to) {
+        return true;
+    }
+
+    void write(RegistryFriendlyByteBuf buf, T attachment, boolean initialSync);
 
     // TODO: we could also return void and let the sync handler call .setData(type, xxx). But that means passing the type somehow.
     @Nullable

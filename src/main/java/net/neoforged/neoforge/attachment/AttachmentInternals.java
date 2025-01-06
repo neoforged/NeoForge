@@ -17,11 +17,13 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -31,8 +33,8 @@ import net.neoforged.neoforge.common.extensions.IEntityExtension;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.event.entity.living.LivingConversionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -114,25 +116,56 @@ public final class AttachmentInternals {
         };
     }
 
-    public static <T> void syncAttachmentUpdate(AttachmentHolder holder, ServerLevel level, AttachmentType<T> type) {
+    private static <T> void syncUpdate(AttachmentHolder holder, AttachmentType<T> type, List<ServerPlayer> players) {
+        RegistryAccess registryAccess = null;
+        for (var player : players) {
+            if (type.syncHandler.sendToPlayer(holder.getExposedHolder(), player)) {
+                registryAccess = player.registryAccess();
+                break;
+            }
+        }
+        // This also serves as a short-circuit if there are no players to sync data to.
+        if (registryAccess == null) {
+            return;
+        }
+        var data = FriendlyByteBufUtil.writeCustomData(buf -> {
+            // TODO: what if data is missing?
+            type.syncHandler.write(buf, holder.getData(type), false);
+        }, registryAccess);
+        var packet = new SyncAttachmentsPayload(syncTarget(holder), List.of(type), data).toVanillaClientbound();
+        for (var player : players) {
+            if (type.syncHandler.sendToPlayer(holder.getExposedHolder(), player)) {
+                player.connection.send(packet);
+            }
+        }
+    }
+
+    public static void syncBlockEntityUpdate(BlockEntity blockEntity, AttachmentType<?> type) {
+        if (type.syncHandler == null || !(blockEntity.getLevel() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        syncUpdate(blockEntity, type, serverLevel.getChunkSource().chunkMap.getPlayers(new ChunkPos(blockEntity.getBlockPos()), false));
+    }
+
+    public static void syncChunkUpdate(LevelChunk chunk, AttachmentHolder.AsField holder, AttachmentType<?> type) {
+        if (type.syncHandler == null || !(chunk.getLevel() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        syncUpdate(holder, type, serverLevel.getChunkSource().chunkMap.getPlayers(chunk.getPos(), false));
+    }
+
+    public static void syncEntityUpdate(Entity entity, AttachmentType<?> type) {
+        if (type.syncHandler == null || !(entity.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        syncUpdate(entity, type, serverLevel.getChunkSource().chunkMap.getPlayersWatching(entity));
+    }
+
+    public static void syncLevelUpdate(ServerLevel level, AttachmentType<?> type) {
         if (type.syncHandler == null) {
             return;
         }
-        var value = holder.getData(type); // TODO: what if data is missing?
-        for (var player : level.players()) { // TODO: only sync to relevant players? e.g. only players that see a specific chunk
-            List<AttachmentType<?>> syncedTypes = new ArrayList<>(1);
-            var data = FriendlyByteBufUtil.writeCustomData(buf -> {
-                int indexBefore = buf.writerIndex();
-                type.syncHandler.write(buf, value, player, AttachmentSyncReason.ENTITY_SYNC_REQUESTED);
-                if (indexBefore < buf.writerIndex()) {
-                    // Actually wrote something
-                    syncedTypes.add(type);
-                }
-            }, level.registryAccess());
-            if (!syncedTypes.isEmpty()) {
-                PacketDistributor.sendToPlayer(player, new SyncAttachmentsPayload(syncTarget(holder), syncedTypes, data));
-            }
-        }
+        syncUpdate(level, type, level.players());
     }
 
     @Nullable
@@ -155,7 +188,7 @@ public final class AttachmentInternals {
                 var syncHandler = (IAttachmentSyncHandler<Object>) type.syncHandler;
                 if (syncHandler != null) {
                     int indexBefore = buf.writerIndex();
-                    syncHandler.write(buf, entry.getValue(), to, AttachmentSyncReason.NEW_ENTITY);
+                    syncHandler.write(buf, entry.getValue(), true);
                     if (indexBefore < buf.writerIndex()) {
                         // Actually wrote something
                         syncedTypes.add(type);
@@ -164,6 +197,24 @@ public final class AttachmentInternals {
             }
         }, to.registryAccess());
         return new SyncAttachmentsPayload(syncTarget(holder), syncedTypes, data);
+    }
+
+    @SubscribeEvent
+    public static void onChunkSent(ChunkWatchEvent.Sent event) {
+        List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
+        var chunkPayload = syncInitialAttachments(event.getChunk().getAttachmentHolder(), event.getPlayer());
+        if (chunkPayload != null) {
+            packets.add(chunkPayload.toVanillaClientbound());
+        }
+        for (var blockEntity : event.getChunk().getBlockEntities().values()) {
+            var blockEntityPayload = syncInitialAttachments(blockEntity, event.getPlayer());
+            if (blockEntityPayload != null) {
+                packets.add(blockEntityPayload.toVanillaClientbound());
+            }
+        }
+        if (!packets.isEmpty()) {
+            event.getPlayer().connection.send(new ClientboundBundlePacket(packets));
+        }
     }
 
     public static void sendEntityPairingData(Entity entity, ServerPlayer to, Consumer<Packet<? super ClientGamePacketListener>> packetConsumer) {

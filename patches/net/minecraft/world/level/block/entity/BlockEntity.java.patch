@@ -69,7 +69,7 @@
      }
  
      public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -234,6 +_,34 @@
+@@ -234,6 +_,32 @@
          return this.type;
      }
  
@@ -96,9 +96,7 @@
 +
 +    @Override
 +    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
-+        if (level instanceof ServerLevel serverLevel) {
-+            net.neoforged.neoforge.attachment.AttachmentInternals.syncAttachmentUpdate(this, serverLevel, type);
-+        }
++        net.neoforged.neoforge.attachment.AttachmentInternals.syncBlockEntityUpdate(this, type);
 +    }
 +
      @Deprecated

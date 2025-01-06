@@ -14,13 +14,11 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.attachment.AttachmentSyncReason;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSyncHandler;
@@ -43,7 +41,7 @@ public class AttachmentSyncTest {
                     // TODO: use streamcodec version at some point
                     .sync(new IAttachmentSyncHandler<Integer>() {
                         @Override
-                        public void write(RegistryFriendlyByteBuf buf, Integer attachment, ServerPlayer to, AttachmentSyncReason reason) {
+                        public void write(RegistryFriendlyByteBuf buf, Integer attachment, boolean initialSync) {
                             buf.writeInt(attachment);
                         }
 

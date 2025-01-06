@@ -16,7 +16,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -248,7 +247,7 @@ public final class AttachmentType<T> {
             Objects.requireNonNull(streamCodec);
             return sync(new IAttachmentSyncHandler<>() {
                 @Override
-                public void write(RegistryFriendlyByteBuf buf, T attachment, ServerPlayer to, AttachmentSyncReason reason) {
+                public void write(RegistryFriendlyByteBuf buf, T attachment, boolean initialSync) {
                     streamCodec.encode(buf, attachment);
                 }
 

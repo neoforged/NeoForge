@@ -65,6 +65,27 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
+@@ -1240,6 +_,20 @@
+         });
+     }
+ 
++    // Neo: Getter for players watching an entity.
++    public List<ServerPlayer> getPlayersWatching(Entity entity) {
++        var trackedEntity = entityMap.get(entity.getId());
++        if (trackedEntity != null) {
++            var ret = new java.util.ArrayList<ServerPlayer>(trackedEntity.seenBy.size());
++            for (var connection : trackedEntity.seenBy) {
++                ret.add(connection.getPlayer());
++            }
++            return List.copyOf(ret);
++        } else {
++            return List.of();
++        }
++    }
++
+     class DistanceManager extends net.minecraft.server.level.DistanceManager {
+         protected DistanceManager(Executor p_140459_, Executor p_140460_) {
+             super(p_140459_, p_140460_);
 @@ -1354,5 +_,20 @@
                  this.updatePlayer(serverplayer);
              }
