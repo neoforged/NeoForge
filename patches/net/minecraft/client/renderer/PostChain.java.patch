@@ -1,16 +1,5 @@
 --- a/net/minecraft/client/renderer/PostChain.java
 +++ b/net/minecraft/client/renderer/PostChain.java
-@@ -79,8 +_,8 @@
-                     abstracttexture.setFilter(flag, false);
-                     postpass.addInput(new PostPass.TextureInput(s3, abstracttexture, i, j));
-                     continue;
--                case PostChainConfig.TargetInput(String s1, ResourceLocation resourcelocation1, boolean flag1, boolean flag2):
--                    postpass.addInput(new PostPass.TargetInput(s1, resourcelocation1, flag1, flag2));
-+                case PostChainConfig.TargetInput(String s1, ResourceLocation resourcelocation1, boolean flag1, boolean flag2, boolean useStencilBuffer):
-+                    postpass.addInput(new PostPass.TargetInput(s1, resourcelocation1, net.minecraft.client.renderer.PostPass.TargetInput.BufferType.from(flag1, useStencilBuffer), flag2));
-                     continue;
-                 default:
-                     throw new MatchException(null, null);
 @@ -95,17 +_,33 @@
          Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)p_361423_, 0.0F, (float)p_362735_, 0.1F, 1000.0F);
          Map<ResourceLocation, ResourceHandle<RenderTarget>> map = new HashMap<>(this.internalTargets.size() + this.externalTargets.size());
