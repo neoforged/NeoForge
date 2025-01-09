@@ -6,12 +6,12 @@
      public MainTarget(int p_166137_, int p_166138_) {
 -        super(true);
 -        this.createFrameBuffer(p_166137_, p_166138_);
-+        this(p_166137_, p_166138_, false);
++        this(net.neoforged.neoforge.client.ClientHooks.configureMainRenderTarget(true, p_166137_, p_166138_));
 +    }
 +
-+    public MainTarget(int width, int height, boolean useStencil) {
-+        super(true, useStencil);
-+        this.createFrameBuffer(width, height);
++    private MainTarget(net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent e) {
++        super(e.useDepth(), e.useStencil());
++        this.createFrameBuffer(e.width(), e.height());
      }
  
      private void createFrameBuffer(int p_166142_, int p_166143_) {
@@ -25,31 +25,27 @@
          GlStateManager._bindTexture(0);
          this.viewWidth = maintarget$dimension.width;
          this.viewHeight = maintarget$dimension.height;
-@@ -58,7 +_,11 @@
+@@ -58,8 +_,8 @@
                  maintarget$attachmentstate = maintarget$attachmentstate.with(MainTarget.AttachmentState.COLOR);
              }
  
 -            if (this.allocateDepthAttachment(maintarget$dimension)) {
-+            if (this.useStencil && this.allocateDepthStencilAttachment(maintarget$dimension)) {
+-                maintarget$attachmentstate = maintarget$attachmentstate.with(MainTarget.AttachmentState.DEPTH);
++            if (this.useStencil && this.allocateDepthAttachment(maintarget$dimension)) {
 +                maintarget$attachmentstate = maintarget$attachmentstate.with(AttachmentState.DEPTH);
-+            }
-+
-+            else if (this.allocateDepthAttachment(maintarget$dimension)) {
-                 maintarget$attachmentstate = maintarget$attachmentstate.with(MainTarget.AttachmentState.DEPTH);
              }
  
-@@ -83,6 +_,14 @@
+             if (maintarget$attachmentstate == MainTarget.AttachmentState.COLOR_DEPTH) {
+@@ -82,7 +_,11 @@
+         RenderSystem.assertOnRenderThreadOrInit();
          GlStateManager._getError();
          GlStateManager._bindTexture(this.depthBufferId);
-         GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, 6402, 5126, null);
-+        return GlStateManager._getError() != 1285;
-+    }
-+
-+    private boolean allocateDepthStencilAttachment(MainTarget.Dimension p_166145_) {
-+        RenderSystem.assertOnRenderThreadOrInit();
-+        GlStateManager._getError();
-+        GlStateManager._bindTexture(this.depthBufferId);
-+        GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL, org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8, null);
+-        GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, 6402, 5126, null);
++        if (this.useStencil) {
++            GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL, org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8, null);
++        } else {
++            GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, 6402, 5126, null);
++        }
          return GlStateManager._getError() != 1285;
      }
  
