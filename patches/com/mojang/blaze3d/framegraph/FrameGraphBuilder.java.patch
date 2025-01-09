@@ -1,22 +1,11 @@
 --- a/com/mojang/blaze3d/framegraph/FrameGraphBuilder.java
 +++ b/com/mojang/blaze3d/framegraph/FrameGraphBuilder.java
-@@ -173,6 +_,11 @@
-         public T get() {
-             return this.resource;
-         }
-+
-+        @Override
-+        public ResourceDescriptor<T> getDescriptor() {
-+            return null;
-+        }
-     }
- 
-     @OnlyIn(Dist.CLIENT)
-@@ -211,6 +_,10 @@
+@@ -211,6 +_,11 @@
          public String toString() {
              return this.createdBy != null ? this.holder + "#" + this.version + " (from " + this.createdBy + ")" : this.holder + "#" + this.version;
          }
 +
++        @Nullable
 +        public ResourceDescriptor<T> getDescriptor() {
 +            return this.holder.getDescriptor();
 +        }
