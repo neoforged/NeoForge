@@ -56,18 +56,12 @@
          private ResourceHandle<RenderTarget> getHandle(Map<ResourceLocation, ResourceHandle<RenderTarget>> p_364534_) {
              ResourceHandle<RenderTarget> resourcehandle = p_364534_.get(this.targetId);
              if (resourcehandle == null) {
-@@ -142,7 +_,13 @@
+@@ -142,7 +_,7 @@
              ResourceHandle<RenderTarget> resourcehandle = this.getHandle(p_361239_);
              RenderTarget rendertarget = resourcehandle.get();
              rendertarget.setFilterMode(this.bilinear ? 9729 : 9728);
 -            p_366564_.bindSampler(this.samplerName + "Sampler", this.depthBuffer ? rendertarget.getDepthTextureId() : rendertarget.getColorTextureId());
-+            if (this.depthBuffer())
-+                p_366564_.bindSampler(this.samplerName + "Sampler", rendertarget.getDepthTextureId());
-+            // If stencil is specified
-+            else if (this.stencilBuffer())
-+                p_366564_.bindSampler(this.samplerName + "Sampler", rendertarget.getStencilTextureId());
-+            else
-+                p_366564_.bindSampler(this.samplerName + "Sampler", rendertarget.getColorTextureId());
++            p_366564_.bindSampler(this.samplerName + "Sampler", this.depthBuffer() ? rendertarget.getDepthTextureId() : rendertarget.getColorTextureId());
              p_366564_.safeGetUniform(this.samplerName + "Size").set((float)rendertarget.width, (float)rendertarget.height);
          }
  

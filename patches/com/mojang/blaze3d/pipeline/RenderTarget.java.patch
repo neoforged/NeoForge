@@ -62,24 +62,14 @@
  
              this.checkStatus();
              this.clear();
-@@ -218,6 +_,10 @@
+@@ -217,6 +_,10 @@
+         if (this.useDepth) {
              GlStateManager._clearDepth(1.0);
              i |= 256;
-         }
++        }
 +        if (this.useStencil) {
 +            GlStateManager._clearStencil(0);
 +            i |= org.lwjgl.opengl.GL32.GL_STENCIL_BUFFER_BIT;
-+        }
+         }
  
          GlStateManager._clear(i);
-         this.unbindWrite();
-@@ -229,5 +_,9 @@
- 
-     public int getDepthTextureId() {
-         return this.depthBufferId;
-+    }
-+
-+    public int getStencilTextureId() {
-+        return this.stencilBufferId;
-     }
- }
