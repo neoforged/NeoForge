@@ -9,6 +9,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
@@ -1101,9 +1102,9 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
     }
 
-    public static ConfigureMainRenderTargetEvent configureMainRenderTarget(boolean useDepth, int width, int height) {
-        var e = new ConfigureMainRenderTargetEvent(useDepth, width, height);
-        ModLoader.postEvent(e);
-        return e;
+    @ApiStatus.Internal
+    public static MainTarget createMainRenderTarget(int width, int height) {
+        var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
+        return new MainTarget(width, height, e.useStencil());
     }
 }
