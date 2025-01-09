@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/pipeline/RenderTarget.java
 +++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
-@@ -25,17 +_,31 @@
+@@ -25,6 +_,7 @@
      public int viewWidth;
      public int viewHeight;
      public final boolean useDepth;
@@ -8,8 +8,7 @@
      public int frameBufferId;
      protected int colorTextureId;
      protected int depthBufferId;
-+    protected int stencilBufferId;
-     private final float[] clearChannels = Util.make(() -> new float[]{1.0F, 1.0F, 1.0F, 0.0F});
+@@ -32,7 +_,15 @@
      public int filterMode;
  
      public RenderTarget(boolean p_166199_) {
@@ -18,84 +17,36 @@
 +    }
 +
 +    public RenderTarget(boolean useDepth, boolean useStencil) {
++        if (useStencil && !useDepth) {
++            throw new IllegalArgumentException("Stencil can only be enabled if depth is enabled.");
++        }
 +        this.useDepth = useDepth;
 +        this.useStencil = useStencil;
          this.frameBufferId = -1;
          this.colorTextureId = -1;
          this.depthBufferId = -1;
-+
-+        if (!useDepth && useStencil) {
-+            var capabilities = org.lwjgl.opengl.GL.getCapabilities();
-+            if (!capabilities.GL_ARB_texture_stencil8 && !capabilities.OpenGL44) {
-+                throw new UnsupportedOperationException("Stencil-only buffers require GL_ARB_texture_stencil8 OR OpenGL 4.4");
-+            }
-+        }
-     }
- 
-     public void resize(int p_83942_, int p_83943_) {
-@@ -53,6 +_,11 @@
-         RenderSystem.assertOnRenderThreadOrInit();
-         this.unbindRead();
-         this.unbindWrite();
-+        if (this.stencilBufferId > -1 && this.stencilBufferId != this.depthBufferId) {
-+            TextureUtil.releaseTextureId(this.stencilBufferId);
-+            this.stencilBufferId = -1;
-+        }
-+
-         if (this.depthBufferId > -1) {
-             TextureUtil.releaseTextureId(this.depthBufferId);
-             this.depthBufferId = -1;
-@@ -96,9 +_,50 @@
+@@ -96,7 +_,20 @@
                  GlStateManager._texParameter(3553, 34892, 0);
                  GlStateManager._texParameter(3553, 10242, 33071);
                  GlStateManager._texParameter(3553, 10243, 33071);
-+                if (!this.useStencil) // If stenciling is enabled, we will fill this later
-                 GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
-             }
- 
-+            if (this.useStencil) {
-+                if (this.useDepth) {
-+                    // If depth and stencil buffers are both enabled, we must combine them
-+                    this.stencilBufferId = this.depthBufferId;
+-                GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
++                if (!this.useStencil) {
++                    GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
 +                } else {
-+                    // Otherwise, we can generate a new texture in its place.
-+                    this.stencilBufferId = TextureUtil.generateTextureId();
-+                    GlStateManager._bindTexture(this.stencilBufferId);
-+                    GlStateManager._texParameter(3553, 10241, 9728);
-+                    GlStateManager._texParameter(3553, 10240, 9728);
-+                    GlStateManager._texParameter(3553, 34892, 0);
-+                    GlStateManager._texParameter(3553, 10242, 33071);
-+                    GlStateManager._texParameter(3553, 10243, 33071);
-+                }
-+
-+                if (this.useDepth) {
 +                    // Use a combined format for both depth and stencil.
 +                    GlStateManager._texImage2D(
-+                        org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
-+                        0,
-+                        org.lwjgl.opengl.GL32.GL_DEPTH24_STENCIL8,
-+                        this.width, this.height,
-+                        0,
-+                        org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL,
-+                        org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8,
-+                        null);
-+                } else {
-+                    // Otherwise, we can use a separate format. Testing for this was done in the constructor already.
-+                    GlStateManager._texImage2D(
-+                        org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
-+                        0,
-+                        org.lwjgl.opengl.GL32.GL_STENCIL_INDEX8,
-+                        this.width, this.height,
-+                        0,
-+                        org.lwjgl.opengl.GL32.GL_STENCIL_INDEX,
-+                        org.lwjgl.opengl.GL32.GL_BYTE,
-+                        null);
++                            org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
++                            0,
++                            org.lwjgl.opengl.GL32.GL_DEPTH24_STENCIL8,
++                            this.width, this.height,
++                            0,
++                            org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL,
++                            org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8,
++                            null);
 +                }
-+            }
-+
+             }
+ 
              this.setFilterMode(9728, true);
-             GlStateManager._bindTexture(this.colorTextureId);
-             GlStateManager._texParameter(3553, 10242, 33071);
 @@ -109,6 +_,14 @@
              if (this.useDepth) {
                  GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthBufferId, 0);
@@ -105,7 +56,7 @@
 +                    org.lwjgl.opengl.GL32.GL_FRAMEBUFFER,
 +                    org.lwjgl.opengl.GL32.GL_STENCIL_ATTACHMENT,
 +                    org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
-+                    this.stencilBufferId,
++                    this.depthBufferId,
 +                    0);
 +            }
  
