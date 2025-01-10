@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
@@ -145,6 +146,8 @@ public interface IClientItemExtensions {
      * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
      * <p>
      * This is where pumpkins would render their overlay.
+     * <p>
+     * Note: Only use this if {@link Equippable#cameraOverlay()} doesn't suit your use case
      *
      * @param stack       The item stack
      * @param player      The player entity
