@@ -14,7 +14,7 @@
  
          public void setupBlockModel(BakedModel p_386829_, RenderType p_387529_) {
 +            // Neo: Guard against models using chunk render types.
-+            if (RenderType.chunkBufferLayers().contains(p_387529_)) {
++            if (p_387529_.getChunkLayerId() != -1) {
 +                throw new IllegalArgumentException("""
 +                        Attempting to render an item BakedModel with an invalid RenderType: %s.
 +                        Chunk render types are not supported, and the equivalent render types from the Sheets class should be used.
