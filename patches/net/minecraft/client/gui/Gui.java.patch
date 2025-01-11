@@ -106,7 +106,7 @@
                      if (equippable != null && equippable.slot() == equipmentslot && equippable.cameraOverlay().isPresent()) {
                          this.renderTextureOverlay(p_316735_, equippable.cameraOverlay().get().withPath(p_380782_ -> "textures/" + p_380782_ + ".png"), 1.0F);
 +                    } else {
-+                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).renderHelmetOverlay(itemstack, this.minecraft.player, p_316735_.guiWidth(), p_316735_.guiHeight(), p_348538_.getGameTimeDeltaPartialTick(true));
++                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).renderHelmetOverlay(itemstack, this.minecraft.player, p_316735_, p_348538_);
                      }
                  }
              }

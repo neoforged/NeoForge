@@ -6,7 +6,9 @@
 package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
@@ -149,13 +151,12 @@ public interface IClientItemExtensions {
      * <p>
      * Note: Only use this if {@link Equippable#cameraOverlay()} doesn't suit your use case
      *
-     * @param stack       The item stack
-     * @param player      The player entity
-     * @param width       The viewport width
-     * @param height      Viewport height
-     * @param partialTick Partial tick time, useful for interpolation
+     * @param stack        The item stack
+     * @param player       The player entity
+     * @param guiGraphics  The gui graphics
+     * @param deltaTracker The delta tracker
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick) {}
+    default void renderHelmetOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}
