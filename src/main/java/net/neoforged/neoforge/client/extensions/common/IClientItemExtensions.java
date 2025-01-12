@@ -145,7 +145,7 @@ public interface IClientItemExtensions {
     default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
-     * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
+     * Called when the client starts rendering the HUD, and is wearing this item in the head equipment slot.
      * <p>
      * This is where pumpkins would render their overlay.
      * <p>
@@ -156,7 +156,7 @@ public interface IClientItemExtensions {
      * @param guiGraphics  The gui graphics
      * @param deltaTracker The delta tracker
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
+    default void renderFirstPersonOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}
