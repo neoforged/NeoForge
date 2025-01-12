@@ -145,18 +145,22 @@ public interface IClientItemExtensions {
     default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
-     * Called when the client starts rendering the HUD, and is wearing this item in the head equipment slot.
+     * Called to render an overlay on the first-person camera.
      * <p>
-     * This is where pumpkins would render their overlay.
+     * Called after the client camera overlay
+     * provided by the {@link DataComponents#EQUIPPABLE Equipable data component} is rendered if it's present,
+     * such as the pumpkin overlay.
      * <p>
-     * Note: Only use this if {@link Equippable#cameraOverlay()} doesn't suit your use case
+     * This method should be used if the overlay is dynamic or has dynamic components.
+     * For a static overlay, prefer using {@link Equippable#cameraOverlay()}.
      *
-     * @param stack        The item stack
-     * @param player       The player entity
-     * @param guiGraphics  The gui graphics
-     * @param deltaTracker The delta tracker
+     * @param stack         The item stack that the player is wearing
+     * @param equipmentSlot The slot in which the player is wearing the above item stack
+     * @param player        The player entity
+     * @param guiGraphics   The gui graphics
+     * @param deltaTracker  The delta tracker
      */
-    default void renderFirstPersonOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
+    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}
