@@ -37,6 +37,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.advancements.packs.VanillaAdvancementProvider;
 import net.minecraft.data.advancements.packs.VanillaHusbandryAdvancements;
@@ -59,16 +60,14 @@ import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class NeoForgeAdvancementProvider extends AdvancementProvider {
-    public NeoForgeAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, ExistingFileHelper existingFileHelper) {
-        super(output, registries, existingFileHelper, getVanillaAdvancementProviders(output, registries));
+    public NeoForgeAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries, getVanillaAdvancementProviders(output, registries));
     }
 
-    private static List<AdvancementGenerator> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+    private static List<AdvancementSubProvider> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers = new ArrayList<>();
         criteriaReplacers.add(replaceMatchToolCriteria(ItemAbilities.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
         criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build(), Items.SHEARS));
@@ -86,9 +85,9 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         //Walk on powdered snow
         criteriaReplacers.add(replaceWearingPredicate(SnowBootsEntityPredicate.INSTANCE, predicate -> predicate.feet().filter(item -> predicateMatches(item, Items.LEATHER_BOOTS)).isPresent()));
 
-        List<AdvancementSubProvider> subProviders = getPrivateValue(net.minecraft.data.advancements.AdvancementProvider.class, VanillaAdvancementProvider.create(output, registries), "subProviders");
+        List<AdvancementSubProvider> subProviders = getPrivateValue(AdvancementProvider.class, VanillaAdvancementProvider.create(output, registries), "subProviders");
         return subProviders.stream()
-                .<AdvancementGenerator>map(vanillaProvider -> new NeoForgeAdvancementGenerator(vanillaProvider, criteriaReplacers))
+                .<AdvancementSubProvider>map(vanillaProvider -> new NeoForgeAdvancementGenerator(vanillaProvider, criteriaReplacers))
                 .toList();
     }
 
@@ -247,9 +246,9 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         return value;
     }
 
-    private record NeoForgeAdvancementGenerator(AdvancementSubProvider vanillaProvider, List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers) implements AdvancementGenerator {
+    private record NeoForgeAdvancementGenerator(AdvancementSubProvider vanillaProvider, List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers) implements AdvancementSubProvider {
         @Override
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
+        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             // Warning: ugly code here.
             // Wrap the registries to allow using any tag. This is used to make decoding using the codec work in `replacePlayerPredicate`.
             var registriesWithAnyTag = new HolderLookup.Provider() {
@@ -298,7 +297,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
             vanillaProvider.generate(registriesWithAnyTag, advancementHolder -> {
                 Advancement.Builder newBuilder = findAndReplaceInHolder(advancementHolder, registriesWithAnyTag);
                 if (newBuilder != null) {
-                    newBuilder.save(saver, advancementHolder.id(), existingFileHelper);
+                    newBuilder.save(saver, advancementHolder.id());
                 }
             });
         }

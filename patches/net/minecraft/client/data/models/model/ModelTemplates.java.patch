@@ -1,0 +1,25 @@
+--- a/net/minecraft/client/data/models/model/ModelTemplates.java
++++ b/net/minecraft/client/data/models/model/ModelTemplates.java
+@@ -203,18 +_,18 @@
+     }
+ 
+     public static ModelTemplate create(String p_386521_, TextureSlot... p_388561_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("block/" + p_386521_)), Optional.empty(), p_388561_);
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateBlockModelLocation(p_386521_)), Optional.empty(), p_388561_);
+     }
+ 
+     public static ModelTemplate createItem(String p_388248_, TextureSlot... p_386756_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("item/" + p_388248_)), Optional.empty(), p_386756_);
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateItemModelLocation(p_388248_)), Optional.empty(), p_386756_);
+     }
+ 
+     public static ModelTemplate createItem(String p_386727_, String p_387707_, TextureSlot... p_387856_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("item/" + p_386727_)), Optional.of(p_387707_), p_387856_);
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateItemModelLocation(p_386727_)), Optional.of(p_387707_), p_387856_);
+     }
+ 
+     public static ModelTemplate create(String p_386833_, String p_386662_, TextureSlot... p_387086_) {
+-        return new ModelTemplate(Optional.of(ResourceLocation.withDefaultNamespace("block/" + p_386833_)), Optional.of(p_386662_), p_387086_);
++        return new ModelTemplate(Optional.of(ModelLocationUtils.decorateBlockModelLocation(p_386833_)), Optional.of(p_386662_), p_387086_);
+     }
+ }

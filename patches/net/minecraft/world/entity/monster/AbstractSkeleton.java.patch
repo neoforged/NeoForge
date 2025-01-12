@@ -1,14 +1,16 @@
 --- a/net/minecraft/world/entity/monster/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/AbstractSkeleton.java
-@@ -163,7 +_,7 @@
+@@ -163,8 +_,8 @@
          if (this.level() != null && !this.level().isClientSide) {
              this.goalSelector.removeGoal(this.meleeGoal);
              this.goalSelector.removeGoal(this.bowGoal);
 -            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
+-            if (itemstack.is(Items.BOW)) {
 +            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
-             if (itemstack.is(Items.BOW)) {
++            if (itemstack.getItem() instanceof net.minecraft.world.item.BowItem) {
                  int i = this.getHardAttackInterval();
                  if (this.level().getDifficulty() != Difficulty.HARD) {
+                     i = this.getAttackInterval();
 @@ -188,9 +_,11 @@
  
      @Override

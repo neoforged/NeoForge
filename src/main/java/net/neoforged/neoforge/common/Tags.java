@@ -142,27 +142,33 @@ public class Tags {
         public static final TagKey<Block> OBSIDIANS_NORMAL = tag("obsidians/normal");
         public static final TagKey<Block> OBSIDIANS_CRYING = tag("obsidians/crying");
         /**
-         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
+         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
         /**
-         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation
+         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
         /**
-         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation
+         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
         /**
-         * Ores which on average result in more than one resource worth of materials
+         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
+         * (example, Copper Ore)
          */
         public static final TagKey<Block> ORE_RATES_DENSE = tag("ore_rates/dense");
         /**
-         * Ores which on average result in one resource worth of materials
+         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Iron Ore)
          */
         public static final TagKey<Block> ORE_RATES_SINGULAR = tag("ore_rates/singular");
         /**
-         * Ores which on average result in less than one resource worth of materials
+         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
          */
         public static final TagKey<Block> ORE_RATES_SPARSE = tag("ore_rates/sparse");
         public static final TagKey<Block> ORES = tag("ores");
@@ -177,15 +183,18 @@ public class Tags {
         public static final TagKey<Block> ORES_QUARTZ = tag("ores/quartz");
         public static final TagKey<Block> ORES_REDSTONE = tag("ores/redstone");
         /**
-         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output
+         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
         /**
-         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output
+         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
         /**
-         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output
+         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
@@ -242,6 +251,7 @@ public class Tags {
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Block> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Block> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
+        public static final TagKey<Block> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Block> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Block> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Block> STRIPPED_LOGS = tag("stripped_logs");
@@ -302,6 +312,7 @@ public class Tags {
         public static final TagKey<Item> BRICKS = tag("bricks");
         public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
         public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
+        public static final TagKey<Item> BRICKS_RESIN = tag("bricks/resin");
         public static final TagKey<Item> BUCKETS = tag("buckets");
         public static final TagKey<Item> BUCKETS_EMPTY = tag("buckets/empty");
         /**
@@ -343,6 +354,8 @@ public class Tags {
          * For blocks that are similar to amethyst where they have clusters forming from budding blocks
          */
         public static final TagKey<Item> CLUSTERS = tag("clusters");
+        public static final TagKey<Item> CLUMPS = tag("clumps");
+        public static final TagKey<Item> CLUMPS_RESIN = tag("clumps/resin");
         /**
          * For raw materials harvested from growable plants. Crop items can be edible like carrots or
          * non-edible like wheat and cocoa beans.
@@ -505,6 +518,9 @@ public class Tags {
         public static final TagKey<Item> INGOTS_IRON = tag("ingots/iron");
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
         public static final TagKey<Item> LEATHERS = tag("leathers");
+        /**
+         * Small mushroom items. Not the full block forms.
+         */
         public static final TagKey<Item> MUSHROOMS = tag("mushrooms");
         /**
          * For music disc-like materials to be used in recipes.
@@ -524,27 +540,33 @@ public class Tags {
         public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
         public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
         /**
-         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation
+         * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Item> ORE_BEARING_GROUND_DEEPSLATE = tag("ore_bearing_ground/deepslate");
         /**
-         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation
+         * Blocks which are often replaced by netherrack ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_NETHERRACK}, during world generation.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Item> ORE_BEARING_GROUND_NETHERRACK = tag("ore_bearing_ground/netherrack");
         /**
-         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation
+         * Blocks which are often replaced by stone ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_STONE}, during world generation.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Item> ORE_BEARING_GROUND_STONE = tag("ore_bearing_ground/stone");
         /**
-         * Ores which on average result in more than one resource worth of materials
+         * Ores which on average result in more than one resource worth of materials ignoring fortune and other modifiers.
+         * (example, Copper Ore)
          */
         public static final TagKey<Item> ORE_RATES_DENSE = tag("ore_rates/dense");
         /**
-         * Ores which on average result in one resource worth of materials
+         * Ores which on average result in one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Iron Ore)
          */
         public static final TagKey<Item> ORE_RATES_SINGULAR = tag("ore_rates/singular");
         /**
-         * Ores which on average result in less than one resource worth of materials
+         * Ores which on average result in less than one resource worth of materials ignoring fortune and other modifiers.
+         * (Example, Nether Gold Ore as it drops 2 to 6 Gold Nuggets which is less than normal Gold Ore's Raw Gold drop)
          */
         public static final TagKey<Item> ORE_RATES_SPARSE = tag("ore_rates/sparse");
         public static final TagKey<Item> ORES = tag("ores");
@@ -559,19 +581,34 @@ public class Tags {
         public static final TagKey<Item> ORES_QUARTZ = tag("ores/quartz");
         public static final TagKey<Item> ORES_REDSTONE = tag("ores/redstone");
         /**
-         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output
+         * Ores in deepslate (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_DEEPSLATE}) which could logically use deepslate as recipe input or output.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Item> ORES_IN_GROUND_DEEPSLATE = tag("ores_in_ground/deepslate");
         /**
-         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output
+         * Ores in netherrack (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_NETHERRACK}) which could logically use netherrack as recipe input or output.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Item> ORES_IN_GROUND_NETHERRACK = tag("ores_in_ground/netherrack");
         /**
-         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output
+         * Ores in stone (or in equivalent blocks in the tag {@link #ORE_BEARING_GROUND_STONE}) which could logically use stone as recipe input or output.
+         * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Item> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Item> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
+        /**
+         * Items that can hold various potion effects by making use of {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}.
+         * Contents of this tag may not always be a kind of bottle. Buckets of potions could go here.
+         * The subtags would be the name of the container that is holding the potion effects such as `c:potions/bucket` or `c:potions/vial` as examples.
+         */
+        public static final TagKey<Item> POTIONS = tag("potions");
+        /**
+         * Variations of the potion bottle that can hold various effects by using {@link net.minecraft.core.component.DataComponents#POTION_CONTENTS}.
+         * Examples are splash and lingering potions from vanilla.
+         * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
+         */
+        public static final TagKey<Item> POTIONS_BOTTLE = tag("potions/bottle");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -603,10 +640,14 @@ public class Tags {
         public static final TagKey<Item> SANDSTONE_UNCOLORED_SLABS = tag("sandstone/uncolored_slabs");
         public static final TagKey<Item> SANDSTONE_UNCOLORED_STAIRS = tag("sandstone/uncolored_stairs");
 
+        /**
+         * For items that are explicitly seeds for use cases such as refilling a bird feeder block or certain seed-based recipes.
+         */
         public static final TagKey<Item> SEEDS = tag("seeds");
         public static final TagKey<Item> SEEDS_BEETROOT = tag("seeds/beetroot");
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
+        public static final TagKey<Item> SEEDS_TORCHFLOWER = tag("seeds/torchflower");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
         /**
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
@@ -639,6 +680,7 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_GOLD = tag("storage_blocks/raw_gold");
         public static final TagKey<Item> STORAGE_BLOCKS_RAW_IRON = tag("storage_blocks/raw_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_REDSTONE = tag("storage_blocks/redstone");
+        public static final TagKey<Item> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
         public static final TagKey<Item> STRINGS = tag("strings");
@@ -906,20 +948,41 @@ public class Tags {
 
         public static final TagKey<Biome> IS_VOID = tag("is_void");
 
+        /**
+         * Biomes that are above 0.8 temperature. (Excluding 0.8)
+         */
         public static final TagKey<Biome> IS_HOT = tag("is_hot");
         public static final TagKey<Biome> IS_HOT_OVERWORLD = tag("is_hot/overworld");
         public static final TagKey<Biome> IS_HOT_NETHER = tag("is_hot/nether");
         public static final TagKey<Biome> IS_HOT_END = tag("is_hot/end");
 
+        /**
+         * Biomes that are between 0.5 and 0.8 temperature range. (Including 0.5 and 0.8)
+         */
+        public static final TagKey<Biome> IS_TEMPERATE = tag("is_temperate");
+        public static final TagKey<Biome> IS_TEMPERATE_OVERWORLD = tag("is_temperate/overworld");
+        public static final TagKey<Biome> IS_TEMPERATE_NETHER = tag("is_temperate/nether");
+        public static final TagKey<Biome> IS_TEMPERATE_END = tag("is_temperate/end");
+
+        /**
+         * Biomes that are below 0.5 temperature. (Excluding 0.5)
+         */
         public static final TagKey<Biome> IS_COLD = tag("is_cold");
         public static final TagKey<Biome> IS_COLD_OVERWORLD = tag("is_cold/overworld");
         public static final TagKey<Biome> IS_COLD_NETHER = tag("is_cold/nether");
         public static final TagKey<Biome> IS_COLD_END = tag("is_cold/end");
 
+        /**
+         * If a biome has trees but spawn infrequently like a Savanna or Sparse Jungle, then the biome is considered having sparse vegetation. It does NOT mean no trees.
+         */
         public static final TagKey<Biome> IS_SPARSE_VEGETATION = tag("is_sparse_vegetation");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_OVERWORLD = tag("is_sparse_vegetation/overworld");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_NETHER = tag("is_sparse_vegetation/nether");
         public static final TagKey<Biome> IS_SPARSE_VEGETATION_END = tag("is_sparse_vegetation/end");
+        /**
+         * If a biome has more vegetation than a regular Forest biome, then it is considered having dense vegetation.
+         * This is more subjective so simply do your best with classifying your biomes.
+         */
         public static final TagKey<Biome> IS_DENSE_VEGETATION = tag("is_dense_vegetation");
         public static final TagKey<Biome> IS_DENSE_VEGETATION_OVERWORLD = tag("is_dense_vegetation/overworld");
         public static final TagKey<Biome> IS_DENSE_VEGETATION_NETHER = tag("is_dense_vegetation/nether");
@@ -974,7 +1037,19 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_FOREST})
          */
         public static final TagKey<Biome> IS_FOREST = tag("is_forest");
+        /**
+         * For biomes that are a variant of Birch Forest (has mostly birch trees)
+         */
         public static final TagKey<Biome> IS_BIRCH_FOREST = tag("is_birch_forest");
+        /**
+         * For biomes that are a variant of Dark Forest. (Has roofed trees that are reminiscent of Dark Forest's style)
+         * Pale Gardens is included in this tag because according to Mojang's blog post, they state it is a variation of the Dark Forest biome.
+         * <a href="https://www.minecraft.net/en-us/article/minecraft-java-edition-1-21-4#pale_garden:~:text=The%20Pale%20Garden%20is%20a%20biome%20variation%20of%20Dark%20Forest">...</a>.
+         */
+        public static final TagKey<Biome> IS_DARK_FOREST = tag("is_dark_forest");
+        /**
+         * For biomes that are a variant of Flower Forest (Is very dense in variety of flowers)
+         */
         public static final TagKey<Biome> IS_FLOWER_FOREST = tag("is_flower_forest");
         /**
          * Biomes that spawn as a taiga.
@@ -982,6 +1057,10 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_TAIGA})
          */
         public static final TagKey<Biome> IS_TAIGA = tag("is_taiga");
+        /**
+         * For biomes that are an "old growth" variant of a regular biome.
+         * Usually this includes taller or different tree styles as if the biome is older.
+         */
         public static final TagKey<Biome> IS_OLD_GROWTH = tag("is_old_growth");
         /**
          * Biomes that spawn as a hills biome. (Previously was called Extreme Hills biome in past)
@@ -989,6 +1068,10 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_HILL})
          */
         public static final TagKey<Biome> IS_HILL = tag("is_hill");
+        /**
+         * For biomes that are a "windswept" variant of a regular biome.
+         * Usually these biomes includes fewer trees than normal and more exposed stone on hilly terrain.
+         */
         public static final TagKey<Biome> IS_WINDSWEPT = tag("is_windswept");
         /**
          * Biomes that spawn as a jungle.
@@ -1002,7 +1085,14 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_SAVANNA})
          */
         public static final TagKey<Biome> IS_SAVANNA = tag("is_savanna");
+        /**
+         * For biomes that are considered a swamp such as Swamp or Mangrove Swamp.
+         */
         public static final TagKey<Biome> IS_SWAMP = tag("is_swamp");
+        /**
+         * For biomes that are considered a regular desert.
+         * Badlands have their own tag to better separate them from this tag.
+         */
         public static final TagKey<Biome> IS_DESERT = tag("is_desert");
         /**
          * Biomes that spawn as a badlands.
@@ -1011,12 +1101,18 @@ public class Tags {
          */
         public static final TagKey<Biome> IS_BADLANDS = tag("is_badlands");
         /**
-         * Biomes that are dedicated to spawning on the shoreline of a body of water.
+         * Non-stony biomes that are dedicated to spawning on the shoreline of a body of water.
          * (This is for people who want to tag their biomes without getting
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_BEACH})
          */
         public static final TagKey<Biome> IS_BEACH = tag("is_beach");
+        /**
+         * Stony biomes that are dedicated to spawning on the shoreline of a body of water.
+         */
         public static final TagKey<Biome> IS_STONY_SHORES = tag("is_stony_shores");
+        /**
+         * For biomes that spawn primarily mushrooms.
+         */
         public static final TagKey<Biome> IS_MUSHROOM = tag("is_mushroom");
 
         /**
@@ -1037,16 +1133,39 @@ public class Tags {
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_DEEP_OCEAN})
          */
         public static final TagKey<Biome> IS_DEEP_OCEAN = tag("is_deep_ocean");
+        /**
+         * Biomes that spawn as part of the world's oceans that have shallow depth.
+         */
         public static final TagKey<Biome> IS_SHALLOW_OCEAN = tag("is_shallow_ocean");
 
+        /**
+         * Biomes that spawn primarily underground. (Not necessarily always a cave)
+         */
         public static final TagKey<Biome> IS_UNDERGROUND = tag("is_underground");
+        /**
+         * Biomes dedicated to decorating caves such as Lush Caves or Dripstone Caves.
+         */
         public static final TagKey<Biome> IS_CAVE = tag("is_cave");
 
+        /**
+         * Biomes whose flora primarily consists of vibrant thick vegetation and pools of water. Think of Lush Caves as an example.
+         */
         public static final TagKey<Biome> IS_LUSH = tag("is_lush");
+        /**
+         * Biomes whose theme revolves around magic. Like a forest full of fairies or plants of magical abilities.
+         */
         public static final TagKey<Biome> IS_MAGICAL = tag("is_magical");
+        /**
+         * Intended for biomes that spawns infrequently and can be difficult to find.
+         */
         public static final TagKey<Biome> IS_RARE = tag("is_rare");
+        /**
+         * Biomes that spawn as a flat-topped hill often.
+         */
         public static final TagKey<Biome> IS_PLATEAU = tag("is_plateau");
-        public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
+        /**
+         * For biomes that are intended to be creepy or scary. For example, see Deep Dark biome or Dark Forest biome.
+         */
         public static final TagKey<Biome> IS_SPOOKY = tag("is_spooky");
         /**
          * Biomes that lack any natural life or vegetation.
@@ -1104,6 +1223,13 @@ public class Tags {
          * Biomes that spawn as part of the large islands outside the center island in The End dimension.
          */
         public static final TagKey<Biome> IS_OUTER_END_ISLAND = tag("is_outer_end_island");
+
+        /**
+         * Old legacy tag that lost it's intended use case and is too unclear with regard to the current worldgen biome system today.
+         * TODO: remove in 1.22
+         */
+        @Deprecated(forRemoval = true, since = "21.1")
+        public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
 
         private static TagKey<Biome> tag(String name) {
             return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("c", name));

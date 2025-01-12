@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/data/models/EquipmentAssetProvider.java
++++ b/net/minecraft/client/data/models/EquipmentAssetProvider.java
+@@ -26,6 +_,10 @@
+         this.pathProvider = p_387559_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "equipment");
+     }
+ 
++    protected void registerModels(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> output) {
++        bootstrap(output);
++    }
++
+     private static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> p_387865_) {
+         p_387865_.accept(
+             EquipmentAssets.LEATHER,
+@@ -106,7 +_,7 @@
+     @Override
+     public CompletableFuture<?> run(CachedOutput p_387304_) {
+         Map<ResourceKey<EquipmentAsset>, EquipmentClientInfo> map = new HashMap<>();
+-        bootstrap((p_386976_, p_388942_) -> {
++        registerModels((p_386976_, p_388942_) -> {
+             if (map.putIfAbsent(p_386976_, p_388942_) != null) {
+                 throw new IllegalStateException("Tried to register equipment asset twice for id: " + p_386976_);
+             }

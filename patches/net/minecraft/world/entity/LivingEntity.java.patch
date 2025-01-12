@@ -52,8 +52,8 @@
                  double d4 = Math.min((double)(0.2F + f / 15.0F), 2.5);
                  int i = (int)(150.0 * d4);
 -                serverlevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, p_20992_), d0, d1, d2, i, 0.0, 0.0, 0.0, 0.15F);
-+                if (!p_20992_.addLandingEffects((ServerLevel) this.level(), p_20993_, p_20992_, this, i))
-+                ((ServerLevel)this.level()).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, p_20992_).setPos(p_20993_), d0, d1, d2, i, 0.0, 0.0, 0.0, 0.15F);
++                if (!p_20992_.addLandingEffects(serverlevel, p_20993_, p_20992_, this, i))
++                serverlevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, p_20992_, p_20993_), d0, d1, d2, i, 0.0, 0.0, 0.0, 0.15F);
              }
          }
  

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.data.event;
 
+import com.google.common.collect.Lists;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -13,38 +15,60 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
+import net.minecraft.client.resources.ClientPackSource;
+import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.repository.ServerPacksSource;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.resource.ResourcePackLoader;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
     private final DataGeneratorConfig config;
-    private final ExistingFileHelper existingFileHelper;
     private final ModContainer modContainer;
 
-    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
+    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig) {
         this.modContainer = mc;
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
-        this.existingFileHelper = existingFileHelper;
     }
 
     public ModContainer getModContainer() {
         return this.modContainer;
+    }
+
+    public ResourceManager getResourceManager(PackType packType) {
+        return switch (packType) {
+            case CLIENT_RESOURCES -> config.clientResourceManager;
+            case SERVER_DATA -> config.serverResourceManager;
+        };
     }
 
     public Collection<Path> getInputs() {
@@ -53,10 +77,6 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
     public DataGenerator getGenerator() {
         return this.dataGenerator;
-    }
-
-    public ExistingFileHelper getExistingFileHelper() {
-        return existingFileHelper;
     }
 
     public CompletableFuture<HolderLookup.Provider> getLookupProvider() {
@@ -76,14 +96,14 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     public static class Server extends GatherDataEvent {
-        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
-            super(mc, dataGenerator, dataGeneratorConfig, existingFileHelper);
+        public Server(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig) {
+            super(mc, dataGenerator, dataGeneratorConfig);
         }
     }
 
     public static class Client extends GatherDataEvent {
-        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
-            super(mc, dataGenerator, dataGeneratorConfig, existingFileHelper);
+        public Client(ModContainer mc, DataGenerator dataGenerator, DataGeneratorConfig dataGeneratorConfig) {
+            super(mc, dataGenerator, dataGeneratorConfig);
         }
     }
 
@@ -97,9 +117,11 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final boolean validate;
         private final boolean flat;
         private final List<DataGenerator> generators = new ArrayList<>();
+        private final ResourceManager clientResourceManager;
+        private final ResourceManager serverResourceManager;
 
         public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
-                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator) {
+                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final @Nullable String assetIndex, final @Nullable File assetsDir, Collection<Path> existingPacks) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
@@ -108,6 +130,14 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.reports = reports;
             this.validate = validate;
             this.flat = flat;
+
+            clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, consumer -> {
+                if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
+                    consumer.accept(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
+            });
+
+            serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));
+
             if (mods.contains("minecraft") || mods.isEmpty()) {
                 this.generators.add(vanillaGenerator);
             }
@@ -146,6 +176,34 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
                 }
             });
         }
+
+        private static ResourceManager createResourceManager(PackType packType, Predicate<String> isGeneratedMod, Collection<Path> existingPacks, Consumer<Consumer<PackResources>> consumer) {
+            var packs = Lists.<PackResources>newArrayList();
+            // include vanilla resource packs first
+            consumer.accept(packs::add);
+
+            // include existing packs
+            existingPacks.forEach(path -> {
+                var packInfo = new PackLocationInfo(path.getFileName().toString(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
+                packs.add(new PathPackResources(packInfo, path));
+            });
+
+            // include mod resources last
+            ModList.get().getSortedMods().stream()
+                    // ignore 'minecraft' mod, this is added via `[Server|Client]PackSource`
+                    .filter(Predicate.not(mod -> mod.getModId().equals("minecraft")))
+                    // ignore actively generated models, their resource packs should be included using `--existing <packPath>`
+                    // this is to workaround accidentally including resources being actively generated
+                    .filter(Predicate.not(mod -> isGeneratedMod.test(mod.getModId())))
+                    .map(mod -> {
+                        var owningFile = mod.getModInfo().getOwningFile();
+                        var packInfo = new PackLocationInfo("mod/" + mod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
+                        return ResourcePackLoader.createPackForMod(owningFile).openPrimary(packInfo);
+                    })
+                    .forEach(packs::add);
+
+            return new MultiPackResourceManager(packType, packs);
+        }
     }
 
     public <T extends DataProvider> T addProvider(T provider) {
@@ -156,21 +214,13 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         return addProvider(builder.create(dataGenerator.getPackOutput()));
     }
 
-    public <T extends DataProvider> T createProvider(DataProviderFromOutputFileHelper<T> builder) {
-        return addProvider(builder.create(dataGenerator.getPackOutput(), existingFileHelper));
-    }
-
     public <T extends DataProvider> T createProvider(DataProviderFromOutputLookup<T> builder) {
         return addProvider(builder.create(dataGenerator.getPackOutput(), config.lookupProvider));
     }
 
-    public <T extends DataProvider> T createProvider(DataProviderFromOutputLookupFileHelper<T> builder) {
-        return addProvider(builder.create(dataGenerator.getPackOutput(), config.lookupProvider, existingFileHelper));
-    }
-
-    public void createBlockAndItemTags(DataProviderFromOutputLookupFileHelper<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
+    public void createBlockAndItemTags(DataProviderFromOutputLookup<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
         var blockTags = createProvider(blockTagsProvider);
-        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter(), this.getExistingFileHelper()));
+        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter()));
     }
 
     @FunctionalInterface
@@ -184,22 +234,12 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     @FunctionalInterface
-    public interface DataProviderFromOutputFileHelper<T extends DataProvider> {
-        T create(PackOutput output, ExistingFileHelper existingFileHelper);
-    }
-
-    @FunctionalInterface
-    public interface DataProviderFromOutputLookupFileHelper<T extends DataProvider> {
-        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper);
-    }
-
-    @FunctionalInterface
     public interface GatherDataEventGenerator {
-        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper);
+        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig);
     }
 
     @FunctionalInterface
     public interface ItemTagsProvider {
-        TagsProvider<Item> create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter, ExistingFileHelper existingFileHelper);
+        TagsProvider<Item> create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter);
     }
 }

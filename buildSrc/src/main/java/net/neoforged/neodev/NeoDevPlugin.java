@@ -37,6 +37,7 @@ import org.gradle.api.tasks.bundling.Zip;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -271,6 +272,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
         );
 
+        var installerRepositoryUrls = getInstallerRepositoryUrls(project);
         // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.setGroup(INTERNAL_GROUP);
@@ -279,17 +281,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
             task.setLibraries(configurations.launcherProfileClasspath);
-            task.getRepositoryURLs().set(project.provider(() -> {
-                List<URI> repos = new ArrayList<>();
-                for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
-                    var uri = repo.getUrl();
-                    if (!uri.toString().endsWith("/")) {
-                        uri = URI.create(uri + "/");
-                    }
-                    repos.add(uri);
-                }
-                return repos;
-            }));
+            task.getRepositoryURLs().set(installerRepositoryUrls);
             // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
             task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
             task.setModules(configurations.modulePath);
@@ -308,17 +300,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.addLibraries(configurations.launcherProfileClasspath);
             // We need the NeoForm zip for the SRG mappings.
             task.addLibraries(configurations.neoFormDataOnly);
-            task.getRepositoryURLs().set(project.provider(() -> {
-                List<URI> repos = new ArrayList<>();
-                for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
-                    var uri = repo.getUrl();
-                    if (!uri.toString().endsWith("/")) {
-                        uri = URI.create(uri + "/");
-                    }
-                    repos.add(uri);
-                }
-                return repos;
-            }));
+            task.getRepositoryURLs().set(installerRepositoryUrls);
             task.getUniversalJar().set(universalJar.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getInstallerProfile().set(neoDevBuildDir.map(dir -> dir.file("installer-profile.json")));
 
@@ -465,6 +447,30 @@ public class NeoDevPlugin implements Plugin<Project> {
                 createCleanArtifacts.flatMap(CreateCleanArtifacts::getRawClientJar)
         );
         setupProductionServerTest(project, installerJar);
+    }
+
+    /**
+     * Get the list of Maven repositories that may contain artifacts for the installer.
+     */
+    private static Provider<List<URI>> getInstallerRepositoryUrls(Project project) {
+        return project.provider(() -> {
+            List<URI> repos = new ArrayList<>();
+            var projectRepos = project.getRepositories();
+            if (!projectRepos.isEmpty()) {
+                for (var repo : projectRepos.withType(MavenArtifactRepository.class)) {
+                    repos.add(repo.getUrl());
+                }
+            } else {
+                // If no project repos are defined, use the repository list we exposed in settings.gradle via an extension
+                // See the end of settings.gradle for details
+                Collections.addAll(repos, (URI[]) project.getGradle().getExtensions().getByName("repositoryBaseUrls"));
+            }
+
+            // Ensure all base urls end with a slash
+            repos.replaceAll(uri -> uri.toString().endsWith("/") ? uri : URI.create(uri + "/"));
+
+            return repos;
+        });
     }
 
     private static TaskProvider<TransformSources> configureAccessTransformer(

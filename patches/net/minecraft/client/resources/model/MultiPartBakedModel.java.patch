@@ -55,7 +55,7 @@
 +    }
 +
 +    @Override // FORGE: Get render types based on the selectors matched by the given block state
-+    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
++    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, net.neoforged.neoforge.client.model.data.ModelData data) {
 +        var renderTypeSets = new java.util.LinkedList<net.neoforged.neoforge.client.ChunkRenderTypeSet>();
 +        var selectors = getSelectors(state);
 +        for (int i = 0; i < selectors.length(); i++)

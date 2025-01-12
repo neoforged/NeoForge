@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 
 /**
  * <p>Data provider for atlas configuration files.<br>
@@ -38,13 +37,13 @@ public abstract class SpriteSourceProvider extends JsonCodecProvider<List<Sprite
 
     private final Map<ResourceLocation, SourceList> atlases = new HashMap<>();
 
-    public SpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, ExistingFileHelper existingFileHelper) {
-        super(output, PackOutput.Target.RESOURCE_PACK, "atlases", PackType.CLIENT_RESOURCES, SpriteSources.FILE_CODEC, lookupProvider, modId, existingFileHelper);
+    public SpriteSourceProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
+        super(output, PackOutput.Target.RESOURCE_PACK, "atlases", SpriteSources.FILE_CODEC, lookupProvider, modId);
     }
 
     /**
      * Get or create a {@link SourceList} for the given atlas
-     * 
+     *
      * @param id The texture atlas the sources should be added to, see constants at the top for the format
      *           and the vanilla atlases
      * @return an existing {@code SourceList} for the given atlas or a new one if not present yet
@@ -60,7 +59,7 @@ public abstract class SpriteSourceProvider extends JsonCodecProvider<List<Sprite
     protected record SourceList(List<SpriteSource> sources) {
         /**
          * Add the given {@link SpriteSource} to this atlas configuration
-         * 
+         *
          * @param source The {@code SpriteSource} to be added
          */
         public SourceList addSource(SpriteSource source) {

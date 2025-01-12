@@ -21,11 +21,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
-    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, blockTagProvider, "neoforge", existingFileHelper);
+    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider) {
+        super(output, lookupProvider, blockTagProvider, "neoforge");
     }
 
     @SuppressWarnings("unchecked")
@@ -35,9 +34,10 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.BARRELS_WOODEN, Tags.Items.BARRELS_WOODEN);
         tag(Tags.Items.BONES).add(Items.BONE);
         copy(Tags.Blocks.BOOKSHELVES, Tags.Items.BOOKSHELVES);
-        tag(Tags.Items.BRICKS).addTags(Tags.Items.BRICKS_NORMAL, Tags.Items.BRICKS_NETHER);
+        tag(Tags.Items.BRICKS).addTags(Tags.Items.BRICKS_NORMAL, Tags.Items.BRICKS_NETHER, Tags.Items.BRICKS_RESIN);
         tag(Tags.Items.BRICKS_NORMAL).add(Items.BRICK);
         tag(Tags.Items.BRICKS_NETHER).add(Items.NETHER_BRICK);
+        tag(Tags.Items.BRICKS_RESIN).add(Items.RESIN_BRICK);
         tag(Tags.Items.BUCKETS_EMPTY).add(Items.BUCKET);
         tag(Tags.Items.BUCKETS_WATER).add(Items.WATER_BUCKET);
         tag(Tags.Items.BUCKETS_LAVA).add(Items.LAVA_BUCKET);
@@ -53,6 +53,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.CHESTS_TRAPPED, Tags.Items.CHESTS_TRAPPED);
         copy(Tags.Blocks.CHESTS_WOODEN, Tags.Items.CHESTS_WOODEN);
         copy(Tags.Blocks.CLUSTERS, Tags.Items.CLUSTERS);
+        tag(Tags.Items.CLUMPS).addTags(Tags.Items.CLUMPS_RESIN);
+        tag(Tags.Items.CLUMPS_RESIN).add(Items.RESIN_CLUMP);
         copy(Tags.Blocks.COBBLESTONES, Tags.Items.COBBLESTONES);
         copy(Tags.Blocks.COBBLESTONES_NORMAL, Tags.Items.COBBLESTONES_NORMAL);
         copy(Tags.Blocks.COBBLESTONES_INFESTED, Tags.Items.COBBLESTONES_INFESTED);
@@ -196,6 +198,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.ORES_IN_GROUND_STONE, Tags.Items.ORES_IN_GROUND_STONE);
         copy(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES);
         copy(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, Tags.Items.PLAYER_WORKSTATIONS_FURNACES);
+        tag(Tags.Items.POTIONS_BOTTLE).add(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
+        tag(Tags.Items.POTIONS).addTags(Tags.Items.POTIONS_BOTTLE);
         tag(Tags.Items.RAW_MATERIALS).addTags(Tags.Items.RAW_MATERIALS_COPPER, Tags.Items.RAW_MATERIALS_GOLD, Tags.Items.RAW_MATERIALS_IRON);
         tag(Tags.Items.RAW_MATERIALS_COPPER).add(Items.RAW_COPPER);
         tag(Tags.Items.RAW_MATERIALS_GOLD).add(Items.RAW_GOLD);
@@ -217,10 +221,11 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.SANDSTONE_UNCOLORED_BLOCKS, Tags.Items.SANDSTONE_UNCOLORED_BLOCKS);
         copy(Tags.Blocks.SANDSTONE_UNCOLORED_SLABS, Tags.Items.SANDSTONE_UNCOLORED_SLABS);
         copy(Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS, Tags.Items.SANDSTONE_UNCOLORED_STAIRS);
-        tag(Tags.Items.SEEDS).addTags(Tags.Items.SEEDS_BEETROOT, Tags.Items.SEEDS_MELON, Tags.Items.SEEDS_PUMPKIN, Tags.Items.SEEDS_WHEAT);
+        tag(Tags.Items.SEEDS).addTags(Tags.Items.SEEDS_BEETROOT, Tags.Items.SEEDS_MELON, Tags.Items.SEEDS_PUMPKIN, Tags.Items.SEEDS_TORCHFLOWER, Tags.Items.SEEDS_WHEAT);
         tag(Tags.Items.SEEDS_BEETROOT).add(Items.BEETROOT_SEEDS);
         tag(Tags.Items.SEEDS_MELON).add(Items.MELON_SEEDS);
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
+        tag(Tags.Items.SEEDS_TORCHFLOWER).add(Items.TORCHFLOWER_SEEDS);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
         tag(Tags.Items.SLIME_BALLS).add(Items.SLIME_BALL);
         tag(Tags.Items.SHULKER_BOXES)
@@ -246,6 +251,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD, Tags.Items.STORAGE_BLOCKS_RAW_GOLD);
         copy(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, Tags.Items.STORAGE_BLOCKS_RAW_IRON);
         copy(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, Tags.Items.STORAGE_BLOCKS_REDSTONE);
+        copy(Tags.Blocks.STORAGE_BLOCKS_RESIN, Tags.Items.STORAGE_BLOCKS_RESIN);
         copy(Tags.Blocks.STORAGE_BLOCKS_SLIME, Tags.Items.STORAGE_BLOCKS_SLIME);
         copy(Tags.Blocks.STORAGE_BLOCKS_WHEAT, Tags.Items.STORAGE_BLOCKS_WHEAT);
         tag(Tags.Items.STRINGS).add(Items.STRING);

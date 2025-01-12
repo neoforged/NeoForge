@@ -44,3 +44,10 @@ include ':coremods'
 // Ensure a unique artifact id within JIJ that does not conflict with net.neoforged:coremods, which is
 // another external dependency.
 project(":coremods").name = "neoforge-coremods"
+
+// Expose the repository base URLs to projects to be able to access them
+// See this Gradle issue for tracking a more permanent solution:
+// https://github.com/gradle/gradle/issues/27260
+gradle.settingsEvaluated {
+    gradle.extensions.add("repositoryBaseUrls", dependencyResolutionManagement.repositories.findAll { it instanceof MavenArtifactRepository }.collect { it.url }.toArray(URI[]::new))
+}

@@ -1,6 +1,7 @@
 {
   "values": [
     "#c:bricks/normal",
-    "#c:bricks/nether"
+    "#c:bricks/nether",
+    "#c:bricks/resin"
   ]
 }

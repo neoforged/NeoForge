@@ -1,11 +1,22 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -56,7 +_,7 @@
-                 p_52944_.levelEvent(1001, p_52945_, 0);
-             } else {
+@@ -58,12 +_,16 @@
                  ItemStack itemstack = dispenserblockentity.getItem(i);
--                if (!itemstack.isEmpty()) {
-+                if (!itemstack.isEmpty() && net.neoforged.neoforge.items.VanillaInventoryCodeHooks.dropperInsertHook(p_52944_, p_52945_, dispenserblockentity, i, itemstack)) {
+                 if (!itemstack.isEmpty()) {
                      Direction direction = p_52944_.getBlockState(p_52945_).getValue(FACING);
-                     Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
+-                    Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
++                    var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
                      ItemStack itemstack1;
+-                    if (container == null) {
++                    if (containerOrHandler.isEmpty()) {
+                         itemstack1 = DISPENSE_BEHAVIOUR.dispense(blocksource, itemstack);
+                     } else {
+-                        itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, container, itemstack.copyWithCount(1), direction.getOpposite());
++                        if (containerOrHandler.container() != null) {
++                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, containerOrHandler.container(), itemstack.copyWithCount(1), direction.getOpposite());
++                        } else {
++                            itemstack1 = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack.copyWithCount(1), false);
++                        }
+                         if (itemstack1.isEmpty()) {
+                             itemstack1 = itemstack.copy();
+                             itemstack1.shrink(1);

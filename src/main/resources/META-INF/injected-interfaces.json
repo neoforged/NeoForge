@@ -225,7 +225,15 @@
   "net/minecraft/world/level/material/FluidState": [
     "net/neoforged/neoforge/common/extensions/IFluidStateExtension"
   ],
-  
+  "net/minecraft/client/data/models/model/TexturedModel": [
+    "net/neoforged/neoforge/client/extensions/ITexturedModelExtension"
+  ],
+  "net/minecraft/client/data/models/ModelProvider": [
+    "net/neoforged/neoforge/common/extensions/IModelProviderExtension"
+  ],
+  "net/minecraft/client/data/models/model/TexturedModel$Provider": [
+    "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$Provider"
+  ],
   "com/mojang/blaze3d/vertex/VertexFormatElement$Usage": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],

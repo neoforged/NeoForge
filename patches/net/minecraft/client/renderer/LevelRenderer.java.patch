@@ -1,5 +1,15 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
+@@ -473,6 +_,9 @@
+             this.targets.entityOutline = framegraphbuilder.importExternal("entity_outline", this.entityOutlineTarget);
+         }
+ 
++        var setupEvent = net.neoforged.neoforge.client.ClientHooks.fireFrameGraphSetup(framegraphbuilder, this.targets, rendertargetdescriptor, frustum, p_109604_, p_254120_, p_323920_, p_348530_, profilerfiller);
++        flag2 |= setupEvent.isOutlineProcessingEnabled();
++
+         FramePass framepass = framegraphbuilder.addPass("clear");
+         this.targets.main = framepass.readsAndWrites(this.targets.main);
+         framepass.executes(() -> {
 @@ -480,7 +_,7 @@
              RenderSystem.clear(16640);
          });

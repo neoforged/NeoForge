@@ -1,11 +1,12 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -83,11 +_,14 @@
+@@ -83,11 +_,15 @@
      private BakedModel missingModel;
      private ItemModel missingItemModel;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
 +    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
 +    private Map<ResourceLocation, BakedModel> bakedStandaloneModels = Map.of();
++    private Set<ResourceLocation> reportedMissingItemModels = new java.util.HashSet<>();
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
          this.blockColors = p_119407_;
@@ -15,6 +16,22 @@
          this.atlases = new AtlasSet(VANILLA_ATLASES, p_119406_);
      }
  
+@@ -100,7 +_,14 @@
+     }
+ 
+     public ItemModel getItemModel(ResourceLocation p_387691_) {
+-        return this.bakedItemStackModels.getOrDefault(p_387691_, this.missingItemModel);
++        ItemModel model = this.bakedItemStackModels.get(p_387691_);
++        if (model == null) {
++            if (this.reportedMissingItemModels.add(p_387691_)) {
++                LOGGER.warn("Missing item model for location {}", p_387691_);
++            }
++            return this.missingItemModel;
++        }
++        return model;
+     }
+ 
+     public ClientItem.Properties getItemProperties(ResourceLocation p_390438_) {
 @@ -115,6 +_,7 @@
      public final CompletableFuture<Void> reload(
          PreparableReloadListener.PreparationBarrier p_249079_, ResourceManager p_251134_, Executor p_250550_, Executor p_249221_
@@ -62,12 +79,20 @@
          p_252136_.popPush("dispatch");
          Map<BlockState, BakedModel> map = createBlockStateToModelDispatch(modelbakery$bakingresult.blockStateModels(), modelbakery$bakingresult.missingModel());
          CompletableFuture<Void> completablefuture = CompletableFuture.allOf(
-@@ -304,6 +_,8 @@
+@@ -304,6 +_,16 @@
          this.modelGroups = p_248996_.modelGroups;
          this.missingModel = modelbakery$bakingresult.missingModel();
          this.missingItemModel = modelbakery$bakingresult.missingItemModel();
 +        this.bakedStandaloneModels = modelbakery$bakingresult.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, modelbakery$bakingresult, this.modelBakery.get());
++        this.reportedMissingItemModels = new java.util.HashSet<>();
++        for (net.minecraft.world.item.Item item : BuiltInRegistries.ITEM) {
++            ResourceLocation modelId = item.components().get(net.minecraft.core.component.DataComponents.ITEM_MODEL);
++            if (modelId != null && !this.bakedItemStackModels.containsKey(modelId)) {
++                this.reportedMissingItemModels.add(modelId);
++                LOGGER.warn("No model loaded for default item ID {} of {}", modelId, item);
++            }
++        }
          p_251960_.popPush("cache");
          this.blockModelShaper.replaceCache(p_248996_.modelCache);
          this.specialBlockModelRenderer = p_248996_.specialBlockModelRenderer;

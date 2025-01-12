@@ -142,6 +142,18 @@ immaculate {
             return sb.toString()
         }
 
+        // Disallow explicit not null in patches, it's always implied.
+        custom 'noNotNull', { String fileContents ->
+            fileContents.eachLine {
+                if (!it.startsWith("+")) return
+                if (it.contains('@NotNull') || it.contains('@Nonnull')
+                        || it.contains('@org.jetbrains.annotations.NotNull')
+                        || it.contains('@javax.annotation.Nonnull')) {
+                    throw new GradleException('@NotNull and @Nonnull are disallowed.')
+                }
+            }
+        }
+
         //Replace any FQN versions of javax.annotation.Nullable with the jetbrains variant
         custom 'jetbrainsNullablePatches', { String fileContents ->
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
