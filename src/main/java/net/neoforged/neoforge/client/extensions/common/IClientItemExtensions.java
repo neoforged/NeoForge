@@ -147,9 +147,8 @@ public interface IClientItemExtensions {
     /**
      * Called to render an overlay on the first-person camera.
      * <p>
-     * Called after the client camera overlay
-     * provided by the {@link DataComponents#EQUIPPABLE Equipable data component} is rendered if it's present,
-     * such as the pumpkin overlay.
+     * If the client camera overlay provided by the {@link DataComponents#EQUIPPABLE Equipable data component} is present,
+     * such as for a pumpkin, this will be called after it is rendered.
      * <p>
      * This method should be used if the overlay is dynamic or has dynamic components.
      * For a static overlay, prefer using {@link Equippable#cameraOverlay()}.
