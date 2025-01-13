@@ -97,7 +97,8 @@ public class CapabilityHooks {
                 BlockEntityType.DISPENSER,
                 BlockEntityType.DROPPER,
                 BlockEntityType.JUKEBOX,
-                BlockEntityType.CRAFTER);
+                BlockEntityType.CRAFTER,
+                BlockEntityType.DECORATED_POT);
         for (var type : nonSidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new InvWrapper(container));
         }
