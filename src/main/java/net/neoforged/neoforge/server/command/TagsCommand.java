@@ -122,7 +122,7 @@ class TagsCommand {
         final TagKey<?> tagKey = TagKey.create(cast(registryKey), tagLocation);
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        Optional<HolderSet.Named<?>> optional = registry.get(TagsCommand.<ResourceKey>cast(tagKey));
+        Optional<HolderSet.Named<?>> optional = registry.get(TagsCommand.<TagKey>cast(tagKey));
         final HolderSet.Named<?> tag = optional.orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
 
         ctx.getSource().sendSuccess(() -> createMessage(
