@@ -1102,9 +1102,21 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
     }
 
-    @ApiStatus.Internal
-    public static MainTarget createMainRenderTarget(int width, int height) {
+    @Nullable
+    private static Boolean enableStencil;
+
+    public static void configureMainRenderTarget() {
+        if (enableStencil != null) {
+            throw new IllegalStateException("configureMainRenderTarget() called more than once");
+        }
         var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
-        return new MainTarget(width, height, e.useStencil());
+        enableStencil = e.useStencil();
+    }
+
+    public static boolean isStencilEnabled() {
+        if (enableStencil == null) {
+            throw new IllegalStateException("isStencilEnabled() called before ConfigureMainRenderTargetEvent was dispatched");
+        }
+        return enableStencil;
     }
 }

@@ -1,38 +1,14 @@
 --- a/net/minecraft/client/renderer/PostChain.java
 +++ b/net/minecraft/client/renderer/PostChain.java
-@@ -95,17 +_,33 @@
-         Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)p_361423_, 0.0F, (float)p_362735_, 0.1F, 1000.0F);
-         Map<ResourceLocation, ResourceHandle<RenderTarget>> map = new HashMap<>(this.internalTargets.size() + this.externalTargets.size());
- 
-+        // Enable the depth and stencil buffers based on whether any external targets use them.
-+        // This is necessary so any created buffers get the correct parameters for blitting.
-+        boolean useDepth = false;
-+        boolean useStencil = false;
-         for (ResourceLocation resourcelocation : this.externalTargets) {
-             map.put(resourcelocation, p_361871_.getOrThrow(resourcelocation));
-+
-+            var handle = p_361871_.get(resourcelocation);
-+
-+            if (handle instanceof FrameGraphBuilder.Handle<?> frameHandle
-+                && frameHandle.getDescriptor() instanceof RenderTargetDescriptor renderDescriptor) {
-+                    useDepth |= renderDescriptor.useDepth();
-+                    useStencil |= renderDescriptor.useStencil();
-+            } else {
-+                var target = handle.get();
-+                useDepth |= target.useDepth;
-+                useStencil |= target.useStencil;
-+            }
-         }
- 
-         for (Entry<ResourceLocation, PostChainConfig.InternalTarget> entry : this.internalTargets.entrySet()) {
+@@ -103,9 +_,9 @@
              ResourceLocation resourcelocation1 = entry.getKey();
              RenderTargetDescriptor rendertargetdescriptor = switch (entry.getValue()) {
                  case PostChainConfig.FixedSizedTarget(int i, int j) -> {
 -                    yield new RenderTargetDescriptor(i, j, true);
-+                    yield new RenderTargetDescriptor(i, j, useDepth, useStencil);
++                    yield new RenderTargetDescriptor(i, j, true, net.neoforged.neoforge.client.ClientHooks.isStencilEnabled());
                  }
 -                case PostChainConfig.FullScreenTarget postchainconfig$fullscreentarget -> new RenderTargetDescriptor(p_361423_, p_362735_, true);
-+                case PostChainConfig.FullScreenTarget postchainconfig$fullscreentarget -> new RenderTargetDescriptor(p_361423_, p_362735_, useDepth, useStencil);
++                case PostChainConfig.FullScreenTarget postchainconfig$fullscreentarget -> new RenderTargetDescriptor(p_361423_, p_362735_, true, net.neoforged.neoforge.client.ClientHooks.isStencilEnabled());
                  default -> throw new MatchException(null, null);
              };
              map.put(resourcelocation1, p_362523_.createInternal(resourcelocation1.toString(), rendertargetdescriptor));
