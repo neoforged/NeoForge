@@ -155,7 +155,7 @@ public interface IClientItemExtensions {
      * For a static overlay, prefer using {@link Equippable#cameraOverlay()}.
      *
      * @param stack         The item stack that the player is wearing
-     * @param equipmentSlot The slot in which the player is wearing the above item stack
+     * @param equipmentSlot The slot in which the player is wearing or holding the above item stack
      * @param player        The player entity
      * @param guiGraphics   The gui graphics
      * @param deltaTracker  The delta tracker
