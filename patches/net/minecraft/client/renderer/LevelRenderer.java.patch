@@ -1,12 +1,11 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -459,7 +_,8 @@
+@@ -459,7 +_,7 @@
          this.targets.main = framegraphbuilder.importExternal("main", this.minecraft.getMainRenderTarget());
          int i = this.minecraft.getMainRenderTarget().width;
          int j = this.minecraft.getMainRenderTarget().height;
 -        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true);
-+        boolean useStencil = this.minecraft.getMainRenderTarget().useStencil;
-+        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true, useStencil);
++        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true, net.neoforged.neoforge.client.ClientHooks.isStencilEnabled());
          PostChain postchain = this.getTransparencyChain();
          if (postchain != null) {
              this.targets.translucent = framegraphbuilder.createInternal("translucent", rendertargetdescriptor);
