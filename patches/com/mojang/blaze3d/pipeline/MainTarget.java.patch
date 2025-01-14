@@ -25,17 +25,6 @@
          GlStateManager._bindTexture(0);
          this.viewWidth = maintarget$dimension.width;
          this.viewHeight = maintarget$dimension.height;
-@@ -58,8 +_,8 @@
-                 maintarget$attachmentstate = maintarget$attachmentstate.with(MainTarget.AttachmentState.COLOR);
-             }
- 
--            if (this.allocateDepthAttachment(maintarget$dimension)) {
--                maintarget$attachmentstate = maintarget$attachmentstate.with(MainTarget.AttachmentState.DEPTH);
-+            if (this.useStencil && this.allocateDepthAttachment(maintarget$dimension)) {
-+                maintarget$attachmentstate = maintarget$attachmentstate.with(AttachmentState.DEPTH);
-             }
- 
-             if (maintarget$attachmentstate == MainTarget.AttachmentState.COLOR_DEPTH) {
 @@ -82,7 +_,11 @@
          RenderSystem.assertOnRenderThreadOrInit();
          GlStateManager._getError();
