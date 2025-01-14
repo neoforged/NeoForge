@@ -47,7 +47,7 @@ public class ClientModLoader extends CommonModLoader {
     @Nullable
     private static ModLoadingException error;
 
-    public static void begin(final Minecraft minecraft) {
+    public static void constructMods(Minecraft minecraft) {
         // force log4j to shutdown logging in a shutdown hook. This is because we disable default shutdown hook so the server properly logs it's shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(LogManager::shutdown));
         ImmediateWindowHandler.updateProgress("Loading mods");
@@ -56,13 +56,21 @@ public class ClientModLoader extends CommonModLoader {
         LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
         try {
-            begin(ImmediateWindowHandler::renderTick, false);
+            constructMods(ImmediateWindowHandler::renderTick);
         } catch (ModLoadingException e) {
             error = e;
         }
     }
 
     public static void finish(final PackRepository defaultResourcePacks, final ReloadableResourceManager mcResourceManager) {
+        if (error == null) {
+            try {
+                begin(ImmediateWindowHandler::renderTick, false);
+            } catch (ModLoadingException e) {
+                error = e;
+            }
+        }
+
         if (error == null) {
             ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES, false);
             DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
