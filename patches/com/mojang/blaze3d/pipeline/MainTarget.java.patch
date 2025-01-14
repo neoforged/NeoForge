@@ -6,12 +6,12 @@
      public MainTarget(int p_166137_, int p_166138_) {
 -        super(true);
 -        this.createFrameBuffer(p_166137_, p_166138_);
-+        this(net.neoforged.neoforge.client.ClientHooks.configureMainRenderTarget(true, p_166137_, p_166138_));
++        this(p_166137_, p_166138_, false);
 +    }
 +
-+    private MainTarget(net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent e) {
-+        super(e.useDepth(), e.useStencil());
-+        this.createFrameBuffer(e.width(), e.height());
++    public MainTarget(int width, int height, boolean useStencil) {
++        super(true, useStencil);
++        this.createFrameBuffer(width, height);
      }
  
      private void createFrameBuffer(int p_166142_, int p_166143_) {
