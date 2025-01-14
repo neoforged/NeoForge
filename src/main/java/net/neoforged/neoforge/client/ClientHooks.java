@@ -9,7 +9,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
-import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;

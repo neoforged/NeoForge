@@ -37,11 +37,11 @@
 +                    GlStateManager._texImage2D(
 +                            org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
 +                            0,
-+                            org.lwjgl.opengl.GL32.GL_DEPTH24_STENCIL8,
++                            org.lwjgl.opengl.GL32.GL_DEPTH32F_STENCIL8,
 +                            this.width, this.height,
 +                            0,
 +                            org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL,
-+                            org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8,
++                            org.lwjgl.opengl.GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
 +                            null);
 +                }
              }
