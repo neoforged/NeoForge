@@ -23,16 +23,30 @@ import org.lwjgl.opengl.GL30;
 @Mod(value = StencilEnableTest.MOD_ID, dist = Dist.CLIENT)
 public class StencilEnableTest {
     public static final String MOD_ID = "stencil_enable_test";
-    public static final boolean ENABLED = true;
+    private enum State {
+        DISABLE,
+        /**
+         * Enables stencil buffer, but does not perform any rendering with stencil.
+         */
+        ENABLE_REGISTRATION,
+        /**
+         * Enables stencil buffer, and renders an overlay using stencil.
+         */
+        ENABLE_UI_LAYER,
+    }
+    private static final State ENABLED = State.ENABLE_REGISTRATION;
 
     public StencilEnableTest(IEventBus modEventBus) {
-        if (!ENABLED) {
+        if (ENABLED == State.DISABLE) {
             return;
         }
         modEventBus.addListener(ConfigureMainRenderTargetEvent.class, event -> {
             event.enableStencil();
         });
         modEventBus.addListener(RegisterGuiLayersEvent.class, event -> {
+            if (ENABLED != State.ENABLE_UI_LAYER) {
+                return;
+            }
             event.registerAboveAll(
                     ResourceLocation.fromNamespaceAndPath(MOD_ID, "block_outline"),
                     (guiGraphics, delta) -> {
@@ -54,7 +68,6 @@ public class StencilEnableTest {
 
                         RenderSystem.stencilFunc(GL30.GL_NOTEQUAL, 1, 0xFF);
                         RenderSystem.stencilMask(0x00);
-                        RenderSystem.disableDepthTest();
 
                         stack = new ItemStack(Blocks.DIAMOND_BLOCK);
                         guiGraphics.pose().scale(1.1f, 1.1f, 1.1f);
@@ -62,7 +75,6 @@ public class StencilEnableTest {
                         guiGraphics.renderItem(stack, 0, 0);
                         guiGraphics.renderItem(stack, 10, 10);
 
-                        RenderSystem.enableDepthTest();
                         GL30.glDisable(GL30.GL_STENCIL_TEST);
 
                         guiGraphics.pose().popPose();
