@@ -203,7 +203,7 @@
   "neoforge.configgui.showLoadWarnings": "Показувати попередження при завантаженні",
   "neoforge.configgui.showLoadWarnings.tooltip": "Коли увімкнено, NeoForge покаже всі попередження, що сталися під час завантаження.",
   "neoforge.configgui.useCombinedDepthStencilAttachment": "Використовувати комбінований атрибут DEPTH_STENCIL",
-  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Встановіть значення \"true\", щоб використовувати комбінований атрибут DEPTH_STENCIL замість двох окремих.",
+  "neoforge.configgui.useCombinedDepthStencilAttachment.tooltip": "Встановіть значення \"true\", для використання комбінованого атрибута DEPTH_STENCIL замість двох окремих.",
   "neoforge.controlsgui.shift": "SHIFT + %s",
   "neoforge.controlsgui.control": "CTRL + %s",
   "neoforge.controlsgui.control.mac": "CMD + %s",

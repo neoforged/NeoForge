@@ -25,11 +25,9 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
-import net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType;
 import org.slf4j.Logger;
 
 /**
@@ -44,9 +42,7 @@ import org.slf4j.Logger;
  */
 public abstract class JsonCodecProvider<T> implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
-    protected final ResourceType resourceType;
     protected final PackOutput.PathProvider pathProvider;
-    protected final ExistingFileHelper existingFileHelper;
     protected final CompletableFuture<HolderLookup.Provider> lookupProvider;
     protected final String modid;
     protected final String directory;
@@ -55,22 +51,12 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
 
     /**
      * @param output    {@linkplain PackOutput} provided by the {@link DataGenerator}.
-     * @param packType  PackType specifying whether to generate entries in assets or data.
      * @param directory String representing the directory to generate jsons in, e.g. "dimension" or "cheesemod/cheese".
      * @param codec     Codec to encode values to jsons with using the provided DynamicOps.
      */
-    public JsonCodecProvider(PackOutput output,
-            PackOutput.Target target,
-            String directory,
-            PackType packType,
-            Codec<T> codec,
-            CompletableFuture<HolderLookup.Provider> lookupProvider,
-            String modId,
-            ExistingFileHelper existingFileHelper) {
+    public JsonCodecProvider(PackOutput output, PackOutput.Target target, String directory, Codec<T> codec, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId) {
         // Track generated data so other dataproviders can validate if needed.
-        this.resourceType = new ResourceType(packType, ".json", directory);
         this.pathProvider = output.createPathProvider(target, directory);
-        this.existingFileHelper = existingFileHelper;
         this.modid = modId;
         this.directory = directory;
         this.codec = codec;
@@ -119,8 +105,6 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
     }
 
     private void process(ResourceLocation id, WithConditions<T> withConditions) {
-        this.existingFileHelper.trackGenerated(id, this.resourceType);
-
         this.conditions.put(id, withConditions);
     }
 }

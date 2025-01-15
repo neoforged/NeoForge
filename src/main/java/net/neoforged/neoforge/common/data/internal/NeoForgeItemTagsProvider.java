@@ -21,11 +21,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
-    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, blockTagProvider, "neoforge", existingFileHelper);
+    public NeoForgeItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagProvider) {
+        super(output, lookupProvider, blockTagProvider, "neoforge");
     }
 
     @SuppressWarnings("unchecked")

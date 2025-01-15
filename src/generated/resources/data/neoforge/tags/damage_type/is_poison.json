@@ -1,6 +1,9 @@
 {
   "values": [
-    "neoforge:poison",
+    {
+      "id": "neoforge:poison",
+      "required": false
+    },
     {
       "id": "#forge:is_poison",
       "required": false

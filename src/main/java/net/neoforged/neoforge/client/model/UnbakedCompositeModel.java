@@ -100,6 +100,7 @@ public class UnbakedCompositeModel extends AbstractUnbakedModel {
 
     @Override
     public void resolveDependencies(Resolver resolver) {
+        super.resolveDependencies(resolver);
         for (Either<ResourceLocation, UnbakedModel> child : children.values()) {
             child.ifLeft(resolver::resolve).ifRight(model -> model.resolveDependencies(resolver));
         }

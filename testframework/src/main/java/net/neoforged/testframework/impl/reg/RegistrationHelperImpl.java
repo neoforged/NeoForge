@@ -39,7 +39,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -61,7 +60,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private interface DataGenProvider<T extends DataProvider> {
-        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, String modId, List<Consumer<T>> consumers);
     }
 
     private static final Map<Class<?>, DataGenProvider<?>> PROVIDERS;
@@ -74,13 +73,13 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         }
         final var reg = new ProviderRegistrar();
 
-        reg.register(LanguageProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
+        reg.register(LanguageProvider.class, (output, registries, generator, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
             @Override
             protected void addTranslations() {
                 consumers.forEach(c -> c.accept(this));
             }
         });
-        reg.register(GlobalLootModifierProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new GlobalLootModifierProvider(output, registries, modId) {
+        reg.register(GlobalLootModifierProvider.class, (output, registries, generator, modId, consumers) -> new GlobalLootModifierProvider(output, registries, modId) {
             @Override
             protected void start() {
                 consumers.forEach(c -> c.accept(this));
@@ -232,7 +231,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
 
     private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
+                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), modId, (List) cons)));
 
         directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
             final DataProvider p = func.apply(event);

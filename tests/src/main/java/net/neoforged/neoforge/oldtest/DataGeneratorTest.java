@@ -48,6 +48,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -60,6 +62,7 @@ import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -87,10 +90,8 @@ import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
@@ -141,12 +142,12 @@ public class DataGeneratorTest {
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
-        gen.addProvider(true, new SoundDefinitions(packOutput, event.getExistingFileHelper()));
-        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
+        gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
+        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
         gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
-        gen.addProvider(true, new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
-        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
+        gen.addProvider(true, new Tags(packOutput, lookupProvider));
+        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, List.of(new Advancements())));
         gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
@@ -283,11 +284,13 @@ public class DataGeneratorTest {
 
     public static class SoundDefinitions extends SoundDefinitionsProvider {
         private static final Logger LOGGER = LogManager.getLogger();
-        private final ExistingFileHelper helper;
 
-        public SoundDefinitions(final PackOutput output, final ExistingFileHelper helper) {
-            super(output, MODID, helper);
-            this.helper = helper;
+        private final ResourceManager resourceManager;
+
+        public SoundDefinitions(final PackOutput output, final ResourceManager resourceManager) {
+            super(output, MODID);
+
+            this.resourceManager = resourceManager;
         }
 
         @Override
@@ -361,7 +364,7 @@ public class DataGeneratorTest {
             }
             final JsonObject actual;
             try {
-                List<Resource> resourceStack = this.helper.getResourceStack(ResourceLocation.withDefaultNamespace("sounds.json"), PackType.CLIENT_RESOURCES);
+                List<Resource> resourceStack = this.resourceManager.getResourceStack(ResourceLocation.withDefaultNamespace("sounds.json"));
                 // Get the first resource in the stack
                 // This guarantees vanilla even when a forge sounds.json is present because getResourceStack reverses the list
                 // so that the lower priority resources are first (to allow overwriting data in later entries)
@@ -475,8 +478,8 @@ public class DataGeneratorTest {
     }
 
     public static class Tags extends BlockTagsProvider {
-        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-            super(output, lookupProvider, MODID, existingFileHelper);
+        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+            super(output, lookupProvider, MODID);
         }
 
         @Override
@@ -519,9 +522,9 @@ public class DataGeneratorTest {
         }
     }
 
-    private static class Advancements implements AdvancementProvider.AdvancementGenerator {
+    private static class Advancements implements AdvancementSubProvider {
         @Override
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
+        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             var obtainDirt = Advancement.Builder.advancement()
                     .display(Items.DIRT,
                             Component.translatable(Items.DIRT.getDescriptionId()),
@@ -532,7 +535,7 @@ public class DataGeneratorTest {
                             true,
                             false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
-                    .save(saver, ResourceLocation.fromNamespaceAndPath(MODID, "obtain_dirt"), existingFileHelper);
+                    .save(saver, ResourceLocation.fromNamespaceAndPath(MODID, "obtain_dirt"));
 
             Advancement.Builder.advancement()
                     .parent(obtainDirt)
@@ -545,7 +548,7 @@ public class DataGeneratorTest {
                             true,
                             false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
-                    .save(saver, ResourceLocation.withDefaultNamespace("obtain_diamond_block"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("obtain_diamond_block"));
 
             Advancement.Builder.advancement()
                     .display(Blocks.GRASS_BLOCK,
@@ -557,7 +560,7 @@ public class DataGeneratorTest {
                             false,
                             false)
                     .addCriterion("crafting_table", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.CRAFTING_TABLE))
-                    .save(saver, ResourceLocation.withDefaultNamespace("story/root"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("story/root"));
 
             // This should cause an error because of the parent not existing
 /*            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
@@ -582,13 +585,17 @@ public class DataGeneratorTest {
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
                     .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "dummy_parent"))
-                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"));
         }
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-        public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
-            super(output, fileHelper);
+        private final ResourceManager resourceManager;
+
+        public ParticleDescriptions(PackOutput output, ResourceManager resourceManager) {
+            super(output);
+
+            this.resourceManager = resourceManager;
         }
 
         @Override
@@ -627,7 +634,7 @@ public class DataGeneratorTest {
         private void validateResults() {
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
                     .map(BuiltInRegistries.PARTICLE_TYPE::getKey).map(particle -> {
-                        try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader()) {
+                        try (var resource = this.resourceManager.openAsReader(particle.withPath(path -> "particles/" + path + ".json"))) {
                             var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
                             var generatedTextures = this.descriptions.get(particle);
 
