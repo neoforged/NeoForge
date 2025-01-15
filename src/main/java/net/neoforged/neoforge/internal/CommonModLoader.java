@@ -30,9 +30,9 @@ import org.jetbrains.annotations.ApiStatus;
  * Internal class for handling the steps of mod loading that are common for client, data and server runs.
  *
  * <p><ul>
- * <li>Client runs {@link #constructMods}, {@link #begin}, {@link #load} and {@link #finish} at different timings, see {@link ClientModLoader}.</li>
- * <li>Server runs all 4 consecutively.</li>
- * <li>Datagen only runs {@link #constructMods} and {@link #begin}.</li>
+ * <li>Client runs {@link #begin}, {@link #load} and {@link #finish} at different timings, see {@link ClientModLoader}.</li>
+ * <li>Server runs all 3 consecutively.</li>
+ * <li>Datagen only runs {@link #begin}.</li>
  * </ul>
  */
 @ApiStatus.Internal
@@ -43,12 +43,10 @@ public abstract class CommonModLoader {
         return registriesLoaded;
     }
 
-    protected static void constructMods(Runnable periodicTask) {
-        ModLoader.gatherAndInitializeMods(ModWorkManager.syncExecutor(), ModWorkManager.parallelExecutor(), periodicTask);
-    }
-
     protected static void begin(Runnable periodicTask, boolean datagen) {
         var syncExecutor = ModWorkManager.syncExecutor();
+
+        ModLoader.gatherAndInitializeMods(syncExecutor, ModWorkManager.parallelExecutor(), periodicTask);
 
         ModLoader.runInitTask("Registry initialization", syncExecutor, periodicTask, () -> {
             RegistryManager.postNewRegistryEvent();

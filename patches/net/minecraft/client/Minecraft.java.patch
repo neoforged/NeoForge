@@ -18,7 +18,7 @@
          this.keyboardHandler = new KeyboardHandler(this);
 -        this.keyboardHandler.setup(this.window.getWindow());
          RenderSystem.initRenderer(this.options.glDebugVerbosity, false);
-+        net.neoforged.neoforge.client.loading.ClientModLoader.constructMods(this);
++        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this);
 +        net.neoforged.neoforge.client.ClientHooks.configureMainRenderTarget();
          this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);

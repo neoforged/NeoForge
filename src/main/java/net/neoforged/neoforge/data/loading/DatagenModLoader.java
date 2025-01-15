@@ -43,7 +43,6 @@ public class DatagenModLoader extends CommonModLoader {
         LOGGER.info("Initializing Data Gatherer for mods {}", mods);
         runningDataGen = true;
         Bootstrap.bootStrap();
-        constructMods(() -> {});
         begin(() -> {}, true);
         // Modify components as the (modified) defaults may be required in datagen, i.e. stack size
         RegistrationEvents.modifyComponents();
