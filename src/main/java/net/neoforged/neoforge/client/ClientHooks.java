@@ -1136,6 +1136,8 @@ public class ClientHooks {
                 width, height,
                 0,
                 GL32.GL_DEPTH_STENCIL,
+                // Since data is null, the format here does not matter as long as it matches internalFormat.
+                // So the usage, for depth, of unsigned int in one case and float in the other case, is not a problem.
                 reducedPrecision ? GL32.GL_UNSIGNED_INT_24_8 : GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
                 null);
     }
