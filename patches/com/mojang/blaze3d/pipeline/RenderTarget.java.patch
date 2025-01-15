@@ -25,7 +25,7 @@
          this.frameBufferId = -1;
          this.colorTextureId = -1;
          this.depthBufferId = -1;
-@@ -96,7 +_,20 @@
+@@ -96,7 +_,11 @@
                  GlStateManager._texParameter(3553, 34892, 0);
                  GlStateManager._texParameter(3553, 10242, 33071);
                  GlStateManager._texParameter(3553, 10243, 33071);
@@ -33,16 +33,7 @@
 +                if (!this.useStencil) {
 +                    GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
 +                } else {
-+                    // Use a combined format for both depth and stencil.
-+                    GlStateManager._texImage2D(
-+                            org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
-+                            0,
-+                            org.lwjgl.opengl.GL32.GL_DEPTH32F_STENCIL8,
-+                            this.width, this.height,
-+                            0,
-+                            org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL,
-+                            org.lwjgl.opengl.GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
-+                            null);
++                    net.neoforged.neoforge.client.ClientHooks.texImageDepthStencil(this.width, this.height);
 +                }
              }
  

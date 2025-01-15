@@ -9,6 +9,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
@@ -183,6 +184,7 @@ import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
@@ -196,6 +198,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL32;
 
 /**
  * Class for various client-side-only hooks.
@@ -1104,6 +1107,7 @@ public class ClientHooks {
     @Nullable
     private static Boolean enableStencil;
 
+    @ApiStatus.Internal
     public static void configureMainRenderTarget() {
         if (enableStencil != null) {
             throw new IllegalStateException("configureMainRenderTarget() called more than once");
@@ -1117,5 +1121,22 @@ public class ClientHooks {
             throw new IllegalStateException("isStencilEnabled() called before ConfigureMainRenderTargetEvent was dispatched");
         }
         return enableStencil;
+    }
+
+    /**
+     * Called by our stencil hooks to specify the depth+stencil texture.
+     */
+    @ApiStatus.Internal
+    public static void texImageDepthStencil(int width, int height) {
+        var reducedPrecision = NeoForgeConfig.CLIENT.reducedDepthStencilFormat.getAsBoolean();
+        GlStateManager._texImage2D(
+                GL32.GL_TEXTURE_2D,
+                0,
+                reducedPrecision ? GL32.GL_DEPTH24_STENCIL8 : GL32.GL_DEPTH32F_STENCIL8,
+                width, height,
+                0,
+                GL32.GL_DEPTH_STENCIL,
+                reducedPrecision ? GL32.GL_UNSIGNED_INT_24_8 : GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
+                null);
     }
 }

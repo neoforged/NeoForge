@@ -24,7 +24,7 @@
          GlStateManager._bindTexture(0);
          this.viewWidth = maintarget$dimension.width;
          this.viewHeight = maintarget$dimension.height;
-@@ -82,7 +_,20 @@
+@@ -82,7 +_,11 @@
          RenderSystem.assertOnRenderThreadOrInit();
          GlStateManager._getError();
          GlStateManager._bindTexture(this.depthBufferId);
@@ -32,16 +32,7 @@
 +        if (!this.useStencil) {
 +            GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, 6402, 5126, null);
 +        } else {
-+            // Use a combined format for both depth and stencil.
-+            GlStateManager._texImage2D(
-+                    org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
-+                    0,
-+                    org.lwjgl.opengl.GL32.GL_DEPTH32F_STENCIL8,
-+                    this.width, this.height,
-+                    0,
-+                    org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL,
-+                    org.lwjgl.opengl.GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
-+                    null);
++            net.neoforged.neoforge.client.ClientHooks.texImageDepthStencil(p_166145_.width, p_166145_.height);
 +        }
          return GlStateManager._getError() != 1285;
      }
