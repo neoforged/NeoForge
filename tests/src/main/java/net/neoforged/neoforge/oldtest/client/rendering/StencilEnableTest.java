@@ -14,8 +14,12 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GL30;
 
+/**
+ * Basic test that uses the stencil buffer.
+ * When the test is enabled, it will render two grass blocks with a diamond block outline in the top left corner of the screen.
+ */
 @Mod(value = StencilEnableTest.MOD_ID, dist = Dist.CLIENT)
 public class StencilEnableTest {
     public static final String MOD_ID = "stencil_enable_test";
@@ -35,19 +39,21 @@ public class StencilEnableTest {
                         guiGraphics.pose().pushPose();
                         guiGraphics.pose().translate(10, 10, 0);
 
-                        RenderSystem.clear(GL33.GL_STENCIL_BUFFER_BIT);
+                        // Implementation derived from https://learnopengl.com/Advanced-OpenGL/Stencil-testing,
+                        // but outlining with a block of diamond rather than a fixed color.
+                        RenderSystem.clear(GL30.GL_STENCIL_BUFFER_BIT);
 
-                        GL33.glEnable(GL33.GL_STENCIL_TEST);
-                        GL33.glStencilOp(GL33.GL_KEEP, GL33.GL_KEEP, GL33.GL_REPLACE);
-                        GL33.glStencilFunc(GL33.GL_ALWAYS, 1, 0xFF);
-                        GL33.glStencilMask(0xFF);
+                        GL30.glEnable(GL30.GL_STENCIL_TEST);
+                        RenderSystem.stencilOp(GL30.GL_KEEP, GL30.GL_KEEP, GL30.GL_REPLACE);
+                        RenderSystem.stencilFunc(GL30.GL_ALWAYS, 1, 0xFF);
+                        RenderSystem.stencilMask(0xFF);
 
                         var stack = new ItemStack(Blocks.GRASS_BLOCK);
                         guiGraphics.renderItem(stack, 0, 0);
                         guiGraphics.renderItem(stack, 10, 10);
 
-                        GL33.glStencilFunc(GL33.GL_NOTEQUAL, 1, 0xFF);
-                        GL33.glStencilMask(0x00);
+                        RenderSystem.stencilFunc(GL30.GL_NOTEQUAL, 1, 0xFF);
+                        RenderSystem.stencilMask(0x00);
                         RenderSystem.disableDepthTest();
 
                         stack = new ItemStack(Blocks.DIAMOND_BLOCK);
@@ -57,7 +63,7 @@ public class StencilEnableTest {
                         guiGraphics.renderItem(stack, 10, 10);
 
                         RenderSystem.enableDepthTest();
-                        GL33.glDisable(GL33.GL_STENCIL_TEST);
+                        GL30.glDisable(GL30.GL_STENCIL_TEST);
 
                         guiGraphics.pose().popPose();
                     });
