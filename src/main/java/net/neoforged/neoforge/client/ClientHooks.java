@@ -9,6 +9,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -1104,23 +1105,10 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
     }
 
-    @Nullable
-    private static Boolean enableStencil;
-
     @ApiStatus.Internal
-    public static void configureMainRenderTarget() {
-        if (enableStencil != null) {
-            throw new IllegalStateException("configureMainRenderTarget() called more than once");
-        }
+    public static MainTarget instantiateMainTarget(int width, int height) {
         var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
-        enableStencil = e.isStencilEnabled();
-    }
-
-    public static boolean isStencilEnabled() {
-        if (enableStencil == null) {
-            throw new IllegalStateException("isStencilEnabled() called before ConfigureMainRenderTargetEvent was dispatched");
-        }
-        return enableStencil;
+        return new MainTarget(width, height, e.isStencilEnabled());
     }
 
     /**

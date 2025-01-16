@@ -8,7 +8,7 @@
          this.demo = p_91084_.game.demo;
          this.allowsMultiplayer = !p_91084_.game.disableMultiplayer;
          this.allowsChat = !p_91084_.game.disableChat;
-@@ -483,15 +_,19 @@
+@@ -483,15 +_,18 @@
              LOGGER.error("Couldn't set icon", (Throwable)ioexception);
          }
  
@@ -20,8 +20,7 @@
          RenderSystem.initRenderer(this.options.glDebugVerbosity, false);
 -        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
 +        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this);
-+        net.neoforged.neoforge.client.ClientHooks.configureMainRenderTarget();
-+        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight(), net.neoforged.neoforge.client.ClientHooks.isStencilEnabled());
++        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear();
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);

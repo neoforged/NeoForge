@@ -5,7 +5,7 @@
          int i = this.minecraft.getMainRenderTarget().width;
          int j = this.minecraft.getMainRenderTarget().height;
 -        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true);
-+        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true, net.neoforged.neoforge.client.ClientHooks.isStencilEnabled());
++        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true, this.minecraft.getMainRenderTarget().useStencil);
          PostChain postchain = this.getTransparencyChain();
          if (postchain != null) {
              this.targets.translucent = framegraphbuilder.createInternal("translucent", rendertargetdescriptor);
