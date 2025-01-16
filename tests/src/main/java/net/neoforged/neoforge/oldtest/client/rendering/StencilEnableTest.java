@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL30;
 @Mod(value = StencilEnableTest.MOD_ID, dist = Dist.CLIENT)
 public class StencilEnableTest {
     public static final String MOD_ID = "stencil_enable_test";
+
     private enum State {
         DISABLE,
         /**
@@ -34,6 +35,7 @@ public class StencilEnableTest {
          */
         ENABLE_UI_LAYER,
     }
+
     private static final State ENABLED = State.ENABLE_REGISTRATION;
 
     public StencilEnableTest(IEventBus modEventBus) {
