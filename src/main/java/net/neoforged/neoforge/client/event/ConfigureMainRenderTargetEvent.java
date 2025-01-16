@@ -19,24 +19,21 @@ import net.neoforged.fml.event.IModBusEvent;
  * This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.
  */
 public class ConfigureMainRenderTargetEvent extends Event implements IModBusEvent {
-    private boolean useStencil;
+    private boolean enableStencil;
 
     /**
      * Returns whether enabling the stencil buffer on the main render target was requested.
      *
      * @return <code>true</code>, if the stencil buffer is enabled, or <code>false</code> otherwise.
      */
-    public boolean useStencil() {
-        return this.useStencil;
+    public boolean isStencilEnabled() {
+        return this.enableStencil;
     }
 
     /**
-     * Enable the stencil buffer for the main render target.
-     *
-     * @return <code>this</code>, for method chaining.
+     * Enables the stencil buffer for the main render target.
      */
-    public ConfigureMainRenderTargetEvent enableStencil() {
-        this.useStencil = true;
-        return this;
+    public void enableStencil() {
+        this.enableStencil = true;
     }
 }

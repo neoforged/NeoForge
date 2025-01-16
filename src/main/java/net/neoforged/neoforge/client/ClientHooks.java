@@ -1113,7 +1113,7 @@ public class ClientHooks {
             throw new IllegalStateException("configureMainRenderTarget() called more than once");
         }
         var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
-        enableStencil = e.useStencil();
+        enableStencil = e.isStencilEnabled();
     }
 
     public static boolean isStencilEnabled() {

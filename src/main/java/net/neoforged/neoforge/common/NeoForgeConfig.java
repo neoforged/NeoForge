@@ -118,7 +118,7 @@ public class NeoForgeConfig {
                     .define("logUntranslatedConfigurationWarnings", true);
 
             reducedDepthStencilFormat = builder
-                    .comment("Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true might slightly improve performance, but risks introducing visual artifacts.")
+                    .comment("Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.")
                     .translation("neoforge.configgui.reducedDepthStencilFormat")
                     .define("reducedDepthStencilFormat", false);
         }

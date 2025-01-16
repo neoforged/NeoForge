@@ -1,11 +1,14 @@
 --- a/com/mojang/blaze3d/pipeline/MainTarget.java
 +++ b/com/mojang/blaze3d/pipeline/MainTarget.java
-@@ -16,7 +_,7 @@
+@@ -16,7 +_,10 @@
      static final MainTarget.Dimension DEFAULT_DIMENSIONS = new MainTarget.Dimension(854, 480);
  
      public MainTarget(int p_166137_, int p_166138_) {
 -        super(true);
-+        super(true, net.neoforged.neoforge.client.ClientHooks.isStencilEnabled());
++        this(p_166137_, p_166138_, false);
++    }
++    public MainTarget(int p_166137_, int p_166138_, boolean enableStencil) {
++        super(true, enableStencil);
          this.createFrameBuffer(p_166137_, p_166138_);
      }
  
