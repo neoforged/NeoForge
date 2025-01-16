@@ -51,6 +51,7 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -181,6 +182,7 @@ import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.client.renderstate.RenderStateExtensions;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
@@ -253,6 +255,10 @@ public class ClientHooks {
             depth = Math.max(depth, GuiLayerManager.Z_SEPARATION * Minecraft.getInstance().gui.getLayerCount());
         }
         return 11_000F + depth;
+    }
+
+    public static Model getGenericArmorModel(IClientItemExtensions extensions, ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
+        return extensions.getGenericArmorModel(itemStack, RenderStateExtensions.getCurrentRenderState(), layerType, original);
     }
 
     public static ResourceLocation getArmorTexture(ItemStack armor, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {

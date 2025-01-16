@@ -33,6 +33,8 @@ public final class RenderStateExtensions {
 
     private static final Map<ResourceKey<MapDecorationType>, Collection<MapDecorationRenderStateModifier>> MAP_DECORATION = new Reference2ObjectArrayMap<>();
 
+    private static final ThreadLocal<EntityRenderState> RENDERING_STATE = ThreadLocal.withInitial(() -> null);
+
     @SuppressWarnings("unchecked")
     @ApiStatus.Internal
     public static <E extends Entity, S extends EntityRenderState> void onUpdateEntityRenderState(EntityRenderer<E, S> renderer, E entity, S renderState) {
@@ -49,6 +51,16 @@ public final class RenderStateExtensions {
         for (BiConsumer<E, S> modifier : modifiers) {
             modifier.accept(entity, renderState);
         }
+
+        RENDERING_STATE.set(renderState);
+    }
+
+    public static EntityRenderState getCurrentRenderState() {
+        return RENDERING_STATE.get();
+    }
+
+    public static void unsetEntityRenderState() {
+        RENDERING_STATE.remove();
     }
 
     @ApiStatus.Internal

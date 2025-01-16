@@ -13,9 +13,12 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -24,11 +27,14 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
@@ -140,6 +146,26 @@ public class ClientTests {
         });
         test.eventListeners().forge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
             test.requestConfirmation(event.getEntity(), Component.literal("Does stone cover the screen when wearing the *_custom_helmet_rendering:neo_helmet?"));
+        });
+    }
+
+    @TestHolder(description = "Tests that the render state can be properly accessed when choosing an armor model for an item.", enabledByDefault = true)
+    static void renderStateOnEquipment(final DynamicTest test) {
+        var item = test.registrationHelper().items().registerItem("wiggling_chestplate", properties -> new Item(ArmorMaterials.IRON.humanoidProperties(properties, ArmorType.CHESTPLATE)));
+        test.framework().modEventBus().addListener((final RegisterClientExtensionsEvent event) -> event.registerItem(new IClientItemExtensions() {
+            @Override
+            public Model getGenericArmorModel(ItemStack itemStack, EntityRenderState renderState, EquipmentClientInfo.LayerType layerType, Model original) {
+                var result = IClientItemExtensions.super.getGenericArmorModel(itemStack, renderState, layerType, original);
+                result.root().yRot = 0.35F * Mth.sin(0.6F * renderState.ageInTicks);
+                return result;
+            }
+        }, item));
+        test.eventListeners().forge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
+            // Give item to player for testing
+            event.getEntity().addItem(item.toStack());
+
+            // Request confirmation from the player
+            test.requestConfirmation(event.getEntity(), Component.literal("Does the 'wiggling_chestplate' wiggle while being worn?"));
         });
     }
 

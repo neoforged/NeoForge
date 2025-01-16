@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
+@@ -203,6 +_,7 @@
+             }
+ 
+             p_363537_.popPose();
++            net.neoforged.neoforge.client.renderstate.RenderStateExtensions.unsetEntityRenderState();
+         } catch (Throwable throwable) {
+             CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering entity in world");
+             CrashReportCategory crashreportcategory = crashreport.addCategory("Entity being rendered");
 @@ -246,12 +_,12 @@
      ) {
          AABB aabb = p_114444_.getBoundingBox().move(-p_114444_.getX(), -p_114444_.getY(), -p_114444_.getZ());

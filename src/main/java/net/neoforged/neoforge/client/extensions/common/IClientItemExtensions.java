@@ -13,6 +13,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -93,31 +94,33 @@ public interface IClientItemExtensions {
     /**
      * Queries the humanoid armor model for this item when it's equipped.
      *
-     * @param itemStack The item stack
-     * @param layerType The slot the item is in
-     * @param original  The original armor model. Will have attributes set.
+     * @param itemStack   The item stack
+     * @param renderState The state of the entity being rendered
+     * @param layerType   The slot the item is in
+     * @param original    The original armor model. Will have attributes set.
      * @return A HumanoidModel to be rendered. Relevant properties are to be copied over by the caller.
-     * @see #getGenericArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)
+     * @see #getGenericArmorModel(ItemStack, EntityRenderState, EquipmentClientInfo.LayerType, Model)
      */
-    default Model getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
+    default Model getHumanoidArmorModel(ItemStack itemStack, EntityRenderState renderState, EquipmentClientInfo.LayerType layerType, Model original) {
         return original;
     }
 
     /**
      * Queries the armor model for this item when it's equipped. Useful in place of
-     * {@link #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)} for wrapping the original
+     * {@link #getHumanoidArmorModel(ItemStack, EntityRenderState, EquipmentClientInfo.LayerType, Model)} for wrapping the original
      * model or returning anything non-standard.
      * <p>
      * If you override this method you are responsible for copying any properties you care about from the original model.
      *
-     * @param itemStack The item stack
-     * @param layerType The slot the item is in
-     * @param original  The original armor model. Will have attributes set.
+     * @param itemStack   The item stack
+     * @param renderState The state of the entity being rendered
+     * @param layerType   The slot the item is in
+     * @param original    The original armor model. Will have attributes set.
      * @return A Model to be rendered. Relevant properties must be copied over manually.
-     * @see #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)
+     * @see #getHumanoidArmorModel(ItemStack, EntityRenderState, EquipmentClientInfo.LayerType, Model)
      */
-    default Model getGenericArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
-        Model replacement = getHumanoidArmorModel(itemStack, layerType, original);
+    default Model getGenericArmorModel(ItemStack itemStack, EntityRenderState renderState, EquipmentClientInfo.LayerType layerType, Model original) {
+        Model replacement = getHumanoidArmorModel(itemStack, renderState, layerType, original);
         if (replacement != original) {
             if (original instanceof HumanoidModel<?> originalHumanoid && replacement instanceof HumanoidModel<?> replacementHumanoid) {
                 ClientHooks.copyModelProperties(originalHumanoid, replacementHumanoid);
@@ -126,23 +129,6 @@ public interface IClientItemExtensions {
         }
         return original;
     }
-
-    /**
-     * Called when an armor piece is about to be rendered, allowing parts of the model to be animated or changed.
-     *
-     * @param itemStack       The item stack being worn
-     * @param livingEntity    The entity wearing the armor
-     * @param equipmentSlot   The slot the armor stack is being worn in
-     * @param model           The armor model being rendered
-     * @param limbSwing       The swing position of the entity's walk animation
-     * @param limbSwingAmount The swing speed of the entity's walk animation
-     * @param partialTick     The partial tick time
-     * @param ageInTicks      The total age of the entity, with partialTick already applied
-     * @param netHeadYaw      The yaw (Y rotation) of the entity's head
-     * @param headPitch       The pitch (X rotation) of the entity's head
-     */
-    // TODO 1.21.2: add back patch that calls this method from HumanoidArmorLayer
-    default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
      * Called to render an overlay on the first-person camera.
