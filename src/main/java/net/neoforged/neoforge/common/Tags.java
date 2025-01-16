@@ -678,6 +678,7 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_TORCHFLOWER = tag("seeds/torchflower");
+        public static final TagKey<Item> SEEDS_PITCHER_PLANT = tag("seeds/pitcher_plant");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
         /**
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}

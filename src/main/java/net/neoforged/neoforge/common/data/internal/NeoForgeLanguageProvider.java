@@ -314,6 +314,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_MELON, "Melon Seeds");
         add(Tags.Items.SEEDS_PUMPKIN, "Pumpkin Seeds");
         add(Tags.Items.SEEDS_TORCHFLOWER, "Torchflower Seeds");
+        add(Tags.Items.SEEDS_PITCHER_PLANT, "Pitcher Plant Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
         add(Tags.Items.SLIME_BALLS, "Slimeballs");
