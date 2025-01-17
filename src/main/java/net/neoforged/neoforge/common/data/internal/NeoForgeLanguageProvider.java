@@ -349,6 +349,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_MACE, "Maces");
         add(Tags.Items.TOOLS_SPEAR, "Spears");
         add(Tags.Items.TOOLS_IGNITER, "Igniters");
+        add(Tags.Items.TOOLS_WRENCH, "Wrenches");
         add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");
         add(Tags.Items.RANGED_WEAPON_TOOLS, "Ranged Weapons");
         add(Tags.Items.MINING_TOOL_TOOLS, "Mining Tools");

@@ -804,6 +804,14 @@ public class Tags {
          */
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
         /**
+         * A tag containing all existing wrenches. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_WRENCH = tag("tools/wrench");
+        /**
          * A tag containing melee-based weapons for recipes and loot tables.
          * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.
          * (In other words, Pickaxes are not melee weapons as they are not intended to be a weapon as a primary purpose)
