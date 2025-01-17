@@ -54,7 +54,7 @@ public class EntityDataSerializerTest {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if custom EntityDataSerializers are properly handled")
     static void customEntityDataSerializer(final DynamicTest test, final RegistrationHelper reg) {
-        var testEntity = reg.entityTypes().registerType("serializer_test_entity", TestEntity::new, MobCategory.CREATURE, builder -> builder.sized(1, 1))
+        var testEntity = reg.entityTypes().registerEntityType("serializer_test_entity", TestEntity::new, MobCategory.CREATURE, builder -> builder.sized(1, 1))
                 .withRenderer(() -> TestEntityRenderer::new);
 
         test.onGameTest(helper -> {

@@ -14,7 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class DeferredEntityTypes extends DeferredRegister.EntityTypes {
+public class DeferredEntityTypes extends DeferredRegister.Entities {
     private final RegistrationHelper helper;
 
     public DeferredEntityTypes(String namespace, RegistrationHelper helper) {
@@ -28,7 +28,7 @@ public class DeferredEntityTypes extends DeferredRegister.EntityTypes {
     }
 
     @Override
-    public <E extends Entity> DeferredEntityTypeBuilder<E, EntityType<E>> registerType(String name, EntityType.EntityFactory<E> factory, MobCategory category, UnaryOperator<EntityType.Builder<E>> builder) {
-        return (DeferredEntityTypeBuilder<E, EntityType<E>>) super.registerType(name, factory, category, builder);
+    public <E extends Entity> DeferredEntityTypeBuilder<E, EntityType<E>> registerEntityType(String name, EntityType.EntityFactory<E> factory, MobCategory category, UnaryOperator<EntityType.Builder<E>> builder) {
+        return (DeferredEntityTypeBuilder<E, EntityType<E>>) super.registerEntityType(name, factory, category, builder);
     }
 }
