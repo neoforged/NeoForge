@@ -180,6 +180,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
         add(Tags.Items.DRINKS, "Drinks");
         add(Tags.Items.DRINKS_WATER, "Water");
+        add(Tags.Items.DRINKS_WATERY, "Watery Drinks");
         add(Tags.Items.DRINKS_MILK, "Milk");
         add(Tags.Items.DRINKS_HONEY, "Honey");
         add(Tags.Items.DRINKS_MAGIC, "Magical Drinks");

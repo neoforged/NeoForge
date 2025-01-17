@@ -390,8 +390,7 @@ public class Tags {
         /**
          * Drinks are defined as (1) consumable items that (2) use the
          * {@linkplain net.minecraft.world.item.ItemUseAnimation#DRINK drink item use animation}, (3) can be consumed regardless the
-         * player's current hunger, and (4, optional) do not (generally) have a
-         * {@linkplain net.minecraft.world.food.FoodProperties food component}.
+         * player's current hunger, and (4, optional) do not (generally) provide nutrition or saturation.
          *
          * <p>Categories of drinks, such as Coffee, Tea, or Alcoholic drinks should be placed in a sub-tag, such as
          * {@code #c:drinks/coffee}, {@code #c:drinks/tea}, and {@code #c:drinks/alcohol}.
@@ -401,9 +400,13 @@ public class Tags {
          */
         public static final TagKey<Item> DRINKS = tag("drinks");
         /**
-         * For consumable drinks that are water, or water based (such as potions).
+         * For consumable drinks that contain only water.
          */
         public static final TagKey<Item> DRINKS_WATER = tag("drinks/water");
+        /**
+         * For consumable drinks that are generally watery (such as potions).
+         */
+        public static final TagKey<Item> DRINKS_WATERY = tag("drinks/watery");
         public static final TagKey<Item> DRINKS_MILK = tag("drinks/milk");
         public static final TagKey<Item> DRINKS_HONEY = tag("drinks/honey");
         /**

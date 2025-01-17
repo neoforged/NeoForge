@@ -84,11 +84,12 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.CROPS_SUGAR_CANE).add(Items.SUGAR_CANE);
         tag(Tags.Items.CROPS_WHEAT).add(Items.WHEAT);
         tag(Tags.Items.DRINKS).addTags(
-                Tags.Items.DRINKS_WATER, Tags.Items.DRINKS_MILK, Tags.Items.DRINKS_HONEY,
-                Tags.Items.DRINKS_MAGIC, Tags.Items.DRINKS_MAGIC_OMINOUS, Tags.Items.DRINKS_JUICE,
-                Tags.Items.DRINKS_JUICE_APPLE, Tags.Items.DRINKS_JUICE_BEET, Tags.Items.DRINKS_JUICE_CARROT,
-                Tags.Items.DRINKS_JUICE_WATERMELON);
-        tag(Tags.Items.DRINKS_WATER).add(Items.POTION);
+                Tags.Items.DRINKS_WATER, Tags.Items.DRINKS_WATERY, Tags.Items.DRINKS_MILK,
+                Tags.Items.DRINKS_HONEY, Tags.Items.DRINKS_MAGIC, Tags.Items.DRINKS_MAGIC_OMINOUS,
+                Tags.Items.DRINKS_JUICE, Tags.Items.DRINKS_JUICE_APPLE, Tags.Items.DRINKS_JUICE_BEET,
+                Tags.Items.DRINKS_JUICE_CARROT, Tags.Items.DRINKS_JUICE_WATERMELON);
+        tag(Tags.Items.DRINKS_WATER);
+        tag(Tags.Items.DRINKS_WATERY).add(Items.POTION).addTags(Tags.Items.DRINKS_WATER);
         tag(Tags.Items.DRINKS_MILK).add(Items.MILK_BUCKET);
         tag(Tags.Items.DRINKS_HONEY).add(Items.HONEY_BOTTLE);
         tag(Tags.Items.DRINKS_MAGIC).add(Items.POTION).addTags(Tags.Items.DRINKS_MAGIC_OMINOUS);
