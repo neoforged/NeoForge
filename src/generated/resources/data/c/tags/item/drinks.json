@@ -1,0 +1,14 @@
+{
+  "values": [
+    "#c:drinks/water",
+    "#c:drinks/milk",
+    "#c:drinks/honey",
+    "#c:drinks/magic",
+    "#c:drinks/magic/ominous",
+    "#c:drinks/juice",
+    "#c:drinks/juice/apple",
+    "#c:drinks/juice/beet",
+    "#c:drinks/juice/carrot",
+    "#c:drinks/juice/watermelon"
+  ]
+}

@@ -386,6 +386,53 @@ public class Tags {
         public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
         public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
+
+        /**
+         * Drinks are defined as (1) consumable items that (2) use the
+         * {@linkplain net.minecraft.world.item.ItemUseAnimation#DRINK drink item use animation}, (3) can be consumed regardless the
+         * player's current hunger, and (4, optional) do not (generally) have a
+         * {@linkplain net.minecraft.world.food.FoodProperties food component}.
+         *
+         * <p>Categories of drinks, such as Coffee, Tea, or Alcoholic drinks should be placed in a sub-tag, such as
+         * {@code #c:drinks/coffee}, {@code #c:drinks/tea}, and {@code #c:drinks/alcohol}.
+         *
+         * <p>Specific types of drinks, such as Lattes, Green Tea, and Beer should go in sub-sub-tags using their regular name,
+         * such as {@code #c:drinks/coffee/latte}, {@code #c:drinks/tea/green_tea}, and {@code #c:drinks/alcohol/beer}.
+         */
+        public static final TagKey<Item> DRINKS = tag("drinks");
+        /**
+         * For consumable drinks that are water, or water based (such as potions).
+         */
+        public static final TagKey<Item> DRINKS_WATER = tag("drinks/water");
+        public static final TagKey<Item> DRINKS_MILK = tag("drinks/milk");
+        public static final TagKey<Item> DRINKS_HONEY = tag("drinks/honey");
+        /**
+         * For consumable drinks that are magic in nature and usually grant at least one
+         * {@link net.minecraft.world.effect.MobEffect} when consumed.
+         */
+        public static final TagKey<Item> DRINKS_MAGIC = tag("drinks/magic");
+        /**
+         * For drinks that always grant the {@linkplain net.minecraft.world.effect.MobEffects#BAD_OMEN Bad Omen} effect.
+         */
+        public static final TagKey<Item> DRINKS_MAGIC_OMINOUS = tag("drinks/magic/ominous");
+        /**
+         * Plant based fruit and vegetable juices belong in this tag, for example apple juice and carrot juice.
+         */
+        public static final TagKey<Item> DRINKS_JUICE = tag("drinks/juice");
+        public static final TagKey<Item> DRINKS_JUICE_APPLE = tag("drinks/juice/apple");
+        public static final TagKey<Item> DRINKS_JUICE_BEET = tag("drinks/juice/beet");
+        public static final TagKey<Item> DRINKS_JUICE_CARROT = tag("drinks/juice/carrot");
+        public static final TagKey<Item> DRINKS_JUICE_WATERMELON = tag("drinks/juice/watermelon");
+
+        /**
+         * For non-empty bottles that are {@linkplain #DRINKS drinkable}.
+         */
+        public static final TagKey<Item> DRINK_CONTAINING_BOTTLE = tag("drink_containing/bottle");
+        /**
+         * For non-empty buckets that are {@linkplain #DRINKS drinkable}.
+         */
+        public static final TagKey<Item> DRINK_CONTAINING_BUCKET = tag("drink_containing/bucket");
+
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
