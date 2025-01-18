@@ -118,8 +118,6 @@ dependencies {
     libraries ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
-    // We depend on apache commons directly as there is a difference between the version the server uses and the one the client does
-    libraries "org.apache.commons:commons-lang3:${project.apache_commons_lang3_version}"
     libraries ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
