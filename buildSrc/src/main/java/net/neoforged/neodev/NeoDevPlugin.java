@@ -133,12 +133,27 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getRejectsFolder().set(project.getRootProject().file("rejects"));
         });
 
-        // 5. Unpack jar from 4.
-        var mcSourcesPath = project.file("src/main/java");
-        tasks.register("setup", Sync.class, task -> {
-            task.setGroup(GROUP);
-            task.from(project.zipTree(applyPatches.flatMap(ApplyPatches::getPatchedJar)));
-            task.into(mcSourcesPath);
+        // 5. Split source jar from 4. into client and server.
+        var splitPatchedSources = tasks.register("splitPatchedSources", SplitMergedSources.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getMergedJar().set(applyPatches.flatMap(ApplyPatches::getPatchedJar));
+            task.getCommonJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/common-patched-sources.jar")));
+            task.getClientJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/client-patched-sources.jar")));
+        });
+
+        // 6. Unpack jars from 5.
+        var setupCommon = tasks.register("setupCommon", Sync.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.zipTree(splitPatchedSources.flatMap(SplitMergedSources::getCommonJar)));
+            task.into(project.file("src/main/java"));
+        });
+        var setupClient = tasks.register("setupClient", Sync.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.zipTree(splitPatchedSources.flatMap(SplitMergedSources::getClientJar)));
+            task.into(project.file("src/client/java"));
+        });
+        tasks.register("setup", task -> {
+            task.dependsOn(setupCommon, setupClient);
         });
 
         /*
@@ -201,11 +216,18 @@ public class NeoDevPlugin implements Plugin<Project> {
          * OTHER TASKS
          */
 
+        var mergeSources = tasks.register("mergePatchedSources", Zip.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.files("src/main/java", "src/client/java"));
+            task.getDestinationDirectory().set(neoDevBuildDir.map(dir -> dir.dir("artifacts/merged-sources")));
+            task.getArchiveFileName().set("merged-patched-sources.jar");
+        });
+
         // Generate source patches into a patch archive, based on the jar with injected interfaces.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
-            task.getModifiedSources().set(project.file("src/main/java"));
+            task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
         });
 
@@ -213,7 +235,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         var genProductionPatches = tasks.register("generateProductionSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyAt.flatMap(TransformSources::getOutputJar));
-            task.getModifiedSources().set(project.file("src/main/java"));
+            task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches")));
         });
 

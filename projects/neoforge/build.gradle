@@ -32,6 +32,15 @@ sourceSets {
             srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources')
         }
     }
+    client {
+        java {
+            srcDirs rootProject.file('src/client/java')
+        }
+        compileClasspath += main.compileClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.runtimeClasspath
+        runtimeClasspath += main.output
+    }
 }
 
 final checkVersion = JCCPlugin.providePreviousVersion(
@@ -55,8 +64,11 @@ checkJarCompatibility {
 
 neoDev {
     mods {
+        // TODO: problem!!! we don't want to include client in non-client runs,
+        // TODO: but the name of the "mod" must be minecraft for FML to work :(
         minecraft {
             sourceSet sourceSets.main
+            sourceSet sourceSets.client
         }
         "neoforge-coremods" {
             sourceSet project(":neoforge-coremods").sourceSets.main
@@ -144,6 +156,7 @@ neoDev {
         }
         client {
             client()
+            sourceSet = sourceSets.client
         }
         server {
             server()
@@ -155,6 +168,7 @@ neoDev {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
+            sourceSet = sourceSets.main
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
