@@ -187,9 +187,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.DRINKS_MAGIC_OMINOUS, "Ominous Drinks");
         add(Tags.Items.DRINKS_JUICE, "Juice");
         add(Tags.Items.DRINKS_JUICE_APPLE, "Apple Juice");
-        add(Tags.Items.DRINKS_JUICE_BEET, "Beet Juice");
+        add(Tags.Items.DRINKS_JUICE_BEETROOT, "Beet Juice");
         add(Tags.Items.DRINKS_JUICE_CARROT, "Carrot Juice");
-        add(Tags.Items.DRINKS_JUICE_WATERMELON, "Watermelon Juice");
+        add(Tags.Items.DRINKS_JUICE_MELON, "Melon Juice");
         add(Tags.Items.DRINK_CONTAINING_BUCKET, "Drink Containing Buckets");
         add(Tags.Items.DRINK_CONTAINING_BOTTLE, "Drink Containing Bottles");
         add(Tags.Items.DUSTS, "Dusts");

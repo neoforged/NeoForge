@@ -425,9 +425,9 @@ public class Tags {
          */
         public static final TagKey<Item> DRINKS_JUICE = tag("drinks/juice");
         public static final TagKey<Item> DRINKS_JUICE_APPLE = tag("drinks/juice/apple");
-        public static final TagKey<Item> DRINKS_JUICE_BEET = tag("drinks/juice/beet");
+        public static final TagKey<Item> DRINKS_JUICE_BEETROOT = tag("drinks/juice/beetroot");
         public static final TagKey<Item> DRINKS_JUICE_CARROT = tag("drinks/juice/carrot");
-        public static final TagKey<Item> DRINKS_JUICE_WATERMELON = tag("drinks/juice/watermelon");
+        public static final TagKey<Item> DRINKS_JUICE_MELON = tag("drinks/juice/melon");
 
         /**
          * For non-empty bottles that are {@linkplain #DRINKS drinkable}.
