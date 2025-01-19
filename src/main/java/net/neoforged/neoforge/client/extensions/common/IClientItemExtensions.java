@@ -161,7 +161,9 @@ public interface IClientItemExtensions {
      * @param guiGraphics  The gui graphics
      * @param deltaTracker The delta tracker
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
+    default void renderHelmetOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        renderHelmetOverlay(stack, player, guiGraphics.guiWidth(), guiGraphics.guiHeight(), deltaTracker.getGameTimeDeltaPartialTick(true));
+    }
 
     /**
      * Queries this item's renderer.
