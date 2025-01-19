@@ -88,7 +88,7 @@
      public void bindSampler(String p_366802_, int p_366632_) {
          this.samplerTextures.put(p_366802_, p_366632_);
      }
-@@ -261,6 +_,31 @@
+@@ -261,14 +_,63 @@
          RenderSystem.setupShaderLights(this);
      }
  
@@ -97,6 +97,20 @@
 +        if (this.MODEL_OFFSET != null) {
 +            this.MODEL_OFFSET.set(x, y, z);
 +            this.MODEL_OFFSET.upload();
++        }
++    }
++
++    @Override
++    public void setModelViewMatrix(Matrix4f translation) {
++        if (this.MODEL_VIEW_MATRIX != null) {
++            this.MODEL_VIEW_MATRIX.set(translation);
++        }
++    }
++
++    @Override
++    public void setProjectionMatrix(Matrix4f matrix4f) {
++        if (this.PROJECTION_MATRIX != null) {
++            this.PROJECTION_MATRIX.set(matrix4f);
 +        }
 +    }
 +
@@ -120,15 +134,12 @@
      @VisibleForTesting
      public void registerUniform(Uniform p_366436_) {
          this.uniforms.add(p_366436_);
-@@ -268,7 +_,23 @@
+         this.uniformsByName.put(p_366436_.getName(), p_366436_);
      }
  
-     @VisibleForTesting
-+    @Override
-     public int getProgramId() {
-         return this.programId;
-+    }
-+
+-    @VisibleForTesting
+-    public int getProgramId() {
+-        return this.programId;
 +    @Override
 +    public void setupLights(Vector3f... shaderLightDirections) {
 +        if (shaderLightDirections.length != 2) {

@@ -7,7 +7,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.170-fix-lazy-jvm-arguments'
+    id 'net.neoforged.gradle.platform' version '7.0.180'
 }
 
 rootProject.name = rootDir.name

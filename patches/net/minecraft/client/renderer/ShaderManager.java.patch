@@ -106,12 +106,20 @@
              ShaderProgramConfig shaderprogramconfig = this.configs.programs.get(p_368538_.configId());
              if (shaderprogramconfig == null) {
                  throw new ShaderManager.CompilationException("Could not find program with id: " + p_368538_.configId());
-@@ -352,7 +_,7 @@
+@@ -352,7 +_,15 @@
          @Override
          public void close() {
              RenderSystem.assertOnRenderThread();
 -            this.programs.values().forEach(p_368606_ -> p_368606_.ifPresent(CompiledShaderProgram::close));
-+            this.programs.values().forEach(p_368606_ -> p_368606_.ifPresent(IGraphicsShader::close));
++            this.programs.values().forEach(p_368606_ -> {
++                p_368606_.ifPresent(iGraphicsShader -> {
++                    try {
++                        iGraphicsShader.close();
++                    } catch (Exception e) {
++                        throw new RuntimeException(e);
++                    }
++                });
++            });
              this.shaders.values().forEach(CompiledShader::close);
              this.programs.clear();
              this.shaders.clear();
