@@ -219,6 +219,17 @@ generateAccessTransformers {
             named('net/minecraft/world/item/CreativeModeTabs'),
             fieldsOfType(named('net/minecraft/resources/ResourceKey'))
     )
+
+    // Make all villager item listings classes and constructors public for use in custom trades
+    classGroup(
+            'villager item listings', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing')
+    )
+    methodGroup(
+            'villager item listing constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
+            named('<init>')
+    )
 }
 
 tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
