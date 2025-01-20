@@ -1,6 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 
 plugins {
@@ -62,14 +63,17 @@ checkJarCompatibility {
     baseJar = createCompatJar.flatMap { it.output }
 }
 
+// We don't want to include client in non-client runs,
+// however the name of the ModModel must be minecraft for FML to work.
+// Since we need both mods to be named minecraft we create them manually.
+ext.commonMod = objects.newInstance(ModModel, "minecraft")
+commonMod.sourceSet sourceSets.main
+ext.joinedMod = objects.newInstance(ModModel, "minecraft")
+joinedMod.sourceSet sourceSets.main
+joinedMod.sourceSet sourceSets.client
+
 neoDev {
     mods {
-        // TODO: problem!!! we don't want to include client in non-client runs,
-        // TODO: but the name of the "mod" must be minecraft for FML to work :(
-        minecraft {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
         "neoforge-coremods" {
             sourceSet project(":neoforge-coremods").sourceSets.main
         }
@@ -157,18 +161,22 @@ neoDev {
         client {
             client()
             sourceSet = sourceSets.client
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
         }
         server {
             server()
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
         }
         gameTestServer {
             type = "gameTestServer"
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
         }
         data {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
             sourceSet = sourceSets.main
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
