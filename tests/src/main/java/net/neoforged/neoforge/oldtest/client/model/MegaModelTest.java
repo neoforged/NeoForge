@@ -19,6 +19,7 @@ import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -42,6 +43,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
+import net.neoforged.neoforge.client.model.loadingplugin.ModelModifier;
 import net.neoforged.neoforge.client.model.quad.QuadTransforms;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.model.data.ModelData;
@@ -98,10 +100,16 @@ public class MegaModelTest {
     @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID)
     public static class ClientEvents {
         @SubscribeEvent
-        public static void onModelBakingCompleted(ModelEvent.ModifyBakingResult event) {
-            event.getBakingResult().blockStateModels().computeIfPresent(
-                    TEST_BLOCK.value().defaultBlockState(),
-                    (n, m) -> new TransformingModelWrapper(m));
+        public static void onRegisterModelLoadingPlugins(ModelEvent.RegisterLoadingPlugins event) {
+            event.registerPlugin(Identifier.fromNamespaceAndPath(MOD_ID, "wrap"), ctx -> ctx.registerModifier(new ModelModifier.ModifyBlockAfterBake() {
+                @Override
+                public BlockStateModel modifyBlockModelAfterBake(BlockStateModel model, Context context) {
+                    if (context.state().is(TEST_BLOCK)) {
+                        return new TransformingModelWrapper(model);
+                    }
+                    return model;
+                }
+            }));
         }
     }
 

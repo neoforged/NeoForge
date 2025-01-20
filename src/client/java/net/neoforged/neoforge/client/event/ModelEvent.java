@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.event;
 
 import com.google.common.base.Preconditions;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -18,6 +19,10 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
+import net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition;
+import net.neoforged.neoforge.client.model.loadingplugin.ModelLoadingPlugin;
+import net.neoforged.neoforge.client.model.loadingplugin.ModelModifier;
+import net.neoforged.neoforge.client.model.loadingplugin.PreparableModelLoadingPlugin;
 import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
 import net.neoforged.neoforge.client.model.standalone.UnbakedStandaloneModel;
 import org.jetbrains.annotations.ApiStatus;
@@ -43,7 +48,10 @@ public abstract class ModelEvent extends Event {
      * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+     *
+     * @deprecated Use {@link CustomBlockModelDefinition}s or {@link ModelModifier}s instead
      */
+    @Deprecated(forRemoval = true, since = "1.21.8")
     public static class ModifyBakingResult extends ModelEvent implements IModBusEvent {
         private final ModelBakery.BakingResult bakingResult;
         private final Function<Identifier, TextureAtlasSprite> textureGetter;
@@ -84,7 +92,7 @@ public abstract class ModelEvent extends Event {
      * Fired when the {@link ModelManager} is notified of the resource manager reloading.
      * Called after the model registry is set up and cached in the {@link net.minecraft.client.renderer.block.BlockModelShaper}.<br>
      * The model registry given by this event is unmodifiable. To modify the model registry, use
-     * {@link ModelEvent.ModifyBakingResult} instead.
+     * {@link CustomBlockModelDefinition}s or {@link ModelModifier}s instead.
      *
      * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
@@ -177,6 +185,54 @@ public abstract class ModelEvent extends Event {
         public void register(Identifier key, UnbakedModelLoader<?> loader) {
             Preconditions.checkArgument(!loaders.containsKey(key), "Unbaked model loader already registered: " + key);
             loaders.put(key, loader);
+        }
+    }
+
+    /// Fired during client startup to register [ModelLoadingPlugin]s and [PreparableModelLoadingPlugin]s.
+    ///
+    /// This event is not [cancellable][ICancellableEvent].
+    ///
+    /// This event is fired on the mod-specific event bus, only on the [logical client][LogicalSide#CLIENT].
+    public static class RegisterLoadingPlugins extends ModelEvent implements IModBusEvent {
+        private final Map<Identifier, ModelLoadingPlugin> plugins;
+        private final Map<Identifier, PreparableModelLoadingPlugin<?>> preparablePlugins;
+
+        @ApiStatus.Internal
+        public RegisterLoadingPlugins(Map<Identifier, ModelLoadingPlugin> plugins, Map<Identifier, PreparableModelLoadingPlugin<?>> preparablePlugins) {
+            this.plugins = plugins;
+            this.preparablePlugins = preparablePlugins;
+        }
+
+        /// Register a [ModelLoadingPlugin] with the provided ID.
+        ///
+        /// @param id     The ID of the plugin
+        /// @param plugin The plugin to register
+        public void registerPlugin(Identifier id, ModelLoadingPlugin plugin) {
+            ModelLoadingPlugin prevPlugin = plugins.putIfAbsent(id, plugin);
+            if (prevPlugin != null) {
+                throw new IllegalStateException(String.format(
+                        Locale.ROOT,
+                        "Duplicate ModelLoadingPlugin registration with ID %s (old: %s, new: %s)",
+                        id,
+                        prevPlugin,
+                        plugin));
+            }
+        }
+
+        /// Register a [PreparableModelLoadingPlugin] with the provided ID.
+        ///
+        /// @param id     The ID of the plugin
+        /// @param plugin The plugin to register
+        public void registerPlugin(Identifier id, PreparableModelLoadingPlugin<?> plugin) {
+            PreparableModelLoadingPlugin<?> prevPlugin = preparablePlugins.putIfAbsent(id, plugin);
+            if (prevPlugin != null) {
+                throw new IllegalStateException(String.format(
+                        Locale.ROOT,
+                        "Duplicate PreparableModelLoadingPlugin registration with ID %s (old: %s, new: %s)",
+                        id,
+                        prevPlugin,
+                        plugin));
+            }
         }
     }
 }

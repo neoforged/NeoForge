@@ -1,22 +1,23 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -67,7 +_,11 @@
+@@ -67,7 +_,12 @@
      private final Map<Identifier, ClientItem> clientInfos;
      private final Map<Identifier, ResolvedModel> resolvedModels;
      private final ResolvedModel missingModel;
 +    private final net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels;
 +    private final net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations;
++    private final net.neoforged.neoforge.client.model.loadingplugin.@org.jspecify.annotations.Nullable ModelLoadingPluginManager pluginManager;
  
-+    /// @deprecated Neo: use [#ModelBakery(EntityModelSet, SpriteGetter, PlayerSkinRenderCache, Map, Map, Map, ResolvedModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations)] instead
++    /// @deprecated Neo: use [#ModelBakery(EntityModelSet, SpriteGetter, PlayerSkinRenderCache, Map, Map, Map, ResolvedModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations, net.neoforged.neoforge.client.model.loadingplugin.ModelLoadingPluginManager)] instead
 +    @Deprecated
      public ModelBakery(
          EntityModelSet entityModelSet,
          SpriteGetter sprites,
-@@ -77,6 +_,20 @@
+@@ -77,6 +_,21 @@
          Map<Identifier, ResolvedModel> resolvedModels,
          ResolvedModel missingModel
      ) {
-+        this(entityModelSet, sprites, playerSkinRenderCache, unbakedBlockStateModels, clientInfos, resolvedModels, missingModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY);
++        this(entityModelSet, sprites, playerSkinRenderCache, unbakedBlockStateModels, clientInfos, resolvedModels, missingModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY, net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations.EMPTY, null);
 +    }
 +
 +    public ModelBakery(
@@ -28,29 +29,63 @@
 +        Map<Identifier, ResolvedModel> resolvedModels,
 +        ResolvedModel missingModel,
 +        net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels,
-+        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations
++        net.neoforged.neoforge.client.entity.animation.json.AnimationLoader.PendingAnimations pendingAnimations,
++        net.neoforged.neoforge.client.model.loadingplugin.@org.jspecify.annotations.Nullable ModelLoadingPluginManager pluginManager
 +    ) {
          this.entityModelSet = entityModelSet;
          this.sprites = sprites;
          this.playerSkinRenderCache = playerSkinRenderCache;
-@@ -84,6 +_,8 @@
+@@ -84,6 +_,9 @@
          this.clientInfos = clientInfos;
          this.resolvedModels = resolvedModels;
          this.missingModel = missingModel;
 +        this.standaloneModels = standaloneModels;
 +        this.pendingAnimations = pendingAnimations;
++        this.pluginManager = pluginManager;
      }
  
      public CompletableFuture<ModelBakery.BakingResult> bakeModels(MaterialBaker materials, Executor taskExecutor) {
-@@ -107,7 +_,7 @@
-                     return clientInfo.model()
-                         .bake(
-                             new ItemModel.BakingContext(
+@@ -93,7 +_,14 @@
+         CompletableFuture<Map<BlockState, BlockStateModel>> bakedBlockStateModelFuture = ParallelMapTransform.schedule(
+             this.unbakedBlockStateModels, (blockState, model) -> {
+                 try {
+-                    return model.bake(blockState, baker);
++                    if (this.pluginManager != null) {
++                        model = this.pluginManager.modifyBlockModelBeforeBake(blockState, model, baker);
++                    }
++                    BlockStateModel bakedModel = model.bake(blockState, baker);
++                    if (this.pluginManager != null) {
++                        bakedModel = this.pluginManager.modifyBlockModelAfterBake(blockState, bakedModel, model, baker);
++                    }
++                    return bakedModel;
+                 } catch (Exception var4x) {
+                     LOGGER.warn("Unable to bake model: '{}': {}", blockState, var4x);
+                     return null;
+@@ -104,13 +_,18 @@
+             this.clientInfos,
+             (location, clientInfo) -> {
+                 try {
+-                    return clientInfo.model()
+-                        .bake(
+-                            new ItemModel.BakingContext(
 -                                baker, this.entityModelSet, this.sprites, this.playerSkinRenderCache, missingModels.item, clientInfo.registrySwapper()
+-                            ),
+-                            IDENTITY
++                    ItemModel.BakingContext bakingContext = new ItemModel.BakingContext(
 +                                baker, this.entityModelSet, this.sprites, this.playerSkinRenderCache, missingModels.item, clientInfo.registrySwapper(), this.pendingAnimations
-                             ),
-                             IDENTITY
                          );
++                    ItemModel.Unbaked unbakedModel = clientInfo.model();
++                    if (this.pluginManager != null) {
++                        unbakedModel = this.pluginManager.modifyItemModelBeforeBake(location, unbakedModel, clientInfo, bakingContext);
++                    }
++                    ItemModel bakedModel = unbakedModel.bake(bakingContext, IDENTITY);
++                    if (this.pluginManager != null) {
++                        bakedModel = this.pluginManager.modifyItemModelAfterBake(location, bakedModel, unbakedModel, clientInfo, bakingContext);
++                    }
++                    return bakedModel;
+                 } catch (Exception var6x) {
+                     LOGGER.warn("Unable to bake item model: '{}'", location, var6x);
+                     return null;
 @@ -118,6 +_,8 @@
              },
              taskExecutor

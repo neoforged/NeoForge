@@ -26,7 +26,18 @@
      }
  
      public ClientItem.Properties getItemProperties(Identifier id) {
-@@ -119,8 +_,10 @@
+@@ -113,14 +_,19 @@
+     ) {
+         ResourceManager manager = currentReload.resourceManager();
+         CompletableFuture<EntityModelSet> entityModelSet = CompletableFuture.supplyAsync(EntityModelSet::vanilla, taskExecutor);
+-        CompletableFuture<Map<Identifier, UnbakedModel>> modelCache = loadBlockModels(manager, taskExecutor);
+-        CompletableFuture<BlockStateModelLoader.LoadedModels> blockStateModels = BlockStateModelLoader.loadBlockStates(manager, taskExecutor);
++        var pluginFuture = net.neoforged.neoforge.client.model.loadingplugin.ModelLoadingPluginManager.prepare(currentReload, taskExecutor);
++        CompletableFuture<Map<Identifier, UnbakedModel>> modelCache = loadBlockModels(manager, taskExecutor)
++                .thenCombine(pluginFuture, (models, pluginManager) -> pluginManager.modifyModelsOnLoad(models));
++        CompletableFuture<BlockStateModelLoader.LoadedModels> blockStateModels = BlockStateModelLoader.loadBlockStates(manager, taskExecutor)
++                .thenCombine(pluginFuture, (models, pluginManager) -> pluginManager.modifyBlockModelsOnLoad(models));
+         CompletableFuture<Map<BlockState, BlockModel.Unbaked>> blockModelContents = CompletableFuture.supplyAsync(
              () -> BuiltInBlockModels.createBlockModels(this.blockColors), taskExecutor
          );
          CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> itemStackModels = ClientItemInfoLoader.scheduleLoad(manager, taskExecutor);
@@ -47,22 +58,24 @@
          return CompletableFuture.allOf(
                  pendingBlockAtlasSprites,
                  pendingItemAtlasSprites,
-@@ -138,7 +_,8 @@
+@@ -138,7 +_,9 @@
                  itemStackModels,
                  entityModelSet,
                  blockModels,
 -                modelCache
 +                modelCache,
-+                standaloneModelsFuture
++                standaloneModelsFuture,
++                pluginFuture
              )
              .thenComposeAsync(
                  var11x -> {
-@@ -162,8 +_,11 @@
+@@ -162,8 +_,12 @@
                          itemStackModels.join().contents(),
                          resolvedModels.models(),
                          resolvedModels.missing()
 +                        , standaloneModelsFuture.join(),
-+                        pendingAnimations
++                        pendingAnimations,
++                        pluginFuture.join()
                      );
 -                    return loadModels(blockAtlasSprites, itemAtlasSprites, bakery, blockModels.join(), groups, entityModelSet.join(), taskExecutor);
 +                    this.modelBakery.set(bakery);

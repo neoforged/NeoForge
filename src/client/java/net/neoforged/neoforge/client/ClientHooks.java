@@ -198,6 +198,7 @@ import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
+import net.neoforged.neoforge.client.model.loadingplugin.ModelLoadingPluginManager;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -858,6 +859,7 @@ public class ClientHooks {
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
         GameRuleEntryFactoryManager.register();
+        ModelLoadingPluginManager.init();
     }
 
     // Runs during Minecraft construction, before initial resource loading and during datagen startup

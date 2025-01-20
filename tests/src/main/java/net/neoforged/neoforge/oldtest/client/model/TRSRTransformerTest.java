@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.oldtest.client.model;
 
 import com.mojang.math.Transformation;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -18,6 +18,7 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.BlockItem;
@@ -30,6 +31,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
+import net.neoforged.neoforge.client.model.loadingplugin.ModelModifier;
 import net.neoforged.neoforge.client.model.quad.QuadTransforms;
 import net.neoforged.neoforge.common.util.TransformationHelper;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -52,7 +54,7 @@ public class TRSRTransformerTest {
 
     public TRSRTransformerTest(IEventBus modEventBus) {
         if (FMLEnvironment.getDist().isClient()) {
-            modEventBus.addListener(TRSRTransformerTest::onModelBake);
+            modEventBus.addListener(TRSRTransformerTest::onRegisterModelLoadingPlugins);
         }
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
@@ -64,13 +66,16 @@ public class TRSRTransformerTest {
             event.accept(TEST_ITEM);
     }
 
-    private static void onModelBake(ModelEvent.ModifyBakingResult e) {
-        Map<BlockState, BlockStateModel> models = e.getBakingResult().blockStateModels();
-        for (BlockState state : models.keySet()) {
-            if (state.is(TEST_BLOCK)) {
-                models.put(state, new MyBakedModel(models.get(state)));
+    private static void onRegisterModelLoadingPlugins(ModelEvent.RegisterLoadingPlugins event) {
+        event.registerPlugin(Identifier.fromNamespaceAndPath(MODID, "wrap"), ctx -> ctx.registerModifier(new ModelModifier.ModifyBlockAfterBake() {
+            @Override
+            public BlockStateModel modifyBlockModelAfterBake(BlockStateModel model, Context context) {
+                if (context.state().is(TEST_BLOCK)) {
+                    return new MyBakedModel(model);
+                }
+                return model;
             }
-        }
+        }));
     }
 
     private static class MyBakedModel extends DelegateBlockStateModel {
