@@ -11,10 +11,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
@@ -36,6 +38,19 @@ import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
  * synced so that mods can use them on the client side.
  */
 public class NeoForgeDataMaps {
+    /**
+     * The {@linkplain Biome} data map that replaces {@link VillagerType#BY_BIOME}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/biome/biome_villagers.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code villager_type}, villager type ID - the type of the villagers present in the biome</li>
+     * </ul>
+     *
+     * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<Biome, BiomeVillager> BIOME_VILLAGERS = DataMapType.builder(
+            id("biome_villagers"), Registries.BIOME, BiomeVillager.CODEC).synced(BiomeVillager.TYPE_CODEC, false).build();
+
     /**
      * The {@linkplain Item} data map that replaces {@link ComposterBlock#COMPOSTABLES}.
      * <p>
@@ -147,6 +162,7 @@ public class NeoForgeDataMaps {
 
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
+        event.register(BIOME_VILLAGERS);
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
