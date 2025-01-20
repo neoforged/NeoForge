@@ -153,7 +153,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
@@ -208,6 +207,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -1516,13 +1516,7 @@ public class CommonHooks {
      */
     @Nullable
     public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server != null) {
-            return server.registryAccess().lookup(key).orElse(null);
-        } else if (FMLEnvironment.dist.isClient()) {
-            return ClientHooks.resolveLookup(key);
-        }
-        return null;
+        return NeoForgeProxy.INSTANCE.resolveLookup(key);
     }
 
     /**
@@ -1588,12 +1582,5 @@ public class CommonHooks {
             vanillaMap = Map.copyOf(vanillaMap);
         }
         return vanillaMap;
-    }
-
-    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
-        if (FMLEnvironment.dist.isClient()) {
-            return ClientHooks.getFilteredRecipeBookTypeValues();
-        }
-        return RecipeBookType.values();
     }
 }

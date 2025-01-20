@@ -33,11 +33,15 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientDispatchPayload;
 import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -51,6 +55,22 @@ public final class ClientPayloadHandler {
     private static final Map<ResourceLocation, RegistrySnapshot> synchronizedRegistries = Maps.newConcurrentMap();
 
     private ClientPayloadHandler() {}
+
+    public static void dispatch(ClientDispatchPayload payload, IPayloadContext context) {
+        switch (payload) {
+            case ConfigFilePayload configFilePayload -> handle(configFilePayload, context);
+            case FrozenRegistrySyncStartPayload frozenRegistrySyncStartPayload -> handle(frozenRegistrySyncStartPayload, context);
+            case FrozenRegistryPayload frozenRegistryPayload -> handle(frozenRegistryPayload, context);
+            case FrozenRegistrySyncCompletedPayload frozenRegistrySyncCompletedPayload -> handle(frozenRegistrySyncCompletedPayload, context);
+            case KnownRegistryDataMapsPayload knownRegistryDataMapsPayload -> ClientRegistryManager.handleKnownDataMaps(knownRegistryDataMapsPayload, context);
+            case AdvancedAddEntityPayload advancedAddEntityPayload -> handle(advancedAddEntityPayload, context);
+            case AdvancedOpenScreenPayload advancedOpenScreenPayload -> handle(advancedOpenScreenPayload, context);
+            case AuxiliaryLightDataPayload auxiliaryLightDataPayload -> handle(auxiliaryLightDataPayload, context);
+            case RegistryDataMapSyncPayload<?> registryDataMapSyncPayload -> ClientRegistryManager.handleDataMapSync(registryDataMapSyncPayload, context);
+            case AdvancedContainerSetDataPayload advancedContainerSetDataPayload -> handle(advancedContainerSetDataPayload, context);
+            case ClientboundCustomSetTimePayload clientboundCustomSetTimePayload -> handle(clientboundCustomSetTimePayload, context);
+        }
+    }
 
     public static void handle(FrozenRegistryPayload payload, IPayloadContext context) {
         synchronizedRegistries.put(payload.registryName(), payload.snapshot());
@@ -86,7 +106,9 @@ public final class ClientPayloadHandler {
     }
 
     public static void handle(ConfigFilePayload payload, IPayloadContext context) {
-        ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
+        if (!Minecraft.getInstance().isLocalServer()) {
+            ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
+        }
     }
 
     public static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {

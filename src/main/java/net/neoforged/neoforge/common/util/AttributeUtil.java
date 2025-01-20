@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -43,6 +42,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.extensions.IAttributeExtension;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -279,7 +279,7 @@ public class AttributeUtil {
      */
     public static void addPotionTooltip(List<Pair<Holder<Attribute>, AttributeModifier>> list, Consumer<Component> tooltips) {
         for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
-            tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), getTooltipFlag()));
+            tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), NeoForgeProxy.INSTANCE.getTooltipFlag()));
         }
     }
 
@@ -318,18 +318,6 @@ public class AttributeUtil {
     }
 
     /**
-     * Gets the current global tooltip flag. Used by {@link AttributeUtil#addPotionTooltip} since one isn't available locally.
-     * 
-     * @return If called on the client, the current tooltip flag, otherwise {@link TooltipFlag#NORMAL}
-     */
-    private static TooltipFlag getTooltipFlag() {
-        if (FMLEnvironment.dist.isClient()) {
-            return ClientAccess.getTooltipFlag();
-        }
-        return TooltipFlag.NORMAL;
-    }
-
-    /**
      * Stores a single base modifier (determined by {@link IAttributeExtension#getBaseId()}) and any other children non-base modifiers for the same attribute.
      * <p>
      * Used during attribute merging logic within {@link AttributeUtil#applyTextFor}.
@@ -343,14 +331,5 @@ public class AttributeUtil {
         double sum = 0;
         boolean isMerged = false;
         private List<AttributeModifier> children = new LinkedList<>();
-    }
-
-    /**
-     * Client bouncer class to avoid class loading issues. Access to this class still needs a dist check.
-     */
-    private static class ClientAccess {
-        static TooltipFlag getTooltipFlag() {
-            return Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL;
-        }
     }
 }

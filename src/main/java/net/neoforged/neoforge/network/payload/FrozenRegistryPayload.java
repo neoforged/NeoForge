@@ -20,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @param snapshot     The snapshot of the registry
  */
 @ApiStatus.Internal
-public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnapshot snapshot) implements CustomPacketPayload {
+public record FrozenRegistryPayload(ResourceLocation registryName, RegistrySnapshot snapshot) implements ClientDispatchPayload {
     public static final Type<FrozenRegistryPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "frozen_registry"));
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistryPayload> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC,

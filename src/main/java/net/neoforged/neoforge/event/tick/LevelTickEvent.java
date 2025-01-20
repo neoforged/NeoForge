@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.event.tick;
 
 import java.util.function.BooleanSupplier;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
  * This payload is sent to the client when the server has finished sending all the frozen registries.
  */
 @ApiStatus.Internal
-public final class FrozenRegistrySyncCompletedPayload implements CustomPacketPayload {
+public final class FrozenRegistrySyncCompletedPayload implements ClientDispatchPayload {
     public static final Type<FrozenRegistrySyncCompletedPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "frozen_registry_sync_completed"));
     public static final FrozenRegistrySyncCompletedPayload INSTANCE = new FrozenRegistrySyncCompletedPayload();
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistrySyncCompletedPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);

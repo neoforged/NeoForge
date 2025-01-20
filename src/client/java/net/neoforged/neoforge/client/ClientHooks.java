@@ -40,6 +40,7 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.client.Options;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
@@ -183,8 +184,10 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
+import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -253,6 +256,18 @@ public class ClientHooks {
             depth = Math.max(depth, GuiLayerManager.Z_SEPARATION * Minecraft.getInstance().gui.getLayerCount());
         }
         return 11_000F + depth;
+    }
+
+    /**
+     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
+     * health bar.
+     *
+     * @param player    The local {@link Player}
+     * @param heartType The {@link Gui.HeartType} which would be displayed by vanilla
+     * @return The heart type which should be displayed
+     */
+    public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
+        return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
     }
 
     public static ResourceLocation getArmorTexture(ItemStack armor, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
@@ -368,16 +383,14 @@ public class ClientHooks {
     public static void renderMainMenu(TitleScreen gui, GuiGraphics guiGraphics, Font font, int width, int height, int alpha) {
         ForgeSnapshotsModClient.renderMainMenuWarning(NeoForgeVersion.getVersion(), guiGraphics, font, width, height, alpha);
 
-        forgeStatusLine = switch (NeoForgeVersion.getStatus()) {
+        BrandingControl.setForgeStatusLine(switch (NeoForgeVersion.getStatus()) {
             // case FAILED -> " Version check failed";
             // case UP_TO_DATE -> "Forge up to date";
             // case AHEAD -> "Using non-recommended Forge build, issues may arise.";
             case OUTDATED, BETA_OUTDATED -> I18n.get("neoforge.update.newversion", NeoForgeVersion.getTarget());
             default -> null;
-        };
+        });
     }
-
-    public static String forgeStatusLine;
 
     @Nullable
     public static SoundInstance playSound(SoundEngine manager, SoundInstance sound) {
@@ -1029,16 +1042,6 @@ public class ClientHooks {
      */
     public static void fireClientTickPost() {
         NeoForge.EVENT_BUS.post(new ClientTickEvent.Post());
-    }
-
-    @Nullable
-    @SuppressWarnings("resource")
-    public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null) {
-            return level.registryAccess().lookup(key).orElse(null);
-        }
-        return null;
     }
 
     /**

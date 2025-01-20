@@ -14,7 +14,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public record ClientboundCustomSetTimePayload(long gameTime, long dayTime, boolean gameRule, float dayTimeFraction, float dayTimePerTick) implements CustomPacketPayload {
+public record ClientboundCustomSetTimePayload(long gameTime, long dayTime, boolean gameRule, float dayTimeFraction, float dayTimePerTick) implements ClientDispatchPayload {
 
     public static final Type<ClientboundCustomSetTimePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "custom_time_packet"));
 

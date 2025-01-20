@@ -24,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @param contents The contents of the config file.
  */
 @ApiStatus.Internal
-public record ConfigFilePayload(String fileName, byte[] contents) implements CustomPacketPayload {
+public record ConfigFilePayload(String fileName, byte[] contents) implements ClientDispatchPayload {
     public static final Type<ConfigFilePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "config_file"));
     public static final StreamCodec<FriendlyByteBuf, ConfigFilePayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,

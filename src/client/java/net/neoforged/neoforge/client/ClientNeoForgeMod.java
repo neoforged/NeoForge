@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.color.item.FluidContentsTint;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
@@ -43,6 +44,7 @@ import net.neoforged.neoforge.client.model.UnbakedCompositeModel;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
+import net.neoforged.neoforge.client.util.SelfTestClient;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -65,6 +67,7 @@ import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvid
 import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.server.command.ConfigCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -75,7 +78,7 @@ public class ClientNeoForgeMod {
     }
 
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
-        SelfTest.initClient();
+        SelfTestClient.initClient();
 
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
@@ -91,6 +94,10 @@ public class ClientNeoForgeMod {
                     spec.resetCaches(ModConfigSpec.RestartType.WORLD);
                 }
             });
+        });
+
+        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
+            ConfigCommand.register(event.getDispatcher());
         });
     }
 
