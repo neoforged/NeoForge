@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.inventory.RecipeBookType;
@@ -21,6 +22,9 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Allows common code to call client-only methods, through {@code NeoForgeClientProxy}.
@@ -87,5 +91,11 @@ public class NeoForgeProxy {
             return server.registryAccess().lookup(key).orElse(null);
         }
         return null;
+    }
+
+    // First parameter: Supplier<Minecraft>
+    // Returns: Supplier<LoadingOverlay>
+    public Supplier<?> instantiateLoadingOverlay(Supplier<?> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
+        throw new UnsupportedOperationException("Cannot instantiate loading overlay on the server");
     }
 }

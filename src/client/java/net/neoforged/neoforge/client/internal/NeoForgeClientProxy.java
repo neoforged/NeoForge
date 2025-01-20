@@ -1,6 +1,7 @@
 package net.neoforged.neoforge.client.internal;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.resources.ClientPackSource;
@@ -12,6 +13,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.TooltipFlag;
@@ -26,6 +28,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class NeoForgeClientProxy extends NeoForgeProxy {
     @Override
@@ -87,5 +92,10 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
             }
         }
         return null;
+    }
+
+    @Override
+    public Supplier<?> instantiateLoadingOverlay(Supplier<?> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
+        return () -> new LoadingOverlay((Minecraft) mc.get(), ri.get(), ex, fadein);
     }
 }
