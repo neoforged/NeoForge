@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
+@@ -459,7 +_,7 @@
+         this.targets.main = framegraphbuilder.importExternal("main", this.minecraft.getMainRenderTarget());
+         int i = this.minecraft.getMainRenderTarget().width;
+         int j = this.minecraft.getMainRenderTarget().height;
+-        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true);
++        RenderTargetDescriptor rendertargetdescriptor = new RenderTargetDescriptor(i, j, true, this.minecraft.getMainRenderTarget().useStencil);
+         PostChain postchain = this.getTransparencyChain();
+         if (postchain != null) {
+             this.targets.translucent = framegraphbuilder.createInternal("translucent", rendertargetdescriptor);
 @@ -473,6 +_,9 @@
              this.targets.entityOutline = framegraphbuilder.importExternal("entity_outline", this.entityOutlineTarget);
          }
@@ -240,7 +249,7 @@
              if (j < k) {
                  j = k;
              }
-@@ -1449,5 +_,22 @@
+@@ -1449,5 +_,27 @@
  
      public CloudRenderer getCloudRenderer() {
          return this.cloudRenderer;
@@ -261,5 +270,10 @@
 +        synchronized (this.globalBlockEntities) {
 +            this.globalBlockEntities.forEach(blockEntityConsumer);
 +        }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public Iterable<? extends net.neoforged.neoforge.client.IRenderableSection> getRenderableSections() {
++            return this.visibleSections;
      }
  }
