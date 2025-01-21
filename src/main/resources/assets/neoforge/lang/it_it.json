@@ -200,5 +200,5 @@
   "neoforge.network.aux_light_data.failed": "Errore durante la gestione dei dati della luce per il chunk %s: %s",
   "neoforge.network.data_maps.failed": "Gestione della sincronizzazione del registro della mappa dati fallita per il registro %s: %s",
   "neoforge.network.data_maps.missing_our": "Impossibile connettersi al server in quanto manca un registro della mappa dati obbligatorio presente nel client: %s",
-  "neoforge.network.data_maps.missing_their": "Impossibile connettersi al server in quanto presenta un registro della mappa dati obbligatorio assente nel client: %s"
+  "neoforge.network.data_maps.missing_their": "Impossibile connettersi al server poiché mappe dati di registro obbligatorie non sono presenti sul client: %s"
 }
