@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -254,7 +_,7 @@
-     }
- 
-     @OnlyIn(Dist.CLIENT)
--    public class RenderSection implements net.neoforged.neoforge.client.IRenderableSection {
-+    public class RenderSection {
-         public static final int SIZE = 16;
-         public final int index;
-         public final AtomicReference<SectionRenderDispatcher.CompiledSection> compiled = new AtomicReference<>(
 @@ -399,9 +_,10 @@
  
          public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
