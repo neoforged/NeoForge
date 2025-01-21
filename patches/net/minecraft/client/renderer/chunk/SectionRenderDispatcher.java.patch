@@ -4,8 +4,8 @@
      }
  
      @OnlyIn(Dist.CLIENT)
--    public class RenderSection {
-+    public class RenderSection implements net.neoforged.neoforge.client.IRenderableSection {
+-    public class RenderSection implements net.neoforged.neoforge.client.IRenderableSection {
++    public class RenderSection {
          public static final int SIZE = 16;
          public final int index;
          public final AtomicReference<SectionRenderDispatcher.CompiledSection> compiled = new AtomicReference<>(
