@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/gui/GuiGraphics.java
 +++ b/net/minecraft/client/gui/GuiGraphics.java
-@@ -52,7 +_,7 @@
- import org.joml.Vector2ic;
- 
- @OnlyIn(Dist.CLIENT)
--public class GuiGraphics {
-+public class GuiGraphics implements net.neoforged.neoforge.client.extensions.IGuiGraphicsExtension {
-     public static final float MAX_GUI_Z = 10000.0F;
-     public static final float MIN_GUI_Z = -10000.0F;
-     private static final int EXTRA_SPACE_AFTER_FIRST_TOOLTIP_LINE = 2;
 @@ -229,6 +_,11 @@
      }
  

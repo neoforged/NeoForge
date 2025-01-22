@@ -38,7 +38,7 @@ public class ItemHandlerCopySlot extends StackCopySlot {
 
     @Override
     protected void setStackCopy(ItemStack stack) {
-        ((IItemHandlerModifiable) slotItemHandler.getItemHandler()).setStackInSlot(index, stack);
+        ((IItemHandlerModifiable) slotItemHandler.getItemHandler()).setStackInSlot(slotItemHandler.index, stack);
     }
 
     @Override

@@ -4,11 +4,11 @@
          int p_371309_,
          @Nullable ResourceLocation p_371639_
      ) {
-+        p_371731_ = getArmorModelHook(p_371670_, p_387484_, p_371731_);
++        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_371670_);
++        p_371731_ = extensions.getGenericArmorModel(p_371670_, p_387484_, p_371731_);
          List<EquipmentClientInfo.Layer> list = this.equipmentAssets.get(p_387603_).getLayers(p_387484_);
          if (!list.isEmpty()) {
 -            int i = p_371670_.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(p_371670_, 0) : 0;
-+            net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_371670_);
 +            int i = extensions.getDefaultDyeColor(p_371670_);
              boolean flag = p_371670_.hasFoil();
  
@@ -29,17 +29,3 @@
              }
  
              ArmorTrim armortrim = p_371670_.get(DataComponents.TRIM);
-@@ -100,6 +_,13 @@
-         } else {
-             return -1;
-         }
-+    }
-+
-+    /**
-+     * Hook to allow item-sensitive armor model. for HumanoidArmorLayer.
-+     */
-+    protected net.minecraft.client.model.Model getArmorModelHook(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model model) {
-+        return net.neoforged.neoforge.client.ClientHooks.getArmorModel(itemStack, layerType, model);
-     }
- 
-     @OnlyIn(Dist.CLIENT)

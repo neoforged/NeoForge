@@ -11,11 +11,12 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Either;
 import com.mojang.math.Transformation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,6 @@ import java.util.Objects;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -35,6 +35,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,17 +49,14 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A model composed of several named children.
  */
-public class UnbakedCompositeModel implements UnbakedModel {
-    private final ImmutableMap<String, ResourceLocation> children;
+public class UnbakedCompositeModel extends AbstractUnbakedModel {
+    private final ImmutableMap<String, Either<ResourceLocation, UnbakedModel>> children;
     private final ImmutableList<String> itemPasses;
-    private final Transformation rootTransform;
-    private final Map<String, Boolean> partVisibility;
 
-    public UnbakedCompositeModel(ImmutableMap<String, ResourceLocation> children, ImmutableList<String> itemPasses, Transformation rootTransform, Map<String, Boolean> partVisibility) {
+    public UnbakedCompositeModel(ImmutableMap<String, Either<ResourceLocation, UnbakedModel>> children, ImmutableList<String> itemPasses, StandardModelParameters parameters) {
+        super(parameters);
         this.children = children;
         this.itemPasses = itemPasses;
-        this.rootTransform = rootTransform;
-        this.partVisibility = partVisibility;
     }
 
     @Override
@@ -67,19 +65,25 @@ public class UnbakedCompositeModel implements UnbakedModel {
             ModelState state,
             boolean useAmbientOcclusion,
             boolean usesBlockLight,
-            ItemTransforms transforms) {
+            ItemTransforms transforms,
+            ContextMap additionalProperties) {
         TextureAtlasSprite particle = baker.findSprite(slots, TextureSlot.PARTICLE.getId());
 
+        Transformation rootTransform = additionalProperties.getOrDefault(NeoForgeModelProperties.TRANSFORM, Transformation.identity());
         if (!rootTransform.isIdentity())
             state = UnbakedElementsHelper.composeRootTransformIntoModelState(state, rootTransform);
 
+        Map<String, Boolean> partVisibility = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
         var bakedPartsBuilder = ImmutableMap.<String, BakedModel>builder();
+        ModelState fstate = state;
         for (var entry : children.entrySet()) {
             var name = entry.getKey();
             if (!partVisibility.getOrDefault(name, true))
                 continue;
-            var model = entry.getValue();
-            bakedPartsBuilder.put(name, baker.bake(model, state));
+            Either<ResourceLocation, UnbakedModel> model = entry.getValue();
+            bakedPartsBuilder.put(name, model.map(
+                    reference -> baker.bake(reference, fstate),
+                    inline -> UnbakedModel.bakeWithTopModelValues(inline, baker, fstate)));
         }
         var bakedParts = bakedPartsBuilder.build();
 
@@ -96,8 +100,9 @@ public class UnbakedCompositeModel implements UnbakedModel {
 
     @Override
     public void resolveDependencies(Resolver resolver) {
-        for (ResourceLocation path : children.values()) {
-            resolver.resolve(path);
+        super.resolveDependencies(resolver);
+        for (Either<ResourceLocation, UnbakedModel> child : children.values()) {
+            child.ifLeft(resolver::resolve).ifRight(model -> model.resolveDependencies(resolver));
         }
     }
 
@@ -314,8 +319,8 @@ public class UnbakedCompositeModel implements UnbakedModel {
         @Override
         public UnbakedCompositeModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             List<String> itemPasses = new ArrayList<>();
-            ImmutableMap.Builder<String, ResourceLocation> childrenBuilder = ImmutableMap.builder();
-            readChildren(jsonObject, "children", childrenBuilder, itemPasses);
+            ImmutableMap.Builder<String, Either<ResourceLocation, UnbakedModel>> childrenBuilder = ImmutableMap.builder();
+            readChildren(jsonObject, "children", childrenBuilder, itemPasses, jsonDeserializationContext);
 
             var children = childrenBuilder.build();
             if (children.isEmpty())
@@ -331,34 +336,27 @@ public class UnbakedCompositeModel implements UnbakedModel {
                 }
             }
 
-            final Map<String, Boolean> partVisibility;
-            if (jsonObject.has("visibility")) {
-                partVisibility = new HashMap<>();
-                JsonObject visibility = jsonObject.getAsJsonObject("visibility");
-                for (Map.Entry<String, JsonElement> part : visibility.entrySet()) {
-                    partVisibility.put(part.getKey(), part.getValue().getAsBoolean());
-                }
-            } else {
-                partVisibility = Collections.emptyMap();
-            }
+            StandardModelParameters parameters = StandardModelParameters.parse(jsonObject, jsonDeserializationContext);
 
-            final Transformation transformation;
-            if (jsonObject.has("transform")) {
-                transformation = BlockModel.GSON.fromJson(jsonObject.get("transform"), Transformation.class);
-            } else {
-                transformation = Transformation.identity();
-            }
-
-            return new UnbakedCompositeModel(children, ImmutableList.copyOf(itemPasses), transformation, partVisibility);
+            return new UnbakedCompositeModel(children, ImmutableList.copyOf(itemPasses), parameters);
         }
 
-        private void readChildren(JsonObject jsonObject, String name, ImmutableMap.Builder<String, ResourceLocation> children, List<String> itemPasses) {
+        private static void readChildren(
+                JsonObject jsonObject,
+                String name,
+                ImmutableMap.Builder<String, Either<ResourceLocation, UnbakedModel>> children,
+                List<String> itemPasses,
+                JsonDeserializationContext context) {
             if (!jsonObject.has(name))
                 return;
             var childrenJsonObject = jsonObject.getAsJsonObject(name);
             for (Map.Entry<String, JsonElement> entry : childrenJsonObject.entrySet()) {
-                ResourceLocation location = ResourceLocation.parse(entry.getValue().getAsString());
-                children.put(entry.getKey(), location);
+                Either<ResourceLocation, UnbakedModel> child = switch (entry.getValue()) {
+                    case JsonPrimitive reference -> Either.left(ResourceLocation.parse(reference.getAsString()));
+                    case JsonObject inline -> Either.right(context.deserialize(inline, UnbakedModel.class));
+                    default -> throw new IllegalArgumentException("");
+                };
+                children.put(entry.getKey(), child);
                 itemPasses.add(entry.getKey()); // We can do this because GSON preserves ordering during deserialization
             }
         }

@@ -1,6 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 
 plugins {
     id 'java-library'
@@ -117,8 +118,6 @@ dependencies {
     libraries ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
-    // We depend on apache commons directly as there is a difference between the version the server uses and the one the client does
-    libraries "org.apache.commons:commons-lang3:${project.apache_commons_lang3_version}"
     libraries ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
@@ -159,6 +158,90 @@ neoDev {
                     '--output', rootProject.file("src/generated/resources").absolutePath
         }
     }
+}
+
+generateAccessTransformers {
+    // Make all state shards public
+    classGroup(
+            'render state shard classes', PUBLIC,
+            innerClassesOf('net/minecraft/client/renderer/RenderStateShard')
+    )
+    // Make all state shard fields public
+    fieldGroup(
+            'render state shards', PUBLIC,
+            named('net/minecraft/client/renderer/RenderStateShard'),
+            fieldsOfType(classesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
+    )
+
+    // Make all block constructors public so they can be used by mods
+    methodGroup(
+            'block constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/level/block/Block'),
+            named('<init>')
+    )
+    // Make all particle constructors public so they can be used by mods
+    methodGroup(
+            'particle constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/client/particle/Particle'),
+            named('<init>')
+    )
+
+    // Make all criteria methods in the recipe provider protected so mods can use them
+    methodGroup(
+            'recipe criteria', PROTECTED,
+            named('net/minecraft/data/recipes/RecipeProvider'),
+            methodsReturning('net/minecraft/advancements/Criterion')
+    )
+
+    // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
+    methodGroup(
+            'skeleton step sound', PROTECTED,
+            classesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
+            named('getStepSound')
+    )
+
+    // Make all noise generator setting factories public so mods can use them for custom dimensions
+    methodGroup(
+            'noise generator', PUBLIC,
+            named('net/minecraft/world/level/levelgen/NoiseGeneratorSettings'),
+            methodsReturning('net/minecraft/world/level/levelgen/NoiseGeneratorSettings')
+    )
+
+    fieldGroup(
+            'biome effects builder', PROTECTED,
+            named('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
+            matchAny()
+    )
+
+    // Make all creative tab ids accessible
+    fieldGroup(
+            'creative tabs', PUBLIC,
+            named('net/minecraft/world/item/CreativeModeTabs'),
+            fieldsOfType(named('net/minecraft/resources/ResourceKey'))
+    )
+
+    // Make all villager item listings classes and constructors public for use in custom trades
+    classGroup(
+            'villager item listings', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing')
+    )
+    methodGroup(
+            'villager item listing constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
+            named('<init>')
+    )
+}
+
+tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
+    group generateAccessTransformers.group
+    description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
+    input = generateAccessTransformers.input
+    output = rootProject.file("coremods/src/main/resources/net/neoforged/neoforge/coremods/finalize_spawn_targets.json")
+}
+
+tasks.withType(JavaCompile.class).configureEach {
+    // Increase memory used during compilation, to avoid OutOfMemoryErrors
+    options.forkOptions.memoryMaximumSize = '2g'
 }
 
 tasks.withType(Javadoc.class).configureEach {

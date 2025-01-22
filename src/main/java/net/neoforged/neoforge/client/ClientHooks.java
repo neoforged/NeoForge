@@ -8,8 +8,12 @@ package net.neoforged.neoforge.client;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.pipeline.MainTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -49,7 +53,6 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -65,6 +68,7 @@ import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderDefines;
@@ -106,6 +110,7 @@ import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -114,7 +119,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
@@ -142,8 +146,10 @@ import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
+import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -179,6 +185,7 @@ import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
@@ -192,6 +199,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL32;
 
 /**
  * Class for various client-side-only hooks.
@@ -274,7 +282,7 @@ public class ClientHooks {
         var mc = Minecraft.getInstance();
         var profiler = Profiler.get();
         profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
         profiler.pop();
     }
 
@@ -298,10 +306,6 @@ public class ClientHooks {
 
     public static void onBlockColorsInit(BlockColors blockColors) {
         ModLoader.postEvent(new RegisterColorHandlersEvent.Block(blockColors));
-    }
-
-    public static Model getArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model _default) {
-        return IClientItemExtensions.of(itemStack).getGenericArmorModel(itemStack, layerType, _default);
     }
 
     /** Copies humanoid model properties from the original model to another, used for armor models */
@@ -460,11 +464,6 @@ public class ClientHooks {
 
     public static void onModelBake(ModelManager modelManager, ModelBakery.BakingResult bakingResult, ModelBakery modelBakery) {
         ModLoader.postEvent(new ModelEvent.BakingCompleted(modelManager, bakingResult, modelBakery));
-    }
-
-    public static BakedModel handleCameraTransforms(PoseStack poseStack, @Nullable BakedModel model, ItemDisplayContext cameraTransformType, boolean applyLeftHandTransform) {
-        model = model.applyTransform(cameraTransformType, poseStack, applyLeftHandTransform);
-        return model;
     }
 
     @SuppressWarnings("deprecation")
@@ -1099,5 +1098,35 @@ public class ClientHooks {
         vanillaAtlases = new HashMap<>(vanillaAtlases);
         ModLoader.postEvent(new RegisterMaterialAtlasesEvent(vanillaAtlases));
         return Map.copyOf(vanillaAtlases);
+    }
+
+    @ApiStatus.Internal
+    public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
+        return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
+    }
+
+    @ApiStatus.Internal
+    public static MainTarget instantiateMainTarget(int width, int height) {
+        var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
+        return new MainTarget(width, height, e.isStencilEnabled());
+    }
+
+    /**
+     * Called by our stencil hooks to specify the depth+stencil texture.
+     */
+    @ApiStatus.Internal
+    public static void texImageDepthStencil(int width, int height) {
+        var reducedPrecision = NeoForgeConfig.CLIENT.reducedDepthStencilFormat.getAsBoolean();
+        GlStateManager._texImage2D(
+                GL32.GL_TEXTURE_2D,
+                0,
+                reducedPrecision ? GL32.GL_DEPTH24_STENCIL8 : GL32.GL_DEPTH32F_STENCIL8,
+                width, height,
+                0,
+                GL32.GL_DEPTH_STENCIL,
+                // Since data is null, the format here does not matter as long as it matches internalFormat.
+                // So the usage, for depth, of unsigned int in one case and float in the other case, is not a problem.
+                reducedPrecision ? GL32.GL_UNSIGNED_INT_24_8 : GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
+                null);
     }
 }

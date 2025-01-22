@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/resources/model/MultiPartBakedModel.java
 +++ b/net/minecraft/client/resources/model/MultiPartBakedModel.java
-@@ -16,7 +_,7 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
--public class MultiPartBakedModel extends DelegateBakedModel {
-+public class MultiPartBakedModel extends DelegateBakedModel implements net.neoforged.neoforge.client.model.IDynamicBakedModel {
-     private final List<MultiPartBakedModel.Selector> selectors;
-     private final Map<BlockState, BitSet> selectorCache = new Reference2ObjectOpenHashMap<>();
- 
 @@ -33,11 +_,7 @@
          this.selectors = p_119462_;
      }
@@ -64,7 +55,7 @@
 +    }
 +
 +    @Override // FORGE: Get render types based on the selectors matched by the given block state
-+    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
++    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, net.neoforged.neoforge.client.model.data.ModelData data) {
 +        var renderTypeSets = new java.util.LinkedList<net.neoforged.neoforge.client.ChunkRenderTypeSet>();
 +        var selectors = getSelectors(state);
 +        for (int i = 0; i < selectors.length(); i++)

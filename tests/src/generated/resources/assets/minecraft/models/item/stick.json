@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:item/generated",
+  "parent": "minecraft:item/handheld_rod",
   "display": {
     "neotests:hanging": {
       "rotation": [

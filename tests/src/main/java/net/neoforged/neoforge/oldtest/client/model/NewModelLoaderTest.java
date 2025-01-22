@@ -9,7 +9,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.util.Arrays;
+import java.util.stream.Stream;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -19,6 +25,7 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -28,11 +35,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -46,15 +53,8 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.ExtendedUnbakedModel;
 import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
-import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
-import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -68,7 +68,56 @@ public class NewModelLoaderTest {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
-    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", props -> new Block(props) {
+    public static DeferredBlock<Block> obj_block = BLOCKS.registerBlock("obj_block", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+
+    // Same at obj_block except all the parts in the obj model have the same name,
+    // this is a test for neoforged/NeoForge#1755 that was fixed by neoforged/NeoForge#1759
+    public static DeferredBlock<Block> obj_block_same_part_names = BLOCKS.registerBlock("obj_block_same_part_names", TestBlock::new, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
+
+    public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
+        @Override
+        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+            return armorType == EquipmentSlot.HEAD;
+        }
+    });
+
+    public static DeferredItem<Item> obj_item_same_part_names = ITEMS.registerItem("obj_block_same_part_names", props -> new BlockItem(obj_block_same_part_names.get(), props));
+
+    public static DeferredItem<Item> custom_transforms = ITEMS.registerSimpleItem("custom_transforms");
+
+    public static DeferredItem<Item> custom_vanilla_loader = ITEMS.registerSimpleItem("custom_vanilla_loader");
+
+    public static DeferredItem<Item> custom_loader = ITEMS.registerSimpleItem("custom_loader");
+
+    public NewModelLoaderTest(IEventBus modEventBus) {
+        BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
+
+        modEventBus.addListener(this::modelRegistry);
+        modEventBus.addListener(this::datagen);
+        modEventBus.addListener(this::addCreative);
+    }
+
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            Arrays.asList(
+                    obj_item,
+                    obj_item_same_part_names,
+                    custom_transforms,
+                    custom_vanilla_loader,
+                    custom_loader).forEach(event::accept);
+        }
+    }
+
+    public void modelRegistry(ModelEvent.RegisterLoaders event) {
+        event.register(ResourceLocation.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
+    }
+
+    static class TestBlock extends Block {
+        public TestBlock(Properties properties) {
+            super(properties);
+        }
+
         @Override
         protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -85,48 +134,6 @@ public class NewModelLoaderTest {
         public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
             return Block.box(2, 2, 2, 14, 14, 14);
         }
-    }, Block.Properties.of().mapColor(MapColor.WOOD).strength(10));
-
-    public static DeferredItem<Item> obj_item = ITEMS.registerItem("obj_block", props -> new BlockItem(obj_block.get(), props.useBlockDescriptionPrefix()) {
-        @Override
-        public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
-            return armorType == EquipmentSlot.HEAD;
-        }
-    });
-
-    public static DeferredItem<Item> custom_transforms = ITEMS.registerSimpleItem("custom_transforms");
-
-    public static DeferredItem<Item> custom_vanilla_loader = ITEMS.registerSimpleItem("custom_vanilla_loader");
-
-    public static DeferredItem<Item> custom_loader = ITEMS.registerSimpleItem("custom_loader");
-
-    public static DeferredItem<Item> item_layers = ITEMS.registerSimpleItem("item_layers");
-
-    public static DeferredItem<Item> separate_perspective = ITEMS.registerSimpleItem("separate_perspective");
-
-    public NewModelLoaderTest(IEventBus modEventBus) {
-        BLOCKS.register(modEventBus);
-        ITEMS.register(modEventBus);
-
-        modEventBus.addListener(this::modelRegistry);
-        modEventBus.addListener(this::datagen);
-        modEventBus.addListener(this::addCreative);
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            Arrays.asList(
-                    obj_item,
-                    custom_transforms,
-                    custom_vanilla_loader,
-                    custom_loader,
-                    item_layers,
-                    separate_perspective).forEach(event::accept);
-        }
-    }
-
-    public void modelRegistry(ModelEvent.RegisterLoaders event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(MODID, "custom_loader"), new TestLoader());
     }
 
     static class TestLoader implements UnbakedModelLoader<TestModel> {
@@ -168,63 +175,42 @@ public class NewModelLoaderTest {
         final PackOutput output = gen.getPackOutput();
 
         // Let blockstate provider see generated item models by passing its existing file helper
-        ItemModelProvider itemModels = new ItemModels(output, event.getExistingFileHelper());
-        gen.addProvider(true, itemModels);
-        gen.addProvider(true, new BlockStates(output, itemModels.existingFileHelper));
+        gen.addProvider(true, new ModelGen(output));
     }
 
-    public static class ItemModels extends ItemModelProvider {
-        public ItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
-            super(output, MODID, existingFileHelper);
+    private static class ModelGen extends ModelProvider {
+        public ModelGen(PackOutput output) {
+            super(output, MODID);
         }
 
         @Override
-        protected void registerModels() {
-            withExistingParent(NewModelLoaderTest.item_layers.getId().getPath(), "neoforge:item/default")
-                    .texture("particle", "minecraft:block/red_stained_glass")
-                    .texture("layer0", "minecraft:item/coal")
-                    .texture("layer1", "minecraft:item/stick")
-                    .customLoader(ItemLayerModelBuilder::begin)
-                    .emissive(15, 15, 1)
-                    .end();
-            withExistingParent(NewModelLoaderTest.separate_perspective.getId().getPath(), "neoforge:item/default")
-                    .customLoader(SeparateTransformsModelBuilder::begin)
-                    .base(nested().parent(getExistingFile(mcLoc("minecraft:item/coal"))))
-                    .perspective(ItemDisplayContext.GUI, nested().parent(getExistingFile(mcLoc("minecraft:item/snowball"))))
-                    .perspective(ItemDisplayContext.FIRST_PERSON_LEFT_HAND, nested().parent(getExistingFile(mcLoc("minecraft:item/bone"))))
-                    .end();
+        protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+            createModelAndBlockState(obj_block, "sugar_glider", blockModels);
+            createModelAndBlockState(obj_block_same_part_names, "sugar_glider_same_part_names", blockModels);
         }
-    }
 
-    public static class BlockStates extends BlockStateProvider {
-        public BlockStates(PackOutput output, ExistingFileHelper exFileHelper) {
-            super(output, MODID, exFileHelper);
+        private void createModelAndBlockState(DeferredBlock<Block> block, String objModel, BlockModelGenerators blockModels) {
+            var qrTexture = TextureSlot.create("qr");
+
+            blockModels.createHorizontallyRotatedBlock(block.value(), TexturedModel.ORIENTABLE.updateTemplate(template -> template.extend()
+                    .customLoader(ObjModelBuilder::new, loader -> loader
+                            .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/" + objModel + ".obj"))
+                            .flipV(true))
+                    .requiredTextureSlot(qrTexture)
+                    .build())
+                    .updateTexture(textures -> textures
+                            .put(qrTexture, TextureMapping.getBlockTexture(Blocks.OAK_PLANKS))
+                            .copySlot(qrTexture, TextureSlot.PARTICLE)));
         }
 
         @Override
-        protected void registerStatesAndModels() {
-            BlockModelBuilder model = models()
-                    .getBuilder(NewModelLoaderTest.obj_block.getId().getPath())
-                    .customLoader(ObjModelBuilder::begin)
-                    .modelLocation(ResourceLocation.fromNamespaceAndPath("new_model_loader_test", "models/item/sugar_glider.obj"))
-                    .flipV(true)
-                    .end()
-                    .texture("qr", "minecraft:block/oak_planks")
-                    .texture("particle", "#qr");
-            getVariantBuilder(NewModelLoaderTest.obj_block.get())
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
-                    .addModels(new ConfiguredModel(model, 0, 90, false))
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST)
-                    .addModels(new ConfiguredModel(model, 0, 270, false))
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
-                    .addModels(new ConfiguredModel(model))
-                    .partialState()
-                    .with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
-                    .addModels(new ConfiguredModel(model, 0, 180, false))
-                    .partialState();
+        protected Stream<? extends Holder<Block>> getKnownBlocks() {
+            return Stream.of(obj_block, obj_block_same_part_names);
+        }
+
+        @Override
+        protected Stream<? extends Holder<Item>> getKnownItems() {
+            return Stream.of(obj_item, obj_item_same_part_names);
         }
     }
 }

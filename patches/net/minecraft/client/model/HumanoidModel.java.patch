@@ -18,15 +18,6 @@
          }
      }
  
-@@ -372,7 +_,7 @@
-     }
- 
-     @OnlyIn(Dist.CLIENT)
--    public static enum ArmPose {
-+    public static enum ArmPose implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
-         EMPTY(false),
-         ITEM(false),
-         BLOCK(false),
 @@ -385,13 +_,31 @@
          BRUSH(false);
  

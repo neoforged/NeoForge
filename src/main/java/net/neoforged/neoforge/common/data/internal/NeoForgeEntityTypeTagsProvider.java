@@ -13,11 +13,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
-    public NeoForgeEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, "neoforge", existingFileHelper);
+    public NeoForgeEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, "neoforge");
     }
 
     @Override
@@ -32,6 +31,7 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
                         EntityType.JUNGLE_CHEST_BOAT,
                         EntityType.ACACIA_CHEST_BOAT,
                         EntityType.CHERRY_CHEST_BOAT,
+                        EntityType.PALE_OAK_CHEST_BOAT,
                         EntityType.DARK_OAK_CHEST_BOAT,
                         EntityType.MANGROVE_CHEST_BOAT,
                         EntityType.BAMBOO_CHEST_RAFT);

@@ -3,7 +3,7 @@ import java.util.regex.Pattern
 
 plugins {
     id 'net.neoforged.gradleutils' version '3.0.0'
-    id 'com.diffplug.spotless' version '6.22.0' apply false
+    id 'dev.lukebemish.immaculate' version '0.1.6' apply false
     id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
     id 'neoforge.versioning'
@@ -56,14 +56,14 @@ license {
 }
 
 // Put spotless here because it wants the files to live inside the project root
-spotless {
-    java {
-        target rootProject.fileTree("src", {
+immaculate {
+    workflows.named("java") {
+        files.from rootProject.fileTree("src", {
             include "**/*.java"
         })
     }
-    format 'patches', {
-        target rootProject.fileTree("patches")
+    workflows.register("patches") {
+        files.from(rootProject.fileTree("patches"))
 
         custom 'noImportChanges', { String fileContents ->
             if (fileContents.contains('+import') || fileContents.contains('-import')) {
@@ -72,27 +72,21 @@ spotless {
             return fileContents
         }
 
-        def interfaceChange = Pattern.compile('^[-+].*(implements|(interface.*extends)).*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
-        custom 'noInterfaceRemoval', { String fileContents ->
-            def interfaceChanges = fileContents.findAll(interfaceChange)
+        def interfaceChange = Pattern.compile('[-+].*(implements|(interface.*extends))(.*)\\{')
+        custom 'noInterfaceModifications', { String fileContents ->
+            def interfaceChanges = fileContents.lines().filter { it.matches(interfaceChange) }.toList()
             if (interfaceChanges.isEmpty()) return fileContents
-            String removalChange = ""
+            String oldInterfaces = ""
+            // we expect interface additions/removals in pairs of - and then +
             interfaceChanges.each { String change ->
+                final match = change =~ interfaceChange
+                match.find()
+                final values = match.group(3).trim()
                 if (change.startsWith('-')) {
-                    //Skip the - and the ending brace
-                    int implementsIndex = change.indexOf("implements")
-                    if (implementsIndex == -1) implementsIndex = change.indexOf("extends")
-                    //It should never still be -1 based on our initial matching regex, but if it does fail so we can figure out why
-                    if (implementsIndex == -1) implementsIndex = 1
-                    removalChange = change.substring(implementsIndex, change.length() - 1).trim()
-                } else if (!removalChange.isEmpty() && !change.contains(removalChange)) {
-                    throw new GradleException("Removal of interfaces via patches is not allowed!")
-                } else {
-                    removalChange = ""
+                    oldInterfaces = values
+                } else if (oldInterfaces != values) {
+                    throw new GradleException("Modification of interfaces via patches is not allowed!")
                 }
-            }
-            if (!removalChange.isEmpty()) {
-                throw new GradleException("Removal of interfaces via patches is not allowed!")
             }
             return fileContents
         }
@@ -148,11 +142,21 @@ spotless {
             return sb.toString()
         }
 
+        // Disallow explicit not null in patches, it's always implied.
+        custom 'noNotNull', { String fileContents ->
+            fileContents.eachLine {
+                if (!it.startsWith("+")) return
+                if (it.contains('@NotNull') || it.contains('@Nonnull')
+                        || it.contains('@org.jetbrains.annotations.NotNull')
+                        || it.contains('@javax.annotation.Nonnull')) {
+                    throw new GradleException('@NotNull and @Nonnull are disallowed.')
+                }
+            }
+        }
+
         //Replace any FQN versions of javax.annotation.Nullable with the jetbrains variant
         custom 'jetbrainsNullablePatches', { String fileContents ->
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
-
-        bumpThisNumberIfACustomStepChanges(5)
     }
 }

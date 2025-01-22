@@ -8,7 +8,7 @@
              return p_140179_;
          }
      }
-@@ -529,8 +_,11 @@
+@@ -529,12 +_,15 @@
              } else {
                  ChunkAccess chunkaccess = p_140183_.getLatestChunk();
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && chunkaccess != null) {
@@ -16,10 +16,14 @@
 +                    this.chunkTypeCache.remove(chunkaccess.getPos().toLong()); // Neo: Prevent chunk type cache from permanently retaining data for unloaded chunks
                      if (chunkaccess instanceof LevelChunk levelchunk) {
                          levelchunk.setLoaded(false);
-+                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(chunkaccess));
                      }
  
                      this.save(chunkaccess);
+                     if (chunkaccess instanceof LevelChunk levelchunk1) {
++                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkEvent.Unload(levelchunk1));
+                         this.level.unload(levelchunk1);
+                     }
+ 
 @@ -579,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkLoad");
                  if (p_372662_.isPresent()) {
@@ -48,6 +52,27 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
+@@ -955,6 +_,20 @@
+         }
+     }
+ 
++    void collectForceTickingChunks(List<LevelChunk> list) {
++        var itr = distanceManager.forcedTickets.long2ObjectEntrySet().fastIterator();
++        while (itr.hasNext()) {
++            var entry = itr.next();
++            ChunkHolder holder = this.visibleChunkMap.get(entry.getLongKey());
++            if (holder != null && !entry.getValue().isEmpty()) {
++                var chunk = holder.getTickingChunk();
++                if (chunk != null) {
++                    list.add(chunk);
++                }
++            }
++        }
++    }
++
+     boolean anyPlayerCloseEnoughForSpawning(ChunkPos p_183880_) {
+         return !this.distanceManager.hasPlayersNearby(p_183880_.toLong()) ? false : this.anyPlayerCloseEnoughForSpawningInternal(p_183880_);
+     }
 @@ -1059,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }

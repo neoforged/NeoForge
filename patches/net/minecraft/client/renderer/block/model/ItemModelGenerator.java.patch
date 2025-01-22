@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
 +++ b/net/minecraft/client/renderer/block/model/ItemModelGenerator.java
-@@ -20,7 +_,7 @@
- import org.joml.Vector3f;
- 
- @OnlyIn(Dist.CLIENT)
--public class ItemModelGenerator implements UnbakedModel {
-+public class ItemModelGenerator implements UnbakedModel, net.neoforged.neoforge.client.model.ExtendedUnbakedModel {
-     public static final ResourceLocation GENERATED_ITEM_MODEL_ID = ResourceLocation.withDefaultNamespace("builtin/generated");
-     public static final List<String> LAYERS = List.of("layer0", "layer1", "layer2", "layer3", "layer4");
-     private static final float MIN_Z = 7.5F;
 @@ -43,13 +_,23 @@
      }
  

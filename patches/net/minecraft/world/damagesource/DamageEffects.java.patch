@@ -1,16 +1,14 @@
 --- a/net/minecraft/world/damagesource/DamageEffects.java
 +++ b/net/minecraft/world/damagesource/DamageEffects.java
-@@ -5,7 +_,9 @@
+@@ -5,6 +_,8 @@
  import net.minecraft.sounds.SoundEvents;
  import net.minecraft.util.StringRepresentable;
  
--public enum DamageEffects implements StringRepresentable {
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
-+public enum DamageEffects implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum DamageEffects implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      HURT("hurt", SoundEvents.PLAYER_HURT),
      THORNS("thorns", SoundEvents.THORNS_HIT),
-     DROWNING("drowning", SoundEvents.PLAYER_HURT_DROWN),
 @@ -15,11 +_,33 @@
  
      public static final Codec<DamageEffects> CODEC = StringRepresentable.fromEnum(DamageEffects::values);

@@ -63,9 +63,8 @@ public interface IBakedModelExtension {
      * Applies a transform for the given {@link ItemTransforms.TransformType} and {@code applyLeftHandTransform}, and
      * returns the model to be rendered.
      */
-    default BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+    default void applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
         self().getTransforms().getTransform(transformType).apply(applyLeftHandTransform, poseStack);
-        return self();
     }
 
     default ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
