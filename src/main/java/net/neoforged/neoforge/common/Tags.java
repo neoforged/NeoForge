@@ -678,6 +678,7 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_TORCHFLOWER = tag("seeds/torchflower");
+        public static final TagKey<Item> SEEDS_PITCHER_PLANT = tag("seeds/pitcher_plant");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
         /**
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
@@ -803,6 +804,14 @@ public class Tags {
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
+        /**
+         * A tag containing all existing wrenches. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_WRENCH = tag("tools/wrench");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
          * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.

@@ -13,6 +13,22 @@
              return this.lastRebuildTask;
          }
  
+@@ -441,6 +_,15 @@
+             );
+         }
+ 
++        // Neo: start
++
++        @Override
++        public boolean isEmpty() {
++            return !getCompiled().hasRenderableLayers();
++        }
++
++        // Neo: end
++
+         @OnlyIn(Dist.CLIENT)
+         public abstract class CompileTask {
+             protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
 @@ -470,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable

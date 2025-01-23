@@ -249,7 +249,7 @@
              if (j < k) {
                  j = k;
              }
-@@ -1449,5 +_,22 @@
+@@ -1449,5 +_,27 @@
  
      public CloudRenderer getCloudRenderer() {
          return this.cloudRenderer;
@@ -270,5 +270,10 @@
 +        synchronized (this.globalBlockEntities) {
 +            this.globalBlockEntities.forEach(blockEntityConsumer);
 +        }
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public Iterable<? extends net.neoforged.neoforge.client.IRenderableSection> getRenderableSections() {
++            return this.visibleSections;
      }
  }

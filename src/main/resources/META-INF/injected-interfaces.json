@@ -234,6 +234,9 @@
   "net/minecraft/client/data/models/model/TexturedModel$Provider": [
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$Provider"
   ],
+  "net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection": [
+    "net/neoforged/neoforge/client/IRenderableSection"
+  ],
   "com/mojang/blaze3d/vertex/VertexFormatElement$Usage": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
