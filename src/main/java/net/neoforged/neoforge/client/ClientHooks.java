@@ -1122,15 +1122,6 @@ public class ClientHooks {
         return RECIPE_BOOK_TYPES;
     }
 
-    private static final RandomSource OUTLINE_PASS_RANDOM = RandomSource.create();
-
-    public static boolean isInTranslucentBlockOutlinePass(Level level, BlockPos pos, BlockState state) {
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        OUTLINE_PASS_RANDOM.setSeed(42);
-        ChunkRenderTypeSet renderTypes = model.getRenderTypes(state, OUTLINE_PASS_RANDOM, level.getModelData(pos));
-        return renderTypes.contains(RenderType.TRANSLUCENT) || renderTypes.contains(RenderType.TRIPWIRE);
-    }
-
     public static void reloadRenderer() {
         Minecraft.getInstance().levelRenderer.allChanged();
     }
