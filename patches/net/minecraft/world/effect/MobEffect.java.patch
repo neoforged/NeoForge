@@ -32,7 +32,7 @@
          return this.requiredFeatures;
      }
  
--    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+-    public static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
 +    /**
 +     * Neo: Allowing mods to define client behavior for their MobEffects
 +     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
@@ -41,7 +41,7 @@
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
 +    }
 +
-+    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
++    public static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation, @Nullable it.unimi.dsi.fastutil.ints.Int2DoubleFunction curve) {
 +
 +        public AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
 +            this(id, amount, operation, null);
