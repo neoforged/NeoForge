@@ -17,7 +17,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
@@ -84,7 +84,7 @@ public class ItemInventoryTests {
 
             inserted = items.insert(0, appleResource, INSERT_AMOUNT, TransferAction.EXECUTE);
             helper.assertTrue(inserted == INSERT_AMOUNT, "Successfully inserting the entire item should return the amount inserted, AKA 32.");
-            helper.assertTrue(HandlerUtil.resourceAndCountMatches(items, 0, appleResource, INSERT_AMOUNT), "Successfully inserting an item should be visible via the get methods");
+            helper.assertTrue(ResourceHandlerUtil.resourceAndCountMatches(items, 0, appleResource, INSERT_AMOUNT), "Successfully inserting an item should be visible via the get methods");
 
             ItemContainerContents newContents = stack.get(DataComponents.CONTAINER);
             helper.assertTrue(ItemStack.isSameItemSameComponents(appleResource.toStack(INSERT_AMOUNT), newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
@@ -92,14 +92,14 @@ public class ItemInventoryTests {
             ItemResource resource = items.getResource(0);
             int extractedApple = items.extract(0, resource, INSERT_AMOUNT, TransferAction.EXECUTE);
             helper.assertTrue(extractedApple == INSERT_AMOUNT, "Extracting the entire inserted item should produce the same item.");
-            helper.assertTrue(HandlerUtil.isIndexEmpty(items, 0), "Extracting the entire inserted item should leave the slot empty.");
+            helper.assertTrue(ResourceHandlerUtil.isIndexEmpty(items, 0), "Extracting the entire inserted item should leave the slot empty.");
 
             int extractedStick = items.extract(STICK_SLOT, Items.STICK.defaultResource, EXTRACT_AMOUNT, TransferAction.EXECUTE);
             helper.assertTrue(extractedStick == EXTRACT_AMOUNT, "The extracted item from the stick slot should be a 64-count stick.");
-            helper.assertTrue(HandlerUtil.isIndexEmpty(items, STICK_SLOT), "Extracting the entire stack should leave the slot empty.");
+            helper.assertTrue(ResourceHandlerUtil.isIndexEmpty(items, STICK_SLOT), "Extracting the entire stack should leave the slot empty.");
 
             for (int i = 0; i < SLOTS; i++) {
-                helper.assertTrue(HandlerUtil.isIndexEmpty(items, i), "Stack at slot " + i + " must be empty.");
+                helper.assertTrue(ResourceHandlerUtil.isIndexEmpty(items, i), "Stack at slot " + i + " must be empty.");
             }
 
             helper.succeed();

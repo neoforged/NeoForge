@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.items.wrappers;
 
 import net.minecraft.world.Container;
-import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
@@ -71,7 +71,8 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isEmpty() || !allowsInsertion(index) || !isValid(index, resource)) return 0;
+        //allows is a hint, not a logic function.
+        if (amount <= 0 || resource.isEmpty()/* || !allowsInsertion(index)*/ || !isValid(index, resource)) return 0;
         ResourceStack<ItemResource> stack = getContainer().getItem(index).immutable();
         if (stack.isEmpty()) {
             int insert = Math.min(amount, getCapacity(index, resource));
@@ -91,7 +92,7 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isEmpty() || !allowsExtraction(index) ||!isExtractable(index, resource)) return 0;
+        if (amount <= 0 || resource.isEmpty()/* || !allowsExtraction(index)*/ ||!isExtractable(index, resource)) return 0;
         ResourceStack<ItemResource> stack = getContainer().getItem(index).immutable();
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extract = Math.min(amount, stack.amount());
@@ -103,12 +104,12 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
 
     @Override
     public int insert(ItemResource resource, int amount, TransferAction action) {
-        return HandlerUtil.insertStacking(this, resource, amount, action);
+        return ResourceHandlerUtil.insertStacking(this, resource, amount, action);
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransferAction action) {
-        return HandlerUtil.extract(this, resource, amount, action);
+        return ResourceHandlerUtil.extract(this, resource, amount, action);
     }
 
     public Container getContainer() {

@@ -9,7 +9,6 @@ import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 public class SingleResourceStorageItem<T extends IResource> implements ISingleResourceHandler<T>  {
     protected final IItemContext context;
@@ -20,28 +19,29 @@ public class SingleResourceStorageItem<T extends IResource> implements ISingleRe
     protected final T emptyResource;
     protected final ResourceStack<T> emptyStack;
 
-    protected Predicate<T> validator = r -> true;
+    protected final Predicate<T> validator;
 
     public SingleResourceStorageItem(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit) {
+        this(context, componentType, emptyResource, singleItemLimit, r->true);
+    }
+
+    public SingleResourceStorageItem(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit, Predicate<T> validator) {
         this.context = context;
         this.componentType = componentType;
         this.singleItemLimit = singleItemLimit;
         this.emptyResource = emptyResource;
         this.emptyStack = new ResourceStack<>(emptyResource, 0);
+        this.validator = validator;
     }
 
-    public SingleResourceStorageItem<T> setValidator(Predicate<T> validator) {
-        this.validator = validator;
-        return this;
-    }
 
     @Override
-    public T getResource() {
+    public T getResource(int index) {
         return context.getResource().getOrDefault(componentType, emptyStack).resource();
     }
 
     @Override
-    public int getAmount() {
+    public int getAmount(int index) {
         return getSingleItemAmount() * context.getAmount();
     }
 
@@ -50,12 +50,21 @@ public class SingleResourceStorageItem<T extends IResource> implements ISingleRe
     }
 
     @Override
-    public int getCapacity(T resource) {
-        return getCapacity();
+    public int getCapacity(int index, T resource) {
+        //Test the validity of the inquired resource.
+        if (!isValid(resource)) return 0;
+
+        //Assuming it was valid, we now need to check to see if the current resource is the same or is empty
+        var stored = context.getResource().getOrDefault(componentType, emptyStack).resource();
+        if (!stored.isEmpty() && !stored.equals(resource)) return 0;
+        //This ignores say the ItemStack size limits at the moment. As well as possibly able to overflow if done incorrectly
+        return singleItemLimit*context.getAmount();
     }
 
+    //Theoretical version
     @Override
-    public int getCapacity() {
+    public int getCapacity(int index) {
+        //Possibly able to overflow if done incorrectly
         return singleItemLimit * context.getAmount();
     }
 
@@ -81,7 +90,7 @@ public class SingleResourceStorageItem<T extends IResource> implements ISingleRe
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         if (resource.isEmpty() || amount <= 0 || !isValid(resource)) return 0;
-        T presentResource = getResource();
+        T presentResource = getResource(0);
         if (presentResource.isEmpty()) {
             if (amount < singleItemLimit) return setPartial(resource, amount, action) == 1 ? amount : 0;
             return setFull(resource, amount / singleItemLimit, action) * singleItemLimit;
@@ -97,7 +106,7 @@ public class SingleResourceStorageItem<T extends IResource> implements ISingleRe
 
     @Override
     public int extract(T resource, int amount, TransferAction action) {
-        if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource().equals(resource)) return 0;
+        if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource(0).equals(resource)) return 0;
         int containerFill = getSingleItemAmount();
         if (amount < containerFill) {
             int exchanged = setPartial(resource, containerFill - amount, action);
@@ -115,12 +124,12 @@ public class SingleResourceStorageItem<T extends IResource> implements ISingleRe
     }
 
     protected int setFull(T resource, int count, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(componentType, new ResourceStack<>(resource, singleItemLimit));
+        ItemResource filledContainer = context.getResource().with(componentType, new ResourceStack<>(resource, singleItemLimit));
         return context.exchange(filledContainer, count, action);
     }
 
     protected int setPartial(T resource, int amount, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(componentType, new ResourceStack<>(resource, amount));
+        ItemResource filledContainer = context.getResource().with(componentType, new ResourceStack<>(resource, amount));
         return context.exchange(filledContainer, 1, action);
     }
 }

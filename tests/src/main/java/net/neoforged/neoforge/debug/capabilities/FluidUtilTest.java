@@ -51,7 +51,8 @@ public class FluidUtilTest {
     private static final RegistrationHelper HELPER = RegistrationHelper.create("item_fluid_util_tests");
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = HELPER.attachments();
 
-    private static final Supplier<AttachmentType<ResourceStorageContents<FluidResource>>> FLUID_COMPONENT = ATTACHMENTS.register("test_fluid", AttachmentType.builder(() -> new ResourceStorageContents<>(1, FluidResource.NONE))::build);
+    private static final Supplier<AttachmentType<ResourceStorageContents<FluidResource>>> FLUID_COMPONENT =
+            ATTACHMENTS.register("test_fluid", AttachmentType.builder(() -> ResourceStorageContents.of(1, FluidResource.NONE))::build);
 
     @OnInit
     static void init(final TestFramework framework) {

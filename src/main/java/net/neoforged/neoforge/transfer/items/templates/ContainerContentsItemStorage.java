@@ -32,7 +32,8 @@ public class ContainerContentsItemStorage implements IResourceHandlerModifiable<
     }
 
     public int setAndValidate(ItemContainerContents contents, int changedAmount, TransferAction action) {
-        return context.exchange(context.getResource().set(componentType, contents), 1, action) == 1 ? changedAmount : 0;
+        // 1? curious what "1" is representing here.
+        return context.exchange(context.getResource().with(componentType, contents), 1, action) == 1 ? changedAmount : 0;
     }
 
     @Override
@@ -42,17 +43,14 @@ public class ContainerContentsItemStorage implements IResourceHandlerModifiable<
 
     @Override
     public ItemResource getResource(int index) {
-        return getContents().getImmutableStackInSlot(index).resource();
+        // You may need to still add what you had before. Depends on if this really resulted in much better
+        //return getContents().getImmutableStackInSlot(index).resource();
+        return ItemResource.of(getContents().getStackInSlot(index));
     }
 
     @Override
     public int getAmount(int index) {
-        return getContents().getImmutableStackInSlot(index).amount();
-    }
-
-    @Override
-    public int getCapacity(int index, ItemResource resource) {
-        return resource.getMaxStackSize();
+        return getContents().getStackInSlot(index).getCount();
     }
 
     @Override
@@ -61,8 +59,14 @@ public class ContainerContentsItemStorage implements IResourceHandlerModifiable<
     }
 
     @Override
+    public int getCapacity(int index, ItemResource resource) {
+        return Math.min(resource.getMaxStackSize(), getCapacity(index));
+    }
+
+    @Override
     public boolean isValid(int index, ItemResource resource) {
-        return true;
+        var current = getResource(index);
+        return current.isEmpty() || current.equals(resource);
     }
 
     @Override
@@ -77,22 +81,27 @@ public class ContainerContentsItemStorage implements IResourceHandlerModifiable<
 
     @Override
     public void set(int index, ItemResource resource, int amount) {
-        ItemContainerContents contents = getContents().set(index, resource, amount);
-        setAndValidate(contents, 0, TransferAction.EXECUTE);
+        ItemContainerContents contents = getContents();
+        contents.getStackInSlot(index).setCount(amount);
+        //The amount here was 0. Why? ADRIAN&SOARYN
+        setAndValidate(contents, amount, TransferAction.EXECUTE);
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
         if (amount <= 0 || resource.isEmpty() || !isValid(index, resource)) return 0;
         ItemContainerContents contents = getContents();
-        ResourceStack<ItemResource> stack = contents.getImmutableStackInSlot(index);
+        ItemStack stack = contents.getStackInSlot(index);
         if (stack.isEmpty()) {
             amount = Math.min(amount, resource.getMaxStackSize());
+
             return setAndValidate(contents.set(index, resource, amount), amount, action);
-        } else if (stack.resource().equals(resource) && stack.amount() < resource.getMaxStackSize()) {
-            int newAmount = Math.min(stack.amount() + amount, resource.getMaxStackSize());
-            amount = newAmount - stack.amount();
-            return setAndValidate(contents.set(index, resource, newAmount), amount, action);
+        } else if (resource.matches(stack) && stack.getCount() < resource.getMaxStackSize()) {
+            int newAmount = Math.min(stack.getCount() + amount, resource.getMaxStackSize());
+            amount = newAmount - stack.getCount();
+            if(action.isExecuting())
+                stack.grow(amount);
+            return setAndValidate(contents, amount, action);
         }
         return 0;
     }

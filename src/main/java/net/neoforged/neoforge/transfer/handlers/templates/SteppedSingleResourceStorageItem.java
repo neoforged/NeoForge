@@ -9,7 +9,6 @@ import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 public class SteppedSingleResourceStorageItem<T extends IResource> implements ISingleResourceHandler<T> {
     protected final IItemContext context;
@@ -20,23 +19,28 @@ public class SteppedSingleResourceStorageItem<T extends IResource> implements IS
     protected final T emptyResource;
     protected final ResourceStack<T> emptyStack;
 
-    protected Predicate<T> validator = r -> true;
+    protected final Predicate<T> validator;
 
     public SteppedSingleResourceStorageItem(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit) {
+        this(context, componentType, emptyResource, singleItemLimit, r -> true);
+    }
+
+    public SteppedSingleResourceStorageItem(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit, Predicate<T> validator) {
         this.context = context;
         this.componentType = componentType;
         this.singleItemLimit = singleItemLimit;
         this.emptyResource = emptyResource;
         this.emptyStack = new ResourceStack<>(emptyResource, 0);
+        this.validator = validator;
     }
 
     @Override
-    public T getResource() {
+    public T getResource(int index) {
         return context.getResource().getOrDefault(componentType, emptyStack).resource();
     }
 
     @Override
-    public int getAmount() {
+    public int getAmount(int index) {
         return getSingleItemAmount() * context.getAmount();
     }
 
@@ -45,12 +49,12 @@ public class SteppedSingleResourceStorageItem<T extends IResource> implements IS
     }
 
     @Override
-    public int getCapacity(T resource) {
-        return getCapacity();
+    public int getCapacity(int index, T resource) {
+        return getCapacity(index);
     }
 
     @Override
-    public int getCapacity() {
+    public int getCapacity(int index) {
         return singleItemLimit * context.getAmount();
     }
 
@@ -82,7 +86,7 @@ public class SteppedSingleResourceStorageItem<T extends IResource> implements IS
 
     @Override
     public int extract(T resource, int amount, TransferAction action) {
-        if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource().equals(resource)) return 0;
+        if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource(0).equals(resource)) return 0;
         if (amount > singleItemLimit) {
             int extractedCount = amount / singleItemLimit;
             int exchanged = empty(extractedCount, action);
@@ -97,7 +101,7 @@ public class SteppedSingleResourceStorageItem<T extends IResource> implements IS
     }
 
     protected int fill(T resource, int count, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(componentType, new ResourceStack<>(resource, singleItemLimit));
+        ItemResource filledContainer = context.getResource().with(componentType, new ResourceStack<>(resource, singleItemLimit));
         return context.exchange(filledContainer, count, action);
     }
 }

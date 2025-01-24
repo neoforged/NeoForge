@@ -15,6 +15,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +25,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.MutableResourceStack;
 import net.neoforged.neoforge.transfer.ResourceStack;
 
 import java.util.ArrayList;
@@ -44,21 +47,44 @@ public final class ItemResource implements IResource, DataComponentHolder {
      */
     public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC
             .xmap(ItemResource::of, ItemResource::toStack);
+
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts blank resources.
      */
     public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
             .xmap(o -> o.orElse(ItemResource.NONE), r -> r.isEmpty() ? Optional.of(ItemResource.NONE) : Optional.of(r));
+
     /**
      * Codec for an item resource and an amount. Does <b>not</b> accept empty stacks.
      */
     public static final Codec<ResourceStack<ItemResource>> WITH_AMOUNT_CODEC = ItemStack.CODEC
-            .xmap(ItemStack::immutable, ItemStack::of);
+            .xmap(ItemStack::immutable, ItemResource::toStackWithCount);
+
     /**
      * Codec for an item resource and an amount. Accepts empty stacks.
      */
     public static final Codec<ResourceStack<ItemResource>> OPTIONAL_WITH_AMOUNT_CODEC = ItemStack.OPTIONAL_CODEC
-            .xmap(ItemStack::immutable, ItemStack::of);
+            .xmap(ItemStack::immutable, ItemResource::toStackWithCount);
+
+    //ADRIAN&SOARYN: Do we need these or should we just assume the user will use *_WITH_AMOUNT_CODEC and map them?
+    /**
+     * Codec for storing a {@link MutableResourceStack}. Does <b>not</b> accept empty stacks.
+     */
+    public static final Codec<MutableResourceStack<ItemResource>> WITH_MUTABLE_AMOUNT_CODEC =  ItemStack.CODEC
+            .xmap(ItemStack::immutable, ItemResource::toStackWithCount)
+            .xmap(ResourceStack::mutable, MutableResourceStack::immutable);
+
+    /**
+     * Codec for storing a {@link MutableResourceStack}. Accepts empty stacks.
+     */
+    public static final Codec<MutableResourceStack<ItemResource>> OPTIONAL_WITH_MUTABLE_AMOUNT_CODEC = ItemStack.OPTIONAL_CODEC
+            .xmap(ItemStack::immutable, ItemResource::toStackWithCount)
+            .xmap(ResourceStack::mutable, MutableResourceStack::immutable);
+
+    private static ItemStack toStackWithCount(ResourceStack<ItemResource> resourceStack) {
+        return resourceStack.resource().toStack(resourceStack.amount());
+    }
+
     /**
      * Stream codec for an item resource. Accepts blank resources.
      */
@@ -102,20 +128,26 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.is(item);
     }
 
+    public boolean is(TagKey<Item> item) {
+        return innerStack.is(item);
+    }
+
     public ItemResource applyPatch(DataComponentPatch patch) {
         ItemStack stack = innerStack.copy();
         stack.applyComponents(patch);
         return new ItemResource(stack);
     }
 
-    public <D> ItemResource set(DataComponentType<D> type, D data) {
+    //This may want to be called `with` to imply it is creating a new copy rather than what `set` implies where as ItemStack can SET
+    //was called set ADRIAN&SOARYN
+    public <D> ItemResource with(DataComponentType<D> type, D data) {
         ItemStack stack = innerStack.copy();
         stack.set(type, data);
         return new ItemResource(stack);
     }
 
-    public <D> ItemResource set(Supplier<DataComponentType<D>> type, D data) {
-        return set(type.get(), data);
+    public <D> ItemResource with(Supplier<DataComponentType<D>> type, D data) {
+        return with(type.get(), data);
     }
 
     public ItemResource remove(DataComponentType<?> type) {

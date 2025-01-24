@@ -13,7 +13,18 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
-public class HandlerUtil {
+public final class ResourceHandlerUtil {
+    /**
+     * PR NOTES: This is likely going to be a point of contention; do we limit a dev to be locked in at a readable number or do we let them have ~147million more points of data?
+     * Realistically, it should be in favor of the player to present them the best options for readability; without sacrificing the functional aspects. The effective max limit is still an integer max,
+     * but this is to try to encourage a more human approach for the player's sake. It should be assumed these numbers are very much visible to the player. At the point where 2 billion is not enough for a single call, something has gone awry earlier than just "insert" or "extract".
+     * <p>
+     * A near max int value intended to be easier to view in normal gameplay. (2E9)
+     * While {@link Integer#MAX_VALUE} does tend to make sense as a structural upper bound it is far to often used at the player's expense of reading.
+     * Anything breaking past this boundary (whether it is by storing a long internally or otherwise), the main request is to maintain rapid human readability.
+     */
+    public static final int PRETTY_MAX_INT = 2000000000;
+
 
     /**
      * Checks if an {@link IResourceHandler} is empty.
@@ -126,7 +137,7 @@ public class HandlerUtil {
         int inserted = 0;
         int size = handler.size();
         for (int index = 0; index < size; index++) {
-            if (HandlerUtil.isIndexEmpty(handler, index)) continue;
+            if (ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -134,7 +145,7 @@ public class HandlerUtil {
         }
 
         for (int index = 0; index < size; index++) {
-            if (!HandlerUtil.isIndexEmpty(handler, index)) continue;
+            if (!ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
             if (inserted >= amount) {
                 return inserted;
@@ -287,4 +298,6 @@ public class HandlerUtil {
     public static <T extends IResource> ResourceStack<T> moveAny(IResourceHandler<T> from, IResourceHandler<T> to, int amount, TransferAction action) {
         return moveFiltered(from, to, Predicate.not(IResource::isEmpty), amount, action);
     }
+
+    private ResourceHandlerUtil(){}
 }

@@ -14,7 +14,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
@@ -69,7 +69,7 @@ public class FluidTemplatesTests {
         if (!player.getMainHandItem().has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected fluid stack component");
         }
-        if (HandlerUtil.resourceAndCountMatches(fluidHandler, 0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME)) {
+        if (ResourceHandlerUtil.resourceAndCountMatches(fluidHandler, 0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME)) {
             helper.fail("Expected a bucket of water");
         }
 
@@ -77,7 +77,7 @@ public class FluidTemplatesTests {
         if (drained != FluidType.BUCKET_VOLUME) {
             helper.fail("Expected to drain a bucket of water");
         }
-        if (!HandlerUtil.isIndexEmpty(fluidHandler, 0)) {
+        if (!ResourceHandlerUtil.isIndexEmpty(fluidHandler, 0)) {
             helper.fail("Expected empty tank");
         }
         if (player.getMainHandItem().has(SIMPLE_FLUID_CONTENT)) {

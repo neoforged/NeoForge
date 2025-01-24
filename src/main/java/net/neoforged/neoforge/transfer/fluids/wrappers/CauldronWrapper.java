@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
@@ -36,26 +37,29 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public FluidResource getResource() {
+    public FluidResource getResource(int index) {
         BlockState state = level.getBlockState(pos);
         return getContent(state).fluid.defaultResource;
     }
 
     @Override
-    public int getAmount() {
+    public int getAmount(int index) {
         BlockState state = level.getBlockState(pos);
         return getContent(state).getMillibuckets(state);
     }
 
     @Override
-    public int getCapacity(FluidResource resource) {
+    public int getCapacity(int index, FluidResource resource) {
         CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getFluid());
         return fluidContent == null ? 0 : fluidContent.totalAmount;
     }
 
     @Override
-    public int getCapacity() {
-        return Integer.MAX_VALUE; // CauldronFluidContent.totalAmount does not have a maximum value
+    public int getCapacity(int index) {
+        //We could probably have something that queries all of the totalAmounts for every fluid at startup, and have that;
+        // but 1 bucket seems more reasonable as a theoretical than MaxInt
+        return FluidType.BUCKET_VOLUME;
+        //        return Integer.MAX_VALUE; // CauldronFluidContent.totalAmount does not have a maximum value
     }
 
     @Override
@@ -125,14 +129,14 @@ public class CauldronWrapper implements ISingleResourceHandler<FluidResource> {
         int extractedIncrements = Math.min(amount / amountIncrements, currentLevel / levelIncrements);
         if (extractedIncrements > 0) {
             int newLevel = currentLevel - extractedIncrements * levelIncrements;
-            if (newLevel == 0) {
-                // Fully extract -> back to empty cauldron
-                if (action.isExecuting()) {
+            if (action.isExecuting()) {
+                if (newLevel == 0) {
+                    // Fully extract -> back to empty cauldron
                     level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
+                } else {
+                    // Otherwise just decrease levels
+                    updateLevel(content, newLevel);
                 }
-            } else {
-                // Otherwise just decrease levels
-                if (action.isExecuting()) updateLevel(content, newLevel);
             }
         }
 

@@ -8,68 +8,71 @@ package net.neoforged.neoforge.transfer.handlers.templates;
 import net.neoforged.neoforge.transfer.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
 /**
- * An {@link ISingleResourceHandler} that represents a handler that rejects all operations.
+ * An {@link IResourceHandler} that represents a handler that rejects all operations.
  * You should use the static instances {@link #ITEM} and {@link #FLUID} instead of creating new instances.
  * If you're using this with a different resource type, you should create a new static instance.
  *
  * @param <T> The type of resource
  */
-public class EmptyHandler<T extends IResource> implements ISingleResourceHandler<T> {
+public record EmptyHandler<T extends IResource>(T emptyResource) implements IResourceHandler<T> {
     public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.NONE);
     public static final EmptyHandler<FluidResource> FLUID = new EmptyHandler<>(FluidResource.NONE);
 
-    private final T emptyResource;
-
-    public EmptyHandler(T emptyResource) {
-        this.emptyResource = emptyResource;
-    }
-
     @Override
-    public T getResource() {
+    public int size() {
+        return 0;
+    }
+    @Override
+    public int insert(T resource, int amount, TransferAction action) {
+        return 0;
+    }
+    @Override
+    public int insert(int index, T resource, int amount, TransferAction action) {
+        return 0;
+    }
+    @Override
+    public int extract(T resource, int amount, TransferAction action) {
+        return 0;
+    }
+    @Override
+    public int extract(int index, T resource, int amount, TransferAction action) {
+        return 0;
+    }
+    @Override
+    public T getResource(int index) {
         return emptyResource;
     }
-
     @Override
-    public int getAmount() {
+    public int getAmount(int index) {
         return 0;
     }
-
     @Override
-    public int getCapacity(T resource) {
+    public int getCapacity(int index) {
         return 0;
     }
-
     @Override
-    public int getCapacity() {
+    public int getCapacity(int index, T resource) {
         return 0;
     }
 
     @Override
     public boolean isValid(T resource) {
-        return true;
-    }
-
-    @Override
-    public boolean allowsInsertion() {
         return false;
     }
-
     @Override
-    public boolean allowsExtraction() {
+    public boolean isValid(int index, T resource) {
         return false;
     }
-
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
-        return 0;
+    public boolean allowsInsertion(int index) {
+        return false;
     }
-
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
-        return 0;
+    public boolean allowsExtraction(int index) {
+        return false;
     }
 }

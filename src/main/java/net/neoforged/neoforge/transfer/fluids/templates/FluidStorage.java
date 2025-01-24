@@ -11,7 +11,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorage;
 
 public abstract class FluidStorage extends ResourceStorage<FluidResource> {
     public FluidStorage(int size, int indexCapacity) {
-        super(FluidResource.NONE, size, indexCapacity);
+        super(size, indexCapacity, FluidResource.NONE);
     }
 
     public static class Component extends FluidStorage {
@@ -26,12 +26,12 @@ public abstract class FluidStorage extends ResourceStorage<FluidResource> {
 
         @Override
         public ResourceStorageContents<FluidResource> getContents() {
-            return context.getResource().getOrDefault(componentType, new ResourceStorageContents<>(size, emptyResource));
+            return context.getResource().getOrDefault(componentType, ResourceStorageContents.of(size, FluidResource.NONE));
         }
 
         @Override
         public int setAndValidate(ResourceStorageContents<FluidResource> contents, int changedAmount, TransferAction action) {
-            return context.exchange(context.getResource().set(componentType, contents), 1, action) == 1 ? changedAmount : 0;
+            return context.exchange(context.getResource().with(componentType, contents), 1, action) == 1 ? changedAmount : 0;
         }
     }
 

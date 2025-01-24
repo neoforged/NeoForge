@@ -21,7 +21,7 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
@@ -101,7 +101,7 @@ public class FluidUtil {
      */
     @Nullable
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, TransferAction action) {
-        ResourceStack<FluidResource> moved = HandlerUtil.moveAny(from, to, amount, action);
+        ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveAny(from, to, amount, action);
         if (moved == null || moved.isEmpty()) return null;
 
         if (action == TransferAction.EXECUTE) {

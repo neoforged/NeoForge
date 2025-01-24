@@ -11,7 +11,6 @@ import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -59,9 +58,8 @@ public class ScopedHandlerWrapper<T extends IResource> extends DelegatingHandler
         IResourceHandler<T> handler = getDelegate();
         for (int index : indices) {
             inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount) {
-                return inserted;
-            }
+            if (inserted >= amount)
+                break;
         }
         return inserted;
     }
@@ -72,9 +70,8 @@ public class ScopedHandlerWrapper<T extends IResource> extends DelegatingHandler
         IResourceHandler<T> handler = getDelegate();
         for (int index : indices) {
             extracted += handler.extract(index, resource, amount - extracted, action);
-            if (extracted >= amount) {
-                return extracted;
-            }
+            if (extracted >= amount)
+                break;
         }
         return extracted;
     }

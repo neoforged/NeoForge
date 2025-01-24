@@ -8,11 +8,12 @@ package net.neoforged.neoforge.transfer.items.wrappers;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
+//In what context of "recipe"?
 public class RecipeWrapper implements Container {
     protected final IResourceHandlerModifiable<ItemResource> handler;
 
@@ -28,7 +29,7 @@ public class RecipeWrapper implements Container {
     @Override
     public boolean isEmpty() {
         for (int i = 0; i < handler.size(); i++) {
-            if (!HandlerUtil.isIndexEmpty(handler, i)) return false;
+            if (!ResourceHandlerUtil.isIndexEmpty(handler, i)) return false;
         }
         return true;
     }
@@ -40,7 +41,7 @@ public class RecipeWrapper implements Container {
 
     @Override
     public ItemStack removeItem(int index, int amount) {
-        if (HandlerUtil.isIndexEmpty(handler, index)) return ItemStack.EMPTY;
+        if (ResourceHandlerUtil.isIndexEmpty(handler, index)) return ItemStack.EMPTY;
         ItemResource resource = handler.getResource(index);
         return resource.toStack(handler.extract(index, resource, amount, TransferAction.EXECUTE));
     }

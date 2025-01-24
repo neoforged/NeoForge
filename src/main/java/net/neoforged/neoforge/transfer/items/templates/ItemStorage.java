@@ -12,12 +12,12 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
 
 public abstract class ItemStorage extends ResourceStorage<ItemResource> {
     public ItemStorage(int size) {
-        super(ItemResource.NONE, size, Item.ABSOLUTE_MAX_STACK_SIZE);
+        super( size, Item.ABSOLUTE_MAX_STACK_SIZE, ItemResource.NONE);
     }
 
     @Override
     public int getCapacity(int index, ItemResource resource) {
-        return resource.getMaxStackSize();
+        return Math.min(resource.getMaxStackSize(), getCapacity(index));
     }
 
     public static class Component extends ItemStorage {
@@ -32,12 +32,12 @@ public abstract class ItemStorage extends ResourceStorage<ItemResource> {
 
         @Override
         public ResourceStorageContents<ItemResource> getContents() {
-            return context.getResource().getOrDefault(componentType, new ResourceStorageContents<>(size, emptyResource));
+            return context.getResource().getOrDefault(componentType, ResourceStorageContents.of(size, emptyResource));
         }
 
         @Override
         public int setAndValidate(ResourceStorageContents<ItemResource> contents, int changedAmount, TransferAction action) {
-            return context.exchange(context.getResource().set(componentType, contents), 1, action) == 1 ? changedAmount : 0;
+            return context.exchange(context.getResource().with(componentType, contents), 1, action) == 1 ? changedAmount : 0;
         }
     }
 

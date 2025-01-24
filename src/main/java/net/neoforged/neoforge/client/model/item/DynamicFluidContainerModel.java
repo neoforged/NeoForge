@@ -43,7 +43,7 @@ import net.neoforged.neoforge.client.model.SimpleModelState;
 import net.neoforged.neoforge.client.model.UnbakedCompositeModel;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.fluids.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;

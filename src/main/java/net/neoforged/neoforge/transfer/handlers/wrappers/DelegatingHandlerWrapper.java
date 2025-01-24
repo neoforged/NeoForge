@@ -60,6 +60,11 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
     }
 
     @Override
+    public boolean isValid(T resource) {
+        return getDelegate().isValid(resource);
+    }
+
+    @Override
     public boolean isValid(int index, T resource) {
         return getDelegate().isValid(convertIndex(index), resource);
     }

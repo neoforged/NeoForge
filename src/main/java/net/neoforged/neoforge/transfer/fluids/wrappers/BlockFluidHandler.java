@@ -45,23 +45,24 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     }
 
     @Override
-    public FluidResource getResource() {
+    public FluidResource getResource(int index) {
         FluidState fluidState = level.getFluidState(blockPos);
         return fluidState.getType().defaultResource;
     }
 
     @Override
-    public int getAmount() {
-        return getResource().isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
+    public int getAmount(int index) {
+        return getResource(index).isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
     }
 
     @Override
-    public int getCapacity(FluidResource ignored) {
-        return FluidType.BUCKET_VOLUME;
+    public int getCapacity(int index, FluidResource resource) {
+        //Possibly check to see if fluid resource HAS a blockstate
+        return getCapacity(index);
     }
 
     @Override
-    public int getCapacity() {
+    public int getCapacity(int index) {
         return FluidType.BUCKET_VOLUME;
     }
 

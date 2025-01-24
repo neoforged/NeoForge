@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.HandlerUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.items.ItemResource;
@@ -156,7 +156,7 @@ public class VanillaInventoryCodeHooks {
     private static ItemStack insertStack(BlockEntity source, Object destination, IResourceHandler<ItemResource> destInventory, ItemStack stack, int slot) {
         ItemResource resource = ItemResource.of(stack);
         if (destInventory.insert(slot, resource, stack.getCount(), TransferAction.SIMULATE) > 0) {
-            boolean inventoryWasEmpty = HandlerUtil.isEmpty(destInventory);
+            boolean inventoryWasEmpty = ResourceHandlerUtil.isEmpty(destInventory);
             int inserted = destInventory.insert(slot, resource, stack.getCount(), TransferAction.EXECUTE);
 
             if (inserted > 0) {

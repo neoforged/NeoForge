@@ -98,12 +98,12 @@ public class ItemEnergyStorage implements IEnergyStorage {
     }
 
     protected int setFull(int count, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(energyComponent, getIndividualLimit());
+        ItemResource filledContainer = context.getResource().with(energyComponent, getIndividualLimit());
         return context.exchange(filledContainer, count, action);
     }
 
     protected int setPartial(int amount, TransferAction action) {
-        ItemResource filledContainer = context.getResource().set(energyComponent, amount);
+        ItemResource filledContainer = context.getResource().with(energyComponent, amount);
         return context.exchange(filledContainer, 1, action);
     }
 

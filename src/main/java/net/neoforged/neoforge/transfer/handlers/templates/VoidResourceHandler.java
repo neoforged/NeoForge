@@ -1,0 +1,97 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.templates;
+
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.items.ItemResource;
+
+/**
+ * An {@link ISingleResourceHandler} that automatically destroys any resources that are inserted into it.
+ * You should use the static instances {@link #ITEM} and {@link #FLUID} instead of creating new instances.
+ * If you're using this with a different resource type, you should create a new static instance.
+ *
+ * @param <T> The type of resource that this storage can accept.
+ */
+public class VoidResourceHandler<T extends IResource> implements IResourceHandler<T> {
+    public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.NONE);
+    public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.NONE);
+
+    private final T emptyResource;
+
+    public VoidResourceHandler(T emptyResource) {
+        this.emptyResource = emptyResource;
+    }
+
+    @Override
+    public int size() {
+        return 1;
+    }
+
+    @Override
+    public int insert(int index, T resource, int amount, TransferAction action) {
+        return amount; // ignore the inputs, and inform the return is always accepted
+    }
+
+    @Override
+    public int insert(T resource, int amount, TransferAction action) {
+        return amount; // ignore the inputs, and inform the return is always accepted
+    }
+
+    @Override
+    public int extract(int index, T resource, int amount, TransferAction action) {
+        return 0; // Nothing is ever allowed to be extracted
+    }
+
+    @Override
+    public int extract(T resource, int amount, TransferAction action) {
+        return 0; // Nothing is ever allowed to be extracted
+    }
+
+    @Override
+    public T getResource(int index) {
+        return emptyResource; // The resource type's "None"
+    }
+
+    @Override
+    public int getAmount(int index) {
+        return 0;
+    }
+
+    @Override
+    public int getCapacity(int index, T resource) {
+        return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
+    }
+
+    @Override
+    public int getCapacity(int index) {
+        return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
+    }
+
+    @Override
+    public boolean isValid(T resource) {
+        return true; // What ever resource is queried is always allowed
+    }
+
+    @Override
+    public boolean isValid(int index, T resource) {
+        return true; // What ever resource is queried is always allowed
+    }
+
+    @Override
+    public boolean allowsInsertion(int index) {
+        return true; // Always insertable
+    }
+
+    @Override
+    public boolean allowsExtraction(int index) {
+        return false; // Never insertable
+    }
+}

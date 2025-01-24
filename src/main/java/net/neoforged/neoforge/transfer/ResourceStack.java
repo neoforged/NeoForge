@@ -23,7 +23,7 @@ import java.util.function.UnaryOperator;
  *
  * @param <T> the held resource type
  */
-public record ResourceStack<T extends IResource>(T resource, int amount) {
+public record ResourceStack<T extends IResource>(T resource, int amount) implements IResourceStack<T>{
     public ResourceStack {
         Objects.requireNonNull(resource, "resource");
     }
@@ -74,7 +74,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
      *
      * @param resourceCodec
      * @return
-     * @param <T>
+     * @param <T> The resource type
      */
     public static <T extends IResource> Codec<ResourceStack<T>> flatCodec(MapCodec<T> resourceCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
@@ -84,18 +84,9 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
     }
 
     /**
-     * Checks if this is empty, meaning that the amount is not positive
-     * or that the resource is {@link IResource#isEmpty() blank}.
-     *
-     * @return {@code true} if empty
-     */
-    public boolean isEmpty() {
-        return amount <= 0 || resource.isEmpty();
-    }
-
-    /**
      * @return a copy of this instance with an updated amount.
      */
+    @Override
     public ResourceStack<T> withAmount(int newAmount) {
         return new ResourceStack<>(resource, newAmount);
     }
@@ -103,6 +94,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
     /**
      * @return a copy of this instance with an updated resource.
      */
+    @Override
     public ResourceStack<T> shrink(int amount) {
         return withAmount(Math.max(this.amount - amount, 0));
     }
@@ -110,6 +102,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
     /**
      * @return a copy of this instance with an updated resource.
      */
+    @Override
     public ResourceStack<T> grow(int amount) {
         return withAmount(this.amount + amount);
     }
@@ -117,7 +110,24 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
     /**
      * @return a copy of this instance with an updated resource.
      */
+    @Override
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         return new ResourceStack<>(operator.apply(resource), amount);
+    }
+
+    /**
+     * @return a copy of this instance as a mutable resource stack.
+     */
+    @Override
+    public MutableResourceStack<T> mutable() {
+        return MutableResourceStack.of(this);
+    }
+
+    /**
+     * @return this instance.
+     */
+    @Override
+    public ResourceStack<T> immutable() {
+        return this;
     }
 }

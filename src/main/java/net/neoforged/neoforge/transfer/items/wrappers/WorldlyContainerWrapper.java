@@ -10,14 +10,8 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedHandlerWrapper;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class WorldlyContainerWrapper extends ContainerWrapper {
     @Nullable
@@ -56,12 +50,27 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
 
     @Override
     public boolean allowsInsertion(int index) {
-        return side == null ? super.allowsInsertion(index) : IntStream.of(getContainer().getSlotsForFace(side)).anyMatch(i -> i == index);
+        if (side == null) {
+            return super.allowsInsertion(index);
+        }
+        for (int i : getContainer().getSlotsForFace(side)) {
+            if (i == index) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean allowsExtraction(int index) {
-        return side == null ? super.allowsExtraction(index) : Arrays.stream(getContainer().getSlotsForFace(side)).anyMatch(i -> i == index);
+        if (side == null) {
+            return super.allowsExtraction(index);
+        }
+        for (int i : getContainer().getSlotsForFace(side)) {
+            if (i == index)
+                return true;
+        }
+        return false;
     }
 
     public static class Furnace extends WorldlyContainerWrapper {

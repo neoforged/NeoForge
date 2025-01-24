@@ -10,12 +10,9 @@ import net.neoforged.neoforge.transfer.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.context.IItemContext;
 import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.SteppedSingleResourceStorageItem;
 import net.neoforged.neoforge.transfer.items.ItemResource;
 
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 /**
  * A simple fluid storage handler that uses a single item context to store a fluid resource.
