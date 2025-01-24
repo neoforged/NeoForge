@@ -34,7 +34,7 @@
          return this.isRandomlyTicking;
      }
  
-+    @Deprecated //Neo: Use more sensitive version {@link IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
++    @Deprecated //NeoForge: Use more sensitive version {@link IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
@@ -59,7 +59,7 @@
              return this.useShapeForLightOcclusion;
          }
  
-+        /** @deprecated Forge: Use {@link BlockState#getLightEmission(BlockGetter, BlockPos)} instead */
++        /** @deprecated NeoForge: Use {@link IBlockStateExtension#getLightEmission(BlockGetter, BlockPos)} instead */
 +        @Deprecated
          public int getLightEmission() {
              return this.lightEmission;
@@ -107,7 +107,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
  
-+        @Deprecated //Forge: Use more sensitive version {@link IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
++        @Deprecated //NeoForge: Use more sensitive version {@link IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
