@@ -40,7 +40,7 @@ import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
-import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillager;
+import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
@@ -58,9 +58,9 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
 
     @Override
     protected void gather(HolderLookup.Provider provider) {
-        final var biomeVillagers = builder(NeoForgeDataMaps.BIOME_VILLAGERS);
+        final var biomeVillagers = builder(NeoForgeDataMaps.VILLAGER_TYPES);
         ObfuscationReflectionHelper.<Map<ResourceKey<Biome>, VillagerType>, VillagerType>getPrivateValue(VillagerType.class, null, "BY_BIOME")
-                .forEach((biome, type) -> biomeVillagers.add(biome, new BiomeVillager(type), false));
+                .forEach((biome, type) -> biomeVillagers.add(biome, new BiomeVillagerType(type), false));
 
         final var compostables = builder(NeoForgeDataMaps.COMPOSTABLES);
         final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
