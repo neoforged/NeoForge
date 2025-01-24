@@ -4,7 +4,7 @@
      public static final VillagerType SWAMP = register("swamp");
      public static final VillagerType TAIGA = register("taiga");
      private final String name;
-+    /** Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.BIOME_VILLAGERS data map} instead as this field will be ignored in future versions */
++    /** Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#VILLAGER_TYPES data map} instead as this field will be ignored in future versions */
 +    @Deprecated
      private static final Map<ResourceKey<Biome>, VillagerType> BY_BIOME = Util.make(Maps.newHashMap(), p_35834_ -> {
          p_35834_.put(Biomes.BADLANDS, DESERT);
