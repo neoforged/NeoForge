@@ -13,17 +13,43 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.repository.ServerPacksSource;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.resource.ResourcePackLoader;
+import org.apache.commons.lang3.function.Consumers;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 public class GatherDataEvent extends Event implements IModBusEvent {
     private final DataGenerator dataGenerator;
@@ -31,7 +57,10 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     private final ExistingFileHelper existingFileHelper;
     private final ModContainer modContainer;
 
-    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, ExistingFileHelper existingFileHelper) {
+    @Nullable
+    private CompletableFuture<HolderLookup.Provider> registriesWithModdedEntries = null;
+
+    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig) {
         this.modContainer = mc;
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
@@ -55,7 +84,7 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     }
 
     public CompletableFuture<HolderLookup.Provider> getLookupProvider() {
-        return this.config.lookupProvider;
+        return Objects.requireNonNullElse(this.registriesWithModdedEntries, this.config.lookupProvider);
     }
 
     public boolean includeServer() {
@@ -138,5 +167,96 @@ public class GatherDataEvent extends Event implements IModBusEvent {
                 }
             });
         }
+
+        private static ResourceManager createResourceManager(PackType packType, Predicate<String> isGeneratedMod, Collection<Path> existingPacks, Consumer<Consumer<PackResources>> consumer) {
+            var packs = Lists.<PackResources>newArrayList();
+            // include vanilla resource packs first
+            consumer.accept(packs::add);
+
+            // include existing packs
+            existingPacks.forEach(path -> {
+                var packInfo = new PackLocationInfo(path.getFileName().toString(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
+                packs.add(new PathPackResources(packInfo, path));
+            });
+
+            // include mod resources last
+            ModList.get().getSortedMods().stream()
+                    // ignore 'minecraft' mod, this is added via `[Server|Client]PackSource`
+                    .filter(Predicate.not(mod -> mod.getModId().equals("minecraft")))
+                    // ignore actively generated models, their resource packs should be included using `--existing <packPath>`
+                    // this is to workaround accidentally including resources being actively generated
+                    .filter(Predicate.not(mod -> isGeneratedMod.test(mod.getModId())))
+                    .map(mod -> {
+                        var owningFile = mod.getModInfo().getOwningFile();
+                        var packInfo = new PackLocationInfo("mod/" + mod.getModId(), Component.empty(), PackSource.BUILT_IN, Optional.empty());
+                        return ResourcePackLoader.createPackForMod(owningFile).openPrimary(packInfo);
+                    })
+                    .forEach(packs::add);
+
+            return new MultiPackResourceManager(packType, packs);
+        }
+    }
+
+    public <T extends DataProvider> T addProvider(T provider) {
+        return dataGenerator.addProvider(true, provider);
+    }
+
+    public <T extends DataProvider> T createProvider(DataProviderFromOutput<T> builder) {
+        return addProvider(builder.create(dataGenerator.getPackOutput()));
+    }
+
+    public <T extends DataProvider> T createProvider(DataProviderFromOutputLookup<T> builder) {
+        return addProvider(builder.create(dataGenerator.getPackOutput(), this.getLookupProvider()));
+    }
+
+    public void createBlockAndItemTags(DataProviderFromOutputLookup<TagsProvider<Block>> blockTagsProvider, ItemTagsProvider itemTagsProvider) {
+        var blockTags = createProvider(blockTagsProvider);
+        addProvider(itemTagsProvider.create(this.getGenerator().getPackOutput(), this.getLookupProvider(), blockTags.contentsGetter()));
+    }
+
+    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder) {
+        this.createDatapackRegistryObjects(datapackEntriesBuilder, Set.of(this.modContainer.getModId()));
+    }
+
+    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Set<String> modIds) {
+        this.createDatapackRegistryObjects(datapackEntriesBuilder, Consumers.nop(), modIds);
+    }
+
+    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Map<ResourceKey<?>, List<ICondition>> conditions) {
+        this.createDatapackRegistryObjects(datapackEntriesBuilder, conditions, Set.of(this.modContainer.getModId()));
+    }
+
+    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Map<ResourceKey<?>, List<ICondition>> conditions, Set<String> modIds) {
+        var registries = this.createProvider((output, lookupProvider) -> new DatapackBuiltinEntriesProvider(output, lookupProvider, datapackEntriesBuilder, conditions, modIds));
+        this.registriesWithModdedEntries = registries.getRegistryProvider();
+    }
+
+    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Consumer<BiConsumer<ResourceKey<?>, ICondition>> conditionsBuilder) {
+        this.createDatapackRegistryObjects(datapackEntriesBuilder, conditionsBuilder, Set.of(this.modContainer.getModId()));
+    }
+
+    public void createDatapackRegistryObjects(RegistrySetBuilder datapackEntriesBuilder, Consumer<BiConsumer<ResourceKey<?>, ICondition>> conditionsBuilder, Set<String> modIds) {
+        var registries = this.createProvider((output, lookupProvider) -> new DatapackBuiltinEntriesProvider(output, lookupProvider, datapackEntriesBuilder, conditionsBuilder, modIds));
+        this.registriesWithModdedEntries = registries.getRegistryProvider();
+    }
+
+    @FunctionalInterface
+    public interface DataProviderFromOutput<T extends DataProvider> {
+        T create(PackOutput output);
+    }
+
+    @FunctionalInterface
+    public interface DataProviderFromOutputLookup<T extends DataProvider> {
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider);
+    }
+
+    @FunctionalInterface
+    public interface GatherDataEventGenerator {
+        GatherDataEvent create(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig);
+    }
+
+    @FunctionalInterface
+    public interface ItemTagsProvider {
+        TagsProvider<Item> create(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> contentsGetter);
     }
 }
