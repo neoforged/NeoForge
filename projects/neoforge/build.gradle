@@ -37,10 +37,13 @@ sourceSets {
         java {
             srcDirs rootProject.file('src/client/java')
         }
-        compileClasspath += main.compileClasspath
-        compileClasspath += main.output
-        runtimeClasspath += main.runtimeClasspath
-        runtimeClasspath += main.output
+    }
+}
+
+java {
+    registerFeature('client') {
+        usingSourceSet(sourceSets.client)
+        disablePublication()
     }
 }
 
@@ -151,6 +154,8 @@ dependencies {
     // Must be implementation instead of compileOnly so that running dependent projects such as tests will trigger (re)compilation of coremods.
     // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
     implementation(jarJar(project(":neoforge-coremods")))
+
+    clientImplementation project(path: ":neoforge", configuration: 'runtimeElements')
 }
 
 neoDev {
@@ -399,6 +404,16 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+}
+
+jar {
+    from sourceSets.client.output
+}
+sourcesJar {
+    from sourceSets.client.allSource
+}
+javadoc {
+    source += sourceSets.client.allSource
 }
 
 processResources {

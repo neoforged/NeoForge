@@ -22,7 +22,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation project(path: ':neoforge', configuration: 'runtimeElements')
+    implementation project(path: ':neoforge', configuration: 'clientRuntimeElements')
     implementation(testframeworkProject)
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
