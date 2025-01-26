@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.data.event;
 
+import com.google.common.collect.Lists;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -20,8 +22,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
+import net.minecraft.client.resources.ClientPackSource;
+import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
@@ -42,10 +47,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;
@@ -60,7 +67,7 @@ public class GatherDataEvent extends Event implements IModBusEvent {
     @Nullable
     private CompletableFuture<HolderLookup.Provider> registriesWithModdedEntries = null;
 
-    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig) {
+    public GatherDataEvent(final ModContainer mc, final DataGenerator dataGenerator, final DataGeneratorConfig dataGeneratorConfig, final ExistingFileHelper existingFileHelper) {
         this.modContainer = mc;
         this.dataGenerator = dataGenerator;
         this.config = dataGeneratorConfig;
@@ -69,6 +76,13 @@ public class GatherDataEvent extends Event implements IModBusEvent {
 
     public ModContainer getModContainer() {
         return this.modContainer;
+    }
+
+    public ResourceManager getResourceManager(PackType packType) {
+        return switch (packType) {
+            case CLIENT_RESOURCES -> config.clientResourceManager;
+            case SERVER_DATA -> config.serverResourceManager;
+        };
     }
 
     public Collection<Path> getInputs() {
@@ -107,6 +121,7 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         return this.config.validate;
     }
 
+    @ApiStatus.Internal
     public static class DataGeneratorConfig {
         private final Set<String> mods;
         private final Path path;
@@ -119,9 +134,17 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         private final boolean validate;
         private final boolean flat;
         private final List<DataGenerator> generators = new ArrayList<>();
+        private final ResourceManager clientResourceManager;
+        private final ResourceManager serverResourceManager;
 
+        @Deprecated(forRemoval = true)
         public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
                 final boolean server, final boolean client, final boolean dev, final boolean reports, final boolean validate, final boolean flat) {
+            this(mods, path, inputs, lookupProvider, server, client, dev, reports, validate, flat, null, null, List.of());
+        }
+
+        public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
+                final boolean server, final boolean client, final boolean dev, final boolean reports, final boolean validate, final boolean flat, final @Nullable String assetIndex, final @Nullable File assetsDir, Collection<Path> existingPacks) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
@@ -132,6 +155,13 @@ public class GatherDataEvent extends Event implements IModBusEvent {
             this.reports = reports;
             this.validate = validate;
             this.flat = flat;
+
+            clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, consumer -> {
+                if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
+                    consumer.accept(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
+            });
+
+            serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));
         }
 
         public Collection<Path> getInputs() {
