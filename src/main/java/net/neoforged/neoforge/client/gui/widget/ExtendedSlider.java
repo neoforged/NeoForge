@@ -138,7 +138,7 @@ public class ExtendedSlider extends AbstractSliderButton {
             if (stepSize <= 0D)
                 this.setSliderValue(this.value + (f / (this.width - 8)));
             else
-                this.setValue(this.getValue() + f * this.stepSize);
+                this.setSliderValue(this.getValue() + f * this.stepSize);
         }
 
         return false;
