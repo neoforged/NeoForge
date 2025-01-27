@@ -267,8 +267,8 @@ javaComponent.withVariantsFromConfiguration(configurations.runtimeElements) {
 configurations {
     runtimeElements {
         attributes {
-            // Add an internal attribute to disambiguate with the universalJar
-            attribute(Attribute.of("net.neoforged.neoforge.internal", Boolean), true)
+            // Add an attribute to disambiguate with the universalJar
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
         }
     }
     modDevBundle {

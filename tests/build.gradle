@@ -25,7 +25,7 @@ dependencies {
     implementation(neoforgeProject) {
         // Select runtimeElements rather than universalJar from the neoforge project
         attributes {
-            attribute(Attribute.of("net.neoforged.neoforge.internal", Boolean), true)
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
         }
     }
     implementation(testframeworkProject)
@@ -39,7 +39,7 @@ dependencies {
     junitImplementation(neoforgeProject) {
         // Select runtimeElements rather than universalJar from the neoforge project
         attributes {
-            attribute(Attribute.of("net.neoforged.neoforge.internal", Boolean), true)
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
         }
     }
     junitImplementation(testframeworkProject)
