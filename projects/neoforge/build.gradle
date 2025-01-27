@@ -265,6 +265,12 @@ javaComponent.withVariantsFromConfiguration(configurations.runtimeElements) {
 
 // Resolvable configurations only
 configurations {
+    runtimeElements {
+        attributes {
+            // Add an internal attribute to disambiguate with the universalJar
+            attribute(Attribute.of("net.neoforged.neoforge.internal", Boolean), true)
+        }
+    }
     modDevBundle {
         canBeDeclared = false
         canBeResolved = false
