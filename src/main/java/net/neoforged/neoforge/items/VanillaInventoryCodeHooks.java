@@ -5,208 +5,118 @@
 
 package net.neoforged.neoforge.items;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import net.minecraft.core.BlockPos;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Direction;
-import net.minecraft.core.FrontAndTop;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DropperBlock;
-import net.minecraft.world.level.block.HopperBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.CrafterBlockEntity;
-import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.items.ItemResource;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class VanillaInventoryCodeHooks {
     /**
-     * Copied from TileEntityHopper#captureDroppedItems and added capability support
-     * 
-     * @return Null if we did nothing {no IItemHandler}, True if we moved an item, False if we moved no items
+     * Tries to extract items from an item handler and insert them in the hopper.
+     *
+     * @param handler target item handler
+     * @return {@code true} if we moved an item, {@code false} if we moved no items
      */
-    @Nullable
-    public static Boolean extractHook(Level level, Hopper dest) {
-        return getSourceItemHandler(level, dest)
-                .map(itemHandlerResult -> {
-                    IItemHandler handler = itemHandlerResult.getKey();
+    public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
+        for (int i = 0; i < handler.size(); i++) {
+//            ItemStack extractItem = handler.extractItem(i, 1, true);
+            var extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.SIMULATE, ItemResource.NONE);
+            //Should likely be "isEmpty" but because it is null we need to check differently then expected
+            if (extracted.isEmpty()) continue;
 
-                    for (int i = 0; i < handler.getSlots(); i++) {
-                        ItemStack extractItem = handler.extractItem(i, 1, true);
-                        if (!extractItem.isEmpty()) {
-                            for (int j = 0; j < dest.getContainerSize(); j++) {
-                                ItemStack destStack = dest.getItem(j);
-                                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
-                                    extractItem = handler.extractItem(i, 1, false);
-                                    if (destStack.isEmpty())
-                                        dest.setItem(j, extractItem);
-                                    else {
-                                        destStack.grow(1);
-                                        dest.setItem(j, destStack);
-                                    }
-                                    dest.setChanged();
-                                    return true;
-                                }
-                            }
-                        }
+            var extractItem = ItemResource.itemStackOf(extracted);
+
+            for (int j = 0; j < dest.getContainerSize(); j++) {
+                ItemStack destStack = dest.getItem(j);
+
+                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
+                    extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.EXECUTE, ItemResource.NONE);
+                    if(extracted.isEmpty()) continue;//Should be unneeded
+                    if (destStack.isEmpty())
+                        dest.setItem(j, ItemResource.itemStackOf(extracted));
+                    else {
+                        destStack.grow(1);
+                        dest.setItem(j, destStack);
                     }
-
-                    return false;
-                })
-                .orElse(null); // TODO bad null
-    }
-
-    /**
-     * Copied from BlockDropper#dispense and added capability support
-     */
-    public static boolean dropperInsertHook(Level level, BlockPos pos, DispenserBlockEntity dropper, int slot, ItemStack stack) {
-        Direction facing = level.getBlockState(pos).getValue(DropperBlock.FACING);
-        return getAttachedItemHandler(level, pos, facing)
-                .map(destinationResult -> {
-                    IItemHandler itemHandler = destinationResult.getKey();
-                    Object destination = destinationResult.getValue();
-                    ItemStack dispensedStack = stack.copy().split(1);
-                    ItemStack remainder = putStackInInventoryAllSlots(dropper, destination, itemHandler, dispensedStack);
-
-                    if (remainder.isEmpty()) {
-                        remainder = stack.copy();
-                        remainder.shrink(1);
-                    } else {
-                        remainder = stack.copy();
-                    }
-
-                    dropper.setItem(slot, remainder);
-                    return false;
-                })
-                .orElse(true);
-    }
-
-    /**
-     * Copied from TileEntityHopper#transferItemsOut and added capability support
-     */
-    public static boolean insertHook(HopperBlockEntity hopper) {
-        Direction hopperFacing = hopper.getBlockState().getValue(HopperBlock.FACING);
-        return getAttachedItemHandler(hopper.getLevel(), hopper.getBlockPos(), hopperFacing)
-                .map(destinationResult -> {
-                    IItemHandler itemHandler = destinationResult.getKey();
-                    Object destination = destinationResult.getValue();
-                    if (isFull(itemHandler)) {
-                        return false;
-                    } else {
-                        for (int i = 0; i < hopper.getContainerSize(); ++i) {
-                            if (!hopper.getItem(i).isEmpty()) {
-                                ItemStack originalSlotContents = hopper.getItem(i).copy();
-                                ItemStack insertStack = hopper.removeItem(i, 1);
-                                ItemStack remainder = putStackInInventoryAllSlots(hopper, destination, itemHandler, insertStack);
-
-                                if (remainder.isEmpty()) {
-                                    return true;
-                                }
-
-                                hopper.setItem(i, originalSlotContents);
-                            }
-                        }
-
-                        return false;
-                    }
-                })
-                .orElse(false);
-    }
-
-    /**
-     * Added capability support for the Crafter dispensing the result
-     */
-    public static ItemStack insertCrafterOutput(Level level, BlockPos pos, CrafterBlockEntity crafterBlockEntity, ItemStack stack) {
-        FrontAndTop frontAndTop = level.getBlockState(pos).getValue(BlockStateProperties.ORIENTATION);
-        return getAttachedItemHandler(level, pos, frontAndTop.front())
-                .map(destinationResult -> {
-                    IItemHandler itemHandler = destinationResult.getKey();
-                    Object destination = destinationResult.getValue();
-                    ItemStack remainder = putStackInInventoryAllSlots(crafterBlockEntity, destination, itemHandler, stack);
-                    return remainder;
-                })
-                .orElse(stack);
-    }
-
-    private static ItemStack putStackInInventoryAllSlots(BlockEntity source, Object destination, IItemHandler destInventory, ItemStack stack) {
-        for (int slot = 0; slot < destInventory.getSlots() && !stack.isEmpty(); slot++) {
-            stack = insertStack(source, destination, destInventory, stack, slot);
-        }
-        return stack;
-    }
-
-    /**
-     * Copied from TileEntityHopper#insertStack and added capability support
-     */
-    private static ItemStack insertStack(BlockEntity source, Object destination, IResourceHandler<ItemResource> destInventory, ItemStack stack, int slot) {
-        ItemResource resource = ItemResource.of(stack);
-        if (destInventory.insert(slot, resource, stack.getCount(), TransferAction.SIMULATE) > 0) {
-            boolean inventoryWasEmpty = ResourceHandlerUtil.isEmpty(destInventory);
-            int inserted = destInventory.insert(slot, resource, stack.getCount(), TransferAction.EXECUTE);
-
-            if (inserted > 0) {
-                if (inventoryWasEmpty && destination instanceof HopperBlockEntity destinationHopper) {
-                    if (!destinationHopper.isOnCustomCooldown()) {
-                        int k = 0;
-                        if (source instanceof HopperBlockEntity) {
-                            if (destinationHopper.getLastUpdateTime() >= ((HopperBlockEntity) source).getLastUpdateTime()) {
-                                k = 1;
-                            }
-                        }
-                        destinationHopper.setCooldown(8 - k);
-                    }
+                    dest.setChanged();
+                    return true;
                 }
             }
         }
-
-        return stack;
+        return false;
     }
 
-    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getAttachedItemHandler(Level level, BlockPos pos, Direction direction) {
-        return getItemHandlerAt(level, pos.getX() + direction.getStepX() + 0.5, pos.getY() + direction.getStepY() + 0.5, pos.getZ() + direction.getStepZ() + 0.5, direction.getOpposite());
-    }
+    /**
+     * Tries to insert a hopper's items into an item handler.
+     *
+     * @param handler target item handler
+     * @return {@code true} if we moved an item, {@code false} if we moved no items
+     */
+    public static boolean insertHook(HopperBlockEntity hopper, IResourceHandler<ItemResource> handler) {
+        if (ResourceHandlerUtil.isFull(handler))
+            return false;
 
-    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getSourceItemHandler(Level level, Hopper hopper) {
-        return getItemHandlerAt(level, hopper.getLevelX(), hopper.getLevelY() + 1.0, hopper.getLevelZ(), Direction.DOWN);
-    }
+        for (int i = 0; i < hopper.getContainerSize(); ++i) {
+            if (hopper.getItem(i).isEmpty())
+                continue;
 
-    private static Optional<Pair<IResourceHandler<ItemResource>, Object>> getItemHandlerAt(Level worldIn, double x, double y, double z, final Direction side) {
-        BlockPos blockpos = BlockPos.containing(x, y, z);
-        BlockState state = worldIn.getBlockState(blockpos);
-        BlockEntity blockEntity = state.hasBlockEntity() ? worldIn.getBlockEntity(blockpos) : null;
+            ItemStack originalSlotContents = hopper.getItem(i).copy();
+            ResourceStack<ItemResource> insertStack = hopper.removeItem(i, 1).immutable();
+            int accepted = ResourceHandlerUtil.insertIndexForced(handler, insertStack.resource(), insertStack.amount(), TransferAction.EXECUTE);
+            if (accepted > 0)
+                return true;
 
-        // Look for block capability first
-        var blockCap = worldIn.getCapability(Capabilities.ItemHandler.BLOCK, blockpos, state, blockEntity, side);
-        if (blockCap != null)
-            return Optional.of(ImmutablePair.of(blockCap, blockEntity));
-
-        // Otherwise fallback to automation entity capability
-        // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
-        List<Entity> list = worldIn.getEntities((Entity) null, new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D), EntitySelector.ENTITY_STILL_ALIVE);
-        if (!list.isEmpty()) {
-            Collections.shuffle(list);
-            for (Entity entity : list) {
-                var entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
-                if (entityCap != null)
-                    return Optional.of(ImmutablePair.of(entityCap, entity));
-            }
+            hopper.setItem(i, originalSlotContents);
         }
 
-        return Optional.empty();
+        return false;
+    }
+
+//    private static boolean isFull(IItemHandler itemHandler) {
+//        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
+//            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
+//            if (stackInSlot.isEmpty() || stackInSlot.getCount() < itemHandler.getSlotLimit(slot)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+
+    public static @Nullable Either<Container, IResourceHandler<ItemResource>> getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
+        List<Entity> list = level.getEntities(
+                (Entity) null,
+                new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D),
+                entity -> {
+                    // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
+                    if (!entity.isAlive()) {
+                        return false;
+                    }
+                    return entity instanceof Container || entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side) != null;
+                });
+        if (!list.isEmpty()) {
+            var entity = list.get(level.random.nextInt(list.size()));
+            if (entity instanceof Container container) {
+                return Either.left(container);//new ContainerOrHandler(container, null);
+            }
+            IResourceHandler<ItemResource> entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+            if (entityCap != null) { // Could be null even if it wasn't in the entity predicate above.
+                return Either.right(entityCap);//new ContainerOrHandler(null, entityCap);
+            }
+        }
+        return null; //Optional.empty();
     }
 }

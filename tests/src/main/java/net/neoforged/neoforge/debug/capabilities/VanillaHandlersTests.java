@@ -5,9 +5,6 @@
 
 package net.neoforged.neoforge.debug.capabilities;
 
-import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE;
-import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.SIMULATE;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -16,7 +13,9 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -38,7 +37,8 @@ public class VanillaHandlersTests {
                 helper.absolutePos(composterPos),
                 Direction.UP,
                 () -> true,
-                invalidationCount::increment);
+                invalidationCount::increment
+        );
 
         if (capCache.getCapability() != null)
             helper.fail("Expected no capability", composterPos);
@@ -90,52 +90,57 @@ public class VanillaHandlersTests {
                 helper.absolutePos(cauldronPos),
                 Direction.UP,
                 () -> true,
-                invalidationCount::increment);
+                invalidationCount::increment
+        );
 
         // Capability should be absent
         helper.assertTrue(capCache.getCapability() == null, "Expected no capability");
 
         // Should invalidate once when setting the block
         helper.setBlock(cauldronPos, Blocks.CAULDRON);
+
         var wrapper = capCache.getCapability();
         helper.assertTrue(wrapper != null, "Expected fluid handler");
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 
         helper.assertTrue(wrapper.size() == 1, "Got %d tanks".formatted(wrapper.size()));
 
-        // Simulate filling with water
-        var fillResult = wrapper.fill(new FluidStack(Fluids.WATER, 2000), SIMULATE);
-        helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
-        helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
+        var waterResource = Fluids.WATER.defaultResource;
+        var lavaResource = Fluids.LAVA.defaultResource;
+
+
+        // Simulate filling with water, and it should only accept 1 bucket
+        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.SIMULATE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
         // Can't fill with less than 1000 though...
-        helper.assertTrue(wrapper.fill(new FluidStack(Fluids.WATER, 999), SIMULATE) == 0, "Expected 0 fill result");
+        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME - 1, TransferAction.SIMULATE), 0, "Needs at least 1 bucket and will return 1 bucket. Fill result should match");
+        helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
-        // Action!
-        fillResult = wrapper.fill(new FluidStack(Fluids.WATER, 2000), EXECUTE);
-        helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
+        // Excecute tests
+        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.EXECUTE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
         helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, () -> "Expected level 3 cauldron");
-
-        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 1000)), "Expected 1000 water");
+        helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
+        helper.assertValueEqual(wrapper.getAmount(0), FluidType.BUCKET_VOLUME, "Should match a bucket");
 
         // Try to empty as well
-        helper.assertTrue(wrapper.drain(new FluidStack(Fluids.LAVA, 1000), EXECUTE).isEmpty(), "Cannot drain lava");
-        helper.assertTrue(wrapper.drain(new FluidStack(Fluids.WATER, 999), EXECUTE).isEmpty(), "Cannot drain less than 1000 water");
-        helper.assertTrue(FluidStack.matches(wrapper.drain(new FluidStack(Fluids.WATER, 1000), EXECUTE), new FluidStack(Fluids.WATER, 1000)), "Expected drain of 1000 water");
+        helper.assertValueEqual(wrapper.extract(lavaResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), 0, "Cannot drain lava");
+        helper.assertFalse(wrapper.getResource(0).isEmpty(), "Water should still be present");
+        helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME - 1, TransferAction.EXECUTE), 0, "Cannot drain less than a bucket");
+        helper.assertFalse(wrapper.getResource(0).isEmpty(), "Water should still be present");
+        helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), FluidType.BUCKET_VOLUME, "One bucket should be drained");
+        helper.assertTrue(wrapper.getResource(0).isEmpty(), "Expected empty handler");
 
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
-        helper.assertTrue(wrapper.getFluidInTank(0).isEmpty(), "Expected empty handler");
 
         // Try lava cauldron
         helper.setBlock(cauldronPos, Blocks.LAVA_CAULDRON);
-        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.LAVA, 1000)), "Expected 1000 lava");
-        helper.assertTrue(FluidStack.matches(wrapper.drain(1000, EXECUTE), new FluidStack(Fluids.LAVA, 1000)), "Expected drain of 1000 lava");
-        helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
+        helper.assertValueEqual(wrapper.getResource(0), lavaResource, "Expected 1000 lava");
 
         // Try partial water filling
         helper.setBlock(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
-        helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 666)), "Expected 666 water");
-        helper.assertTrue(wrapper.drain(1000, EXECUTE).isEmpty(), "Expected no water drain from partial cauldron");
-        helper.assertTrue(wrapper.fill(new FluidStack(Fluids.WATER, 1000), EXECUTE) == 0, "Expected no water fill to partial cauldron");
+        helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
+        helper.assertValueEqual(wrapper.getAmount(0), 666, "Should match");
+        helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), 0, "Expected no water drain from partial cauldron");
+        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), 0, "Expected no water fill to partial cauldron");
 
         // None of this should have invalidated the capability
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only after the whole test");

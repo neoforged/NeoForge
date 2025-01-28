@@ -6,12 +6,11 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.ISingleResourceHandler;
-import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * An {@link ISingleResourceHandler} that automatically destroys any resources that are inserted into it.
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.transfer.items.ItemResource;
  *
  * @param <T> The type of resource that this storage can accept.
  */
-public class VoidResourceHandler<T extends IResource> implements IResourceHandler<T> {
+public class VoidResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
     public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.NONE);
     public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.NONE);
 
@@ -30,24 +29,10 @@ public class VoidResourceHandler<T extends IResource> implements IResourceHandle
         this.emptyResource = emptyResource;
     }
 
-    @Override
-    public int size() {
-        return 1;
-    }
-
-    @Override
-    public int insert(int index, T resource, int amount, TransferAction action) {
-        return amount; // ignore the inputs, and inform the return is always accepted
-    }
 
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         return amount; // ignore the inputs, and inform the return is always accepted
-    }
-
-    @Override
-    public int extract(int index, T resource, int amount, TransferAction action) {
-        return 0; // Nothing is ever allowed to be extracted
     }
 
     @Override
@@ -76,22 +61,17 @@ public class VoidResourceHandler<T extends IResource> implements IResourceHandle
     }
 
     @Override
-    public boolean isValid(T resource) {
-        return true; // What ever resource is queried is always allowed
-    }
-
-    @Override
     public boolean isValid(int index, T resource) {
         return true; // What ever resource is queried is always allowed
     }
 
     @Override
-    public boolean allowsInsertion(int index) {
-        return true; // Always insertable
+    public boolean allowsInsertion() {
+        return true;
     }
 
     @Override
-    public boolean allowsExtraction(int index) {
-        return false; // Never insertable
+    public boolean allowsExtraction() {
+        return false;
     }
 }

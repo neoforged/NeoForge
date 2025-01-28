@@ -10,8 +10,8 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.context.IItemContext;
-import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * Variant of {@link AttachmentEnergyStorage} for use with data components.
@@ -93,7 +93,7 @@ public class ItemEnergyStorage implements IEnergyStorage {
     }
 
     protected int empty(int count, TransferAction action) {
-        ItemResource emptiedContainer = context.getResource().remove(energyComponent);
+        ItemResource emptiedContainer = context.getResource().without(energyComponent);
         return context.exchange(emptiedContainer, count, action);
     }
 

@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.transfer.handlers;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import org.jetbrains.annotations.Range;
 
@@ -65,23 +66,6 @@ public interface IResourceHandler<T extends IResource> {
      * @return True if the resource can be inserted, false otherwise.
      */
     boolean isValid(int index, T resource);
-
-    //ADRIAN&SOARYN: This was in ISingle, but I moved it here as there may be SOME use-cases where you'd want to arbitrarily ask, is this resource valid?
-    // While not strictly required it may serve some performance benefits of having it here for the same reasons we don't default the insert or extract calls.
-    /**
-     * Checks if the given resource is valid for insertion into the handler.
-     *
-     * @param resource The resource to check.
-     * @return True if the resource is valid, false otherwise.
-     */
-    default boolean isValid(T resource) {
-        for (int i = 0; i < size(); i++) {
-            if (isValid(i, resource)) {
-                return true;
-            }
-        }
-        return false;
-    };
 
     /**
      * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -174,7 +158,7 @@ public interface IResourceHandler<T extends IResource> {
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransferAction)}, as you may needlessly re-check validations.
-     * See {@link net.neoforged.neoforge.transfer.handlers.templates.ResourceStorage#insert(IResource, int, TransferAction) ResourceStorage.insert} for an example.
+     * See {@link ResourceStorageHandler#insert(IResource, int, TransferAction) ResourceStorage.insert} for an example.
      *
      * @param resource The resource to insert.
      * @param amount   The amount of the resource to insert.
@@ -202,7 +186,7 @@ public interface IResourceHandler<T extends IResource> {
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #extract(int, IResource, int, TransferAction)}, as you may needlessly re-check validations.
-     * See {@link net.neoforged.neoforge.transfer.handlers.templates.ResourceStorage#extract(IResource, int, TransferAction) ResourceStorage.extract} for an example.
+     * See {@link ResourceStorageHandler#extract(IResource, int, TransferAction) ResourceStorage.extract} for an example.
      *
      *
      * @param resource The resource to extract.

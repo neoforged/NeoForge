@@ -12,7 +12,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.transfer.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.FluidUtil;
 
 @Mod(MilkFluidTest.MODID)
 public class MilkFluidTest {
@@ -29,7 +29,10 @@ public class MilkFluidTest {
     private static void useMilk(PlayerInteractEvent event) {
         ItemStack stack = event.getItemStack();
         if (stack.getItem() == Items.MILK_BUCKET) {
-            FluidUtil.getFluidContained(stack).ifPresent((fluid) -> event.getEntity().displayClientMessage(Component.literal("Contains ").append(fluid.getHoverName()), true));
+            var fluidStack = FluidUtil.getFluidContained(stack);
+            if (!fluidStack.isEmpty()) {
+                event.getEntity().displayClientMessage(Component.literal("Contains ").append(fluidStack.getHoverName()), true);
+            }
         }
     }
 }

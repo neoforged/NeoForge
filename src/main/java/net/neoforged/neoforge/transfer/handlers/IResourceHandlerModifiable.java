@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.transfer.handlers;
 
-import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
 
 public interface IResourceHandlerModifiable<T extends IResource> extends IResourceHandler<T> {
     /**
-     * Sets the resource and amount at the given index to the given resource and amount.
+     * Sets the resource and amount at the given index to the given resource and amount. This bypasses all validation methods. This is intended for more internal use or testing specific scenarios.
      *
      * @param index The index to set the resource at.
      * @param resource The resource to set.

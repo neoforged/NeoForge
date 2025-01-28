@@ -9,8 +9,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -27,6 +29,7 @@ public interface IItemHandler {
      * Returns the number of slots available
      *
      * @return The number of slots available
+     * @deprecated This is now {@link IResourceHandler#size()}
      **/
     int getSlots();
 
@@ -48,6 +51,7 @@ public interface IItemHandler {
      *
      * @param slot Slot to query
      * @return ItemStack in given slot. Empty Itemstack if the slot is empty.
+     * @deprecated This is now {@link IResourceHandler#getResource(int)} & {@link IResourceHandler#getAmount(int)}
      **/
     ItemStack getStackInSlot(int slot);
 
@@ -64,6 +68,7 @@ public interface IItemHandler {
      * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return an empty ItemStack).
      *         May be the same as the input ItemStack if unchanged, otherwise a new ItemStack.
      *         The returned ItemStack can be safely modified after.
+     * @deprecated This is now {@link IResourceHandler#insert(int, IResource, int, TransferAction)}
      **/
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
@@ -79,6 +84,12 @@ public interface IItemHandler {
      * @param simulate If true, the extraction is only simulated
      * @return ItemStack extracted from the slot, must be empty if nothing can be extracted.
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
+     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransferAction)} & {@link IResourceHandler#getResource(int)}<pre>
+     *     {@code
+     *      T resource = handler.getResource(index);
+     *      int amount = handler.extract(index, resource, amount, action);
+     *     }
+     * </pre>
      **/
     ItemStack extractItem(int slot, int amount, boolean simulate);
 
@@ -87,6 +98,7 @@ public interface IItemHandler {
      *
      * @param slot Slot to query.
      * @return The maximum stack size allowed in the slot.
+     * @deprecated This is now {@link IResourceHandler#getCapacity(int)}
      */
     int getSlotLimit(int slot);
 
@@ -109,6 +121,7 @@ public interface IItemHandler {
      *
      * @return true if the slot can insert the ItemStack, not considering the current state of the inventory.
      *         false if the slot can never insert the ItemStack in any situation.
+     * @deprecated This is now {@link IResourceHandler#isValid(int, IResource)}
      */
     boolean isItemValid(int slot, ItemStack stack);
 }

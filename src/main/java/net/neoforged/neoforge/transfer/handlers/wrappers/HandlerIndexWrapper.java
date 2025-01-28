@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
@@ -23,6 +23,11 @@ public class HandlerIndexWrapper<T extends IResource> extends DelegatingHandlerW
     public HandlerIndexWrapper(IResourceHandler<T> delegate, int index) {
         super(delegate);
         this.index = index;
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 
     public HandlerIndexWrapper(Supplier<IResourceHandler<T>> delegate, int index) {

@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.capabilities;
 
-import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.item.BucketItem;
@@ -23,12 +23,13 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.transfer.fluids.wrappers.BucketHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.AggregateResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.items.MCItemContentsWrapperHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingHandlerWrapper;
-import net.neoforged.neoforge.transfer.items.templates.ContainerContentsItemStorage;
-import net.neoforged.neoforge.transfer.items.wrappers.*;
+import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.*;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
 
 @ApiStatus.Internal
 public class CapabilityHooks {
@@ -106,18 +107,19 @@ public class CapabilityHooks {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new ContainerWrapper(entity));
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new ContainerWrapper(entity));
         }
-        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInventoryHandler(player));
-        // Register to all entity types to make sure we support all living entity subclasses.
-        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
-                if (entity instanceof AbstractHorse horse)
-                    return new ContainerWrapper(horse.getInventory());
-                else if (entity instanceof LivingEntity livingEntity)
-                    return new AggregateResourceHandler.Modifiable<>(EntityEquipmentItemHandler.ofHands(livingEntity), EntityEquipmentItemHandler.ofArmor(livingEntity));
-
-                return null;
-            });
-        }
+        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInventoryWrapper(player));
+        //ADRIAN&SOARYN: Isn't this handled in the fallback?
+//        // Register to all entity types to make sure we support all living entity subclasses.
+//        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+//            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
+//                if (entity instanceof AbstractHorse horse)
+//                    return new ContainerWrapper(horse.getInventory());
+//                else if (entity instanceof LivingEntity livingEntity)
+//                    return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
+//
+//                return null;
+//            });
+//        }
 
         // Items
         for (Item item : BuiltInRegistries.ITEM) {
@@ -127,7 +129,7 @@ public class CapabilityHooks {
         if (NeoForgeMod.MILK.isBound()) {
             event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), Items.MILK_BUCKET);
         }
-        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ContainerContentsItemStorage(ctx, DataComponents.CONTAINER, 27),
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new MCItemContentsWrapperHandler(ctx, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,
@@ -153,10 +155,9 @@ public class CapabilityHooks {
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
-                    return new InvWrapper(horse.getInventory());
+                    return new ContainerWrapper(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
-                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
-
+                    return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
                 return null;
             });
         }
@@ -164,12 +165,12 @@ public class CapabilityHooks {
         // Items
         for (Item item : BuiltInRegistries.ITEM) {
             if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), item);
         }
 
         // We want mods to be able to override our milk cap by default
         if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), Items.MILK_BUCKET);
         }
     }
 

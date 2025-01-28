@@ -18,7 +18,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.transfer.fluids.wrappers.CauldronWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.CauldronHandler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -174,7 +174,7 @@ public final class CauldronFluidContent {
         for (Block block : BLOCK_TO_CAULDRON.keySet()) {
             event.registerBlock(
                     Capabilities.FluidHandler.BLOCK,
-                    (level, pos, state, be, context) -> new CauldronWrapper(level, pos),
+                    (level, pos, state, be, context) -> new CauldronHandler(level, pos),
                     block);
         }
     }

@@ -38,9 +38,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.transfer.ResourceStack;
-import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.common.util.DataComponentUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -549,6 +549,6 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     @Deprecated(forRemoval = true, since = "1.20.5")
     public boolean isFluidEqual(ItemStack other) {
-        return FluidUtil.getFluidContained(other).map(this::isFluidEqual).orElse(false);
+        return isFluidEqual(FluidUtil.getFluidContained(other));
     }
 }

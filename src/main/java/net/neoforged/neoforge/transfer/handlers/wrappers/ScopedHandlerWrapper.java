@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;

@@ -8,20 +8,24 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.SlotItemResourceWrapper;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
- * Slot class that can be used with immutable {@link IItemHandler}s
+ * Slot class that can be used with immutable {@link IResourceHandler IResourceHandlers}
  * like {@link ComponentItemHandler}.
  */
 public class ItemHandlerCopySlot extends StackCopySlot {
-    private final SlotItemHandler slotItemHandler;
+    private final SlotItemResourceWrapper slotItemHandler;
 
-    public ItemHandlerCopySlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+    public ItemHandlerCopySlot(IResourceHandler<ItemResource> itemHandler, int index, int xPosition, int yPosition) {
         super(xPosition, yPosition);
-        slotItemHandler = new SlotItemHandler(itemHandler, index, xPosition, yPosition);
+        slotItemHandler = new SlotItemResourceWrapper(itemHandler, index, xPosition, yPosition);
     }
 
-    public ItemHandlerCopySlot(SlotItemHandler slotItemHandler) {
+    public ItemHandlerCopySlot(SlotItemResourceWrapper slotItemHandler) {
         super(slotItemHandler.x, slotItemHandler.y);
         this.slotItemHandler = slotItemHandler;
     }
@@ -38,7 +42,7 @@ public class ItemHandlerCopySlot extends StackCopySlot {
 
     @Override
     protected void setStackCopy(ItemStack stack) {
-        ((IItemHandlerModifiable) slotItemHandler.getItemHandler()).setStackInSlot(slotItemHandler.index, stack);
+        ((IResourceHandlerModifiable<ItemResource>) slotItemHandler.asResourceHandler()).set(slotItemHandler.index, ItemResource.of(stack), stack.getCount());
     }
 
     @Override
@@ -66,7 +70,7 @@ public class ItemHandlerCopySlot extends StackCopySlot {
         return slotItemHandler.isSameInventory(other);
     }
 
-    public IItemHandler getItemHandler() {
-        return slotItemHandler.getItemHandler();
+    public IResourceHandler<ItemResource> getItemHandler() {
+        return slotItemHandler.asResourceHandler();
     }
 }

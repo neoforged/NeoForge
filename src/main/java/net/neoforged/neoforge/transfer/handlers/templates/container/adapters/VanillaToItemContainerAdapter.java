@@ -1,0 +1,57 @@
+package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
+
+
+import net.minecraft.world.Container;
+import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
+
+/**
+ * Adapts a vanilla Minecraft {@link Container} to a {@link IResourceContainer<ItemResource>}.
+ * This is always assumed to be of type {@link ItemResource} currently, since a {@link Container} can only handle {@link net.minecraft.world.item.ItemStack ItemStacks}
+ */
+public record VanillaToItemContainerAdapter(Container container) implements IResourceContainer<ItemResource> {
+
+    @Override
+    public ResourceStack<ItemResource> defaultResource() {
+        return ItemResource.EMPTY_STACK;
+    }
+
+    @Override
+    public int size() {
+        return container.getContainerSize();
+    }
+
+    @Override
+    public MutableResourceStack<ItemResource> get(int index) {
+        var stack = container.getItem(index);
+        return MutableResourceStack.of(ItemResource.of(stack), stack.getCount());
+    }
+
+    @Override
+    public void set(int index, MutableResourceStack<ItemResource> stack) {
+        container.setItem(index, stack.resource().toStack(stack.amount()));
+    }
+
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        return container.canPlaceItem(index, resource.toStack());
+    }
+
+    @Override
+    public int getCapacity(int index, ItemResource resource) {
+        return Math.min(container.getMaxStackSize(resource.toStack()), resource.getMaxStackSize());
+    }
+
+    @Override
+    public int getCapacity(int index) {
+        return container.getMaxStackSize();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return container.isEmpty();
+    }
+}
+

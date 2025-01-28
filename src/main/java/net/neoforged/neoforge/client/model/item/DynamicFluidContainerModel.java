@@ -43,7 +43,7 @@ import net.neoforged.neoforge.client.model.SimpleModelState;
 import net.neoforged.neoforge.client.model.UnbakedCompositeModel;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -147,10 +147,8 @@ public class DynamicFluidContainerModel implements ItemModel {
 
     @Override
     public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver modelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int p_387820_) {
-        var fluid = FluidUtil.getFluidContained(stack)
-                .map(FluidStack::getFluid)
-                // not a fluid item apparently
-                .orElse(unbakedModel.fluid);
+        var fluidStack = FluidUtil.getFluidContained(stack);
+        var fluid = fluidStack.isEmpty() ? unbakedModel.fluid : fluidStack.getFluid();
 
         cache.computeIfAbsent(fluid, this::bakeModelForFluid)
                 .update(renderState, stack, modelResolver, displayContext, level, entity, p_387820_);

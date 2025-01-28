@@ -7,10 +7,17 @@ package net.neoforged.neoforge.transfer;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Predicate;
 
 public final class ResourceHandlerUtil {
@@ -37,9 +44,8 @@ public final class ResourceHandlerUtil {
      */
     public static boolean isEmpty(IResourceHandler<? extends IResource> handler) {
         for (int i = 0; i < handler.size(); i++) {
-            if (!isIndexEmpty(handler, i)) {
+            if (!isIndexEmpty(handler, i))
                 return false;
-            }
         }
         return true;
     }
@@ -55,9 +61,8 @@ public final class ResourceHandlerUtil {
      */
     public static boolean isFull(IResourceHandler<? extends IResource> handler) {
         for (int i = 0; i < handler.size(); i++) {
-            if (!isIndexFull(handler, i)) {
+            if (!isIndexFull(handler, i))
                 return false;
-            }
         }
         return true;
     }
@@ -98,6 +103,15 @@ public final class ResourceHandlerUtil {
         return handler.getResource(index).equals(resource);
     }
 
+    public static <T extends IResource> boolean isValid(IResourceHandler<T> handler, T resource) {
+        var size = handler.size();
+        for (int i = 0; i < size; i++) {
+            if (handler.isValid(i, resource))
+                return true;
+        }
+        return false;
+    }
+
     /**
      * Calculates the redstone signal strength based on the given resource handler. This value is between 0 and 15.
      * This method is based off of {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}
@@ -112,9 +126,8 @@ public final class ResourceHandlerUtil {
 
         for (int index = 0; index < size; ++index) {
             int indexFill = handler.getAmount(index);
-            if (indexFill > 0) {
+            if (indexFill > 0)
                 proportion += (float) indexFill / handler.getCapacity(index, handler.getResource(index));
-            }
         }
 
         proportion /= size;
@@ -139,17 +152,15 @@ public final class ResourceHandlerUtil {
         for (int index = 0; index < size; index++) {
             if (ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount) {
+            if (inserted >= amount)
                 return inserted;
-            }
         }
 
         for (int index = 0; index < size; index++) {
             if (!ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
             inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount) {
+            if (inserted >= amount)
                 return inserted;
-            }
         }
 
         return inserted;
@@ -167,14 +178,13 @@ public final class ResourceHandlerUtil {
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
-    public static <T extends IResource> int insert(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
+    public static <T extends IResource> int insertIndexForced(IResourceHandler<T> handler, T resource, int amount, TransferAction action) {
         int inserted = 0;
         int size = handler.size();
         for (int index = 0; index < size; index++) {
             inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount) {
+            if (inserted >= amount)
                 return inserted;
-            }
         }
 
         return inserted;
@@ -197,53 +207,48 @@ public final class ResourceHandlerUtil {
         int size = handler.size();
         for (int index = 0; index < size; index++) {
             extracted += handler.extract(index, resource, amount - extracted, action);
-            if (extracted >= amount) {
+            if (extracted >= amount)
                 return extracted;
-            }
         }
 
         return extracted;
     }
 
-
     /**
      * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
      *
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to extract the resource from
-     * @param filter   the filter to apply to the resources
-     * @param amount   the desired amount of the resource to extract
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>     the type of resource handled by the handler
+     * @param handler the {@link IResourceHandler} to extract the resource from
+     * @param filter  the filter to apply to the resources
+     * @param amount  the desired amount of the resource to extract
+     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *                while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    @Nullable
-    public static <T extends IResource> ResourceStack<T> extractFiltered(IResourceHandler<T> handler, Predicate<T> filter, int amount, TransferAction action) {
+    public static <T extends IResource> ResourceStack<T> extractFiltered(IResourceHandler<T> handler, Predicate<T> filter, int amount, TransferAction action, T emptyResource) {
         int size = handler.size();
         for (int index = 0; index < size; index++) {
             T resource = handler.getResource(index);
             if (!filter.test(resource)) continue;
             int extract = handler.extract(resource, amount, action);
-            if (extract > 0) {
+            if (extract > 0)
                 return new ResourceStack<>(resource, extract);
-            }
         }
-        return null;
+        return new ResourceStack<>(emptyResource, 0);
     }
 
     /**
      * Extracts the first resource from an {@link IResourceHandler} that is not blank.
      *
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to extract the resource from
-     * @param amount   the desired amount of the resource to extract
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>     the type of resource handled by the handler
+     * @param handler the {@link IResourceHandler} to extract the resource from
+     * @param amount  the desired amount of the resource to extract
+     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *                while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
      */
-    @Nullable
-    public static <T extends IResource> ResourceStack<T> extractAny(IResourceHandler<T> handler, int amount, TransferAction action) {
-        return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, action);
+    public static <T extends IResource> ResourceStack<T> extractAny(IResourceHandler<T> handler, int amount, TransferAction action, T emptyResource) {
+        return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, action, emptyResource);
     }
 
     /**
@@ -257,30 +262,32 @@ public final class ResourceHandlerUtil {
      *               while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) moved
      */
-    @Nullable
-    public static <T extends IResource> ResourceStack<T> moveFiltered(IResourceHandler<T> from, IResourceHandler<T> to, Predicate<T> filter, int amount, TransferAction action) {
+    public static <T extends IResource> ResourceStack<T> moveFiltered(IResourceHandler<T> from, IResourceHandler<T> to, Predicate<T> filter, int amount, TransferAction action, T emptyResource) {
         for (int index = 0; index < from.size(); index++) {
             T resource = from.getResource(index);
             if (!filter.test(resource)) continue;
             int extracted = from.extract(resource, amount, TransferAction.SIMULATE);
             int inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
-            if (extracted > 0 && inserted > 0) {
-                while (extracted != inserted) {
-                    extracted = from.extract(resource, inserted, TransferAction.SIMULATE);
-                    inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
-                    if (extracted == 0 || inserted == 0) {
-                        break;
-                    }
-                }
-                if (inserted == 0) continue;
-                if (action.isExecuting()) {
-                    from.extract(resource, inserted, TransferAction.EXECUTE);
-                    to.insert(resource, inserted, TransferAction.EXECUTE);
-                }
-                return new ResourceStack<>(resource, inserted);
+            if (extracted == 0 || inserted == 0)
+                continue;
+
+            while (extracted != inserted) {
+                extracted = from.extract(resource, inserted, TransferAction.SIMULATE);
+                inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
+                if (extracted == 0 || inserted == 0)
+                    break;
             }
+            if (inserted == 0)
+                continue;
+
+            if (action.isExecuting()) {
+                from.extract(resource, inserted, TransferAction.EXECUTE);
+                to.insert(resource, inserted, TransferAction.EXECUTE);
+            }
+            return new ResourceStack<>(resource, inserted);
         }
-        return null;
+
+        return new ResourceStack<>(emptyResource, 0);
     }
 
     /**
@@ -294,10 +301,43 @@ public final class ResourceHandlerUtil {
      *               while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) moved
      */
-    @Nullable
-    public static <T extends IResource> ResourceStack<T> moveAny(IResourceHandler<T> from, IResourceHandler<T> to, int amount, TransferAction action) {
-        return moveFiltered(from, to, Predicate.not(IResource::isEmpty), amount, action);
+    public static <T extends IResource> ResourceStack<T> moveAny(IResourceHandler<T> from, IResourceHandler<T> to, int amount, TransferAction action, T emptyResource) {
+        return moveFiltered(from, to, Predicate.not(IResource::isEmpty), amount, action, emptyResource);
     }
 
-    private ResourceHandlerUtil(){}
+    public static <T extends IResource> boolean hasResource(IResourceHandler<T> handler, T resource) {
+        return handler.extract(resource, 1, TransferAction.SIMULATE) > 0;
+    }
+
+    // Look into if we should use resource or item Stacks here.
+    /**
+     * Inserts the given itemstack into the players inventory. If the inventory can't hold it, the item will be dropped
+     * in the world at the players position.
+     *
+     * @param player The player to give the item to
+     * @param stack  The itemstack to insert
+     */
+    public static void giveItemToPlayer(Player player, ItemStack stack) {
+        if (stack.isEmpty()) return;
+
+        PlayerInventoryHandler inventory = new PlayerInventoryHandler(player);
+        inventory.insertOrDrop(ItemResource.of(stack), stack.getCount());
+    }
+
+    /**
+     * Inserts the given itemstack into the players inventory.
+     * If the inventory can't hold it, the item will be dropped in the world at the players position.
+     *
+     * @param player The player to give the item to
+     * @param stack  The itemstack to insert
+     */
+    public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
+        if (stack.isEmpty()) return;
+
+        PlayerContext context = new PlayerContext(player, preferredSlot);
+        context.insert(ItemResource.of(stack), stack.getCount(), TransferAction.EXECUTE);
+    }
+
+
+    private ResourceHandlerUtil() { }
 }

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.oldtest.misc;
 
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -28,17 +27,16 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.AttachmentEnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.registries.*;
-import net.neoforged.testframework.registration.DeferredAttachmentTypes;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @Mod(GameTestTest.MODID)
 public class GameTestTest {
@@ -47,16 +45,11 @@ public class GameTestTest {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MODID);
-
-    private static final DeferredBlock<Block> ENERGY_BLOCK = BLOCKS.register("energy_block",
-            () -> new EnergyBlock(Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredBlock<Block> GAME_TEST_BLOCK = BLOCKS.registerBlock("game_test_block", GameTestBlock::new, Properties.of().mapColor(MapColor.STONE));
     @SuppressWarnings("unused")
-    private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(ENERGY_BLOCK);
-    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnergyBlockEntity>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
-            () -> new BlockEntityType<>(EnergyBlockEntity::new, ENERGY_BLOCK.get()));
-
-    private static final DeferredHolder<AttachmentType<?>, AttachmentType<Integer>> ENERGY_TYPE = ATTACHMENTS.register("energy", AttachmentType.builder(() -> 0)::build);
+    private static final DeferredItem<BlockItem> ENERGY_BLOCK_ITEM = ITEMS.registerSimpleBlockItem(GAME_TEST_BLOCK);
+    private static final DeferredHolder<BlockEntityType<?>, BlockEntityType<Entity>> ENERGY_BLOCK_ENTITY = BLOCK_ENTITIES.register("energy",
+            () -> new BlockEntityType<>(Entity::new, GAME_TEST_BLOCK.get()));
 
     public GameTestTest(IEventBus modBus) {
         if (ENABLED) {
@@ -66,7 +59,6 @@ public class GameTestTest {
             ITEMS.register(modBus);
             BLOCK_ENTITIES.register(modBus);
             modBus.addListener(this::addCreative);
-            modBus.addListener(this::registerCaps);
         }
     }
 
@@ -75,9 +67,6 @@ public class GameTestTest {
             event.accept(ENERGY_BLOCK_ITEM);
     }
 
-    private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.EnergyHandler.BLOCK, ENERGY_BLOCK_ENTITY.get(), (be, side) -> be.energyStorage);
-    }
 
     @SubscribeEvent
     public void onRegisterGameTests(RegisterGameTestsEvent event) {
@@ -159,49 +148,22 @@ public class GameTestTest {
         helper.runAtTickTime(21, helper::succeed);
     }
 
-    @PrefixGameTestTemplate(false)
-    @GameTest(templateNamespace = MODID, template = "empty3x3x3")
-    public static void testEnergyStorage(GameTestHelper helper) {
-        BlockPos energyPos = new BlockPos(1, 1, 1);
 
-        // Sets (1,1,1) to our custom energy block
-        helper.setBlock(energyPos, ENERGY_BLOCK.get());
-
-        // Queries the energy capability
-        IEnergyStorage energyStorage = helper.getLevel().getCapability(Capabilities.EnergyHandler.BLOCK, helper.absolutePos(energyPos), null);
-        if (energyStorage == null) {
-            helper.fail("Expected energy storage", energyPos);
-        }
-
-        // Adds 2000 FE, but our energy storage can only hold 1000 FE
-        energyStorage.receiveEnergy(2000, false);
-
-        // Fails test if stored energy is not equal to 1000 FE
-        int energy = energyStorage.getEnergyStored();
-        int target = 1000;
-        if (energy != target) {
-            helper.fail("Expected energy=" + target + " but it was energy=" + energy, energyPos);
-        }
-
-        helper.succeed();
-    }
-
-    private static class EnergyBlock extends Block implements EntityBlock {
-        public EnergyBlock(Properties properties) {
+    private static class GameTestBlock extends Block implements EntityBlock {
+        public GameTestBlock(Properties properties) {
             super(properties);
         }
 
         @Nullable
         @Override
         public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-            return new EnergyBlockEntity(pos, state);
+            return new Entity(pos, state);
         }
     }
 
-    private static class EnergyBlockEntity extends BlockEntity {
-        private final AttachmentEnergyStorage energyStorage = new AttachmentEnergyStorage(this, ENERGY_TYPE, 1000);
+    private static class Entity extends BlockEntity {
 
-        public EnergyBlockEntity(BlockPos pos, BlockState state) {
+        public Entity(BlockPos pos, BlockState state) {
             super(ENERGY_BLOCK_ENTITY.get(), pos, state);
         }
     }

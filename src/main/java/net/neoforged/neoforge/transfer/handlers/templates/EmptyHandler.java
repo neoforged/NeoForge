@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
-import net.neoforged.neoforge.transfer.IResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.fluids.FluidResource;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * An {@link IResourceHandler} that represents a handler that rejects all operations.
@@ -26,51 +26,57 @@ public record EmptyHandler<T extends IResource>(T emptyResource) implements IRes
     public int size() {
         return 0;
     }
+
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         return 0;
     }
+
     @Override
     public int insert(int index, T resource, int amount, TransferAction action) {
         return 0;
     }
+
     @Override
     public int extract(T resource, int amount, TransferAction action) {
         return 0;
     }
+
     @Override
     public int extract(int index, T resource, int amount, TransferAction action) {
         return 0;
     }
+
     @Override
     public T getResource(int index) {
         return emptyResource;
     }
+
     @Override
     public int getAmount(int index) {
         return 0;
     }
+
     @Override
     public int getCapacity(int index) {
         return 0;
     }
+
     @Override
     public int getCapacity(int index, T resource) {
         return 0;
     }
 
     @Override
-    public boolean isValid(T resource) {
-        return false;
-    }
-    @Override
     public boolean isValid(int index, T resource) {
         return false;
     }
+
     @Override
     public boolean allowsInsertion(int index) {
         return false;
     }
+
     @Override
     public boolean allowsExtraction(int index) {
         return false;
