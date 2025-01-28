@@ -56,9 +56,8 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public void sendSuccess(Supplier<Component> message, boolean sendToAdmins) {
-        if (this.source.acceptsSuccess() && !isSilent()) {
-            this.source.sendSystemMessage(message.get());
-        }
+        //Don't send the message to admins, as that requires querying the server for the list of admins, and would cause a NPE
+        super.sendSuccess(message, false);
     }
 
     /**
