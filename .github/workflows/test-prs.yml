@@ -17,16 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1000
-          fetch-tags: true
-
-      # GradleUtils will append the branch name to the version,
-      # but for that we need a properly checked out branch
-      - name: Create branch for commit
-        run:
-          git switch -C pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.ref }}
+        uses: neoforged/actions/checkout@main
 
       - name: Setup JDK 21
         uses: neoforged/actions/setup-java@main
