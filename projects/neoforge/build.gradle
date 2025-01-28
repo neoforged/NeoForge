@@ -127,6 +127,10 @@ dependencies {
     userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
 }
 
+tasks.register('genPatches') {
+    dependsOn(tasks.named('unpackSourcePatches'))
+}
+
 runTypes {
     client {
         singleInstance false
