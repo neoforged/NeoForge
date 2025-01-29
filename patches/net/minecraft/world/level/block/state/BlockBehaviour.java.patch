@@ -40,7 +40,7 @@
      }
  
 +    @Deprecated
-+    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(BlockState, LevelReader, BlockPos, Player, boolean) player-sensitive version} */
++    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) player-sensitive version} */
      protected ItemStack getCloneItemStack(LevelReader p_382795_, BlockPos p_383120_, BlockState p_382830_, boolean p_388788_) {
          return new ItemStack(this.asItem());
      }
