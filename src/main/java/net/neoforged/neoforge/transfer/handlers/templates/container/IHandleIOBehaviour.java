@@ -1,6 +1,6 @@
 package net.neoforged.neoforge.transfer.handlers.templates.container;
 
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import org.jetbrains.annotations.Contract;
 
 /**

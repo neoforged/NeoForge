@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.transfer.handlers.templates;
+package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
@@ -22,13 +22,8 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
      */
     public ResourceStorageAttachment(NonNullList<MutableResourceStack<T>> stacks) {
         this.stacks = stacks;
-        int i = 0;
-        for (IResourceStack<T> itemstack : stacks) {
-            i = i * 31 + itemstack.resource().hashCode();
-        }
-        this.hashCode = i;
         this.size = stacks.size();
-
+        this.hashCode = IResourceStack.hashCode(stacks);
     }
 
 

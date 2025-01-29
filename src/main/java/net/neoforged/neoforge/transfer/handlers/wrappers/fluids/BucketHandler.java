@@ -12,7 +12,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
@@ -27,7 +27,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public FluidResource getResource(int ignoredIndex) {
+    public FluidResource getResource(int index) {
         ItemResource resource = context.getResource();
         if (resource.getItem() instanceof BucketItem bucket) {
             return bucket.content.defaultResource;
@@ -44,7 +44,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public int getCapacity(int ignoredIndex, FluidResource resource) {
+    public int getCapacity(int index, FluidResource resource) {
         return FluidType.BUCKET_VOLUME;
     }
 
@@ -54,7 +54,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     }
 
     @Override
-    public boolean isValid(int ignoredIndex, FluidResource resource) {
+    public boolean isValid(int index, FluidResource resource) {
         return !resource.getFilledBucket().isEmpty();
     }
 

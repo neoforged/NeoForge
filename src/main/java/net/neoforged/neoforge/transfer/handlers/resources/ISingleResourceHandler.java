@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates;
+package net.neoforged.neoforge.transfer.handlers.resources;
 
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 
@@ -22,26 +21,26 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     }
 
     @Override
-    default int insert(int ignoredIndex, T resource, int amount, TransferAction action) {
+    default int insert(int index, T resource, int amount, TransferAction action) {
         // With single resource handlers the index is ignored
         return insert(resource, amount, action);
     }
 
     @Override
-    default int extract(int ignoredIndex, T resource, int amount, TransferAction action) {
+    default int extract(int index, T resource, int amount, TransferAction action) {
         // With single resource handlers the index is ignored
         return extract(resource, amount, action);
     }
 
     @Override
-    T getResource(int ignoredIndex);
+    T getResource(int index);
 
     //These allow methods are flipped from the IResourceHandler for which one is the default and which needs to be implemented.
     @Override
     boolean allowsInsertion();
 
     @Override
-    default boolean allowsInsertion(int ignoredIndex) {
+    default boolean allowsInsertion(int index) {
         return allowsInsertion();
     }
 
@@ -49,7 +48,7 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     boolean allowsExtraction();
 
     @Override
-    default boolean allowsExtraction(int ignoredIndex) {
+    default boolean allowsExtraction(int index) {
         return allowsExtraction();
     }
 
@@ -60,8 +59,8 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     int getCapacity(int ignoredIndex);
 
     @Override
-    int getCapacity(int ignoredIndex, T resource);
+    int getCapacity(int index, T resource);
 
     @Override
-    boolean isValid(int ignoredIndex, T resource);
+    boolean isValid(int index, T resource);
 }

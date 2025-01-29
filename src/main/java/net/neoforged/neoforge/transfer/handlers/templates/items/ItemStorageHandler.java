@@ -6,10 +6,10 @@ import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.IResourceData;
-import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageAttachment;
-import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.IResourceData;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageAttachment;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemResource> {

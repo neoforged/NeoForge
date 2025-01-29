@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.transfer.handlers.templates;
+package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
@@ -12,20 +12,16 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public final class ResourceStorageComponent<T extends IResource> implements IResourceData<T> {
     private final NonNullList<ResourceStack<T>> stacks;
-    private final int hashCode;
     private final int size;
+    private final int hashCode;
 
     /**
      * Intended to be used as a data component on an ItemStack. This stores a immutable list, and any changes needed, create a new list.
      */
     public ResourceStorageComponent(NonNullList<ResourceStack<T>> stacks) {
         this.stacks = stacks;
-        int i = 0;
-        for (IResourceStack<T> itemstack : stacks) {
-            i = i * 31 + itemstack.resource().hashCode();
-        }
-        this.hashCode = i;
         this.size = stacks.size();
+        this.hashCode = IResourceStack.hashCode(stacks);
     }
 
     public ResourceStorageComponent(int size, T emptyResource) {

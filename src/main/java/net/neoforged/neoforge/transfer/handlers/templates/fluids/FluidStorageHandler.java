@@ -5,10 +5,10 @@ import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.IResourceData;
-import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.IResourceData;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
 
 public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidResource> {
     public FluidStorageHandler(int size, int indexCapacity) {

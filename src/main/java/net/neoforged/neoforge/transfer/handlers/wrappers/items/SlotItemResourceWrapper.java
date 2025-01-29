@@ -11,13 +11,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import org.jetbrains.annotations.Nullable;
 
 public class SlotItemResourceWrapper extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
     private final IResourceHandler<ItemResource> handler;
+    @Nullable
     private ItemStack cachedStack = null;
 
     public SlotItemResourceWrapper(IResourceHandler<ItemResource> handler, int index, int xPosition, int yPosition) {
@@ -68,6 +70,7 @@ public class SlotItemResourceWrapper extends Slot {
 
     @Override
     public void setChanged() {
+        //Won't this cause a possible infinite loop. Not versed enough in how `vanilla` Slots/Containers work anymore so if not, then no changes needed
         if (cachedStack != null) {
             set(cachedStack);
         }

@@ -7,8 +7,8 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.EmptyHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.HandlerIndexWrapper;

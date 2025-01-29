@@ -2,8 +2,8 @@ package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.*;
 import net.neoforged.neoforge.transfer.resources.*;
 import org.jetbrains.annotations.Contract;
@@ -65,7 +65,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     }
 
     /**
-     * Creates a new item holder that wraps the specified  {@link net.neoforged.neoforge.transfer.handlers.IResourceHandler}.
+     * Creates a new item holder that wraps the specified  {@link IResourceHandler}.
      *
      * @param handler The resource handler.
      * @return A wrapping item holder.

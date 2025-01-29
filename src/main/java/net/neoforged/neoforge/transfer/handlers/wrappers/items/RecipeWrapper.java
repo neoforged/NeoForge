@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 public class RecipeWrapper implements RecipeInput {

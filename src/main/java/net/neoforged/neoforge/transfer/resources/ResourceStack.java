@@ -7,8 +7,6 @@ package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -102,6 +100,18 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
     @Override
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         return new ResourceStack<>(operator.apply(resource), amount);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof IResourceStack<?> that)) return false;
+        return Objects.equals(resource(), that.resource()) && amount() == that.amount();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resource, amount);
     }
 
     /**

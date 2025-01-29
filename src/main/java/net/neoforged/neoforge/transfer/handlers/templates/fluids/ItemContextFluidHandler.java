@@ -5,7 +5,7 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.handlers.templates.ItemContextResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 import java.util.function.Predicate;

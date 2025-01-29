@@ -4,7 +4,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -13,6 +13,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
+//Mostly to show that alternate resources are possible with the same backing interface allowing for cross mod interactions to be easier with buffered or accumulated resources
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.alternate.")
 public class AlternateResourceTests {
     public static final BlockCapability<IResourceHandler<TestElementResource>, Void> BLOCK_CAPABILITY = BlockCapability.createVoid(ResourceLocation.fromNamespaceAndPath("resource_handler_tests", "elements_of_lol"), IResourceHandler.asClass());

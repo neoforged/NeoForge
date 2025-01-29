@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.items;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
 

@@ -42,7 +42,6 @@ import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.SimpleModelState;
 import net.neoforged.neoforge.client.model.UnbakedCompositeModel;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;

@@ -11,7 +11,7 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.handlers.templates.container.templates.ResourceContainer;
 import net.neoforged.neoforge.transfer.handlers.templates.container.templates.SimpleFluidResourceContainer;
@@ -19,10 +19,11 @@ import net.neoforged.neoforge.transfer.handlers.templates.container.templates.Si
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
+//This is the XyCraft example of how a container is used along with the helper (`holderWith`) of how to set the holder during deserializing.
 public class TestResourceContainerAttachment {
     public static final Codec<TestResourceContainerAttachment> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             ResourceContainer.Codecs.itemResourcesOf("item_resources", data -> data.itemContainer),
@@ -42,7 +43,8 @@ public class TestResourceContainerAttachment {
 
     public final IResourceHandlerModifiable<FluidResource> fluidHandler;
 
-    public BlockEntity blockEntity;
+    @Nullable
+    public BlockEntity blockEntity; // We want to set data, or more accurately: mark the block entity owning this data as `changed`
 
     public TestResourceContainerAttachment(IAttachmentHolder holder) {
         this(
@@ -54,11 +56,14 @@ public class TestResourceContainerAttachment {
     }
 
     public TestResourceContainerAttachment(NonNullList<MutableResourceStack<ItemResource>> items, NonNullList<MutableResourceStack<FluidResource>> fluids, int capacity) {
+        //the callback passed in allows us, in this case, to inform the block entity of being changed without making the container block entity specific
         itemContainer = SimpleItemResourceContainer
                 .from(items)
                 .onChange(this::markBlockEntityAsDirty)
                 .build();
-        //This shows we can serialize the capacity and set it when we get it back from the codec. The value is set in the instancing constructor above.
+
+        //This shows we can serialize the capacity and set it when we get it back from the codec.
+        // The value is set in the instancing constructor above.
         fluidContainer = SimpleFluidResourceContainer.from(fluids).capacity(capacity).onChange(this::markBlockEntityAsDirty).build();
 
         //Creates a handler from the container from slots [0,10) that allows insert only
@@ -67,18 +72,19 @@ public class TestResourceContainerAttachment {
         output = itemContainer.slice(10, 20).asHandler(IHandleIOBehaviour.EXTRACT_ONLY);
 
         //Another way to make a handler from the same backing container with slots [9,...) that allows only extraction
-        //        output = itemContainer.asHandler(new IHandleIOBehaviour() {
-        //            @Override
-        //            public boolean canInsert(int slot) {
-        //                return false;
-        //            }
-        //            @Override
-        //            public boolean canExtract(int slot) {
-        //                return slot >= 9;
-        //            }
-        //        });
+        //noinspection unused
+        var alternateExampleOutput = itemContainer.asHandler(new IHandleIOBehaviour() {
+            @Override
+            public boolean canInsert(int slot) {
+                return false;
+            }
+            @Override
+            public boolean canExtract(int slot) {
+                return slot >= 9;
+            }
+        });
 
-        //Creates a handler from a container that does both of the above.
+        //Creates a handler from a container that allows insertion and extraction but indicates which slots do which
         both = itemContainer.asHandler(new IHandleIOBehaviour() {
             @Override
             public boolean canInsert(int slot) {
@@ -106,7 +112,7 @@ public class TestResourceContainerAttachment {
     public static <T> IAttachmentSerializer<Tag, T> holderWith(Codec<T> codec, BiConsumer<T, IAttachmentHolder> setter) {
         return new IAttachmentSerializer<>() {
             @Override
-            public @NotNull T read(@NotNull IAttachmentHolder holder, @NotNull Tag tag, HolderLookup.@NotNull Provider provider) {
+            public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
                 var parse = codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag);
                 if (parse.error().isPresent()) {
                     throw new RuntimeException(parse.error().get().toString());
@@ -120,7 +126,7 @@ public class TestResourceContainerAttachment {
             }
 
             @Override
-            public Tag write(@NotNull T attachment, HolderLookup.@NotNull Provider provider) {
+            public Tag write(T attachment, HolderLookup.Provider provider) {
                 var encode = codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment);
                 if (encode.error().isPresent()) {
                     throw new RuntimeException(encode.error().get().toString());

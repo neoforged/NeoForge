@@ -1,6 +1,7 @@
-package net.neoforged.neoforge.transfer.handlers.templates;
+package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
 import net.minecraft.core.component.DataComponentType;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
@@ -9,7 +10,7 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 import java.util.function.Predicate;
 
-public class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T>  {
+public class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
     protected final IItemContext context;
     protected final DataComponentType<ResourceStack<T>> componentType;
 

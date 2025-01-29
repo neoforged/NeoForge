@@ -3,7 +3,6 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
@@ -152,9 +151,8 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (MutableResourceStack<T>) obj;
-        return Objects.equals(this.resource, that.resource) && this.amount == that.amount;
+        if (!(obj instanceof IResourceStack<?> that)) return false;
+        return Objects.equals(resource(), that.resource()) && amount() == that.amount();
     }
 
     @Override

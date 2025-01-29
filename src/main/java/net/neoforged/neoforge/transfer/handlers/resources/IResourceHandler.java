@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers;
+package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.templates.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
 import org.jetbrains.annotations.Range;
@@ -199,6 +199,7 @@ public interface IResourceHandler<T extends IResource> {
     int extract(T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount, TransferAction action);
 
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {
+        //noinspection unchecked
         return (Class<IResourceHandler<T>>) (Object) IResourceHandler.class;
     }
 }

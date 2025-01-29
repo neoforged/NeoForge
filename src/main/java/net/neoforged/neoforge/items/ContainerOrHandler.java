@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.items;
 
 import net.minecraft.world.Container;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.Nullable;
 //Why?... this is just a fancy either?
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @deprecated This is just an {@link com.mojang.datafixers.util.Either}
  */
-@Deprecated(since = "1.21.4")
+@Deprecated(since = "1.21.4", forRemoval = true)
 public record ContainerOrHandler(
         @Nullable Container container,
         @Nullable IResourceHandler<ItemResource> itemHandler) {

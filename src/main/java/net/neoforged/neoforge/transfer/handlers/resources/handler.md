@@ -19,8 +19,8 @@
 |                                                                 |                                                                           | `boolean` allowsExtraction(int index)                                                                                                       | A structurally permanent* indication of if the handler can be extract into the specified index. If this value is expected to change throughout the capability's lifetime, it is recommended to return true. This is **NOT** logic control, meaning that what ever returns here does not affect `extract` |
 |                                                                 |                                                                           | `boolean` allowsExtraction()                                                                                                                | A structurally permanent* indication of if the handler can be extract at all. If this value is expected to change throughout the capability's lifetime, it is recommended to return true. This is **NOT** logic control, meaning that what ever returns here does not affect `extract`                   |
 
-\*structurally permanent - `Anything that once a capability has been created, should not change without invalidation.`
-
+*Structurally permanent
+: Anything that once a capability has been created, should not change without invalidation.
     
     
     

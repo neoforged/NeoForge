@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
 
 /**
  * An {@link ISingleResourceHandler} that allows extraction of an unlimited amount of a specified resource.
@@ -33,7 +33,7 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
-    public T getResource(int ignoredIndex) {
+    public T getResource(int index) {
         return infinite;
     }
 
@@ -43,7 +43,7 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
-    public int getCapacity(int ignoredIndex, T resource) {
+    public int getCapacity(int index, T resource) {
         //0 or max? because technically it stores nothing nor would allow any.
         return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
     }
@@ -54,7 +54,7 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
-    public boolean isValid(int ignoredIndex, T resource) {
+    public boolean isValid(int index, T resource) {
         return resource.equals(infinite); // If the resource matches the current infinite
     }
 

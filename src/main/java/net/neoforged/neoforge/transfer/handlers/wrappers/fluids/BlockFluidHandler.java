@@ -20,7 +20,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +46,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     }
 
     @Override
-    public FluidResource getResource(int ignoredIndex) {
+    public FluidResource getResource(int index) {
         FluidState fluidState = level.getFluidState(blockPos);
         return fluidState.getType().defaultResource;
     }
@@ -57,7 +57,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     }
 
     @Override
-    public int getCapacity(int ignoredIndex, FluidResource resource) {
+    public int getCapacity(int index, FluidResource resource) {
         //Possibly check to see if fluid resource HAS a blockstate
         return FluidType.BUCKET_VOLUME;
     }
@@ -68,7 +68,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     }
 
     @Override
-    public boolean isValid(int ignoredIndex, FluidResource resource) {
+    public boolean isValid(int index, FluidResource resource) {
         return true;
     }
 

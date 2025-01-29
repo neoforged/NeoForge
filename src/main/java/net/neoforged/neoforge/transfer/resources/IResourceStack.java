@@ -107,7 +107,6 @@ public interface IResourceStack<T extends IResource> {
 
     IResourceStack<T> with(UnaryOperator<T> operator);
 
-
     // These methods allow a simple helper to return themselves if they are already an instance of that type, otherwise, a new one
 
     /**
@@ -119,4 +118,13 @@ public interface IResourceStack<T extends IResource> {
      * @return an immutable resource stack
      */
     ResourceStack<T> immutable();
+
+    static <T extends IResourceStack<?>> int hashCode(Iterable<T> stacks) {
+        int i = 0;
+        //Like vanilla, the count is omitted in the hash comparison
+        for (IResourceStack<?> resourceStack : stacks) {
+            i = i * 31 + resourceStack.resource().hashCode();
+        }
+        return i;
+    }
 }

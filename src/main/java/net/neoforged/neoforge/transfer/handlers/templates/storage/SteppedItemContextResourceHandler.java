@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.transfer.handlers.templates;
+package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.resources.IResource;
