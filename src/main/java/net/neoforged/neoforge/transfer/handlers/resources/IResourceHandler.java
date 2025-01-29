@@ -76,7 +76,7 @@ public interface IResourceHandler<T extends IResource> {
      * this should return true. To be clear, this value assumed to be constant throughout the life-time of the handler and does <b>not</b> control the handler's logic in any way.
      * <h5>IMPORTANT:</h5>
      * This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling insert or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc) to be able to infer what it can do with the handler
+     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * well before actually operating.
      * <p>
      * It is also advised to not use the result of this call in insert if the lookup is complex.
@@ -89,7 +89,7 @@ public interface IResourceHandler<T extends IResource> {
     /**
      * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
      * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling insert or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc) to be able to infer what it can do with the handler
+     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
      * <p>
      * It is also advised to not use the result of this call in insert if the lookup is complex.
@@ -112,7 +112,7 @@ public interface IResourceHandler<T extends IResource> {
      * this should return true.
      * <p>
      * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling extract or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc) to be able to infer what it can do with the handler
+     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
      * <p>
      * It is also advised to not use the result of this call in extract if the lookup is complex.
@@ -125,7 +125,7 @@ public interface IResourceHandler<T extends IResource> {
     /**
      * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
      * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling extract or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc) to be able to infer what it can do with the handler
+     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
      * <p>
      * It is also advised to not use the result of this call in extract if the lookup is complex.

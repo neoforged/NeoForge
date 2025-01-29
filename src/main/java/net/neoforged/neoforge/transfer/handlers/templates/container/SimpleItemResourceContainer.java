@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.container.templates;
+package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;

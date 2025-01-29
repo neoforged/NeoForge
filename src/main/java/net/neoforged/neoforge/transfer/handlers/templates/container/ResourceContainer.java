@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.container.templates;
+package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -15,7 +15,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ItemContainerToVanillaAdapter;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -29,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * A data storage for mutable resource stacks. This data can be put anywhere (with limited exceptions such as DataComponents), but it was designed with {@link net.neoforged.neoforge.attachment.AttachmentType DataAttachments} in mind.
  * You are able to build new containers, slice existing ones, as well as convert them to other types such as an {@link IResourceHandler IResourceHandler}.
  * To be more clear, the container itself, but by calling {@link #asHandler()} it will create one, though it is recommended you cache this rather than call it every time you need a handler of the container.
+ * <p>
  *
  * <strong>Example Usage</strong>
  * 

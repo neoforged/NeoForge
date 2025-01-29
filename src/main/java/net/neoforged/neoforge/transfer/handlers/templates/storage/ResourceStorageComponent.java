@@ -21,7 +21,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
     private final int hashCode;
 
     /**
-     * Intended to be used as a data component on an ItemStack. This stores a immutable list, and any changes needed, create a new list.
+     * Intended to be used as a data component on an ItemStack. This stores an immutable list, and any changes needed, create a new list.
      */
     public ResourceStorageComponent(NonNullList<ResourceStack<T>> stacks) {
         this.stacks = stacks;

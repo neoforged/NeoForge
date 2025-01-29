@@ -10,7 +10,7 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
  * A utility interface for a handler that manages a single index of a resource.
- * The index parameter in the methods from IResourceHandler are expected to be ignored from this interface down. This creates something also referred to as a `SlotlessResourceHandler`
+ * The index parameter in the methods from IResourceHandler are expected to be ignored from this interface down. This creates something also referred to as a `Slot-lessResourceHandler`
  * 
  * @param <T> The type of resource this handler manages.
  */

@@ -11,11 +11,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import org.jetbrains.annotations.Nullable;
 
 public class WorldlyContainerWrapper extends ContainerWrapper {
+    @Nullable
     protected final Direction side;
 
-    public static WorldlyContainerWrapper of(WorldlyContainer container, Direction side) {
+    public static WorldlyContainerWrapper of(WorldlyContainer container, @Nullable Direction side) {
         if (container instanceof AbstractFurnaceBlockEntity) {
             return new Furnace(container, side);
         } else if (container instanceof BrewingStandBlockEntity) {
@@ -25,7 +27,7 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
         return new WorldlyContainerWrapper(container, side);
     }
 
-    protected WorldlyContainerWrapper(WorldlyContainer container, Direction side) {
+    protected WorldlyContainerWrapper(WorldlyContainer container, @Nullable Direction side) {
         super(container);
         this.side = side;
     }
@@ -71,7 +73,7 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
     }
 
     public static class Furnace extends WorldlyContainerWrapper {
-        protected Furnace(WorldlyContainer container, Direction side) {
+        protected Furnace(WorldlyContainer container, @Nullable Direction side) {
             super(container, side);
         }
 
@@ -82,7 +84,7 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
     }
 
     public static class BrewingStand extends WorldlyContainerWrapper {
-        protected BrewingStand(WorldlyContainer container, Direction side) {
+        protected BrewingStand(WorldlyContainer container, @Nullable Direction side) {
             super(container, side);
         }
 

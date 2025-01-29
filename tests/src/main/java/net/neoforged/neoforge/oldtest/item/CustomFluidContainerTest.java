@@ -34,17 +34,17 @@ import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemCont
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-@Mod(CustomFluidContainerTest.MODID)
+@Mod(CustomFluidContainerTest.MOD_ID)
 public class CustomFluidContainerTest {
-    public static final String MODID = "custom_fluid_container_test";
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    public static final DeferredRegister<DataComponentType<?>> COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
+    public static final String MOD_ID = "custom_fluid_container_test";
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    public static final DeferredRegister<DataComponentType<?>> COMPONENT_TYPES = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MOD_ID);
 
     public static final boolean ENABLED = true;
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
-            .persistent(ResourceStack.codec(FluidResource.OPTIONAL_CODEC))
+            .persistent(ResourceStack.flatCodec(FluidResource.OPTIONAL_CODEC))
             .networkSynchronized(ResourceStack.streamCodec(FluidResource.STREAM_CODEC)).build());
 
     public CustomFluidContainerTest(IEventBus modEventBus) {
@@ -62,7 +62,7 @@ public class CustomFluidContainerTest {
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new SteppedItemContextFluidHandler(ctx, SIMPLE_FLUID_CONTENT.get(), FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new SteppedItemContextFluidHandler(ctx, SIMPLE_FLUID_CONTENT.get(), FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 
     /**

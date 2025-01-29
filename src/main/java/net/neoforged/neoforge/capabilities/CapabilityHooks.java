@@ -57,12 +57,16 @@ public class CapabilityHooks {
             // Return a wrapper that gets re-evaluated every time it is accessed
             // Invalidation is taken care of by the patches to ComposterBlock
 
+            //Should we return one with side == null?
             // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
             return new DelegatingHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
         }, Blocks.COMPOSTER);
 
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            return new ContainerWrapper(ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true));
+            var container = ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true);
+            if (container == null) return null;
+            // This was allowing a possible null container, though it is unlikely it would have ever been null. Something to look into
+            return new ContainerWrapper(container);
         }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
@@ -125,14 +129,16 @@ public class CapabilityHooks {
 //        }
 
         // Items
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), item);
-        }
-        if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), Items.MILK_BUCKET);
-        }
-        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new MCItemContentsWrapperHandler(ctx, DataComponents.CONTAINER, 27),
+        //THESE are handled in the fallback. Registering them twice seems wasteful and providing them twice defeats the fallback
+        //        for (Item item : BuiltInRegistries.ITEM) {
+        //            if (item.getClass() == BucketItem.class)
+        //                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), item);
+        //        }
+        //        if (NeoForgeMod.MILK.isBound()) {
+        //            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), Items.MILK_BUCKET);
+        //        }
+        event.registerItem(
+                Capabilities.ItemHandler.ITEM, (stack, ctx) -> ctx == null ? null : new MCItemContentsWrapperHandler(ctx, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,
@@ -168,12 +174,12 @@ public class CapabilityHooks {
         // Items
         for (Item item : BuiltInRegistries.ITEM) {
             if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), item);
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), item);
         }
 
         // We want mods to be able to override our milk cap by default
         if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketHandler(ctx), Items.MILK_BUCKET);
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), Items.MILK_BUCKET);
         }
     }
 

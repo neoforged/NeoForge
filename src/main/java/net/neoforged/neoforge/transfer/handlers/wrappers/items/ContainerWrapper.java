@@ -56,7 +56,7 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
     }
 
     public boolean isExtractable(int index, ItemResource resource) {
-        return true; // canTakeItem requires the other container thats accepting the item, so it cant be used here
+        return true; // canTakeItem requires the other container that's accepting the item, so it cant be used here
     }
 
     @Override

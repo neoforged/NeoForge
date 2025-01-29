@@ -57,7 +57,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int getCapacity(int index) {
-        //We could probably have something that queries all of the totalAmounts for every fluid at startup, and have that;
+        //We could probably have something that queries all the totalAmounts for every fluid at startup, and have that;
         // but 1 bucket seems more reasonable as a theoretical than MaxInt
         return FluidType.BUCKET_VOLUME;
         //        return Integer.MAX_VALUE; // CauldronFluidContent.totalAmount does not have a maximum value

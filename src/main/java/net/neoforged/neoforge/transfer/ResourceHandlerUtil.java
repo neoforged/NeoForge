@@ -75,7 +75,7 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the resource at the specified index is empty, {@code false} otherwise
      */
     public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
-        return handler.getResource(index).isEmpty() || handler.getAmount(index) <= 0;
+        return handler.getResource(index).isEmpty() || handler.getAmount(index) == 0;
     }
 
     /**
@@ -308,11 +308,11 @@ public final class ResourceHandlerUtil {
 
     // Look into if we should use resource or item Stacks here.
     /**
-     * Inserts the given itemstack into the players inventory. If the inventory can't hold it, the item will be dropped
+     * Inserts the given {@link ItemStack} into the players inventory. If the inventory can't hold it, the item will be dropped
      * in the world at the players position.
      *
      * @param player The player to give the item to
-     * @param stack  The itemstack to insert
+     * @param stack  The {@link ItemStack} to insert
      */
     public static void giveItemToPlayer(Player player, ItemStack stack) {
         if (stack.isEmpty()) return;
@@ -322,11 +322,11 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Inserts the given itemstack into the players inventory.
+     * Inserts the given {@link ItemStack} into the players inventory.
      * If the inventory can't hold it, the item will be dropped in the world at the players position.
      *
      * @param player The player to give the item to
-     * @param stack  The itemstack to insert
+     * @param stack  The {@link ItemStack} to insert
      */
     public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
         if (stack.isEmpty()) return;

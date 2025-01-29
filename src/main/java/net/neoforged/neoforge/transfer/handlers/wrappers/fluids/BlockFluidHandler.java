@@ -59,7 +59,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
 
     @Override
     public int getCapacity(int index, FluidResource resource) {
-        //Possibly check to see if fluid resource HAS a blockstate
+        //Possibly check to see if fluid resource HAS a block state
         return FluidType.BUCKET_VOLUME;
     }
 

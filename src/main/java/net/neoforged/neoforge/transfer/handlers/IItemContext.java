@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents the context of the space an item occupies.
@@ -19,10 +20,10 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
  * for better handling of stacked item capabilities.
  * <p>
  * <h3>Example</h3>
- * Lets take a look at an example of how this context could be utilized:
+ * Let's take a look at an example of how this context could be utilized:
  * <p>
  * Imagine we have 16 bottles of honey in your inventory. We want to extract 1 bucket's worth of liquid from this stack.
- * First, we create a context of the stack of honey bottles. Lets assume this stack is in your mainhand:
+ * First, we create a context of the stack of honey bottles. Let's assume this stack is in your main hand:
  * 
  * <pre>{@code
  * IItemContext context = PlayerContext.ofHand(InteractionHand.MAIN_HAND);
@@ -58,6 +59,7 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
 public interface IItemContext {
+    @Nullable
     default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
         return capability.getCapability(getResource().toStack(), this);
     }

@@ -93,7 +93,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     public int extract(T resource, int amount, TransferAction action) {
         if (amount <= 0 || resource.isEmpty()) return 0;
         //Get the contents and if not mutable, make it mutable ONLY if we are executing.
-        // Otherwise we can keep the existing allocations.
+        // Otherwise, we can keep the existing allocations.
         IResourceData<T> contents = action.isExecuting() ? getContents().attachment() : getContents();
         int changedAmount = 0;
         for (int i = 0; i < size(); i++) {

@@ -213,7 +213,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.getFluidType().isVaporizedOnPlacement(level, pos, innerStack);
     }
 
-    public void onVaporize(Player player, Level level, BlockPos pos) {
+    public void onVaporize(@Nullable Player player, Level level, BlockPos pos) {
         innerStack.getFluidType().onVaporize(player, level, pos, innerStack);
     }
 
