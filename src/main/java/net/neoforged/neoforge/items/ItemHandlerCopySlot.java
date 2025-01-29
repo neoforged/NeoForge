@@ -12,7 +12,8 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.SlotItemResourceWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-//Is this still necessary with our examples, and what did this do exactly? Fine with which ever, we need to fix the documentation linking
+// Is this still necessary with our examples, and what did this do exactly? Fine with which ever, we need to fix the documentation linking
+
 /**
  * Slot class that can be used with immutable {@link IResourceHandler IResourceHandlers}
  * like {@link ComponentItemHandler}.

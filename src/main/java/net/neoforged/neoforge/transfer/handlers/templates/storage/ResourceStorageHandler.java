@@ -1,11 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
-import net.neoforged.neoforge.transfer.*;
+import java.util.Objects;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
-
-import java.util.Objects;
 
 public abstract class ResourceStorageHandler<T extends IResource> implements IResourceHandler<T> {
     /**
@@ -20,7 +24,6 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
      * Capacity per index. This value is the same across all indices.
      */
     protected final int capacity;
-
 
     public ResourceStorageHandler(int size, int capacity, T emptyResource) {
         this.size = size;

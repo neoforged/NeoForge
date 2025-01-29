@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
+import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
-import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-
-import java.util.function.Predicate;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
     protected final IItemContext context;
@@ -22,7 +26,7 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
     protected final Predicate<T> validator;
 
     public ItemContextResourceHandler(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit) {
-        this(context, componentType, emptyResource, singleItemLimit, r->true);
+        this(context, componentType, emptyResource, singleItemLimit, r -> true);
     }
 
     public ItemContextResourceHandler(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit, Predicate<T> validator) {
@@ -33,7 +37,6 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
         this.emptyStack = new ResourceStack<>(emptyResource, 0);
         this.validator = validator;
     }
-
 
     @Override
     public T getResource(int index) {
@@ -52,7 +55,7 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
     @Override
     public int getCapacity(int index, T resource) {
         //This ignores say the resource size limits at the moment. As well as possibly able to overflow if done incorrectly
-        return singleItemLimit*context.getAmount();
+        return singleItemLimit * context.getAmount();
     }
 
     //Theoretical version

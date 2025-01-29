@@ -1,5 +1,9 @@
-package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
+package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
@@ -12,7 +16,6 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
  * This is always assumed to be of type {@link ItemResource} currently, since a {@link Container} can only handle {@link net.minecraft.world.item.ItemStack ItemStacks}
  */
 public record VanillaToItemContainerAdapter(Container container) implements IResourceContainer<ItemResource> {
-
     @Override
     public ResourceStack<ItemResource> defaultResource() {
         return ItemResource.EMPTY_STACK;
@@ -54,4 +57,3 @@ public record VanillaToItemContainerAdapter(Container container) implements IRes
         return container.isEmpty();
     }
 }
-

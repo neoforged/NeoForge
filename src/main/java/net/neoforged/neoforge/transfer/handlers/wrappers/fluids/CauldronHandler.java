@@ -14,8 +14,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 
 /**
  * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
@@ -104,7 +104,6 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
             return 0;
         }
 
-
         // We can only insert increments based on the GCD between the number of levels and the total amount.
         int d = IntMath.gcd(insertContent.maxLevel, insertContent.totalAmount);
         int amountIncrements = insertContent.totalAmount / d;
@@ -148,5 +147,4 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
 
         return extractedIncrements * amountIncrements;
     }
-
 }

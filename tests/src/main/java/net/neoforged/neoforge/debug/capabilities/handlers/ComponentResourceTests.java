@@ -20,9 +20,9 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -30,10 +30,9 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-//Tests component storages on ItemStacks as well as the handler logic for those components. Also validates the Codec and Stream codec
+// Tests component storages on ItemStacks as well as the handler logic for those components. Also validates the Codec and Stream codec
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.component.")
 public class ComponentResourceTests {
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests that FluidHandlerItemStack works")
@@ -76,7 +75,6 @@ public class ComponentResourceTests {
         helper.succeed();
     }
 
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests that FluidHandlerItemStack works")
@@ -98,7 +96,6 @@ public class ComponentResourceTests {
         //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
         helper.succeed();
     }
-
 
     @GameTest
     @EmptyTemplate
@@ -127,7 +124,6 @@ public class ComponentResourceTests {
         var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
         blockHandler.insert(applesWithContents, 2, TransferAction.EXECUTE);
 
-
         helper.succeed();
     }
 
@@ -136,7 +132,7 @@ public class ComponentResourceTests {
     @TestHolder(description = "Tests that Codec for resources work along side component storage")
     public static void testCodec(ExtendedGameTestHelper helper) {
         FriendlyByteBufUtil.writeCustomData(buf -> {
-            var itemContents = new ResourceStorageComponent<>(3, ItemResource.NONE).modify(0,Items.APPLE.defaultResource.with(DataComponents.DAMAGE, 20), 3);
+            var itemContents = new ResourceStorageComponent<>(3, ItemResource.NONE).modify(0, Items.APPLE.defaultResource.with(DataComponents.DAMAGE, 20), 3);
             var fluidContents = new ResourceStorageComponent<>(3, FluidResource.NONE).modify(0, Fluids.LAVA.defaultResource, 200);
 
             var resource = Items.APPLE.defaultResource.with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
@@ -144,7 +140,7 @@ public class ComponentResourceTests {
             ItemResource.STREAM_CODEC.encode(buf, resource);
             var result = ItemResource.STREAM_CODEC.decode(buf);
             helper.assertValueEqual(result, resource, "decoded resource");
-        },helper.getLevel().registryAccess());
+        }, helper.getLevel().registryAccess());
         helper.succeed();
     }
 }

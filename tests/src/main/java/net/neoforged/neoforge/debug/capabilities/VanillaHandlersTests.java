@@ -15,7 +15,6 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -37,8 +36,7 @@ public class VanillaHandlersTests {
                 helper.absolutePos(composterPos),
                 Direction.UP,
                 () -> true,
-                invalidationCount::increment
-        );
+                invalidationCount::increment);
 
         if (capCache.getCapability() != null)
             helper.fail("Expected no capability", composterPos);
@@ -90,8 +88,7 @@ public class VanillaHandlersTests {
                 helper.absolutePos(cauldronPos),
                 Direction.UP,
                 () -> true,
-                invalidationCount::increment
-        );
+                invalidationCount::increment);
 
         // Capability should be absent
         helper.assertTrue(capCache.getCapability() == null, "Expected no capability");
@@ -107,7 +104,6 @@ public class VanillaHandlersTests {
 
         var waterResource = Fluids.WATER.defaultResource;
         var lavaResource = Fluids.LAVA.defaultResource;
-
 
         // Simulate filling with water, and it should only accept 1 bucket
         helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.SIMULATE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");

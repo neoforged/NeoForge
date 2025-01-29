@@ -25,11 +25,11 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
-import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.transfer.FluidUtil;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -62,7 +62,7 @@ public class CustomFluidContainerTest {
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new SteppedItemContextFluidHandler(ctx,SIMPLE_FLUID_CONTENT.get(),FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new SteppedItemContextFluidHandler(ctx, SIMPLE_FLUID_CONTENT.get(), FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 
     /**

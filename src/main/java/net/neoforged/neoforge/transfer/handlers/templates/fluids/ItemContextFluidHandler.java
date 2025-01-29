@@ -1,31 +1,37 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
+import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.templates.storage.ItemContextResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-
-import java.util.function.Predicate;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public class ItemContextFluidHandler extends ItemContextResourceHandler<FluidResource> {
-
     public ItemContextFluidHandler(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
         super(context, componentType, FluidResource.NONE, singleItemLimit, validator);
     }
+
     public ItemContextFluidHandler(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit) {
         super(context, componentType, FluidResource.NONE, singleItemLimit);
     }
-    public static class Consumable extends ItemContextFluidHandler {
 
+    public static class Consumable extends ItemContextFluidHandler {
         public Consumable(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
             super(context, componentType, singleItemLimit, validator);
         }
+
         public Consumable(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit) {
             super(context, componentType, singleItemLimit);
         }
+
         @Override
         protected int empty(int count, TransferAction action) {
             return context.extract(context.getResource(), count, action);

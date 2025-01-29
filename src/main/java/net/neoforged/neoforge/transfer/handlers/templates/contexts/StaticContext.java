@@ -1,11 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
+import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-
-import java.util.Objects;
 
 /**
  * A static context that holds a fixed amount of a single item. Operations on this context will still perform as if the

@@ -1,5 +1,9 @@
-package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
+package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
@@ -15,7 +19,6 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
  */
 public record ResourceHandlerToContainerAdapter<T extends IResource>(
         IResourceHandler<T> wrappedHandler, ResourceStack<T> emptyResource) implements IResourceContainer<T> {
-
     @Override
     public int size() {
         return wrappedHandler.size();
@@ -55,7 +58,6 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
     public int getCapacity(int index) {
         return wrappedHandler.getCapacity(index);
     }
-
 
     @Override
     public IResourceHandlerModifiable<T> asHandler() {

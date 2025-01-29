@@ -1,18 +1,29 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.container;
 
+import java.util.Iterator;
+import java.util.Objects;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.*;
-import net.neoforged.neoforge.transfer.resources.*;
+import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerSlice;
+import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerToHandlerAdapter;
+import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceHandlerToContainerAdapter;
+import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.VanillaToItemContainerAdapter;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Iterator;
-import java.util.Objects;
-
+// Originally written by Soaryn for XyCraft adopted from Amadornes's ItemContainer.
 public interface IResourceContainer<TResource extends IResource> extends Iterable<IResourceStack<TResource>> {
-
     /**
      * Gets the size of this container.
      *
@@ -65,7 +76,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     }
 
     /**
-     * Creates a new item holder that wraps the specified  {@link IResourceHandler}.
+     * Creates a new item holder that wraps the specified {@link IResourceHandler}.
      *
      * @param handler The resource handler.
      * @return A wrapping item holder.
@@ -174,7 +185,6 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     default IResourceHandlerModifiable<TResource> asHandler(IHandleIOBehaviour behavior) {
         return new ResourceContainerToHandlerAdapter<>(this, behavior);
     }
-
 
     ResourceStack<TResource> defaultResource();
 

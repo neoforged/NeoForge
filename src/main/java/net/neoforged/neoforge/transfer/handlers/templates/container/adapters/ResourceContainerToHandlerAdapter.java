@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
@@ -7,15 +13,12 @@ import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceCon
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 
-import java.util.Objects;
-
 /**
  * A basic {@link IResourceHandlerModifiable} implementation derived from an {@link IResourceContainer}.
  */
 public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         IResourceContainer<TResource> container,
         IHandleIOBehaviour behavior) implements IResourceHandlerModifiable<TResource> {
-
     @Override
     public int size() {
         return container.size();

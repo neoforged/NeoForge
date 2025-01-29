@@ -9,7 +9,7 @@ import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.Nullable;
-//Why?... this is just a fancy either?
+// Why?... this is just a fancy either?
 
 /**
  * @deprecated This is just an {@link com.mojang.datafixers.util.Either}

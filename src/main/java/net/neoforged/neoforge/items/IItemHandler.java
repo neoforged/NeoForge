@@ -24,7 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
 @Deprecated(forRemoval = true, since = "1.21")
 @ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IItemHandler {
-
     /**
      * Returns the number of slots available
      *
@@ -84,7 +83,9 @@ public interface IItemHandler {
      * @param simulate If true, the extraction is only simulated
      * @return ItemStack extracted from the slot, must be empty if nothing can be extracted.
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
-     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransferAction)} & {@link IResourceHandler#getResource(int)}<pre>
+     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransferAction)} & {@link IResourceHandler#getResource(int)}
+     * 
+     *             <pre>
      *     {@code
      *      T resource = handler.getResource(index);
      *      int amount = handler.extract(index, resource, amount, action);

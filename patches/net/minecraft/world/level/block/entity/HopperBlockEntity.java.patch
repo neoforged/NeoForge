@@ -7,44 +7,76 @@
 -        Container container = getAttachedContainer(p_155563_, p_155564_, p_326256_);
 -        if (container == null) {
 +        var containerOrHandler = getContainerOrHandlerAt(p_155563_, p_155564_.relative(p_326256_.facing), p_326256_.facing.getOpposite());
-+        if (containerOrHandler.isEmpty()) {
++        if (containerOrHandler == null) {
              return false;
 -        } else {
-+        } else if (containerOrHandler.container() != null) {
-+            Container container = containerOrHandler.container();
++        } else if (containerOrHandler.left().isPresent()) {
++            Container container = containerOrHandler.left().get();
              Direction direction = p_326256_.facing.getOpposite();
              if (isFullContainer(container, direction)) {
                  return false;
-@@ -164,6 +_,8 @@
- 
+@@ -165,6 +_,8 @@
                  return false;
              }
-+        } else {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
          }
++        //noinspection OptionalGetWithoutIsPresent Checked with null and left check
++        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.right().get());
      }
  
-@@ -214,8 +_,9 @@
+     private static int[] getSlots(Container p_59340_, Direction p_59341_) {
+@@ -214,21 +_,11 @@
      public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
          BlockPos blockpos = BlockPos.containing(p_155554_.getLevelX(), p_155554_.getLevelY() + 1.0, p_155554_.getLevelZ());
          BlockState blockstate = p_155553_.getBlockState(blockpos);
 -        Container container = getSourceContainer(p_155553_, p_155554_, blockpos, blockstate);
 -        if (container != null) {
+-            Direction direction = Direction.DOWN;
+-
+-            for (int i : getSlots(container, direction)) {
+-                if (tryTakeInItemFromSlot(p_155554_, container, i, direction)) {
+-                    return true;
+-                }
+-            }
+-
+-            return false;
+-        } else {
 +        var containerOrHandler = getSourceContainerOrHandler(p_155553_, p_155554_, blockpos, blockstate);
-+        if (containerOrHandler.container() != null) {
-+            Container container = containerOrHandler.container();
-             Direction direction = Direction.DOWN;
- 
-             for (int i : getSlots(container, direction)) {
-@@ -225,6 +_,8 @@
-             }
- 
-             return false;
-+        } else if (containerOrHandler.itemHandler() != null) {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
-         } else {
++        if(containerOrHandler == null) {
              boolean flag = p_155554_.isGridAligned()
-                 && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
+-                && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
+-                && !blockstate.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
++                    && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
++                    && !blockstate.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
+             if (!flag) {
+                 for (ItemEntity itementity : getItemsAtAndAbove(p_155553_, p_155554_)) {
+                     if (addItem(p_155554_, itementity)) {
+@@ -236,9 +_,23 @@
+                     }
+                 }
+             }
+-
+-            return false;
+-        }
++            return false;
++        }
++
++        if (containerOrHandler.left().isPresent()) {
++            Container container = containerOrHandler.left().get();
++            Direction direction = Direction.DOWN;
++
++            for (int i : getSlots(container, direction)) {
++                if (tryTakeInItemFromSlot(p_155554_, container, i, direction)) {
++                    return true;
++                }
++            }
++
++            return false;
++        }
++        //noinspection OptionalGetWithoutIsPresent We do it above with the left & null check
++        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.right().get());
+     }
+ 
+     private static boolean tryTakeInItemFromSlot(Hopper p_59355_, Container p_59356_, int p_59357_, Direction p_59358_) {
 @@ -368,6 +_,8 @@
          return p_155590_.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
      }
@@ -58,24 +90,24 @@
          return !list.isEmpty() ? (Container)list.get(p_326325_.random.nextInt(list.size())) : null;
      }
  
-+    private static net.neoforged.neoforge.items.ContainerOrHandler getSourceContainerOrHandler(Level p_155597_, Hopper p_155598_, BlockPos p_326315_, BlockState p_326093_) {
++    private static @Nullable com.mojang.datafixers.util.Either<Container, net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler<net.neoforged.neoforge.transfer.resources.ItemResource>> getSourceContainerOrHandler(Level p_155597_, Hopper p_155598_, BlockPos p_326315_, BlockState p_326093_) {
 +        return getContainerOrHandlerAt(p_155597_, p_326315_, p_326093_, p_155598_.getLevelX(), p_155598_.getLevelY() + 1.0, p_155598_.getLevelZ(), Direction.DOWN);
 +    }
 +
-+    public static net.neoforged.neoforge.items.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, @Nullable Direction side) {
++    public static @Nullable  com.mojang.datafixers.util.Either<Container, net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler<net.neoforged.neoforge.transfer.resources.ItemResource>> getContainerOrHandlerAt(Level level, BlockPos pos, @Nullable Direction side) {
 +        return getContainerOrHandlerAt(
 +                level, pos, level.getBlockState(pos), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, side
 +        );
 +    }
 +
-+    private static net.neoforged.neoforge.items.ContainerOrHandler getContainerOrHandlerAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, @Nullable Direction side) {
++    private static @Nullable com.mojang.datafixers.util.Either<Container, net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler<net.neoforged.neoforge.transfer.resources.ItemResource>> getContainerOrHandlerAt(Level level, BlockPos pos, BlockState state, double x, double y, double z, @Nullable Direction side) {
 +        Container container = getBlockContainer(level, pos, state);
 +        if (container != null) {
-+            return new net.neoforged.neoforge.items.ContainerOrHandler(container, null);
++            return com.mojang.datafixers.util.Either.left(container);// new net.neoforged.neoforge.items.ContainerOrHandler(container, null);
 +        }
 +        var blockItemHandler = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, pos, state, null, side);
 +        if (blockItemHandler != null) {
-+            return new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
++            return com.mojang.datafixers.util.Either.right(blockItemHandler);// new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
 +        }
 +        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
 +    }

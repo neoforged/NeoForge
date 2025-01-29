@@ -41,13 +41,13 @@ import org.jetbrains.annotations.Nullable;
  */
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.fluid_util.")
 public class FluidUtilTest {
-
     private static void setFluid(ExtendedGameTestHelper helper, BlockPos blockPos, ResourceStack<FluidResource> resourceStack) {
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, blockPos, null);
         if (handler instanceof IResourceHandlerModifiable<FluidResource> modifiable) {
             modifiable.set(0, resourceStack.resource(), resourceStack.amount());
         }
     }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests that FluidUtil#tryPickupFluid works correctly")
@@ -112,25 +112,22 @@ public class FluidUtilTest {
 
         handler.set(0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME);
         resetInventory(player, new ItemStack(Items.BUCKET, 1));
-        var startingAmount = handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT,TransferAction.SIMULATE);
+        var startingAmount = handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE);
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
-        helper.assertValueEqual(startingAmount-FluidType.BUCKET_VOLUME, handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT,TransferAction.SIMULATE), "fluid amount");
+        helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE), "fluid amount");
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
-        helper.assertValueEqual(startingAmount, handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT,TransferAction.SIMULATE), "fluid amount");
+        helper.assertValueEqual(startingAmount, handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE), "fluid amount");
 
         helper.succeed();
     }
 
-
-
     public static void resetWater(GameTestHelper helper, BlockPos pos) {
         helper.setBlock(pos, Blocks.WATER);
     }
-
 
     public static void resetInventory(Player player, ItemStack stack) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -162,6 +159,5 @@ public class FluidUtilTest {
             helper.fail("We expected main item to be " + mainItem + " it was " + mainHand.getItem().getDescriptionId());
         if (mainCount != mainHand.getCount())
             helper.fail("We expected main item count to be " + mainCount + " it was " + mainHand.getCount());
-
     }
 }

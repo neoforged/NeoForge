@@ -9,7 +9,15 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -110,12 +_,13 @@
+@@ -91,6 +_,7 @@
+     private final Item craftingRemainingItem;
+     protected final String descriptionId;
+     private final FeatureFlagSet requiredFeatures;
++    public final net.neoforged.neoforge.transfer.resources.ItemResource defaultResource;
+ 
+     public static int getId(Item p_41394_) {
+         return p_41394_ == null ? 0 : BuiltInRegistries.ITEM.getId(p_41394_);
+@@ -110,12 +_,14 @@
          this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -21,6 +29,7 @@
              }
          }
 +        this.canCombineRepair = p_41383_.canCombineRepair;
++        this.defaultResource = net.neoforged.neoforge.transfer.resources.ItemResource.of(this);
      }
  
      @Deprecated

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/EquipmentSlot.java
++++ b/net/minecraft/world/entity/EquipmentSlot.java
+@@ -53,6 +_,10 @@
+         return p_147069_ + this.index;
+     }
+ 
++    public int getCountLimit(){
++        return this.countLimit;
++    }
++
+     public ItemStack limit(ItemStack p_348466_) {
+         return this.countLimit > 0 ? p_348466_.split(this.countLimit) : p_348466_;
+     }

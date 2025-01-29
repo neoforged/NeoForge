@@ -1,9 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 public class CreativePlayerContext extends StaticContext {
     protected final PlayerInventoryHandler handler;

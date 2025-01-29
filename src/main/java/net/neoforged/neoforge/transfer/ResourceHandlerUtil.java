@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
+import java.util.function.Predicate;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -17,8 +18,6 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-import java.util.function.Predicate;
-
 public final class ResourceHandlerUtil {
     /**
      * PR NOTES: This is likely going to be a point of contention; do we limit a dev to be locked in at a readable number or do we let them have ~147million more points of data?
@@ -30,7 +29,6 @@ public final class ResourceHandlerUtil {
      * Anything breaking past this boundary (whether it is by storing a long internally or otherwise), the main request is to maintain rapid human readability.
      */
     public static final int PRETTY_MAX_INT = 2000000000;
-
 
     /**
      * Checks if an {@link IResourceHandler} is empty.
@@ -337,6 +335,5 @@ public final class ResourceHandlerUtil {
         context.insert(ItemResource.of(stack), stack.getCount(), TransferAction.EXECUTE);
     }
 
-
-    private ResourceHandlerUtil() { }
+    private ResourceHandlerUtil() {}
 }

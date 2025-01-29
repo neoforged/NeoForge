@@ -7,10 +7,10 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     protected final Container container;

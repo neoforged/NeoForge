@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.container.templates;
 
 import net.minecraft.core.NonNullList;
@@ -26,6 +31,7 @@ public class SimpleFluidResourceContainer extends ResourceContainer<FluidResourc
 
         @Override
         public SimpleFluidResourceContainer build() {
+            if (stacks == null) throw new IllegalArgumentException("SimpleFluidResourceContainer's stacks must not be null");
             return new SimpleFluidResourceContainer(stacks, capacity, updateCallback);
         }
     }

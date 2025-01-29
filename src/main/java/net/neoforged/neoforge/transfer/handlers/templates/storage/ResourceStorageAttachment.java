@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
 import com.mojang.serialization.Codec;
@@ -9,7 +14,6 @@ import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-
 /**
  * Data structure used to store a list of resource stacks that can be serialized either by Component or DataAttachment
  */
@@ -17,6 +21,7 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
     private final NonNullList<MutableResourceStack<T>> stacks;
     private final int hashCode;
     private final int size;
+
     /**
      * @param stacks a list of MutableResourceStacks. The stacks are expected to have their amount mutated internally never externally.
      */
@@ -26,7 +31,6 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
         this.hashCode = IResourceStack.hashCode(stacks);
     }
 
-
     public static <T extends IResource> Codec<ResourceStorageAttachment<T>> codec(Codec<T> resourceCodec) {
         return NonNullList.codecOf(MutableResourceStack.codec(resourceCodec)).xmap(ResourceStorageAttachment::new, contents -> contents.stacks);
     }
@@ -34,10 +38,8 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
     public static <T extends IResource> StreamCodec<FriendlyByteBuf, ResourceStorageAttachment<T>> streamCodec(StreamCodec<FriendlyByteBuf, MutableResourceStack<T>> resourceCodec) {
         return StreamCodec.of(
                 (buf, component) -> buf.writeCollection(component.stacks, resourceCodec),
-                buf -> new ResourceStorageAttachment<>(buf.readCollection(NonNullList::<MutableResourceStack<T>>createWithCapacity, resourceCodec))
-        );
+                buf -> new ResourceStorageAttachment<>(buf.readCollection(NonNullList::<MutableResourceStack<T>>createWithCapacity, resourceCodec)));
     }
-
 
     public static <T extends IResource> ResourceStorageAttachment<T> of(int size, T emptyResource) {
         return new ResourceStorageAttachment<>(MutableResourceStack.nonNullListOfSize(size, MutableResourceStack.of(emptyResource, 0)));
@@ -57,7 +59,6 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
             stacks.set(index, MutableResourceStack.of(resource, amount));
         return this;
     }
-
 
     @Override
     public ResourceStorageAttachment<T> attachment() {

@@ -19,8 +19,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,8 @@ import org.jetbrains.annotations.Nullable;
 public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    @Nullable protected final Player player;
+    @Nullable
+    protected final Player player;
     protected final Level level;
     protected final BlockPos blockPos;
 

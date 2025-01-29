@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.BiConsumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.NbtOps;
@@ -21,16 +27,12 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiConsumer;
-
-//This is the XyCraft example of how a container is used along with the helper (`holderWith`) of how to set the holder during deserializing.
+// This is the XyCraft example of how a container is used along with the helper (`holderWith`) of how to set the holder during deserializing.
 public class TestResourceContainerAttachment {
     public static final Codec<TestResourceContainerAttachment> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             ResourceContainer.Codecs.itemResourcesOf("item_resources", data -> data.itemContainer),
             ResourceContainer.Codecs.fluidResourcesOf("fluid_resources", data -> data.fluidContainer),
-            Codec.INT.fieldOf("tank_capacity").forGetter(data -> data.fluidContainer.getCapacity(0))
-    ).apply(builder, TestResourceContainerAttachment::new));
-
+            Codec.INT.fieldOf("tank_capacity").forGetter(data -> data.fluidContainer.getCapacity(0))).apply(builder, TestResourceContainerAttachment::new));
 
     public static final AttachmentType.Builder<TestResourceContainerAttachment> BUILDER = AttachmentType.builder(TestResourceContainerAttachment::new).serialize(holderWith(TestResourceContainerAttachment.CODEC, TestResourceContainerAttachment::setHolder));
 
@@ -78,6 +80,7 @@ public class TestResourceContainerAttachment {
             public boolean canInsert(int slot) {
                 return false;
             }
+
             @Override
             public boolean canExtract(int slot) {
                 return slot >= 9;
@@ -90,6 +93,7 @@ public class TestResourceContainerAttachment {
             public boolean canInsert(int slot) {
                 return slot < 10;
             }
+
             @Override
             public boolean canExtract(int slot) {
                 return slot >= 10;
@@ -138,5 +142,4 @@ public class TestResourceContainerAttachment {
             }
         };
     }
-
 }

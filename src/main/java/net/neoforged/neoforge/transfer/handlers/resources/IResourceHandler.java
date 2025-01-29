@@ -6,13 +6,14 @@
 package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.TransferAction;
 import org.jetbrains.annotations.Range;
 
 /**
  * A generic handler for handling a resource of type {@link T}.
+ * 
  * @param <T> The type of resource this handler manages.
  */
 public interface IResourceHandler<T extends IResource> {
@@ -36,7 +37,6 @@ public interface IResourceHandler<T extends IResource> {
     @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
     int getAmount(int index);
 
-
     /**
      * Gets the theoretical maximum amount that the given index can hold of "any" resource. If there is something in the slot, it is valid to use its max bounds.
      *
@@ -51,7 +51,7 @@ public interface IResourceHandler<T extends IResource> {
      * the resource, you can just return the result of {@link #getCapacity(int)}. This is historically the case for fluids,
      * but not for items.
      *
-     * @param index The index to get the limit from.
+     * @param index    The index to get the limit from.
      * @param resource The resource to get the limit for.
      * @return The limit of the resource at the given index.
      */
@@ -61,7 +61,7 @@ public interface IResourceHandler<T extends IResource> {
     /**
      * Checks if the given resource is allowed to be inserted into the handler at the given index.
      *
-     * @param index The index to check.
+     * @param index    The index to check.
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */

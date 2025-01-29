@@ -6,15 +6,16 @@
 package net.neoforged.neoforge.fluids.capability;
 
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Implement this interface as a capability which should handle fluids
+ * 
  * @deprecated Use {@link IResourceHandler} of {@link FluidResource} instead
  */
 

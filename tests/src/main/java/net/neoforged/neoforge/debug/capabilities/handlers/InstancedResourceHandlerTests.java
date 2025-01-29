@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.core.Direction;
@@ -20,7 +25,6 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.instanced.")
 public class InstancedResourceHandlerTests {
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Handles endless handler tests")
@@ -54,6 +58,7 @@ public class InstancedResourceHandlerTests {
 
         helper.succeed();
     }
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Handles endless handler tests")
@@ -138,5 +143,4 @@ public class InstancedResourceHandlerTests {
         helper.assertValueEqual(handler.extract(emptyResource, 1, TransferAction.SIMULATE), 0, "Empty should no-op");
         helper.assertValueEqual(handler.extract(emptyResource, 1, TransferAction.EXECUTE), 0, "Empty should no-op");
     }
-
 }

@@ -6,10 +6,10 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
-import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
@@ -28,7 +28,6 @@ public class VoidResourceHandler<T extends IResource> implements ISingleResource
     public VoidResourceHandler(T emptyResource) {
         this.emptyResource = emptyResource;
     }
-
 
     @Override
     public int insert(T resource, int amount, TransferAction action) {

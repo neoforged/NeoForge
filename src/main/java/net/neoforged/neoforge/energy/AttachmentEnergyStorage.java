@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.energy;
 
+import java.util.function.Supplier;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-
-import java.util.function.Supplier;
 
 /**
  * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.

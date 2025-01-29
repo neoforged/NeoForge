@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.container.templates;
 
 import net.minecraft.core.NonNullList;
@@ -7,7 +12,6 @@ import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 public class SimpleItemResourceContainer extends ResourceContainer<ItemResource> {
-
     /**
      * @param capacity Typically is expected to be {@link Item#ABSOLUTE_MAX_STACK_SIZE}, but you can set your own as high as you like. Just note you will need to override the {@link #getCapacity(int, ItemResource)} to allow more control per item
      */
@@ -36,8 +40,8 @@ public class SimpleItemResourceContainer extends ResourceContainer<ItemResource>
 
         @Override
         public SimpleItemResourceContainer build() {
+            if (stacks == null) throw new IllegalArgumentException("SimpleItemResourceContainer's stacks must not be null");
             return new SimpleItemResourceContainer(stacks, capacity, updateCallback);
         }
     }
-
 }

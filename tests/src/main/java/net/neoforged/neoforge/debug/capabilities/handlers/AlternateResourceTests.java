@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.gametest.framework.GameTest;
@@ -13,7 +18,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-//Mostly to show that alternate resources are possible with the same backing interface allowing for cross mod interactions to be easier with buffered or accumulated resources
+// Mostly to show that alternate resources are possible with the same backing interface allowing for cross mod interactions to be easier with buffered or accumulated resources
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.alternate.")
 public class AlternateResourceTests {
     public static final BlockCapability<IResourceHandler<TestElementResource>, Void> BLOCK_CAPABILITY = BlockCapability.createVoid(ResourceLocation.fromNamespaceAndPath("resource_handler_tests", "elements_of_lol"), IResourceHandler.asClass());
@@ -25,8 +30,7 @@ public class AlternateResourceTests {
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
                 BLOCK_CAPABILITY,
                 ResourceHandlerTestSetup.Content.RESOURCE_BLOCK_ENTITY.value(),
-                (blockEntity, context) -> new InfiniteResourceHandler<>(TestElementResource.FIRE)
-        ));
+                (blockEntity, context) -> new InfiniteResourceHandler<>(TestElementResource.FIRE)));
     }
 
     @GameTest
@@ -41,5 +45,4 @@ public class AlternateResourceTests {
 
         helper.succeed();
     }
-
 }

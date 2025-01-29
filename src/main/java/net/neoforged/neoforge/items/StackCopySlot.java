@@ -11,7 +11,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-//Is this still needed, and what did this do? Same deal as the ItemHandlerCopySlot
+// Is this still needed, and what did this do? Same deal as the ItemHandlerCopySlot
 /**
  * Slot to handle immutable itemstack storages (Ex: {@link ComponentItemHandler}).
  * <p>

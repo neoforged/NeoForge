@@ -6,6 +6,10 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
@@ -26,11 +30,6 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
@@ -47,7 +46,6 @@ public final class ItemResource implements IResource, DataComponentHolder {
      */
     public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(ItemResource::fromOptional, ItemResource::asOptional);
 
-
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static ItemResource fromOptional(Optional<ItemResource> optional) {
         return optional.orElse(ItemResource.NONE);
@@ -63,17 +61,14 @@ public final class ItemResource implements IResource, DataComponentHolder {
     public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getItemHolder,
             DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
-            ItemResource::of
-    );
+            ItemResource::of);
 
     public static ItemStack itemStackOf(IResourceStack<ItemResource> resourceStack) {
         return resourceStack.resource().toStack(resourceStack.amount());
     }
 
-
     public static final ItemResource NONE = new ItemResource(ItemStack.EMPTY);
     public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(NONE, 0);
-
 
     public static ItemResource of(ItemStack itemStack) {
         return itemStack.isEmpty() ? NONE : new ItemResource(itemStack.copyWithCount(1));
@@ -213,6 +208,4 @@ public final class ItemResource implements IResource, DataComponentHolder {
         //DO we even want to try to encode the components into the print?
         return innerStack.getItem().toString();
     }
-
-
 }

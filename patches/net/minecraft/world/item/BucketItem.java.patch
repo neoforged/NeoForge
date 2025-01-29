@@ -36,12 +36,12 @@
              }
  
              boolean flag1 = flag2;
-+            java.util.Optional<net.neoforged.neoforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.neoforged.neoforge.fluids.FluidUtil::getFluidContained);
++            net.neoforged.neoforge.fluids.FluidStack containedFluidStack = container == null || container.isEmpty() ? net.neoforged.neoforge.fluids.FluidStack.EMPTY : net.neoforged.neoforge.transfer.FluidUtil.getFluidContained(container);
              if (!flag1) {
 -                return p_150719_ != null && this.emptyContents(p_150716_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
 +                return p_150719_ != null && this.emptyContents(p_150716_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null, container);
-+            } else if (containedFluidStack.isPresent() && this.content.getFluidType().isVaporizedOnPlacement(p_150717_, p_150718_, containedFluidStack.get())) {
-+                this.content.getFluidType().onVaporize(p_150716_, p_150717_, p_150718_, containedFluidStack.get());
++            } else if (!containedFluidStack.isEmpty() && this.content.getFluidType().isVaporizedOnPlacement(p_150717_, p_150718_, containedFluidStack)) {
++                this.content.getFluidType().onVaporize(p_150716_, p_150717_, p_150718_, containedFluidStack);
 +                return true;
              } else if (p_150717_.dimensionType().ultraWarm() && this.content.is(FluidTags.WATER)) {
                  int l = p_150718_.getX();

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.capabilities;
 
+import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -26,10 +27,12 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.transfer.handlers.templates.items.MCItemContentsWrapperHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingHandlerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.*;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.ContainerWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.EntityEquipmentItemHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.WorldlyContainerWrapper;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
 
 @ApiStatus.Internal
 public class CapabilityHooks {

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
 import net.minecraft.core.component.DataComponentType;
@@ -7,8 +12,8 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.storage.IResourceData;
 import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 
 public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidResource> {
     public FluidStorageHandler(int size, int indexCapacity) {
@@ -32,10 +37,10 @@ public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidRe
 
         @Override
         public int setAndValidate(IResourceData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
-            if(changedAmount == 0) return 0;
+            if (changedAmount == 0) return 0;
             var exchangeCount = requestedAmount / changedAmount;
             var result = context.exchange(context.getResource().with(componentType, contents.component()), exchangeCount, action);
-            return result*changedAmount;
+            return result * changedAmount;
         }
     }
 

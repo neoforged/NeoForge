@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.oldtest.misc;
 
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -36,8 +37,6 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 @Mod(GameTestTest.MODID)
 public class GameTestTest {
     public static final String MODID = "gametest_test";
@@ -66,7 +65,6 @@ public class GameTestTest {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
             event.accept(ENERGY_BLOCK_ITEM);
     }
-
 
     @SubscribeEvent
     public void onRegisterGameTests(RegisterGameTestsEvent event) {
@@ -148,7 +146,6 @@ public class GameTestTest {
         helper.runAtTickTime(21, helper::succeed);
     }
 
-
     private static class GameTestBlock extends Block implements EntityBlock {
         public GameTestBlock(Properties properties) {
             super(properties);
@@ -162,7 +159,6 @@ public class GameTestTest {
     }
 
     private static class Entity extends BlockEntity {
-
         public Entity(BlockPos pos, BlockState state) {
             super(ENERGY_BLOCK_ENTITY.get(), pos, state);
         }

@@ -31,7 +31,7 @@ public class SimpleItemContext implements IItemContext {
     }
 
     public SimpleItemContext(IResourceHandlerModifiable<ItemResource> mainHandler, int index) {
-        this(mainHandler, ScopedHandlerWrapper.fromHandlerExcludingIndices(mainHandler, new int[]{index}), index);
+        this(mainHandler, ScopedHandlerWrapper.fromHandlerExcludingIndices(mainHandler, new int[] { index }), index);
     }
 
     @Override

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.TransferAction;
@@ -11,6 +16,7 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * <p>
  * <strong>Important: This will only work with constant sized handlers.</strong>
  * Dynamically sized handlers are supported by api, but not by this implementation
+ * 
  * @param <T>
  */
 public class CombinedResourceWrapper<T extends IResource> implements IResourceHandler<T> {
@@ -57,21 +63,25 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
     public int size() {
         return sizeCache;
     }
+
     @Override
     public T getResource(int index) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getResource(getSlotFromIndex(index, handlerIndex));
     }
+
     @Override
     public int getAmount(int index) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getAmount(getSlotFromIndex(index, handlerIndex));
     }
+
     @Override
     public int getCapacity(int index) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getCapacity(getSlotFromIndex(index, handlerIndex));
     }
+
     @Override
     public int getCapacity(int index, T resource) {
         var handlerIndex = getHandlerIndex(index);
@@ -89,6 +99,7 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).allowsInsertion(getSlotFromIndex(index, handlerIndex));
     }
+
     @Override
     public boolean allowsExtraction(int index) {
         var handlerIndex = getHandlerIndex(index);
@@ -100,6 +111,7 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, action);
     }
+
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         var handled = 0;
@@ -109,11 +121,13 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
         }
         return handled;
     }
+
     @Override
     public int extract(int index, T resource, int amount, TransferAction action) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, action);
     }
+
     @Override
     public int extract(T resource, int amount, TransferAction action) {
         var handled = 0;
@@ -137,6 +151,5 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
             if (handler instanceof IResourceHandlerModifiable<T> modifiable)
                 modifiable.set(getSlotFromIndex(index, handlerIndex), resource, amount);
         }
-
     }
 }

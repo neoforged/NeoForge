@@ -1,15 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
-
-import java.util.Objects;
-import java.util.function.UnaryOperator;
-
 
 /**
  * Represents an immutable {@link IResource} and a mutable amount.
@@ -20,6 +23,7 @@ import java.util.function.UnaryOperator;
 public final class MutableResourceStack<T extends IResource> implements IResourceStack<T> {
     /**
      * Creates a codec with the resource being a field in the object.
+     * 
      * <pre>{@code
      * {
      *     "resource": {
@@ -40,6 +44,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
 
     /**
      * Creates a codec where the fields for the resource are at the same level as the amount
+     * 
      * <pre>{@code
      * {
      *    "id": "minecraft:water",
@@ -164,5 +169,4 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     public String toString() {
         return "%s(%d)".formatted(resource, amount);
     }
-
 }

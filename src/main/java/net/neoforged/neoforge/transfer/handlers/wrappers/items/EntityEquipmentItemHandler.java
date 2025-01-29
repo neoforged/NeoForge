@@ -5,30 +5,29 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final LivingEntity entity;
     protected final List<EquipmentSlot> slots;
 
-    public static boolean isHands(EquipmentSlot slot){
+    public static boolean isHands(EquipmentSlot slot) {
         return slot.getType() == EquipmentSlot.Type.HAND;
     }
 
     @SafeVarargs
-    public EntityEquipmentItemHandler(LivingEntity entity, Predicate<EquipmentSlot>...slotFilter) {
+    public EntityEquipmentItemHandler(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
         this.entity = entity;
         var list = new ArrayList<EquipmentSlot>();
         for (var equipmentSlotPredicate : slotFilter) {

@@ -1,15 +1,21 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.wrappers.fluids;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 
 /**
  * A wrapper for devs who are still using the legacy IFluidHandler interface. This should not be relied on and should be
  * replaced with the new IResourceHandler interface. This wrapper will be removed alongside the legacy IFluidHandler
  * interface in 1.22.
+ * 
  * @param handler The legacy IFluidHandler to wrap
  */
 public record LegacyFluidHandlerWrapper(IFluidHandler handler) implements IResourceHandler<FluidResource> {

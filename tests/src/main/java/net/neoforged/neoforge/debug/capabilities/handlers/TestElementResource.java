@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,9 +18,11 @@ public enum TestElementResource implements IResource, StringRepresentable {
     AIR("air");
 
     private final String elementName;
+
     TestElementResource(String elementName) {
         this.elementName = elementName;
     }
+
     @Override
     public boolean isEmpty() {
         return this == NONE;
@@ -29,7 +36,5 @@ public enum TestElementResource implements IResource, StringRepresentable {
     //Unsure if these are correct, but for the purpose of testing, this was enough
     public static final StringRepresentableCodec<TestElementResource> CODEC = StringRepresentable.fromEnum(TestElementResource::values);
     public static final StreamCodec<FriendlyByteBuf, TestElementResource> STREAM_CODEC = StreamCodec.of(
-            FriendlyByteBuf::writeEnum, buf -> buf.readEnum(TestElementResource.class)
-    );
-
+            FriendlyByteBuf::writeEnum, buf -> buf.readEnum(TestElementResource.class));
 }

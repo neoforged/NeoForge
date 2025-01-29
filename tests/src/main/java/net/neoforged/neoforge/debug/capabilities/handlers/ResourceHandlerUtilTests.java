@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.core.Direction;
@@ -20,7 +25,6 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.util.")
 public class ResourceHandlerUtilTests {
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests the general uses of ResourceHandlerUtil. Not necessarily Exhaustive")
@@ -79,10 +83,9 @@ public class ResourceHandlerUtilTests {
         for (var i = 0; i < dstHandler.size(); i++) {
             dstHandler.set(i, ItemResource.NONE, 0);
         }
-        ResourceHandlerUtil.insertStacking(dstHandler, Items.APPLE.defaultResource, 400,TransferAction.EXECUTE);
+        ResourceHandlerUtil.insertStacking(dstHandler, Items.APPLE.defaultResource, 400, TransferAction.EXECUTE);
         dstHandler.set(0, Items.HONEY_BOTTLE.defaultResource, 3000);
         dstHandler.set(1, ItemResource.NONE, 0);
         helper.succeed();
     }
-
 }

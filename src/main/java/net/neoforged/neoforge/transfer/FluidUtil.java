@@ -70,7 +70,6 @@ public class FluidUtil {
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
 
-
         IItemContext itemContext = PlayerContext.ofHand(player, hand);
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) {
@@ -87,13 +86,13 @@ public class FluidUtil {
     /**
      * Moves fluid between two fluid handlers, playing a sound if the action is executed.
      *
-     * @param level     The level where the sound should be played
-     * @param pos       The position of the fluid handlers in the level
+     * @param level       The level where the sound should be played
+     * @param pos         The position of the fluid handlers in the level
      * @param soundAction The sound action to play if the action is executed.
-     * @param from      The fluid handler to move fluid from.
-     * @param to        The fluid handler to move fluid to.
-     * @param amount    The amount of fluid to move.
-     * @param action    The action to perform.
+     * @param from        The fluid handler to move fluid from.
+     * @param to          The fluid handler to move fluid to.
+     * @param amount      The amount of fluid to move.
+     * @param action      The action to perform.
      * @return The fluid stack that was moved, or null if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, TransferAction action) {
@@ -114,10 +113,10 @@ public class FluidUtil {
      * Attempts to pickup the fluid placed in world at the given location in the given level and insert it into the provided handler.
      * If pickup is successful, the fluid is moved to the given fluid handler and a sound is played at the given position.
      *
-     * @param handler The fluid handler to move the fluid to.
+     * @param handler  The fluid handler to move the fluid to.
      * @param soundPos The position to play the sound at.
-     * @param level The level where the fluid is placed.
-     * @param pos The position of the fluid in the level.
+     * @param level    The level where the fluid is placed.
+     * @param pos      The position of the fluid in the level.
      * @return true if the fluid was picked up and moved to the handler, false otherwise.
      */
     public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
@@ -130,10 +129,10 @@ public class FluidUtil {
      * Attempts to place the fluid held in the fluid handler at the given position in the given level. If placement is successful, the
      * fluid is extracted from the given fluid handler and a sound is played at the given position.
      *
-     * @param handler The fluid handler to move the fluid from.
+     * @param handler  The fluid handler to move the fluid from.
      * @param soundPos The position to play the sound at.
-     * @param level The level where the fluid is placed.
-     * @param pos The position to place the fluid in the level.
+     * @param level    The level where the fluid is placed.
+     * @param pos      The position to place the fluid in the level.
      * @return true if the fluid was placed and moved from the handler, false otherwise.
      */
     public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
@@ -147,9 +146,9 @@ public class FluidUtil {
      * that is attached to the item in the player's hand. If pickup is successful, the fluid is inserted into the item's fluid handler.
      *
      * @param playerIn The player picking up the fluid.
-     * @param hand The hand holding the item that should pickup the fluid.
-     * @param level The level where the fluid is placed.
-     * @param pos The position of the fluid in the level.
+     * @param hand     The hand holding the item that should pickup the fluid.
+     * @param level    The level where the fluid is placed.
+     * @param pos      The position of the fluid in the level.
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
     public static boolean tryPickupFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
@@ -162,9 +161,9 @@ public class FluidUtil {
      * given level. If placement is successful, the fluid is extracted from the item's fluid handler.
      *
      * @param playerIn The player placing the fluid.
-     * @param hand The hand holding the item that should place the fluid.
-     * @param level The level where the fluid is placed.
-     * @param pos The position to place the fluid in the level.
+     * @param hand     The hand holding the item that should place the fluid.
+     * @param level    The level where the fluid is placed.
+     * @param pos      The position to place the fluid in the level.
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
     public static boolean tryPlaceFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
@@ -174,8 +173,9 @@ public class FluidUtil {
 
     /**
      * Destroys the block at the given position if it is not solid and not a liquid.
+     * 
      * @param level The level where the block is located.
-     * @param pos The position of the block to destroy.
+     * @param pos   The position of the block to destroy.
      */
     public static void destroyBlockOnFluidPlacement(Level level, BlockPos pos) {
         if (level.isClientSide) return;
@@ -188,6 +188,7 @@ public class FluidUtil {
 
     /**
      * Gets the fluid resource and amount contained in the given item context.
+     * 
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
@@ -206,6 +207,7 @@ public class FluidUtil {
 
     /**
      * Gets the fluid contained in the given item context.
+     * 
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
@@ -216,6 +218,7 @@ public class FluidUtil {
 
     /**
      * Gets the fluid contained in the given item stack.
+     * 
      * @param stack The item stack to get the fluid from.
      * @return The fluid contained in the item stack, or empty if no fluid is contained.
      */

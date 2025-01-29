@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
 import net.minecraft.world.Container;
@@ -12,7 +17,6 @@ import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
  */
 public record ItemContainerToVanillaAdapter(IResourceContainer<ItemResource> itemContainer)
         implements Container {
-
     @Override
     public int getContainerSize() {
         return itemContainer.size();
@@ -50,7 +54,7 @@ public record ItemContainerToVanillaAdapter(IResourceContainer<ItemResource> ite
     }
 
     @Override
-    public void setChanged() { }
+    public void setChanged() {}
 
     @Override
     public boolean stillValid(Player player) {

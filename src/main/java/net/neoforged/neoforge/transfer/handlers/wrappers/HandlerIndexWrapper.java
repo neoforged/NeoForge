@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import net.neoforged.neoforge.transfer.resources.IResource;
+import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
  * A wrapper that delegates all calls to a single index of a handler.

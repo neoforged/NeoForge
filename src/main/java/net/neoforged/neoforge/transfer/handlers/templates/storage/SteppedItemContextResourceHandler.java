@@ -1,19 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
+import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-
-import java.util.function.Predicate;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public class SteppedItemContextResourceHandler<T extends IResource> extends ItemContextResourceHandler<T> {
-
     public SteppedItemContextResourceHandler(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit) {
         super(context, componentType, emptyResource, singleItemLimit);
     }
+
     public SteppedItemContextResourceHandler(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit, Predicate<T> validator) {
         super(context, componentType, emptyResource, singleItemLimit, validator);
     }
@@ -41,4 +45,3 @@ public class SteppedItemContextResourceHandler<T extends IResource> extends Item
         return context.exchange(filledContainer, count, action);
     }
 }
-

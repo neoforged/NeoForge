@@ -9,15 +9,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * @deprecated Moved to {@link net.neoforged.neoforge.transfer.ResourceHandlerUtil ResourceHandlerUtil}
  */
 @Deprecated(forRemoval = true, since = "1.21.4")
 public class ItemHandlerHelper {
-
     /**
      * Inserts the given itemstack into the players inventory. If the inventory can't hold it, the item will be dropped
      * in the world at the players position.

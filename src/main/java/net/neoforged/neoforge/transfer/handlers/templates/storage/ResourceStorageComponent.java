@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
 import com.mojang.serialization.Codec;
@@ -45,6 +50,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
     public ResourceStack<T> get(int index) {
         return stacks.get(index);
     }
+
     @Override
     public ResourceStorageComponent<T> modify(int index, T resource, int amount) {
         var list = NonNullList.<ResourceStack<T>>createWithCapacity(stacks.size());

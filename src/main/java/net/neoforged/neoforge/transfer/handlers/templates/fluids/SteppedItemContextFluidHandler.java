@@ -5,16 +5,14 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
+import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.handlers.templates.storage.SteppedItemContextResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-
-import java.util.function.Predicate;
-
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 /**
  * A simple fluid storage handler that uses a single item context to store a fluid resource.
@@ -47,10 +45,12 @@ public class SteppedItemContextFluidHandler extends SteppedItemContextResourceHa
 
     public static class SwapEmpty extends SteppedItemContextFluidHandler {
         protected final ItemResource emptyContainer;
+
         public SwapEmpty(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator, ItemResource emptyContainer) {
             super(context, componentType, singleItemLimit, validator);
             this.emptyContainer = emptyContainer;
         }
+
         public SwapEmpty(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, ItemResource emptyContainer) {
             super(context, componentType, singleItemLimit);
             this.emptyContainer = emptyContainer;

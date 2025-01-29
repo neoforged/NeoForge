@@ -10,12 +10,11 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 /**
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a IResourceHandler
@@ -103,7 +102,7 @@ public class MCItemContentsWrapperHandler implements IResourceHandlerModifiable<
         } else if (resource.matches(stack) && stack.getCount() < resource.getMaxStackSize()) {
             int newAmount = Math.min(stack.getCount() + amount, resource.getMaxStackSize());
             amount = newAmount - stack.getCount();
-            if(action.isExecuting())
+            if (action.isExecuting())
                 stack.grow(amount);
             return setAndValidate(contents, amount, action);
         }

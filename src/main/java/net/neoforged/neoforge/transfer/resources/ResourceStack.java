@@ -6,13 +6,12 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 
 /**
  * Represents an immutable resource and an amount.
@@ -25,9 +24,9 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
         Objects.requireNonNull(resource, "resource");
     }
 
-
     /**
      * Creates a codec with the resource being a field in the object.
+     * 
      * <pre>{@code
      * {
      *     "resource": {
@@ -48,6 +47,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
 
     /**
      * Creates a codec where the fields for the resource are at the same level as the amount
+     * 
      * <pre>{@code
      * {
      *    "id": "minecraft:water",

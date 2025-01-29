@@ -1,8 +1,15 @@
-package net.neoforged.neoforge.transfer.handlers.templates.container.templates;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
+package net.neoforged.neoforge.transfer.handlers.templates.container.templates;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.function.Function;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -10,13 +17,13 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ItemContainerToVanillaAdapter;
-import net.neoforged.neoforge.transfer.resources.*;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * A data storage for mutable resource stacks. This data can be put anywhere (with limited exceptions such as DataComponents), but it was designed with {@link net.neoforged.neoforge.attachment.AttachmentType DataAttachments} in mind.
@@ -24,21 +31,24 @@ import java.util.function.Function;
  * To be more clear, the container itself, but by calling {@link #asHandler()} it will create one, though it is recommended you cache this rather than call it every time you need a handler of the container.
  *
  * <strong>Example Usage</strong>
+ * 
  * <pre>
  * {@code
- *   var container = SimpleItemResourceContainer.from(someSerializedList)
- *          .onChange(this::markHolderAsDirty)
- *          .build();
- *   IResourceHandler<ItemResource> handler = container.asHandler();
- *   var outputContainer = container.slice(3, 4);
- *   var outputHandler = outputContainer.asHandler(IHandleIOBehaviour.EXTRACT_ONLY);
+ * var container = SimpleItemResourceContainer.from(someSerializedList)
+ *         .onChange(this::markHolderAsDirty)
+ *         .build();
+ * IResourceHandler<ItemResource> handler = container.asHandler();
+ * var outputContainer = container.slice(3, 4);
+ * var outputHandler = outputContainer.asHandler(IHandleIOBehaviour.EXTRACT_ONLY);
  * }
  * </pre>
+ * 
  * <p>
  * To reiterate, this can work anywhere in a mutable context, but things like {@link net.minecraft.core.component.DataComponentType DataComponents} that require an immutable scope will not work properly.
  *
  * @param <T> resource type
  */
+//Originally written by Soaryn for XyCraft adopted from Amadornes's ItemContainer.
 public class ResourceContainer<T extends IResource> implements IResourceContainer<T> {
     private final NonNullList<MutableResourceStack<T>> resourceStacks;
     private final @Nullable Runnable updateCallback;
@@ -61,22 +71,18 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     }
 
     public static final class Codecs {
-
-        public static <TAttachment, TResource extends IResource>
-        RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<TResource>>>
-        resourcesOf(String key, Codec<TResource> codec, Function<TAttachment, IResourceContainer<TResource>> containerToStackList) {
+        public static <TAttachment, TResource extends IResource> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<TResource>>> resourcesOf(String key, Codec<TResource> codec, Function<TAttachment, IResourceContainer<TResource>> containerToStackList) {
             return NonNullList.codecOf(MutableResourceStack.flatCodec(codec)).fieldOf(key).forGetter(attachment -> containerToStackList.apply(attachment).copyToList());
         }
-        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<ItemResource>>>
-        itemResourcesOf(String key, Function<TAttachment, IResourceContainer<ItemResource>> containerToStackList) {
+
+        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<ItemResource>>> itemResourcesOf(String key, Function<TAttachment, IResourceContainer<ItemResource>> containerToStackList) {
             return resourcesOf(key, ItemResource.OPTIONAL_CODEC, containerToStackList);
         }
-        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<FluidResource>>>
-        fluidResourcesOf(String key, Function<TAttachment, IResourceContainer<FluidResource>> containerToStackList) {
+
+        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<FluidResource>>> fluidResourcesOf(String key, Function<TAttachment, IResourceContainer<FluidResource>> containerToStackList) {
             return resourcesOf(key, FluidResource.OPTIONAL_CODEC, containerToStackList);
         }
     }
-
 
     public ResourceStack<T> defaultResource() {
         return emptyStack;
@@ -86,6 +92,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     public int size() {
         return size;
     }
+
     @Override
     public int getCapacity(int index) {
         return capacity;
@@ -96,7 +103,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         Objects.checkIndex(index, size());
         return true;
     }
-
 
     //An item resource container will override this and use which ever is smaller, the resource stack or the capacity
     @Override
@@ -131,7 +137,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         return new Slice(from, to - from);
     }
 
-
     /**
      * Creates a vanilla {@link Container} instance that reflects this item holder.
      *
@@ -149,43 +154,44 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     private static final Container EMPTY = new Container() {
         @Override
-        public void clearContent() {
+        public void clearContent() {}
 
-        }
         @Override
         public int getContainerSize() {
             return 0;
         }
+
         @Override
         public boolean isEmpty() {
             return false;
         }
+
         @Override
         public ItemStack getItem(int p_18941_) {
             return ItemStack.EMPTY;
         }
+
         @Override
         public ItemStack removeItem(int p_18942_, int p_18943_) {
             return ItemStack.EMPTY;
         }
+
         @Override
         public ItemStack removeItemNoUpdate(int p_18951_) {
             return ItemStack.EMPTY;
         }
-        @Override
-        public void setItem(int p_18944_, ItemStack p_18945_) {
 
-        }
         @Override
-        public void setChanged() {
+        public void setItem(int p_18944_, ItemStack p_18945_) {}
 
-        }
+        @Override
+        public void setChanged() {}
+
         @Override
         public boolean stillValid(Player p_18946_) {
             return false;
         }
     };
-
 
     private class Slice implements IResourceContainer<T> {
         private final int start, length;
@@ -252,7 +258,9 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     public static class Builder<T extends IResource, TBuilder extends Builder<T, TBuilder>> {
         protected int capacity;
-        protected @Nullable Runnable updateCallback;
+        @Nullable
+        protected Runnable updateCallback;
+        @Nullable
         protected NonNullList<MutableResourceStack<T>> stacks;
         protected ResourceStack<T> emptyStack;
 
@@ -286,10 +294,12 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         public ResourceContainer<T> build() {
+            if (stacks == null) throw new IllegalArgumentException("ResourceContainer's stacks must not be null");
             return new ResourceContainer<>(stacks, emptyStack, capacity, updateCallback);
         }
 
         public final ResourceContainer<T> buildRaw() {
+            if (stacks == null) throw new IllegalArgumentException("ResourceContainer's stacks must not be null");
             return new ResourceContainer<>(stacks, emptyStack, capacity, updateCallback);
         }
     }

@@ -11,8 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * A context that represents a player's inventory slot.
@@ -73,9 +73,9 @@ public class PlayerContext implements IItemContext {
         if (amount >= currentAmount) {
             if (action.isExecuting()) {
                 var capacity = resource.getMaxStackSize();
-                if(capacity >=currentAmount)
+                if (capacity >= currentAmount)
                     handler.set(index, resource, currentAmount);
-                else{
+                else {
                     handler.set(index, resource, capacity);
                     handler.insertOrDrop(resource, currentAmount - capacity);
                 }

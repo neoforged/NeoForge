@@ -1,15 +1,19 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-
-import java.util.function.BiFunction;
-import java.util.function.UnaryOperator;
 
 /**
  * Represents the underlying instruction set for mutable and immutable resource stacks.
@@ -17,9 +21,9 @@ import java.util.function.UnaryOperator;
  * @param <T> resource type
  */
 public interface IResourceStack<T extends IResource> {
-
     /**
      * Creates a codec with the resource being a field in the object.
+     * 
      * <pre>{@code
      * {
      *     "resource": {
@@ -34,17 +38,15 @@ public interface IResourceStack<T extends IResource> {
      * @param <TResource>   the resource type
      * @return a codec for a resource stack
      */
-    static <TResource extends IResource, TStack extends IResourceStack<TResource>>
-    Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(IResourceStack<TResource>::resource),
-                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)
-        ).apply(instance, factory));
+                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)).apply(instance, factory));
     }
-
 
     /**
      * Creates a codec where the fields for the resource are at the same level as the amount
+     * 
      * <pre>{@code
      * {
      *    "id": "minecraft:water",
@@ -58,25 +60,20 @@ public interface IResourceStack<T extends IResource> {
      * @param <TResource>   The resource type
      * @return Codec for the specified IResourceStack implementer
      */
-    static <TResource extends IResource, TStack extends IResourceStack<TResource>>
-    Codec<TStack> flatCodec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> flatCodec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 MapCodec.assumeMapUnsafe(resourceCodec).forGetter(IResourceStack<TResource>::resource),
-                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)
-        ).apply(instance, factory));
+                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)).apply(instance, factory));
     }
-
 
     /**
      * Creates a standard stream codec for a IResourceStack implementer of the specified resource type.
      */
-    static <B extends FriendlyByteBuf, TResource extends IResource, TStack extends IResourceStack<TResource>>
-    StreamCodec<B, TStack> streamCodec(StreamCodec<? super B, TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <B extends FriendlyByteBuf, TResource extends IResource, TStack extends IResourceStack<TResource>> StreamCodec<B, TStack> streamCodec(StreamCodec<? super B, TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return StreamCodec.composite(
                 resourceCodec, IResourceStack::resource,
                 ByteBufCodecs.VAR_INT, IResourceStack::amount,
-                factory
-        );
+                factory);
     }
 
     /**

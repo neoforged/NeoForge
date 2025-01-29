@@ -1,20 +1,23 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-import java.util.Objects;
-
 /**
- * A slice of a  {@link IResourceContainer}. Changes to the slice should reflect in the parent.
+ * A slice of a {@link IResourceContainer}. Changes to the slice should reflect in the parent.
  */
 public record ResourceContainerSlice<TResource extends IResource>(
         IResourceContainer<TResource> parent,
         int start,
         int length) implements IResourceContainer<TResource> {
-
     @Override
     public int size() {
         return length;
@@ -45,7 +48,8 @@ public record ResourceContainerSlice<TResource extends IResource>(
 
     @Override
     public int getCapacity(int index) {
-        return parent.getCapacity(index);    }
+        return parent.getCapacity(index);
+    }
 
     @Override
     public IResourceContainer<TResource> slice(int from, int to) {

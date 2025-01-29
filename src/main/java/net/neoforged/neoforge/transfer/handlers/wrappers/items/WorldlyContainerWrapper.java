@@ -18,8 +18,7 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
     public static WorldlyContainerWrapper of(WorldlyContainer container, Direction side) {
         if (container instanceof AbstractFurnaceBlockEntity) {
             return new Furnace(container, side);
-        }
-        else if (container instanceof BrewingStandBlockEntity) {
+        } else if (container instanceof BrewingStandBlockEntity) {
             return new BrewingStand(container, side);
         }
 

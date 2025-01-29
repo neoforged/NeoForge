@@ -1,21 +1,25 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.templates.storage;
 
+import java.util.Iterator;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
-
-public interface IResourceData<TResource extends IResource> extends  Iterable<IResourceStack<TResource>> {
+public interface IResourceData<TResource extends IResource> extends Iterable<IResourceStack<TResource>> {
     int size();
-    IResourceStack<TResource> get(int index);
-    IResourceData< TResource> modify(int index, TResource resource, int amount);
 
+    IResourceStack<TResource> get(int index);
+
+    IResourceData<TResource> modify(int index, TResource resource, int amount);
 
     ResourceStorageComponent<TResource> component();
-    ResourceStorageAttachment<TResource> attachment();
 
+    ResourceStorageAttachment<TResource> attachment();
 
     static boolean equals(IResourceData<?> data1, Object data2) {
         if (data1 == data2)
@@ -34,7 +38,6 @@ public interface IResourceData<TResource extends IResource> extends  Iterable<IR
         return true;
     }
 
-
     /**
      * Creates an iterator over the indices in this component.
      *
@@ -42,7 +45,7 @@ public interface IResourceData<TResource extends IResource> extends  Iterable<IR
      */
     @Contract(value = "-> new", pure = true)
     @Override
-    default @NotNull Iterator<IResourceStack<TResource>> iterator() {
+    default Iterator<IResourceStack<TResource>> iterator() {
         return new Iterator<>() {
             final int size = size();
             int i = 0;
