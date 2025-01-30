@@ -29,6 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Immutable combination of an {@link Item} and data components.
@@ -70,16 +71,36 @@ public final class ItemResource implements IResource, DataComponentHolder {
     public static final ItemResource NONE = new ItemResource(ItemStack.EMPTY);
     public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(NONE, 0);
 
+    /**
+     * This is used only for registry, you should not use this method!
+     */
+    @ApiStatus.Internal
+    public static ItemResource invalidateDefault(ItemLike  item) {
+        return item == Items.AIR ? NONE : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
+    }
+
     public static ItemResource of(ItemStack itemStack) {
-        return itemStack.isEmpty() ? NONE : new ItemResource(itemStack.copyWithCount(1));
+        if (itemStack.isEmpty())
+            return NONE;
+        if(itemStack.isComponentsPatchEmpty())
+            return itemStack.getItem().defaultResource();
+        return new ItemResource(itemStack.copyWithCount(1));
     }
 
+    /**
+     * <strong>Note:</strong> This cannot be called before your item is registered
+     */
     public static ItemResource of(ItemLike item) {
-        return item == Items.AIR ? NONE : new ItemResource(new ItemStack(item));
+        return item == Items.AIR ? NONE : item.asItem().defaultResource();
     }
 
+    /**
+     * <strong>Note:</strong> This cannot be called before your item is registered
+     */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
-        return item.value() == Items.AIR ? NONE : new ItemResource(new ItemStack(item, 1, patch));
+        if (item.value() == Items.AIR) return NONE;
+
+        return item.value().defaultResource().withPatch(patch);
     }
 
     /**
@@ -140,7 +161,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
 
     @Override
     public DataComponentMap getComponents() {
-        return innerStack.getComponents();
+        return innerStack.immutableComponents();
     }
 
     public DataComponentPatch getComponentsPatch() {

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.items;
+package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import com.mojang.datafixers.util.Either;
 import java.util.List;
@@ -34,7 +34,6 @@ public class VanillaInventoryCodeHooks {
         for (int i = 0; i < handler.size(); i++) {
 //            ItemStack extractItem = handler.extractItem(i, 1, true);
             var extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.SIMULATE, ItemResource.NONE);
-            //Should likely be "isEmpty" but because it is null we need to check differently then expected
             if (extracted.isEmpty()) continue;
 
             var extractItem = ItemResource.itemStackOf(extracted);
@@ -42,18 +41,18 @@ public class VanillaInventoryCodeHooks {
             for (int j = 0; j < dest.getContainerSize(); j++) {
                 ItemStack destStack = dest.getItem(j);
 
-                if (dest.canPlaceItem(j, extractItem) && (destStack.isEmpty() || destStack.getCount() < destStack.getMaxStackSize() && destStack.getCount() < dest.getMaxStackSize() && ItemStack.isSameItemSameComponents(extractItem, destStack))) {
-                    extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.EXECUTE, ItemResource.NONE);
-                    if (extracted.isEmpty()) continue;//Should be unneeded
-                    if (destStack.isEmpty())
-                        dest.setItem(j, ItemResource.itemStackOf(extracted));
-                    else {
-                        destStack.grow(1);
-                        dest.setItem(j, destStack);
-                    }
-                    dest.setChanged();
-                    return true;
+                if (!dest.canPlaceItem(j, extractItem) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
+                    continue;
+                extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.EXECUTE, ItemResource.NONE);
+                if (extracted.isEmpty()) continue;//Should be unneeded
+                if (destStack.isEmpty())
+                    dest.setItem(j, ItemResource.itemStackOf(extracted));
+                else {
+                    destStack.grow(1);
+                    dest.setItem(j, destStack);
                 }
+                dest.setChanged();
+                return true;
             }
         }
         return false;

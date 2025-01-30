@@ -40,7 +40,7 @@ public class ResourceHandlerUtilTests {
             throw new GameTestAssertException("The returned capability was not a Modifiable resource handler");
         }
 
-        var workingStack = new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource, 5000);
+        var workingStack = new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource(), 5000);
 
         srcHandler.set(0, ItemResource.NONE, 0);
         helper.assertTrue(ResourceHandlerUtil.isEmpty(srcHandler), "The inv was not empty");
@@ -60,18 +60,18 @@ public class ResourceHandlerUtilTests {
 
         dstHandler.set(10, workingStack.resource(), workingStack.amount());
         helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, TransferAction.SIMULATE, ItemResource.NONE), ItemResource.EMPTY_STACK, "Nothing should move");
-        helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, TransferAction.SIMULATE, ItemResource.NONE), new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource, 100), "amount to move");
+        helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, TransferAction.SIMULATE, ItemResource.NONE), new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource(), 100), "amount to move");
 
         helper.assertTrue(ResourceHandlerUtil.hasResource(dstHandler, workingStack.resource()), "The dst handler should have cobble");
-        helper.assertFalse(ResourceHandlerUtil.hasResource(dstHandler, Items.STICK.defaultResource), "The dst handler should have no sticks");
+        helper.assertFalse(ResourceHandlerUtil.hasResource(dstHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");
 
         for (var i = 0; i < dstHandler.size(); i++) {
             dstHandler.set(i, ItemResource.NONE, 0);
         }
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(dstHandler, Items.APPLE.defaultResource, 123, TransferAction.EXECUTE), 123, "apples inserted");
+        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(dstHandler, Items.APPLE.defaultResource(), 123, TransferAction.EXECUTE), 123, "apples inserted");
         for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, Items.APPLE.defaultResource, 100);
+            dstHandler.set(i, Items.APPLE.defaultResource(), 100);
         }
 
         helper.assertTrue(ResourceHandlerUtil.isFull(dstHandler), "Dst handler should be full");
@@ -83,8 +83,8 @@ public class ResourceHandlerUtilTests {
         for (var i = 0; i < dstHandler.size(); i++) {
             dstHandler.set(i, ItemResource.NONE, 0);
         }
-        ResourceHandlerUtil.insertStacking(dstHandler, Items.APPLE.defaultResource, 400, TransferAction.EXECUTE);
-        dstHandler.set(0, Items.HONEY_BOTTLE.defaultResource, 3000);
+        ResourceHandlerUtil.insertStacking(dstHandler, Items.APPLE.defaultResource(), 400, TransferAction.EXECUTE);
+        dstHandler.set(0, Items.HONEY_BOTTLE.defaultResource(), 3000);
         dstHandler.set(1, ItemResource.NONE, 0);
         helper.succeed();
     }

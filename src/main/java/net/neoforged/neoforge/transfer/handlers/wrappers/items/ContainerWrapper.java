@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
@@ -55,8 +56,11 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
         return getContainer().canPlaceItem(index, resource.toStack());
     }
 
+    /**
+     * Vanilla has the concept of isValid on extraction {@link Container#canTakeItem(Container, int, ItemStack)} which is not normally part of the {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler} contract.
+     */
     public boolean isExtractable(int index, ItemResource resource) {
-        return true; // canTakeItem requires the other container that's accepting the item, so it cant be used here
+        return true; // canTakeItemThroughFace requires the other container that's accepting the item, so it cant be used here
     }
 
     @Override

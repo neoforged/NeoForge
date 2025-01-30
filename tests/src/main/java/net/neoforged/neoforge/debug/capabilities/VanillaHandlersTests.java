@@ -102,8 +102,8 @@ public class VanillaHandlersTests {
 
         helper.assertTrue(wrapper.size() == 1, "Got %d tanks".formatted(wrapper.size()));
 
-        var waterResource = Fluids.WATER.defaultResource;
-        var lavaResource = Fluids.LAVA.defaultResource;
+        var waterResource = Fluids.WATER.defaultResource();
+        var lavaResource = Fluids.LAVA.defaultResource();
 
         // Simulate filling with water, and it should only accept 1 bucket
         helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.SIMULATE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");

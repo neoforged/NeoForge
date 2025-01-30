@@ -29,6 +29,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -72,7 +73,17 @@ public final class FluidResource implements IResource, DataComponentHolder {
     public static final FluidResource NONE = new FluidResource(FluidStack.EMPTY);
     public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(FluidResource.NONE, 0);
 
+    /**
+     * This is used only for registry, you should not use this method!
+     */
+    @ApiStatus.Internal
+    public static FluidResource invalidateDefault(Fluid fluid) {
+        return fluid == Fluids.EMPTY ? NONE : new FluidResource(new FluidStack(fluid, 1));
+    }
+
     public static FluidResource of(FluidStack fluidStack) {
+        if (fluidStack.isComponentsPatchEmpty())
+            return fluidStack.getFluid().defaultResource();
         return fluidStack.isEmpty() ? NONE : new FluidResource(fluidStack.copyWithAmount(1));
     }
 
@@ -166,7 +177,8 @@ public final class FluidResource implements IResource, DataComponentHolder {
 
     @Override
     public DataComponentMap getComponents() {
-        return innerStack.getComponents();
+        if(innerStack.isEmpty()) return DataComponentMap.EMPTY;
+        return innerStack.getComponents().toImmutableMap();
     }
 
     public DataComponentPatch getComponentsPatch() {

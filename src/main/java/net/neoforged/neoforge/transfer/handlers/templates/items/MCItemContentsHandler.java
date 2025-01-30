@@ -20,12 +20,12 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a IResourceHandler
  */
 //Wiki wiki it is hip yo! It's rad it, is with it
-public class MCItemContentsWrapperHandler implements IResourceHandlerModifiable<ItemResource> {
+public class MCItemContentsHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final int size;
     protected final DataComponentType<ItemContainerContents> componentType;
     protected final IItemContext context;
 
-    public MCItemContentsWrapperHandler(IItemContext context, DataComponentType<ItemContainerContents> componentType, int size) {
+    public MCItemContentsHandler(IItemContext context, DataComponentType<ItemContainerContents> componentType, int size) {
         this.componentType = componentType;
         this.context = context;
         this.size = size;

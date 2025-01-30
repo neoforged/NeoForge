@@ -4,18 +4,22 @@
  
  public abstract class Fluid implements net.neoforged.neoforge.common.extensions.IFluidExtension {
      public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
-+    public final net.neoforged.neoforge.transfer.resources.FluidResource defaultResource;
++    public final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.FluidResource> defaultResource;
      protected final StateDefinition<Fluid, FluidState> stateDefinition;
      private FluidState defaultFluidState;
 +
      private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
  
      protected Fluid() {
-@@ -32,6 +_,7 @@
+@@ -32,6 +_,11 @@
          this.createFluidStateDefinition(builder);
          this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
          this.registerDefaultState(this.stateDefinition.any());
-+        this.defaultResource = net.neoforged.neoforge.transfer.resources.FluidResource.of(this);
++        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.FluidResource.invalidateDefault(this));
++    }
++
++    public final net.neoforged.neoforge.transfer.resources.FluidResource defaultResource() {
++        return this.defaultResource.get();
      }
  
      protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76121_) {

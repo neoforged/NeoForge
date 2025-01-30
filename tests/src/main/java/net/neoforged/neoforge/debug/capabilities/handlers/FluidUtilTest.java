@@ -54,7 +54,7 @@ public class FluidUtilTest {
     private static void pickupFluid(ExtendedGameTestHelper helper) {
         var posOfWater = helper.relativePos(new BlockPos(1, 0, 0));
         var player = helper.makeMockPlayer();
-        var endlessWaterSource = new InfiniteResourceHandler<>(Fluids.WATER.defaultResource);
+        var endlessWaterSource = new InfiniteResourceHandler<>(Fluids.WATER.defaultResource());
 
         // test pickup of water and ensure exchange shrinks main stack and puts overflow in inventory
         resetInventory(player, new ItemStack(Items.BUCKET, 2));
@@ -96,7 +96,7 @@ public class FluidUtilTest {
     private static void handlerInteractionWithItem(ExtendedGameTestHelper helper) {
         var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         var player = helper.makeMockPlayer();
-        var waterOf1BucketAmount = new ResourceStack<>(Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME);
+        var waterOf1BucketAmount = new ResourceStack<>(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
 
         if (!(helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null) instanceof IResourceHandlerModifiable<FluidResource> handler)) {
             throw new GameTestAssertException("The returned capability was not a Modifiable resource handler");
@@ -110,17 +110,17 @@ public class FluidUtilTest {
         helper.assertValueEqual(handler.getAmount(0), 0, "fluid amount in index `0`");
         helper.assertValueEqual(handler.getResource(0), FluidResource.NONE, "fluid in index `0`");
 
-        handler.set(0, Fluids.WATER.defaultResource, FluidType.BUCKET_VOLUME);
+        handler.set(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
         resetInventory(player, new ItemStack(Items.BUCKET, 1));
-        var startingAmount = handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE);
+        var startingAmount = handler.extract(Fluids.WATER.defaultResource(), ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE);
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
-        helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE), "fluid amount");
+        helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, handler.extract(Fluids.WATER.defaultResource(), ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE), "fluid amount");
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
-        helper.assertValueEqual(startingAmount, handler.extract(Fluids.WATER.defaultResource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE), "fluid amount");
+        helper.assertValueEqual(startingAmount, handler.extract(Fluids.WATER.defaultResource(), ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE), "fluid amount");
 
         helper.succeed();
     }

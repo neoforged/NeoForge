@@ -235,6 +235,41 @@ public final class ResourceHandlerUtil {
     }
 
     /**
+     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
+     *
+     * @param <T>     the type of resource handled by the handler
+     * @param handler the {@link IResourceHandler} to extract the resource from
+     * @param index   the index to use for the handler
+     * @param filter  the filter to apply to the resources
+     * @param amount  the desired amount of the resource to extract
+     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *                while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @return the amount of the resource that was (or would have been, if simulated) extracted
+     */
+    public static <T extends IResource> ResourceStack<T> extractIndexFiltered(IResourceHandler<T> handler, int index, Predicate<T> filter, int amount, TransferAction action, T emptyResource) {
+        T resource = handler.getResource(index);
+        if (!filter.test(resource)) return new ResourceStack<>(resource, amount);
+        int extract = handler.extract(resource, amount, action);
+        if (extract > 0)
+            return new ResourceStack<>(resource, extract);
+        return new ResourceStack<>(emptyResource, 0);
+    }
+
+    /**
+     * Extracts the first resource from an {@link IResourceHandler} that is not blank.
+     *
+     * @param <T>     the type of resource handled by the handler
+     * @param handler the {@link IResourceHandler} to extract the resource from
+     * @param amount  the desired amount of the resource to extract
+     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
+     *                while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
+     */
+    public static <T extends IResource> ResourceStack<T> extractIndexedAny(IResourceHandler<T> handler, int index, int amount, TransferAction action, T emptyResource) {
+        return extractIndexFiltered(handler, index, Predicate.not(IResource::isEmpty), amount, action, emptyResource);
+    }
+
+    /**
      * Extracts the first resource from an {@link IResourceHandler} that is not blank.
      *
      * @param <T>     the type of resource handled by the handler

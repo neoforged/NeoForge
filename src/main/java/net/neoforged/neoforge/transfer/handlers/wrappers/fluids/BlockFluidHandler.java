@@ -49,12 +49,12 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     @Override
     public FluidResource getResource(int index) {
         FluidState fluidState = level.getFluidState(blockPos);
-        return fluidState.getType().defaultResource;
+        return fluidState.getType().defaultResource();
     }
 
     @Override
     public int getAmount(int ignoredIndex) {
-        return level.getFluidState(blockPos).getType().defaultResource.isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
+        return level.getFluidState(blockPos).getType().defaultResource().isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(blockPos);
         FluidState fluidState = level.getFluidState(blockPos);
-        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !resource.equals(fluidState.getType().defaultResource)) return 0;
+        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !resource.equals(fluidState.getType().defaultResource())) return 0;
         if (!state.getFluidState().isEmpty()) {
             if (!(state.getBlock() instanceof BucketPickup pickupHandler)) return 0;
             if (action.isSimulating()) {
@@ -116,7 +116,7 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
             }
             ItemStack stack = pickupHandler.pickupBlock(player, level, blockPos, state);
             if (!stack.isEmpty()) {
-                if (stack.getItem() instanceof BucketItem bucket && !resource.equals(bucket.content.defaultResource)) {
+                if (stack.getItem() instanceof BucketItem bucket && !resource.equals(bucket.content.defaultResource())) {
                     LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
                             BuiltInRegistries.FLUID.getKey(fluidState.getType()), blockPos, level.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
                     return 0;

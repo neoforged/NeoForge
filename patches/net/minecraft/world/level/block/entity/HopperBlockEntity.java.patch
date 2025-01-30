@@ -20,7 +20,7 @@
              }
          }
 +        //noinspection OptionalGetWithoutIsPresent Checked with null and left check
-+        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.right().get());
++        return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.right().get());
      }
  
      private static int[] getSlots(Container p_59340_, Direction p_59341_) {
@@ -73,7 +73,7 @@
 +            return false;
 +        }
 +        //noinspection OptionalGetWithoutIsPresent We do it above with the left & null check
-+        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.right().get());
++        return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.right().get());
      }
  
      private static boolean tryTakeInItemFromSlot(Hopper p_59355_, Container p_59356_, int p_59357_, Direction p_59358_) {
@@ -109,7 +109,7 @@
 +        if (blockItemHandler != null) {
 +            return com.mojang.datafixers.util.Either.right(blockItemHandler);// new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
 +        }
-+        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
++        return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
 +    }
 +
      private static boolean canMergeItems(ItemStack p_59345_, ItemStack p_59346_) {

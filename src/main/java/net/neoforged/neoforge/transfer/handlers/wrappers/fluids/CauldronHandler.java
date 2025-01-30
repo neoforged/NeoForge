@@ -40,7 +40,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
     @Override
     public FluidResource getResource(int index) {
         BlockState state = level.getBlockState(pos);
-        return getContent(state).fluid.defaultResource;
+        return getContent(state).fluid.defaultResource();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
 
         if (resource.isEmpty() || amount <= 0) {
             return 0;
-        } else if (currentContent.fluid != Fluids.EMPTY && !resource.equals(currentContent.fluid.defaultResource)) {
+        } else if (currentContent.fluid != Fluids.EMPTY && !resource.equals(currentContent.fluid.defaultResource())) {
             return 0;
         }
 
@@ -122,7 +122,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
     public int extract(FluidResource resource, int amount, TransferAction action) {
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent content = getContent(state);
-        if (amount < content.getMillibuckets(state) || resource.isEmpty() || !resource.equals(content.fluid.defaultResource)) {
+        if (amount < content.getMillibuckets(state) || resource.isEmpty() || !resource.equals(content.fluid.defaultResource())) {
             return 0;
         }
 

@@ -24,7 +24,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.transfer.handlers.templates.items.MCItemContentsWrapperHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.items.MCItemContentsHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingHandlerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ContainerWrapper;
@@ -138,7 +138,7 @@ public class CapabilityHooks {
         //            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), Items.MILK_BUCKET);
         //        }
         event.registerItem(
-                Capabilities.ItemHandler.ITEM, (stack, ctx) -> ctx == null ? null : new MCItemContentsWrapperHandler(ctx, DataComponents.CONTAINER, 27),
+                Capabilities.ItemHandler.ITEM, (stack, ctx) -> ctx == null ? null : new MCItemContentsHandler(ctx, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,

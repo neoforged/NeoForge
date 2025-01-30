@@ -30,10 +30,10 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     public FluidResource getResource(int index) {
         ItemResource resource = context.getResource();
         if (resource.getItem() instanceof BucketItem bucket) {
-            return bucket.content.defaultResource;
+            return bucket.content.defaultResource();
             // Should this check for milk item specifically, tag, or something else. It was an instanceof check before.
         } else if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound()) {
-            return NeoForgeMod.MILK.get().defaultResource;
+            return NeoForgeMod.MILK.get().defaultResource();
         }
         return FluidResource.NONE;
     }
@@ -81,7 +81,7 @@ public class BucketHandler implements ISingleResourceHandler<FluidResource> {
     }
 
     private ItemResource getEmpty() {
-        return Items.BUCKET.defaultResource;
+        return Items.BUCKET.defaultResource();
     }
 
     @Override
