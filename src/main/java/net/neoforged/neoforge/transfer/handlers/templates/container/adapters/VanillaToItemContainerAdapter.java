@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
  */
 public record VanillaToItemContainerAdapter(Container container) implements IResourceContainer<ItemResource> {
     @Override
-    public ResourceStack<ItemResource> defaultResource() {
+    public ResourceStack<ItemResource> emptyResource() {
         return ItemResource.EMPTY_STACK;
     }
 

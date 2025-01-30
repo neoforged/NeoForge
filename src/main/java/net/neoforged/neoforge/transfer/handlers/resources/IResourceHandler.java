@@ -92,7 +92,7 @@ public interface IResourceHandler<T extends IResource> {
      * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in insert if the lookup is complex.
+     * It is also advised to not use the result of this call in insert.
      *
      * @return True if a resource can be inserted, false otherwise.
      */

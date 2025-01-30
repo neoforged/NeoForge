@@ -75,14 +75,14 @@ public final class ItemResource implements IResource, DataComponentHolder {
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
-    public static ItemResource invalidateDefault(ItemLike  item) {
+    public static ItemResource invalidateDefault(ItemLike item) {
         return item == Items.AIR ? NONE : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
     }
 
     public static ItemResource of(ItemStack itemStack) {
         if (itemStack.isEmpty())
             return NONE;
-        if(itemStack.isComponentsPatchEmpty())
+        if (itemStack.isComponentsPatchEmpty())
             return itemStack.getItem().defaultResource();
         return new ItemResource(itemStack.copyWithCount(1));
     }

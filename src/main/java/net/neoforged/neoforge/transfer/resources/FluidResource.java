@@ -177,7 +177,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
 
     @Override
     public DataComponentMap getComponents() {
-        if(innerStack.isEmpty()) return DataComponentMap.EMPTY;
+        if (innerStack.isEmpty()) return DataComponentMap.EMPTY;
         return innerStack.getComponents().toImmutableMap();
     }
 

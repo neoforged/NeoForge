@@ -84,7 +84,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
     }
 
-    public ResourceStack<T> defaultResource() {
+    public ResourceStack<T> emptyResource() {
         return emptyStack;
     }
 
@@ -126,7 +126,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     @Override
     public void clear() {
-        Collections.fill(resourceStacks, defaultResource().mutable());
+        Collections.fill(resourceStacks, emptyResource().mutable());
         if (updateCallback != null)
             updateCallback.run();
     }
@@ -144,7 +144,10 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
      */
     @Contract(pure = true)
     public Container asVanillaContainer() {
-        if (defaultResource().resource() instanceof ItemResource) {
+        //This is used to determine the type of the resource container.
+        // A round about way of doing it perhaps, but this was what was possible in Java
+        //in C# we'd do typeof(T) but we can't do that here. Since we know the
+        if (emptyResource().resource() instanceof ItemResource) {
             //noinspection unchecked
             return new ItemContainerToVanillaAdapter((ResourceContainer<ItemResource>) this);
         }
@@ -239,7 +242,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         @Override
         public void clear() {
             for (int i = 0; i < length; i++)
-                ResourceContainer.this.resourceStacks.set(i + start, defaultResource().mutable());
+                ResourceContainer.this.resourceStacks.set(i + start, emptyResource().mutable());
             if (ResourceContainer.this.updateCallback != null)
                 ResourceContainer.this.updateCallback.run();
         }
@@ -251,8 +254,8 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public ResourceStack<T> defaultResource() {
-            return ResourceContainer.this.defaultResource();
+        public ResourceStack<T> emptyResource() {
+            return ResourceContainer.this.emptyResource();
         }
     }
 

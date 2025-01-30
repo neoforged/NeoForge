@@ -25,22 +25,6 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
     }
 
     @Override
-    public boolean allowsInsertion() {
-        for (var i = 0; i < container.size(); i++)
-            if (allowsInsertion(i))
-                return true;
-        return false;
-    }
-
-    @Override
-    public boolean allowsExtraction() {
-        for (var i = 0; i < container.size(); i++)
-            if (allowsExtraction(i))
-                return true;
-        return false;
-    }
-
-    @Override
     public boolean allowsInsertion(int index) {
         return behavior.canInsert(index);
     }
@@ -159,7 +143,7 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         var current = container.get(index);
         if (resource.isEmpty()) amount = 0;
         if (amount == 0)
-            container.set(index, container.defaultResource().mutable());
+            container.set(index, container.emptyResource().mutable());
         else if (current.resource().equals(resource))
             container.set(index, current.withAmount(amount));
         else

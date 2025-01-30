@@ -27,7 +27,7 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
     @Override
     public MutableResourceStack<T> get(int index) {
         var resource = wrappedHandler.getResource(index);
-        if (resource.isEmpty()) return defaultResource().mutable();
+        if (resource.isEmpty()) return emptyResource().mutable();
         return MutableResourceStack.of(resource, wrappedHandler.getAmount(index));
     }
 
@@ -62,10 +62,5 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
     @Override
     public IResourceHandlerModifiable<T> asHandler() {
         return wrappedHandler instanceof IResourceHandlerModifiable<T> modifiable ? modifiable : IResourceContainer.super.asHandler();
-    }
-
-    @Override
-    public ResourceStack<T> defaultResource() {
-        return emptyResource();
     }
 }

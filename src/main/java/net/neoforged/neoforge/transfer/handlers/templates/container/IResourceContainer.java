@@ -47,7 +47,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
      */
     default void clear() {
         for (int i = 0; i < size(); i++) {
-            set(i, defaultResource().mutable());
+            set(i, emptyResource().mutable());
         }
     }
 
@@ -186,7 +186,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
         return new ResourceContainerToHandlerAdapter<>(this, behavior);
     }
 
-    ResourceStack<TResource> defaultResource();
+    ResourceStack<TResource> emptyResource();
 
     /**
      * Copies all the contents of this container to a non-null list of the same size.
@@ -195,7 +195,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
      */
     @Contract(pure = true)
     default NonNullList<MutableResourceStack<TResource>> copyToList() {
-        var list = NonNullList.withSize(size(), defaultResource().mutable());
+        var list = NonNullList.withSize(size(), emptyResource().mutable());
         for (int index = 0; index < size(); index++) {
             list.set(index, get(index));
         }
@@ -203,7 +203,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     }
 
     default NonNullList<ResourceStack<TResource>> immutableList() {
-        var list = NonNullList.withSize(size(), defaultResource());
+        var list = NonNullList.withSize(size(), emptyResource());
         for (int index = 0; index < size(); index++) list.set(index, get(index).immutable());
         return list;
     }

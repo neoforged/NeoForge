@@ -58,7 +58,7 @@ public record ResourceContainerSlice<TResource extends IResource>(
     }
 
     @Override
-    public ResourceStack<TResource> defaultResource() {
-        return parent.defaultResource();
+    public ResourceStack<TResource> emptyResource() {
+        return parent.emptyResource();
     }
 }
