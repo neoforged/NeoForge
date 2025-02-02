@@ -324,7 +324,7 @@
          this.level = p_91157_;
          this.updateLevelInEngines(p_91157_);
          if (!this.isLocalServer) {
-@@ -2030,6 +_,7 @@
+@@ -2030,13 +_,16 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -332,7 +332,8 @@
          this.gameMode = null;
          this.narrator.clear();
          this.clientLevelTeardownInProgress = true;
-@@ -2037,6 +_,7 @@
+ 
++        var connection = this.getConnection() != null ? this.getConnection().getConnection() : null; // Neo: Hold connection to revert after shutdown
          try {
              this.updateScreenAndTick(p_320248_);
              if (this.level != null) {
@@ -340,6 +341,14 @@
                  if (integratedserver != null) {
                      ProfilerFiller profilerfiller = Profiler.get();
                      profilerfiller.push("waitForServer");
+@@ -2060,6 +_,7 @@
+         }
+ 
+         SkullBlockEntity.clear();
++        if(connection != null) net.neoforged.neoforge.registries.RegistryManager.revertToFrozen(); // Neo: Revert registries to frozen on disconnect
+     }
+ 
+     public void clearDownloadedResourcePacks() {
 @@ -2197,6 +_,7 @@
  
      private void pickBlock() {
