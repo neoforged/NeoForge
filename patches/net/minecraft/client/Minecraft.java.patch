@@ -333,7 +333,7 @@
          this.narrator.clear();
          this.clientLevelTeardownInProgress = true;
  
-+        var connection = this.getConnection() != null ? this.getConnection().getConnection() : null; // Neo: Hold connection to revert after shutdown
++        var shouldRevertRegistriesToFrozen = this.getConnection() != null && this.getConnection().getConnection() != null; // Neo: Track whether to revert registries after disconnect
          try {
              this.updateScreenAndTick(p_320248_);
              if (this.level != null) {
@@ -345,7 +345,7 @@
          }
  
          SkullBlockEntity.clear();
-+        if(connection != null) net.neoforged.neoforge.registries.RegistryManager.revertToFrozen(); // Neo: Revert registries to frozen on disconnect
++        if(shouldRevertRegistriesToFrozen) net.neoforged.neoforge.registries.RegistryManager.revertToFrozen(); // Neo: Revert registries to frozen on disconnect
      }
  
      public void clearDownloadedResourcePacks() {
