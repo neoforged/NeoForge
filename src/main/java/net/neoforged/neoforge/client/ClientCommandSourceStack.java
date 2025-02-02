@@ -109,7 +109,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     }
 
     /**
-     * {@return the {@link FeatureFlagSet } from the client side}
+     * {@return the {@link FeatureFlagSet} from the client side}
      */
     @Override
     public FeatureFlagSet enabledFeatures() {
