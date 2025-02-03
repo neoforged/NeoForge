@@ -53,6 +53,8 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.SkullModelBase;
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -124,6 +126,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -685,7 +688,7 @@ public class ClientHooks {
         return IClientMobEffectExtensions.of(effectInstance).isVisibleInInventory(effectInstance);
     }
 
-    private static final Map<ModelLayerLocation, Supplier<LayerDefinition>> layerDefinitions = new HashMap<>();
+    private static Map<ModelLayerLocation, Supplier<LayerDefinition>> layerDefinitions = new HashMap<>();
 
     public static void registerLayerDefinition(ModelLayerLocation layerLocation, Supplier<LayerDefinition> supplier) {
         layerDefinitions.put(layerLocation, supplier);
@@ -693,6 +696,19 @@ public class ClientHooks {
 
     public static void loadLayerDefinitions(ImmutableMap.Builder<ModelLayerLocation, LayerDefinition> builder) {
         layerDefinitions.forEach((k, v) -> builder.put(k, v.get()));
+    }
+
+    private static Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModelsByType = null;
+
+    @Nullable
+    public static SkullModelBase getModdedSkullModel(EntityModelSet modelSet, SkullBlock.Type type) {
+        return skullModelsByType.getOrDefault(type, set -> null).apply(modelSet);
+    }
+
+    public static void registerModdedSkullModels() {
+        ImmutableMap.Builder<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> builder = ImmutableMap.builder();
+        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(builder));
+        skullModelsByType = builder.build();
     }
 
     private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
@@ -982,6 +998,7 @@ public class ClientHooks {
         MenuScreens.init();
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
+        registerModdedSkullModels();
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
