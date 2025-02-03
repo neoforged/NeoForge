@@ -51,3 +51,26 @@ publishing {
         maven rootProject.gradleutils.getPublishingMaven()
     }
 }
+
+// Workaround for Eclipse discarding compileOnly cross-project dependencies.
+// See also https://github.com/gradle/gradle/issues/32284
+configurations {
+    eclipseCompileClasspath {
+        attributes {
+            // Needs to be jar otherwise it will get purged
+            attribute LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR)
+            // To resolve apiElements specifically
+            attribute Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_API)
+        }
+    }
+}
+dependencies {
+    eclipseCompileClasspath project(path: ':neoforge')
+}
+plugins.withId("eclipse") {
+    eclipse {
+        classpath {
+            plusConfigurations.add(configurations.eclipseCompileClasspath)
+        }
+    }
+}
