@@ -705,7 +705,7 @@ public class ClientHooks {
         return skullModelsByType.getOrDefault(type, set -> null).apply(modelSet);
     }
 
-    public static void registerModdedSkullModels() {
+    private static void registerModdedSkullModels() {
         ImmutableMap.Builder<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> builder = ImmutableMap.builder();
         ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(builder));
         skullModelsByType = builder.build();
