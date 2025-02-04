@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -204,11 +203,11 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class CreateSkullModels extends EntityRenderersEvent {
-        private final ImmutableMap.Builder<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> builder;
+        private final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels;
 
         @ApiStatus.Internal
-        public CreateSkullModels(ImmutableMap.Builder<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> builder) {
-            this.builder = builder;
+        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels) {
+            this.skullModels = skullModels;
         }
 
         /**
@@ -248,7 +247,9 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
             if (type instanceof SkullBlock.Types) {
                 throw new IllegalArgumentException("Cannot register skull model for vanilla skull type: " + type.getSerializedName());
             }
-            builder.put(type, factory);
+            if (skullModels.putIfAbsent(type, factory) != null) {
+                throw new IllegalArgumentException("Factory already registered for provided skull type: " + type.getSerializedName());
+            }
         }
     }
 }

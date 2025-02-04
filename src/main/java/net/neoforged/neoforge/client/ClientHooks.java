@@ -688,7 +688,7 @@ public class ClientHooks {
         return IClientMobEffectExtensions.of(effectInstance).isVisibleInInventory(effectInstance);
     }
 
-    private static Map<ModelLayerLocation, Supplier<LayerDefinition>> layerDefinitions = new HashMap<>();
+    private static final Map<ModelLayerLocation, Supplier<LayerDefinition>> layerDefinitions = new HashMap<>();
 
     public static void registerLayerDefinition(ModelLayerLocation layerLocation, Supplier<LayerDefinition> supplier) {
         layerDefinitions.put(layerLocation, supplier);
@@ -698,17 +698,11 @@ public class ClientHooks {
         layerDefinitions.forEach((k, v) -> builder.put(k, v.get()));
     }
 
-    private static Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModelsByType = null;
+    private static final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModelsByType = new HashMap<>();
 
     @Nullable
     public static SkullModelBase getModdedSkullModel(EntityModelSet modelSet, SkullBlock.Type type) {
         return skullModelsByType.getOrDefault(type, set -> null).apply(modelSet);
-    }
-
-    private static void registerModdedSkullModels() {
-        ImmutableMap.Builder<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> builder = ImmutableMap.builder();
-        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(builder));
-        skullModelsByType = builder.build();
     }
 
     private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
@@ -998,7 +992,7 @@ public class ClientHooks {
         MenuScreens.init();
         ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
-        registerModdedSkullModels();
+        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
