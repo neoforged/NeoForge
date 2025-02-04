@@ -237,8 +237,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         /**
          * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
          *
-         * @param type    a unique skull type; an exception will be thrown later if multiple mods (including vanilla)
-         *                register models for the same type
+         * @param type    a unique skull type; an exception will be thrown if multiple mods register models for
+         *                the same type or a mod tries to register a model for a vanilla type
          * @param factory the factory to create the skull model instance. A typical implementation will simply bake
          *                a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
          *                constructor for {@link SkullModel}
