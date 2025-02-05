@@ -13,7 +13,7 @@ plugins {
 
 // This makes the version available to buildSrc
 gradle.ext.moddevgradle_plugin_version = moddevgradle_plugin_version
-gradle.ext.gson_version = gson_version
+gradle.ext.minecraft_version = minecraft_version
 gradle.ext.diffpatch_version = diffpatch_version
 gradle.ext.asm_version = asm_version
 

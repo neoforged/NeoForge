@@ -9,6 +9,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.pipeline.MainTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
@@ -144,6 +146,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
+import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
@@ -182,6 +185,7 @@ import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.gametest.GameTestHooks;
@@ -195,6 +199,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL32;
 
 /**
  * Class for various client-side-only hooks.
@@ -277,7 +282,7 @@ public class ClientHooks {
         var mc = Minecraft.getInstance();
         var profiler = Profiler.get();
         profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
         profiler.pop();
     }
 
@@ -1098,5 +1103,30 @@ public class ClientHooks {
     @ApiStatus.Internal
     public static FrameGraphSetupEvent fireFrameGraphSetup(FrameGraphBuilder builder, LevelTargetBundle targets, RenderTargetDescriptor renderTargetDescriptor, Frustum frustum, Camera camera, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, DeltaTracker deltaTracker, ProfilerFiller profiler) {
         return NeoForge.EVENT_BUS.post(new FrameGraphSetupEvent(builder, targets, renderTargetDescriptor, frustum, camera, modelViewMatrix, projectionMatrix, deltaTracker, profiler));
+    }
+
+    @ApiStatus.Internal
+    public static MainTarget instantiateMainTarget(int width, int height) {
+        var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
+        return new MainTarget(width, height, e.isStencilEnabled());
+    }
+
+    /**
+     * Called by our stencil hooks to specify the depth+stencil texture.
+     */
+    @ApiStatus.Internal
+    public static void texImageDepthStencil(int width, int height) {
+        var reducedPrecision = NeoForgeConfig.CLIENT.reducedDepthStencilFormat.getAsBoolean();
+        GlStateManager._texImage2D(
+                GL32.GL_TEXTURE_2D,
+                0,
+                reducedPrecision ? GL32.GL_DEPTH24_STENCIL8 : GL32.GL_DEPTH32F_STENCIL8,
+                width, height,
+                0,
+                GL32.GL_DEPTH_STENCIL,
+                // Since data is null, the format here does not matter as long as it matches internalFormat.
+                // So the usage, for depth, of unsigned int in one case and float in the other case, is not a problem.
+                reducedPrecision ? GL32.GL_UNSIGNED_INT_24_8 : GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV,
+                null);
     }
 }

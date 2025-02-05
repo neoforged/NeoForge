@@ -10,25 +10,13 @@ java.withSourcesJar()
 apply plugin : net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin
 
 dependencies {
-    // TODO: is this leaking in the POM? (most likely yes)
-    // TODO: does this need to be changed back to runtimeDependencies?
-    // TODO: should use attributes to resolve the right variant instead of hardcoding
-    compileOnly project(path: ':neoforge', configuration: 'apiElements')
-    runtimeOnly project(path: ':neoforge', configuration: 'runtimeElements')
+    compileOnly project(path: ':neoforge')
 
     compileOnly(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     compileOnly "org.junit.jupiter:junit-jupiter-params"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-}
-
-sourceSets {
-    main {
-        // TODO: cursed
-        compileClasspath += project(':neoforge').sourceSets.main.compileClasspath
-        runtimeClasspath += project(':neoforge').sourceSets.main.runtimeClasspath
-    }
 }
 
 license {

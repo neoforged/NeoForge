@@ -1,0 +1,42 @@
+--- a/com/mojang/blaze3d/pipeline/MainTarget.java
++++ b/com/mojang/blaze3d/pipeline/MainTarget.java
+@@ -16,7 +_,10 @@
+     static final MainTarget.Dimension DEFAULT_DIMENSIONS = new MainTarget.Dimension(854, 480);
+ 
+     public MainTarget(int p_166137_, int p_166138_) {
+-        super(true);
++        this(p_166137_, p_166138_, false);
++    }
++    public MainTarget(int p_166137_, int p_166138_, boolean enableStencil) {
++        super(true, enableStencil);
+         this.createFrameBuffer(p_166137_, p_166138_);
+     }
+ 
+@@ -37,6 +_,14 @@
+         GlStateManager._texParameter(3553, 10242, 33071);
+         GlStateManager._texParameter(3553, 10243, 33071);
+         GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthBufferId, 0);
++        if (this.useStencil) {
++            GlStateManager._glFramebufferTexture2D(
++                    org.lwjgl.opengl.GL32.GL_FRAMEBUFFER,
++                    org.lwjgl.opengl.GL32.GL_STENCIL_ATTACHMENT,
++                    org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
++                    this.depthBufferId,
++                    0);
++        }
+         GlStateManager._bindTexture(0);
+         this.viewWidth = maintarget$dimension.width;
+         this.viewHeight = maintarget$dimension.height;
+@@ -82,7 +_,11 @@
+         RenderSystem.assertOnRenderThreadOrInit();
+         GlStateManager._getError();
+         GlStateManager._bindTexture(this.depthBufferId);
+-        GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, 6402, 5126, null);
++        if (!this.useStencil) {
++            GlStateManager._texImage2D(3553, 0, 6402, p_166145_.width, p_166145_.height, 0, 6402, 5126, null);
++        } else {
++            net.neoforged.neoforge.client.ClientHooks.texImageDepthStencil(p_166145_.width, p_166145_.height);
++        }
+         return GlStateManager._getError() != 1285;
+     }
+ 

@@ -99,6 +99,8 @@ public class NeoForgeConfig {
 
         public final BooleanValue logUntranslatedConfigurationWarnings;
 
+        public final BooleanValue reducedDepthStencilFormat;
+
         Client(ModConfigSpec.Builder builder) {
             experimentalForgeLightPipelineEnabled = builder
                     .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
@@ -114,6 +116,11 @@ public class NeoForgeConfig {
                     .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")
                     .translation("neoforge.configgui.logUntranslatedConfigurationWarnings")
                     .define("logUntranslatedConfigurationWarnings", true);
+
+            reducedDepthStencilFormat = builder
+                    .comment("Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.")
+                    .translation("neoforge.configgui.reducedDepthStencilFormat")
+                    .define("reducedDepthStencilFormat", false);
         }
     }
 

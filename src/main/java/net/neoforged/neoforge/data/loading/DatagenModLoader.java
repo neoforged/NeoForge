@@ -15,7 +15,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.server.Bootstrap;
-import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.internal.RegistrationEvents;
@@ -49,8 +50,16 @@ public class DatagenModLoader extends CommonModLoader {
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
         dataGeneratorConfig = new GatherDataEvent.DataGeneratorConfig(mods, path, inputs, lookupProvider, devToolGenerators, reportsGenerator, structureValidator, flat, vanillaGenerator, assetIndex, assetsDir, existingPacks);
         setup.run();
-        ModLoader.runEventGenerator(mc -> eventGenerator.create(mc, dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mc.getModId()),
-                dataGeneratorConfig.getMods().contains(mc.getModId())), dataGeneratorConfig));
+
+        // Only fire the event for mods that have their generators enabled
+        for (ModContainer mod : ModList.get().getSortedMods()) {
+            if (dataGeneratorConfig.getMods().contains(mod.getModId())) {
+                var generator = dataGeneratorConfig.makeGenerator(p -> dataGeneratorConfig.isFlat() ? p : p.resolve(mod.getModId()));
+                var event = eventGenerator.create(mod, generator, dataGeneratorConfig);
+                mod.acceptEvent(event);
+            }
+        }
+
         dataGeneratorConfig.runAll();
     }
 }

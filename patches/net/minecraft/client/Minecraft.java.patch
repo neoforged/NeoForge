@@ -8,7 +8,7 @@
          this.demo = p_91084_.game.demo;
          this.allowsMultiplayer = !p_91084_.game.disableMultiplayer;
          this.allowsChat = !p_91084_.game.disableChat;
-@@ -483,15 +_,17 @@
+@@ -483,15 +_,18 @@
              LOGGER.error("Couldn't set icon", (Throwable)ioexception);
          }
  
@@ -18,11 +18,13 @@
          this.keyboardHandler = new KeyboardHandler(this);
 -        this.keyboardHandler.setup(this.window.getWindow());
          RenderSystem.initRenderer(this.options.glDebugVerbosity, false);
-         this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
+-        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
++        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this);
++        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear();
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
-+        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this, this.resourcePackRepository, this.resourceManager);
++        net.neoforged.neoforge.client.loading.ClientModLoader.finish(this.resourcePackRepository, this.resourceManager);
 +        //Move client bootstrap to after mod loading so that events can be fired for it.
 +        ClientBootstrap.bootstrap();
          this.resourcePackRepository.reload();
