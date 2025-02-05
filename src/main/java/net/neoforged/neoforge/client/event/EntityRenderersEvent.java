@@ -213,8 +213,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         /**
          * Registers a {@link SkullModel} for a skull block with the given {@link SkullBlock.Type}.
          *
-         * @param type          a unique skull type; an exception will be thrown later if multiple mods (including vanilla)
-         *                      register models for the same type
+         * @param type          a unique skull type; an exception will be thrown if multiple mods register models
+         *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          */
         public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation) {
@@ -224,8 +224,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         /**
          * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
          *
-         * @param type          a unique skull type; an exception will be thrown later if multiple mods (including vanilla)
-         *                      register models for the same type
+         * @param type          a unique skull type; an exception will be thrown if multiple mods register models
+         *                      for the same type or a mod tries to register a model for a vanilla type
          * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
          *                      returning the model.
