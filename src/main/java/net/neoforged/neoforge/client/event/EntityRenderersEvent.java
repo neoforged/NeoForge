@@ -5,15 +5,16 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -27,7 +28,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.SkullBlock.Type;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
@@ -195,43 +195,61 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
     }
 
     /**
-     * Fired for registering additional {@linkplain net.minecraft.client.model.SkullModelBase skull models} at the appropriate time.
+     * Fired for registering additional {@linkplain net.minecraft.client.model.SkullModelBase skull models}.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not have a result.</p>
      *
      * <p>This event is fired on the mod-specific event bus,
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
     public static class CreateSkullModels extends EntityRenderersEvent {
-        private final ImmutableMap.Builder<Type, SkullModelBase> builder;
-        private final EntityModelSet entityModelSet;
+        private final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels;
 
         @ApiStatus.Internal
-        public CreateSkullModels(ImmutableMap.Builder<Type, SkullModelBase> builder, EntityModelSet entityModelSet) {
-            this.builder = builder;
-            this.entityModelSet = entityModelSet;
+        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels) {
+            this.skullModels = skullModels;
         }
 
         /**
-         * {@return the set of entity models}
-         */
-        public EntityModelSet getEntityModelSet() {
-            return entityModelSet;
-        }
-
-        /**
-         * Registers the constructor for a skull block with the given {@link SkullBlock.Type}.
-         * These will be inserted into the maps used by the item, entity, and block model renderers at the appropriate
-         * time.
+         * Registers a {@link SkullModel} for a skull block with the given {@link SkullBlock.Type}.
          *
-         * @param type  a unique skull type; an exception will be thrown later if multiple mods (including vanilla)
-         *              register models for the same type
-         * @param model the skull model instance. A typical implementation will simply bake a model using
-         *              {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the constructor for
-         *              {@link SkullModel}.
+         * @param type          a unique skull type; an exception will be thrown if multiple mods register models
+         *                      for the same type or a mod tries to register a model for a vanilla type
+         * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
          */
-        public void registerSkullModel(SkullBlock.Type type, SkullModelBase model) {
-            builder.put(type, model);
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation) {
+            this.registerSkullModel(type, layerLocation, SkullModel::new);
+        }
+
+        /**
+         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
+         *
+         * @param type          a unique skull type; an exception will be thrown if multiple mods register models
+         *                      for the same type or a mod tries to register a model for a vanilla type
+         * @param layerLocation the key that identifies the {@link LayerDefinition} used by the model
+         * @param factory       the factory to create the skull model instance, taking in the root {@link ModelPart} and
+         *                      returning the model.
+         */
+        public void registerSkullModel(SkullBlock.Type type, ModelLayerLocation layerLocation, Function<ModelPart, SkullModelBase> factory) {
+            this.registerSkullModel(type, modelSet -> factory.apply(modelSet.bakeLayer(layerLocation)));
+        }
+
+        /**
+         * Registers the entity model for a skull block with the given {@link SkullBlock.Type}.
+         *
+         * @param type    a unique skull type; an exception will be thrown if multiple mods register models for
+         *                the same type or a mod tries to register a model for a vanilla type
+         * @param factory the factory to create the skull model instance. A typical implementation will simply bake
+         *                a model using {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the
+         *                constructor for {@link SkullModel}
+         */
+        public void registerSkullModel(SkullBlock.Type type, Function<EntityModelSet, SkullModelBase> factory) {
+            if (type instanceof SkullBlock.Types) {
+                throw new IllegalArgumentException("Cannot register skull model for vanilla skull type: " + type.getSerializedName());
+            }
+            if (skullModels.putIfAbsent(type, factory) != null) {
+                throw new IllegalArgumentException("Factory already registered for provided skull type: " + type.getSerializedName());
+            }
         }
     }
 }

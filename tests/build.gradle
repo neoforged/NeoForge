@@ -22,7 +22,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation project(path: ':neoforge', configuration: 'runtimeElements')
+    implementation(neoforgeProject)
     implementation(testframeworkProject)
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
@@ -31,10 +31,19 @@ dependencies {
 
     junitImplementation("org.assertj:assertj-core:${project.assertj_core}")
     junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
-    junitImplementation project(path: ':neoforge', configuration: 'runtimeElements')
+    junitImplementation(neoforgeProject)
     junitImplementation(testframeworkProject)
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+}
+
+// Select runtimeElements rather than universalJar from the neoforge project
+sourceSets.each {
+    configurations.named(it.runtimeClasspathConfigurationName) {
+        attributes {
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
+        }
+    }
 }
 
 junitTest {

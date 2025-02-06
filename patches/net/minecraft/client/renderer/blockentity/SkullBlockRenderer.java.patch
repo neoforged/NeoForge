@@ -1,9 +1,19 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
-@@ -115,4 +_,14 @@
+@@ -57,7 +_,7 @@
+                 case PIGLIN -> new PiglinHeadModel(p_387840_.bakeLayer(ModelLayers.PIGLIN_HEAD));
+             });
+         } else {
+-            return null;
++            return net.neoforged.neoforge.client.ClientHooks.getModdedSkullModel(p_387840_, p_388801_); // Neo: Lookup model for modded skull types
+         }
+     }
+ 
+@@ -114,5 +_,15 @@
+                 p_389624_ != null ? p_389624_ : Minecraft.getInstance().getSkinManager().getInsecureSkin(p_389483_.gameProfile()).texture()
              )
              : RenderType.entityCutoutNoCullZOffset(p_389624_ != null ? p_389624_ : SKIN_BY_TYPE.get(p_389566_));
-     }
++    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(SkullBlockEntity blockEntity) {
@@ -13,5 +23,5 @@
 +            return new net.minecraft.world.phys.AABB(pos.getX() - .75, pos.getY() - .35, pos.getZ() - .75, pos.getX() + 1.75, pos.getY() + 1.0, pos.getZ() + 1.75);
 +        }
 +        return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
-+    }
+     }
  }
