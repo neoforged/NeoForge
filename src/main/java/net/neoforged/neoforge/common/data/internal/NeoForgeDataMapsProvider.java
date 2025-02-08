@@ -24,8 +24,10 @@ import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -52,14 +54,14 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
     }
 
     @Override
-        final var biomeVillagers = builder(NeoForgeDataMaps.VILLAGER_TYPES);
-        ObfuscationReflectionHelper.<Map<ResourceKey<Biome>, VillagerType>, VillagerType>getPrivateValue(VillagerType.class, null, "BY_BIOME")
-                .forEach((biome, type) -> biomeVillagers.add(biome, new BiomeVillagerType(type), false));
-
     protected void gather() {
         final var compostables = builder(NeoForgeDataMaps.COMPOSTABLES);
         final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
         ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new Compostable(chance, villagerCompostables.contains(item.asItem())), false));
+
+        final var biomeVillagers = builder(NeoForgeDataMaps.VILLAGER_TYPES);
+        ObfuscationReflectionHelper.<Map<ResourceKey<Biome>, VillagerType>, VillagerType>getPrivateValue(VillagerType.class, null, "BY_BIOME")
+                .forEach((biome, type) -> biomeVillagers.add(biome, new BiomeVillagerType(type), false));
 
         final var fuels = builder(NeoForgeDataMaps.FURNACE_FUELS);
         AbstractFurnaceBlockEntity.buildFuels((value, time) -> value.ifLeft(item -> fuels.add(item.builtInRegistryHolder(), new FurnaceFuel(time), false))
