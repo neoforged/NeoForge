@@ -17,15 +17,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.util.thread.NamedThreadFactory;
 import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,14 +35,10 @@ public final class IOUtilities {
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING
     };
-    private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory("NeoForge-IOUtilities");
-    private static ExecutorService ioExecutor = newIOExecutor();
+
+    private static CompletableFuture<Void> saveDataTasks = CompletableFuture.completedFuture(null);
 
     private IOUtilities() {}
-
-    private static ExecutorService newIOExecutor() {
-        return Executors.newSingleThreadExecutor(THREAD_FACTORY);
-    }
 
     /**
      * Cleans up any temporary files that may have been left over from interrupted
@@ -164,20 +157,16 @@ public final class IOUtilities {
     }
 
     public static void withIOWorker(Runnable task) {
-        ioExecutor.execute(task);
+        saveDataTasks = saveDataTasks.thenRunAsync(task, Util.ioPool());
+    }
+
+    public static void clearWorkerWhenDone() {
+        withIOWorker(() -> saveDataTasks = CompletableFuture.completedFuture(null));
     }
 
     public static void waitUntilIOWorkerComplete() {
-        ExecutorService old = ioExecutor;
-        ioExecutor = newIOExecutor();
-        old.shutdown();
-        try {
-            if (!old.awaitTermination(1L, TimeUnit.HOURS)) {
-                throw new RuntimeException("Timed out waiting for IO worker to complete");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        saveDataTasks.join();
+        saveDataTasks = CompletableFuture.completedFuture(null);
     }
 
     /**
