@@ -1122,6 +1122,10 @@ public class ClientHooks {
         return RECIPE_BOOK_TYPES;
     }
 
+    public static void reloadRenderer() {
+        Minecraft.getInstance().levelRenderer.allChanged();
+    }
+
     public static Map<ResourceLocation, ResourceLocation> gatherMaterialAtlases(Map<ResourceLocation, ResourceLocation> vanillaAtlases) {
         vanillaAtlases = new HashMap<>(vanillaAtlases);
         ModLoader.postEvent(new RegisterMaterialAtlasesEvent(vanillaAtlases));
