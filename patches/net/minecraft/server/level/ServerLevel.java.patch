@@ -112,13 +112,15 @@
          this.getProfiler().pop();
  
          for (Entity entity : p_8648_.getPassengers()) {
-@@ -807,6 +_,10 @@
+@@ -807,6 +_,12 @@
              } else {
                  this.entityManager.autoSave();
              }
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.LevelEvent.Save(this));
 +            if (p_8645_) {
 +                net.neoforged.neoforge.common.IOUtilities.waitUntilIOWorkerComplete();
++            } else {
++                net.neoforged.neoforge.common.IOUtilities.clearWorkerWhenDone();
 +            }
          }
      }
