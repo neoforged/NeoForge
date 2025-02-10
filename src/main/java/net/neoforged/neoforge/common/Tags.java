@@ -394,11 +394,11 @@ public class Tags {
          *
          * <p>Drinks may provide nutrition and saturation, but are not required to do so.
          *
-         * <p>Categories of drinks, such as Coffee, Tea, or Alcoholic drinks should be placed in a sub-tag, such as
-         * {@code #c:drinks/coffee}, {@code #c:drinks/tea}, and {@code #c:drinks/alcohol}.
+         * <p>Categories of drinks, such as Coffee, Tea, or Wine should be placed in a sub-tag, such as
+         * {@code #c:drinks/coffee}, {@code #c:drinks/tea}, and {@code #c:drinks/wine}.
          *
-         * <p>Specific types of drinks, such as Lattes, Green Tea, and Beer should go in sub-sub-tags using their regular name,
-         * such as {@code #c:drinks/coffee/latte}, {@code #c:drinks/tea/green_tea}, and {@code #c:drinks/alcohol/beer}.
+         * <p>Specific types of drinks, such as Lattes, Green Tea, and Chardonnay should go in sub-sub-tags using their regular name,
+         * such as {@code #c:drinks/coffee/latte}, {@code #c:drinks/tea/green_tea}, and {@code #c:drinks/wine/chardonnay}.
          */
         public static final TagKey<Item> DRINKS = tag("drinks");
         /**
