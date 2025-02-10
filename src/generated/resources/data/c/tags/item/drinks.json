@@ -6,10 +6,6 @@
     "#c:drinks/honey",
     "#c:drinks/magic",
     "#c:drinks/magic/ominous",
-    "#c:drinks/juice",
-    "#c:drinks/juice/apple",
-    "#c:drinks/juice/beetroot",
-    "#c:drinks/juice/carrot",
-    "#c:drinks/juice/melon"
+    "#c:drinks/juice"
   ]
 }

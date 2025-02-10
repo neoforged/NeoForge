@@ -86,21 +86,14 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.DRINKS).addTags(
                 Tags.Items.DRINKS_WATER, Tags.Items.DRINKS_WATERY, Tags.Items.DRINKS_MILK,
                 Tags.Items.DRINKS_HONEY, Tags.Items.DRINKS_MAGIC, Tags.Items.DRINKS_MAGIC_OMINOUS,
-                Tags.Items.DRINKS_JUICE, Tags.Items.DRINKS_JUICE_APPLE, Tags.Items.DRINKS_JUICE_BEETROOT,
-                Tags.Items.DRINKS_JUICE_CARROT, Tags.Items.DRINKS_JUICE_MELON);
+                Tags.Items.DRINKS_JUICE);
         tag(Tags.Items.DRINKS_WATER);
         tag(Tags.Items.DRINKS_WATERY).add(Items.POTION).addTags(Tags.Items.DRINKS_WATER);
         tag(Tags.Items.DRINKS_MILK).add(Items.MILK_BUCKET);
         tag(Tags.Items.DRINKS_HONEY).add(Items.HONEY_BOTTLE);
         tag(Tags.Items.DRINKS_MAGIC).add(Items.POTION).addTags(Tags.Items.DRINKS_MAGIC_OMINOUS);
         tag(Tags.Items.DRINKS_MAGIC_OMINOUS).add(Items.OMINOUS_BOTTLE);
-        tag(Tags.Items.DRINKS_JUICE).addTags(
-                Tags.Items.DRINKS_JUICE_APPLE, Tags.Items.DRINKS_JUICE_BEETROOT, Tags.Items.DRINKS_JUICE_CARROT,
-                Tags.Items.DRINKS_JUICE_MELON);
-        tag(Tags.Items.DRINKS_JUICE_APPLE);
-        tag(Tags.Items.DRINKS_JUICE_BEETROOT);
-        tag(Tags.Items.DRINKS_JUICE_CARROT);
-        tag(Tags.Items.DRINKS_JUICE_MELON);
+        tag(Tags.Items.DRINKS_JUICE);
         addColored(Tags.Items.DYED, "{color}_banner");
         addColored(Tags.Items.DYED, "{color}_bed");
         addColored(Tags.Items.DYED, "{color}_candle");

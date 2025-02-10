@@ -422,12 +422,11 @@ public class Tags {
         public static final TagKey<Item> DRINKS_MAGIC_OMINOUS = tag("drinks/magic/ominous");
         /**
          * Plant based fruit and vegetable juices belong in this tag, for example apple juice and carrot juice.
+         *
+         * <p>If tags for specific types of juices are desired, they may go in a sub-sub-tag, using their regular name such as
+         * {@code #c:drinks/juice/apple_juice}.
          */
         public static final TagKey<Item> DRINKS_JUICE = tag("drinks/juice");
-        public static final TagKey<Item> DRINKS_JUICE_APPLE = tag("drinks/juice/apple");
-        public static final TagKey<Item> DRINKS_JUICE_BEETROOT = tag("drinks/juice/beetroot");
-        public static final TagKey<Item> DRINKS_JUICE_CARROT = tag("drinks/juice/carrot");
-        public static final TagKey<Item> DRINKS_JUICE_MELON = tag("drinks/juice/melon");
 
         /**
          * For non-empty bottles that are {@linkplain #DRINKS drinkable}.
