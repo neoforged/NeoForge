@@ -1,8 +1,0 @@
-repositories {
-    maven { url = 'https://maven.neoforged.net/releases' }
-    maven {
-        name 'Mojang'
-        url 'https://libraries.minecraft.net'
-    }
-    mavenCentral()
-}

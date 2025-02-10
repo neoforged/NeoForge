@@ -27,9 +27,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
@@ -38,10 +38,12 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.UnbakedCompositeModel;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
+import net.neoforged.neoforge.client.resources.VanillaClientListeners;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
@@ -64,7 +66,9 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
 import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -131,9 +135,16 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
-    static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
-        event.registerReloadListener(ObjLoader.INSTANCE);
-        event.registerReloadListener(AnimationLoader.INSTANCE);
+    static void onRegisterReloadListeners(AddClientReloadListenersEvent event) {
+        event.addListener(NeoForgeReloadListeners.CLIENT_MOD_LOADING, ClientModLoader::onResourceReload);
+        event.addListener(NeoForgeReloadListeners.BRANDING, BrandingControl.resourceManagerReloadListener());
+
+        // These run before vanilla reload listeners.
+        event.addDependency(NeoForgeReloadListeners.CLIENT_MOD_LOADING, NeoForgeReloadListeners.BRANDING);
+        event.addDependency(NeoForgeReloadListeners.BRANDING, VanillaClientListeners.FIRST);
+
+        event.addListener(NeoForgeReloadListeners.OBJ_LOADER, ObjLoader.INSTANCE);
+        event.addListener(NeoForgeReloadListeners.ENTITY_ANIMATIONS, AnimationLoader.INSTANCE);
     }
 
     @SubscribeEvent

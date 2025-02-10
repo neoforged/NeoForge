@@ -492,6 +492,18 @@
      }
  
      protected float getWaterSlowDown() {
+@@ -2193,8 +_,9 @@
+     public void travel(Vec3 p_21280_) {
+         if (this.isControlledByLocalInstance()) {
+             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
+-            if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+-                this.travelInFluid(p_21280_);
++            // Neo: Call (patched-in overload of) #travelInFluid for custom fluid types
++            if ((this.isInWater() || this.isInLava() || this.isInFluidType(fluidstate)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
++                this.travelInFluid(p_21280_, fluidstate);
+             } else if (this.isFallFlying()) {
+                 this.travelFallFlying();
+             } else {
 @@ -2205,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -80,7 +79,6 @@ public class DataMapLoader implements PreparableReloadListener {
     private <T, R> Map<ResourceKey<R>, T> buildDataMap(Registry<R> registry, DataMapType<R, T> attachment, List<DataMapFile<T, R>> entries) {
         record WithSource<T, R>(T attachment, Either<TagKey<R>, ResourceKey<R>> source) {}
         final Map<ResourceKey<R>, WithSource<T, R>> result = new IdentityHashMap<>();
-        final BiConsumer<Either<TagKey<R>, ResourceKey<R>>, Consumer<Holder<R>>> valueResolver = (key, cons) -> key.ifLeft(tag -> registry.getTagOrEmpty(tag).forEach(cons)).ifRight(k -> cons.accept(registry.getOrThrow(k)));
         final DataMapValueMerger<R, T> merger = attachment instanceof AdvancedDataMapType<R, T, ?> adv ? adv.merger() : DataMapValueMerger.defaultMerger();
         entries.forEach(entry -> {
             if (entry.replace()) {
@@ -90,9 +88,9 @@ public class DataMapLoader implements PreparableReloadListener {
             entry.values().forEach((tKey, value) -> {
                 if (value.isEmpty()) return;
 
-                valueResolver.accept(tKey, holder -> {
+                resolve(registry, tKey, true, holder -> {
                     final var newValue = value.get().carrier();
-                    final var key = holder.unwrapKey().orElseThrow();
+                    final var key = holder.getKey();
                     final var oldValue = result.get(key);
                     if (oldValue == null || newValue.replace()) {
                         result.put(key, new WithSource<>(newValue.value(), tKey));
@@ -102,27 +100,43 @@ public class DataMapLoader implements PreparableReloadListener {
                 });
             });
 
-            entry.removals().forEach(trRemoval -> valueResolver.accept(trRemoval.key(), holder -> {
-                if (trRemoval.remover().isPresent()) {
-                    final var key = holder.unwrapKey().orElseThrow();
-                    final var oldValue = result.get(key);
-                    if (oldValue != null) {
-                        final var newValue = trRemoval.remover().get().remove(oldValue.attachment(), registry, oldValue.source(), holder.value());
-                        if (newValue.isEmpty()) {
-                            result.remove(key);
-                        } else {
-                            result.put(key, new WithSource<>(newValue.get(), oldValue.source()));
+            for (var removal : entry.removals()) {
+                if (removal.remover().isPresent()) {
+                    var remover = removal.remover().orElseThrow();
+                    resolve(registry, removal.key(), false, holder -> {
+                        final var key = holder.getKey();
+                        final var oldValue = result.get(key);
+                        if (oldValue != null) {
+                            final var newValue = remover.remove(oldValue.attachment(), registry, oldValue.source(), holder.value());
+                            if (newValue.isEmpty()) {
+                                result.remove(key);
+                            } else {
+                                result.put(key, new WithSource<>(newValue.get(), oldValue.source()));
+                            }
                         }
-                    }
+                    });
                 } else {
-                    result.remove(holder.unwrapKey().orElseThrow());
+                    resolve(registry, removal.key(), false, holder -> result.remove(holder.getKey()));
                 }
-            }));
+            }
         });
         final Map<ResourceKey<R>, T> newMap = new IdentityHashMap<>();
         result.forEach((key, val) -> newMap.put(key, val.attachment()));
 
         return newMap;
+    }
+
+    private <R> void resolve(Registry<R> registry, Either<TagKey<R>, ResourceKey<R>> value, boolean required, Consumer<Holder<R>> consumer) {
+        if (value.left().isPresent()) {
+            registry.getTagOrEmpty(value.left().orElseThrow()).forEach(consumer);
+        } else {
+            var object = registry.get(value.right().orElseThrow());
+            if (object.isPresent()) {
+                consumer.accept(object.get());
+            } else if (required) {
+                LOGGER.error("Object with ID {} specified in data map for registry {} doesn't exist", value.right().orElseThrow().location(), registry.key().location());
+            }
+        }
     }
 
     private CompletableFuture<Map<ResourceKey<? extends Registry<?>>, LoadResult<?>>> load(ResourceManager manager, Executor executor, ProfilerFiller profiler) {
