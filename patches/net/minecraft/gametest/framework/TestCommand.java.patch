@@ -1,8 +1,11 @@
 --- a/net/minecraft/gametest/framework/TestCommand.java
 +++ b/net/minecraft/gametest/framework/TestCommand.java
-@@ -363,7 +_,7 @@
+@@ -361,9 +_,9 @@
+                 say(serverlevel, "Structure block entity could not be found", ChatFormatting.RED);
+                 return 0;
              } else {
-                 BlockPos blockpos1 = blockpos.subtract(optional.get());
+-                BlockPos blockpos1 = blockpos.subtract(optional.get());
++                BlockPos blockpos1 = blockpos.subtract(optional.get()).subtract(structureblockentity.getStructurePos()); // Neo: Match relative position to GameTestHelper#relativePos
                  String s = blockpos1.getX() + ", " + blockpos1.getY() + ", " + blockpos1.getZ();
 -                String s1 = structureblockentity.getMetaData();
 +                String s1 = structureblockentity.getMetaData().isBlank() ? structureblockentity.getStructureName() : structureblockentity.getMetaData(); // Neo: use the metadata for the structure name

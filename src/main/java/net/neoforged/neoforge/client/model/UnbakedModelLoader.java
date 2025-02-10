@@ -11,17 +11,17 @@ import com.google.gson.JsonParseException;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
 /**
  * A loader for custom {@linkplain UnbakedModel unbaked models}.
  * <p>
  * If you do any caching, you should implement {@link ResourceManagerReloadListener} and register it with
- * {@link RegisterClientReloadListenersEvent}.
+ * {@link AddClientReloadListenersEvent}.
  *
  * @see ModelEvent.RegisterLoaders
- * @see RegisterClientReloadListenersEvent
+ * @see AddClientReloadListenersEvent
  */
 public interface UnbakedModelLoader<T extends UnbakedModel> {
     /**

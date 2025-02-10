@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -27,6 +28,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -43,11 +45,19 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     }
 
     /**
+     * {@return the current connection, used to shorten method calls and hide the nullability warnings}
+     */
+    private ClientPacketListener connection() {
+        return Minecraft.getInstance().getConnection();
+    }
+
+    /**
      * Sends a success message without attempting to get the server side list of admins
      */
     @Override
     public void sendSuccess(Supplier<Component> message, boolean sendToAdmins) {
-        Minecraft.getInstance().gui.getChat().addMessage(message.get());
+        //Don't send the message to admins, as that requires querying the server for the list of admins, and would cause a NPE
+        super.sendSuccess(message, false);
     }
 
     /**
@@ -55,7 +65,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public Collection<String> getAllTeams() {
-        return Minecraft.getInstance().level.getScoreboard().getTeamNames();
+        return getScoreboard().getTeamNames();
     }
 
     /**
@@ -63,20 +73,23 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public Collection<String> getOnlinePlayerNames() {
-        return Minecraft.getInstance().getConnection().getOnlinePlayers().stream().map((player) -> player.getProfile().getName()).collect(Collectors.toList());
+        return connection().getOnlinePlayers().stream().map(player -> player.getProfile().getName()).collect(Collectors.toList());
     }
 
     @Override
     public CompletableFuture<Suggestions> suggestRegistryElements(
-            ResourceKey<? extends Registry<?>> p_212330_,
-            SharedSuggestionProvider.ElementSuggestionType p_212331_,
-            SuggestionsBuilder p_212332_,
-            CommandContext<?> p_212333_) {
-        // TODO 1.21.2: Not sure what to do here. Letting super get called will cause an NPE on this.server.
-        if (p_212330_ == Registries.RECIPE || p_212330_ == Registries.ADVANCEMENT) {
+            ResourceKey<? extends Registry<?>> registry,
+            SharedSuggestionProvider.ElementSuggestionType suggestionType,
+            SuggestionsBuilder suggestionsBuilder,
+            CommandContext<?> context) {
+        if (registry == Registries.RECIPE) {
+            // TODO 1.21.2: Not sure what to do here as the client doesn't receive recipe names. Letting super get called will cause an NPE on this.server.
             return Suggestions.empty();
+        } else if (registry == Registries.ADVANCEMENT) {
+            //Only suggest from advancements that are visible to the player
+            return SharedSuggestionProvider.suggestResource(connection().getAdvancements().getTree().nodes().stream().map(node -> node.holder().id()), suggestionsBuilder);
         }
-        return super.suggestRegistryElements(p_212330_, p_212331_, p_212332_, p_212333_);
+        return super.suggestRegistryElements(registry, suggestionType, suggestionsBuilder, context);
     }
 
     /**
@@ -84,7 +97,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public Set<ResourceKey<Level>> levels() {
-        return Minecraft.getInstance().getConnection().levels();
+        return connection().levels();
     }
 
     /**
@@ -92,7 +105,15 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public RegistryAccess registryAccess() {
-        return Minecraft.getInstance().getConnection().registryAccess();
+        return connection().registryAccess();
+    }
+
+    /**
+     * {@return the {@link FeatureFlagSet} from the client side}
+     */
+    @Override
+    public FeatureFlagSet enabledFeatures() {
+        return connection().enabledFeatures();
     }
 
     /**
@@ -100,7 +121,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public Scoreboard getScoreboard() {
-        return Minecraft.getInstance().level.getScoreboard();
+        return connection().scoreboard();
     }
 
     /**
@@ -109,7 +130,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     @Override
     @Nullable
     public AdvancementHolder getAdvancement(ResourceLocation id) {
-        return Minecraft.getInstance().getConnection().getAdvancements().get(id);
+        return connection().getAdvancements().get(id);
     }
 
     /**
@@ -117,7 +138,7 @@ public class ClientCommandSourceStack extends CommandSourceStack {
      */
     @Override
     public Level getUnsidedLevel() {
-        return Minecraft.getInstance().level;
+        return connection().getLevel();
     }
 
     /**

@@ -11,6 +11,7 @@ import com.mojang.math.Axis;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -185,6 +186,50 @@ public class ClientEventTests {
                 }
                 poseStack.popPose();
                 test.pass();
+            });
+        });
+    }
+
+    @TestHolder(description = { "Tests if rendering custom geometry on visible chunks works", "When the message \"gold block\" is sent in chat, gold blocks should render at the origin of every visible section with blocks" })
+    static void renderLevelStageWithSectionData(final DynamicTest test) {
+        test.whenEnabled(listeners -> {
+            listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
+                if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
+                    var player = Minecraft.getInstance().player;
+                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent event) -> {
+                        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+                            var buffer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(Sheets.solidBlockSheet());
+                            var randomSource = new SingleThreadedRandomSource(0);
+                            var state = Blocks.GOLD_BLOCK.defaultBlockState();
+                            var stack = event.getPoseStack();
+                            var camera = event.getCamera().getPosition();
+                            event.getRenderableSections().forEach(section -> {
+                                if (section.isEmpty()) {
+                                    return;
+                                }
+
+                                stack.pushPose();
+                                stack.translate(
+                                        section.getOrigin().getX() - camera.x,
+                                        section.getOrigin().getY() - camera.y,
+                                        section.getOrigin().getZ() - camera.z);
+                                Minecraft.getInstance().getBlockRenderer().renderBatched(
+                                        state,
+                                        section.getOrigin(),
+                                        Minecraft.getInstance().level,
+                                        stack,
+                                        buffer,
+                                        false,
+                                        randomSource,
+                                        ModelData.EMPTY,
+                                        RenderType.solid());
+                                stack.popPose();
+
+                                test.pass();
+                            });
+                        }
+                    });
+                }
             });
         });
     }

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.entity.vehicle;
 
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -13,7 +14,6 @@ import net.minecraft.world.entity.vehicle.ChestBoat;
 import net.minecraft.world.entity.vehicle.ChestRaft;
 import net.minecraft.world.entity.vehicle.Raft;
 import net.minecraft.world.item.BoatItem;
-import net.minecraft.world.item.Item;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -32,10 +32,10 @@ public class CustomBoatTest {
     @EmptyTemplate
     @TestHolder(description = "Tests that custom boat types work")
     static void customBoatType(final DynamicTest test, final RegistrationHelper reg) {
-        Supplier<EntityType<Boat>> paperBoat = reg.entityTypes().registerType("paper_boat", () -> EntityType.Builder.<Boat>of((type, level) -> new Boat(type, level, (Supplier<Item>) () -> paperBoatItem.get()), MobCategory.MISC));
-        Supplier<EntityType<ChestBoat>> paperChestBoat = reg.entityTypes().registerType("paper_chest_boat", () -> EntityType.Builder.<ChestBoat>of((type, level) -> new ChestBoat(type, level, (Supplier<Item>) () -> paperChestBoatItem.get()), MobCategory.MISC));
-        Supplier<EntityType<Raft>> paperRaft = reg.entityTypes().registerType("paper_raft", () -> EntityType.Builder.<Raft>of((type, level) -> new Raft(type, level, (Supplier<Item>) () -> paperRaftItem.get()), MobCategory.MISC));
-        Supplier<EntityType<ChestRaft>> paperChestRaft = reg.entityTypes().registerType("paper_chest_raft", () -> EntityType.Builder.<ChestRaft>of((type, level) -> new ChestRaft(type, level, (Supplier<Item>) () -> paperChestRaftItem.get()), MobCategory.MISC));
+        Supplier<EntityType<Boat>> paperBoat = reg.entityTypes().registerEntityType("paper_boat", (type, level) -> new Boat(type, level, () -> paperBoatItem.get()), MobCategory.MISC, UnaryOperator.identity());
+        Supplier<EntityType<ChestBoat>> paperChestBoat = reg.entityTypes().registerEntityType("paper_chest_boat", (type, level) -> new ChestBoat(type, level, () -> paperChestBoatItem.get()), MobCategory.MISC, UnaryOperator.identity());
+        Supplier<EntityType<Raft>> paperRaft = reg.entityTypes().registerEntityType("paper_raft", (type, level) -> new Raft(type, level, () -> paperRaftItem.get()), MobCategory.MISC, UnaryOperator.identity());
+        Supplier<EntityType<ChestRaft>> paperChestRaft = reg.entityTypes().registerEntityType("paper_chest_raft", (type, level) -> new ChestRaft(type, level, () -> paperChestRaftItem.get()), MobCategory.MISC, UnaryOperator.identity());
 
         paperBoatItem = reg.items().registerItem("paper_boat", props -> new BoatItem(paperBoat.get(), props))
                 .withLang("Paper Boat");
