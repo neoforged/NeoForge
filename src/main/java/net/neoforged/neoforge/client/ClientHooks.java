@@ -53,6 +53,8 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.SkullModelBase;
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -124,6 +126,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -136,6 +139,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
@@ -154,7 +158,6 @@ import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
@@ -695,6 +698,13 @@ public class ClientHooks {
         layerDefinitions.forEach((k, v) -> builder.put(k, v.get()));
     }
 
+    private static final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModelsByType = new HashMap<>();
+
+    @Nullable
+    public static SkullModelBase getModdedSkullModel(EntityModelSet modelSet, SkullBlock.Type type) {
+        return skullModelsByType.getOrDefault(type, set -> null).apply(modelSet);
+    }
+
     private static final ResourceLocation ICON_SHEET = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "textures/gui/icons.png");
 
     public static void firePlayerLogin(MultiPlayerGameMode pc, LocalPlayer player, Connection networkManager) {
@@ -980,8 +990,13 @@ public class ClientHooks {
         GameTestHooks.registerGametests();
         registerSpriteSourceTypes();
         MenuScreens.init();
-        ModLoader.postEvent(new RegisterClientReloadListenersEvent(resourceManager));
+
+        var rlEvent = new AddClientReloadListenersEvent(resourceManager);
+        ModLoader.postEvent(rlEvent);
+        resourceManager.updateListenersFrom(rlEvent);
+
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
+        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();

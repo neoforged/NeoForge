@@ -179,7 +179,7 @@
          this.deltaTracker.updatePauseState(this.pause);
          this.deltaTracker.updateFrozenState(!this.isLevelRunningNormally());
          long l = Util.getNanos();
-@@ -1351,10 +_,12 @@
+@@ -1351,10 +_,13 @@
          this.window.setGuiScale((double)i);
          if (this.screen != null) {
              this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
@@ -187,6 +187,7 @@
          }
  
          RenderTarget rendertarget = this.getMainRenderTarget();
++        if (rendertarget != null)
          rendertarget.resize(this.window.getWidth(), this.window.getHeight());
 +        if (this.gameRenderer != null)
          this.gameRenderer.resize(this.window.getWidth(), this.window.getHeight());
@@ -324,7 +325,7 @@
          this.level = p_91157_;
          this.updateLevelInEngines(p_91157_);
          if (!this.isLocalServer) {
-@@ -2030,6 +_,7 @@
+@@ -2030,13 +_,16 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -332,7 +333,8 @@
          this.gameMode = null;
          this.narrator.clear();
          this.clientLevelTeardownInProgress = true;
-@@ -2037,6 +_,7 @@
+ 
++        var shouldRevertRegistriesToFrozen = this.getConnection() != null && this.getConnection().getConnection() != null; // Neo: Track whether to revert registries after disconnect
          try {
              this.updateScreenAndTick(p_320248_);
              if (this.level != null) {
@@ -340,6 +342,14 @@
                  if (integratedserver != null) {
                      ProfilerFiller profilerfiller = Profiler.get();
                      profilerfiller.push("waitForServer");
+@@ -2060,6 +_,7 @@
+         }
+ 
+         SkullBlockEntity.clear();
++        if(shouldRevertRegistriesToFrozen) net.neoforged.neoforge.registries.RegistryManager.revertToFrozen(); // Neo: Revert registries to frozen on disconnect
+     }
+ 
+     public void clearDownloadedResourcePacks() {
 @@ -2197,6 +_,7 @@
  
      private void pickBlock() {

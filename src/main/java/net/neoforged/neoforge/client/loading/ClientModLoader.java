@@ -28,7 +28,6 @@ import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -66,12 +65,15 @@ public class ClientModLoader extends CommonModLoader {
         if (error == null) {
             ResourcePackLoader.populatePackRepository(defaultResourcePacks, PackType.CLIENT_RESOURCES, false);
             DataPackConfig.DEFAULT.addModPacks(ResourcePackLoader.getPackNames(PackType.SERVER_DATA));
-            mcResourceManager.registerReloadListener(ClientModLoader::onResourceReload);
-            mcResourceManager.registerReloadListener(BrandingControl.resourceManagerReloadListener());
         }
     }
 
-    private static CompletableFuture<Void> onResourceReload(final PreparableReloadListener.PreparationBarrier stage, final ResourceManager resourceManager, final Executor asyncExecutor, final Executor syncExecutor) {
+    /**
+     * This method can be bound as a method reference to {@link PreparableReloadListener}.
+     * <p>
+     * It is used as the entrypoint for client mod loading, which starts when {@link Minecraft} triggers the first resource reload.
+     */
+    public static CompletableFuture<Void> onResourceReload(final PreparableReloadListener.PreparationBarrier stage, final ResourceManager resourceManager, final Executor asyncExecutor, final Executor syncExecutor) {
         return CompletableFuture.runAsync(() -> startModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor())
                 .thenCompose(stage::wait)
                 .thenRunAsync(() -> finishModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor());
