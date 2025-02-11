@@ -217,7 +217,6 @@ public final class AttachmentType<T> {
                 }
 
                 private RuntimeException buildException(final String operation, final String error) {
-                    // TODO: Maybe find a way to let the user know *which* attachment has exploded?
                     return new IllegalStateException("Unable to " + operation + " attachment due to an internal codec error: " + error);
                 }
             });
