@@ -82,7 +82,8 @@ public abstract class DataMapProvider implements DataProvider {
     /**
      * Generate data map entries.
      */
-    protected abstract void gather();
+    @Deprecated(forRemoval = true)
+    protected void gather() {}
 
     /**
      * Generate data map entries.
