@@ -160,10 +160,6 @@ public final class IOUtilities {
         saveDataTasks = saveDataTasks.thenRunAsync(task, Util.ioPool());
     }
 
-    public static void clearWorkerWhenDone() {
-        withIOWorker(() -> saveDataTasks = CompletableFuture.completedFuture(null));
-    }
-
     public static void waitUntilIOWorkerComplete() {
         saveDataTasks.join();
         saveDataTasks = CompletableFuture.completedFuture(null);
