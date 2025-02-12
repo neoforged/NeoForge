@@ -7,6 +7,7 @@ package net.neoforged.neoforge.attachment;
 
 import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -198,17 +199,25 @@ public final class AttachmentType<T> {
          */
         public Builder<T> serialize(Codec<T> codec, Predicate<? super T> shouldSerialize) {
             Objects.requireNonNull(codec);
-            // TODO: better error handling
             return serialize(new IAttachmentSerializer<>() {
                 @Override
                 public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
-                    return codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag).result().get();
+                    final DataResult<T> parsingResult = codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag);
+                    return parsingResult.getOrThrow(msg -> buildException("read", msg));
                 }
 
                 @Nullable
                 @Override
                 public Tag write(T attachment, HolderLookup.Provider provider) {
-                    return shouldSerialize.test(attachment) ? codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment).result().get() : null;
+                    if (!shouldSerialize.test(attachment)) {
+                        return null;
+                    }
+                    final DataResult<Tag> encodingResult = codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment);
+                    return encodingResult.getOrThrow(msg -> buildException("write", msg));
+                }
+
+                private RuntimeException buildException(final String operation, final String error) {
+                    return new IllegalStateException("Unable to " + operation + " attachment due to an internal codec error: " + error);
                 }
             });
         }
