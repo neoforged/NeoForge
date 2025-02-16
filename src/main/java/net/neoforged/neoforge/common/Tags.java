@@ -436,6 +436,9 @@ public class Tags {
         public static final TagKey<Item> DYES_ORANGE = DyeColor.ORANGE.getTag();
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
 
+        /**
+         * For eggs to use for culinary purposes in recipes such as baking a cake.
+         */
         public static final TagKey<Item> EGGS = tag("eggs");
         public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");
