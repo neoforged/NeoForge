@@ -1,0 +1,10 @@
+--- a/net/minecraft/util/worldupdate/WorldUpgrader.java
++++ b/net/minecraft/util/worldupdate/WorldUpgrader.java
+@@ -111,6 +_,7 @@
+         LOGGER.info("Upgrading blocks");
+         new WorldUpgrader.ChunkUpgrader().upgrade();
+         this.overworldDataStorage.save();
++        net.neoforged.neoforge.common.IOUtilities.waitUntilIOWorkerComplete();
+         i = Util.getMillis() - i;
+         LOGGER.info("World optimizaton finished after {} seconds", i / 1000L);
+         this.finished = true;
