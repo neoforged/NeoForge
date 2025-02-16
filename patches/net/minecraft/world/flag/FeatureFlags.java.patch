@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/flag/FeatureFlags.java
++++ b/net/minecraft/world/flag/FeatureFlags.java
+@@ -33,6 +_,7 @@
+         VANILLA = featureflagregistry$builder.createVanilla("vanilla");
+         BUNDLE = featureflagregistry$builder.createVanilla("bundle");
+         TRADE_REBALANCE = featureflagregistry$builder.createVanilla("trade_rebalance");
++        net.neoforged.neoforge.common.util.flag.FeatureFlagLoader.loadModdedFlags(featureflagregistry$builder);
+         REGISTRY = featureflagregistry$builder.build();
+         CODEC = REGISTRY.codec();
+         VANILLA_SET = FeatureFlagSet.of(VANILLA);

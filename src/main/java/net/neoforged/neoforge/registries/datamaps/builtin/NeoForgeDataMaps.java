@@ -11,10 +11,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
@@ -129,6 +131,19 @@ public class NeoForgeDataMaps {
             id("vibration_frequencies"), Registries.GAME_EVENT, VibrationFrequency.CODEC).synced(VibrationFrequency.FREQUENCY_CODEC, false).build();
 
     /**
+     * The {@linkplain Biome} data map that replaces {@link VillagerType#BY_BIOME}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/worldgen/biome/villager_types.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code villager_type}, villager type ID - the type of the villagers present in the biome</li>
+     * </ul>
+     *
+     * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<Biome, BiomeVillagerType> VILLAGER_TYPES = DataMapType.builder(
+            id("villager_types"), Registries.BIOME, BiomeVillagerType.CODEC).synced(BiomeVillagerType.TYPE_CODEC, false).build();
+
+    /**
      * The {@linkplain Block} data map that replaces {@link HoneycombItem#WAXABLES}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/waxables.json}, and the values are objects with 1 field:
@@ -154,6 +169,7 @@ public class NeoForgeDataMaps {
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
         event.register(VIBRATION_FREQUENCIES);
+        event.register(VILLAGER_TYPES);
         event.register(WAXABLES);
     }
 }

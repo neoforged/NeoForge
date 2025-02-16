@@ -50,7 +50,7 @@
      }
  
      @Override
-@@ -354,6 +_,7 @@
+@@ -354,9 +_,12 @@
  
          this.renderBlurredBackground(p_294317_);
          this.renderMenuBackground(p_283688_);
@@ -58,6 +58,11 @@
      }
  
      protected void renderBlurredBackground(float p_330683_) {
++        // Neo: fix blur effect rendered at high z with depth test breaking subsequent rendering of screen elements (https://github.com/neoforged/NeoForge/issues/1504)
++        RenderSystem.disableDepthTest();
+         this.minecraft.gameRenderer.processBlurEffect(p_330683_);
+         this.minecraft.getMainRenderTarget().bindWrite(false);
+     }
 @@ -467,6 +_,10 @@
      public void onFilesDrop(List<Path> p_96591_) {
      }

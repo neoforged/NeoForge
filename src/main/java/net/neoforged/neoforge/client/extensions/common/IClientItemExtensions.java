@@ -7,8 +7,10 @@ package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
@@ -144,17 +146,24 @@ public interface IClientItemExtensions {
     default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
+     * @deprecated Switch to {@link IClientItemExtensions#renderHelmetOverlay(ItemStack, Player, GuiGraphics, DeltaTracker)}
+     */
+    @Deprecated(forRemoval = true)
+    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick) {}
+
+    /**
      * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
      * <p>
      * This is where pumpkins would render their overlay.
      *
-     * @param stack       The item stack
-     * @param player      The player entity
-     * @param width       The viewport width
-     * @param height      Viewport height
-     * @param partialTick Partial tick time, useful for interpolation
+     * @param stack        The item stack
+     * @param player       The player entity
+     * @param guiGraphics  The gui graphics
+     * @param deltaTracker The delta tracker
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick) {}
+    default void renderHelmetOverlay(ItemStack stack, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        renderHelmetOverlay(stack, player, guiGraphics.guiWidth(), guiGraphics.guiHeight(), deltaTracker.getGameTimeDeltaPartialTick(true));
+    }
 
     /**
      * Queries this item's renderer.

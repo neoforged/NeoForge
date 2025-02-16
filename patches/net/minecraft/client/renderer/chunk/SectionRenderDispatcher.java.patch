@@ -36,7 +36,14 @@
              }
  
              @Override
-@@ -552,7 +_,7 @@
+@@ -547,12 +_,14 @@
+                     RenderChunkRegion renderchunkregion = this.region;
+                     this.region = null;
+                     if (renderchunkregion == null) {
++                        // Neo: Fix MC-279596 (global block entities not being updated for empty sections)
++                        RenderSection.this.updateGlobalBlockEntities(Set.of());
+                         RenderSection.this.setCompiled(SectionRenderDispatcher.CompiledSection.EMPTY);
+                         return CompletableFuture.completedFuture(SectionRenderDispatcher.SectionTaskResult.SUCCESSFUL);
                      } else {
                          SectionPos sectionpos = SectionPos.of(RenderSection.this.origin);
                          SectionCompiler.Results sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler

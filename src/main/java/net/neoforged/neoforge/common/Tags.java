@@ -35,8 +35,28 @@ public class Tags {
          * This is patched into the following method: {@link net.minecraft.world.entity.monster.EnderMan.EndermanLeaveBlockGoal#canPlaceBlock(Level, BlockPos, BlockState, BlockState, BlockState, BlockPos)}
          */
         public static final TagKey<Block> ENDERMAN_PLACE_ON_BLACKLIST = neoforgeTag("enderman_place_on_blacklist");
+
+        /**
+         * For denoting blocks that need tools that are Wood or higher to mine.
+         * By default, this is not added to any Minecraft tag since Wood is in the lowest "tier".
+         */
         public static final TagKey<Block> NEEDS_WOOD_TOOL = neoforgeTag("needs_wood_tool");
+
+        /**
+         * For denoting blocks that need tools that are Gold or higher to mine.
+         * By default, this is not added to any Minecraft tag since Gold is in the lowest "tier".
+         */
         public static final TagKey<Block> NEEDS_GOLD_TOOL = neoforgeTag("needs_gold_tool");
+
+        /**
+         * For denoting blocks that need tools that are Netherite or higher to mine.
+         * Blocks in this tag gets added to the following Minecraft tags:
+         * {@link BlockTags#INCORRECT_FOR_WOODEN_TOOL}
+         * {@link BlockTags#INCORRECT_FOR_STONE_TOOL}
+         * {@link BlockTags#INCORRECT_FOR_IRON_TOOL}
+         * {@link BlockTags#INCORRECT_FOR_GOLD_TOOL}
+         * {@link BlockTags#INCORRECT_FOR_DIAMOND_TOOL}
+         */
         public static final TagKey<Block> NEEDS_NETHERITE_TOOL = neoforgeTag("needs_netherite_tool");
 
         // `c` tags for common conventions
@@ -758,6 +778,14 @@ public class Tags {
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
+        /**
+         * A tag containing all existing wrenches. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_WRENCH = tag("tools/wrench");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
          * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.

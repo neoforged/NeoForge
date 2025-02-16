@@ -8,7 +8,8 @@
     "minecraft:polished_andesite",
     "#minecraft:beehives",
     "#minecraft:banners",
-    "#minecraft:beds"
+    "#minecraft:beds",
+    "minecraft:dacite"
   ],
   "values": []
 }

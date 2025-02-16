@@ -62,7 +62,7 @@
                                      TagBuilder tagbuilder = p_323138_.getValue();
                                      List<TagEntry> list = tagbuilder.build();
 -                                    List<TagEntry> list1 = list.stream().filter(p_274771_ -> !p_274771_.verifyIfPresent(predicate, predicate1)).toList();
-+                                    List<TagEntry> list1 = java.util.stream.Stream.concat(list.stream(), tagbuilder.getRemoveEntries())
++                                    List<TagEntry> list1 = list.stream()
 +                                              .filter((p_274771_) -> !p_274771_.verifyIfPresent(predicate, predicate1))
 +                                              .filter(this::missing)
 +                                              .toList();

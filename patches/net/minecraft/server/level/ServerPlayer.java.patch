@@ -323,12 +323,3 @@
      }
  
      public boolean allowsListing() {
-@@ -1958,7 +_,7 @@
-         this.awardStat(Stats.ITEM_BROKEN.get(p_348565_));
-     }
- 
--    static record RespawnPosAngle(Vec3 position, float yaw) {
-+    public static record RespawnPosAngle(Vec3 position, float yaw) {
-         public static ServerPlayer.RespawnPosAngle of(Vec3 p_348670_, BlockPos p_348504_) {
-             return new ServerPlayer.RespawnPosAngle(p_348670_, calculateLookAtYaw(p_348670_, p_348504_));
-         }

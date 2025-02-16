@@ -49,7 +49,6 @@ import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.mixins.MappedRegistryAccessor;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
-import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -123,7 +122,6 @@ public class ServerLifecycleHooks {
     }
 
     public static void handleServerStopped(final MinecraftServer server) {
-        if (!server.isDedicatedServer()) RegistryManager.revertToFrozen();
         NeoForge.EVENT_BUS.post(new ServerStoppedEvent(server));
         currentServer = null;
         LogicalSidedProvider.setServer(null);

@@ -101,6 +101,15 @@
          RenderSystem.disableDepthTest();
      }
  
+@@ -220,6 +_,8 @@
+                 ItemStack itemstack = this.minecraft.player.getInventory().getArmor(3);
+                 if (itemstack.is(Blocks.CARVED_PUMPKIN.asItem())) {
+                     this.renderTextureOverlay(p_316735_, PUMPKIN_BLUR_LOCATION, 1.0F);
++                } else {
++                    net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).renderHelmetOverlay(itemstack, this.minecraft.player, p_316735_, p_348538_);
+                 }
+             }
+         }
 @@ -262,8 +_,12 @@
              }
  
