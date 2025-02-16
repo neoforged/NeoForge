@@ -281,11 +281,20 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
     }
 
+    /**
+     * @deprecated Use {@linkplain #dispatchRenderStage(RenderLevelStageEvent.Stage, Level, LevelRenderer, PoseStack, Matrix4f, Matrix4f, int, Camera, Frustum)} instead, passing in a level.
+     */
+    @Deprecated
     public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
+        var mc = Minecraft.getInstance();
+        dispatchRenderStage(stage, mc.level, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
+    }
+
+    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
         var profiler = Profiler.get();
         profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, level, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
         profiler.pop();
     }
 

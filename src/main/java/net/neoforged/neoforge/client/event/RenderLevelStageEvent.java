@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -38,6 +40,7 @@ import org.joml.Matrix4f;
  */
 public class RenderLevelStageEvent extends Event {
     private final Stage stage;
+    private final Level level;
     private final LevelRenderer levelRenderer;
     private final PoseStack poseStack;
     private final Matrix4f modelViewMatrix;
@@ -48,8 +51,14 @@ public class RenderLevelStageEvent extends Event {
     private final Frustum frustum;
     private final Iterable<? extends IRenderableSection> renderableSections;
 
+    @Deprecated(forRemoval = true)
     public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+        this(stage, Minecraft.getInstance().level, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, partialTick, camera, frustum, renderableSections);
+    }
+
+    public RenderLevelStageEvent(Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
         this.stage = stage;
+        this.level = level;
         this.levelRenderer = levelRenderer;
         this.poseStack = poseStack != null ? poseStack : new PoseStack();
         this.modelViewMatrix = modelViewMatrix;
@@ -67,6 +76,13 @@ public class RenderLevelStageEvent extends Event {
      */
     public Stage getStage() {
         return stage;
+    }
+
+    /**
+     * {@return the current {@linkplain Level level} that is being rendered.}
+     */
+    public Level getLevel() {
+        return level;
     }
 
     /**
