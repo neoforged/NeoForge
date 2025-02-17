@@ -281,15 +281,6 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
     }
 
-    /**
-     * @deprecated Use {@linkplain #dispatchRenderStage(RenderLevelStageEvent.Stage, Level, LevelRenderer, PoseStack, Matrix4f, Matrix4f, int, Camera, Frustum)} instead, passing in a level.
-     */
-    @Deprecated
-    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
-        var mc = Minecraft.getInstance();
-        dispatchRenderStage(stage, mc.level, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
-    }
-
     public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
         var profiler = Profiler.get();
@@ -298,10 +289,10 @@ public class ClientHooks {
         profiler.pop();
     }
 
-    public static void dispatchRenderStage(RenderType renderType, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
+    public static void dispatchRenderStage(RenderType renderType, Level level, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
         RenderLevelStageEvent.Stage stage = RenderLevelStageEvent.Stage.fromRenderType(renderType);
         if (stage != null)
-            dispatchRenderStage(stage, levelRenderer, null, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
+            dispatchRenderStage(stage, level, levelRenderer, null, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
     }
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {

@@ -203,7 +203,7 @@
              compiledshaderprogram.clear();
              VertexBuffer.unbind();
              zone.close();
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(p_294513_, this, p_294782_, p_324517_, this.ticks, this.minecraft.gameRenderer.getMainCamera(), this.getFrustum());
++            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(p_294513_, level, this, p_294782_, p_324517_, this.ticks, this.minecraft.gameRenderer.getMainCamera(), this.getFrustum());
              p_294513_.clearRenderState();
          }
      }

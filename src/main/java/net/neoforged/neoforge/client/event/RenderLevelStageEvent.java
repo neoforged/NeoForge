@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -50,11 +49,6 @@ public class RenderLevelStageEvent extends Event {
     private final Camera camera;
     private final Frustum frustum;
     private final Iterable<? extends IRenderableSection> renderableSections;
-
-    @Deprecated(forRemoval = true)
-    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
-        this(stage, Minecraft.getInstance().level, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, partialTick, camera, frustum, renderableSections);
-    }
 
     public RenderLevelStageEvent(Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
         this.stage = stage;
