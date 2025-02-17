@@ -394,11 +394,8 @@ public class Tags {
          *
          * <p>Drinks may provide nutrition and saturation, but are not required to do so.
          *
-         * <p>Categories of drinks, such as Coffee, Tea, or Wine should be placed in a sub-tag, such as
-         * {@code #c:drinks/coffee}, {@code #c:drinks/tea}, and {@code #c:drinks/wine}.
-         *
-         * <p>Specific types of drinks, such as Lattes, Green Tea, and Chardonnay should go in sub-sub-tags using their regular name,
-         * such as {@code #c:drinks/coffee/latte}, {@code #c:drinks/tea/green_tea}, and {@code #c:drinks/wine/chardonnay}.
+         * <p>More specific types of drinks, such as Water, Milk, or Juice should be placed in a sub-tag, such as
+         * {@code #c:drinks/water}, {@code #c:drinks/milk}, and {@code #c:drinks/juice}.
          */
         public static final TagKey<Item> DRINKS = tag("drinks");
         /**
@@ -419,12 +416,12 @@ public class Tags {
         /**
          * For drinks that always grant the {@linkplain net.minecraft.world.effect.MobEffects#BAD_OMEN Bad Omen} effect.
          */
-        public static final TagKey<Item> DRINKS_MAGIC_OMINOUS = tag("drinks/magic/ominous");
+        public static final TagKey<Item> DRINKS_OMINOUS = tag("drinks/ominous");
         /**
          * Plant based fruit and vegetable juices belong in this tag, for example apple juice and carrot juice.
          *
-         * <p>If tags for specific types of juices are desired, they may go in a sub-sub-tag, using their regular name such as
-         * {@code #c:drinks/juice/apple_juice}.
+         * <p>If tags for specific types of juices are desired, they may go in a sub-tag, using their regular name such as
+         * {@code #c:drinks/apple_juice}.
          */
         public static final TagKey<Item> DRINKS_JUICE = tag("drinks/juice");
 
