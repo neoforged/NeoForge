@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/decoration/ArmorStand.java
++++ b/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -75,7 +_,7 @@
+     public static final EntityDataAccessor<Rotations> DATA_LEFT_LEG_POSE = SynchedEntityData.defineId(ArmorStand.class, EntityDataSerializers.ROTATIONS);
+     public static final EntityDataAccessor<Rotations> DATA_RIGHT_LEG_POSE = SynchedEntityData.defineId(ArmorStand.class, EntityDataSerializers.ROTATIONS);
+     private static final Predicate<Entity> RIDABLE_MINECARTS = p_373856_ -> {
+-        if (p_373856_ instanceof AbstractMinecart abstractminecart && abstractminecart.isRideable()) {
++        if (p_373856_ instanceof AbstractMinecart abstractminecart && abstractminecart.canBeRidden()) {
+             return true;
+         }
+ 

@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/entity/vehicle/NewMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/NewMinecartBehavior.java
+@@ -50,7 +_,7 @@
+             BlockPos blockpos = this.minecart.getCurrentBlockPosOrRailBelow();
+             BlockState $$4 = this.level().getBlockState(blockpos);
+             if (this.minecart.isFirstTick()) {
+-                this.minecart.setOnRails(BaseRailBlock.isRail($$4));
++                this.minecart.setOnRails(this.minecart.canUseRail() && BaseRailBlock.isRail($$4));
+                 this.adjustToRails(blockpos, $$4, true);
+             }
+ 
+@@ -58,7 +_,7 @@
+             this.minecart.moveAlongTrack(serverlevel);
+         } else {
+             this.lerpClientPositionAndRotation();
+-            boolean flag = BaseRailBlock.isRail(this.level().getBlockState(this.minecart.getCurrentBlockPosOrRailBelow()));
++            boolean flag = this.minecart.canUseRail() && BaseRailBlock.isRail(this.level().getBlockState(this.minecart.getCurrentBlockPosOrRailBelow()));
+             this.minecart.setOnRails(flag);
+         }
+     }
 @@ -170,7 +_,7 @@
  
      public void adjustToRails(BlockPos p_360495_, BlockState p_362772_, boolean p_366683_) {
@@ -23,6 +41,15 @@
                  Vec3 vec31 = this.calculateTrackSpeed(p_376236_, vec3.horizontal(), newminecartbehavior$trackiteration, blockpos, blockstate, railshape);
                  if (newminecartbehavior$trackiteration.firstIteration) {
                      newminecartbehavior$trackiteration.movementLeft = vec31.horizontalDistance();
+@@ -362,7 +_,7 @@
+     }
+ 
+     private Vec3 calculateSlopeSpeed(Vec3 p_361946_, RailShape p_361759_) {
+-        double d0 = Math.max(0.0078125, p_361946_.horizontalDistance() * 0.02);
++        double d0 = Math.max(this.minecart.getSlopeAdjustment(), p_361946_.horizontalDistance() * 0.02);
+         if (this.minecart.isInWater()) {
+             d0 *= 0.2;
+         }
 @@ -393,7 +_,7 @@
      }
  
@@ -67,3 +94,21 @@
          if (!this.minecart.horizontalCollision && !this.minecart.verticalCollision) {
              return false;
          } else {
+@@ -521,7 +_,7 @@
+     }
+ 
+     public boolean pickupEntities(AABB p_366509_) {
+-        if (this.minecart.isRideable() && !this.minecart.isVehicle()) {
++        if (this.minecart.canBeRidden() && !this.minecart.isVehicle()) {
+             List<Entity> list = this.level().getEntities(this.minecart, p_366509_, EntitySelector.pushableBy(this.minecart));
+             if (!list.isEmpty()) {
+                 for (Entity entity : list) {
+@@ -544,7 +_,7 @@
+ 
+     public boolean pushEntities(AABB p_366897_) {
+         boolean flag = false;
+-        if (this.minecart.isRideable()) {
++        if (this.minecart.canBeRidden()) {
+             List<Entity> list = this.level().getEntities(this.minecart, p_366897_, EntitySelector.pushableBy(this.minecart));
+             if (!list.isEmpty()) {
+                 for (Entity entity : list) {

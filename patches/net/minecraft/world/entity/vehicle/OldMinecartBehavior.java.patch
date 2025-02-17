@@ -1,15 +1,24 @@
 --- a/net/minecraft/world/entity/vehicle/OldMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/OldMinecartBehavior.java
-@@ -97,7 +_,7 @@
-             this.minecart.setOnRails($$4);
-             if ($$4) {
+@@ -94,13 +_,14 @@
+             BlockPos blockpos = this.minecart.getCurrentBlockPosOrRailBelow();
+             BlockState blockstate = this.level().getBlockState(blockpos);
+             boolean $$4 = BaseRailBlock.isRail(blockstate);
+-            this.minecart.setOnRails($$4);
+-            if ($$4) {
++            if (this.minecart.canUseRail() && $$4) {
++                this.minecart.setOnRails(true);
                  this.moveAlongTrack(serverlevel);
 -                if (blockstate.is(Blocks.ACTIVATOR_RAIL)) {
 +                if (blockstate.getBlock() instanceof PoweredRailBlock poweredRail && poweredRail.isActivatorRail()) {
                      this.minecart.activateMinecart(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockstate.getValue(PoweredRailBlock.POWERED));
                  }
              } else {
-@@ -148,7 +_,7 @@
++                this.minecart.setOnRails(false);
+                 this.minecart.comeOffTrack(serverlevel);
+             }
+ 
+@@ -148,18 +_,18 @@
          d1 = (double)blockpos.getY();
          boolean flag = false;
          boolean flag1 = false;
@@ -18,7 +27,11 @@
              flag = blockstate.getValue(PoweredRailBlock.POWERED);
              flag1 = !flag;
          }
-@@ -159,7 +_,7 @@
+ 
+-        double d3 = 0.0078125;
++        double d3 = this.minecart.getSlopeAdjustment();
+         if (this.minecart.isInWater()) {
+             d3 *= 0.2;
          }
  
          Vec3 vec31 = this.getDeltaMovement();
@@ -27,6 +40,41 @@
          switch (railshape) {
              case ASCENDING_EAST:
                  this.setDeltaMovement(vec31.add(-d3, 0.0, 0.0));
+@@ -211,7 +_,7 @@
+             }
+         }
+ 
+-        if (flag1) {
++        if (flag1 && this.minecart.shouldDoRailFunctions()) {
+             double d20 = this.getDeltaMovement().horizontalDistance();
+             if (d20 < 0.03) {
+                 this.setDeltaMovement(Vec3.ZERO);
+@@ -240,10 +_,7 @@
+         d0 = d21 + d4 * d12;
+         d2 = d9 + d5 * d12;
+         this.setPos(d0, d1, d2);
+-        double d23 = this.minecart.isVehicle() ? 0.75 : 1.0;
+-        double d24 = this.minecart.getMaxSpeed(p_376285_);
+-        vec31 = this.getDeltaMovement();
+-        this.minecart.move(MoverType.SELF, new Vec3(Mth.clamp(d23 * vec31.x, -d24, d24), 0.0, Mth.clamp(d23 * vec31.z, -d24, d24)));
++        this.minecart.moveMinecartOnRail(p_376285_, blockpos);
+         if (vec3i.getY() != 0
+             && Mth.floor(this.minecart.getX()) - blockpos.getX() == vec3i.getX()
+             && Mth.floor(this.minecart.getZ()) - blockpos.getZ() == vec3i.getZ()) {
+@@ -275,7 +_,12 @@
+             this.setDeltaMovement(d25 * (double)(j - blockpos.getX()), vec36.y, d25 * (double)(i - blockpos.getZ()));
+         }
+ 
+-        if (flag) {
++        if (this.minecart.shouldDoRailFunctions()) {
++            BaseRailBlock baserailblock = (BaseRailBlock) blockstate.getBlock();
++            baserailblock.onMinecartPass(blockstate, level(), blockpos, this.minecart);
++        }
++
++        if (flag && this.minecart.shouldDoRailFunctions()) {
+             Vec3 vec37 = this.getDeltaMovement();
+             double d26 = vec37.horizontalDistance();
+             if (d26 > 0.01) {
 @@ -317,9 +_,10 @@
              j--;
          }
@@ -53,14 +101,16 @@
              Pair<Vec3i, Vec3i> pair = AbstractMinecart.exits(railshape);
              Vec3i vec3i = pair.getFirst();
              Vec3i vec3i1 = pair.getSecond();
-@@ -404,7 +_,9 @@
+@@ -404,8 +_,10 @@
  
      @Override
      public boolean pushAndPickupEntities() {
 -        AABB aabb = this.minecart.getBoundingBox().inflate(0.2F, 0.0, 0.2F);
+-        if (this.minecart.isRideable() && this.getDeltaMovement().horizontalDistanceSqr() >= 0.01) {
 +        AABB aabb;
 +        if (AbstractMinecart.getCollisionHandler() != null) aabb = AbstractMinecart.getCollisionHandler().getMinecartCollisionBox(this.minecart);
 +        else aabb = this.minecart.getBoundingBox().inflate(0.2F, 0.0, 0.2F);
-         if (this.minecart.isRideable() && this.getDeltaMovement().horizontalDistanceSqr() >= 0.01) {
++        if (this.minecart.canBeRidden() && this.getDeltaMovement().horizontalDistanceSqr() >= 0.01) {
              List<Entity> list = this.level().getEntities(this.minecart, aabb, EntitySelector.pushableBy(this.minecart));
              if (!list.isEmpty()) {
+                 for (Entity entity1 : list) {

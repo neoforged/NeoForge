@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -43,7 +_,7 @@
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
+ 
+-public abstract class AbstractMinecart extends VehicleEntity {
++public abstract class AbstractMinecart extends VehicleEntity implements net.neoforged.neoforge.common.extensions.IAbstractMinecartExtension {
+     private static final Vec3 LOWERED_PASSENGER_ATTACHMENT = new Vec3(0.0, 0.0, 0.0);
+     private static final EntityDataAccessor<Integer> DATA_ID_DISPLAY_BLOCK = SynchedEntityData.defineId(AbstractMinecart.class, EntityDataSerializers.INT);
+     private static final EntityDataAccessor<Integer> DATA_ID_DISPLAY_OFFSET = SynchedEntityData.defineId(AbstractMinecart.class, EntityDataSerializers.INT);
 @@ -75,6 +_,8 @@
          p_38135_.put(RailShape.NORTH_WEST, Pair.of(vec3i2, vec3i));
          p_38135_.put(RailShape.NORTH_EAST, Pair.of(vec3i2, vec3i1));
@@ -25,6 +34,33 @@
      public void setInitialPos(double p_374451_, double p_374374_, double p_374085_) {
          this.setPos(p_374451_, p_374374_, p_374085_);
          this.xo = p_374451_;
+@@ -366,16 +_,24 @@
+     }
+ 
+     protected void comeOffTrack(ServerLevel p_376696_) {
+-        double d0 = this.getMaxSpeed(p_376696_);
++        double d0 = this.onGround() ? this.getMaxSpeed(p_376696_) : this.getMaxSpeedAirLateral(p_376696_);
+         Vec3 vec3 = this.getDeltaMovement();
+         this.setDeltaMovement(Mth.clamp(vec3.x, -d0, d0), vec3.y, Mth.clamp(vec3.z, -d0, d0));
+         if (this.onGround()) {
+             this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
+         }
+ 
++        if (this.getMaxSpeedAirVertical() > 0 && this.getDeltaMovement().y > this.getMaxSpeedAirVertical()) {
++            if(Math.abs(this.getDeltaMovement().x) < 0.3f && Math.abs(this.getDeltaMovement().z) < 0.3f) {
++                this.setDeltaMovement(new Vec3(this.getDeltaMovement().x, 0.15f, this.getDeltaMovement().z));
++            } else {
++                this.setDeltaMovement(new Vec3(this.getDeltaMovement().x, getMaxSpeedAirVertical(), this.getDeltaMovement().z));
++            }
++        }
++
+         this.move(MoverType.SELF, this.getDeltaMovement());
+         if (!this.onGround()) {
+-            this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
++            this.setDeltaMovement(this.getDeltaMovement().scale(this.getDragAir()));
+         }
+     }
+ 
 @@ -430,8 +_,8 @@
  
      public Vec3 getRedstoneDirection(BlockPos p_361470_) {
@@ -47,3 +83,109 @@
          if (!this.level().isClientSide) {
              if (!p_38165_.noPhysics && !this.noPhysics) {
                  if (!this.hasPassenger(p_38165_)) {
+@@ -546,11 +_,11 @@
+         if (!(d2 < 0.8F) || useExperimentalMovement(this.level())) {
+             Vec3 vec32 = this.getDeltaMovement();
+             Vec3 vec33 = p_374524_.getDeltaMovement();
+-            if (p_374524_.isFurnace() && !this.isFurnace()) {
++            if (p_374524_.isPoweredCart() && !this.isPoweredCart()) {
+                 this.setDeltaMovement(vec32.multiply(0.2, 1.0, 0.2));
+                 this.push(vec33.x - p_374304_, 0.0, vec33.z - p_374378_);
+                 p_374524_.setDeltaMovement(vec33.multiply(0.95, 1.0, 0.95));
+-            } else if (!p_374524_.isFurnace() && this.isFurnace()) {
++            } else if (!p_374524_.isPoweredCart() && this.isPoweredCart()) {
+                 p_374524_.setDeltaMovement(vec33.multiply(0.2, 1.0, 0.2));
+                 p_374524_.push(vec32.x + p_374304_, 0.0, vec32.z + p_374378_);
+                 this.setDeltaMovement(vec32.multiply(0.95, 1.0, 0.95));
+@@ -612,5 +_,91 @@
+ 
+     public boolean isFurnace() {
+         return false;
++    }
++
++    // NEO
++    @Override
++    public double getMaxSpeedWithRail(ServerLevel serverLevel) {
++        if (!this.canUseRail()) return this.getMaxSpeed(serverLevel);
++        BlockPos pos = this.getCurrentRailPosition();
++        BlockState state = this.level().getBlockState(pos);
++        if (!state.is(BlockTags.RAILS)) return this.getMaxSpeed(serverLevel);
++
++        float railMaxSpeed = ((BaseRailBlock)state.getBlock()).getRailMaxSpeed(state, this.level(), pos, this);
++        return Math.min(railMaxSpeed, this.getCurrentCartSpeedCapOnRail());
++    }
++
++    @Override
++    public void moveMinecartOnRail(ServerLevel serverLevel, BlockPos pos) {
++        double d23 = this.isVehicle() ? 0.75 : 1.0;
++        double d24 = this.getMaxSpeedWithRail(serverLevel);
++        Vec3 deltaMovement = this.getDeltaMovement();
++        this.move(MoverType.SELF, new Vec3(Mth.clamp(d23 * deltaMovement.x, -d24, d24), 0.0, Mth.clamp(d23 * deltaMovement.z, -d24, d24)));
++    }
++
++    // Neo: Controls whether a Minecart is allowed on Rails or not
++    private boolean canUseRail = true;
++
++    @Override
++    public boolean canUseRail() {
++        return this.canUseRail;
++    }
++
++    @Override
++    public void setCanUseRail(boolean value) {
++        this.canUseRail = value;
++    }
++
++    // Neo: Controls the rail speed cap
++    private float currentSpeedCapOnRail = this.getMaxCartSpeedOnRail();
++
++    @Override
++    public float getCurrentCartSpeedCapOnRail() {
++        return this.currentSpeedCapOnRail;
++    }
++
++    @Override
++    public void setCurrentCartSpeedCapOnRail(float value) {
++        this.currentSpeedCapOnRail = Math.min(value, this.getMaxCartSpeedOnRail());
++    }
++
++    // Neo: Controls the horizontal air speed cap
++    @Nullable
++    private Float maxSpeedAirLateral = null;
++
++    @Override
++    public float getMaxSpeedAirLateral(ServerLevel serverLevel) {
++        return this.maxSpeedAirLateral == null ? (float) this.getMaxSpeed(serverLevel) : this.maxSpeedAirLateral;
++    }
++
++    @Override
++    public void setMaxSpeedAirLateral(float value) {
++        maxSpeedAirLateral = value;
++    }
++
++    // Neo: Controls the vertical air speed cap
++    private float maxSpeedAirVertical = DEFAULT_MAX_SPEED_AIR_VERTICAL;
++
++    @Override
++    public float getMaxSpeedAirVertical() {
++        return this.maxSpeedAirVertical;
++    }
++
++    @Override
++    public void setMaxSpeedAirVertical(float value) {
++        this.maxSpeedAirVertical = value;
++    }
++
++    // Neo: Controls the drag effect when Minecart is in air
++    private double dragAir = DEFAULT_AIR_DRAG;
++
++    @Override
++    public double getDragAir() {
++        return this.dragAir;
++    }
++
++    @Override
++    public void setDragAir(double value) {
++        dragAir = value;
+     }
+ }
