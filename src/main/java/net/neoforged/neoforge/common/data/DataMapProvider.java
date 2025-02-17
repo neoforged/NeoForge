@@ -81,6 +81,8 @@ public abstract class DataMapProvider implements DataProvider {
 
     /**
      * Generate data map entries.
+     *
+     * @deprecated Use {@link #gather(HolderLookup.Provider)} instead.
      */
     @Deprecated(forRemoval = true)
     protected void gather() {}
