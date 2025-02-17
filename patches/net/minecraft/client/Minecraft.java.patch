@@ -179,7 +179,7 @@
          this.deltaTracker.updatePauseState(this.pause);
          this.deltaTracker.updateFrozenState(!this.isLevelRunningNormally());
          long l = Util.getNanos();
-@@ -1351,10 +_,12 @@
+@@ -1351,10 +_,13 @@
          this.window.setGuiScale((double)i);
          if (this.screen != null) {
              this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
@@ -187,6 +187,7 @@
          }
  
          RenderTarget rendertarget = this.getMainRenderTarget();
++        if (rendertarget != null)
          rendertarget.resize(this.window.getWidth(), this.window.getHeight());
 +        if (this.gameRenderer != null)
          this.gameRenderer.resize(this.window.getWidth(), this.window.getHeight());
