@@ -55,3 +55,15 @@
                          if (this.restAtVShape(p_361660_, railshape)) {
                              return 0.0;
                          }
+@@ -511,7 +_,10 @@
+ 
+     @Override
+     public boolean pushAndPickupEntities() {
+-        boolean flag = this.pickupEntities(this.minecart.getBoundingBox().inflate(0.2, 0.0, 0.2));
++        AABB box;
++        if (AbstractMinecart.getCollisionHandler() != null) box = AbstractMinecart.getCollisionHandler().getMinecartCollisionBox(this.minecart);
++        else box = this.minecart.getBoundingBox().inflate(0.2, 0.0, 0.2);
++        boolean flag = this.pickupEntities(box);
+         if (!this.minecart.horizontalCollision && !this.minecart.verticalCollision) {
+             return false;
+         } else {

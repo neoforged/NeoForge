@@ -53,3 +53,14 @@
              Pair<Vec3i, Vec3i> pair = AbstractMinecart.exits(railshape);
              Vec3i vec3i = pair.getFirst();
              Vec3i vec3i1 = pair.getSecond();
+@@ -404,7 +_,9 @@
+ 
+     @Override
+     public boolean pushAndPickupEntities() {
+-        AABB aabb = this.minecart.getBoundingBox().inflate(0.2F, 0.0, 0.2F);
++        AABB aabb;
++        if (AbstractMinecart.getCollisionHandler() != null) aabb = AbstractMinecart.getCollisionHandler().getMinecartCollisionBox(this.minecart);
++        else aabb = this.minecart.getBoundingBox().inflate(0.2F, 0.0, 0.2F);
+         if (this.minecart.isRideable() && this.getDeltaMovement().horizontalDistanceSqr() >= 0.01) {
+             List<Entity> list = this.level().getEntities(this.minecart, aabb, EntitySelector.pushableBy(this.minecart));
+             if (!list.isEmpty()) {

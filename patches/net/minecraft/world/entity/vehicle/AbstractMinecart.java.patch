@@ -1,5 +1,30 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -75,6 +_,8 @@
+         p_38135_.put(RailShape.NORTH_WEST, Pair.of(vec3i2, vec3i));
+         p_38135_.put(RailShape.NORTH_EAST, Pair.of(vec3i2, vec3i1));
+     });
++    @Nullable
++    private static net.neoforged.neoforge.common.IMinecartCollisionHandler COLLISIONS = null;
+ 
+     protected AbstractMinecart(EntityType<?> p_38087_, Level p_38088_) {
+         super(p_38087_, p_38088_);
+@@ -91,6 +_,15 @@
+         this.setInitialPos(p_38092_, p_38093_, p_38094_);
+     }
+ 
++    @Nullable
++    public static net.neoforged.neoforge.common.IMinecartCollisionHandler getCollisionHandler() {
++        return COLLISIONS;
++    }
++
++    public static void registerCollisionHandler(@Nullable net.neoforged.neoforge.common.IMinecartCollisionHandler handler) {
++        COLLISIONS = handler;
++    }
++
+     public void setInitialPos(double p_374451_, double p_374374_, double p_374085_) {
+         this.setPos(p_374451_, p_374374_, p_374085_);
+         this.xo = p_374451_;
 @@ -430,8 +_,8 @@
  
      public Vec3 getRedstoneDirection(BlockPos p_361470_) {
@@ -11,3 +36,14 @@
              if (railshape == RailShape.EAST_WEST) {
                  if (this.isRedstoneConductor(p_361470_.west())) {
                      return new Vec3(1.0, 0.0, 0.0);
+@@ -495,6 +_,10 @@
+ 
+     @Override
+     public void push(Entity p_38165_) {
++        if (getCollisionHandler() != null) {
++            getCollisionHandler().onEntityCollision(this, p_38165_);
++            return;
++        }
+         if (!this.level().isClientSide) {
+             if (!p_38165_.noPhysics && !this.noPhysics) {
+                 if (!this.hasPassenger(p_38165_)) {
