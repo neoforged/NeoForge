@@ -17,8 +17,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.apache.commons.io.output.CloseShieldOutputStream;
@@ -33,6 +35,8 @@ public final class IOUtilities {
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING
     };
+
+    private static CompletableFuture<Void> saveDataTasks = CompletableFuture.completedFuture(null);
 
     private IOUtilities() {}
 
@@ -150,6 +154,15 @@ public final class IOUtilities {
 
             throw first;
         }
+    }
+
+    public static void withIOWorker(Runnable task) {
+        saveDataTasks = saveDataTasks.thenRunAsync(task, Util.ioPool());
+    }
+
+    public static void waitUntilIOWorkerComplete() {
+        saveDataTasks.join();
+        saveDataTasks = CompletableFuture.completedFuture(null);
     }
 
     /**
