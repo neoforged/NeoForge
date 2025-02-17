@@ -194,6 +194,8 @@
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Opcja konfiguracyjna głównie dla deweloperów. Wyloguj tagi zmodowanego itemu, które nie mają tłumaczeń podczas pracy na zintegrowanym serwerze. Wymagany format to tag.item.<namespace>.<path> dla klucza tłumaczenia. Domyślnie dla SILENCED.",
   "neoforge.configgui.permissionHandler": "Obsługa uprawnień",
   "neoforge.configgui.permissionHandler.tooltip": "Obsługa uprawnień używana przez serwer. Domyślnie przekierowuje neoforge:default_handler jeśli nie jest zarejestrowany taki program obsługi o tej nazwie.",
+  "neoforge.configgui.reducedDepthStencilFormat": "Reduced Depth+Stencil Format",
+  "neoforge.configgui.reducedDepthStencilFormat.tooltip": "Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.",
   "neoforge.configgui.removeErroringBlockEntities": "Usuń błędne elementy bloków",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Ustaw na true aby usunąć dowolną jednostkę, która rzuca błąd w metodzie aktualizacji zamiast zamykać serwer i zgłaszać awarię.",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "ZOSTAŁEŚ OSTRZEŻONY TO MOŻE ZEPSUĆ WSZYSTKO\nUŻYWAJ ROZWAŻNIE\nNIE JESTEŚMY ODPOWIEDZIALNI ZA SZKODY.",

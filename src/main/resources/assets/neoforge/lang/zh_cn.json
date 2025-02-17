@@ -194,6 +194,8 @@
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "一个主要面向开发者的配置选项。在内置服务端上运行时，在日志中记录没有翻译的模组环境物品标签。翻译键要求的格式是tag.item.<命名空间>.<路径>。默认值为SILENCED。",
   "neoforge.configgui.permissionHandler": "权限处理",
   "neoforge.configgui.permissionHandler.tooltip": "服务器使用的权限处理程序。如果没有注册这样的处理程序，默认为neoforge:default_handler。",
+  "neoforge.configgui.reducedDepthStencilFormat": "Reduced Depth+Stencil Format",
+  "neoforge.configgui.reducedDepthStencilFormat.tooltip": "Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.",
   "neoforge.configgui.removeErroringBlockEntities": "删除错误方块实体",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "开启此项后，游戏会移除任何在更新方法中出现错误的方块实体，而不是关闭服务端并报告崩溃日志。",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "请注意，这可能会把一切搞砸。\n尽量少使用。\n我们不对损坏负责。",
