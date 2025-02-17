@@ -8,15 +8,3 @@
      }
  
      protected abstract void rewardTradeXp(MerchantOffer p_35299_);
-@@ -187,9 +_,9 @@
- 
-     @Nullable
-     @Override
--    public Entity changeDimension(DimensionTransition p_350994_) {
-+    public Entity teleport(TeleportTransition p_379715_) {
-         this.stopTrading();
--        return super.changeDimension(p_350994_);
-+        return super.teleport(p_379715_);
-     }
- 
-     protected void stopTrading() {
