@@ -194,6 +194,8 @@
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Item-Tags von Mods im Log, die keine Übersetzungen haben, wenn man den integrierten Server verwendet. Das gewünschte Format ist tag.item.<namespace>.<path> für den Übersetzungsschlüssel. Standard ist SILENCED.",
   "neoforge.configgui.permissionHandler": "Berechtigungsverwalter",
   "neoforge.configgui.permissionHandler.tooltip": "Der vom Server verwendete Berechtigungsverwalter. Standard ist neoforge:default_handler, wenn kein Handler mit diesem Namen registriert wurde.",
+  "neoforge.configgui.reducedDepthStencilFormat": "Reduziertes Tiefen-+Stencilbuffer-Format",
+  "neoforge.configgui.reducedDepthStencilFormat.tooltip": "Konfiguriert, wie viele Bits für einen Tiefenbuffer verwendet werden, wenn eine Mod den Stencilbuffer verwendet. Aktiviere diese Option, um 24+8 Bits zu verwenden, andernfalls werden 32+8 Bits verwendet. Bei aktivierter Option wird die VRAM-Verwendung leicht reduziert, es können jedoch visuelle Artefakte auftreten.",
   "neoforge.configgui.removeErroringBlockEntities": "Fehlerhafte Block-Entitäten entfernen",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Aktiviere diese Option, um alle Block-Entitäten mit Fehlern in ihrer Update-Methode zu entfernen, anstatt den Server zu schließen und einen Absturzbericht zu erstellen.",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "SEI GEWARNT: DIES KANN ALLES BESCHÄDIGEN. SPARSAM VERWENDEN. WIR SIND NICHT FÜR SCHÄDEN VERANTWORTLICH.",
