@@ -8,17 +8,3 @@
      }
  
      protected abstract void rewardTradeXp(MerchantOffer p_35299_);
-@@ -183,13 +_,6 @@
-         }
- 
-         this.readInventoryFromTag(p_35290_, this.registryAccess());
--    }
--
--    @Nullable
--    @Override
--    public Entity changeDimension(DimensionTransition p_350994_) {
--        this.stopTrading();
--        return super.changeDimension(p_350994_);
-     }
- 
-     protected void stopTrading() {
