@@ -46,6 +46,13 @@ public class GatherDataEvent extends Event implements IModBusEvent {
         return this.config.getInputs();
     }
 
+    /**
+     * @return the mod IDs for which data should be generated
+     */
+    public Set<String> getMods() {
+        return this.config.getMods();
+    }
+
     public DataGenerator getGenerator() {
         return this.dataGenerator;
     }
