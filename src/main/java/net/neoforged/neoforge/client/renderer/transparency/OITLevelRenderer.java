@@ -14,16 +14,15 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL40;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.mojang.blaze3d.platform.GlStateManager.glBlendFuncSeparate;
 import static org.lwjgl.opengl.GL11.*;
@@ -33,8 +32,13 @@ import static org.lwjgl.opengl.GL30.glClearBufferfv;
 public final class OITLevelRenderer
 {
     private static final OITLevelRenderer INSTANCE = new OITLevelRenderer();
-    public static final ShaderProgram COMPOSITION_SHADER_PROGRAM = new ShaderProgram(
+    public static final ShaderProgram WBOIT_COMPOSITION_SHADER = new ShaderProgram(
             ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "oit/blit_screen_oit"),
+            DefaultVertexFormat.POSITION_TEX_COLOR,
+            ShaderDefines.EMPTY);
+
+    public static final ShaderProgram MBOIT_COMPOSITION_SHADER = new ShaderProgram(
+            ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "oit_moments/blit_screen_oit"),
             DefaultVertexFormat.POSITION_TEX_COLOR,
             ShaderDefines.EMPTY);
 
@@ -46,6 +50,7 @@ public final class OITLevelRenderer
     private boolean levelRenderingInProgress;
     private OITRenderTarget transparentOITRenderTarget;
     private OITPreDepthTarget shadowMapTarget;
+    private OITMomentTarget momentTarget;
 
 
     private final List<IRenderCall> queuedRenderCallList = new ArrayList<>();
@@ -65,6 +70,11 @@ public final class OITLevelRenderer
         this.shadowMapTarget = new OITPreDepthTarget(width, height);
         this.shadowMapTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         this.shadowMapTarget.clear();
+
+        /*
+        this.momentTarget = new OITMomentTarget(width, height);
+        this.momentTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        this.momentTarget.clear();*/
     }
 
     /**
@@ -84,7 +94,10 @@ public final class OITLevelRenderer
      */
     public CompiledShaderProgram getCompositionShader()
     {
-        return Minecraft.getInstance().getShaderManager().getProgram(COMPOSITION_SHADER_PROGRAM);
+        if (NeoForgeConfig.CLIENT.usesMomentBasedOIT.get())
+            return Minecraft.getInstance().getShaderManager().getProgram(MBOIT_COMPOSITION_SHADER);
+        else
+            return Minecraft.getInstance().getShaderManager().getProgram(WBOIT_COMPOSITION_SHADER);
     }
 
     /**
@@ -318,6 +331,10 @@ public final class OITLevelRenderer
         shadowMapTarget.bindWrite(true);
         glClearBufferfv(GL_DEPTH, 0, new float[]{1f});
         shadowMapTarget.unbindWrite();
+        /*momentTarget.bindWrite(true);
+        glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        glClear(GL_COLOR_BUFFER_BIT);
+        momentTarget.unbindWrite();*/
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
     }
 
@@ -347,6 +364,13 @@ public final class OITLevelRenderer
      * @param profilerfiller The profiler to use.
      */
     private void renderQueue(ProfilerFiller profilerfiller) {
+        if (NeoForgeConfig.CLIENT.usesMomentBasedOIT.get())
+            renderMBOITQueue(profilerfiller);
+        else
+            renderWBOITQueue(profilerfiller);
+    }
+
+    private void renderWBOITQueue(ProfilerFiller profilerfiller) {
         if (queuedRenderCallList.isEmpty()) {
             return;
         }
@@ -354,6 +378,13 @@ public final class OITLevelRenderer
         renderPreDepthMap(profilerfiller);
         renderOITTransparent(profilerfiller);
         renderComposed(profilerfiller);
+    }
+
+    private void renderMBOITQueue(ProfilerFiller profilerfiller) {
+        if (queuedRenderCallList.isEmpty()) {
+            return;
+        }
+
     }
 
     private void renderComposed(ProfilerFiller profilerfiller) {

@@ -2,13 +2,9 @@ package net.neoforged.neoforge.client.renderer.transparency;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.shaders.CompiledShader;
-import com.mojang.blaze3d.shaders.Uniform;
-import net.minecraft.client.renderer.CompiledShaderProgram;
-import net.minecraft.client.renderer.ShaderProgram;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.renderer.INeoForgeGlslPreprocessor;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class OITGlslPreprocessor implements INeoForgeGlslPreprocessor
@@ -51,7 +47,7 @@ public class OITGlslPreprocessor implements INeoForgeGlslPreprocessor
             throw new IllegalStateException("Failed to find #version line in shader");
         }
 
-        final String[] versionParts = OITShaders.FRAGMENT_SHADER_VERSION_HEADER.split("\n");
+        final String[] versionParts = OITShaders.WBOIT_FRAGMENT_SHADER_VERSION_HEADER.split("\n");
 
         lines.remove(versionLine);
         for (int i = 0; i < versionParts.length; i++)
@@ -110,7 +106,7 @@ public class OITGlslPreprocessor implements INeoForgeGlslPreprocessor
             }
         }
 
-        final List<String> toInject = List.of(OITShaders.FRAGMENT_SHADER_PREFIX.split("\n"));
+        final List<String> toInject = List.of(OITShaders.WBOIT_FRAGMENT_SHADER_PREFIX.split("\n"));
         for (int i = 0; i < toInject.size(); i++)
         {
             String line = toInject.get(i);
@@ -128,7 +124,7 @@ public class OITGlslPreprocessor implements INeoForgeGlslPreprocessor
         //TODO: Dynamically determine the depth variable name
         final String depthVariable = "vertexDistance";
 
-        final String code = OITShaders.FRAGMENT_SHADER_SUFFIX
+        final String code = OITShaders.WBOIT_FRAGMENT_SHADER_SUFFIX
                 .replace("%OUT_COLOR%", outVariable)
                 .replace("%Z_VALUE%", depthVariable);
 

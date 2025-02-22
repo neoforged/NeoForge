@@ -24,7 +24,10 @@ public class OITEventHandler {
         @SubscribeEvent
         public static void onShaderRegistration(RegisterShadersEvent registerShadersEvent) throws IOException {
             registerShadersEvent.registerShader(
-                    OITLevelRenderer.COMPOSITION_SHADER_PROGRAM
+                    OITLevelRenderer.WBOIT_COMPOSITION_SHADER
+            );
+            registerShadersEvent.registerShader(
+                    OITLevelRenderer.MBOIT_COMPOSITION_SHADER
             );
         }
 
@@ -42,11 +45,14 @@ public class OITEventHandler {
             event.getShader().registerSampler(
                     new ShaderProgramConfig.Sampler(ClientHooks.SAMPLER_OIT_NAME)
             );
+
+            //throw new IllegalStateException("Missing MBOIT uniforms");
         }
 
         @SubscribeEvent
         public static void onShaderProgramCompile(RegisterGlslPreprocessorsEvent event) {
             event.newProcessor(new OITGlslPreprocessor());
+            //throw new IllegalStateException("Missing MBOIT preprocessor");
         }
     }
 

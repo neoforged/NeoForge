@@ -91,6 +91,8 @@ public class NeoForgeConfig {
 
         public final BooleanValue orderIndependentTransparentRendering;
 
+        public final BooleanValue usesMomentBasedOIT;
+
         Client(ModConfigSpec.Builder builder) {
             experimentalForgeLightPipelineEnabled = builder
                     .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
@@ -111,6 +113,11 @@ public class NeoForgeConfig {
                     .comment("When enabled, NeoForge will use order independent transparency to render transparent blocks. This may improve performance, but may also cause issues with some mods.")
                     .translation("neoforge.configgui.orderIndependentTransparentRendering")
                     .define("orderIndependentTransparentRendering", true);
+
+            usesMomentBasedOIT = builder
+                    .comment("When enabled, NeoForge will use moment based order independent transparency to render transparent blocks. This may improve performance, but may also cause issues with some mods.")
+                    .translation("neoforge.configgui.usesMomentBasedOIT")
+                    .define("usesMomentBasedOIT", false);
         }
     }
 

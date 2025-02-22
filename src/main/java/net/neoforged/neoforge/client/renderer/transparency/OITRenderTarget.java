@@ -66,7 +66,11 @@ public class OITRenderTarget extends RenderTarget
                 maintarget$attachmentstate = maintarget$attachmentstate.with(AttachmentState.REVEAL);
             }
 
-            if (maintarget$attachmentstate == AttachmentState.ACCUMULATOR_REVEAL) {
+            if (this.allocateBucketAttachment(maintarget$dimension)) {
+                maintarget$attachmentstate = maintarget$attachmentstate.with(AttachmentState.BUCKET);
+            }
+
+            if (maintarget$attachmentstate == AttachmentState.ACCUMULATOR_REVEAL_BUCKET) {
                 return maintarget$dimension;
             }
         }
