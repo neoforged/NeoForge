@@ -51,8 +51,8 @@ public final class OITShaders
             """;
 
     public static final String MBOIT_FRAGMENT_SHADER_PREFIX = """
-            layout (location = 1) out vec4 firstMoments;
-            layout (location = 2) out float zerothMoment;
+            layout (location = 0) out vec4 firstMoments;
+            layout (location = 1) out float zerothMoment;
             """;
 
 
