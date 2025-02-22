@@ -25,6 +25,7 @@ public class RegistryBuilder<T> {
     private final List<RegistryCallback<T>> callbacks = new ArrayList<>();
     @Nullable
     private ResourceLocation defaultKey;
+    private boolean intrusiveHolders = false;
     private int maxId = -1;
     private boolean sync = false;
     private boolean registrationCheck = true;
@@ -40,6 +41,11 @@ public class RegistryBuilder<T> {
 
     public RegistryBuilder<T> defaultKey(ResourceKey<T> key) {
         this.defaultKey = key.location();
+        return this;
+    }
+
+    public RegistryBuilder<T> hasIntrusiveHolders() {
+        intrusiveHolders = true;
         return this;
     }
 
@@ -103,8 +109,8 @@ public class RegistryBuilder<T> {
      */
     public Registry<T> create() {
         BaseMappedRegistry<T> registry = this.defaultKey != null
-                ? new DefaultedMappedRegistry<>(this.defaultKey.toString(), this.registryKey, Lifecycle.stable(), false)
-                : new MappedRegistry<>(this.registryKey, Lifecycle.stable(), false);
+                ? new DefaultedMappedRegistry<>(this.defaultKey.toString(), this.registryKey, Lifecycle.stable(), intrusiveHolders)
+                : new MappedRegistry<>(this.registryKey, Lifecycle.stable(), intrusiveHolders);
         this.callbacks.forEach(registry::addCallback);
         if (this.maxId != -1)
             registry.setMaxId(this.maxId);
