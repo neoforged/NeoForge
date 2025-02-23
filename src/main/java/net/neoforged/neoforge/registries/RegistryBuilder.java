@@ -44,7 +44,12 @@ public class RegistryBuilder<T> {
         return this;
     }
 
-    public RegistryBuilder<T> hasIntrusiveHolders() {
+    /**
+     * @deprecated Vanilla has deprecated intrusive holders and is in the process of moving away from them,
+     * you should not use this unless you have no better option.
+     */
+    @Deprecated
+    public RegistryBuilder<T> withIntrusiveHolders() {
         intrusiveHolders = true;
         return this;
     }
