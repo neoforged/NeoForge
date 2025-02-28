@@ -7,7 +7,7 @@ license="LGPL v2.1"
 
 [[mods]]
     modId="neotests"
-    description="NeoForge tests. Change the language to fr_fr and the description should change too."
+    description="NeoForge's tests. Change the language to fr_fr and the description should change too."
     enumExtensions="META-INF/enumextensions.json"
 [[mods]]
     modId="configui"
@@ -248,5 +248,8 @@ modId="conditional_codec_test"
 modId="may_fly_attribute_item"
 [[mods]]
 modId="client_information_updated_test"
+[[mods]]
+modId="custom_feature_flags_pack_test"
+featureFlags="game_test_feature_flags.json"
 
 # ADD ABOVE THIS LINE

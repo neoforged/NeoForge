@@ -7,12 +7,11 @@ package net.neoforged.neoforge.common.data.internal;
 
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
 public class VanillaSoundDefinitionsProvider extends SoundDefinitionsProvider {
-    public VanillaSoundDefinitionsProvider(PackOutput output, ExistingFileHelper helper) {
-        super(output, "minecraft", helper);
+    public VanillaSoundDefinitionsProvider(PackOutput output) {
+        super(output, "minecraft");
     }
 
     @Override

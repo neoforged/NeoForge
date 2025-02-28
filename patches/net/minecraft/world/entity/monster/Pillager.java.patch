@@ -1,5 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Pillager.java
 +++ b/net/minecraft/world/entity/monster/Pillager.java
+<<<<<<< HEAD
 @@ -92,7 +_,7 @@
  
      @Override
@@ -10,6 +11,9 @@
  
      public boolean isChargingCrossbow() {
 @@ -119,7 +_,7 @@
+=======
+@@ -127,7 +_,7 @@
+>>>>>>> upstream/1.21.x
      public AbstractIllager.IllagerArmPose getArmPose() {
          if (this.isChargingCrossbow()) {
              return AbstractIllager.IllagerArmPose.CROSSBOW_CHARGE;

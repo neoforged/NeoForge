@@ -73,7 +73,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
@@ -250,7 +249,7 @@ public interface IBlockExtension {
      * @param fluid         The current fluid state at current position
      */
     default void onDestroyedByPushReaction(BlockState state, Level level, BlockPos pos, Direction pushDirection, FluidState fluid) {
-        level.setBlock(pos, Blocks.AIR.defaultBlockState(), level.isClientSide ? 11 : 3);
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS);
         level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
     }
 
@@ -324,14 +323,12 @@ public interface IBlockExtension {
     }
 
     /**
-     *
      * Called when A user uses the creative pick block button on this block
      *
-     * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return self().getCloneItemStack(level, pos, state);
+    default ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
+        return state.getCloneItemStack(level, pos, includeData);
     }
 
     /**
@@ -1018,5 +1015,17 @@ public interface IBlockExtension {
         } else {
             return BubbleColumnDirection.NONE;
         }
+    }
+
+    /**
+     * Determines if a fluid adjacent to the block on the given side should not be rendered.
+     * 
+     * @param state         the block state of the block
+     * @param selfFace      the face of this block that the fluid is adjacent to
+     * @param adjacentFluid the fluid that is touching that face
+     * @return true if this block should cause the fluid's face to not render
+     */
+    default boolean shouldHideAdjacentFluidFace(BlockState state, Direction selfFace, FluidState adjacentFluid) {
+        return state.getFluidState().getType().isSame(adjacentFluid.getType());
     }
 }

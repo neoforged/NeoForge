@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/BrewingStandMenu.java
 +++ b/net/minecraft/world/inventory/BrewingStandMenu.java
-@@ -42,9 +_,9 @@
+@@ -45,9 +_,9 @@
          this.brewingStand = p_39095_;
          this.brewingStandData = p_39096_;
          PotionBrewing potionbrewing = p_39094_.player.level().potionBrewing();
@@ -13,7 +13,7 @@
          this.ingredientSlot = this.addSlot(new BrewingStandMenu.IngredientsSlot(potionbrewing, p_39095_, 3, 79, 17));
          this.addSlot(new BrewingStandMenu.FuelSlot(p_39095_, 4, 17, 17));
          this.addDataSlots(p_39096_);
-@@ -73,7 +_,7 @@
+@@ -76,7 +_,7 @@
                      if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
                          return ItemStack.EMPTY;
                      }
@@ -22,7 +22,7 @@
                      if (!this.moveItemStackTo(itemstack1, 0, 3, false)) {
                          return ItemStack.EMPTY;
                      }
-@@ -150,13 +_,20 @@
+@@ -158,13 +_,20 @@
      }
  
      static class PotionSlot extends Slot {
@@ -44,7 +44,7 @@
          }
  
          @Override
-@@ -168,14 +_,20 @@
+@@ -176,14 +_,20 @@
          public void onTake(Player p_150499_, ItemStack p_150500_) {
              Optional<Holder<Potion>> optional = p_150500_.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).potion();
              if (optional.isPresent() && p_150499_ instanceof ServerPlayer serverplayer) {
@@ -63,5 +63,5 @@
 +        public static boolean mayPlaceItem(PotionBrewing potionBrewing, ItemStack p_39134_) {
 +            return potionBrewing.isInput(p_39134_) || p_39134_.is(Items.GLASS_BOTTLE);
          }
-     }
- }
+ 
+         @Override

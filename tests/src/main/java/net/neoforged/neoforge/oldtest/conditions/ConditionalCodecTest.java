@@ -20,7 +20,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.slf4j.Logger;
 
@@ -77,7 +77,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:true" }
+                            { "type": "neoforge:always" }
                         ],
                         "i": 1,
                         "s": "test"
@@ -91,7 +91,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:false" }
+                            { "type": "neoforge:never" }
                         ],
                         "i": 1,
                         "s": "test"
@@ -109,7 +109,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:true" }
+                            { "type": "neoforge:always" }
                         ],
                         "neoforge:value": {
                             "i": 1,
@@ -136,12 +136,12 @@ public class ConditionalCodecTest {
                     {
                       "neoforge:conditions": [
                         {
-                          "type": "neoforge:true"
+                          "type": "neoforge:always"
                         }
                       ],
                       "i": 1,
                       "s": "test"
-                    }""", write(SimpleRecord.CONDITIONS_CODEC, Optional.of(WithConditions.builder(record).addCondition(TrueCondition.INSTANCE).build())));
+                    }""", write(SimpleRecord.CONDITIONS_CODEC, Optional.of(WithConditions.builder(record).addCondition(NeoForgeConditions.always()).build())));
         }
 
         private record SimpleRecord(int i, String s) {
@@ -184,7 +184,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:true" }
+                            { "type": "neoforge:always" }
                         ],
                         "neoforge:value": 1
                     }
@@ -197,7 +197,7 @@ public class ConditionalCodecTest {
             JsonElement json = read("""
                     {
                         "neoforge:conditions": [
-                            { "type": "neoforge:false" }
+                            { "type": "neoforge:never" }
                         ],
                         "i": 1,
                         "s": "test"
@@ -219,11 +219,11 @@ public class ConditionalCodecTest {
                     {
                       "neoforge:conditions": [
                         {
-                          "type": "neoforge:true"
+                          "type": "neoforge:always"
                         }
                       ],
                       "neoforge:value": 1
-                    }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(TrueCondition.INSTANCE).build())));
+                    }""", write(CONDITIONS_INT, Optional.of(WithConditions.builder(1).addCondition(NeoForgeConditions.always()).build())));
         }
     }
 

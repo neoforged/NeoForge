@@ -54,7 +54,7 @@
              int l = j + k + i * 5 / 100;
              int i1 = 1;
 -            if (!p_332723_.isDamageableItem()) {
-+            if (!p_332723_.isDamageableItem() || !p_332723_.isRepairable()) {
++            if (!p_332723_.isDamageableItem() || !p_332723_.isCombineRepairable()) {
                  if (p_332723_.getMaxStackSize() < 2 || !ItemStack.matches(p_332723_, p_332686_)) {
                      return ItemStack.EMPTY;
                  }
@@ -62,7 +62,7 @@
              if (itemstack.isDamageableItem()) {
                  itemstack.set(DataComponents.MAX_DAMAGE, i);
                  itemstack.setDamageValue(Math.max(i - l, 0));
-+                if (!p_332686_.isRepairable()) itemstack.setDamageValue(p_332723_.getDamageValue());
++                if (!p_332686_.isCombineRepairable()) itemstack.setDamageValue(p_332723_.getDamageValue());
              }
  
              this.mergeEnchantsFrom(itemstack, p_332686_);

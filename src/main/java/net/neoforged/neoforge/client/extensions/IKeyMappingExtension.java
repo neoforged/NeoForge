@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.client.settings.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
@@ -55,5 +56,13 @@ public interface IKeyMappingExtension {
             }
         }
         return false;
+    }
+
+    /**
+     * {@return the display name of this key mapping}
+     * Defaults to a {@linkplain Component#translatable(String) translatable component} of the {@link KeyMapping#getName() name}.
+     */
+    default Component getDisplayName() {
+        return Component.translatable(self().getName());
     }
 }

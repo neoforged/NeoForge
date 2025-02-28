@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "custom_transformtype_test:block/item_hanger"
+  }
+}

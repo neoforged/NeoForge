@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/gui/font/glyphs/BakedGlyph.java
 +++ b/net/minecraft/client/gui/font/glyphs/BakedGlyph.java
-@@ -75,6 +_,15 @@
-         p_95223_.addVertex(p_254370_, p_95221_.x0, p_95221_.y1, p_95221_.depth).setColor(p_95221_.color).setUv(this.u1, this.v0).setLight(p_95224_);
+@@ -139,6 +_,15 @@
+             .setLight(p_382874_);
      }
  
 +    /**

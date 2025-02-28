@@ -9,7 +9,7 @@
      public static final Object2FloatMap<ItemLike> COMPOSTABLES = new Object2FloatOpenHashMap<>();
      private static final int AABB_SIDE_THICKNESS = 2;
      private static final VoxelShape OUTER_SHAPE = Shapes.block();
-@@ -231,6 +_,15 @@
+@@ -233,6 +_,15 @@
          if (p_51978_.getValue(LEVEL) == 7) {
              p_51979_.scheduleTick(p_51980_, p_51978_.getBlock(), 20);
          }
@@ -25,7 +25,7 @@
      }
  
      @Override
-@@ -238,7 +_,7 @@
+@@ -240,7 +_,7 @@
          ItemStack p_316332_, BlockState p_316118_, Level p_316624_, BlockPos p_316660_, Player p_316715_, InteractionHand p_316472_, BlockHitResult p_316606_
      ) {
          int i = p_316118_.getValue(LEVEL);
@@ -34,7 +34,7 @@
              if (i < 7 && !p_316624_.isClientSide) {
                  BlockState blockstate = addItem(p_316715_, p_316118_, p_316624_, p_316660_, p_316332_);
                  p_316624_.levelEvent(1500, p_316660_, p_316118_ != blockstate ? 1 : 0);
-@@ -265,7 +_,7 @@
+@@ -267,7 +_,7 @@
  
      public static BlockState insertItem(Entity p_270919_, BlockState p_270087_, ServerLevel p_270284_, ItemStack p_270253_, BlockPos p_270678_) {
          int i = p_270087_.getValue(LEVEL);
@@ -43,7 +43,7 @@
              BlockState blockstate = addItem(p_270919_, p_270087_, p_270284_, p_270678_, p_270253_);
              p_270253_.shrink(1);
              return blockstate;
-@@ -296,7 +_,7 @@
+@@ -298,7 +_,7 @@
  
      static BlockState addItem(@Nullable Entity p_270464_, BlockState p_270603_, LevelAccessor p_270151_, BlockPos p_270547_, ItemStack p_270354_) {
          int i = p_270603_.getValue(LEVEL);
@@ -52,7 +52,7 @@
          if ((i != 0 || !(f > 0.0F)) && !(p_270151_.getRandom().nextDouble() < (double)f)) {
              return p_270603_;
          } else {
-@@ -396,7 +_,7 @@
+@@ -398,7 +_,7 @@
  
          @Override
          public boolean canPlaceItemThroughFace(int p_52028_, ItemStack p_52029_, @Nullable Direction p_52030_) {
@@ -61,7 +61,7 @@
          }
  
          @Override
-@@ -454,5 +_,11 @@
+@@ -456,5 +_,11 @@
              ComposterBlock.empty(null, this.state, this.level, this.pos);
              this.changed = true;
          }

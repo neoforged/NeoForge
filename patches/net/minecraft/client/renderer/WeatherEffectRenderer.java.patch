@@ -1,15 +1,15 @@
 --- a/net/minecraft/client/renderer/WeatherEffectRenderer.java
 +++ b/net/minecraft/client/renderer/WeatherEffectRenderer.java
-@@ -61,6 +_,8 @@
+@@ -56,6 +_,8 @@
      }
  
-     public void render(Level p_364994_, LightTexture p_363130_, int p_363664_, float p_361655_, Vec3 p_363375_) {
-+        if (((ClientLevel) p_364994_).effects().renderSnowAndRain((ClientLevel) p_364994_, p_363664_, p_361655_, p_363130_, p_363375_.x, p_363375_.y, p_363375_.z))
+     public void render(Level p_364994_, MultiBufferSource p_383071_, int p_363664_, float p_361655_, Vec3 p_363375_) {
++        if (((ClientLevel) p_364994_).effects().renderSnowAndRain((ClientLevel) p_364994_, p_363664_, p_361655_, p_363375_.x, p_363375_.y, p_363375_.z))
 +            return;
          float f = p_364994_.getRainLevel(p_361655_);
          if (!(f <= 0.0F)) {
              int i = Minecraft.useFancyGraphics() ? 10 : 5;
-@@ -201,6 +_,8 @@
+@@ -180,6 +_,8 @@
      }
  
      public void tickRainParticles(ClientLevel p_361823_, Camera p_364990_, int p_361788_, ParticleStatus p_363302_) {

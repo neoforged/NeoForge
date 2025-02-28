@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
@@ -16,10 +17,12 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.client.IRenderableSection;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +39,7 @@ import org.joml.Matrix4f;
  */
 public class RenderLevelStageEvent extends Event {
     private final Stage stage;
+    private final Level level;
     private final LevelRenderer levelRenderer;
     private final PoseStack poseStack;
     private final Matrix4f modelViewMatrix;
@@ -44,9 +48,11 @@ public class RenderLevelStageEvent extends Event {
     private final DeltaTracker partialTick;
     private final Camera camera;
     private final Frustum frustum;
+    private final Iterable<? extends IRenderableSection> renderableSections;
 
-    public RenderLevelStageEvent(Stage stage, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum) {
+    public RenderLevelStageEvent(Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
         this.stage = stage;
+        this.level = level;
         this.levelRenderer = levelRenderer;
         this.poseStack = poseStack != null ? poseStack : new PoseStack();
         this.modelViewMatrix = modelViewMatrix;
@@ -55,6 +61,7 @@ public class RenderLevelStageEvent extends Event {
         this.partialTick = partialTick;
         this.camera = camera;
         this.frustum = frustum;
+        this.renderableSections = renderableSections;
     }
 
     /**
@@ -63,6 +70,13 @@ public class RenderLevelStageEvent extends Event {
      */
     public Stage getStage() {
         return stage;
+    }
+
+    /**
+     * {@return the current {@linkplain Level level} that is being rendered.}
+     */
+    public Level getLevel() {
+        return level;
     }
 
     /**
@@ -119,6 +133,16 @@ public class RenderLevelStageEvent extends Event {
      */
     public Frustum getFrustum() {
         return frustum;
+    }
+
+    /**
+     * Returns an iterable of all visible sections.
+     *
+     * Calling {@link Iterable#forEach(Consumer)} on the returned iterable allows the underlying renderer
+     * to optimize how it fetches the visible sections, and is recommended.
+     */
+    public Iterable<? extends IRenderableSection> getRenderableSections() {
+        return renderableSections;
     }
 
     /**

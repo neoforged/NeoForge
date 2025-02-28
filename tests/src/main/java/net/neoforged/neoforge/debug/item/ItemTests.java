@@ -5,17 +5,23 @@
 
 package net.neoforged.neoforge.debug.item;
 
+import java.util.EnumMap;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -40,15 +46,18 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -111,13 +120,12 @@ public class ItemTests {
             "Tests if the forge spawn egg works"
     })
     static void forgeSpawnEggTest(final DynamicTest test, final RegistrationHelper reg) {
-        final var testEntity = reg.entityTypes().registerType("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE)
-                .sized(1, 1))
+        final var testEntity = reg.entityTypes().registerEntityType("test_entity", Pig::new, MobCategory.CREATURE, builder -> builder.sized(1, 1))
                 .withAttributes(Pig::createAttributes)
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
 
-        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), 0x0000FF, 0xFF0000, props) {
+        final var egg = reg.items().registerItem("test_spawn_egg", props -> new SpawnEggItem(testEntity.get(), props) {
             @Override
             public InteractionResult useOn(UseOnContext ctx) {
                 final var result = super.useOn(ctx);
@@ -136,7 +144,29 @@ public class ItemTests {
                 return sup;
             }
         })
-                .tab(CreativeModeTabs.SPAWN_EGGS).withModel(builder -> builder.parent(new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"))));
+                .tab(CreativeModeTabs.SPAWN_EGGS);
+
+        reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
+            @Override
+            protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+                itemModels.generateSpawnEgg(egg.value(), 0xFFFFFF, 0xFFFFFF);
+            }
+
+            @Override
+            protected Stream<? extends Holder<Item>> getKnownItems() {
+                return Stream.of(egg);
+            }
+
+            @Override
+            protected Stream<? extends Holder<Block>> getKnownBlocks() {
+                return Stream.empty();
+            }
+
+            @Override
+            public String getName() {
+                return "forge_spawn_egg_test_model_generator";
+            }
+        }));
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.IRON_BLOCK))
@@ -199,9 +229,19 @@ public class ItemTests {
                 .thenSucceed());
     }
 
-    @TestHolder(description = "Adds a stone-pickaxe-like item that cannot mine bamboo blocks and is repaired with beds. Tests that registries can correctly handle named holder set references.")
+    private static final ArmorMaterial NEO_MATERIAL = new ArmorMaterial(5, Util.make(new EnumMap<>(ArmorType.class), map -> {
+        map.put(ArmorType.BOOTS, 1);
+        map.put(ArmorType.LEGGINGS, 2);
+        map.put(ArmorType.CHESTPLATE, 3);
+        map.put(ArmorType.HELMET, 1);
+        map.put(ArmorType.BODY, 3);
+    }), 15, SoundEvents.AMBIENT_CAVE, 0.0F, 0.0F, Tags.Items.BARRELS, EquipmentAssets.LEATHER);
+
+    @TestHolder(description = "Tests that registries can correctly handle named holder set references.")
     static void toolItem(final DynamicTest test, final RegistrationHelper reg) {
         var material = new ToolMaterial(BlockTags.BAMBOO_BLOCKS, 160, 5.0F, 0.5F, 10, ItemTags.BEDS);
         reg.items().registerItem("neo_pickaxe", properties -> new PickaxeItem(material, 1.0F, -2.8F, properties));
+        // This is invalid registration, but replicates an error suppression issue found in RegistryManager#applySnapshot
+//        reg.items().register("neo_helmet", () -> new ArmorItem(NEO_MATERIAL, ArmorType.HELMET, new Item.Properties()));
     }
 }

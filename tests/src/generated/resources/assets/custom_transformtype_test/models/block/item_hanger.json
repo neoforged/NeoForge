@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "custom_transformtype_test:block/item_hanger_bottom",
+    "front": "custom_transformtype_test:block/item_hanger_front",
+    "side": "custom_transformtype_test:block/item_hanger_side",
+    "top": "custom_transformtype_test:block/item_hanger_top"
+  }
+}

@@ -1,30 +1,30 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -54,6 +_,7 @@
+@@ -53,6 +_,7 @@
+     public static final int NUM_DATA_VALUES = 4;
      public static final int BURN_TIME_STANDARD = 200;
      public static final int BURN_COOL_SPEED = 2;
-     public static final int UNKNOWN_LIT_DURATION = 0;
 +    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
      protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
-     int litTime;
-     int litDuration = 0;
-@@ -64,9 +_,14 @@
+     int litTimeRemaining;
+     int litTotalTime;
+@@ -63,9 +_,14 @@
          public int get(int p_58431_) {
              switch (p_58431_) {
                  case 0:
-+                    if (litDuration > Short.MAX_VALUE) {
++                    if (litTotalTime > Short.MAX_VALUE) {
 +                        // Neo: preserve litTime / litDuration ratio on the client as data slots are synced as shorts.
-+                        return net.minecraft.util.Mth.floor(((double) litTime / litDuration) * Short.MAX_VALUE);
++                        return net.minecraft.util.Mth.floor(((double) litTimeRemaining / litTotalTime) * Short.MAX_VALUE);
 +                    }
 +
-                     return AbstractFurnaceBlockEntity.this.litTime;
+                     return AbstractFurnaceBlockEntity.this.litTimeRemaining;
                  case 1:
--                    return AbstractFurnaceBlockEntity.this.litDuration;
-+                    return Math.min(AbstractFurnaceBlockEntity.this.litDuration, Short.MAX_VALUE);
+-                    return AbstractFurnaceBlockEntity.this.litTotalTime;
++                    return Math.min(AbstractFurnaceBlockEntity.this.litTotalTime, Short.MAX_VALUE);
                  case 2:
-                     return AbstractFurnaceBlockEntity.this.cookingProgress;
+                     return AbstractFurnaceBlockEntity.this.cookingTimer;
                  case 3:
-@@ -106,6 +_,7 @@
+@@ -105,6 +_,7 @@
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
@@ -32,34 +32,38 @@
      }
  
      private boolean isLit() {
-@@ -117,9 +_,9 @@
+@@ -116,10 +_,10 @@
          super.loadAdditional(p_155025_, p_323468_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
          ContainerHelper.loadAllItems(p_155025_, this.items, p_323468_);
--        this.litTime = p_155025_.getShort("BurnTime");
--        this.cookingProgress = p_155025_.getShort("CookTime");
--        this.cookingTotalTime = p_155025_.getShort("CookTimeTotal");
-+        this.litTime = p_155025_.getInt("BurnTime");
-+        this.cookingProgress = p_155025_.getInt("CookTime");
-+        this.cookingTotalTime = p_155025_.getInt("CookTimeTotal");
-         this.litDuration = 0;
+-        this.cookingTimer = p_155025_.getShort("cooking_time_spent");
+-        this.cookingTotalTime = p_155025_.getShort("cooking_total_time");
+-        this.litTimeRemaining = p_155025_.getShort("lit_time_remaining");
+-        this.litTotalTime = p_155025_.getShort("lit_total_time");
++        this.cookingTimer = p_155025_.getInt("cooking_time_spent");
++        this.cookingTotalTime = p_155025_.getInt("cooking_total_time");
++        this.litTimeRemaining = p_155025_.getInt("lit_time_remaining");
++        this.litTotalTime = p_155025_.getInt("lit_total_time");
          CompoundTag compoundtag = p_155025_.getCompound("RecipesUsed");
  
-@@ -131,9 +_,9 @@
+         for (String s : compoundtag.getAllKeys()) {
+@@ -130,10 +_,10 @@
      @Override
      protected void saveAdditional(CompoundTag p_187452_, HolderLookup.Provider p_323656_) {
          super.saveAdditional(p_187452_, p_323656_);
--        p_187452_.putShort("BurnTime", (short)this.litTime);
--        p_187452_.putShort("CookTime", (short)this.cookingProgress);
--        p_187452_.putShort("CookTimeTotal", (short)this.cookingTotalTime);
-+        p_187452_.putInt("BurnTime", this.litTime);
-+        p_187452_.putInt("CookTime", this.cookingProgress);
-+        p_187452_.putInt("CookTimeTotal", this.cookingTotalTime);
+-        p_187452_.putShort("cooking_time_spent", (short)this.cookingTimer);
+-        p_187452_.putShort("cooking_total_time", (short)this.cookingTotalTime);
+-        p_187452_.putShort("lit_time_remaining", (short)this.litTimeRemaining);
+-        p_187452_.putShort("lit_total_time", (short)this.litTotalTime);
++        p_187452_.putInt("cooking_time_spent", this.cookingTimer);
++        p_187452_.putInt("cooking_total_time", this.cookingTotalTime);
++        p_187452_.putInt("lit_time_remaining", this.litTimeRemaining);
++        p_187452_.putInt("lit_total_time", this.litTotalTime);
          ContainerHelper.saveAllItems(p_187452_, this.items, p_323656_);
          CompoundTag compoundtag = new CompoundTag();
          this.recipesUsed.forEach((p_380898_, p_380899_) -> compoundtag.putInt(p_380898_.location().toString(), p_380899_));
-@@ -170,11 +_,15 @@
-                 p_155017_.litDuration = p_155017_.litTime;
+@@ -166,11 +_,15 @@
+                 p_155017_.litTotalTime = p_155017_.litTimeRemaining;
                  if (p_155017_.isLit()) {
                      flag1 = true;
 +                    var remainder = itemstack.getCraftingRemainder();
@@ -75,7 +79,7 @@
                          }
                      }
                  }
-@@ -227,9 +_,9 @@
+@@ -223,9 +_,9 @@
                  } else if (!ItemStack.isSameItemSameComponents(itemstack1, itemstack)) {
                      return false;
                  } else {
@@ -87,7 +91,7 @@
                  }
              }
          } else {
-@@ -251,7 +_,7 @@
+@@ -247,7 +_,7 @@
              if (itemstack2.isEmpty()) {
                  p_267073_.set(2, itemstack1.copy());
              } else if (ItemStack.isSameItemSameComponents(itemstack2, itemstack1)) {
@@ -96,7 +100,7 @@
              }
  
              if (itemstack.is(Blocks.WET_SPONGE.asItem()) && !p_267073_.get(1).isEmpty() && p_267073_.get(1).is(Items.BUCKET)) {
-@@ -266,7 +_,7 @@
+@@ -262,7 +_,7 @@
      }
  
      protected int getBurnDuration(FuelValues p_363501_, ItemStack p_58343_) {
@@ -105,7 +109,7 @@
      }
  
      private static int getTotalCookTime(ServerLevel p_380169_, AbstractFurnaceBlockEntity p_222694_) {
-@@ -329,7 +_,7 @@
+@@ -325,7 +_,7 @@
              return true;
          } else {
              ItemStack itemstack = this.items.get(1);

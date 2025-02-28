@@ -44,7 +44,6 @@ import net.minecraft.network.protocol.game.ServerboundLockDifficultyPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.network.protocol.game.ServerboundMoveVehiclePacket;
 import net.minecraft.network.protocol.game.ServerboundPaddleBoatPacket;
-import net.minecraft.network.protocol.game.ServerboundPickItemPacket;
 import net.minecraft.network.protocol.game.ServerboundPlaceRecipePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
@@ -182,9 +181,6 @@ public class FakePlayer extends ServerPlayer {
 
         @Override
         public void handleSetCommandMinecart(ServerboundSetCommandMinecartPacket packet) {}
-
-        @Override
-        public void handlePickItem(ServerboundPickItemPacket packet) {}
 
         @Override
         public void handleRenameItem(ServerboundRenameItemPacket packet) {}

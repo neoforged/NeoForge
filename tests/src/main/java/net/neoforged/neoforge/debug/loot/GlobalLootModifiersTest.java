@@ -247,7 +247,7 @@ public class GlobalLootModifiersTest {
                                 .build(SMELT.location())));
 
         var subpack = HELPER.registerSubpack("smelt_glms");
-        HELPER.addProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), CompletableFuture.supplyAsync(() -> registrySetBuilder.build(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)), Util.backgroundExecutor()), HELPER.modId()) {
+        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), CompletableFuture.supplyAsync(() -> registrySetBuilder.build(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY)), Util.backgroundExecutor()), HELPER.modId()) {
             @Override
             protected void start() {
                 add("smelting", new SmeltingEnchantmentModifier(
@@ -266,7 +266,7 @@ public class GlobalLootModifiersTest {
                 return super.getName() + " - smelting modifier";
             }
         });
-        HELPER.addProvider(event -> new DatapackBuiltinEntriesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(),
+        HELPER.addClientProvider(event -> new DatapackBuiltinEntriesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(),
                 registrySetBuilder, Set.of(HELPER.modId())));
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL).preventItemPickup())
@@ -297,7 +297,7 @@ public class GlobalLootModifiersTest {
     @TestHolder(description = "Tests if a GLM replacing loot table values works, by replacing seeds with wheat when harvesting wheat")
     static void wheatSeedReplacerTest(final DynamicTest test) {
         var subpack = HELPER.registerSubpack("wheat_seed_glms");
-        HELPER.addProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getLookupProvider(), HELPER.modId()) {
+        HELPER.addClientProvider(event -> new GlobalLootModifierProvider(event.getGenerator().getPackOutput(subpack), event.getLookupProvider(), HELPER.modId()) {
             @Override
             protected void start() {
                 this.add("wheat_harvest", new WheatSeedsConverterModifier(
@@ -335,7 +335,7 @@ public class GlobalLootModifiersTest {
     @EmptyTemplate
     @TestHolder(description = "Tests if dungeon loot modifiers work, by rolling the simple_dungeon loot table")
     static void dungeonLootTest(final DynamicTest test) {
-        HELPER.provider(GlobalLootModifierProvider.class, prov -> prov.add("dungeon_loot", new DungeonLootEnhancerModifier(
+        HELPER.clientProvider(GlobalLootModifierProvider.class, prov -> prov.add("dungeon_loot", new DungeonLootEnhancerModifier(
                 new LootItemCondition[] {
                         LootTableIdCondition.builder(ResourceLocation.withDefaultNamespace("chests/simple_dungeon")).build(),
                         new TestEnabledLootCondition(test)

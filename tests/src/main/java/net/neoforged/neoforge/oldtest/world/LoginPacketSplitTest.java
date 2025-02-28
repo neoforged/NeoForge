@@ -43,7 +43,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -210,12 +210,14 @@ public class LoginPacketSplitTest {
 
         @Nullable
         @Override
-        public <T> T getMetadataSection(MetadataSectionSerializer<T> section) throws IOException {
+        public <T> T getMetadataSection(MetadataSectionType<T> section) throws IOException {
             final JsonObject json = GsonHelper.parse(new String(root.get("pack.mcmeta").get()));
-            if (!json.has(section.getMetadataSectionName())) {
+            if (!json.has(section.name())) {
                 return null;
             } else {
-                return section.fromJson(GsonHelper.getAsJsonObject(json, section.getMetadataSectionName()));
+                return section.codec().parse(JsonOps.INSTANCE, json.get(section.name()))
+                        .result()
+                        .orElse(null);
             }
         }
 

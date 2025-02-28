@@ -11,7 +11,16 @@
                  p_362483_.pushPose();
                  p_362483_.translate(
                      (float)maprenderstate$mapdecorationrenderstate.x / 2.0F + 64.0F, (float)maprenderstate$mapdecorationrenderstate.y / 2.0F + 64.0F, -0.02F
-@@ -116,6 +_,7 @@
+@@ -109,13 +_,15 @@
+         p_364922_.texture = this.mapTextureManager.prepareMapTexture(p_361383_, p_363500_);
+         p_364922_.decorations.clear();
+ 
++        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateMapRenderState(p_363500_, p_364922_);
+         for (MapDecoration mapdecoration : p_363500_.getDecorations()) {
+-            p_364922_.decorations.add(this.extractDecorationRenderState(mapdecoration));
++            p_364922_.decorations.add(net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateMapDecorationRenderState(mapdecoration.type(), p_363500_, p_364922_, this.extractDecorationRenderState(mapdecoration)));
+         }
+     }
  
      private MapRenderState.MapDecorationRenderState extractDecorationRenderState(MapDecoration p_364175_) {
          MapRenderState.MapDecorationRenderState maprenderstate$mapdecorationrenderstate = new MapRenderState.MapDecorationRenderState();

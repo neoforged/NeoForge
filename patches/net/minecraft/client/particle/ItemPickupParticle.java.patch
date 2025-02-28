@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/particle/ItemPickupParticle.java
 +++ b/net/minecraft/client/particle/ItemPickupParticle.java
-@@ -102,4 +_,11 @@
+@@ -99,4 +_,11 @@
          this.targetYOld = this.targetY;
          this.targetZOld = this.targetZ;
      }

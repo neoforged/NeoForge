@@ -1,11 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -60,11 +_,11 @@
- import net.minecraft.world.phys.shapes.VoxelShape;
- import org.slf4j.Logger;
- 
--public class Block extends BlockBehaviour implements ItemLike {
-+public class Block extends BlockBehaviour implements ItemLike, net.neoforged.neoforge.common.extensions.IBlockExtension {
+@@ -64,7 +_,7 @@
      public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);
@@ -112,18 +107,7 @@
      public float getExplosionResistance() {
          return this.explosionResistance;
      }
-@@ -375,8 +_,10 @@
- 
-     public void updateEntityMovementAfterFallOn(BlockGetter p_49821_, Entity p_49822_) {
-         p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0, 0.0, 1.0));
-+        p_49822_.setDeltaMovement(p_49822_.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
-     }
- 
-+    @Deprecated //Forge: Use more sensitive version
-     public ItemStack getCloneItemStack(LevelReader p_304395_, BlockPos p_49824_, BlockState p_49825_) {
-         return new ItemStack(this);
-     }
-@@ -410,6 +_,7 @@
+@@ -406,6 +_,7 @@
      public void handlePrecipitation(BlockState p_152450_, Level p_152451_, BlockPos p_152452_, Biome.Precipitation p_152453_) {
      }
  
@@ -131,7 +115,7 @@
      public boolean dropFromExplosion(Explosion p_49826_) {
          return true;
      }
-@@ -475,6 +_,35 @@
+@@ -471,6 +_,35 @@
          return this.stateDefinition.getPossibleStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), p_152459_));
      }
  

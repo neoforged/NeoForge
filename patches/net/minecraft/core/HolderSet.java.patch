@@ -1,14 +1,5 @@
 --- a/net/minecraft/core/HolderSet.java
 +++ b/net/minecraft/core/HolderSet.java
-@@ -15,7 +_,7 @@
- import net.minecraft.util.RandomSource;
- import org.jetbrains.annotations.VisibleForTesting;
- 
--public interface HolderSet<T> extends Iterable<Holder<T>> {
-+public interface HolderSet<T> extends Iterable<Holder<T>>, net.neoforged.neoforge.common.extensions.IHolderSetExtension<T> {
-     Stream<Holder<T>> stream();
- 
-     int size();
 @@ -182,6 +_,9 @@
  
          void bind(List<Holder<T>> p_205836_) {

@@ -1,10 +1,10 @@
 {
   "variants": {
     "bottom=false": {
-      "model": "minecraft:block/scaffolding_stable"
+      "model": "scaffolding_test:block/scaffolding_method_test_stable"
     },
     "bottom=true": {
-      "model": "minecraft:block/scaffolding_unstable"
+      "model": "scaffolding_test:block/scaffolding_method_test_unstable"
     }
   }
 }
