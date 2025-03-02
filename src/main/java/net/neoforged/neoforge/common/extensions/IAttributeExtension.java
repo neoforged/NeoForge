@@ -128,7 +128,7 @@ public interface IAttributeExtension {
 
         // Emit both the value of the modifier, and the entity's base value as debug information, since both are flattened into the modifier.
         // Skip showing debug information here when displaying a merged modifier, since it will be shown if the user holds shift to display the un-merged modifier.
-        if (flag.isAdvanced() && !merged) {
+        if (flag.isAdvanced() && !merged && NeoForgeConfig.COMMON.attributeAdvancedTooltipDebugInfo.get()) {
             Component debugInfo = Component.literal(" ").append(Component.translatable("neoforge.attribute.debug.base", FORMAT.format(entityBase), FORMAT.format(value - entityBase)).withStyle(ChatFormatting.GRAY));
             comp.append(debugInfo);
         }
