@@ -225,7 +225,7 @@ public class Tags {
         /**
          * For pumpkins that are already carved and a light source.
          */
-        public static final TagKey<Block> JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
+        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
@@ -717,7 +717,7 @@ public class Tags {
         /**
          * For pumpkins that are already carved and a light source.
          */
-        public static final TagKey<Item> JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
+        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
