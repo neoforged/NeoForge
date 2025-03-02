@@ -74,6 +74,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.OBSIDIANS, "Obsidians");
         add(Tags.Blocks.OBSIDIANS_NORMAL, "Normal Obsidians");
         add(Tags.Blocks.OBSIDIANS_CRYING, "Crying Obsidians");
+        add(Tags.Blocks.PUMPKINS, "Pumpkins");
         add(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, "Deepslate Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, "Netherrack Ore Bearing Ground");
         add(Tags.Blocks.ORE_BEARING_GROUND_STONE, "Stone Ore Bearing Ground");
@@ -96,6 +97,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
+        add(Tags.Blocks.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Blocks.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Blocks.JACK_O_LANTERNS, "Jack O Lanterns");
         add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
         add(Tags.Blocks.ROPES, "Ropes");
         add(Tags.Blocks.SANDS, "Sands");
@@ -298,6 +302,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
         add(Tags.Items.POTIONS_BOTTLE, "Bottled Potions");
+        add(Tags.Items.PUMPKINS, "Pumpkins");
+        add(Tags.Items.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Items.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Items.JACK_O_LANTERNS, "Jack O Lanterns");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
