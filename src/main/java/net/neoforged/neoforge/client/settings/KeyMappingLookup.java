@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.settings;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public class KeyMappingLookup {
     public void put(InputConstants.Key keyCode, KeyMapping keyBinding) {
         KeyModifier keyModifier = keyBinding.getKeyModifier();
         Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap = map.get(keyModifier);
-        Collection<KeyMapping> bindingsForKey = bindingsMap.computeIfAbsent(keyCode, k -> Sets.newConcurrentHashSet());
+        Collection<KeyMapping> bindingsForKey = bindingsMap.computeIfAbsent(keyCode, k -> Lists.newCopyOnWriteArrayList());
         bindingsForKey.add(keyBinding);
     }
 
