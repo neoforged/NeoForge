@@ -73,6 +73,38 @@ public interface IBlockStateExtension {
     }
 
     /**
+     * Gets the speed factor at the given location at the given state. Normally
+     * between 0 and 1.
+     * <p>
+     * Note that entities may manipulate the speed factor on their own;
+     * for {@link LivingEntity#getBlockSpeedFactor()}
+     *
+     * @param level  the level
+     * @param pos    the position in the level
+     * @param entity the entity in question
+     * @return the factor by which the entity's speed should be multiplied
+     */
+    default float getSpeedFactor(LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return self().getBlock().getSpeedFactor(self(), level, pos, entity);
+    }
+
+    /**
+     * Gets the jump factor at the given location at the given state. Normally
+     * between 0 and 1.
+     * <p>
+     * Note that entities may manipulate the speed factor on their own;
+     * for {@link LivingEntity#getJumpPower()}
+     *
+     * @param level  the level
+     * @param pos    the position in the level
+     * @param entity the entity in question
+     * @return the factor by which the entity's jump should be multiplied
+     */
+    default float getJumpFactor(LevelReader level, BlockPos pos, @Nullable Entity entity) {
+        return self().getBlock().getJumpFactor(self(), level, pos, entity);
+    }
+
+    /**
      * Whether this block state has dynamic light emission which is not solely based on its underlying block or its
      * state properties and instead uses the {@link BlockPos}, the {@link AuxiliaryLightManager} or another external
      * data source to determine its light value in {@link #getLightEmission(BlockGetter, BlockPos)}

@@ -74,6 +74,34 @@
                      ? blockpos.atY(Mth.floor(this.position.y - (double)p_216987_))
                      : blockpos;
              }
+@@ -872,16 +_,23 @@
+     }
+ 
+     protected float getBlockJumpFactor() {
+-        float f = this.level().getBlockState(this.blockPosition()).getBlock().getJumpFactor();
+-        float f1 = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getJumpFactor();
++        BlockPos insidePos = this.blockPosition();
++        BlockPos belowPos = this.getBlockPosBelowThatAffectsMyMovement();
++        float f = this.level().getBlockState(insidePos).getJumpFactor(this.level(), insidePos, this);
++        float f1 = this.level().getBlockState(belowPos).getJumpFactor(this.level(), belowPos, this);
+         return (double)f == 1.0 ? f1 : f;
+     }
+ 
+     protected float getBlockSpeedFactor() {
+         BlockState blockstate = this.level().getBlockState(this.blockPosition());
+-        float f = blockstate.getBlock().getSpeedFactor();
++        float f = blockstate.getSpeedFactor(this.level(), this.blockPosition(), this);
+         if (!blockstate.is(Blocks.WATER) && !blockstate.is(Blocks.BUBBLE_COLUMN)) {
+-            return (double)f == 1.0 ? this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getSpeedFactor() : f;
++            if (f == 1.0) {
++                BlockPos belowPos = this.getBlockPosBelowThatAffectsMyMovement();
++                return this.level().getBlockState(belowPos).getSpeedFactor(this.level(), belowPos, this);
++            } else {
++                return f;
++            }
+         } else {
+             return f;
+         }
 @@ -1141,19 +_,19 @@
          return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
      }
