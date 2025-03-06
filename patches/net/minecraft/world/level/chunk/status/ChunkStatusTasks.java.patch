@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/status/ChunkStatusTasks.java
 +++ b/net/minecraft/world/level/chunk/status/ChunkStatusTasks.java
-@@ -198,11 +_,22 @@
+@@ -199,11 +_,22 @@
              }
  
              levelchunk.setFullStatus(generationchunkholder::getFullStatus);

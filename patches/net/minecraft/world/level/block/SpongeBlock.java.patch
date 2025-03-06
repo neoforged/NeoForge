@@ -14,6 +14,6 @@
                          FluidState fluidstate = p_56808_.getFluidState(p_294069_);
 -                        if (!fluidstate.is(FluidTags.WATER)) {
 +                        if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_294069_)) {
-                             return false;
+                             return BlockPos.TraversalNodeStatus.SKIP;
                          } else {
                              if (blockstate.getBlock() instanceof BucketPickup bucketpickup

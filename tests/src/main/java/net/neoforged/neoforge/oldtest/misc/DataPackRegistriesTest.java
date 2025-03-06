@@ -81,7 +81,7 @@ public class DataPackRegistriesTest {
         }
     }
 
-    private void onGatherData(final GatherDataEvent event) {
+    private void onGatherData(final GatherDataEvent.Client event) {
         // Example of how to datagen datapack registry objects.
         // Objects to be datagenerated must be registered (e.g. via DeferredRegister above).
         // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
@@ -95,7 +95,7 @@ public class DataPackRegistriesTest {
         final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath() + ".json");
         final Path path = outputFolder.resolve(pathString);
 
-        generator.addProvider(event.includeServer(), new DataProvider() {
+        generator.addProvider(true, new DataProvider() {
             @Override
             public CompletableFuture<?> run(final CachedOutput cache) {
                 return providerCompletableFuture.thenCompose(provider -> {

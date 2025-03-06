@@ -125,8 +125,8 @@ public class BiomeModifierTest {
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event) {
-        event.getGenerator().addProvider(event.includeServer(), (DataProvider.Factory<BiomeModifiers>) output -> new BiomeModifiers(output, event.getLookupProvider()));
+    private void onGatherData(GatherDataEvent.Client event) {
+        event.getGenerator().addProvider(true, (DataProvider.Factory<BiomeModifiers>) output -> new BiomeModifiers(output, event.getLookupProvider()));
     }
 
     private static class BiomeModifiers extends DatapackBuiltinEntriesProvider {

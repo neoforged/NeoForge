@@ -36,7 +36,7 @@ public record TestEnabledIngredient(Ingredient base, TestFramework framework, St
 
     @Override
     public Stream<Holder<Item>> items() {
-        return base.items().stream();
+        return base.items();
     }
 
     @Override

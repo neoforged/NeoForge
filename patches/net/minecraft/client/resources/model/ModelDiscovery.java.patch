@@ -1,26 +1,23 @@
 --- a/net/minecraft/client/resources/model/ModelDiscovery.java
 +++ b/net/minecraft/client/resources/model/ModelDiscovery.java
-@@ -49,6 +_,7 @@
-         });
-         set.add(ItemRenderer.TRIDENT_MODEL);
-         set.add(ItemRenderer.SPYGLASS_MODEL);
-+        net.neoforged.neoforge.client.ClientHooks.onRegisterAdditionalModels(set);
-         return set;
+@@ -22,6 +_,7 @@
+     final UnbakedModel missingModel;
+     private final List<ResolvableModel> topModels = new ArrayList<>();
+     private final Map<ResourceLocation, UnbakedModel> referencedModels = new HashMap<>();
++    final Map<ResourceLocation, UnbakedModel> standaloneModels = new HashMap<>();
+ 
+     public ModelDiscovery(Map<ResourceLocation, UnbakedModel> p_360750_, UnbakedModel p_365355_) {
+         this.inputModels = p_360750_;
+@@ -31,6 +_,12 @@
+ 
+     public void registerSpecialModels() {
+         this.referencedModels.put(ItemModelGenerator.GENERATED_ITEM_MODEL_ID, new ItemModelGenerator());
++
++        net.neoforged.neoforge.client.ClientHooks.onRegisterAdditionalModels(path -> {
++            UnbakedModel model = getBlockModel(path);
++            this.addRoot(model);
++            this.standaloneModels.put(path, model);
++        });
      }
  
-@@ -77,6 +_,15 @@
-                     }
-                 }
-             );
-+        // Neo: ensure standalone models registered in ModelEvent.RegisterAdditional are loaded
-+        var it = set.iterator();
-+        while (it.hasNext()) {
-+            ModelResourceLocation mrl = it.next();
-+            if (mrl.getVariant().equals(ModelResourceLocation.STANDALONE_VARIANT)) {
-+                registerTopModel(mrl, getBlockModel(mrl.id()));
-+                it.remove();
-+            }
-+        }
-         if (!set.isEmpty()) {
-             LOGGER.warn("Missing mandatory models: {}", set.stream().map(p_370354_ -> "\n\t" + p_370354_).collect(Collectors.joining()));
-         }
+     public void addRoot(ResolvableModel p_388596_) {

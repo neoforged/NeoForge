@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -393,9 +_,10 @@
+@@ -399,9 +_,10 @@
  
          public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
              this.cancelTasks();
@@ -13,7 +13,23 @@
              return this.lastRebuildTask;
          }
  
-@@ -464,10 +_,17 @@
+@@ -441,6 +_,15 @@
+             );
+         }
+ 
++        // Neo: start
++
++        @Override
++        public boolean isEmpty() {
++            return !getCompiled().hasRenderableLayers();
++        }
++
++        // Neo: end
++
+         @OnlyIn(Dist.CLIENT)
+         public abstract class CompileTask {
+             protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
+@@ -470,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected volatile RenderChunkRegion region;
@@ -31,7 +47,16 @@
              }
  
              @Override
-@@ -498,7 +_,7 @@
+@@ -489,6 +_,8 @@
+                     RenderChunkRegion renderchunkregion = this.region;
+                     this.region = null;
+                     if (renderchunkregion == null) {
++                        // Neo: Fix MC-279596 (global block entities not being updated for empty sections)
++                        RenderSection.this.updateGlobalBlockEntities(Set.of());
+                         RenderSection.this.setCompiled(SectionRenderDispatcher.CompiledSection.EMPTY);
+                         return CompletableFuture.completedFuture(SectionRenderDispatcher.SectionTaskResult.SUCCESSFUL);
+                     } else {
+@@ -499,7 +_,7 @@
                              SectionCompiler.Results sectioncompiler$results;
                              try (Zone zone = Profiler.get().zone("Compile Section")) {
                                  sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler

@@ -143,7 +143,7 @@ public interface IGuiGraphicsExtension {
             if (centerX) x += (w - boundsWidth) / 2;
         }
 
-        self().blit(RenderType::guiTextured, texture, x, y, boundsWidth, boundsHeight, 0, 0, rectWidth, rectHeight, rectWidth, rectHeight);
+        self().blit(RenderType::guiTextured, texture, x, y, 0, 0, boundsWidth, boundsHeight, rectWidth, rectHeight, rectWidth, rectHeight);
     }
 
     // TODO: 1.20.2: do we need to fix these or can we just remove them?

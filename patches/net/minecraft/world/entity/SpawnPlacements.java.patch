@@ -26,7 +26,7 @@
      }
  
      static {
-@@ -183,5 +_,16 @@
+@@ -182,5 +_,16 @@
      @FunctionalInterface
      public interface SpawnPredicate<T extends Entity> {
          boolean test(EntityType<T> p_217081_, ServerLevelAccessor p_217082_, EntitySpawnReason p_363558_, BlockPos p_217084_, RandomSource p_217085_);

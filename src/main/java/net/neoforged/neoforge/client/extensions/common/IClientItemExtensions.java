@@ -6,16 +6,17 @@
 package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ARGB;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -24,9 +25,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.item.equipment.EquipmentModel;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,15 +97,15 @@ public interface IClientItemExtensions {
      * @param layerType The slot the item is in
      * @param original  The original armor model. Will have attributes set.
      * @return A HumanoidModel to be rendered. Relevant properties are to be copied over by the caller.
-     * @see #getGenericArmorModel(ItemStack, EquipmentModel.LayerType, Model)
+     * @see #getGenericArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)
      */
-    default Model getHumanoidArmorModel(ItemStack itemStack, EquipmentModel.LayerType layerType, Model original) {
+    default Model getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
         return original;
     }
 
     /**
      * Queries the armor model for this item when it's equipped. Useful in place of
-     * {@link #getHumanoidArmorModel(ItemStack, EquipmentModel.LayerType, Model)} for wrapping the original
+     * {@link #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)} for wrapping the original
      * model or returning anything non-standard.
      * <p>
      * If you override this method you are responsible for copying any properties you care about from the original model.
@@ -113,13 +114,14 @@ public interface IClientItemExtensions {
      * @param layerType The slot the item is in
      * @param original  The original armor model. Will have attributes set.
      * @return A Model to be rendered. Relevant properties must be copied over manually.
-     * @see #getHumanoidArmorModel(ItemStack, EquipmentModel.LayerType, Model)
+     * @see #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)
      */
-    default Model getGenericArmorModel(ItemStack itemStack, EquipmentModel.LayerType layerType, Model original) {
+    default Model getGenericArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
         Model replacement = getHumanoidArmorModel(itemStack, layerType, original);
         if (replacement != original) {
-            // FIXME: equipment rendering deals with a plain Model now
-            //ClientHooks.copyModelProperties(original, replacement);
+            if (original instanceof HumanoidModel<?> originalHumanoid && replacement instanceof HumanoidModel<?> replacementHumanoid) {
+                ClientHooks.copyModelProperties(originalHumanoid, replacementHumanoid);
+            }
             return replacement;
         }
         return original;
@@ -143,29 +145,22 @@ public interface IClientItemExtensions {
     default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
-     * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
+     * Called to render an overlay on the first-person camera.
      * <p>
-     * This is where pumpkins would render their overlay.
+     * This method will always be called to render an overlay, regardless of whether the client camera overlay provided
+     * by the {@link DataComponents#EQUIPPABLE Equippable data component} is present. If the equippable overlay is present
+     * (e.g. the pumpkin overlay), this method will be called after it has been rendered.
+     * <p>
+     * This method should be used if the overlay is dynamic or has dynamic components.
+     * For a static overlay, prefer using {@link Equippable#cameraOverlay()}.
      *
-     * @param stack       The item stack
-     * @param player      The player entity
-     * @param width       The viewport width
-     * @param height      Viewport height
-     * @param partialTick Partial tick time, useful for interpolation
+     * @param stack         The item stack that the player is wearing
+     * @param equipmentSlot The slot in which the player is wearing or holding the above item stack
+     * @param player        The player entity
+     * @param guiGraphics   The gui graphics
+     * @param deltaTracker  The delta tracker
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick) {}
-
-    /**
-     * Queries this item's renderer.
-     * <p>
-     * Only used if {@link BakedModel#isCustomRenderer()} returns {@code true} or {@link BlockState#getRenderShape()}
-     * returns {@link net.minecraft.world.level.block.RenderShape#ENTITYBLOCK_ANIMATED}.
-     * <p>
-     * By default, returns vanilla's block entity renderer.
-     */
-    default BlockEntityWithoutLevelRenderer getCustomRenderer() {
-        return Minecraft.getInstance().getItemRenderer().getBlockEntityRenderer();
-    }
+    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}
@@ -201,13 +196,13 @@ public interface IClientItemExtensions {
      *                      performance
      * @return a custom color for the layer, in ARGB format, or 0 to skip rendering
      */
-    default int getArmorLayerTintColor(ItemStack stack, EquipmentModel.Layer layer, int layerIdx, int fallbackColor) {
+    default int getArmorLayerTintColor(ItemStack stack, EquipmentClientInfo.Layer layer, int layerIdx, int fallbackColor) {
         return EquipmentLayerRenderer.getColorForLayer(layer, fallbackColor);
     }
 
     /**
      * Called once per render pass of equipped armor items, regardless of the number of layers; the return value of this
-     * method is passed to {@link #getArmorLayerTintColor(ItemStack, EquipmentModel.Layer, int, int)} as
+     * method is passed to {@link #getArmorLayerTintColor(ItemStack, EquipmentClientInfo.Layer, int, int)} as
      * the {@code fallbackColor} parameter.
      * <p>
      * You can override this method for your custom armor item to provide an alternative default color for the item when
@@ -217,7 +212,25 @@ public interface IClientItemExtensions {
      * @return a default color for the layer, in ARGB format
      */
     default int getDefaultDyeColor(ItemStack stack) {
-        return stack.is(ItemTags.DYEABLE) ? ARGB.opaque(DyedItemColor.getOrDefault(stack, 0)) : 0;
+        return stack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(stack, 0) : 0;
+    }
+
+    /**
+     * Called by RenderBiped and RenderPlayer to determine the armor texture that
+     * should be used for the currently equipped item. This will be called on
+     * stacks with the {@link DataComponents#EQUIPPABLE} component.
+     *
+     * Returning null from this function will use the default value.
+     *
+     * @param stack    ItemStack for the equipped armor
+     * @param type     The layer type of the armor
+     * @param layer    The armor layer
+     * @param _default The default texture determined by the equipment renderer
+     * @return Path of texture to bind, or null to use default
+     */
+    @Nullable
+    default ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
+        return null;
     }
 
     enum FontContext {

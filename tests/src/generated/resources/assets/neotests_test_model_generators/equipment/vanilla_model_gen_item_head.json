@@ -1,0 +1,9 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "neotests_test_model_generators:vanilla_model_gen_item_head"
+      }
+    ]
+  }
+}

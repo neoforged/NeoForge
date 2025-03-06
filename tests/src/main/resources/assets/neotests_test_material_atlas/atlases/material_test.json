@@ -1,0 +1,8 @@
+{
+    "sources": [
+        {
+            "type": "minecraft:single",
+            "resource": "minecraft:block/stone"
+        }
+    ]
+}

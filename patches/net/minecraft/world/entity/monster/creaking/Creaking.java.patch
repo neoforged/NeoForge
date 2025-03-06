@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
-@@ -230,7 +_,8 @@
- 
-             return true;
-         } else {
--            Predicate<LivingEntity> predicate = this.isActive() ? LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM : p_380174_ -> true;
-+            // Neo: provide entity being looked at to disguise check
-+            java.util.function.BiPredicate<LivingEntity, LivingEntity> predicate = this.isActive() ? LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET : (p_380174_, target) -> true;
- 
+@@ -503,7 +_,8 @@
              for (Player player : list) {
-                 if (!player.isCreative()
+                 if (this.canAttack(player) && !this.isAlliedTo(player)) {
+                     flag1 = true;
+-                    if ((!flag || LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM.test(player))
++                    // Neo: provide entity being looked at to disguise check
++                    if ((!flag || LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(player, this))
+                         && this.isLookingAtMe(
+                             player,
+                             0.5,

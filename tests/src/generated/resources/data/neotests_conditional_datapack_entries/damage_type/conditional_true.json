@@ -1,7 +1,7 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:true"
+      "type": "neoforge:always"
     }
   ],
   "effects": "burning",

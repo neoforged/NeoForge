@@ -6,9 +6,11 @@
 package net.neoforged.neoforge.resource;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -53,5 +55,15 @@ public abstract class ContextAwareReloadListener implements PreparableReloadList
      */
     protected final ConditionalOps<JsonElement> makeConditionalOps() {
         return new ConditionalOps<>(getRegistryLookup().createSerializationContext(JsonOps.INSTANCE), getContext());
+    }
+
+    protected final ConditionalOps<JsonElement> makeConditionalOps(DynamicOps<JsonElement> ops) {
+        if (ops instanceof ConditionalOps<JsonElement> conditionalOps) {
+            return conditionalOps;
+        }
+        if (ops instanceof RegistryOps<JsonElement> registryOps) {
+            return new ConditionalOps<>(registryOps, getContext());
+        }
+        return makeConditionalOps();
     }
 }

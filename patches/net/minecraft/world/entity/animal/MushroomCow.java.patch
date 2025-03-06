@@ -1,19 +1,19 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
-@@ -166,11 +_,19 @@
+@@ -165,11 +_,19 @@
      @Override
      public void shear(ServerLevel p_376375_, SoundSource p_28924_, ItemStack p_373092_) {
          p_376375_.playSound(null, this, SoundEvents.MOOSHROOM_SHEAR, p_28924_, 1.0F, 1.0F);
 +        if (!net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.COW, (timer) -> {})) return;
-         this.convertTo(EntityType.COW, ConversionParams.single(this, false, false), p_381482_ -> {
-+            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_381482_);
+         this.convertTo(EntityType.COW, ConversionParams.single(this, false, false), p_390217_ -> {
++            net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_390217_);
              p_376375_.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
-             this.dropFromShearingLootTable(p_376375_, BuiltInLootTables.SHEAR_MOOSHROOM, p_373092_, (p_381483_, p_381484_) -> {
-                 for (int i = 0; i < p_381484_.getCount(); i++) {
--                    p_381483_.addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(1.0), this.getZ(), p_381484_.copyWithCount(1)));
+             this.dropFromShearingLootTable(p_376375_, BuiltInLootTables.SHEAR_MOOSHROOM, p_373092_, (p_390218_, p_390219_) -> {
+                 for (int i = 0; i < p_390219_.getCount(); i++) {
+-                    p_390218_.addFreshEntity(new ItemEntity(this.level(), this.getX(), this.getY(1.0), this.getZ(), p_390219_.copyWithCount(1)));
 +                    // Neo: Change from addFreshEntity to spawnAtLocation to ensure captureDrops can capture this, we also need to unset the default pickup delay from the item
 +                    // Vanilla uses this.getY(1.0) for the y-level, which is this.getY() + this.getBbHeight() * 1.0, so we pass the BB height as the Y-offset.
-+                    ItemEntity item = spawnAtLocation(p_381483_, p_381484_.copyWithCount(1), this.getBbHeight());
++                    ItemEntity item = spawnAtLocation(p_390218_, p_390219_.copyWithCount(1), this.getBbHeight());
 +                    if (item != null) {
 +                        // addFreshEntity does not incur a pickup delay, while spawnAtLocation sets the default pickup delay.
 +                        item.setNoPickUpDelay();

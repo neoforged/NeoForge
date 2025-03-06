@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @Mod(RemoveTagDatagenTest.MODID)
@@ -32,11 +31,10 @@ public class RemoveTagDatagenTest {
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event) {
+    private void onGatherData(GatherDataEvent.Client event) {
         DataGenerator generator = event.getGenerator();
-        ExistingFileHelper helper = event.getExistingFileHelper();
 
-        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getLookupProvider(), MODID, helper) {
+        var blocks = new BlockTagsProvider(generator.getPackOutput(), event.getLookupProvider(), MODID) {
             @SuppressWarnings("unchecked")
             @Override
             protected void addTags(HolderLookup.Provider provider) {
@@ -50,9 +48,9 @@ public class RemoveTagDatagenTest {
             }
         };
 
-        generator.addProvider(event.includeServer(), blocks);
+        generator.addProvider(true, blocks);
 
-        generator.addProvider(event.includeServer(), new ItemTagsProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID, helper) {
+        generator.addProvider(true, new ItemTagsProvider(generator.getPackOutput(), event.getLookupProvider(), blocks.contentsGetter(), MODID) {
             @Override
             protected void addTags(HolderLookup.Provider provider) {
                 // This is for testing if it is functional, remove spruce_planks from planks, which makes us unable to craft beds with them.

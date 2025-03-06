@@ -65,6 +65,7 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -952,7 +953,7 @@ public class CommonHooks {
      * Used as the default implementation of {@link Item#getCreatorModId}. Call that method instead.
      */
     @Nullable
-    public static String getDefaultCreatorModId(ItemStack itemStack) {
+    public static String getDefaultCreatorModId(HolderLookup.Provider registries, ItemStack itemStack) {
         Item item = itemStack.getItem();
         ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();
@@ -974,7 +975,7 @@ public class CommonHooks {
                     return key.get().location().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(registries, itemStack));
                 if (key.isPresent()) {
                     return key.get().location().getNamespace();
                 }
@@ -1522,6 +1523,18 @@ public class CommonHooks {
             return ClientHooks.resolveLookup(key);
         }
         return null;
+    }
+
+    /**
+     * Extracts a {@link HolderLookup.Provider} from the given {@code ops}, if possible.
+     *
+     * @throws IllegalArgumentException if the ops were not created using a {@linkplain HolderLookup.Provider}
+     */
+    public static HolderLookup.Provider extractLookupProvider(RegistryOps<?> ops) {
+        if (ops.lookupProvider instanceof RegistryOps.HolderLookupAdapter hla) {
+            return hla.lookupProvider;
+        }
+        throw new IllegalArgumentException("Registry ops has lookup provider " + ops.lookupProvider + " which is not a HolderLookupAdapter");
     }
 
     /**

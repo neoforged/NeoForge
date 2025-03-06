@@ -27,7 +27,6 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
@@ -40,10 +39,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -65,7 +60,7 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private interface DataGenProvider<T extends DataProvider> {
-        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, ExistingFileHelper existingFileHelper, String modId, List<Consumer<T>> consumers);
+        T create(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, DataGenerator generator, String modId, List<Consumer<T>> consumers);
     }
 
     private static final Map<Class<?>, DataGenProvider<?>> PROVIDERS;
@@ -78,26 +73,13 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         }
         final var reg = new ProviderRegistrar();
 
-        reg.register(LanguageProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
+        reg.register(LanguageProvider.class, (output, registries, generator, modId, consumers) -> new LanguageProvider(output, modId, "en_us") {
             @Override
             protected void addTranslations() {
                 consumers.forEach(c -> c.accept(this));
             }
         });
-        reg.register(BlockStateProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new BlockStateProvider(output, modId, existingFileHelper) {
-            @Override
-            protected void registerStatesAndModels() {
-                existingFileHelper.trackGenerated(ResourceLocation.fromNamespaceAndPath("testframework", "block/white"), ModelProvider.TEXTURE);
-                consumers.forEach(c -> c.accept(this));
-            }
-        });
-        reg.register(ItemModelProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new ItemModelProvider(output, modId, existingFileHelper) {
-            @Override
-            protected void registerModels() {
-                consumers.forEach(c -> c.accept(this));
-            }
-        });
-        reg.register(GlobalLootModifierProvider.class, (output, registries, generator, existingFileHelper, modId, consumers) -> new GlobalLootModifierProvider(output, registries, modId) {
+        reg.register(GlobalLootModifierProvider.class, (output, registries, generator, modId, consumers) -> new GlobalLootModifierProvider(output, registries, modId) {
             @Override
             protected void start() {
                 consumers.forEach(c -> c.accept(this));
@@ -108,8 +90,10 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     private final String modId;
-    private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
-    private final List<Function<GatherDataEvent, DataProvider>> directProviders = new ArrayList<>();
+    private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> clientProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final ListMultimap<Class<?>, Consumer<? extends DataProvider>> serverProviders = Multimaps.newListMultimap(new IdentityHashMap<>(), ArrayList::new);
+    private final List<Function<GatherDataEvent.Client, DataProvider>> directClientProviders = new ArrayList<>();
+    private final List<Function<GatherDataEvent.Server, DataProvider>> directServerProviders = new ArrayList<>();
     private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> registrars = new ConcurrentHashMap<>();
 
     @Override
@@ -199,13 +183,23 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     }
 
     @Override
-    public <T extends DataProvider> void provider(Class<T> type, Consumer<T> consumer) {
-        providers.put(type, consumer);
+    public <T extends DataProvider> void serverProvider(Class<T> type, Consumer<T> consumer) {
+        serverProviders.put(type, consumer);
     }
 
     @Override
-    public void addProvider(Function<GatherDataEvent, DataProvider> provider) {
-        directProviders.add(provider);
+    public <T extends DataProvider> void clientProvider(Class<T> type, Consumer<T> consumer) {
+        clientProviders.put(type, consumer);
+    }
+
+    @Override
+    public void addClientProvider(Function<GatherDataEvent.Client, DataProvider> provider) {
+        directClientProviders.add(provider);
+    }
+
+    @Override
+    public void addServerProvider(Function<GatherDataEvent.Server, DataProvider> provider) {
+        directServerProviders.add(provider);
     }
 
     private IEventBus bus;
@@ -214,7 +208,8 @@ public class RegistrationHelperImpl implements RegistrationHelper {
     public void register(IEventBus bus, ModContainer container) {
         this.bus = bus;
         this.owner = container;
-        bus.addListener(this::gather);
+        bus.addListener(this::gatherServer);
+        bus.addListener(this::gatherClient);
         listeners.forEach(bus::addListener);
         registrars.values().forEach(r -> r.register(bus));
     }
@@ -226,9 +221,17 @@ public class RegistrationHelperImpl implements RegistrationHelper {
         return bus == null ? listeners::add : bus::addListener;
     }
 
-    private void gather(final GatherDataEvent event) {
+    private void gatherServer(final GatherDataEvent.Server event) {
+        gather(event, serverProviders, directServerProviders);
+    }
+
+    private void gatherClient(final GatherDataEvent.Client event) {
+        gather(event, clientProviders, directClientProviders);
+    }
+
+    private <T extends GatherDataEvent> void gather(final T event, ListMultimap<Class<?>, Consumer<? extends DataProvider>> providers, List<Function<T, DataProvider>> directProviders) {
         providers.asMap().forEach((cls, cons) -> event.getGenerator().addProvider(true, PROVIDERS.get(cls).create(
-                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), event.getExistingFileHelper(), modId, (List) cons)));
+                event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getGenerator(), modId, (List) cons)));
 
         directProviders.forEach(func -> event.getGenerator().addProvider(true, new DataProvider() {
             final DataProvider p = func.apply(event);

@@ -317,12 +317,12 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Determines if a item is reparable, used by Repair recipes and Grindstone.
+     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
      *
-     * @return True if reparable
+     * @return True if repairable by combining
      */
-    default boolean isRepairable() {
-        return self().getItem().isRepairable(self());
+    default boolean isCombineRepairable() {
+        return self().getItem().isCombineRepairable(self());
     }
 
     /**

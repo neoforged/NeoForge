@@ -26,7 +26,7 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -39,12 +39,16 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
 import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
+    private static LootModifierManager LOOT_MODIFIER_MANAGER;
+    private static DataMapLoader DATA_MAP_LOADER;
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
@@ -102,7 +106,7 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void tagsUpdated(TagsUpdatedEvent event) {
         if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
-            DATA_MAPS.apply();
+            DATA_MAP_LOADER.apply();
         }
     }
 
@@ -146,25 +150,17 @@ public class NeoForgeEventHandler {
         ConfigCommand.register(event.getDispatcher());
     }
 
-    private static LootModifierManager INSTANCE;
-    private static DataMapLoader DATA_MAPS;
-
     @SubscribeEvent
-    public void onResourceReload(AddReloadListenerEvent event) {
-        INSTANCE = new LootModifierManager();
-        event.addListener(INSTANCE);
-        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+    public void onResourceReload(AddServerReloadListenersEvent event) {
+        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
+        event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
     }
 
     static LootModifierManager getLootModifierManager() {
-        if (INSTANCE == null)
+        if (LOOT_MODIFIER_MANAGER == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
-        return INSTANCE;
-    }
-
-    @SubscribeEvent
-    public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(CreativeModeTabRegistry.getReloadListener());
+        return LOOT_MODIFIER_MANAGER;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

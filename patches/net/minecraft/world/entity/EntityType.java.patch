@@ -1,21 +1,22 @@
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -1088,6 +_,10 @@
+@@ -1070,6 +_,11 @@
      private final float spawnDimensionsScale;
      private final FeatureFlagSet requiredFeatures;
  
 +    private final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier;
 +    private final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier;
++    private final boolean onlyOpCanSetNbt;
 +
      private static <T extends Entity> EntityType<T> register(ResourceKey<EntityType<?>> p_368669_, EntityType.Builder<T> p_368714_) {
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, p_368669_, p_368714_.build(p_368669_));
      }
-@@ -1124,6 +_,28 @@
+@@ -1106,6 +_,29 @@
          Optional<ResourceKey<LootTable>> p_368696_,
          FeatureFlagSet p_273518_
      ) {
-+        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_368582_, p_368696_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier);
++        this(p_273268_, p_272918_, p_273417_, p_273389_, p_273556_, p_272654_, p_273631_, p_272946_, p_338404_, p_272895_, p_273451_, p_368582_, p_368696_, p_273518_, EntityType::defaultTrackDeltasSupplier, EntityType::defaultTrackingRangeSupplier, EntityType::defaultUpdateIntervalSupplier, false);
 +    }
 +
 +    public EntityType(
@@ -35,26 +36,27 @@
 +        FeatureFlagSet p_273518_,
 +        final java.util.function.Predicate<EntityType<?>> trackDeltasSupplier,
 +        final java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier,
-+        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier
++        final java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier,
++        boolean onlyOpCanSetNbt
 +    ) {
          this.factory = p_273268_;
          this.category = p_272918_;
          this.canSpawnFarFromPlayer = p_272654_;
-@@ -1138,6 +_,9 @@
+@@ -1120,6 +_,10 @@
          this.descriptionId = p_368582_;
          this.lootTable = p_368696_;
          this.requiredFeatures = p_273518_;
 +        this.trackDeltasSupplier = trackDeltasSupplier;
 +        this.trackingRangeSupplier = trackingRangeSupplier;
 +        this.updateIntervalSupplier = updateIntervalSupplier;
++        this.onlyOpCanSetNbt = onlyOpCanSetNbt;
      }
  
      @Nullable
-@@ -1228,6 +_,15 @@
+@@ -1213,6 +_,13 @@
                  mob.yHeadRot = mob.getYRot();
                  mob.yBodyRot = mob.getYRot();
                  mob.finalizeSpawn(p_262637_, p_262637_.getCurrentDifficultyAt(mob.blockPosition()), p_360546_, null);
-+
 +                if (mob.isSpawnCancelled()) {
 +                    // Neo: Discard mob, spawn was cancelled
 +                    mob.discard();
@@ -62,11 +64,10 @@
 +                    // fixes llamas for wandering trader spawning if wandering trader was cancelled
 +                    return null;
 +                }
-+
-                 mob.playAmbientSound();
              }
  
-@@ -1410,14 +_,23 @@
+             if (p_262629_ != null) {
+@@ -1399,14 +_,23 @@
      }
  
      public int clientTrackingRange() {
@@ -90,8 +91,12 @@
          return this != PLAYER
              && this != LLAMA_SPIT
              && this != WITHER
-@@ -1469,6 +_,8 @@
-         return (p_375561_, p_375562_) -> new ChestRaft(p_375561_, p_375562_, p_376648_);
+@@ -1459,9 +_,12 @@
+     }
+ 
+     public boolean onlyOpCanSetNbt() {
++        if (onlyOpCanSetNbt) return true;
+         return OP_ONLY_CUSTOM_DATA.contains(this);
      }
  
 +    public Stream<TagKey<EntityType<?>>> getTags() {return this.builtInRegistryHolder().tags();}
@@ -99,18 +104,19 @@
      public static class Builder<T extends Entity> {
          private final EntityType.EntityFactory<T> factory;
          private final MobCategory category;
-@@ -1488,6 +_,10 @@
+@@ -1481,6 +_,11 @@
              );
          private DependantName<EntityType<?>, String> descriptionId = p_367918_ -> Util.makeDescriptionId("entity", p_367918_.location());
  
 +        private java.util.function.Predicate<EntityType<?>> velocityUpdateSupplier = EntityType::defaultTrackDeltasSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> trackingRangeSupplier = EntityType::defaultTrackingRangeSupplier;
 +        private java.util.function.ToIntFunction<EntityType<?>> updateIntervalSupplier = EntityType::defaultUpdateIntervalSupplier;
++        private boolean onlyOpCanSetNbt = false;
 +
          private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
              this.factory = p_20696_;
              this.category = p_20697_;
-@@ -1600,6 +_,21 @@
+@@ -1593,6 +_,26 @@
              return this;
          }
  
@@ -129,18 +135,24 @@
 +            return this;
 +        }
 +
++        public EntityType.Builder<T> setOnlyOpCanSetNbt(boolean onlyOpCanSetNbt) {
++            this.onlyOpCanSetNbt = onlyOpCanSetNbt;
++            return this;
++        }
++
          public EntityType<T> build(ResourceKey<EntityType<?>> p_368626_) {
              if (this.serialize) {
                  Util.fetchChoiceType(References.ENTITY_TREE, p_368626_.location().toString());
-@@ -1619,7 +_,10 @@
+@@ -1612,7 +_,11 @@
                  this.updateInterval,
                  this.descriptionId.get(p_368626_),
                  this.lootTable.get(p_368626_),
 -                this.requiredFeatures
 +                this.requiredFeatures,
-+                velocityUpdateSupplier,
-+                trackingRangeSupplier,
-+                updateIntervalSupplier
++                this.velocityUpdateSupplier,
++                this.trackingRangeSupplier,
++                this.updateIntervalSupplier,
++                this.onlyOpCanSetNbt
              );
          }
      }

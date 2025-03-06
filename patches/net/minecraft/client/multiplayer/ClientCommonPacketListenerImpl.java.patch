@@ -63,16 +63,6 @@
          this.connection.send(p_295097_);
      }
  
-@@ -285,6 +_,9 @@
-     public void onDisconnect(DisconnectionDetails p_350760_) {
-         this.telemetryManager.onDisconnect();
-         this.minecraft.disconnect(this.createDisconnectScreen(p_350760_), this.isTransferring);
-+        if (!this.connection.isMemoryConnection()) {
-+            net.neoforged.neoforge.registries.RegistryManager.revertToFrozen();
-+        }
-         LOGGER.warn("Client disconnected with reason: {}", p_350760_.reason().getString());
-     }
- 
 @@ -409,5 +_,10 @@
          @OnlyIn(Dist.CLIENT)
          static record PendingRequest(UUID id, URL url, String hash) {

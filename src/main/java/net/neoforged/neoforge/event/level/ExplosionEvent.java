@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.event.level;
 
 import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerExplosion;
@@ -63,17 +64,18 @@ public abstract class ExplosionEvent extends Event {
      */
     public static class Detonate extends ExplosionEvent {
         private final List<Entity> entityList;
+        private final List<BlockPos> blockList;
 
-        public Detonate(Level level, ServerExplosion explosion, List<Entity> entityList) {
+        public Detonate(Level level, ServerExplosion explosion, List<Entity> entityList, List<BlockPos> blockList) {
             super(level, explosion);
             this.entityList = entityList;
+            this.blockList = blockList;
         }
 
         /** return the list of blocks affected by the explosion. */
-        // FIXME porting: explosions changed a bit
-        /*public List<BlockPos> getAffectedBlocks() {
-            return getExplosion().getToBlow();
-        }*/
+        public List<BlockPos> getAffectedBlocks() {
+            return this.blockList;
+        }
 
         /** return the list of entities affected by the explosion. */
         public List<Entity> getAffectedEntities() {

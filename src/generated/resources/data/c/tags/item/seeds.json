@@ -3,6 +3,8 @@
     "#c:seeds/beetroot",
     "#c:seeds/melon",
     "#c:seeds/pumpkin",
+    "#c:seeds/torchflower",
+    "#c:seeds/pitcher_plant",
     "#c:seeds/wheat",
     {
       "id": "#forge:seeds",

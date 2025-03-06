@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.AttributeUtil;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +84,7 @@ public interface IAttributeExtension {
     default Component getDebugInfo(AttributeModifier modif, TooltipFlag flag) {
         Component debugInfo = CommonComponents.EMPTY;
 
-        if (flag.isAdvanced()) {
+        if (flag.isAdvanced() && NeoForgeConfig.COMMON.attributeAdvancedTooltipDebugInfo.get()) {
             // Advanced Tooltips show the underlying operation and the "true" value. We offset MULTIPLY_TOTAL by 1 due to how the operation is calculated.
             double advValue = (modif.operation() == Operation.ADD_MULTIPLIED_TOTAL ? 1 : 0) + modif.amount();
             String valueStr = FORMAT.format(advValue);
@@ -127,7 +128,7 @@ public interface IAttributeExtension {
 
         // Emit both the value of the modifier, and the entity's base value as debug information, since both are flattened into the modifier.
         // Skip showing debug information here when displaying a merged modifier, since it will be shown if the user holds shift to display the un-merged modifier.
-        if (flag.isAdvanced() && !merged) {
+        if (flag.isAdvanced() && !merged && NeoForgeConfig.COMMON.attributeAdvancedTooltipDebugInfo.get()) {
             Component debugInfo = Component.literal(" ").append(Component.translatable("neoforge.attribute.debug.base", FORMAT.format(entityBase), FORMAT.format(value - entityBase)).withStyle(ChatFormatting.GRAY));
             comp.append(debugInfo);
         }

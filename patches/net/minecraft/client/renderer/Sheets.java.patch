@@ -1,22 +1,24 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -141,11 +_,13 @@
+@@ -156,7 +_,7 @@
      }
  
      private static Material createSignMaterial(WoodType p_173386_) {
--        return new Material(SIGN_SHEET, ResourceLocation.withDefaultNamespace("entity/signs/" + p_173386_.name()));
-+        ResourceLocation location = ResourceLocation.parse(p_173386_.name());
-+        return new Material(SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
+-        return createSignMaterial(ResourceLocation.withDefaultNamespace(p_173386_.name()));
++        return createSignMaterial(ResourceLocation.parse(p_173386_.name()));
+     }
+ 
+     public static Material createSignMaterial(ResourceLocation p_389416_) {
+@@ -164,7 +_,7 @@
      }
  
      private static Material createHangingSignMaterial(WoodType p_251735_) {
--        return new Material(SIGN_SHEET, ResourceLocation.withDefaultNamespace("entity/signs/hanging/" + p_251735_.name()));
-+        ResourceLocation location = ResourceLocation.parse(p_251735_.name());
-+        return new Material(SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/hanging/" + location.getPath()));
+-        return createHangingSignMaterial(ResourceLocation.withDefaultNamespace(p_251735_.name()));
++        return createHangingSignMaterial(ResourceLocation.parse(p_251735_.name()));
      }
  
-     public static Material getSignMaterial(WoodType p_173382_) {
-@@ -204,6 +_,23 @@
+     public static Material createHangingSignMaterial(ResourceLocation p_389413_) {
+@@ -231,6 +_,23 @@
              case SINGLE:
              default:
                  return p_110773_;

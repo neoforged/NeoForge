@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -189,7 +_,7 @@
+@@ -191,7 +_,7 @@
              this.shakeTime--;
          }
  
@@ -9,7 +9,7 @@
              this.clearFire();
          }
  
-@@ -269,11 +_,15 @@
+@@ -275,11 +_,15 @@
  
              if (entityhitresult == null) {
                  if (this.isAlive() && p_371761_.getType() != HitResult.Type.MISS) {

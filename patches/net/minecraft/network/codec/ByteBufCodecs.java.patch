@@ -1,19 +1,37 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -487,7 +_,11 @@
+@@ -487,7 +_,7 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
              private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_362297_) {
 -                return p_320353_.apply(p_362297_.registryAccess().lookupOrThrow(p_319942_));
-+                var registry = p_362297_.registryAccess().lookupOrThrow(p_319942_);
-+                if (net.neoforged.neoforge.registries.RegistryManager.isNonSyncedBuiltInRegistry(registry)) {
-+                    throw new IllegalStateException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
-+                }
-+                return p_320353_.apply(registry);
++                return p_320353_.apply(getSyncableRegistryOrThrow(p_362297_, p_319942_));
              }
  
              public R decode(RegistryFriendlyByteBuf p_340887_) {
-@@ -544,8 +_,25 @@
+@@ -517,7 +_,7 @@
+             private static final int DIRECT_HOLDER_ID = 0;
+ 
+             private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf p_376392_) {
+-                return p_376392_.registryAccess().lookupOrThrow(p_320391_).asHolderIdMap();
++                return getSyncableRegistryOrThrow(p_376392_, p_320391_).asHolderIdMap();
+             }
+ 
+             public Holder<T> decode(RegistryFriendlyByteBuf p_363509_) {
+@@ -539,13 +_,38 @@
+         };
+     }
+ 
++    private static <T> Registry<T> getSyncableRegistryOrThrow(RegistryFriendlyByteBuf buffer, ResourceKey<? extends Registry<T>> registryKey) {
++        var registry = buffer.registryAccess().lookupOrThrow(registryKey);
++        if (net.neoforged.neoforge.registries.RegistryManager.isNonSyncedBuiltInRegistry(registry)) {
++            throw new io.netty.handler.codec.CodecException("Cannot use ID syncing for non-synced built-in registry: " + registry.key());
++        }
++        return registry;
++    }
++
+     static <T> StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>> holderSet(final ResourceKey<? extends Registry<T>> p_332137_) {
+         return new StreamCodec<RegistryFriendlyByteBuf, HolderSet<T>>() {
              private static final int NAMED_SET = -1;
              private final StreamCodec<RegistryFriendlyByteBuf, Holder<T>> holderCodec = ByteBufCodecs.holderRegistry(p_332137_);
  

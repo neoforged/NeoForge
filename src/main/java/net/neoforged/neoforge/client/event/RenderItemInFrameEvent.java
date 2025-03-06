@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @see ItemFrameRenderer
  */
 public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
-    private final ItemStack itemStack;
+    private final ItemStackRenderState itemStack;
     private final ItemFrameRenderState frameRenderState;
     private final ItemFrameRenderer<?> renderer;
     private final PoseStack poseStack;
@@ -40,7 +40,7 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     @ApiStatus.Internal
     public RenderItemInFrameEvent(ItemFrameRenderState frameRenderState, ItemFrameRenderer<?> renderItemFrame, PoseStack poseStack,
             MultiBufferSource multiBufferSource, int packedLight) {
-        this.itemStack = frameRenderState.itemStack;
+        this.itemStack = frameRenderState.item;
         this.frameRenderState = frameRenderState;
         this.renderer = renderItemFrame;
         this.poseStack = poseStack;
@@ -51,7 +51,7 @@ public class RenderItemInFrameEvent extends Event implements ICancellableEvent {
     /**
      * {@return the item stack being rendered}
      */
-    public ItemStack getItemStack() {
+    public ItemStackRenderState getItemStackRenderState() {
         return itemStack;
     }
 

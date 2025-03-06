@@ -1,24 +1,23 @@
 --- a/net/minecraft/client/particle/ParticleRenderType.java
 +++ b/net/minecraft/client/particle/ParticleRenderType.java
-@@ -44,6 +_,11 @@
-         public String toString() {
-             return "PARTICLE_SHEET_OPAQUE";
-         }
-+
-+        @Override
-+        public boolean isTranslucent() {
-+            return false;
-+        }
-     };
-     ParticleRenderType PARTICLE_SHEET_TRANSLUCENT = new ParticleRenderType() {
-         @Override
-@@ -89,4 +_,9 @@
+@@ -7,14 +_,18 @@
+ import net.neoforged.api.distmarker.OnlyIn;
  
-     @Nullable
-     BufferBuilder begin(Tesselator p_350949_, TextureManager p_107437_);
+ @OnlyIn(Dist.CLIENT)
+-public record ParticleRenderType(String name, @Nullable RenderType renderType) {
++public record ParticleRenderType(String name, @Nullable RenderType renderType, boolean translucent) {
+     public static final ParticleRenderType TERRAIN_SHEET = new ParticleRenderType("TERRAIN_SHEET", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));
+     public static final ParticleRenderType PARTICLE_SHEET_OPAQUE = new ParticleRenderType(
+-        "PARTICLE_SHEET_OPAQUE", RenderType.opaqueParticle(TextureAtlas.LOCATION_PARTICLES)
++        "PARTICLE_SHEET_OPAQUE", RenderType.opaqueParticle(TextureAtlas.LOCATION_PARTICLES), false
+     );
+     public static final ParticleRenderType PARTICLE_SHEET_TRANSLUCENT = new ParticleRenderType(
+         "PARTICLE_SHEET_TRANSLUCENT", RenderType.translucentParticle(TextureAtlas.LOCATION_PARTICLES)
+     );
+     public static final ParticleRenderType CUSTOM = new ParticleRenderType("CUSTOM", null);
+     public static final ParticleRenderType NO_RENDER = new ParticleRenderType("NO_RENDER", null);
 +
-+    /** {@return whether this type renders before or after the translucent chunk layer} */
-+    default boolean isTranslucent() {
-+        return true;
++    public ParticleRenderType(String name, @Nullable RenderType renderType) {
++        this(name, renderType, true);
 +    }
  }
