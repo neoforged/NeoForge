@@ -294,6 +294,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Items.PIGLIN_USABLE_CROSSBOWS, "Piglin Usable Crossbows");
+        add(Tags.Items.PILLAGER_USABLE_CROSSBOWS, "Pillager Usable Crossbows");
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
@@ -326,6 +328,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_TORCHFLOWER, "Torchflower Seeds");
         add(Tags.Items.SEEDS_PITCHER_PLANT, "Pitcher Plant Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
+        add(Tags.Items.SKELETON_USABLE_BOWS, "Skeleton Usable Bows");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
         add(Tags.Items.SLIME_BALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");

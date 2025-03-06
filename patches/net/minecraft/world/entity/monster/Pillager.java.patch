@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/monster/Pillager.java
 +++ b/net/minecraft/world/entity/monster/Pillager.java
+@@ -95,7 +_,7 @@
+ 
+     @Override
+     public boolean canFireProjectileWeapon(ProjectileWeaponItem p_33280_) {
+-        return p_33280_ == Items.CROSSBOW;
++        return p_33280_.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Items.PILLAGER_USABLE_CROSSBOWS);
+     }
+ 
+     public boolean isChargingCrossbow() {
 @@ -127,7 +_,7 @@
      public AbstractIllager.IllagerArmPose getArmPose() {
          if (this.isChargingCrossbow()) {

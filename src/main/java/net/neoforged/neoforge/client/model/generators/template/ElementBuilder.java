@@ -199,6 +199,7 @@ public final class ElementBuilder {
      * @return this builder
      */
     public ElementBuilder lightEmission(int lightEmission) {
+        Preconditions.checkArgument(lightEmission < 16 && lightEmission >= 0, "lightEmission %s not in valid range - [0,15)", lightEmission);
         this.lightEmission = lightEmission;
         return this;
     }
