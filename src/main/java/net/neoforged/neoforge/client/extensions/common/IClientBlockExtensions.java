@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import java.util.function.Consumer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
