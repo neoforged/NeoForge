@@ -28,7 +28,7 @@ import org.joml.Vector3d;
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link Block}.
  *
- * @see Block#initializeClient(Consumer)
+ * @see net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
  */
 public interface IClientBlockExtensions {
     IClientBlockExtensions DEFAULT = new IClientBlockExtensions() {};
