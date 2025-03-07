@@ -86,9 +86,10 @@ public interface IBlockEntityExtension {
 
     /**
      * Allows you to return additional model data.
-     * This data can be used to provide additional functionality in your {@link BakedModel}
+     * This data can be used to provide additional functionality in your {@link BakedModel}.
      * You need to schedule a refresh of you model data via {@link #requestModelDataUpdate()} if the result of this function changes.
-     * <b>Note that this method may be called on a chunk render thread instead of the main client thread</b>
+     *
+     * <p>This method is always called on the main client thread.
      * 
      * @return Your model data
      */
