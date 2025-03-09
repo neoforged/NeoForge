@@ -184,5 +184,8 @@ public enum KeyModifier {
 
     public abstract Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic);
 
-    public abstract InputConstants.Key[] codes();
+    // Neo: Make abstract in 1.21.5
+    public InputConstants.Key[] codes() {
+        return null;
+    }
 }
