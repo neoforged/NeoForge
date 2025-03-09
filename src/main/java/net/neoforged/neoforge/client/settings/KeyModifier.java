@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.settings;
 
 import com.mojang.blaze3d.platform.InputConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -18,7 +17,6 @@ import org.lwjgl.glfw.GLFW;
 
 public enum KeyModifier {
     CONTROL {
-
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_CONTROL),
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_CONTROL)
@@ -55,7 +53,6 @@ public enum KeyModifier {
         }
     },
     SHIFT {
-
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT),
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_SHIFT)
@@ -82,7 +79,6 @@ public enum KeyModifier {
         }
     },
     ALT {
-
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_ALT),
                 InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_ALT)
@@ -109,7 +105,6 @@ public enum KeyModifier {
         }
     },
     NONE {
-
         private static final InputConstants.Key[] KEYS = new InputConstants.Key[0];
 
         @Override

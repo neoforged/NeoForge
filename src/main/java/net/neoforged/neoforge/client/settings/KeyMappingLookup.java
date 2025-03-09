@@ -39,7 +39,7 @@ public class KeyMappingLookup {
      * Returns all active keys associated with the given key code and the active
      * modifiers and conflict context.
      *
-     * @param keyCode the key being pressed
+     * @param keyCode   the key being pressed
      * @param releasing if the key is being released
      * @return the list of key mappings
      */
