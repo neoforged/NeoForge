@@ -33,7 +33,7 @@
          }
 +
 +        // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
-+        net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.dataFolder, p_78159_);
++        this.pendingWriteFuture = net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.pendingWriteFuture, this.dataFolder, p_78159_);
  
          return compoundtag1;
      }
