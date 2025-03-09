@@ -48,14 +48,18 @@ public final class IOUtilities {
      * @param prefix     The prefix of temporary files to clean up, or null if all
      *                   temporary files should be removed.
      *
-     * @throws IOException if an I/O error occurs during deletion.
+     * @implNote IOException is wrapped to RuntimeException, which will be logged to the error log by the ioPool.
      */
-    public static void cleanupTempFiles(Path targetPath, @Nullable String prefix) throws IOException {
-        try (var filesToDelete = Files.find(targetPath, 1, createPredicate(prefix))) {
-            for (var file : filesToDelete.toList()) {
-                Files.deleteIfExists(file);
+    public static void cleanupTempFiles(Path targetPath, @Nullable String prefix) {
+        withIOWorker(() -> {
+            try (var filesToDelete = Files.find(targetPath, 1, createPredicate(prefix))) {
+                for (var file : filesToDelete.toList()) {
+                    Files.deleteIfExists(file);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
+        });
     }
 
     private static BiPredicate<Path, BasicFileAttributes> createPredicate(@Nullable String prefix) {
