@@ -14,6 +14,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 
 public class KeyMappingLookup {
     private static final EnumMap<KeyModifier, Map<InputConstants.Key, Collection<KeyMapping>>> map = new EnumMap<>(KeyModifier.class);
@@ -31,13 +32,60 @@ public class KeyMappingLookup {
      * @return the list of key mappings
      */
     public List<KeyMapping> getAll(InputConstants.Key keyCode) {
+        return this.getAll(keyCode, false);
+    }
+
+    /**
+     * Returns all active keys associated with the given key code and the active
+     * modifiers and conflict context.
+     *
+     * @param keyCode the key being pressed
+     * @param releasing if the key is being released
+     * @return the list of key mappings
+     */
+    public List<KeyMapping> getAll(InputConstants.Key keyCode, boolean releasing) {
         List<KeyMapping> matchingBindings = new ArrayList<>();
-        KeyModifier activeModifier = KeyModifier.getActiveModifier();
-        // Apply active modifier only if the pressed key is not the modifier itself
-        // Otherwise, look for key bindings without modifiers
-        if (activeModifier == KeyModifier.NONE || activeModifier.matches(keyCode) || !matchingBindings.addAll(findKeybinds(keyCode, activeModifier))) {
+        // Get a list of all active modifiers
+        List<KeyModifier> activeModifiers = KeyModifier.getActiveModifiers();
+
+        for (var modifier : activeModifiers) {
+            // If modifier matches, add other modifiers
+            if (modifier.matches(keyCode)) {
+                // Check if binding matches with another modifier
+                for (var key : activeModifiers) {
+
+                    // Skip if modifier matches
+                    if (key.matches(keyCode)) {
+                        continue;
+                    }
+
+                    // Loop through all modifier codes
+                    for (var modifierKey : key.codes()) {
+                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), modifierKey.getValue())) {
+                            matchingBindings.addAll(findKeybinds(modifierKey, modifier));
+                        }
+                    }
+                }
+            } else {
+                // Attempt to add all keybinds where the keycode and the modifier are different
+                matchingBindings.addAll(findKeybinds(keyCode, modifier));
+            }
+        }
+
+        // Release all keys which use this as a modifier
+        if (releasing && KeyModifier.isKeyCodeModifier(keyCode)) {
+            matchingBindings.addAll(map.get(KeyModifier.getKeyModifier(keyCode)).entrySet().stream()
+                    .filter(entry -> entry.getKey() != InputConstants.UNKNOWN)
+                    .flatMap(entry -> entry.getValue().stream())
+                    .filter(mapping -> mapping.getKeyConflictContext().isActive())
+                    .toList());
+        }
+
+        // If there were no matches, check the key without any modifiers
+        if (matchingBindings.isEmpty()) {
             matchingBindings.addAll(findKeybinds(keyCode, KeyModifier.NONE));
         }
+
         return matchingBindings;
     }
 
