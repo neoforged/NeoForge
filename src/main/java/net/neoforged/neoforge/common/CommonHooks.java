@@ -1596,4 +1596,12 @@ public class CommonHooks {
         }
         return RecipeBookType.values();
     }
+
+    /**
+     * Determines whether the given players should be sent full recipe content or not and handles the sending.
+     */
+    public static void sendRecipes(ServerPlayer player) {
+        var recipeMap = player.server.getRecipeManager().recipeMap();
+
+    }
 }
