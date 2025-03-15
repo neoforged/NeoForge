@@ -1,60 +1,59 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.network.payload;
 
-import io.netty.buffer.Unpooled;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
-import net.neoforged.neoforge.network.connection.ConnectionType;
-
-import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * We use this to transfer the actual recipe content from server to client.
  */
-public final class RecipeContentPayload implements CustomPacketPayload {
+@ApiStatus.Internal
+public record RecipeContentPayload(
+        Set<RecipeType<?>> recipeTypes,
+        List<RecipeHolder<?>> recipes) implements CustomPacketPayload {
+    private static final Logger LOG = LoggerFactory.getLogger(RecipeContentPayload.class);
+
     public static final Type<RecipeContentPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "recipe_content"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, RecipeContentPayload> STREAM_CODEC = StreamCodec.ofMember(
-            RecipeContentPayload::write,
-            RecipeContentPayload::read
-    );
-    private static final StreamCodec<RegistryFriendlyByteBuf, List<RecipeHolder<?>>> RECIPES_STREAM_CODEC = RecipeHolder.STREAM_CODEC.apply(ByteBufCodecs.list());
 
-    private volatile RegistryFriendlyByteBuf cachedPayload;
+    public static final StreamCodec<RegistryFriendlyByteBuf, RecipeContentPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.registry(Registries.RECIPE_TYPE).apply(ByteBufCodecs.collection(HashSet::new)), RecipeContentPayload::recipeTypes,
+            RecipeHolder.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeContentPayload::recipes,
+            RecipeContentPayload::new);
 
-    private static RecipeContentPayload read(RegistryFriendlyByteBuf buffer) {
-        var recipes = RECIPES_STREAM_CODEC.decode(buffer);
-        return new RecipeContentPayload(recipes);
-    }
-
-    private void write(RegistryFriendlyByteBuf buffer) {
-        if (cachedPayload == null) {
-            synchronized (this) {
-                var cachedBuffer = new RegistryFriendlyByteBuf(Unpooled.buffer(), buffer.registryAccess(), ConnectionType.NEOFORGE);
-                RECIPES_STREAM_CODEC.encode(buffer, recipes);
-                cachedPayload = cachedBuffer;
-            }
+    public static RecipeContentPayload create(Collection<RecipeType<?>> recipeTypes, RecipeMap recipes) {
+        var recipeTypeSet = Set.copyOf(recipeTypes);
+        // Fast-path for empty recipe type set (if no mod wants to sync anything)
+        if (recipeTypeSet.isEmpty()) {
+            LOG.debug("Not sending any recipe data to clients.");
+            return new RecipeContentPayload(recipeTypeSet, List.of());
+        } else {
+            var recipeSubset = recipes.values().stream().filter(h -> recipeTypeSet.contains(h.value().getType())).toList();
+            LOG.debug("Sending {} recipes of the following types: {}", recipeSubset.size(), recipeTypeSet);
+            return new RecipeContentPayload(recipeTypeSet, recipeSubset);
         }
-        buffer.writeBytes(cachedPayload, 0, cachedPayload.readableBytes());
-    }
-
-    private final List<RecipeHolder<?>> recipes;
-
-    public RecipeContentPayload(
-            List<RecipeHolder<?>> recipes
-    ) {
-        this.recipes = recipes;
     }
 
     @Override
     public Type<RecipeContentPayload> type() {
         return TYPE;
-    }
-
-    public List<RecipeHolder<?>> recipes() {
-        return recipes;
     }
 }

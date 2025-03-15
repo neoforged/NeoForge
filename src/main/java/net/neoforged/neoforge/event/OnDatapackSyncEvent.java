@@ -5,9 +5,13 @@
 
 package net.neoforged.neoforge.event;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +24,8 @@ public class OnDatapackSyncEvent extends Event {
     private final PlayerList playerList;
     @Nullable
     private final ServerPlayer player;
+
+    private final Set<RecipeType<?>> requestedRecipeTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 
     public OnDatapackSyncEvent(PlayerList playerList, @Nullable ServerPlayer player) {
         this.playerList = playerList;
@@ -52,5 +58,32 @@ public class OnDatapackSyncEvent extends Event {
     @Nullable
     public ServerPlayer getPlayer() {
         return this.player;
+    }
+
+    /**
+     * Requests that all recipes of the given types should be sent to the players.
+     * 
+     * @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
+     */
+    public void sendRecipes(RecipeType<?>... recipeTypes) {
+        Collections.addAll(this.requestedRecipeTypes, recipeTypes);
+    }
+
+    /**
+     * Requests that all recipes of the given types should be sent to the players.
+     * 
+     * @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
+     */
+    public void sendRecipes(Iterable<RecipeType<?>> recipeTypes) {
+        for (var recipeType : recipeTypes) {
+            this.requestedRecipeTypes.add(recipeType);
+        }
+    }
+
+    /**
+     * @return The recipe types that have already been requested to be sent to the players.
+     */
+    public Set<RecipeType<?>> getRequestedRecipeTypes() {
+        return Collections.unmodifiableSet(requestedRecipeTypes);
     }
 }
