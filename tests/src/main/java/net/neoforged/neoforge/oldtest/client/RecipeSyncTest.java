@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.client;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.RecipeType;
