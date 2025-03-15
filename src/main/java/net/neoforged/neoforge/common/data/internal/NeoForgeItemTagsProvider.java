@@ -83,6 +83,17 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.CROPS_PUMPKIN).add(Items.PUMPKIN);
         tag(Tags.Items.CROPS_SUGAR_CANE).add(Items.SUGAR_CANE);
         tag(Tags.Items.CROPS_WHEAT).add(Items.WHEAT);
+        tag(Tags.Items.DRINKS).addTags(
+                Tags.Items.DRINKS_WATER, Tags.Items.DRINKS_WATERY, Tags.Items.DRINKS_MILK,
+                Tags.Items.DRINKS_HONEY, Tags.Items.DRINKS_MAGIC, Tags.Items.DRINKS_OMINOUS,
+                Tags.Items.DRINKS_JUICE);
+        tag(Tags.Items.DRINKS_WATER);
+        tag(Tags.Items.DRINKS_WATERY).add(Items.POTION).addTags(Tags.Items.DRINKS_WATER);
+        tag(Tags.Items.DRINKS_MILK).add(Items.MILK_BUCKET);
+        tag(Tags.Items.DRINKS_HONEY).add(Items.HONEY_BOTTLE);
+        tag(Tags.Items.DRINKS_MAGIC).add(Items.POTION).addTags(Tags.Items.DRINKS_OMINOUS);
+        tag(Tags.Items.DRINKS_OMINOUS).add(Items.OMINOUS_BOTTLE);
+        tag(Tags.Items.DRINKS_JUICE);
         addColored(Tags.Items.DYED, "{color}_banner");
         addColored(Tags.Items.DYED, "{color}_bed");
         addColored(Tags.Items.DYED, "{color}_candle");
@@ -112,6 +123,9 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.FENCES_NETHER_BRICK, Tags.Items.FENCES_NETHER_BRICK);
         copy(Tags.Blocks.FENCES_WOODEN, Tags.Items.FENCES_WOODEN);
         tag(Tags.Items.FERTILIZERS).add(Items.BONE_MEAL);
+        copy(Tags.Blocks.FLOWERS_SMALL, Tags.Items.FLOWERS_SMALL);
+        copy(Tags.Blocks.FLOWERS_TALL, Tags.Items.FLOWERS_TALL);
+        copy(Tags.Blocks.FLOWERS, Tags.Items.FLOWERS);
         tag(Tags.Items.FOODS_FRUIT).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.CHORUS_FRUIT, Items.MELON_SLICE);
         tag(Tags.Items.FOODS_VEGETABLE).add(Items.CARROT, Items.GOLDEN_CARROT, Items.POTATO, Items.BEETROOT);
         tag(Tags.Items.FOODS_BERRY).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
@@ -196,6 +210,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE, Tags.Items.ORES_IN_GROUND_DEEPSLATE);
         copy(Tags.Blocks.ORES_IN_GROUND_NETHERRACK, Tags.Items.ORES_IN_GROUND_NETHERRACK);
         copy(Tags.Blocks.ORES_IN_GROUND_STONE, Tags.Items.ORES_IN_GROUND_STONE);
+        tag(Tags.Items.PIGLIN_USABLE_CROSSBOWS).addTag(Tags.Items.TOOLS_CROSSBOW);
+        tag(Tags.Items.PILLAGER_USABLE_CROSSBOWS).addTags(Tags.Items.TOOLS_CROSSBOW);
         copy(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES);
         copy(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, Tags.Items.PLAYER_WORKSTATIONS_FURNACES);
         tag(Tags.Items.POTIONS_BOTTLE).add(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
@@ -221,12 +237,14 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.SANDSTONE_UNCOLORED_BLOCKS, Tags.Items.SANDSTONE_UNCOLORED_BLOCKS);
         copy(Tags.Blocks.SANDSTONE_UNCOLORED_SLABS, Tags.Items.SANDSTONE_UNCOLORED_SLABS);
         copy(Tags.Blocks.SANDSTONE_UNCOLORED_STAIRS, Tags.Items.SANDSTONE_UNCOLORED_STAIRS);
-        tag(Tags.Items.SEEDS).addTags(Tags.Items.SEEDS_BEETROOT, Tags.Items.SEEDS_MELON, Tags.Items.SEEDS_PUMPKIN, Tags.Items.SEEDS_TORCHFLOWER, Tags.Items.SEEDS_WHEAT);
+        tag(Tags.Items.SEEDS).addTags(Tags.Items.SEEDS_BEETROOT, Tags.Items.SEEDS_MELON, Tags.Items.SEEDS_PUMPKIN, Tags.Items.SEEDS_TORCHFLOWER, Tags.Items.SEEDS_PITCHER_PLANT, Tags.Items.SEEDS_WHEAT);
         tag(Tags.Items.SEEDS_BEETROOT).add(Items.BEETROOT_SEEDS);
         tag(Tags.Items.SEEDS_MELON).add(Items.MELON_SEEDS);
         tag(Tags.Items.SEEDS_PUMPKIN).add(Items.PUMPKIN_SEEDS);
         tag(Tags.Items.SEEDS_TORCHFLOWER).add(Items.TORCHFLOWER_SEEDS);
+        tag(Tags.Items.SEEDS_PITCHER_PLANT).add(Items.PITCHER_POD);
         tag(Tags.Items.SEEDS_WHEAT).add(Items.WHEAT_SEEDS);
+        tag(Tags.Items.SKELETON_USABLE_BOWS).addTag(Tags.Items.TOOLS_BOW);
         tag(Tags.Items.SLIME_BALLS).add(Items.SLIME_BALL);
         tag(Tags.Items.SHULKER_BOXES)
                 .add(Items.SHULKER_BOX).add(Items.WHITE_SHULKER_BOX).add(Items.ORANGE_SHULKER_BOX)
@@ -272,6 +290,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.TOOLS_SHEAR).add(Items.SHEARS);
         tag(Tags.Items.TOOLS_SPEAR).add(Items.TRIDENT);
         tag(Tags.Items.TOOLS_IGNITER).add(Items.FLINT_AND_STEEL);
+        tag(Tags.Items.TOOLS_WRENCH);
         tag(Tags.Items.MINING_TOOL_TOOLS).add(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.GOLDEN_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
         tag(Tags.Items.MELEE_WEAPON_TOOLS).add(
                 Items.MACE, Items.TRIDENT,
@@ -280,7 +299,9 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.RANGED_WEAPON_TOOLS).add(Items.BOW, Items.CROSSBOW, Items.TRIDENT);
         tag(Tags.Items.TOOLS)
                 .addTags(ItemTags.AXES, ItemTags.HOES, ItemTags.PICKAXES, ItemTags.SHOVELS, ItemTags.SWORDS)
-                .addTags(Tags.Items.TOOLS_BOW, Tags.Items.TOOLS_BRUSH, Tags.Items.TOOLS_CROSSBOW, Tags.Items.TOOLS_FISHING_ROD, Tags.Items.TOOLS_IGNITER, Tags.Items.TOOLS_SHEAR, Tags.Items.TOOLS_SHIELD, Tags.Items.TOOLS_SPEAR, Tags.Items.TOOLS_MACE,
+                .addTags(Tags.Items.TOOLS_BOW, Tags.Items.TOOLS_BRUSH, Tags.Items.TOOLS_CROSSBOW, Tags.Items.TOOLS_FISHING_ROD,
+                        Tags.Items.TOOLS_IGNITER, Tags.Items.TOOLS_SHEAR, Tags.Items.TOOLS_SHIELD, Tags.Items.TOOLS_SPEAR,
+                        Tags.Items.TOOLS_MACE, Tags.Items.TOOLS_WRENCH,
                         Tags.Items.MINING_TOOL_TOOLS, Tags.Items.MELEE_WEAPON_TOOLS, Tags.Items.RANGED_WEAPON_TOOLS);
         tag(Tags.Items.ARMORS).addTags(ItemTags.HEAD_ARMOR, ItemTags.CHEST_ARMOR, ItemTags.LEG_ARMOR, ItemTags.FOOT_ARMOR);
         tag(Tags.Items.ENCHANTABLES).addTags(ItemTags.ARMOR_ENCHANTABLE, ItemTags.EQUIPPABLE_ENCHANTABLE, ItemTags.WEAPON_ENCHANTABLE, ItemTags.SWORD_ENCHANTABLE, ItemTags.MINING_ENCHANTABLE, ItemTags.MINING_LOOT_ENCHANTABLE, ItemTags.FISHING_ENCHANTABLE, ItemTags.TRIDENT_ENCHANTABLE, ItemTags.BOW_ENCHANTABLE, ItemTags.CROSSBOW_ENCHANTABLE, ItemTags.MACE_ENCHANTABLE, ItemTags.FIRE_ASPECT_ENCHANTABLE, ItemTags.DURABILITY_ENCHANTABLE, ItemTags.VANISHING_ENCHANTABLE);

@@ -20,9 +20,11 @@ java {
 }
 
 dependencies {
+    compileOnly(platform("net.neoforged:minecraft-dependencies:${project.minecraft_version}"))
+    compileOnly "org.slf4j:slf4j-api"
+    compileOnly "com.google.code.gson:gson"
+
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
-    compileOnly "com.google.code.gson:gson:${gson_version}"
-    compileOnly "org.slf4j:slf4j-api:${slf4j_api_version}"
     compileOnly "net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}"
 }
 

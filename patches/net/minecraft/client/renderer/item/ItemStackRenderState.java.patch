@@ -9,6 +9,21 @@
          }
      }
  
+@@ -116,6 +_,14 @@
+         }
+ 
+         public void setupBlockModel(BakedModel p_386829_, RenderType p_387529_) {
++            // Neo: Guard against models using chunk render types.
++            if (p_387529_.getChunkLayerId() != -1) {
++                throw new IllegalArgumentException("""
++                        Attempting to render an item BakedModel with an invalid RenderType: %s.
++                        Chunk render types are not supported, and the equivalent render types from the Sheets class should be used.
++                        Model: %s.
++                        """.formatted(p_387529_, p_386829_));
++            }
+             this.model = p_386829_;
+             this.renderType = p_387529_;
+         }
 @@ -149,6 +_,9 @@
  
          void render(PoseStack p_387607_, MultiBufferSource p_386763_, int p_387589_, int p_388775_) {

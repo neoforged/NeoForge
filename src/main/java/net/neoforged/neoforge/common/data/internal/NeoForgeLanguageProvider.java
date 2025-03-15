@@ -54,6 +54,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.FENCES, "Fences");
         add(Tags.Blocks.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Blocks.FENCES_WOODEN, "Wooden Fences");
+        add(Tags.Blocks.FLOWERS_SMALL, "Small Flowers");
+        add(Tags.Blocks.FLOWERS_TALL, "Tall Flowers");
+        add(Tags.Blocks.FLOWERS, "Flowers");
         add(Tags.Blocks.GLASS_BLOCKS, "Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_CHEAP, "Silica Glass Blocks");
@@ -175,6 +178,16 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CROPS_PUMPKIN, "Pumpkin Crops");
         add(Tags.Items.CROPS_SUGAR_CANE, "Sugar Cane Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
+        add(Tags.Items.DRINKS, "Drinks");
+        add(Tags.Items.DRINKS_WATER, "Water");
+        add(Tags.Items.DRINKS_WATERY, "Watery Drinks");
+        add(Tags.Items.DRINKS_MILK, "Milk");
+        add(Tags.Items.DRINKS_HONEY, "Honey");
+        add(Tags.Items.DRINKS_MAGIC, "Magical Drinks");
+        add(Tags.Items.DRINKS_OMINOUS, "Ominous Drinks");
+        add(Tags.Items.DRINKS_JUICE, "Juice");
+        add(Tags.Items.DRINK_CONTAINING_BUCKET, "Drink Containing Buckets");
+        add(Tags.Items.DRINK_CONTAINING_BOTTLE, "Drink Containing Bottles");
         add(Tags.Items.DUSTS, "Dusts");
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
@@ -208,6 +221,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
         add(Tags.Items.FERTILIZERS, "Fertilizers");
+        add(Tags.Items.FLOWERS_SMALL, "Small Flowers");
+        add(Tags.Items.FLOWERS_TALL, "Tall Flowers");
+        add(Tags.Items.FLOWERS, "Flowers");
         add(Tags.Items.FOODS, "Foods");
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
@@ -278,6 +294,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Items.PIGLIN_USABLE_CROSSBOWS, "Piglin Usable Crossbows");
+        add(Tags.Items.PILLAGER_USABLE_CROSSBOWS, "Pillager Usable Crossbows");
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
@@ -308,7 +326,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_MELON, "Melon Seeds");
         add(Tags.Items.SEEDS_PUMPKIN, "Pumpkin Seeds");
         add(Tags.Items.SEEDS_TORCHFLOWER, "Torchflower Seeds");
+        add(Tags.Items.SEEDS_PITCHER_PLANT, "Pitcher Plant Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
+        add(Tags.Items.SKELETON_USABLE_BOWS, "Skeleton Usable Bows");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
         add(Tags.Items.SLIME_BALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
@@ -343,6 +363,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_MACE, "Maces");
         add(Tags.Items.TOOLS_SPEAR, "Spears");
         add(Tags.Items.TOOLS_IGNITER, "Igniters");
+        add(Tags.Items.TOOLS_WRENCH, "Wrenches");
         add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");
         add(Tags.Items.RANGED_WEAPON_TOOLS, "Ranged Weapons");
         add(Tags.Items.MINING_TOOL_TOOLS, "Mining Tools");

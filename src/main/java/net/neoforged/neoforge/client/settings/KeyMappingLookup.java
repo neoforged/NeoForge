@@ -5,11 +5,12 @@
 
 package net.neoforged.neoforge.client.settings;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.KeyMapping;
@@ -18,7 +19,7 @@ public class KeyMappingLookup {
     private static final EnumMap<KeyModifier, Map<InputConstants.Key, Collection<KeyMapping>>> map = new EnumMap<>(KeyModifier.class);
     static {
         for (KeyModifier modifier : KeyModifier.values()) {
-            map.put(modifier, new HashMap<>());
+            map.put(modifier, Maps.newConcurrentMap());
         }
     }
 
@@ -53,7 +54,7 @@ public class KeyMappingLookup {
     public void put(InputConstants.Key keyCode, KeyMapping keyBinding) {
         KeyModifier keyModifier = keyBinding.getKeyModifier();
         Map<InputConstants.Key, Collection<KeyMapping>> bindingsMap = map.get(keyModifier);
-        Collection<KeyMapping> bindingsForKey = bindingsMap.computeIfAbsent(keyCode, k -> new ArrayList<>());
+        Collection<KeyMapping> bindingsForKey = bindingsMap.computeIfAbsent(keyCode, k -> Lists.newCopyOnWriteArrayList());
         bindingsForKey.add(keyBinding);
     }
 

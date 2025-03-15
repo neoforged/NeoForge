@@ -34,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -179,6 +180,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.resource.ReloadListenerSort;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -798,10 +800,19 @@ public class EventHooks {
         return event.getNewTime();
     }
 
+    /**
+     * Fires the {@link AddServerReloadListenersEvent} and returns the sorted list of reload listeners.
+     * 
+     * @param serverResources The just-created {@link ReloadableServerResources} instance.
+     * @param registryAccess  The registry access from the {@link ReloadableServerRegistries.LoadResult}.
+     * @return The sorted list of reload listeners.
+     * 
+     * @throws IllegalArgumentException if {@link ReloadListenerSort#sort(SortedReloadListenerEvent)} detects a cycle.
+     */
     public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
-        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
+        AddServerReloadListenersEvent event = new AddServerReloadListenersEvent(serverResources, registryAccess);
         NeoForge.EVENT_BUS.post(event);
-        return event.getListeners();
+        return ReloadListenerSort.sort(event);
     }
 
     public static void onCommandRegister(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection environment, CommandBuildContext context) {

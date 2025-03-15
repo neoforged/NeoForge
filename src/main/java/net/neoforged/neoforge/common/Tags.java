@@ -114,6 +114,21 @@ public class Tags {
         public static final TagKey<Block> FENCES = tag("fences");
         public static final TagKey<Block> FENCES_NETHER_BRICK = tag("fences/nether_brick");
         public static final TagKey<Block> FENCES_WOODEN = tag("fences/wooden");
+        /**
+         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
+         * Equivalent to the "minecraft:small_flowers" block tag.
+         */
+        public static final TagKey<Block> FLOWERS_SMALL = tag("flowers/small");
+        /**
+         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
+         * Equivalent to the "minecraft:tall_flowers" block tag in past Minecraft version.
+         */
+        public static final TagKey<Block> FLOWERS_TALL = tag("flowers/tall");
+        /**
+         * Contains any living plant block that contains flowers or is a flower itself.
+         * Equivalent to the "minecraft:flowers" block tag.
+         */
+        public static final TagKey<Block> FLOWERS = tag("flowers");
 
         public static final TagKey<Block> GLASS_BLOCKS = tag("glass_blocks");
         public static final TagKey<Block> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
@@ -303,6 +318,21 @@ public class Tags {
          * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
          */
         public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
+        /**
+         * Controls what items Piglins can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PIGLIN_USABLE_CROSSBOWS = neoforgeTag("piglin_usable_crossbows");
+        /**
+         * Controls what items Pillagers can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PILLAGER_USABLE_CROSSBOWS = neoforgeTag("pillager_usable_crossbows");
+        /**
+         * Controls what items Skeletons can use as default as a valid bow
+         * This tag defaults to {@link net.minecraft.world.item.Items#BOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> SKELETON_USABLE_BOWS = neoforgeTag("skeleton_usable_bows");
 
         // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
@@ -371,6 +401,54 @@ public class Tags {
         public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
         public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
+
+        /**
+         * Drinks are defined as (1) consumable items that (2) use the
+         * {@linkplain net.minecraft.world.item.ItemUseAnimation#DRINK drink item use animation}, (3) can be consumed regardless of the
+         * player's current hunger.
+         *
+         * <p>Drinks may provide nutrition and saturation, but are not required to do so.
+         *
+         * <p>More specific types of drinks, such as Water, Milk, or Juice should be placed in a sub-tag, such as
+         * {@code #c:drinks/water}, {@code #c:drinks/milk}, and {@code #c:drinks/juice}.
+         */
+        public static final TagKey<Item> DRINKS = tag("drinks");
+        /**
+         * For consumable drinks that contain only water.
+         */
+        public static final TagKey<Item> DRINKS_WATER = tag("drinks/water");
+        /**
+         * For consumable drinks that are generally watery (such as potions).
+         */
+        public static final TagKey<Item> DRINKS_WATERY = tag("drinks/watery");
+        public static final TagKey<Item> DRINKS_MILK = tag("drinks/milk");
+        public static final TagKey<Item> DRINKS_HONEY = tag("drinks/honey");
+        /**
+         * For consumable drinks that are magic in nature and usually grant at least one
+         * {@link net.minecraft.world.effect.MobEffect} when consumed.
+         */
+        public static final TagKey<Item> DRINKS_MAGIC = tag("drinks/magic");
+        /**
+         * For drinks that always grant the {@linkplain net.minecraft.world.effect.MobEffects#BAD_OMEN Bad Omen} effect.
+         */
+        public static final TagKey<Item> DRINKS_OMINOUS = tag("drinks/ominous");
+        /**
+         * Plant based fruit and vegetable juices belong in this tag, for example apple juice and carrot juice.
+         *
+         * <p>If tags for specific types of juices are desired, they may go in a sub-tag, using their regular name such as
+         * {@code #c:drinks/apple_juice}.
+         */
+        public static final TagKey<Item> DRINKS_JUICE = tag("drinks/juice");
+
+        /**
+         * For non-empty bottles that are {@linkplain #DRINKS drinkable}.
+         */
+        public static final TagKey<Item> DRINK_CONTAINING_BOTTLE = tag("drink_containing/bottle");
+        /**
+         * For non-empty buckets that are {@linkplain #DRINKS drinkable}.
+         */
+        public static final TagKey<Item> DRINK_CONTAINING_BUCKET = tag("drink_containing/bucket");
+
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
@@ -421,6 +499,9 @@ public class Tags {
         public static final TagKey<Item> DYES_ORANGE = DyeColor.ORANGE.getTag();
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
 
+        /**
+         * For eggs to use for culinary purposes in recipes such as baking a cake.
+         */
         public static final TagKey<Item> EGGS = tag("eggs");
         public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");
@@ -435,6 +516,21 @@ public class Tags {
          * (Note: Could include durability-based modded bonemeal-like items. Check for durability {@link net.minecraft.core.component.DataComponents#DAMAGE} DataComponent to handle them properly)
          */
         public static final TagKey<Item> FERTILIZERS = tag("fertilizers");
+        /**
+         * Contains living ground-based flowers that are 1 block tall such as Dandelions or Poppy.
+         * Equivalent to the "minecraft:small_flowers" item tag.
+         */
+        public static final TagKey<Item> FLOWERS_SMALL = tag("flowers/small");
+        /**
+         * Contains living ground-based flowers that are 2 block tall such as Rose Bush or Peony.
+         * Equivalent to the "minecraft:tall_flowers" item tag in past Minecraft version.
+         */
+        public static final TagKey<Item> FLOWERS_TALL = tag("flowers/tall");
+        /**
+         * Contains any living plant block that contains flowers or is a flower itself.
+         * Equivalent to the "minecraft:flowers" item tag in past minecraft versions.
+         */
+        public static final TagKey<Item> FLOWERS = tag("flowers");
         public static final TagKey<Item> FOODS = tag("foods");
         /**
          * Apples and other foods that are considered fruits in the culinary field belong in this tag.
@@ -648,6 +744,7 @@ public class Tags {
         public static final TagKey<Item> SEEDS_MELON = tag("seeds/melon");
         public static final TagKey<Item> SEEDS_PUMPKIN = tag("seeds/pumpkin");
         public static final TagKey<Item> SEEDS_TORCHFLOWER = tag("seeds/torchflower");
+        public static final TagKey<Item> SEEDS_PITCHER_PLANT = tag("seeds/pitcher_plant");
         public static final TagKey<Item> SEEDS_WHEAT = tag("seeds/wheat");
         /**
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
@@ -773,6 +870,14 @@ public class Tags {
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS_MACE = tag("tools/mace");
+        /**
+         * A tag containing all existing wrenches. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
+         * @see ItemAbilities
+         */
+        public static final TagKey<Item> TOOLS_WRENCH = tag("tools/wrench");
         /**
          * A tag containing melee-based weapons for recipes and loot tables.
          * Tools are considered melee if they are intentionally intended to be used for melee attack as a primary purpose.

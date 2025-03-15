@@ -206,6 +206,8 @@
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.",
   "neoforge.configgui.permissionHandler": "Permission Handler",
   "neoforge.configgui.permissionHandler.tooltip": "The permission handler used by the server. Defaults to neoforge:default_handler if no such handler with that name is registered.",
+  "neoforge.configgui.reducedDepthStencilFormat": "Reduced Depth+Stencil Format",
+  "neoforge.configgui.reducedDepthStencilFormat.tooltip": "Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.",
   "neoforge.configgui.removeErroringBlockEntities": "Remove Erroring Block Entities",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Set this to true to remove any BlockEntity that throws an error in its update method instead of closing the server and reporting a crash log.",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "BE WARNED THIS COULD SCREW UP EVERYTHING.\nUSE SPARINGLY.\nWE ARE NOT RESPONSIBLE FOR DAMAGES.",

@@ -9,6 +9,15 @@
          }
      }
  
+@@ -392,7 +_,7 @@
+ 
+     @Override
+     public boolean canFireProjectileWeapon(ProjectileWeaponItem p_34715_) {
+-        return p_34715_ == Items.CROSSBOW;
++        return p_34715_.builtInRegistryHolder().is(net.neoforged.neoforge.common.Tags.Items.PIGLIN_USABLE_CROSSBOWS);
+     }
+ 
+     protected void holdInMainHand(ItemStack p_34784_) {
 @@ -400,7 +_,7 @@
      }
  

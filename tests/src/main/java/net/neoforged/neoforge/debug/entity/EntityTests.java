@@ -41,12 +41,12 @@ public class EntityTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom fence gates without wood types work, allowing for the use of the vanilla block for non-wooden gates")
     static void customSpawnLogic(final DynamicTest test, final RegistrationHelper reg) {
-        final var usingForgeAdvancedSpawn = reg.entityTypes().registerType("complex_spawn", () -> EntityType.Builder.of(CustomComplexSpawnEntity::new, MobCategory.AMBIENT)
-                .sized(1, 1)).withLang("Custom complex spawn egg").withRenderer(() -> NoopRenderer::new);
-        final var usingCustomPayloadsSpawn = reg.entityTypes().registerType("adapted_spawn", () -> EntityType.Builder.of(AdaptedSpawnEntity::new, MobCategory.AMBIENT)
-                .sized(1, 1)).withLang("Adapted complex spawn egg").withRenderer(() -> NoopRenderer::new);
-        final var simpleSpawn = reg.entityTypes().registerType("simple_spawn", () -> EntityType.Builder.of(SimpleEntity::new, MobCategory.AMBIENT)
-                .sized(1, 1)).withLang("Simple spawn egg").withRenderer(() -> NoopRenderer::new);
+        final var usingForgeAdvancedSpawn = reg.entityTypes().registerEntityType("complex_spawn", CustomComplexSpawnEntity::new, MobCategory.AMBIENT, builder -> builder.sized(1, 1))
+                .withLang("Custom complex spawn egg").withRenderer(() -> NoopRenderer::new);
+        final var usingCustomPayloadsSpawn = reg.entityTypes().registerEntityType("adapted_spawn", AdaptedSpawnEntity::new, MobCategory.AMBIENT, builder -> builder.sized(1, 1))
+                .withLang("Adapted complex spawn egg").withRenderer(() -> NoopRenderer::new);
+        final var simpleSpawn = reg.entityTypes().registerEntityType("simple_spawn", SimpleEntity::new, MobCategory.AMBIENT, builder -> builder.sized(1, 1))
+                .withLang("Simple spawn egg").withRenderer(() -> NoopRenderer::new);
 
         reg.eventListeners().accept((Consumer<RegisterPayloadHandlersEvent>) event -> event.registrar("1")
                 .playToClient(EntityTests.CustomSyncPayload.TYPE, CustomSyncPayload.STREAM_CODEC, (payload, context) -> {}));

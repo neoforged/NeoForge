@@ -110,6 +110,10 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                     partObj.addProperty("shade", false);
                 }
 
+                if (part.lightEmission != 0) {
+                    partObj.addProperty("light_emission", part.lightEmission);
+                }
+
                 if (!part.getFaceData().equals(ExtraFaceData.DEFAULT)) {
                     partObj.add("neoforge_data", ExtraFaceData.CODEC.encodeStart(JsonOps.INSTANCE, part.getFaceData()).result().get());
                 }

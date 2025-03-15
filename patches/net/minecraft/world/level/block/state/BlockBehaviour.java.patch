@@ -34,13 +34,13 @@
          return this.isRandomlyTicking;
      }
  
-+    @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
++    @Deprecated //Neo: Use more sensitive version {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
  
 +    @Deprecated
-+    /** @deprecated NeoForge: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(BlockState, LevelReader, BlockPos, Player, boolean) player-sensitive version} */
++    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader, BlockPos, BlockState, boolean, Player) player-sensitive version} */
      protected ItemStack getCloneItemStack(LevelReader p_382795_, BlockPos p_383120_, BlockState p_382830_, boolean p_388788_) {
          return new ItemStack(this.asItem());
      }
@@ -59,7 +59,7 @@
              return this.useShapeForLightOcclusion;
          }
  
-+        /** @deprecated Forge: Use {@link BlockState#getLightEmission(BlockGetter, BlockPos)} instead */
++        /** @deprecated Neo: Use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getLightEmission(BlockGetter, BlockPos)} instead */
 +        @Deprecated
          public int getLightEmission() {
              return this.lightEmission;
@@ -107,7 +107,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
  
-+        @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
++        @Deprecated //Neo: Use more sensitive version {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }

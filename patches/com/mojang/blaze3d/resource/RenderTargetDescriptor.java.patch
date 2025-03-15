@@ -1,0 +1,18 @@
+--- a/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
++++ b/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
+@@ -6,9 +_,13 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record RenderTargetDescriptor(int width, int height, boolean useDepth) implements ResourceDescriptor<RenderTarget> {
++public record RenderTargetDescriptor(int width, int height, boolean useDepth, boolean useStencil) implements ResourceDescriptor<RenderTarget> {
++    public RenderTargetDescriptor(int width, int height, boolean useDepth) {
++        this(width, height, useDepth, false);
++    }
++
+     public RenderTarget allocate() {
+-        return new TextureTarget(this.width, this.height, this.useDepth);
++        return new TextureTarget(this.width, this.height, this.useDepth, this.useStencil);
+     }
+ 
+     public void free(RenderTarget p_363223_) {

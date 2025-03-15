@@ -6,7 +6,9 @@
 package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.IArmPoseTransformer;
@@ -142,17 +145,22 @@ public interface IClientItemExtensions {
     default void setupModelAnimations(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {}
 
     /**
-     * Called when the client starts rendering the HUD, and is wearing this item in the helmet slot.
+     * Called to render an overlay on the first-person camera.
      * <p>
-     * This is where pumpkins would render their overlay.
+     * This method will always be called to render an overlay, regardless of whether the client camera overlay provided
+     * by the {@link DataComponents#EQUIPPABLE Equippable data component} is present. If the equippable overlay is present
+     * (e.g. the pumpkin overlay), this method will be called after it has been rendered.
+     * <p>
+     * This method should be used if the overlay is dynamic or has dynamic components.
+     * For a static overlay, prefer using {@link Equippable#cameraOverlay()}.
      *
-     * @param stack       The item stack
-     * @param player      The player entity
-     * @param width       The viewport width
-     * @param height      Viewport height
-     * @param partialTick Partial tick time, useful for interpolation
+     * @param stack         The item stack that the player is wearing
+     * @param equipmentSlot The slot in which the player is wearing or holding the above item stack
+     * @param player        The player entity
+     * @param guiGraphics   The gui graphics
+     * @param deltaTracker  The delta tracker
      */
-    default void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTick) {}
+    default void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {}
 
     /**
      * {@return Whether the item should bob when rendered in the world as an entity}

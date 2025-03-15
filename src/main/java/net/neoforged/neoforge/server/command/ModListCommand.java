@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 
 class ModListCommand {
@@ -18,7 +17,7 @@ class ModListCommand {
         return Commands.literal("mods")
                 .requires(cs -> cs.hasPermission(0)) //permission
                 .executes(ctx -> {
-                    ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.mods.list",
+                    ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.mods.list",
                             ModList.get().applyForEachModFile(modFile ->
                     // locator - filename : firstmod (version) - numberofmods\n
                     String.format(Locale.ROOT, "%s : %s (%s) - %d %s",

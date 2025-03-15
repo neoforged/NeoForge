@@ -101,6 +101,21 @@
      }
  
      private void renderCameraOverlays(GuiGraphics p_316735_, DeltaTracker p_348538_) {
+@@ -236,8 +_,12 @@
+                 for (EquipmentSlot equipmentslot : EquipmentSlot.values()) {
+                     ItemStack itemstack = this.minecraft.player.getItemBySlot(equipmentslot);
+                     Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
+-                    if (equippable != null && equippable.slot() == equipmentslot && equippable.cameraOverlay().isPresent()) {
+-                        this.renderTextureOverlay(p_316735_, equippable.cameraOverlay().get().withPath(p_380782_ -> "textures/" + p_380782_ + ".png"), 1.0F);
++                    if (equippable != null && equippable.slot() == equipmentslot) {
++                        if (equippable.cameraOverlay().isPresent()) {
++                            this.renderTextureOverlay(p_316735_, equippable.cameraOverlay().get().withPath(p_380782_ -> "textures/" + p_380782_ + ".png"), 1.0F);
++                        }
++
++                        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack).renderFirstPersonOverlay(itemstack, equipmentslot, this.minecraft.player, p_316735_, p_348538_);
+                     }
+                 }
+             }
 @@ -289,8 +_,12 @@
              }
  

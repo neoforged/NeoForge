@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.client.extensions.common;
 
-import java.util.function.Consumer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
@@ -28,7 +27,7 @@ import org.joml.Vector3d;
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link Block}.
  *
- * @see Block#initializeClient(Consumer)
+ * @see net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
  */
 public interface IClientBlockExtensions {
     IClientBlockExtensions DEFAULT = new IClientBlockExtensions() {};

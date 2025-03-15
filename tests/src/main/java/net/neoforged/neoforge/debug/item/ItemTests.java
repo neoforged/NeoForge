@@ -120,8 +120,7 @@ public class ItemTests {
             "Tests if the forge spawn egg works"
     })
     static void forgeSpawnEggTest(final DynamicTest test, final RegistrationHelper reg) {
-        final var testEntity = reg.entityTypes().registerType("test_entity", () -> EntityType.Builder.of(Pig::new, MobCategory.CREATURE)
-                .sized(1, 1))
+        final var testEntity = reg.entityTypes().registerEntityType("test_entity", Pig::new, MobCategory.CREATURE, builder -> builder.sized(1, 1))
                 .withAttributes(Pig::createAttributes)
                 .withRenderer(() -> PigRenderer::new)
                 .withLang("Test Pig spawn egg");
