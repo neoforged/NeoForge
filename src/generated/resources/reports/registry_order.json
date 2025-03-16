@@ -2,6 +2,7 @@
   "order": [
     "minecraft:attribute",
     "minecraft:data_component_type",
+    "minecraft:particle_type",
     "minecraft:game_event",
     "minecraft:sound_event",
     "minecraft:fluid",
@@ -10,7 +11,6 @@
     "minecraft:entity_type",
     "minecraft:item",
     "minecraft:potion",
-    "minecraft:particle_type",
     "minecraft:block_entity_type",
     "minecraft:custom_stat",
     "minecraft:chunk_status",

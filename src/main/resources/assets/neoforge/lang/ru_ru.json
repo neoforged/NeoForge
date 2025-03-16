@@ -194,6 +194,8 @@
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Опция конфигурации, предназначенная в основном для разработчиков. При запуске на интегрированном сервере выводит логи тегов предметов из модов, не имеющих перевода. Желаемый формат: tag.item.<namespace>.<path> для ключа перевода. По умолчанию установлено значение SILENCED.",
   "neoforge.configgui.permissionHandler": "Обработчик разрешений",
   "neoforge.configgui.permissionHandler.tooltip": "Обработчик разрешений, используемый сервером. По умолчанию используется neoforge:default_handler, если обработчик с таким именем не зарегистрирован.",
+  "neoforge.configgui.reducedDepthStencilFormat": "Reduced Depth+Stencil Format",
+  "neoforge.configgui.reducedDepthStencilFormat.tooltip": "Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.",
   "neoforge.configgui.removeErroringBlockEntities": "Удалять блочные сущности, вызывающие ошибки",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Установите это значение в true, чтобы удалить любой BlockEntity, который выдает ошибку в своем методе обновления, вместо того чтобы закрыть сервер и сообщить о сбое в журнале.",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "БУДЬТЕ ВНИМАТЕЛЬНЫ, ЭТО МОЖЕТ ВСЕ ИСПОРТИТЬ.\nПОЛЬЗУЙТЕСЬ ОСТОРОЖНО.\nМЫ НЕ НЕСЕМ ОТВЕТСТВЕННОСТИ ЗА ПОВРЕЖДЕНИЯ.",

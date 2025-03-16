@@ -194,6 +194,8 @@
   "neoforge.configgui.logUntranslatedItemTagWarnings.tooltip": "Možnosť konfigurácie najmä pre developerov. Odhlási módované známky vecí ktoré nemajú preklady keď bežia na integrovanom servery. Požadovaný formát je tag.item.<namespace>.<path> pre prekladový kľúč. predvolená hodnota je SILENCED.",
   "neoforge.configgui.permissionHandler": "Manipulátor Povolení",
   "neoforge.configgui.permissionHandler.tooltip": "Manipulátor povolení používaný serverom. Predvolená hodnota do neoforge:default_handler ak nie je žiadny manipulátor s takým menom registrovaný.",
+  "neoforge.configgui.reducedDepthStencilFormat": "Reduced Depth+Stencil Format",
+  "neoforge.configgui.reducedDepthStencilFormat.tooltip": "Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.",
   "neoforge.configgui.removeErroringBlockEntities": "Odstrániť blokové entity spôsobujúce error",
   "neoforge.configgui.removeErroringBlockEntities.tooltip": "Nastavte toto na hodnotu TRUE na odstránenie akejkoľvek Blokovej Entity, ktorá vyhodí chybu pri jej aktualizačnej metóde namiesto uzavretia serveru a nahlásenia zápisu spadnutia.",
   "neoforge.configgui.removeErroringBlockEntities.tooltip.warning": "BUDŤE VAROVANÝ, TOTO BY MOHLO VŠETKO ROZBIŤ.\nPOUŽÍVAJTE OPATRNE.\nNIE SME ZODPOVEDNÝ ZA ŠKODY.",

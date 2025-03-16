@@ -126,6 +126,7 @@ public class GameData {
         Set<ResourceLocation> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
         ordered.add(Registries.DATA_COMPONENT_TYPE.location()); // Vanilla order is incorrect, Item depends on data components at construction time.
+        ordered.add(Registries.PARTICLE_TYPE.location()); // Vanilla order is incorrect, both Block and MobEffect depend on ParticleType at construction time.
         ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
         return ordered;
