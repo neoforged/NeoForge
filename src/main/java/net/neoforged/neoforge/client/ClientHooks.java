@@ -128,6 +128,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.FogType;
@@ -752,6 +753,18 @@ public class ClientHooks {
     public static String onClientSendMessage(String message) {
         ClientChatEvent event = new ClientChatEvent(message);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? "" : event.getMessage();
+    }
+
+    @ApiStatus.Internal
+    public static void handleUpdateRecipes(ClientPacketListener packetListener, Consumer<FuelValues> fuelValuesSetter) {
+        // Neo: abuse recipe sync to overwrite fuel values with datamap values after their sync (tag update doesn't fire on initial sync and the constructor is too early)
+        if (packetListener.getConnectionType().isNeoForge()) {
+            fuelValuesSetter.accept(net.neoforged.neoforge.common.DataMapHooks.populateFuelValues(packetListener.registryAccess(), packetListener.enabledFeatures()));
+        } else {
+            // Notify client mods that they're connected to a Vanilla server, which will never give them recipe data
+            var event = new net.neoforged.neoforge.client.event.RecipesReceivedEvent(java.util.Set.of(), net.minecraft.world.item.crafting.RecipeMap.create(java.util.List.of()));
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
+        }
     }
 
     @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)

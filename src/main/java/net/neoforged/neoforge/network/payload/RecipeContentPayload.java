@@ -20,8 +20,6 @@ import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.jetbrains.annotations.ApiStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * We use this to transfer the actual recipe content from server to client.
@@ -30,8 +28,6 @@ import org.slf4j.LoggerFactory;
 public record RecipeContentPayload(
         Set<RecipeType<?>> recipeTypes,
         List<RecipeHolder<?>> recipes) implements CustomPacketPayload {
-    private static final Logger LOG = LoggerFactory.getLogger(RecipeContentPayload.class);
-
     public static final Type<RecipeContentPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "recipe_content"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RecipeContentPayload> STREAM_CODEC = StreamCodec.composite(
@@ -43,11 +39,9 @@ public record RecipeContentPayload(
         var recipeTypeSet = Set.copyOf(recipeTypes);
         // Fast-path for empty recipe type set (if no mod wants to sync anything)
         if (recipeTypeSet.isEmpty()) {
-            LOG.debug("Not sending any recipe data to clients.");
             return new RecipeContentPayload(recipeTypeSet, List.of());
         } else {
             var recipeSubset = recipes.values().stream().filter(h -> recipeTypeSet.contains(h.value().getType())).toList();
-            LOG.debug("Sending {} recipes of the following types: {}", recipeSubset.size(), recipeTypeSet);
             return new RecipeContentPayload(recipeTypeSet, recipeSubset);
         }
     }

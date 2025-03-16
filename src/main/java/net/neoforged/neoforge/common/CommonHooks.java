@@ -1604,9 +1604,10 @@ public class CommonHooks {
     /**
      * Determines whether the given players should be sent full recipe content or not and handles the sending.
      */
-    public static void sendRecipes(ServerPlayer player, Set<RecipeType<?>> requestedRecipeTypes, RecipeMap recipeMap) {
+    public static void sendRecipes(ServerPlayer player, Set<RecipeType<?>> recipeTypesToSend, RecipeMap recipeMap) {
         if (player.connection.getConnectionType().isNeoForge()) {
-            var payload = RecipeContentPayload.create(requestedRecipeTypes, recipeMap);
+            var payload = RecipeContentPayload.create(recipeTypesToSend, recipeMap);
+            LOGGER.debug("Sending {} recipes of the following types: {}", payload.recipes().size(), payload.recipeTypes());
             PacketDistributor.sendToPlayer(player, payload);
         }
     }

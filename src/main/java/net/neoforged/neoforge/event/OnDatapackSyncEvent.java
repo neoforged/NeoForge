@@ -5,8 +5,9 @@
 
 package net.neoforged.neoforge.event;
 
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +26,7 @@ public class OnDatapackSyncEvent extends Event {
     @Nullable
     private final ServerPlayer player;
 
-    private final Set<RecipeType<?>> requestedRecipeTypes = Collections.newSetFromMap(new IdentityHashMap<>());
+    private final ReferenceSet<RecipeType<?>> recipeTypesToSend = new ReferenceOpenHashSet<>();
 
     public OnDatapackSyncEvent(PlayerList playerList, @Nullable ServerPlayer player) {
         this.playerList = playerList;
@@ -66,7 +67,7 @@ public class OnDatapackSyncEvent extends Event {
      * @see net.neoforged.neoforge.client.event.RecipesReceivedEvent
      */
     public void sendRecipes(RecipeType<?>... recipeTypes) {
-        Collections.addAll(this.requestedRecipeTypes, recipeTypes);
+        Collections.addAll(this.recipeTypesToSend, recipeTypes);
     }
 
     /**
@@ -76,14 +77,14 @@ public class OnDatapackSyncEvent extends Event {
      */
     public void sendRecipes(Iterable<RecipeType<?>> recipeTypes) {
         for (var recipeType : recipeTypes) {
-            this.requestedRecipeTypes.add(recipeType);
+            this.recipeTypesToSend.add(recipeType);
         }
     }
 
     /**
      * @return The recipe types that have already been requested to be sent to the players.
      */
-    public Set<RecipeType<?>> getRequestedRecipeTypes() {
-        return Collections.unmodifiableSet(requestedRecipeTypes);
+    public Set<RecipeType<?>> getRecipeTypesToSend() {
+        return Collections.unmodifiableSet(recipeTypesToSend);
     }
 }
