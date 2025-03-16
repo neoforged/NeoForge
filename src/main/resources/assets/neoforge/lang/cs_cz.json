@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "Sada hodnot přidaných k rozšířeným enumů na klientu a na serveru se nerovnají. Ujistěte se, že užíváte stejný mód a NeoForge verzi jako server. Pro více informací se podívejte do logu",
   "neoforge.network.feature_flags.entry_mismatch": "Server a klient mají různé sady vlastních FeatureFlags. Ujistěte se, že používáte stejné modifikace a verze NeoForge jako server. Pro více podrobností se podívejte do logu",
   "neoforge.network.feature_flags.no_vanilla_server": "Tento klient nepodporuje vanilla servery, protože obsahuje vlastní FeatureFlags",
-  "neoforge.attribute.debug.base": "[Entita: %s | Položka: %s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "Aktivovaný",
