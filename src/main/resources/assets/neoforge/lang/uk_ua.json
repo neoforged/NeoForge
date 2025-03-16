@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "Набір значень, що додаються до розширюваних enum, на клієнті й сервері не збігаються. Переконайтеся, що ви використовуєте однакові версії моду і NeoForge. Дивіться журнал для додаткової інформації",
   "neoforge.network.feature_flags.entry_mismatch": "Сервер і клієнт мають різні набори користувацьких FeatureFlags. Переконайтеся, що ви використовуєте однакові версії моду і NeoForge. Дивіться журнал для отримання додаткової інформації",
   "neoforge.network.feature_flags.no_vanilla_server": "Цей клієнт не підтримує ванільні сервери, тому що він має користувацькі FeatureFlags",
-  "neoforge.attribute.debug.base": "[Сутність: %s | Предмет: %s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "Увімкнено",
