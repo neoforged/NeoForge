@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "Набор значений, добавляемых в расширяемые перечисления на клиенте и сервере, не совпадает. Убедитесь, что вы используете те же версии мода и NeoForge, что и сервер. Посмотрите в журнал для получения более подробной информации",
   "neoforge.network.feature_flags.entry_mismatch": "Сервер и клиент имеют разные наборы пользовательских FeatureFlags. Убедитесь, что вы используете те же версии мода и NeoForge, что и сервер. Посмотрите в журнал для получения более подробной информации",
   "neoforge.network.feature_flags.no_vanilla_server": "Этот клиент не поддерживает ванильные серверы, так как имеет собственные FeatureFlags",
-  "neoforge.attribute.debug.base": "[Сущность: %s | Предмет: %s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "Вкл.",
