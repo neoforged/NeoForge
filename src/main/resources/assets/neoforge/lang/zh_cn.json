@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "客户端和服务器上所需要的模组不匹配。请确保您使用的模组和 NeoForge 版本与服务器上的版本相同。请查看日志以获取更多详细信息。",
   "neoforge.network.feature_flags.entry_mismatch": "客户端和服务端的自定义功能开关（Feature Flag）不一致。请确保你使用的模组及NeoForge版本与服务端上的相同。查看日志以获取更多详细信息。",
   "neoforge.network.feature_flags.no_vanilla_server": "此客户端有自定义功能开关（Feature Flag），因此不支持原版服务端。",
-  "neoforge.attribute.debug.base": "[实体：%s | 物品：%s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "已启用",
