@@ -20,6 +20,9 @@ import org.jetbrains.annotations.ApiStatus;
  * will only be sent for recipe types requested using {@link net.neoforged.neoforge.event.OnDatapackSyncEvent#sendRecipes}
  * on the server-side.
  *
+ * <p>You should clean up any data you kept from this event when the player disconnects,
+ * for example when {@link ClientPlayerNetworkEvent.LoggingOut} is fired.
+ *
  * <p>These events are fired on the {@linkplain NeoForge#EVENT_BUS main event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
