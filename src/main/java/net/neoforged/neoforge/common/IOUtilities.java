@@ -25,6 +25,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains helpers for performing file I/O in a resilient manner.
@@ -35,6 +37,7 @@ public final class IOUtilities {
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING
     };
+    private static final Logger LOGGER = LoggerFactory.getLogger(IOUtilities.class);
 
     private IOUtilities() {}
 
@@ -55,7 +58,7 @@ public final class IOUtilities {
                     Files.deleteIfExists(file);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("Could not delete temp file {}{}", prefix, TEMP_FILE_SUFFIX, e);
             }
         }, Util.ioPool());
     }
