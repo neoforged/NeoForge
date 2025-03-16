@@ -1,5 +1,13 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
+@@ -21,7 +_,6 @@
+ import java.util.function.Predicate;
+ import javax.annotation.Nullable;
+ import net.minecraft.ChatFormatting;
+-import net.minecraft.FileUtil;
+ import net.minecraft.commands.CommandSourceStack;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.LayeredRegistryAccess;
 @@ -129,6 +_,7 @@
      private boolean allowCommandsForAllPlayers;
      private static final boolean ALLOW_LOGOUTIVATOR = false;
@@ -23,7 +31,7 @@
          servergamepacketlistenerimpl.send(new ClientboundSetHeldSlotPacket(p_11263_.getInventory().selected));
 +        var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, p_11263_));
          RecipeManager recipemanager = this.server.getRecipeManager();
-+        net.neoforged.neoforge.common.CommonHooks.sendRecipes(p_11263_, dataSyncEvent.getRequestedRecipeTypes(), recipemanager.recipeMap());
++        net.neoforged.neoforge.common.CommonHooks.sendRecipes(p_11263_, dataSyncEvent.getRecipeTypesToSend(), recipemanager.recipeMap());
          servergamepacketlistenerimpl.send(
              new ClientboundUpdateRecipesPacket(recipemanager.getSynchronizedItemProperties(), recipemanager.getSynchronizedStonecutterRecipes())
          );
@@ -162,7 +170,7 @@
          for (ServerPlayer serverplayer : this.players) {
              serverplayer.connection.send(clientboundupdaterecipespacket);
              serverplayer.getRecipeBook().sendInitialRecipeBook(serverplayer);
-+            net.neoforged.neoforge.common.CommonHooks.sendRecipes(serverplayer, dataSyncEvent.getRequestedRecipeTypes(), recipemanager.recipeMap());
++            net.neoforged.neoforge.common.CommonHooks.sendRecipes(serverplayer, dataSyncEvent.getRecipeTypesToSend(), recipemanager.recipeMap());
          }
      }
  
