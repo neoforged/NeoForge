@@ -24,11 +24,25 @@ public class ParametrizedGameTestSequence<T> {
         this.info = info;
         this.sequence = sequence;
 
+        final AtomicReference<RuntimeException> capturedException = new AtomicReference<>();
         final AtomicReference<T> val = new AtomicReference<>();
-        sequence.thenExecute(() -> val.set(value.get()));
+        sequence.thenExecute(() -> {
+            try {
+                val.set(value.get());
+            } catch (RuntimeException ex) {
+                // Capture the exception to rethrow later, to avoid overwriting it with our own
+                capturedException.set(ex);
+                throw ex;
+            }
+        });
         this.value = () -> {
             final var v = val.get();
             if (v == null) {
+                // Rethrow the captured exception if any before throwing our own exception
+                final var ex = capturedException.get();
+                if (ex != null) {
+                    throw ex;
+                }
                 throw new GameTestAssertException("Expected value to be non-null!");
             }
             return v;
