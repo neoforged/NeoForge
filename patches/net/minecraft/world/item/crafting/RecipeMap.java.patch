@@ -9,22 +9,27 @@
      private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
  
      private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> p_379497_, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> p_380280_) {
-@@ -31,6 +_,19 @@
+@@ -31,6 +_,24 @@
          }
  
          return new RecipeMap(builder.build(), builder1.build());
 +    }
 +
-+    public void order() {
-+        Map<ResourceKey<Recipe<?>>, Integer> recipePriorities = net.neoforged.neoforge.common.NeoForgeEventHandler.getRecipePriorityManager().getRecipePriorities(); // Neo: get overriding recipe priorities
-+        com.google.common.collect.SetMultimap<Integer, com.mojang.datafixers.util.Pair<RecipeType<?>, RecipeHolder<?>>> priorityBuilder = com.google.common.collect.MultimapBuilder.treeKeys().hashSetValues().build();
++    // Neo: handle ordering according to any recipe priorities
++    public void order(it.unimi.dsi.fastutil.objects.Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities) {
++        it.unimi.dsi.fastutil.ints.Int2ObjectMap<java.util.List<RecipeHolder<?>>> priorityBuilder = new it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap<>();
 +        com.google.common.collect.LinkedListMultimap<RecipeType<?>, RecipeHolder<?>> finalBuilder = com.google.common.collect.LinkedListMultimap.create();
 +
 +        for (RecipeHolder<?> recipeholder : this.byKey.values()) {
-+            priorityBuilder.put(recipePriorities.getOrDefault(recipeholder.id(), 0), com.mojang.datafixers.util.Pair.of(recipeholder.value().getType(), recipeholder));
++            int priority = recipePriorities.getOrDefault(recipeholder.id(), 0);
++            if (!priorityBuilder.containsKey(priority)) {
++                priorityBuilder.put(priority, new java.util.ArrayList<>(java.util.List.of(recipeholder)));
++            } else {
++                priorityBuilder.get(priority).add(recipeholder);
++            }
 +        }
 +
-+        com.google.common.collect.Lists.reverse(new java.util.ArrayList<>(priorityBuilder.entries())).forEach((e) -> finalBuilder.put(e.getValue().getFirst(), e.getValue().getSecond()));
++        com.google.common.collect.Lists.reverse(new java.util.ArrayList<>(priorityBuilder.int2ObjectEntrySet())).forEach((e) -> e.getValue().forEach(recipeHolder -> finalBuilder.put(recipeHolder.value().getType(), recipeHolder)));
 +        this.byType = ImmutableMultimap.copyOf(finalBuilder);
      }
  
