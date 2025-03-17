@@ -137,6 +137,7 @@ public enum KeyModifier {
 
     public static final KeyModifier[] MODIFIER_VALUES = { SHIFT, CONTROL, ALT };
 
+    /** @deprecated Use {@link #getActiveModifiers()} instead. */
     @Deprecated(forRemoval = true, since = "1.21.4")
     public static KeyModifier getActiveModifier() {
         for (KeyModifier keyModifier : MODIFIER_VALUES) {

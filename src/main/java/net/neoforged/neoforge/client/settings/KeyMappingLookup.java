@@ -47,36 +47,40 @@ public class KeyMappingLookup {
         List<KeyMapping> matchingBindings = new ArrayList<>();
         // Get a list of all active modifiers
         List<KeyModifier> activeModifiers = KeyModifier.getActiveModifiers();
+        // Get modifier for key code
+        KeyModifier keyCodeModifier = KeyModifier.getKeyModifier(keyCode);
 
         for (var modifier : activeModifiers) {
             // If modifier matches, add other modifiers
             if (modifier.matches(keyCode)) {
                 // Check if binding matches with another modifier
-                for (var key : activeModifiers) {
+                for (var otherModifier : activeModifiers) {
 
-                    // Skip if modifier matches
-                    if (key.matches(keyCode)) {
+                    // Skip if modifier matches current key code
+                    if (otherModifier == keyCodeModifier) {
                         continue;
                     }
 
                     // Loop through all modifier codes
-                    for (var modifierKey : key.codes()) {
-                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), modifierKey.getValue())) {
-                            matchingBindings.addAll(findKeybinds(modifierKey, modifier));
+                    for (var otherModifierCode : otherModifier.codes()) {
+                        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), otherModifierCode.getValue())) {
+                            matchingBindings.addAll(findKeybinds(otherModifierCode, modifier));
                         }
                     }
                 }
             } else {
-                // Attempt to add all keybinds where the keycode and the modifier are different
+                // Attempt to add all bindings where the keycode and the modifier are different
                 matchingBindings.addAll(findKeybinds(keyCode, modifier));
             }
         }
 
-        // Release all keys which use this as a modifier
-        if (releasing && KeyModifier.isKeyCodeModifier(keyCode)) {
-            matchingBindings.addAll(map.get(KeyModifier.getKeyModifier(keyCode)).entrySet().stream()
+        // Release all bindings which use this key code as a modifier
+        if (releasing && keyCodeModifier != KeyModifier.NONE) {
+            matchingBindings.addAll(map.get(keyCodeModifier).entrySet().stream()
+                    // Only match keys that are mapped
                     .filter(entry -> entry.getKey() != InputConstants.UNKNOWN)
                     .flatMap(entry -> entry.getValue().stream())
+                    // Make sure the key is active in the current context
                     .filter(mapping -> mapping.getKeyConflictContext().isActive())
                     .toList());
         }
