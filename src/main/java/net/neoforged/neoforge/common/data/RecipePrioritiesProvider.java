@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common.data;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -71,10 +70,7 @@ public abstract class RecipePrioritiesProvider implements DataProvider {
         }
         json.add("entries", entries);
 
-        ImmutableList.Builder<CompletableFuture<?>> futuresBuilder = new ImmutableList.Builder<>();
-        futuresBuilder.add(DataProvider.saveStable(cache, json, path));
-
-        return CompletableFuture.allOf(futuresBuilder.build().toArray(CompletableFuture[]::new));
+        return DataProvider.saveStable(cache, json, path);
     }
 
     public void add(ResourceLocation recipe, int priority) {

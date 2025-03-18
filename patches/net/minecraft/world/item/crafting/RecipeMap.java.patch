@@ -9,7 +9,7 @@
      private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
  
      private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> p_379497_, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> p_380280_) {
-@@ -31,6 +_,24 @@
+@@ -31,6 +_,25 @@
          }
  
          return new RecipeMap(builder.build(), builder1.build());
@@ -17,19 +17,20 @@
 +
 +    // Neo: handle ordering according to any recipe priorities
 +    public void order(it.unimi.dsi.fastutil.objects.Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities) {
-+        it.unimi.dsi.fastutil.ints.Int2ObjectMap<java.util.List<RecipeHolder<?>>> priorityBuilder = new it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap<>();
++        it.unimi.dsi.fastutil.ints.Int2ObjectMap<java.util.List<RecipeHolder<?>>> priorityBuilder = new it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap<>();
 +        com.google.common.collect.LinkedListMultimap<RecipeType<?>, RecipeHolder<?>> finalBuilder = com.google.common.collect.LinkedListMultimap.create();
 +
 +        for (RecipeHolder<?> recipeholder : this.byKey.values()) {
 +            int priority = recipePriorities.getOrDefault(recipeholder.id(), 0);
-+            if (!priorityBuilder.containsKey(priority)) {
-+                priorityBuilder.put(priority, new java.util.ArrayList<>(java.util.List.of(recipeholder)));
-+            } else {
-+                priorityBuilder.get(priority).add(recipeholder);
++            priorityBuilder.computeIfAbsent(priority, p -> new java.util.ArrayList<>()).add(recipeholder);
++        }
++
++        for (var list : com.google.common.collect.Lists.reverse(new java.util.ArrayList<>(priorityBuilder.int2ObjectEntrySet()))) {
++            for (RecipeHolder<?> recipeHolder : list.getValue()) {
++                finalBuilder.put(recipeHolder.value().getType(), recipeHolder);
 +            }
 +        }
 +
-+        com.google.common.collect.Lists.reverse(new java.util.ArrayList<>(priorityBuilder.int2ObjectEntrySet())).forEach((e) -> e.getValue().forEach(recipeHolder -> finalBuilder.put(recipeHolder.value().getType(), recipeHolder)));
 +        this.byType = ImmutableMultimap.copyOf(finalBuilder);
      }
  

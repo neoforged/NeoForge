@@ -48,7 +48,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
     private static LootModifierManager LOOT_MODIFIER_MANAGER;
-    private static RecipePriorityManager RECIPE_PRIORITY_MANAGER;
     private static DataMapLoader DATA_MAP_LOADER;
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -155,7 +154,7 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void onResourceReload(AddServerReloadListenersEvent event) {
         event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
-        event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, RECIPE_PRIORITY_MANAGER = new RecipePriorityManager(event.getServerResources().getRecipeManager()));
+        event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
         event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
         event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
     }
@@ -164,12 +163,6 @@ public class NeoForgeEventHandler {
         if (LOOT_MODIFIER_MANAGER == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
         return LOOT_MODIFIER_MANAGER;
-    }
-
-    public static RecipePriorityManager getRecipePriorityManager() {
-        if (RECIPE_PRIORITY_MANAGER == null)
-            throw new IllegalStateException("Can not retrieve RecipePriorityManager until resources have loaded once.");
-        return RECIPE_PRIORITY_MANAGER;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

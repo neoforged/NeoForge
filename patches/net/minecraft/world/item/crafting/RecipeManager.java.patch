@@ -17,14 +17,14 @@
          );
          List<RecipeHolder<?>> list = new ArrayList<>(sortedmap.size());
          sortedmap.forEach((p_379232_, p_379233_) -> {
-@@ -93,6 +_,7 @@
-             .stream()
-             .map(p_380840_ -> new RecipeManager.IngredientCollector(p_380840_.getKey(), p_380840_.getValue()))
-             .toList();
+@@ -88,6 +_,7 @@
+     }
+ 
+     public void finalizeRecipeLoading(FeatureFlagSet p_379660_) {
 +        this.recipes.order(this.recipePriorities); // Neo: order recipes by priority.
-         this.recipes
-             .values()
-             .forEach(
+         List<SelectableRecipe.SingleInputEntry<StonecutterRecipe>> list = new ArrayList<>();
+         List<RecipeManager.IngredientCollector> list1 = RECIPE_PROPERTY_SETS.entrySet()
+             .stream()
 @@ -260,6 +_,16 @@
          return p_380850_ -> p_380850_.getType() == p_381108_ && p_380850_ instanceof SingleItemRecipe singleitemrecipe
                  ? Optional.of(singleitemrecipe.input())

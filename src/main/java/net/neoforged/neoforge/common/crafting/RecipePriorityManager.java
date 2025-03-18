@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Optional;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -41,27 +40,23 @@ public class RecipePriorityManager extends SimplePreparableReloadListener<Object
     @Override
     protected Object2IntMap<ResourceKey<Recipe<?>>> prepare(ResourceManager resourceManager, ProfilerFiller profilerFiller) {
         Object2IntMap<ResourceKey<Recipe<?>>> map = new Object2IntOpenHashMap<>();
-        for (String namespace : resourceManager.getNamespaces()) {
-            ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(namespace, "recipe_priorities.json");
-            Optional<Resource> resource = resourceManager.getResource(resourceLocation);
-            if (resource.isPresent()) {
-                try (Reader reader = resource.get().openAsReader()) {
-                    JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
-                    boolean replace = GsonHelper.getAsBoolean(jsonobject, "replace", false);
-                    if (replace) map.clear();
-                    JsonObject entries = GsonHelper.getAsJsonObject(jsonobject, "entries");
-                    if (entries instanceof JsonObject entriesObject) {
-                        for (var priorityEntry : entriesObject.entrySet()) {
-                            ResourceLocation location = ResourceLocation.tryParse(priorityEntry.getKey());
-                            int priority = priorityEntry.getValue().getAsInt();
-                            if (location != null) {
-                                map.put(ResourceKey.create(Registries.RECIPE, location), priority);
-                            }
-                        }
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath("neoforge", "recipe_priorities.json");
+        //read in all data files from neoforge:recipe_priorities in order to do layering
+        for (Resource resource : resourceManager.getResourceStack(resourceLocation)) {
+            try (Reader reader = resource.openAsReader()) {
+                JsonObject jsonobject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
+                boolean replace = GsonHelper.getAsBoolean(jsonobject, "replace", false);
+                if (replace) map.clear();
+                JsonObject entriesObject = GsonHelper.getAsJsonObject(jsonobject, "entries");
+                for (var priorityEntry : entriesObject.entrySet()) {
+                    ResourceLocation location = ResourceLocation.tryParse(priorityEntry.getKey());
+                    int priority = priorityEntry.getValue().getAsInt();
+                    if (location != null) {
+                        map.put(ResourceKey.create(Registries.RECIPE, location), priority);
                     }
-                } catch (RuntimeException | IOException ioexception) {
-                    LOGGER.error("Couldn't read recipe priority list {} in data pack {}", resourceLocation, resource.get().sourcePackId(), ioexception);
                 }
+            } catch (RuntimeException | IOException ioexception) {
+                LOGGER.error("Couldn't read recipe priority list {} in data pack {}", resourceLocation, resource.sourcePackId(), ioexception);
             }
         }
         return Object2IntMaps.unmodifiable(map);
