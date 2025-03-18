@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "Set nilai yang ditambahkan pada enum yang boleh diperluaskan pada klien dan pelayan tidak sepadan. Pastikan anda menggunakan mod dan versi NeoForge yang sama seperti pelayan. Lihat log untuk butiran lanjut",
   "neoforge.network.feature_flags.entry_mismatch": "Pelayan dan klien mempunyai set FeatureFlags tersuai yang berbeza. Pastikan anda menggunakan mod dan versi NeoForge yang sama seperti pelayan. Lihat log untuk butiran lanjut",
   "neoforge.network.feature_flags.no_vanilla_server": "Klien ini tidak menyokong pelayan vanila kerana ia mempunyai FeatureFlags tersuai",
-  "neoforge.attribute.debug.base": "[Entiti: %s | Item: %s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "Didayakan",

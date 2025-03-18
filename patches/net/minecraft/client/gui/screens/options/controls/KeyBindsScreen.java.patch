@@ -27,7 +27,7 @@
          if (this.selectedKey != null) {
 -            if (p_345810_ == 256) {
 +            var key = InputConstants.getKey(p_345810_, p_345447_);
-+            if (net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
++            if (lastPressedModifier == InputConstants.UNKNOWN && net.neoforged.neoforge.client.settings.KeyModifier.isKeyCodeModifier(key)) {
 +                lastPressedModifier = key;
 +                isLastModifierHeldDown = true;
 +            } else {
