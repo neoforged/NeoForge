@@ -96,6 +96,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
+        add(Tags.Blocks.PUMPKINS, "Pumpkins");
+        add(Tags.Blocks.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Blocks.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Blocks.PUMPKINS_JACK_O_LANTERNS, "Jack o'Lanterns");
         add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
         add(Tags.Blocks.ROPES, "Ropes");
         add(Tags.Blocks.SANDS, "Sands");
@@ -294,10 +298,16 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Items.PIGLIN_USABLE_CROSSBOWS, "Piglin Usable Crossbows");
+        add(Tags.Items.PILLAGER_USABLE_CROSSBOWS, "Pillager Usable Crossbows");
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
         add(Tags.Items.POTIONS_BOTTLE, "Bottled Potions");
+        add(Tags.Items.PUMPKINS, "Pumpkins");
+        add(Tags.Items.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Items.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Items.PUMPKINS_JACK_O_LANTERNS, "Jack o'Lanterns");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
@@ -326,6 +336,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_TORCHFLOWER, "Torchflower Seeds");
         add(Tags.Items.SEEDS_PITCHER_PLANT, "Pitcher Plant Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
+        add(Tags.Items.SKELETON_USABLE_BOWS, "Skeleton Usable Bows");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
         add(Tags.Items.SLIME_BALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");

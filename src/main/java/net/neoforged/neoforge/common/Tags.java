@@ -212,6 +212,20 @@ public class Tags {
          * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final TagKey<Block> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Block> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Block> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
@@ -318,6 +332,21 @@ public class Tags {
          * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
          */
         public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
+        /**
+         * Controls what items Piglins can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PIGLIN_USABLE_CROSSBOWS = neoforgeTag("piglin_usable_crossbows");
+        /**
+         * Controls what items Pillagers can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PILLAGER_USABLE_CROSSBOWS = neoforgeTag("pillager_usable_crossbows");
+        /**
+         * Controls what items Skeletons can use as default as a valid bow
+         * This tag defaults to {@link net.minecraft.world.item.Items#BOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> SKELETON_USABLE_BOWS = neoforgeTag("skeleton_usable_bows");
 
         // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
@@ -690,6 +719,20 @@ public class Tags {
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTIONS_BOTTLE = tag("potions/bottle");
+        public static final TagKey<Item> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Item> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");

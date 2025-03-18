@@ -59,7 +59,7 @@
          this.minecraft.getMainRenderTarget().bindWrite(true);
          this.minecraft.levelRenderer.renderLevel(this.resourcePool, p_348589_, flag, camera, this, matrix4f2, matrix4f);
 +        profilerfiller.popPush("neoforge_render_last");
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.level, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
          profilerfiller.popPush("hand");
          if (this.renderHand) {
              RenderSystem.clear(256);
