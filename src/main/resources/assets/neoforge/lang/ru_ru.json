@@ -39,7 +39,7 @@
   "fml.menu.loadingmods": "{0,choice,0#Ни один мод не загружен|1#Загружен 1 мод|Загружено 1<%s<5 мода|Загружено 4<%s модов}",
   "fml.menu.notification.title": "Уведомление при запуске игры",
   "fml.menu.accessdenied.title": "Отказано в доступе к серверу",
-  "fml.menu.accessdenied.message": "Fancy Mod Loader не смог подключиться к этому серверу \nНа сервер %1$s запрещен доступ с модами",
+  "fml.menu.accessdenied.message": "Fancy Mod Loader не смог подключиться к этому серверу \nК серверу %1$s запрещен доступ с модами",
   "fml.menu.backupfailed.title": "Резервное копирование не удалось",
   "fml.menu.backupfailed.message": "Произошла ошибка при сохранении архива %1$s\nПожалуйста, исправьте проблему и попробуйте снова",
   "fml.button.open.file": "Открыть %1$s",
