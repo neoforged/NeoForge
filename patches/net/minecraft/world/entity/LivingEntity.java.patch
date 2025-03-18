@@ -231,7 +231,12 @@
              Entity entity = p_21016_.getEntity();
              if (entity != null) {
                  if (entity instanceof LivingEntity livingentity1
-@@ -1147,9 +_,9 @@
+@@ -1143,13 +_,14 @@
+                     && (!p_21016_.is(DamageTypes.WIND_CHARGE) || !this.getType().is(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE))) {
+                     this.setLastHurtByMob(livingentity1);
+                 }
++                this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
+ 
                  if (entity instanceof Player player1) {
                      this.lastHurtByPlayerTime = 100;
                      this.lastHurtByPlayer = player1;
