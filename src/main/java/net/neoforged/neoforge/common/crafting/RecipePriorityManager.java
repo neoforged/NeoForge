@@ -49,11 +49,9 @@ public class RecipePriorityManager extends SimplePreparableReloadListener<Object
                 if (replace) map.clear();
                 JsonObject entriesObject = GsonHelper.getAsJsonObject(jsonobject, "entries");
                 for (var priorityEntry : entriesObject.entrySet()) {
-                    ResourceLocation location = ResourceLocation.tryParse(priorityEntry.getKey());
+                    ResourceLocation location = ResourceLocation.parse(priorityEntry.getKey());
                     int priority = priorityEntry.getValue().getAsInt();
-                    if (location != null) {
-                        map.put(ResourceKey.create(Registries.RECIPE, location), priority);
-                    }
+                    map.put(ResourceKey.create(Registries.RECIPE, location), priority);
                 }
             } catch (RuntimeException | IOException ioexception) {
                 LOGGER.error("Couldn't read recipe priority list {} in data pack {}", resourceLocation, resource.sourcePackId(), ioexception);
