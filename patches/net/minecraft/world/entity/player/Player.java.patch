@@ -288,10 +288,12 @@
  
                      float f6 = 0.0F;
                      if (p_36347_ instanceof LivingEntity livingentity) {
-@@ -1217,11 +_,12 @@
+@@ -1216,12 +_,13 @@
+                             float f7 = 1.0F + (float)this.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO) * f;
  
                              for (LivingEntity livingentity2 : this.level()
-                                 .getEntitiesOfClass(LivingEntity.class, p_36347_.getBoundingBox().inflate(1.0, 0.25, 1.0))) {
+-                                .getEntitiesOfClass(LivingEntity.class, p_36347_.getBoundingBox().inflate(1.0, 0.25, 1.0))) {
++                                .getEntitiesOfClass(LivingEntity.class, itemstack.getSweepHitBox(this, p_36347_))) { // Neo: Patch in item extension for custom sweep hit box
 +                                double entityReachSq = Mth.square(this.entityInteractionRange()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
                                  if (livingentity2 != this
                                      && livingentity2 != p_36347_
