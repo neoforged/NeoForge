@@ -85,8 +85,8 @@ public class KeyMappingLookup {
                     .toList());
         }
 
-        // If there were no matches, check the key without any modifiers
-        if (matchingBindings.isEmpty()) {
+        // If there were no matches or a key is being released, check the key without any modifiers
+        if (releasing || matchingBindings.isEmpty()) {
             matchingBindings.addAll(findKeybinds(keyCode, KeyModifier.NONE));
         }
 
