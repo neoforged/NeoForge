@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.client.settings;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -15,6 +17,15 @@ import org.lwjgl.glfw.GLFW;
 
 public enum KeyModifier {
     CONTROL {
+        private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_CONTROL),
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_CONTROL)
+        };
+        private static final InputConstants.Key[] OSX_KEYS = new InputConstants.Key[] {
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SUPER),
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_SUPER)
+        };
+
         @Override
         public boolean matches(InputConstants.Key key) {
             int keyCode = key.getValue();
@@ -35,8 +46,18 @@ public enum KeyModifier {
             String localizationFormatKey = Minecraft.ON_OSX ? "neoforge.controlsgui.control.mac" : "neoforge.controlsgui.control";
             return Component.translatable(localizationFormatKey, defaultLogic.get());
         }
+
+        @Override
+        public InputConstants.Key[] codes() {
+            return Minecraft.ON_OSX ? OSX_KEYS : KEYS;
+        }
     },
     SHIFT {
+        private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT),
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_SHIFT)
+        };
+
         @Override
         public boolean matches(InputConstants.Key key) {
             return key.getValue() == GLFW.GLFW_KEY_LEFT_SHIFT || key.getValue() == GLFW.GLFW_KEY_RIGHT_SHIFT;
@@ -51,8 +72,18 @@ public enum KeyModifier {
         public Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic) {
             return Component.translatable("neoforge.controlsgui.shift", defaultLogic.get());
         }
+
+        @Override
+        public InputConstants.Key[] codes() {
+            return KEYS;
+        }
     },
     ALT {
+        private static final InputConstants.Key[] KEYS = new InputConstants.Key[] {
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_ALT),
+                InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_RIGHT_ALT)
+        };
+
         @Override
         public boolean matches(InputConstants.Key key) {
             return key.getValue() == GLFW.GLFW_KEY_LEFT_ALT || key.getValue() == GLFW.GLFW_KEY_RIGHT_ALT;
@@ -67,8 +98,15 @@ public enum KeyModifier {
         public Component getCombinedName(InputConstants.Key keyCode, Supplier<Component> defaultLogic) {
             return Component.translatable("neoforge.controlsgui.alt", defaultLogic.get());
         }
+
+        @Override
+        public InputConstants.Key[] codes() {
+            return KEYS;
+        }
     },
     NONE {
+        private static final InputConstants.Key[] KEYS = new InputConstants.Key[0];
+
         @Override
         public boolean matches(InputConstants.Key key) {
             return false;
@@ -90,10 +128,17 @@ public enum KeyModifier {
         public Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic) {
             return defaultLogic.get();
         }
+
+        @Override
+        public InputConstants.Key[] codes() {
+            return KEYS;
+        }
     };
 
     public static final KeyModifier[] MODIFIER_VALUES = { SHIFT, CONTROL, ALT };
 
+    /** @deprecated Use {@link #getActiveModifiers()} instead. */
+    @Deprecated(forRemoval = true, since = "1.21.4")
     public static KeyModifier getActiveModifier() {
         for (KeyModifier keyModifier : MODIFIER_VALUES) {
             if (keyModifier.isActive(null)) {
@@ -101,6 +146,16 @@ public enum KeyModifier {
             }
         }
         return NONE;
+    }
+
+    public static List<KeyModifier> getActiveModifiers() {
+        List<KeyModifier> modifiers = new ArrayList<>();
+        for (KeyModifier keyModifier : MODIFIER_VALUES) {
+            if (keyModifier.isActive(null)) {
+                modifiers.add(keyModifier);
+            }
+        }
+        return modifiers;
     }
 
     public static KeyModifier getKeyModifier(InputConstants.Key key) {
@@ -129,4 +184,9 @@ public enum KeyModifier {
     public abstract boolean isActive(@Nullable IKeyConflictContext conflictContext);
 
     public abstract Component getCombinedName(InputConstants.Key key, Supplier<Component> defaultLogic);
+
+    // Neo: Make abstract in 1.21.5
+    public InputConstants.Key[] codes() {
+        return null;
+    }
 }

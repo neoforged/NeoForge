@@ -121,12 +121,17 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         CompoundTag tag = null;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
+            var key = NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type);
             if (type.serializer != null) {
-                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
-                if (serialized != null) {
-                    if (tag == null)
-                        tag = new CompoundTag();
-                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
+                try {
+                    Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
+                    if (serialized != null) {
+                        if (tag == null)
+                            tag = new CompoundTag();
+                        tag.put(key.toString(), serialized);
+                    }
+                } catch (Exception exception) {
+                    LOGGER.error("Failed to serialize data attachment {}. Skipping.", key, exception);
                 }
             }
         }

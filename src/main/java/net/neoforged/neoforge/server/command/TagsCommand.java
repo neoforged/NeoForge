@@ -58,9 +58,9 @@ class TagsCommand {
     private static final long PAGE_SIZE = 8;
     private static final ResourceKey<Registry<Registry<?>>> ROOT_REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.withDefaultNamespace("root"));
 
-    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> Component.translatable("commands.neoforge.tags.error.unknown_registry", key.toString()));
-    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_tag", tag.toString(), registry.toString()));
-    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> Component.translatable("commands.neoforge.tags.error.unknown_element", tag.toString(), registry.toString()));
+    private static final DynamicCommandExceptionType UNKNOWN_REGISTRY = new DynamicCommandExceptionType(key -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.error.unknown_registry", key.toString()));
+    private static final Dynamic2CommandExceptionType UNKNOWN_TAG = new Dynamic2CommandExceptionType((tag, registry) -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.error.unknown_tag", tag.toString(), registry.toString()));
+    private static final Dynamic2CommandExceptionType UNKNOWN_ELEMENT = new Dynamic2CommandExceptionType((tag, registry) -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.error.unknown_element", tag.toString(), registry.toString()));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         /*
@@ -99,7 +99,7 @@ class TagsCommand {
         final long tagCount = registry.getTags().count();
 
         ctx.getSource().sendSuccess(() -> createMessage(
-                Component.translatable("commands.neoforge.tags.registry_key", Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.GOLD)),
+                CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.registry_key", Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.GOLD)),
                 "commands.neoforge.tags.tag_count",
                 "commands.neoforge.tags.copy_tag_names",
                 tagCount,
@@ -126,7 +126,7 @@ class TagsCommand {
         final HolderSet.Named<?> tag = optional.orElseThrow(() -> UNKNOWN_TAG.create(tagKey.location(), registryKey.location()));
 
         ctx.getSource().sendSuccess(() -> createMessage(
-                Component.translatable("commands.neoforge.tags.tag_key",
+                CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.tag_key",
                         Component.literal(tagKey.registry().location().toString()).withStyle(ChatFormatting.GOLD),
                         Component.literal(tagKey.location().toString()).withStyle(ChatFormatting.DARK_GREEN)),
                 "commands.neoforge.tags.element_count",
@@ -155,7 +155,7 @@ class TagsCommand {
         final long containingTagsCount = elementHolder.tags().count();
 
         ctx.getSource().sendSuccess(() -> createMessage(
-                Component.translatable("commands.neoforge.tags.element",
+                CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.element",
                         Component.literal(registryKey.location().toString()).withStyle(ChatFormatting.GOLD),
                         Component.literal(elementLocation.toString()).withStyle(ChatFormatting.YELLOW)),
                 "commands.neoforge.tags.containing_tag_count",
@@ -178,7 +178,7 @@ class TagsCommand {
         final long totalPages = (count - 1) / PAGE_SIZE + 1;
         final long actualPage = (long) Mth.clamp(currentPage, 1, totalPages);
 
-        MutableComponent containsComponent = Component.translatable(containsText, count);
+        MutableComponent containsComponent = CommandUtils.makeTranslatableWithFallback(containsText, count);
         if (count > 0) // Highlight the count text, make it clickable, and append page counters
         {
             final String clipboardText;
@@ -215,8 +215,8 @@ class TagsCommand {
                     .withColor(ChatFormatting.GREEN)
                     .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, clipboardText))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                            Component.translatable(copyHoverText)))));
-            containsComponent = Component.translatable("commands.neoforge.tags.page_info",
+                            CommandUtils.makeTranslatableWithFallback(copyHoverText)))));
+            containsComponent = CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.page_info",
                     containsComponent, actualPage, totalPages);
         }
 
@@ -227,7 +227,7 @@ class TagsCommand {
                 .limit(PAGE_SIZE)
                 .map(Component::literal)
                 .map(t -> t.withStyle(elementColor))
-                .map(t -> Component.translatable("\n - ").append(t))
+                .map(t -> CommandUtils.makeTranslatableWithFallback("\n - ").append(t))
                 .forEach(tagElements::append);
 
         return header.append("\n").append(tagElements);
