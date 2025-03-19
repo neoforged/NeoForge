@@ -86,7 +86,7 @@ public class KeyMappingLookup {
         }
 
         // If there were no matches, check the key without any modifiers
-        if (matchingBindings.isEmpty()) {
+        if (releasing || matchingBindings.isEmpty()) {
             matchingBindings.addAll(findKeybinds(keyCode, KeyModifier.NONE));
         }
 
