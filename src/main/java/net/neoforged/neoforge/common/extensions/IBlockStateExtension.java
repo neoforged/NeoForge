@@ -7,7 +7,6 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

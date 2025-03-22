@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.network.handlers;
+package net.neoforged.neoforge.client.network.handlers;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -36,12 +36,16 @@ import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientDispatchPayload;
 import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
+import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.client.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -56,17 +60,34 @@ public final class ClientPayloadHandler {
 
     private ClientPayloadHandler() {}
 
-    public static void handle(FrozenRegistryPayload payload, IPayloadContext context) {
+    public static void dispatch(ClientDispatchPayload payload, IPayloadContext context) {
+        switch (payload) {
+            case AdvancedAddEntityPayload advancedAddEntityPayload -> handle(advancedAddEntityPayload, context);
+            case AdvancedContainerSetDataPayload advancedContainerSetDataPayload -> handle(advancedContainerSetDataPayload, context);
+            case AdvancedOpenScreenPayload advancedOpenScreenPayload -> handle(advancedOpenScreenPayload, context);
+            case AuxiliaryLightDataPayload auxiliaryLightDataPayload -> handle(auxiliaryLightDataPayload, context);
+            case ClientboundCustomSetTimePayload clientboundCustomSetTimePayload -> handle(clientboundCustomSetTimePayload, context);
+            case ConfigFilePayload configFilePayload -> handle(configFilePayload, context);
+            case FrozenRegistryPayload frozenRegistryPayload -> handle(frozenRegistryPayload, context);
+            case FrozenRegistrySyncCompletedPayload frozenRegistrySyncCompletedPayload -> handle(frozenRegistrySyncCompletedPayload, context);
+            case FrozenRegistrySyncStartPayload frozenRegistrySyncStartPayload -> handle(frozenRegistrySyncStartPayload, context);
+            case KnownRegistryDataMapsPayload knownRegistryDataMapsPayload -> ClientRegistryManager.handleKnownDataMaps(knownRegistryDataMapsPayload, context);
+            case RecipeContentPayload recipeContentPayload -> handle(recipeContentPayload, context);
+            case RegistryDataMapSyncPayload<?> registryDataMapSyncPayload -> ClientRegistryManager.handleDataMapSync(registryDataMapSyncPayload, context);
+        }
+    }
+
+    private static void handle(FrozenRegistryPayload payload, IPayloadContext context) {
         synchronizedRegistries.put(payload.registryName(), payload.snapshot());
         toSynchronize.remove(payload.registryName());
     }
 
-    public static void handle(FrozenRegistrySyncStartPayload payload, IPayloadContext context) {
+    private static void handle(FrozenRegistrySyncStartPayload payload, IPayloadContext context) {
         toSynchronize.addAll(payload.toAccess());
         synchronizedRegistries.clear();
     }
 
-    public static void handle(FrozenRegistrySyncCompletedPayload payload, IPayloadContext context) {
+    private static void handle(FrozenRegistrySyncCompletedPayload payload, IPayloadContext context) {
         if (!toSynchronize.isEmpty()) {
             context.disconnect(Component.translatable("neoforge.network.registries.sync.missing", toSynchronize.stream().map(Object::toString).collect(Collectors.joining(", "))));
             return;
@@ -89,11 +110,13 @@ public final class ClientPayloadHandler {
         }
     }
 
-    public static void handle(ConfigFilePayload payload, IPayloadContext context) {
-        ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
+    private static void handle(ConfigFilePayload payload, IPayloadContext context) {
+        if (!Minecraft.getInstance().isLocalServer()) {
+            ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
+        }
     }
 
-    public static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {
+    private static void handle(AdvancedAddEntityPayload advancedAddEntityPayload, IPayloadContext context) {
         try {
             Entity entity = context.player().level().getEntity(advancedAddEntityPayload.entityId());
             if (entity instanceof IEntityWithComplexSpawn entityAdditionalSpawnData) {
@@ -110,7 +133,7 @@ public final class ClientPayloadHandler {
         }
     }
 
-    public static void handle(AdvancedOpenScreenPayload msg, IPayloadContext context) {
+    private static void handle(AdvancedOpenScreenPayload msg, IPayloadContext context) {
         Minecraft mc = Minecraft.getInstance();
         RegistryAccess registryAccess = mc.player.registryAccess();
         final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(msg.additionalData()), registryAccess, context.listener().getConnectionType());
@@ -133,7 +156,7 @@ public final class ClientPayloadHandler {
         });
     }
 
-    public static void handle(AuxiliaryLightDataPayload msg, IPayloadContext context) {
+    private static void handle(AuxiliaryLightDataPayload msg, IPayloadContext context) {
         try {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
@@ -148,11 +171,11 @@ public final class ClientPayloadHandler {
         }
     }
 
-    public static void handle(AdvancedContainerSetDataPayload msg, IPayloadContext context) {
+    private static void handle(AdvancedContainerSetDataPayload msg, IPayloadContext context) {
         context.handle(msg.toVanillaPacket());
     }
 
-    public static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
+    private static void handle(final ClientboundCustomSetTimePayload payload, final IPayloadContext context) {
         @SuppressWarnings("resource")
         final ClientLevel level = Minecraft.getInstance().level;
         level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
@@ -160,7 +183,7 @@ public final class ClientPayloadHandler {
         level.setDayTimePerTick(payload.dayTimePerTick());
     }
 
-    public static void handle(final RecipeContentPayload payload, final IPayloadContext context) {
+    private static void handle(final RecipeContentPayload payload, final IPayloadContext context) {
         var recipeMap = RecipeMap.create(payload.recipes());
         NeoForge.EVENT_BUS.post(new RecipesReceivedEvent(payload.recipeTypes(), recipeMap));
     }

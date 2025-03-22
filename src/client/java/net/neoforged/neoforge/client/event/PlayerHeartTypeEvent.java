@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.event.entity.player;
+package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 /**
  * Fired by {@link Gui.HeartType#forPlayer} to allow mods to change the heart sprite which is displayed in the player's

@@ -3,14 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.forge.snapshots;
+package net.neoforged.neoforge.client.internal;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public class ForgeSnapshotsModClient {
     public static void renderMainMenuWarning(String neoForgeVersion, GuiGraphics graphics, Font font, int width, int height, int alpha) {
         if (NeoForgeMod.isPRBuild()) {

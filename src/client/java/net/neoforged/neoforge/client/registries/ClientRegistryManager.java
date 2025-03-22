@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.registries;
+package net.neoforged.neoforge.client.registries;
 
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
@@ -27,6 +27,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.registries.BaseMappedRegistry;
+import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -41,8 +43,8 @@ public class ClientRegistryManager {
                 var regAccess = Minecraft.getInstance().level.registryAccess();
                 final BaseMappedRegistry<R> registry = (BaseMappedRegistry<R>) regAccess
                         .lookupOrThrow(payload.registryKey());
-                registry.dataMaps.clear();
-                payload.dataMaps().forEach((attachKey, maps) -> registry.dataMaps.put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
+                registry.getDataMaps().clear();
+                payload.dataMaps().forEach((attachKey, maps) -> registry.getDataMaps().put(RegistryManager.getDataMap(payload.registryKey(), attachKey), Collections.unmodifiableMap(maps)));
                 NeoForge.EVENT_BUS.post(new DataMapsUpdatedEvent(regAccess, registry, DataMapsUpdatedEvent.UpdateCause.CLIENT_SYNC));
             } catch (Throwable t) {
                 LOGGER.error("Failed to handle registry data map sync: ", t);

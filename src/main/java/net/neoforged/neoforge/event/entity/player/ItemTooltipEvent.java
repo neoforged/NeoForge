@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.event.entity.player;
 
 import java.util.List;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item.TooltipContext;

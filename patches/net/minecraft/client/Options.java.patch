@@ -29,11 +29,10 @@
          this.minecraft = p_92138_;
          this.optionsFile = new File(p_92139_, "options.txt");
          boolean flag = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1240,11 +_,21 @@
+@@ -1240,11 +_,20 @@
          p_168428_.process("menuBackgroundBlurriness", this.menuBackgroundBlurriness);
          this.startedCleanly = p_168428_.process("startedCleanly", this.startedCleanly);
  
-+        net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod.processOptions(p_168428_);
 +        processOptionsForge(p_168428_);
 +    }
 +    // FORGE: split off to allow reloading options after mod loading is done

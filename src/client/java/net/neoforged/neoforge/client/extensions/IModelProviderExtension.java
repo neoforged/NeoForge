@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.extensions;
+package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.resources.ResourceLocation;

@@ -31,6 +31,7 @@ import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
@@ -39,6 +40,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.internal.SelfTestClient;
 import net.neoforged.neoforge.client.loading.ClientModLoader;
 import net.neoforged.neoforge.client.model.CompositeUnbakedModel;
 import net.neoforged.neoforge.client.model.EmptyModel;
@@ -63,14 +65,14 @@ import net.neoforged.neoforge.common.data.internal.NeoForgeLanguageProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRecipeProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeRegistryOrderReportProvider;
-import net.neoforged.neoforge.common.data.internal.NeoForgeSpriteSourceProvider;
+import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.common.data.internal.NeoForgeStructureTagsProvider;
 import net.neoforged.neoforge.common.data.internal.VanillaSoundDefinitionsProvider;
-import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
+import net.neoforged.neoforge.server.command.ConfigCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -81,7 +83,7 @@ public class ClientNeoForgeMod {
     }
 
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
-        SelfTest.initClient();
+        SelfTestClient.initClient();
 
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
@@ -97,6 +99,10 @@ public class ClientNeoForgeMod {
                     spec.resetCaches(ModConfigSpec.RestartType.WORLD);
                 }
             });
+        });
+
+        NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
+            ConfigCommand.register(event.getDispatcher());
         });
     }
 

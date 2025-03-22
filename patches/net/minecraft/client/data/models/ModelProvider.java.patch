@@ -1,6 +1,14 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -36,20 +_,58 @@
+@@ -30,26 +_,65 @@
+ import net.minecraft.world.level.block.Block;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import net.neoforged.neoforge.client.extensions.IModelProviderExtension;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class ModelProvider implements DataProvider, net.neoforged.neoforge.common.extensions.IModelProviderExtension {
++public class ModelProvider implements DataProvider, IModelProviderExtension {
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;

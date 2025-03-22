@@ -27,7 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public record RecipeContentPayload(
         Set<RecipeType<?>> recipeTypes,
-        List<RecipeHolder<?>> recipes) implements CustomPacketPayload {
+        List<RecipeHolder<?>> recipes) implements ClientDispatchPayload {
     public static final Type<RecipeContentPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "recipe_content"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, RecipeContentPayload> STREAM_CODEC = StreamCodec.composite(

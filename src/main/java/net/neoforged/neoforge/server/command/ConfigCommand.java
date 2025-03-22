@@ -16,24 +16,12 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.StringUtils;
-import net.neoforged.neoforge.client.command.ClientConfigCommand;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
 public class ConfigCommand {
-    @SubscribeEvent
-    public static void onClientCommandsRegister(RegisterClientCommandsEvent event) {
-        ClientConfigCommand.register(event.getDispatcher());
-    }
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("config").then(ShowFile.register()));

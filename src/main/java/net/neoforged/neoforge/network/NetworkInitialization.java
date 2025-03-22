@@ -7,17 +7,19 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
+import net.neoforged.neoforge.network.payload.ClientDispatchPayload;
 import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
@@ -32,13 +34,16 @@ import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.ClientRegistryManager;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class NetworkInitialization {
+    private static <T extends ClientDispatchPayload> IPayloadHandler<T> clientHandler() {
+        return NeoForgeProxy.INSTANCE::handleClientPayload;
+    }
+
     @SubscribeEvent
     private static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1") // Update this version if the payload semantics change.
@@ -47,23 +52,23 @@ public class NetworkInitialization {
                 .configurationToClient(
                         ConfigFilePayload.TYPE,
                         ConfigFilePayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .configurationToClient(
                         FrozenRegistrySyncStartPayload.TYPE,
                         FrozenRegistrySyncStartPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .configurationToClient(
                         FrozenRegistryPayload.TYPE,
                         FrozenRegistryPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .configurationBidirectional(
                         FrozenRegistrySyncCompletedPayload.TYPE,
                         FrozenRegistrySyncCompletedPayload.STREAM_CODEC,
-                        new DirectionalPayloadHandler<>(ClientPayloadHandler::handle, ServerPayloadHandler::handle))
+                        new DirectionalPayloadHandler<>(clientHandler(), ServerPayloadHandler::handle))
                 .configurationToClient(
                         KnownRegistryDataMapsPayload.TYPE,
                         KnownRegistryDataMapsPayload.STREAM_CODEC,
-                        ClientRegistryManager::handleKnownDataMaps)
+                        clientHandler())
                 .configurationToClient(
                         ExtensibleEnumDataPayload.TYPE,
                         ExtensibleEnumDataPayload.STREAM_CODEC,
@@ -87,29 +92,29 @@ public class NetworkInitialization {
                 .playToClient(
                         AdvancedAddEntityPayload.TYPE,
                         AdvancedAddEntityPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .playToClient(
                         AdvancedOpenScreenPayload.TYPE,
                         AdvancedOpenScreenPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .playToClient(
                         AuxiliaryLightDataPayload.TYPE,
                         AuxiliaryLightDataPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .playToClient(
                         RegistryDataMapSyncPayload.TYPE,
                         RegistryDataMapSyncPayload.STREAM_CODEC,
-                        ClientRegistryManager::handleDataMapSync)
+                        clientHandler())
                 .playToClient(AdvancedContainerSetDataPayload.TYPE,
                         AdvancedContainerSetDataPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .playToClient(
                         ClientboundCustomSetTimePayload.TYPE,
                         ClientboundCustomSetTimePayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle)
+                        clientHandler())
                 .playToClient(
                         RecipeContentPayload.TYPE,
                         RecipeContentPayload.STREAM_CODEC,
-                        ClientPayloadHandler::handle);
+                        clientHandler());
     }
 }

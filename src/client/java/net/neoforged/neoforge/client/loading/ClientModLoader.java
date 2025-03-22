@@ -27,7 +27,6 @@ import net.neoforged.fml.loading.ImmediateWindowHandler;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -52,7 +51,6 @@ public class ClientModLoader extends CommonModLoader {
         ImmediateWindowHandler.updateProgress("Loading mods");
         loading = true;
         ClientModLoader.mc = minecraft;
-        LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
         try {
             begin(ImmediateWindowHandler::renderTick, false);

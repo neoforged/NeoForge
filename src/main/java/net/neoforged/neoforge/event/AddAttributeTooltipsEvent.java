@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.event;
+package net.neoforged.neoforge.event;
 
 import java.util.function.Consumer;
 import net.minecraft.core.component.DataComponents;

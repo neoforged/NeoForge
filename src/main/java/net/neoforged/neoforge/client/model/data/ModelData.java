@@ -11,8 +11,6 @@ import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -23,7 +21,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A container for data to be passed to {@link BlockStateModel} instances.
+ * A container for data to be passed to {@code BlockStateModel} instances.
  * <p>
  * All objects stored in here <b>MUST BE IMMUTABLE OR THREAD-SAFE</b>.
  * Properties will be accessed from another thread.

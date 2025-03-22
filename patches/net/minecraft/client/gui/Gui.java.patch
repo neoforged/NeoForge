@@ -420,7 +420,7 @@
              } else {
                  gui$hearttype = NORMAL;
              }
-+            gui$hearttype = net.neoforged.neoforge.event.EventHooks.firePlayerHeartTypeEvent(p_168733_, gui$hearttype);
++            gui$hearttype = net.neoforged.neoforge.client.ClientHooks.firePlayerHeartTypeEvent(p_168733_, gui$hearttype);
  
              return gui$hearttype;
 +        }

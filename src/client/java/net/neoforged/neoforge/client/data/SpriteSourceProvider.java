@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.data;
+package net.neoforged.neoforge.client.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.data.JsonCodecProvider;
 
 /**
  * <p>Data provider for atlas configuration files.<br>

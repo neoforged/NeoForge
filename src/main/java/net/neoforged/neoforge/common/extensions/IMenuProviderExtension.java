@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.extensions;
+package net.neoforged.neoforge.common.extensions;
 
 /**
  * Extension type for the {@link net.minecraft.world.MenuProvider} interface.

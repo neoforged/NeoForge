@@ -63,7 +63,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -409,5 +_,10 @@
+@@ -409,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          record PendingRequest(UUID id, URL url, String hash) {
          }
@@ -72,5 +72,10 @@
 +    @Override
 +    public Connection getConnection() {
 +        return connection;
++    }
++
++    @Override
++    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
++        return Minecraft.getInstance();
      }
  }

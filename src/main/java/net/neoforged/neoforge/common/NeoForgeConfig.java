@@ -8,9 +8,9 @@ package net.neoforged.neoforge.common;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.Logging;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 
@@ -165,7 +165,7 @@ public class NeoForgeConfig {
             boolean experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
             if (experimentalPipelineActive != CLIENT.experimentalPipelineActive) {
                 CLIENT.experimentalPipelineActive = experimentalPipelineActive;
-                ClientHooks.reloadRenderer();
+                NeoForgeProxy.INSTANCE.reloadRenderer();
             }
         }
     }

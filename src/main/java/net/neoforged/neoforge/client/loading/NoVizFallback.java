@@ -5,18 +5,20 @@
 
 package net.neoforged.neoforge.client.loading;
 
-import com.mojang.blaze3d.platform.Monitor;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.server.packs.resources.ReloadInstance;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import org.lwjgl.glfw.GLFW;
 
+/**
+ * This class is in a client package and FML refers to its FQN directly for server launches,
+ * hence it cannot be moved to the client source set.
+ */
 public final class NoVizFallback {
     private static long WINDOW;
 
@@ -24,11 +26,11 @@ public final class NoVizFallback {
         return () -> WINDOW = GLFW.glfwCreateWindow(width.getAsInt(), height.getAsInt(), title.get(), monitor.getAsLong(), 0L);
     }
 
-    public static Supplier<LoadingOverlay> loadingOverlay(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
-        return () -> new LoadingOverlay(mc.get(), ri.get(), ex, fadein);
+    public static Supplier<?> loadingOverlay(Supplier<?> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
+        return NeoForgeProxy.INSTANCE.instantiateLoadingOverlay(mc, ri, ex, fadein);
     }
 
-    public static Boolean windowPositioning(Optional<Monitor> monitor, IntConsumer widthSetter, IntConsumer heightSetter, IntConsumer xSetter, IntConsumer ySetter) {
+    public static Boolean windowPositioning(Optional<?> monitor, IntConsumer widthSetter, IntConsumer heightSetter, IntConsumer xSetter, IntConsumer ySetter) {
         return Boolean.FALSE;
     }
 

@@ -93,7 +93,7 @@ import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
+import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;

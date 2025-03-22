@@ -23,7 +23,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @param toAccess The registries to access.
  */
 @ApiStatus.Internal
-public record FrozenRegistrySyncStartPayload(List<ResourceLocation> toAccess) implements CustomPacketPayload {
+public record FrozenRegistrySyncStartPayload(List<ResourceLocation> toAccess) implements ClientDispatchPayload {
     public static final Type<FrozenRegistrySyncStartPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "frozen_registry_sync_start"));
     public static final StreamCodec<FriendlyByteBuf, FrozenRegistrySyncStartPayload> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()),
