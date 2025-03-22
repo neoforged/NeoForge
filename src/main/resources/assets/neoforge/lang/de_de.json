@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "Die Werte, die zu erweiterten Enums auf dem Client und dem Server hinzugefügt wurden, stimmen nicht überein. Stelle sicher, dass du die gleichen Mod- und NeoForge-Versionen wie der Server verwendest. Weitere Details findest du im Log",
   "neoforge.network.feature_flags.entry_mismatch": "Der Server und der Client verwenden unterschiedliche Sets an benutzerdefinierten FeatureFlags. Stelle sicher, dass du dieselbe Mod- sowie NeoForge-Version wie der Server verwendest. Sieh im Protokoll nach, um weitere Informationen zu erhalten",
   "neoforge.network.feature_flags.no_vanilla_server": "Dieser Client unterstützt keine Vanilla-Server, da er benutzerdefinierte FeatureFlags verwendet",
-  "neoforge.attribute.debug.base": "[Entity: %s | Item: %s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "Aktiviert",

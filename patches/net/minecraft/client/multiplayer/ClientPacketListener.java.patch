@@ -100,15 +100,12 @@
      }
  
      @Override
-@@ -1574,6 +_,11 @@
+@@ -1574,6 +_,8 @@
      public void handleUpdateRecipes(ClientboundUpdateRecipesPacket p_105132_) {
          PacketUtils.ensureRunningOnSameThread(p_105132_, this, this.minecraft);
          this.recipes = new ClientRecipeContainer(p_105132_.itemSets(), p_105132_.stonecutterRecipes());
 +
-+        // Neo: abuse recipe sync to overwrite fuel values with datamap values after their sync (tag update doesn't fire on initial sync and the constructor is too early)
-+        if (this.connectionType.isNeoForge()) {
-+            this.fuelValues = net.neoforged.neoforge.common.DataMapHooks.populateFuelValues(this.registryAccess, this.enabledFeatures);
-+        }
++        net.neoforged.neoforge.client.ClientHooks.handleUpdateRecipes(this, v -> this.fuelValues = v);
      }
  
      @Override

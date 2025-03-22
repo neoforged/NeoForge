@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -63,6 +_,7 @@
+     private SelectableRecipe.SingleInputSet<StonecutterRecipe> stonecutterRecipes = SelectableRecipe.SingleInputSet.empty();
+     private List<RecipeManager.ServerDisplayInfo> allDisplays = List.of();
+     private Map<ResourceKey<Recipe<?>>, List<RecipeManager.ServerDisplayInfo>> recipeToDisplay = Map.of();
++    private Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities = it.unimi.dsi.fastutil.objects.Object2IntMaps.emptyMap(); // Neo: recipe priorities set from RecipePriorityManager.
+ 
+     public RecipeManager(HolderLookup.Provider p_324137_) {
+         this.registries = p_324137_;
 @@ -71,7 +_,7 @@
      protected RecipeMap prepare(ResourceManager p_379845_, ProfilerFiller p_380058_) {
          SortedMap<ResourceLocation, Recipe<?>> sortedmap = new TreeMap<>();
@@ -9,7 +17,15 @@
          );
          List<RecipeHolder<?>> list = new ArrayList<>(sortedmap.size());
          sortedmap.forEach((p_379232_, p_379233_) -> {
-@@ -260,6 +_,11 @@
+@@ -88,6 +_,7 @@
+     }
+ 
+     public void finalizeRecipeLoading(FeatureFlagSet p_379660_) {
++        this.recipes.order(this.recipePriorities); // Neo: order recipes by priority.
+         List<SelectableRecipe.SingleInputEntry<StonecutterRecipe>> list = new ArrayList<>();
+         List<RecipeManager.IngredientCollector> list1 = RECIPE_PROPERTY_SETS.entrySet()
+             .stream()
+@@ -260,6 +_,16 @@
          return p_380850_ -> p_380850_.getType() == p_381108_ && p_380850_ instanceof SingleItemRecipe singleitemrecipe
                  ? Optional.of(singleitemrecipe.input())
                  : Optional.empty();
@@ -18,6 +34,11 @@
 +    // Neo: expose recipe map
 +    public RecipeMap recipeMap() {
 +        return this.recipes;
++    }
++
++    // Neo: set recipe priority map
++    public void setPriorityMap(Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities) {
++        this.recipePriorities = recipePriorities;
      }
  
      public interface CachedCheck<I extends RecipeInput, T extends Recipe<I>> {

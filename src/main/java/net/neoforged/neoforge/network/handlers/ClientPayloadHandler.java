@@ -24,6 +24,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -38,6 +41,7 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -154,5 +158,10 @@ public final class ClientPayloadHandler {
         level.setTimeFromServer(payload.gameTime(), payload.dayTime(), payload.gameRule());
         level.setDayTimeFraction(payload.dayTimeFraction());
         level.setDayTimePerTick(payload.dayTimePerTick());
+    }
+
+    public static void handle(final RecipeContentPayload payload, final IPayloadContext context) {
+        var recipeMap = RecipeMap.create(payload.recipes());
+        NeoForge.EVENT_BUS.post(new RecipesReceivedEvent(payload.recipeTypes(), recipeMap));
     }
 }

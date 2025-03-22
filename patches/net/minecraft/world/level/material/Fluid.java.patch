@@ -1,9 +1,14 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -102,6 +_,13 @@
+@@ -102,6 +_,18 @@
  
      public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
  
++    @Override
++    public String toString() {// Neo: Patch in a toString similar to Item#toString so that FluidStack#toStringis more readable
++        return BuiltInRegistries.FLUID.wrapAsHolder(this).getRegisteredName();
++    }
++
 +    private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
 +    @Override
 +    public net.neoforged.neoforge.fluids.FluidType getFluidType() {

@@ -116,6 +116,8 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -208,6 +210,8 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -1595,5 +1599,16 @@ public class CommonHooks {
             return ClientHooks.getFilteredRecipeBookTypeValues();
         }
         return RecipeBookType.values();
+    }
+
+    /**
+     * Determines whether the given players should be sent full recipe content or not and handles the sending.
+     */
+    public static void sendRecipes(ServerPlayer player, Set<RecipeType<?>> recipeTypesToSend, RecipeMap recipeMap) {
+        if (player.connection.getConnectionType().isNeoForge()) {
+            var payload = RecipeContentPayload.create(recipeTypesToSend, recipeMap);
+            LOGGER.debug("Sending {} recipes of the following types: {}", payload.recipes().size(), payload.recipeTypes());
+            PacketDistributor.sendToPlayer(player, payload);
+        }
     }
 }

@@ -7,7 +7,6 @@ package net.neoforged.neoforge.client.extensions.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -31,7 +30,7 @@ import org.joml.Vector4f;
 /**
  * {@linkplain LogicalSide#CLIENT Client-only} extensions to {@link FluidType}.
  *
- * @see FluidType#initializeClient(Consumer)
+ * @see net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
  */
 public interface IClientFluidTypeExtensions {
     IClientFluidTypeExtensions DEFAULT = new IClientFluidTypeExtensions() {};

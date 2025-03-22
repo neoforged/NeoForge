@@ -36,9 +36,9 @@ class TimeSpeedCommand {
     private static int query(CommandSourceStack source) {
         final float speed = source.getLevel().getDayTimePerTick();
         if (speed < 0) {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.timespeed.query.default", levelName(source)), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query.default", levelName(source)), true);
         } else {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.timespeed.query", levelName(source), speed, minutes(speed)), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.query", levelName(source), speed, minutes(speed)), true);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -55,14 +55,14 @@ class TimeSpeedCommand {
         final BooleanValue rule = source.getLevel().getGameRules().getRule(GameRules.RULE_DAYLIGHT);
         if (!rule.get() && speed > 0) {
             rule.set(true, null);
-            source.sendSuccess(() -> Component.translatable("commands.gamerule.set", GameRules.RULE_DAYLIGHT.getId(), rule.toString()), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.gamerule.set", GameRules.RULE_DAYLIGHT.getId(), rule.toString()), true);
         } else if (rule.get() && speed == 0) {
             rule.set(false, null);
-            source.sendSuccess(() -> Component.translatable("commands.gamerule.set", GameRules.RULE_DAYLIGHT.getId(), rule.toString()), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.gamerule.set", GameRules.RULE_DAYLIGHT.getId(), rule.toString()), true);
             return Command.SINGLE_SUCCESS;
         }
         source.getLevel().setDayTimePerTick(speed);
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.timespeed.set", levelName(source), speed, minutes(speed)), true);
+        source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.set", levelName(source), speed, minutes(speed)), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -75,7 +75,7 @@ class TimeSpeedCommand {
 
     private static int setDefault(CommandSourceStack source) {
         source.getLevel().setDayTimePerTick(-1f);
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.timespeed.set.default", levelName(source)), true);
+        source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.timespeed.set.default", levelName(source)), true);
         return Command.SINGLE_SUCCESS;
     }
 }

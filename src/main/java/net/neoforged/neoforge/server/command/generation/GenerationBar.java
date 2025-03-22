@@ -7,12 +7,12 @@ package net.neoforged.neoforge.server.command.generation;
 
 import java.text.DecimalFormat;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
+import net.neoforged.neoforge.server.command.CommandUtils;
 
 /**
  * Special thanks to Jasmine and Gegy for allowing us to use their pregenerator mod as a model to use in NeoForge!
@@ -24,7 +24,7 @@ public class GenerationBar implements AutoCloseable {
     private final ServerBossEvent bar;
 
     public GenerationBar() {
-        this.bar = new ServerBossEvent(Component.translatable("commands.neoforge.chunkgen.progress_bar_title"), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.PROGRESS);
+        this.bar = new ServerBossEvent(CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.progress_bar_title"), BossEvent.BossBarColor.YELLOW, BossEvent.BossBarOverlay.PROGRESS);
         this.bar.setPlayBossMusic(false);
         this.bar.setCreateWorldFog(false);
         this.bar.setDarkenScreen(false);
@@ -35,12 +35,12 @@ public class GenerationBar implements AutoCloseable {
 
         float percent = (float) count / total;
 
-        MutableComponent title = Component.translatable("commands.neoforge.chunkgen.progress_bar_progress", total)
-                .append(Component.translatable(PERCENT_FORMAT.format(percent * 100.0F) + "%")
+        MutableComponent title = CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.progress_bar_progress", total)
+                .append(CommandUtils.makeTranslatableWithFallback(PERCENT_FORMAT.format(percent * 100.0F) + "%")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
 
         if (error > 0) {
-            title = title.append(Component.translatable("commands.neoforge.chunkgen.progress_bar_errors")
+            title = title.append(CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.progress_bar_errors")
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
         }
 

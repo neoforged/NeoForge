@@ -224,7 +224,7 @@
              }
  
              if (p_376460_.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-@@ -1135,10 +_,12 @@
+@@ -1135,24 +_,28 @@
              if (Float.isNaN(p_376610_) || Float.isInfinite(p_376610_)) {
                  p_376610_ = Float.MAX_VALUE;
              }
@@ -237,7 +237,9 @@
                      return false;
                  }
  
-@@ -1147,12 +_,13 @@
++                this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
+                 this.actuallyHurt(p_376221_, p_376460_, p_376610_ - this.lastHurt);
+                 this.lastHurt = p_376610_;
                  flag1 = false;
              } else {
                  this.lastHurt = p_376610_;
