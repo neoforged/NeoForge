@@ -1,6 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 
 plugins {
@@ -32,6 +33,18 @@ sourceSets {
             srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources')
         }
     }
+    client {
+        java {
+            srcDirs rootProject.file('src/client/java')
+        }
+    }
+}
+
+java {
+    registerFeature('client') {
+        usingSourceSet(sourceSets.client)
+        disablePublication()
+    }
 }
 
 final checkVersion = JCCPlugin.providePreviousVersion(
@@ -53,11 +66,17 @@ checkJarCompatibility {
     baseJar = createCompatJar.flatMap { it.output }
 }
 
+// We don't want to include client in non-client runs,
+// however the name of the ModModel must be minecraft for FML to work.
+// Since we need both mods to be named minecraft we create them manually.
+ext.commonMod = objects.newInstance(ModModel, "minecraft")
+commonMod.sourceSet sourceSets.main
+ext.joinedMod = objects.newInstance(ModModel, "minecraft")
+joinedMod.sourceSet sourceSets.main
+joinedMod.sourceSet sourceSets.client
+
 neoDev {
     mods {
-        minecraft {
-            sourceSet sourceSets.main
-        }
         "neoforge-coremods" {
             sourceSet project(":neoforge-coremods").sourceSets.main
         }
@@ -133,6 +152,9 @@ dependencies {
     // Must be implementation instead of compileOnly so that running dependent projects such as tests will trigger (re)compilation of coremods.
     // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
     implementation(jarJar(project(":neoforge-coremods")))
+
+    // TODO: Don't hardcode which configuration we depend on
+    clientImplementation project(path: ":neoforge", configuration: 'runtimeElements')
 }
 
 neoDev {
@@ -142,17 +164,23 @@ neoDev {
         }
         client {
             client()
+            sourceSet = sourceSets.client
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
         }
         server {
             server()
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
         }
         gameTestServer {
             type = "gameTestServer"
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
         }
         data {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
+            sourceSet = sourceSets.main
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
@@ -404,6 +432,16 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+}
+
+jar {
+    from sourceSets.client.output
+}
+sourcesJar {
+    from sourceSets.client.allSource
+}
+javadoc {
+    source += sourceSets.client.allSource
 }
 
 processResources {
