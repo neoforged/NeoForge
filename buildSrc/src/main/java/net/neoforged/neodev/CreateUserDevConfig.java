@@ -104,7 +104,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
             }
 
             Collections.addAll(args,
-                    "--gameDir", ".",
                     "--fml.fmlVersion", getFmlVersion().get(),
                     "--fml.mcVersion", getMinecraftVersion().get(),
                     "--fml.neoForgeVersion", getNeoForgeVersion().get(),

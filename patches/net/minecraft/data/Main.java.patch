@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/Main.java
 +++ b/net/minecraft/data/Main.java
-@@ -71,21 +_,32 @@
+@@ -71,10 +_,13 @@
          OptionSpec<Void> optionspec1 = optionparser.accepts("server", "Include server generators");
          OptionSpec<Void> optionspec2 = optionparser.accepts("dev", "Include development tools");
          OptionSpec<Void> optionspec3 = optionparser.accepts("reports", "Include data reports");
@@ -10,15 +10,12 @@
          OptionSpec<String> optionspec5 = optionparser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
          OptionSpec<String> optionspec6 = optionparser.accepts("input", "Input folder").withRequiredArg();
 +        OptionSpec<String> existing = optionparser.accepts("existing", "Existing resource packs that generated resources can reference").withRequiredArg();
-+        OptionSpec<java.io.File> gameDir = optionparser.accepts("gameDir").withRequiredArg().ofType(java.io.File.class).defaultsTo(new java.io.File(".")).required(); //Need by modlauncher, so lets just eat it
 +        OptionSpec<String> mod = optionparser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
 +        OptionSpec<Void> flat = optionparser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
          OptionSet optionset = optionparser.parse(p_129669_);
--        if (!optionset.has(optionspec) && optionset.hasOptions()) {
-+        if (!optionset.has(optionspec) && optionset.hasOptions() && !(optionset.specs().size() == 1 && optionset.has(gameDir))) {
+         if (!optionset.has(optionspec) && optionset.hasOptions()) {
              Path path = Paths.get(optionspec5.value(optionset));
-             boolean flag = optionset.has(optionspec4);
-             boolean flag1 = flag || optionset.has(optionspec1);
+@@ -83,9 +_,16 @@
              boolean flag2 = flag || optionset.has(optionspec2);
              boolean flag3 = flag || optionset.has(optionspec3);
              Collection<Path> collection = optionset.valuesOf(optionspec6).stream().map(p_129659_ -> Paths.get(p_129659_)).toList();
