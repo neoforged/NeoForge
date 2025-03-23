@@ -1,5 +1,13 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
+@@ -398,6 +_,7 @@
+     public Minecraft(final GameConfig p_91084_) {
+         super("Client");
+         instance = this;
++        net.neoforged.neoforge.common.util.LogicalSidedProvider.setClient(() -> this);
+         this.clientStartTimeMs = System.currentTimeMillis();
+         this.gameDirectory = p_91084_.location.gameDirectory;
+         File file1 = p_91084_.location.assetDirectory;
 @@ -430,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
@@ -8,7 +16,7 @@
          this.demo = p_91084_.game.demo;
          this.allowsMultiplayer = !p_91084_.game.disableMultiplayer;
          this.allowsChat = !p_91084_.game.disableChat;
-@@ -482,20 +_,25 @@
+@@ -482,20 +_,24 @@
              LOGGER.error("Couldn't set icon", (Throwable)ioexception);
          }
  
@@ -30,7 +38,6 @@
          );
          LOGGER.info("Using optional rendering extensions: {}", String.join(", ", RenderSystem.getDevice().getEnabledExtensions()));
 -        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
-+        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this);
 +        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
 +        net.neoforged.neoforge.client.loading.ClientModLoader.finish(this.resourcePackRepository, this.resourceManager);
@@ -127,6 +134,15 @@
              this.clearResourcePacksOnError(p_91240_, null, p_299846_);
          } else {
              Util.throwAsRuntime(p_91240_);
+@@ -840,6 +_,8 @@
+         DiscontinuousFrame discontinuousframe = TracyClient.createDiscontinuousFrame("Client Tick");
+ 
+         try {
++            net.neoforged.neoforge.client.ClientLifecycleHooks.handleClientStarted(this);
++
+             boolean flag = false;
+ 
+             while (this.running) {
 @@ -943,7 +_,7 @@
              p_307414_.soundManager.emergencyShutdown();
          }
@@ -167,6 +183,22 @@
              this.screen = p_91153_;
              if (this.screen != null) {
                  this.screen.added();
+@@ -1114,6 +_,7 @@
+ 
+     public void destroy() {
+         try {
++            net.neoforged.neoforge.client.ClientLifecycleHooks.handleClientStopping(this);
+             LOGGER.info("Stopping!");
+ 
+             try {
+@@ -1135,6 +_,7 @@
+             }
+ 
+             this.close();
++            net.neoforged.neoforge.client.ClientLifecycleHooks.handleClientStopped(this);
+         } finally {
+             Util.timeSource = System::nanoTime;
+             if (this.delayedCrash == null) {
 @@ -1242,9 +_,11 @@
          this.mouseHandler.handleAccumulatedMovement();
          profilerfiller.pop();

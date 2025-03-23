@@ -27,7 +27,6 @@ import net.neoforged.fml.loading.ImmediateWindowHandler;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -41,18 +40,15 @@ import org.jetbrains.annotations.Nullable;
 public class ClientModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean loading;
-    private static Minecraft mc;
     private static boolean loadingComplete;
     @Nullable
     private static ModLoadingException error;
 
-    public static void begin(final Minecraft minecraft) {
+    public static void begin() {
         // force log4j to shutdown logging in a shutdown hook. This is because we disable default shutdown hook so the server properly logs it's shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(LogManager::shutdown));
         ImmediateWindowHandler.updateProgress("Loading mods");
         loading = true;
-        ClientModLoader.mc = minecraft;
-        LogicalSidedProvider.setClient(() -> minecraft);
         LanguageHook.loadBuiltinLanguages();
         try {
             begin(ImmediateWindowHandler::renderTick, false);
@@ -100,8 +96,6 @@ public class ClientModLoader extends CommonModLoader {
         catchLoadingException(() -> finish(syncExecutor, parallelExecutor));
         loading = false;
         loadingComplete = true;
-        // reload game settings on main thread
-        syncExecutor.execute(() -> mc.options.load(true));
     }
 
     public static VersionChecker.Status checkForUpdates() {
@@ -124,9 +118,9 @@ public class ClientModLoader extends CommonModLoader {
         if (error != null) {
             // Double check we have the langs loaded for forge
             LanguageHook.loadBuiltinLanguages();
-            File dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), mc.gameDirectory);
+            File dumpedLocation = CrashReportExtender.dumpModLoadingCrashReport(LOGGER, error.getIssues(), Minecraft.getInstance().gameDirectory);
             // Ignore incoming initial screens task, the subsequent screens are unreachable in an error state
-            return () -> mc.setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, () -> {}));
+            return () -> Minecraft.getInstance().setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, () -> {}));
         }
 
         // We can finally start the game eventbus up
@@ -134,7 +128,7 @@ public class ClientModLoader extends CommonModLoader {
 
         if (!warnings.isEmpty()) {
             if (showWarnings) {
-                return () -> mc.setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
+                return () -> Minecraft.getInstance().setScreen(new LoadingErrorScreen(warnings, null, initialScreensTask));
             }
 
             //User disabled warning screen, as least log them

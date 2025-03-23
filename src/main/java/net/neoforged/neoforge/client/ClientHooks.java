@@ -982,7 +982,6 @@ public class ClientHooks {
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
-        ClientHooks.onRegisterKeyMappings(mc.options);
         RecipeBookManager.init();
         mc.gui.initModdedOverlays();
         DimensionSpecialEffectsManager.init();
