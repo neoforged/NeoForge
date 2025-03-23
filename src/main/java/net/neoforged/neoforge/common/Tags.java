@@ -708,11 +708,6 @@ public class Tags {
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         // Tools and Armors
-        /**
-         * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
-         * Please use {@link ItemAbilities} instead for what action a tool can do.
-         *
-         * @see ItemAbility
         public static final TagKey<Item> PUMPKINS = tag("pumpkins");
         /**
          * For pumpkins that are not carved.
@@ -727,6 +722,11 @@ public class Tags {
          * For pumpkins that are already carved and a light source.
          */
         public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
+        /**
+         * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
+         * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * @see ItemAbility
          * @see ItemAbilities
          */
         public static final TagKey<Item> TOOLS = tag("tools");
