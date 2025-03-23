@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 
 /**
  * Emitted right before the client ticks for the first time.
- * <p/>
+ * <p>
  * The loading overlay will still be showing and the resource reload is likely still going on.
  */
 public class ClientStartedEvent extends ClientLifecycleEvent {
