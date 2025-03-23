@@ -151,6 +151,7 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.GatherEffectScreenTooltipsEvent;
+import net.neoforged.neoforge.client.event.InitializeClientRegistriesEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
@@ -968,8 +969,9 @@ public class ClientHooks {
         }
     }
 
-    // Make sure the below method is only ever called once (by forge).
+    // Make sure the below methods are only ever called once (by forge).
     private static boolean initializedClientHooks = false;
+    private static boolean initializedClientRegistries = false;
 
     // Runs during Minecraft construction, before initial resource loading.
     @ApiStatus.Internal
@@ -983,6 +985,7 @@ public class ClientHooks {
         // TODO: Porting 1.21.5 too early for registering gametests
         //GameTestHooks.registerGametests();
         MenuScreens.init();
+        initClientRegistries();
 
         var rlEvent = new AddClientReloadListenersEvent(resourceManager);
         ModLoader.postEvent(rlEvent);
@@ -1003,10 +1006,21 @@ public class ClientHooks {
         PresetEditorManager.init();
         MapDecorationRendererManager.init();
         DimensionTransitionScreenManager.init();
-        AnimationTypeManager.init();
         RenderPipelines.registerCustomPipelines();
         PipelineModifiers.init();
+    }
+
+    // Runs during Minecraft construction, before initial resource loading and during datagen startup
+    public static void initClientRegistries() {
+        if (initializedClientRegistries) {
+            throw new IllegalStateException("Client registries initialized more than once");
+        }
+        initializedClientRegistries = true;
+
+        AnimationTypeManager.init();
         BlockStateModelHooks.init();
+
+        ModLoader.postEvent(new InitializeClientRegistriesEvent());
     }
 
     /**

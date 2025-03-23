@@ -29,7 +29,7 @@
 +            }
 +            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, java.util.List.of(), existingPacks, false, false, validate, isFlat, optionset.valueOf(assetIndex), optionset.valueOf(assetsDir), () -> {
 +                ClientBootstrap.bootstrap();
-+                net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager.init();
++                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
 +            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, datagenerator);
          } else {
              optionparser.printHelpOn(System.out);
