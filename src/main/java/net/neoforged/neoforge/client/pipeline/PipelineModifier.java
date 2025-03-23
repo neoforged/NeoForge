@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.pipeline;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +17,11 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
  * <p>
  * All implementations of this interface must be idempotent and have to return the exact same result for the given
  * input. The result of invoking {@link #apply(RenderPipeline, ResourceLocation)} will be cached.
+ *
+ * @see RegisterPipelineModifiersEvent
+ * @see RenderSystem#pushPipelineModifier(ResourceKey)
+ * @see RenderSystem#popPipelineModifier()
+ * @see RenderSystem#renderWithPipelineModifier(ResourceKey, Runnable)
  */
 @FunctionalInterface
 public interface PipelineModifier {
