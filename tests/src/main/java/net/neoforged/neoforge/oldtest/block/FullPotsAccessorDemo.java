@@ -216,7 +216,7 @@ public class FullPotsAccessorDemo {
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerBlockStateModelType(final RegisterBlockStateModels event) {
-            event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diorite_pot"), DioritePotUnbakedBlockStateModel.CODEC);
+            event.registerModel(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diorite_pot"), DioritePotUnbakedBlockStateModel.CODEC);
         }
 
         private static class DioritePotUnbakedBlockStateModel implements CustomUnbakedBlockStateModel {

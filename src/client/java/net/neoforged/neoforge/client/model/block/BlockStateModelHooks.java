@@ -9,6 +9,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.Function;
 import net.minecraft.client.renderer.block.model.SingleVariant;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -21,9 +22,12 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class BlockStateModelHooks {
     static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends CustomUnbakedBlockStateModel>> BLOCK_STATE_MODEL_IDS = new ExtraCodecs.LateBoundIdMapper<>();
+    static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends CustomBlockModelDefinition>> BLOCK_MODEL_DEFINITION_IDS = new ExtraCodecs.LateBoundIdMapper<>();
+    public static final Codec<CustomBlockModelDefinition> DEFINITION_CODEC = BLOCK_MODEL_DEFINITION_IDS.codec(ResourceLocation.CODEC)
+            .dispatch(CustomBlockModelDefinition::codec, Function.identity());
 
     public static void init() {
-        ModLoader.postEvent(new RegisterBlockStateModels(BLOCK_STATE_MODEL_IDS));
+        ModLoader.postEvent(new RegisterBlockStateModels(BLOCK_STATE_MODEL_IDS, BLOCK_MODEL_DEFINITION_IDS));
     }
 
     public static MapCodec<Either<CustomUnbakedBlockStateModel, SingleVariant.Unbaked>> makeSingleModelCodec() {

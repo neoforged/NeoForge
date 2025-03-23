@@ -247,7 +247,7 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void registerBlockStateModels(RegisterBlockStateModels event) {
-        event.register(neoForgeId("composite"), CompositeBlockModel.Unbaked.MAP_CODEC);
+        event.registerModel(neoForgeId("composite"), CompositeBlockModel.Unbaked.MAP_CODEC);
     }
 
     // TODO 1.21.4
