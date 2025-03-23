@@ -29,7 +29,7 @@ public class ClientLifecycleHooks {
     }
 
     /**
-     * Emits the ClientStartedEvent right after the client has freed all of its resources
+     * Emits the ClientStoppedEvent right after the client has freed all of its resources
      * and is about to shut down the process.
      */
     public static void handleClientStopped(Minecraft minecraft) {
