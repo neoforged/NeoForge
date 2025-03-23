@@ -215,7 +215,25 @@ public class NeoForgeExtraCodecs {
      * @param <B>           fallback type
      */
     public static <A, E, B> MapCodec<Either<E, B>> dispatchMapOrElse(Codec<A> typeCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends MapCodec<? extends E>> codec, MapCodec<B> fallbackCodec) {
-        var dispatchCodec = typeCodec.dispatchMap(type, codec);
+        return dispatchMapOrElse("type", typeCodec, type, codec, fallbackCodec);
+    }
+
+    /**
+     * Map dispatch codec with an alternative.
+     *
+     * <p>The alternative will only be used if the provided key is not present in the serialized object.
+     *
+     * @param key           key to dispatch on
+     * @param typeCodec     codec for the dispatch type
+     * @param type          function to retrieve the dispatch type from the dispatched type
+     * @param codec         function to retrieve the dispatched type map codec from the dispatch type
+     * @param fallbackCodec fallback to use when the deserialized object does not have a {@code "type"} key
+     * @param <A>           dispatch type
+     * @param <E>           dispatched type
+     * @param <B>           fallback type
+     */
+    public static <A, E, B> MapCodec<Either<E, B>> dispatchMapOrElse(String key, Codec<A> typeCodec, Function<? super E, ? extends A> type, Function<? super A, ? extends MapCodec<? extends E>> codec, MapCodec<B> fallbackCodec) {
+        var dispatchCodec = typeCodec.dispatchMap(key, type, codec);
         return new MapCodec<>() {
             @Override
             public <T> Stream<T> keys(DynamicOps<T> ops) {
@@ -224,7 +242,7 @@ public class NeoForgeExtraCodecs {
 
             @Override
             public <T> DataResult<Either<E, B>> decode(DynamicOps<T> ops, MapLike<T> input) {
-                if (input.get("type") != null) {
+                if (input.get(key) != null) {
                     return dispatchCodec.decode(ops, input).map(Either::left);
                 } else {
                     return fallbackCodec.decode(ops, input).map(Either::right);

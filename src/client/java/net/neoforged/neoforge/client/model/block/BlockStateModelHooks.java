@@ -9,7 +9,9 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import java.util.function.Function;
+import net.minecraft.client.renderer.block.model.BlockModelDefinition;
 import net.minecraft.client.renderer.block.model.SingleVariant;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -23,8 +25,6 @@ import org.jetbrains.annotations.ApiStatus;
 public class BlockStateModelHooks {
     static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends CustomUnbakedBlockStateModel>> BLOCK_STATE_MODEL_IDS = new ExtraCodecs.LateBoundIdMapper<>();
     static final ExtraCodecs.LateBoundIdMapper<ResourceLocation, MapCodec<? extends CustomBlockModelDefinition>> BLOCK_MODEL_DEFINITION_IDS = new ExtraCodecs.LateBoundIdMapper<>();
-    public static final Codec<CustomBlockModelDefinition> DEFINITION_CODEC = BLOCK_MODEL_DEFINITION_IDS.codec(ResourceLocation.CODEC)
-            .dispatch(CustomBlockModelDefinition::codec, Function.identity());
 
     public static void init() {
         ModLoader.postEvent(new RegisterBlockStateModels(BLOCK_STATE_MODEL_IDS, BLOCK_MODEL_DEFINITION_IDS));
@@ -45,6 +45,26 @@ public class BlockStateModelHooks {
                         singleModelCodec.forGetter(Weighted::value),
                         ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", 1).forGetter(Weighted::weight))
                         .apply(instance, Weighted::new));
+    }
+
+    public static Codec<BlockModelDefinition> makeDefinitionCodec() {
+        return NeoForgeExtraCodecs.dispatchMapOrElse(
+                "neoforge:definition_type",
+                BLOCK_MODEL_DEFINITION_IDS.codec(ResourceLocation.CODEC),
+                CustomBlockModelDefinition::codec,
+                Function.identity(),
+                BlockModelDefinition.VANILLA_CODEC).xmap(
+                        BlockStateModelHooks::packDefinition,
+                        BlockStateModelHooks::unpackDefinition)
+                .codec();
+    }
+
+    private static BlockModelDefinition packDefinition(Either<CustomBlockModelDefinition, BlockModelDefinition> definition) {
+        return definition.map(def -> new BlockModelDefinition(Optional.empty(), Optional.empty(), Optional.of(def)), Function.identity());
+    }
+
+    private static Either<CustomBlockModelDefinition, BlockModelDefinition> unpackDefinition(BlockModelDefinition definition) {
+        return definition.customDefinition().isPresent() ? Either.left(definition.customDefinition().get()) : Either.right(definition);
     }
 
     private BlockStateModelHooks() {}

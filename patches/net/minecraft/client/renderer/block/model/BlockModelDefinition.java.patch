@@ -1,31 +1,30 @@
 --- a/net/minecraft/client/renderer/block/model/BlockModelDefinition.java
 +++ b/net/minecraft/client/renderer/block/model/BlockModelDefinition.java
-@@ -28,12 +_,14 @@
+@@ -28,9 +_,10 @@
  @OnlyIn(Dist.CLIENT)
  public record BlockModelDefinition(
      Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart
 +    , Optional<net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition> customDefinition
  ) {
      static final Logger LOGGER = LogUtils.getLogger();
-     public static final Codec<BlockModelDefinition> CODEC = RecordCodecBuilder.<BlockModelDefinition>create(
+-    public static final Codec<BlockModelDefinition> CODEC = RecordCodecBuilder.<BlockModelDefinition>create(
++    public static final com.mojang.serialization.MapCodec<BlockModelDefinition> VANILLA_CODEC = RecordCodecBuilder.<BlockModelDefinition>mapCodec(
              p_409074_ -> p_409074_.group(
                      BlockModelDefinition.SimpleModelSelectors.CODEC.optionalFieldOf("variants").forGetter(BlockModelDefinition::simpleModels),
                      BlockModelDefinition.MultiPartDefinition.CODEC.optionalFieldOf("multipart").forGetter(BlockModelDefinition::multiPart)
-+                    , net.neoforged.neoforge.client.model.block.BlockStateModelHooks.DEFINITION_CODEC.optionalFieldOf("neoforge:custom").forGetter(BlockModelDefinition::customDefinition)
-                 )
-                 .apply(p_409074_, BlockModelDefinition::new)
-         )
-@@ -43,7 +_,19 @@
+@@ -42,8 +_,21 @@
+                 ? DataResult.error(() -> "Neither 'variants' nor 'multipart' found")
                  : DataResult.success(p_409078_)
          );
- 
++    public static final Codec<BlockModelDefinition> CODEC = net.neoforged.neoforge.client.model.block.BlockStateModelHooks.makeDefinitionCodec();
++
 +    public BlockModelDefinition(Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart) {
 +        this(simpleModels, multiPart, Optional.empty());
 +    }
-+
+ 
      public Map<BlockState, BlockStateModel.UnbakedRoot> instantiate(StateDefinition<Block, BlockState> p_360641_, Supplier<String> p_405739_) {
 +        if (this.customDefinition.isPresent()) {
-+            return this.customDefinition.get().instantiate(this, p_360641_, p_405739_);
++            return this.customDefinition.get().instantiate(p_360641_, p_405739_);
 +        }
 +        return this.instantiateVanilla(p_360641_, p_405739_);
 +    }
