@@ -1,0 +1,49 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
+
+abstract class CheckSplitSources extends DefaultTask {
+    /** Returns the folder where the client package would lie if it were in the server (common) sourceset */
+    @Optional
+    @InputDirectory
+    abstract DirectoryProperty getServerClientFolder()
+
+    /** Returns the folder where the client package lies within the client sourceset */
+    @Optional
+    @InputDirectory
+    abstract DirectoryProperty getClientClientFolder()
+
+    @TaskAction
+    void run() {
+        if (serverClientFolder.isPresent()) {
+            final filesInServer = serverClientFolder.getAsFileTree()
+                    .filter { File f -> f.isFile() }
+                    .getFiles()
+
+            if (!filesInServer.isEmpty()) {
+                throw new GradleException("Found classes under the client package that are placed in the common sourceset: ${filesInServer.join(', ')}")
+            }
+        }
+
+        if (clientClientFolder.isPresent()) {
+            File clientFolder = clientClientFolder.asFile.get()
+            final folders = clientFolder.parentFile.listFiles()
+            if (folders.size() != 1 || folders[0] != clientFolder) {
+                throw new GradleException("Found common files under the client sourceset: ${(folders - clientFolder).join(', ')}")
+            }
+        }
+    }
+}
+
+final task = tasks.register('checkSourcesAreSplit', CheckSplitSources) {
+    serverClientFolder = project.provider { project.layout.projectDirectory.dir('src/main/java/net/neoforged/neoforge/client') }
+        .map { it.asFile.exists() ? it : null }
+    clientClientFolder = project.layout.projectDirectory.dir('src/client/java/net/neoforged/neoforge/client')
+}
+
+tasks.named('checkFormatting') {
+    dependsOn(task)
+}
