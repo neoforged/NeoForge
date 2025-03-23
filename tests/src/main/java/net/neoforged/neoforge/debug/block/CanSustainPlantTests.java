@@ -28,6 +28,7 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
+// TODO - check the light based tests
 @ForEachTest(groups = { "level.block.survivability" })
 public class CanSustainPlantTests {
     @GameTest
@@ -69,6 +70,8 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.LILY_PAD)))
                 .thenExecute(player -> Items.LILY_PAD.use(helper.getLevel(), player, InteractionHand.MAIN_HAND))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.LILY_PAD, belowBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
 
                 .thenSucceed());
     }
@@ -132,6 +135,8 @@ public class CanSustainPlantTests {
 //                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.RED_MUSHROOM), Direction.UP))
 //                .thenExecute(() -> helper.assertBlockPresent(Blocks.RED_MUSHROOM, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -174,6 +179,8 @@ public class CanSustainPlantTests {
 //                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.WHEAT_SEEDS), Direction.UP))
 //                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.WHEAT, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -215,6 +222,8 @@ public class CanSustainPlantTests {
 //                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
 //                .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.PITCHER_POD), Direction.UP))
 //                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.PITCHER_CROP, belowBlock.above()))
+
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
 
                 .thenSucceed());
     }
@@ -262,6 +271,8 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.BAMBOO), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BAMBOO_SAPLING, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -302,13 +313,15 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.CACTUS), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.CACTUS, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
     @GameTest
     @EmptyTemplate(floor = true)
     @TestHolder(description = {
-            "Dead Bushes should be placeable on dirt, sand, and terracotta, but not on glazed terracotta nor farmland. And plantable on custom blocks that allow the plant.",
+            "Dead Bushes should be placeable on dirt, sand, terracotta and farmland, but not on glazed terracotta. And plantable on custom blocks that allow the plant.",
             "(neoforged/NeoForge#306)"
     })
     static void survivabilityDeadBushTest(final DynamicTest test, final RegistrationHelper reg) {
@@ -340,12 +353,12 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.WHITE_GLAZED_TERRACOTTA))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
-                .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, belowBlock.above()))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 
                 .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR))
-                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.FARMLAND))
+                .thenExecute(() -> helper.setBlock(belowBlock, Blocks.WHITE_GLAZED_TERRACOTTA))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.DEAD_BUSH), Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.DEAD_BUSH, belowBlock.above()))
 
@@ -390,6 +403,8 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.OAK_SAPLING), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.OAK_SAPLING, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -421,6 +436,8 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.setBlock(aboveBlock.below(), Blocks.MANGROVE_PROPAGULE.defaultBlockState().setValue(MangrovePropaguleBlock.HANGING, true)))
                 .thenExecute(() -> helper.setBlock(aboveBlock.below().north(), Blocks.STONE)) // Trigger block update on neighbors
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.MANGROVE_PROPAGULE, aboveBlock.below()))
+
+                .thenExecute(() -> helper.setBlock(aboveBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
 
                 .thenSucceed());
     }
@@ -478,6 +495,8 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.SUGAR_CANE), Direction.UP))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.SUGAR_CANE, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -534,6 +553,8 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.SMALL_DRIPLEAF, belowBlock))
                 .thenExecute(() -> helper.assertBlockNotPresent(Blocks.SMALL_DRIPLEAF, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -586,6 +607,8 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> helper.useBlock(belowBlock.above(), player, new ItemStack(Items.BIG_DRIPLEAF), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.BIG_DRIPLEAF, belowBlock.above(2)))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -625,6 +648,8 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.setBlock(belowBlock, sustainingBlock.get()))
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.CHORUS_PLANT), Direction.UP))
                 .thenExecute(() -> helper.assertBlockState(belowBlock.above(), (state) -> state.getValue(ChorusPlantBlock.DOWN), $ -> Component.literal("Chorus Plant not found with down property")))
+
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
 
                 .thenSucceed());
     }
@@ -667,6 +692,8 @@ public class CanSustainPlantTests {
                 .thenExecute(player -> helper.useBlock(belowBlock, player, new ItemStack(Items.CHORUS_FLOWER), Direction.UP))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.CHORUS_FLOWER, belowBlock.above()))
 
+                .thenExecute(() -> helper.setBlock(belowBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
+
                 .thenSucceed());
     }
 
@@ -697,6 +724,8 @@ public class CanSustainPlantTests {
                 .thenExecute(() -> helper.setBlock(centerBlock.north(), sustainingBlock.get()))
                 .thenExecute(player -> helper.useBlock(centerBlock.north(), player, new ItemStack(Items.COCOA_BEANS), Direction.SOUTH))
                 .thenExecute(() -> helper.assertBlockPresent(Blocks.COCOA, centerBlock))
+
+                .thenExecute(() -> helper.setBlock(centerBlock.above(), Blocks.AIR)) // Clear the plant so that it doesn't try to randomly tick to grow and crash because of the side check
 
                 .thenSucceed());
     }

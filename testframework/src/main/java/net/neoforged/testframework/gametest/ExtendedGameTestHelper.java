@@ -202,8 +202,9 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         return makeMockPlayer(GameType.CREATIVE);
     }
 
-    public void killAllEntitiesOfClass(Class<?>... types) {
-        for (Class<?> type : types) {
+    @SafeVarargs
+    public final void killAllEntitiesOfClass(Class<? extends Entity>... types) {
+        for (var type : types) {
             this.killAllEntitiesOfClass(type);
         }
     }
@@ -262,7 +263,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     }
 
     public void assertPlayerHasItem(Player player, Item item) {
-        assertTrue(player.getInventory().hasAnyOf(Set.of(item)), Component.translatable("Player doesn't have '%s' in their inventory!", BuiltInRegistries.ITEM.getKey(item)));
+        assertTrue(player.getInventory().hasAnyOf(Set.of(item)), Component.translatable("Player doesn't have '%s' in their inventory!", BuiltInRegistries.ITEM.getKey(item).toString()));
     }
 
     public void requireDifficulty(final Difficulty difficulty) {
@@ -319,7 +320,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public <T extends Entity> T requireEntityAt(EntityType<T> type, BlockPos pos) {
         final var inRange = getEntities(type, pos, 2);
-        assertTrue(inRange.size() == 1, Component.translatable("Only one entity must be present at %s", pos));
+        assertTrue(inRange.size() == 1, Component.translatable("Only one entity must be present at %s", pos.toString()));
         return inRange.getFirst();
     }
 

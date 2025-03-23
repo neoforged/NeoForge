@@ -117,8 +117,14 @@ public final class GameTestRegistration {
                     .stream().map(t -> {
                         var data = t.asGameTest();
                         if (data == null) return null;
-                        final String batchName = !t.groups().isEmpty() ? t.groups().get(0) : "ungrouped";
-                        return new TestEntry(t, framework.id().withSuffix("/" + batchName.toLowerCase(Locale.ROOT)), data);
+                        ResourceLocation batch;
+                        if (data.batchName() != null) {
+                            batch = data.batchName().contains(":") ? ResourceLocation.parse(data.batchName().toLowerCase(Locale.ROOT)) : framework.id().withSuffix(data.batchName().toLowerCase(Locale.ROOT));
+                        } else {
+                            final String batchName = !t.groups().isEmpty() ? t.groups().get(0) : "ungrouped";
+                            batch = framework.id().withSuffix("/" + batchName.toLowerCase(Locale.ROOT));
+                        }
+                        return new TestEntry(t, batch, data);
                     })
                     .filter(Objects::nonNull)
                     .collect(Multimaps.toMultimap(

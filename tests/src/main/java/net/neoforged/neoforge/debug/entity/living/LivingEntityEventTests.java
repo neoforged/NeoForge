@@ -256,7 +256,7 @@ public class LivingEntityEventTests {
         AtomicBoolean throwIfSlimeSpawns = new AtomicBoolean(false);
 
         test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
-            if (event.getEntity() instanceof Slime slime) {
+            if (event.getEntity() instanceof Slime) {
                 if (throwIfSlimeSpawns.get()) {
                     throw new GameTestAssertException(Component.translatable("Slime should not have been spawned."), -1);
                 }
@@ -274,7 +274,7 @@ public class LivingEntityEventTests {
 
             helper.assertTrue(!childSlimes.isEmpty(), "No child slimes received by event");
             for (Mob s : childSlimes) {
-                helper.assertTrue(s.getPersistentData().getString("test.something").equals("whatever"), "NBT Data not copied");
+                helper.assertValueEqual("whatever", s.getPersistentData().getString("test.something").orElse(null), "NBT Data not copied");
             }
 
             Slime childlessSlime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);

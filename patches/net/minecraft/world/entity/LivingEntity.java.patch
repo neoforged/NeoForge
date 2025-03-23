@@ -244,6 +244,31 @@
              return flag2;
          }
      }
+@@ -1243,7 +_,7 @@
+                 return 0.0F;
+             } else {
+                 BlocksAttacks blocksattacks = itemstack.get(DataComponents.BLOCKS_ATTACKS);
+-                if (blocksattacks != null && !blocksattacks.bypassedBy().map(p_401067_::is).orElse(false)) {
++                if (blocksattacks != null) {
+                     if (p_401067_.getDirectEntity() instanceof AbstractArrow abstractarrow && abstractarrow.getPierceLevel() > 0) {
+                         return 0.0F;
+                     } else {
+@@ -1259,7 +_,14 @@
+                         }
+ 
+                         float f = blocksattacks.resolveBlockedDamage(p_401067_, p_401377_, d0);
+-                        blocksattacks.hurtBlockingItem(this.level(), itemstack, this, this.getUsedItemHand(), f);
++
++                        var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), f, !blocksattacks.bypassedBy().map(p_401067_::is).orElse(false));
++                        if (!ev.getBlocked()) return 0.0F;
++
++                        this.damageContainers.peek().setBlockedDamage(ev);
++                        f = ev.getBlockedDamage();
++
++                        blocksattacks.hurtBlockingItem(this.level(), itemstack, this, this.getUsedItemHand(), f, ev.shieldDamage());
+                         if (!p_401067_.is(DamageTypeTags.IS_PROJECTILE) && p_401067_.getDirectEntity() instanceof LivingEntity livingentity) {
+                             this.blockUsingItem(p_401171_, livingentity);
+                         }
 @@ -1293,9 +_,9 @@
          Entity entity = p_388609_.getEntity();
          if (entity instanceof Player player) {

@@ -1120,11 +1120,12 @@ public class CommonHooks {
      * @param blocker         the entity performing the block
      * @param container       the entity's internal damage container for accessing current values
      *                        in the damage pipeline at the time of this invocation.
+     * @param blockedDamage   the amount of damage that would be blocked
      * @param originalBlocked whether this entity is blocking according to preceding/vanilla logic
      * @return the event object after event listeners have been invoked.
      */
-    public static LivingShieldBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
-        LivingShieldBlockEvent e = new LivingShieldBlockEvent(blocker, container, originalBlocked);
+    public static LivingShieldBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, float blockedDamage, boolean originalBlocked) {
+        LivingShieldBlockEvent e = new LivingShieldBlockEvent(blocker, container, blockedDamage, originalBlocked);
         NeoForge.EVENT_BUS.post(e);
         return e;
     }

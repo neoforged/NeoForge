@@ -21,7 +21,7 @@
 +    protected void affectNeighborsAfterRemoval(BlockState p_394424_, ServerLevel p_394241_, BlockPos p_393520_, boolean p_394545_) {
 +        super.affectNeighborsAfterRemoval(p_394424_, p_394241_, p_393520_, p_394545_);
 +        // Neo: Invalidate composter capabilities when a composter is removed
-+        if (!p_394424_.is(this)) p_394241_.invalidateCapabilities(p_393520_);
++        if (!p_394241_.getBlockState(p_393520_).is(p_394424_.getBlock())) p_394241_.invalidateCapabilities(p_393520_);
      }
  
      @Override

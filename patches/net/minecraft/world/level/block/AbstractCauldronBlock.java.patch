@@ -18,7 +18,7 @@
 +    protected void affectNeighborsAfterRemoval(BlockState p_394424_, ServerLevel p_394241_, BlockPos p_393520_, boolean p_394545_) {
 +        super.affectNeighborsAfterRemoval(p_394424_, p_394241_, p_393520_, p_394545_);
 +        // Neo: Invalidate cauldron capabilities when a cauldron is removed
-+        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(p_394424_.getBlock()) == null) {
++        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(p_394241_.getBlockState(p_393520_).getBlock()) == null) {
 +            p_394241_.invalidateCapabilities(p_393520_);
 +        }
 +    }
