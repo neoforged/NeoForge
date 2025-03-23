@@ -1,0 +1,46 @@
+--- a/net/minecraft/client/data/models/MultiVariant.java
++++ b/net/minecraft/client/data/models/MultiVariant.java
+@@ -12,20 +_,41 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record MultiVariant(WeightedList<Variant> variants) {
+-    public MultiVariant(WeightedList<Variant> variants) {
++public record MultiVariant(WeightedList<Variant> variants, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder customBlockStateModel) {
++    /**
++     * @param customBlockStateModel Neo-added parameter to allow using custom blockstate models with MultiVariantGenerator and MultiPartGenerator (only used during datagen)
++     */
++    public MultiVariant(WeightedList<Variant> variants, @org.jetbrains.annotations.Nullable net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder customBlockStateModel) {
++        if (customBlockStateModel != null) {
++            if (!variants.isEmpty()) {
++                throw new IllegalArgumentException("Cannot specify both a variant list and a custom blockstate model");
++            }
++            this.variants = variants;
++            this.customBlockStateModel = customBlockStateModel;
++        } else
+         if (variants.isEmpty()) {
+             throw new IllegalArgumentException("Variant list must contain at least one element");
+         } else {
+             this.variants = variants;
++            this.customBlockStateModel = null;
+         }
++    }
++
++    public MultiVariant(WeightedList<Variant> variants) {
++        this(variants, null);
+     }
+ 
+     public MultiVariant with(VariantMutator p_409928_) {
++        if (this.customBlockStateModel != null) {
++            return new MultiVariant(this.variants, this.customBlockStateModel.with(p_409928_));
++        }
+         return new MultiVariant(this.variants.map(p_409928_));
+     }
+ 
+     public BlockStateModel.Unbaked toUnbaked() {
++        if (this.customBlockStateModel != null) {
++            return this.customBlockStateModel.toUnbaked();
++        }
+         List<Weighted<Variant>> list = this.variants.unwrap();
+         return (BlockStateModel.Unbaked)(list.size() == 1
+             ? new SingleVariant.Unbaked(list.getFirst().value())
