@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client;
 
 import net.minecraft.client.Minecraft;
@@ -9,7 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class ClientLifecycleHooks {
-
     /**
      * Emits the ClientStartedEvent right before the client ticks for the first time.
      */
