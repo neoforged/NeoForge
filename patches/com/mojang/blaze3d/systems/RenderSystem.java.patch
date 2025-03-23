@@ -9,12 +9,18 @@
      static final Logger LOGGER = LogUtils.getLogger();
      public static final int MINIMUM_ATLAS_TEXTURE_SIZE = 1024;
      @Nullable
-@@ -152,6 +_,15 @@
+@@ -90,6 +_,7 @@
+     @Nullable
+     private static GpuBuffer QUAD_VERTEX_BUFFER;
+     private static final ArrayListDeque<RenderSystem.GpuAsyncTask> PENDING_FENCES = new ArrayListDeque<>();
++    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
  
-     public static void disableScissor() {
+     public static void initRenderThread() {
+         if (renderThread != null) {
+@@ -154,6 +_,15 @@
          SCISSOR_STATE.disable();
-+    }
-+
+     }
+ 
 +
 +    public static void enableStencil(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
 +        STENCIL_TEST = stencilTest;
@@ -22,6 +28,49 @@
 +
 +    public static void disableStencil() {
 +        STENCIL_TEST = null;
++    }
++
+     public static void setShaderFog(FogParameters p_360454_) {
+         assertOnRenderThread();
+         shaderFog = p_360454_;
+@@ -426,6 +_,40 @@
+     @Nullable
+     public static GpuDevice tryGetDevice() {
+         return DEVICE;
++    }
++
++    /**
++     * Neo: Push the provided {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} to be applied to subsequent rendering.
++     * <p>
++     * Must be paired with a corresponding {@link #popPipelineModifier()} call after flushing the used buffers
++     */
++    public static void pushPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier) {
++        PIPELINE_MODIFIERS.push(modifier);
++    }
++
++    /**
++     * Neo: Pop the last {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} off the modifier stack
++     */
++    public static void popPipelineModifier() {
++        PIPELINE_MODIFIERS.pop();
++    }
++
++    /**
++     * Neo: Run the provided {@link Runnable} with the provided {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} applied
++     * to the pipelines used by the rendering done in the {@link Runnable}
++     */
++    public static void renderWithPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier, Runnable renderTask) {
++        PIPELINE_MODIFIERS.renderWithModifier(modifier, renderTask);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static com.mojang.blaze3d.pipeline.RenderPipeline applyPipelineModifiers(com.mojang.blaze3d.pipeline.RenderPipeline pipeline) {
++        return PIPELINE_MODIFIERS.apply(pipeline);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void ensurePipelineModifiersEmpty() {
++        PIPELINE_MODIFIERS.ensureEmpty();
      }
  
-     public static void setShaderFog(FogParameters p_360454_) {
+     @OnlyIn(Dist.CLIENT)

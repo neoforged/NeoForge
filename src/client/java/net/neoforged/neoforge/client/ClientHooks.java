@@ -11,6 +11,7 @@ import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.resource.RenderTargetDescriptor;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -181,6 +182,7 @@ import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
+import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
@@ -1003,6 +1005,7 @@ public class ClientHooks {
         DimensionTransitionScreenManager.init();
         AnimationTypeManager.init();
         RenderPipelines.registerCustomPipelines();
+        PipelineModifiers.init();
         BlockStateModelHooks.init();
     }
 
@@ -1026,6 +1029,7 @@ public class ClientHooks {
      */
     public static void fireRenderFramePost(DeltaTracker partialTick) {
         NeoForge.EVENT_BUS.post(new RenderFrameEvent.Post(partialTick));
+        RenderSystem.ensurePipelineModifiersEmpty();
     }
 
     /**
