@@ -12,8 +12,7 @@ apply plugin : net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin
 dependencies {
     compileOnly(project(path: ':neoforge')) {
         capabilities {
-            // Can be replaced by requireFeature 'client' in Gradle 8.11+
-            requireCapability 'net.neoforged:neoforge-client'
+            requireFeature('client')
         }
     }
 

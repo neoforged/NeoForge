@@ -24,8 +24,7 @@ sourceSets {
 dependencies {
     implementation(neoforgeProject) {
         capabilities {
-            // Can be replaced by requireFeature 'client' in Gradle 8.11+
-            requireCapability 'net.neoforged:neoforge-client'
+            requireFeature('client')
         }
     }
     implementation(testframeworkProject)
@@ -38,8 +37,7 @@ dependencies {
     junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
     junitImplementation(neoforgeProject) {
         capabilities {
-            // Can be replaced by requireFeature 'client' in Gradle 8.11+
-            requireCapability 'net.neoforged:neoforge-client'
+            requireFeature('client')
         }
     }
     junitImplementation(testframeworkProject)
