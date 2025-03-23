@@ -126,7 +126,7 @@
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
   ],
   "net/minecraft/world/MenuProvider": [
-    "net/neoforged/neoforge/client/extensions/IMenuProviderExtension"
+    "net/neoforged/neoforge/common/extensions/IMenuProviderExtension"
   ],
   "net/minecraft/world/effect/MobEffect": [
     "net/neoforged/neoforge/common/extensions/IMobEffectExtension"
@@ -235,7 +235,7 @@
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension"
   ],
   "net/minecraft/client/data/models/ModelProvider": [
-    "net/neoforged/neoforge/common/extensions/IModelProviderExtension"
+    "net/neoforged/neoforge/client/extensions/IModelProviderExtension"
   ],
   "net/minecraft/client/data/models/model/TexturedModel$Provider": [
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$Provider"

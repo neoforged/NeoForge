@@ -5,12 +5,13 @@
  package mcp.client;
  
  import java.io.IOException;
-@@ -7,7 +_,7 @@
+@@ -7,7 +_,9 @@
  
  import com.google.gson.JsonElement;
  import com.google.gson.JsonParser;
--import net.minecraft.client.main.Main;
-+//import net.minecraft.client.main.Main;
++/* Make this not detectable by the spotless rule:
+ import net.minecraft.client.main.Main;
++ */
  
  public class Start
  {

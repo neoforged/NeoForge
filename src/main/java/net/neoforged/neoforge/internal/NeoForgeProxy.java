@@ -1,5 +1,9 @@
 package net.neoforged.neoforge.internal;
 
+import java.io.File;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
@@ -18,11 +22,6 @@ import net.neoforged.neoforge.network.payload.ClientDispatchPayload;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Allows common code to call client-only methods, through {@code NeoForgeClientProxy}.
