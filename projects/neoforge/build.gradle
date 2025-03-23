@@ -153,8 +153,17 @@ dependencies {
     // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
     implementation(jarJar(project(":neoforge-coremods")))
 
-    // TODO: Don't hardcode which configuration we depend on
-    clientImplementation project(path: ":neoforge", configuration: 'runtimeElements')
+    clientApi(project(path: ":neoforge")) {
+        capabilities {
+            requireCapability 'net.neoforged:neoforge'
+        }
+        // Select runtimeElements rather than universalJar
+        // If you don't believe it... try to remove this block, and run the following command:
+        // gradlew :neoforge:dependencyInsight --configuration clientRuntimeClasspath --dependency net.neoforged:neoforge --scan
+        attributes {
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
+        }
+    }
 }
 
 neoDev {
