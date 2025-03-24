@@ -59,11 +59,10 @@ public final class PipelineModifierStack {
                 if (newPipeline != pipeline && newPipeline.getLocation().equals(pipeline.getLocation())) {
                     throw new IllegalStateException(String.format(
                             Locale.ROOT,
-                            "Modified pipeline %s must use location %s instead of location %s of incoming pipeline %s",
+                            "Modified pipeline %s must use a unique location instead of the incoming pipeline's location %s, ideally the provided location %s",
                             newPipeline,
-                            name,
                             pipeline.getLocation(),
-                            pipeline));
+                            name));
                 }
                 xformCache.put(pipeline, newPipeline);
             }
