@@ -21,7 +21,7 @@
      private final int seaLevel;
      private boolean tickDayTime;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
-+    private final net.neoforged.neoforge.client.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager(this);
++    private final net.neoforged.neoforge.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.model.data.ModelDataManager(this);
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
@@ -154,12 +154,12 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
++    public net.neoforged.neoforge.model.data.ModelDataManager getModelDataManager() {
 +        return modelDataManager;
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
++    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
 +        return modelDataManager.getAt(pos);
 +    }
 +

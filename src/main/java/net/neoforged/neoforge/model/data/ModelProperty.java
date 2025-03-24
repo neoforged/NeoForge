@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.model.data;
+package net.neoforged.neoforge.model.data;
 
 import com.google.common.base.Predicates;
 import java.util.function.Predicate;
