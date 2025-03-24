@@ -1,0 +1,15 @@
+diff a/gradle.properties b/gradle.properties	(rejected hunks)
+@@ -8,9 +8,13 @@ org.gradle.caching=true
+ org.gradle.configuration-cache=true
+ org.gradle.debug=false
+ #org.gradle.warning.mode=fail
++#random change
+ 
+ # renovate: net.neoforged:moddev-gradle
+ moddevgradle_plugin_version=2.0.48-beta
++
++#aline
++
+ # renovate: io.codechicken:DiffPatch
+ diffpatch_version=2.0.0.35
+ 
