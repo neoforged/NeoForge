@@ -153,7 +153,7 @@ dependencies {
     // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
     implementation(jarJar(project(":neoforge-coremods")))
 
-    clientApi(project(path: ":neoforge")) {
+    clientApi(project(":neoforge")) {
         capabilities {
             requireCapability 'net.neoforged:neoforge'
         }
