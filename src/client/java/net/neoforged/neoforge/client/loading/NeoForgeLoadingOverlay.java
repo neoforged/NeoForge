@@ -74,7 +74,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         graphics.flush(); // Ensure no draws are queued before we go and render externally
 
         // This updates the EarlyDisplay screen in the off-screen framebuffer
-        displayWindow.render(0xff);
+        displayWindow.renderToFramebuffer();
 
         var fbWidth = this.minecraft.getWindow().getWidth();
         var fbHeight = this.minecraft.getWindow().getHeight();

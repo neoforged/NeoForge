@@ -23,7 +23,7 @@ import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
-import net.neoforged.fml.loading.ImmediateWindowHandler;
+import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeConfig;
@@ -47,11 +47,16 @@ public class ClientModLoader extends CommonModLoader {
     public static void begin() {
         // force log4j to shutdown logging in a shutdown hook. This is because we disable default shutdown hook so the server properly logs it's shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(LogManager::shutdown));
-        ImmediateWindowHandler.updateProgress("Loading mods");
+        var earlyLoadingScreen = EarlyLoadingScreenController.current();
+        if (earlyLoadingScreen != null) {
+            earlyLoadingScreen.updateProgress("Loading mods");
+        }
         loading = true;
         LanguageHook.loadBuiltinLanguages();
+
         try {
-            begin(ImmediateWindowHandler::renderTick, false);
+            Runnable periodicTick = earlyLoadingScreen != null ? earlyLoadingScreen::periodicTick : () -> {};
+            begin(periodicTick, false);
         } catch (ModLoadingException e) {
             error = e;
         }
