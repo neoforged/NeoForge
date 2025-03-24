@@ -1,50 +1,5 @@
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
 
-abstract class CheckSplitSources extends DefaultTask {
-    /**
-     * Configures the folder in the server source-set where someone might accidentally place client classes. Any files placed in this location will fail the build.
-     */
-    @Optional
-    @InputDirectory
-    abstract DirectoryProperty getServerClientFolder()
-
-    /**
-     * Configures the folder in the client source-set where someone might accidentally place common classes. Any files placed in this location will fail the build.
-     */
-    @Optional
-    @InputDirectory
-    abstract DirectoryProperty getClientClientFolder()
-
-    @TaskAction
-    void run() {
-        if (serverClientFolder.isPresent()) {
-            final filesInServer = serverClientFolder.getAsFileTree()
-                    .filter { File f -> f.isFile() }
-                    // Workaround until NoVizFallback can be removed.
-                    .filter { File f -> !f.name.endsWith("NoVizFallback.java") }
-                    .getFiles()
-
-            if (!filesInServer.isEmpty()) {
-                throw new GradleException("Found classes under the client package that are placed in the common sourceset: ${filesInServer.join(', ')}")
-            }
-        }
-
-        if (clientClientFolder.isPresent()) {
-            File clientFolder = clientClientFolder.asFile.get()
-            final folders = clientFolder.parentFile.listFiles()
-            if (folders.size() != 1 || folders[0] != clientFolder) {
-                throw new GradleException("Found common files under the client sourceset: ${(folders - clientFolder).join(', ')}")
-            }
-        }
-    }
-}
-
-final task = tasks.register('checkSourcesAreSplit', CheckSplitSources) {
+final task = tasks.register('checkSourcesAreSplit', net.neoforged.neodev.CheckSplitSources) {
     serverClientFolder = project.provider { project.layout.projectDirectory.dir('src/main/java/net/neoforged/neoforge/client') }
         .map { it.asFile.exists() ? it : null }
     clientClientFolder = project.layout.projectDirectory.dir('src/client/java/net/neoforged/neoforge/client')
