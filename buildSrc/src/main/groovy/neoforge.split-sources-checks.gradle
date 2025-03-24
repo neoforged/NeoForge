@@ -21,6 +21,8 @@ abstract class CheckSplitSources extends DefaultTask {
         if (serverClientFolder.isPresent()) {
             final filesInServer = serverClientFolder.getAsFileTree()
                     .filter { File f -> f.isFile() }
+                    // Workaround until NoVizFallback can be removed.
+                    .filter { File f -> !f.name.endsWith("NoVizFallback.java") }
                     .getFiles()
 
             if (!filesInServer.isEmpty()) {
