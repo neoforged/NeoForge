@@ -6,12 +6,12 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 abstract class CheckSplitSources extends DefaultTask {
-    /** Returns the folder where the client package would lie if it were in the server (common) sourceset */
+    /** Configures the folder in the server source-set where someone might accidentally place client classes. Any files placed in this location will fail the build. */
     @Optional
     @InputDirectory
     abstract DirectoryProperty getServerClientFolder()
 
-    /** Returns the folder where the client package lies within the client sourceset */
+    /** Configures the folder in the client source-set where someone might accidentally place common classes. Any files placed in this location will fail the build. */
     @Optional
     @InputDirectory
     abstract DirectoryProperty getClientClientFolder()

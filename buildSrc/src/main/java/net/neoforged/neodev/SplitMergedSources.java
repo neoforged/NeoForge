@@ -14,6 +14,11 @@ import java.nio.file.Files;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Splits a merged Minecraft source jar into client and common jars based on source-file content analysis.
+ * Files containing "@OnlyIn(Dist.CLIENT)" annotations are placed in the client jar,
+ * while all other files go into the common jar.
+ */
 abstract class SplitMergedSources extends DefaultTask {
     @Inject
     public SplitMergedSources() {}
