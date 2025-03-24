@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -57,7 +_,7 @@
- import net.minecraft.world.ticks.TickContainerAccess;
- import org.slf4j.Logger;
- 
--public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess {
-+public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, LightChunk, StructureAccess, net.neoforged.neoforge.attachment.IAttachmentHolder {
-     public static final int NO_FILLED_SECTION = -1;
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final LongSet EMPTY_REFERENCE_SET = new LongOpenHashSet();
 @@ -327,10 +_,19 @@
  
      @Override

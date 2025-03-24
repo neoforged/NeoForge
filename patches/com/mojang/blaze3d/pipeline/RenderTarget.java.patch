@@ -1,0 +1,66 @@
+--- a/com/mojang/blaze3d/pipeline/RenderTarget.java
++++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
+@@ -25,6 +_,7 @@
+     public int viewWidth;
+     public int viewHeight;
+     public final boolean useDepth;
++    public final boolean useStencil;
+     public int frameBufferId;
+     protected int colorTextureId;
+     protected int depthBufferId;
+@@ -32,7 +_,15 @@
+     public int filterMode;
+ 
+     public RenderTarget(boolean p_166199_) {
+-        this.useDepth = p_166199_;
++        this(p_166199_, false);
++    }
++
++    public RenderTarget(boolean useDepth, boolean useStencil) {
++        if (useStencil && !useDepth) {
++            throw new IllegalArgumentException("Stencil can only be enabled if depth is enabled.");
++        }
++        this.useDepth = useDepth;
++        this.useStencil = useStencil;
+         this.frameBufferId = -1;
+         this.colorTextureId = -1;
+         this.depthBufferId = -1;
+@@ -96,7 +_,11 @@
+                 GlStateManager._texParameter(3553, 34892, 0);
+                 GlStateManager._texParameter(3553, 10242, 33071);
+                 GlStateManager._texParameter(3553, 10243, 33071);
+-                GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
++                if (!this.useStencil) {
++                    GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
++                } else {
++                    net.neoforged.neoforge.client.ClientHooks.texImageDepthStencil(this.width, this.height);
++                }
+             }
+ 
+             this.setFilterMode(9728, true);
+@@ -109,6 +_,14 @@
+             if (this.useDepth) {
+                 GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthBufferId, 0);
+             }
++            if (this.useStencil) {
++                GlStateManager._glFramebufferTexture2D(
++                    org.lwjgl.opengl.GL32.GL_FRAMEBUFFER,
++                    org.lwjgl.opengl.GL32.GL_STENCIL_ATTACHMENT,
++                    org.lwjgl.opengl.GL32.GL_TEXTURE_2D,
++                    this.depthBufferId,
++                    0);
++            }
+ 
+             this.checkStatus();
+             this.clear();
+@@ -217,6 +_,10 @@
+         if (this.useDepth) {
+             GlStateManager._clearDepth(1.0);
+             i |= 256;
++        }
++        if (this.useStencil) {
++            GlStateManager._clearStencil(0);
++            i |= org.lwjgl.opengl.GL32.GL_STENCIL_BUFFER_BIT;
+         }
+ 
+         GlStateManager._clear(i);

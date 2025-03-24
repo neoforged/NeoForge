@@ -1,11 +1,9 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -117,7 +_,8 @@
- import net.minecraft.world.scores.Team;
+@@ -118,6 +_,7 @@
  import org.slf4j.Logger;
  
--public abstract class Player extends LivingEntity {
-+public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IPlayerExtension {
+ public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IPlayerExtension {
 +    public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final HumanoidArm DEFAULT_MAIN_HAND = HumanoidArm.RIGHT;

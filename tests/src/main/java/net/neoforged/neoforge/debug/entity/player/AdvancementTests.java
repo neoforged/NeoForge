@@ -16,6 +16,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -95,13 +95,12 @@ public class AdvancementTests {
         reg.addClientProvider(event -> new AdvancementProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
-                event.getExistingFileHelper(),
-                List.of((registries, saver, existingFileHelper) -> {
+                List.of((registries, saver) -> {
                     Advancement.Builder.advancement()
                             .parent(ResourceLocation.withDefaultNamespace("story/root"))
                             .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, AdvancementType.TASK, true, true, false)
                             .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withSubPredicate(type, new CustomNamePredicate(1, 2))))
-                            .save(saver, ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"), existingFileHelper);
+                            .save(saver, ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"));
                 })));
 
         test.onGameTest(helper -> {

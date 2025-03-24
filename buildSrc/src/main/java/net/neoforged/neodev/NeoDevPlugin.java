@@ -37,6 +37,7 @@ import org.gradle.api.tasks.bundling.Zip;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -100,24 +101,39 @@ public class NeoDevPlugin implements Plugin<Project> {
         );
         var applyAt = configureAccessTransformer(
                 project,
-                configurations,
                 createSourceArtifacts,
                 neoDevBuildDir,
                 atFiles);
 
         applyAt.configure(task -> task.mustRunAfter(genAtsTask));
 
-        // 3. Apply patches to the source jar from 2.
+        // 3. Apply interface injections after the ATs
+        // this jar is only used for the patches in the repo
+        var applyInterfaceInjection = project.getTasks().register("applyInterfaceInjection", TransformSources.class, task -> {
+            task.getInputJar().set(applyAt.flatMap(TransformSources::getOutputJar));
+            task.getInterfaceInjectionData().from(project.getRootProject().file("src/main/resources/META-INF/injected-interfaces.json"));
+            task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/interface-injected-sources.jar")));
+        });
+
+        tasks.withType(TransformSources.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.classpath(configurations.getExecutableTool(Tools.JST));
+
+            task.getLibraries().from(configurations.neoFormClasspath);
+            task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-" + task.getName() + ".txt")));
+        });
+
+        // 4. Apply patches to the source jar from 3.
         var patchesFolder = project.getRootProject().file("patches");
         var applyPatches = tasks.register("applyPatches", ApplyPatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
-            task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
+            task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
             task.getPatchesFolder().set(patchesFolder);
             task.getPatchedJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/patched-sources.jar")));
             task.getRejectsFolder().set(project.getRootProject().file("rejects"));
         });
 
-        // 4. Unpack jar from 3.
+        // 5. Unpack jar from 4.
         var mcSourcesPath = project.file("src/main/java");
         tasks.register("setup", Sync.class, task -> {
             task.setGroup(GROUP);
@@ -185,12 +201,20 @@ public class NeoDevPlugin implements Plugin<Project> {
          * OTHER TASKS
          */
 
-        // Generate source patches into a patch archive.
+        // Generate source patches into a patch archive, based on the jar with injected interfaces.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
-            task.getOriginalJar().set(applyAt.flatMap(ApplyAccessTransformer::getOutputJar));
+            task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
             task.getModifiedSources().set(project.file("src/main/java"));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
+        });
+
+        // Generate source patches that are based on the production environment (without separate interface injection)
+        var genProductionPatches = tasks.register("generateProductionSourcePatches", GenerateSourcePatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getOriginalJar().set(applyAt.flatMap(TransformSources::getOutputJar));
+            task.getModifiedSources().set(project.file("src/main/java"));
+            task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches")));
         });
 
         // Update the patch/ folder with the current patches.
@@ -245,9 +269,10 @@ public class NeoDevPlugin implements Plugin<Project> {
                 configurations,
                 createCleanArtifacts,
                 neoDevBuildDir,
-                patchesFolder
+                genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
         );
 
+        var installerRepositoryUrls = getInstallerRepositoryUrls(project);
         // Launcher profile = the version.json file used by the Minecraft launcher.
         var createLauncherProfile = tasks.register("createLauncherProfile", CreateLauncherProfile.class, task -> {
             task.setGroup(INTERNAL_GROUP);
@@ -256,17 +281,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getNeoForgeVersion().set(neoForgeVersion);
             task.getRawNeoFormVersion().set(rawNeoFormVersion);
             task.setLibraries(configurations.launcherProfileClasspath);
-            task.getRepositoryURLs().set(project.provider(() -> {
-                List<URI> repos = new ArrayList<>();
-                for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
-                    var uri = repo.getUrl();
-                    if (!uri.toString().endsWith("/")) {
-                        uri = URI.create(uri + "/");
-                    }
-                    repos.add(uri);
-                }
-                return repos;
-            }));
+            task.getRepositoryURLs().set(installerRepositoryUrls);
             // ${version_name}.jar will be filled out by the launcher. It corresponds to the raw SRG Minecraft client jar.
             task.getIgnoreList().addAll("client-extra", "${version_name}.jar");
             task.setModules(configurations.modulePath);
@@ -285,17 +300,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.addLibraries(configurations.launcherProfileClasspath);
             // We need the NeoForm zip for the SRG mappings.
             task.addLibraries(configurations.neoFormDataOnly);
-            task.getRepositoryURLs().set(project.provider(() -> {
-                List<URI> repos = new ArrayList<>();
-                for (var repo : project.getRepositories().withType(MavenArtifactRepository.class)) {
-                    var uri = repo.getUrl();
-                    if (!uri.toString().endsWith("/")) {
-                        uri = URI.create(uri + "/");
-                    }
-                    repos.add(uri);
-                }
-                return repos;
-            }));
+            task.getRepositoryURLs().set(installerRepositoryUrls);
             task.getUniversalJar().set(universalJar.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getInstallerProfile().set(neoDevBuildDir.map(dir -> dir.file("installer-profile.json")));
 
@@ -411,7 +416,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.from(binaryPatchOutputs.binaryPatchesForMerged(), spec -> {
                 spec.rename(s -> "joined.lzma");
             });
-            task.from(project.zipTree(genSourcePatches.flatMap(GenerateSourcePatches::getPatchesJar)), spec -> {
+            task.from(project.fileTree(genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)), spec -> {
                 spec.into("patches/");
             });
         });
@@ -444,24 +449,43 @@ public class NeoDevPlugin implements Plugin<Project> {
         setupProductionServerTest(project, installerJar);
     }
 
-    private static TaskProvider<ApplyAccessTransformer> configureAccessTransformer(
+    /**
+     * Get the list of Maven repositories that may contain artifacts for the installer.
+     */
+    private static Provider<List<URI>> getInstallerRepositoryUrls(Project project) {
+        return project.provider(() -> {
+            List<URI> repos = new ArrayList<>();
+            var projectRepos = project.getRepositories();
+            if (!projectRepos.isEmpty()) {
+                for (var repo : projectRepos.withType(MavenArtifactRepository.class)) {
+                    repos.add(repo.getUrl());
+                }
+            } else {
+                // If no project repos are defined, use the repository list we exposed in settings.gradle via an extension
+                // See the end of settings.gradle for details
+                Collections.addAll(repos, (URI[]) project.getGradle().getExtensions().getByName("repositoryBaseUrls"));
+            }
+
+            // Ensure all base urls end with a slash
+            repos.replaceAll(uri -> uri.toString().endsWith("/") ? uri : URI.create(uri + "/"));
+
+            return repos;
+        });
+    }
+
+    private static TaskProvider<TransformSources> configureAccessTransformer(
             Project project,
-            NeoDevConfigurations configurations,
             TaskProvider<CreateMinecraftArtifacts> createSourceArtifacts,
             Provider<Directory> neoDevBuildDir,
             List<File> atFiles) {
 
         // Pass -PvalidateAccessTransformers to validate ATs.
         var validateAts = project.getProviders().gradleProperty("validateAccessTransformers").map(p -> true).orElse(false);
-        return project.getTasks().register("applyAccessTransformer", ApplyAccessTransformer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
-            task.classpath(configurations.getExecutableTool(Tools.JST));
+        return project.getTasks().register("applyAccessTransformer", TransformSources.class, task -> {
             task.getInputJar().set(createSourceArtifacts.flatMap(CreateMinecraftArtifacts::getSourcesArtifact));
             task.getAccessTransformers().from(atFiles);
-            task.getValidate().set(validateAts);
+            task.getValidateAccessTransformers().set(validateAts);
             task.getOutputJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/access-transformed-sources.jar")));
-            task.getLibraries().from(configurations.neoFormClasspath);
-            task.getLibrariesFile().set(neoDevBuildDir.map(dir -> dir.file("minecraft-libraries-for-jst.txt")));
         });
     }
 
@@ -469,7 +493,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                                                                    NeoDevConfigurations configurations,
                                                                    TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
                                                                    Provider<Directory> neoDevBuildDir,
-                                                                   File sourcesPatchesFolder) {
+                                                                   Provider<Directory> sourcesPatchesFolder) {
         var tasks = project.getTasks();
 
         var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);

@@ -5,11 +5,6 @@
 
 package net.neoforged.neoforge.oldtest;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.ObjectArrays;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -22,11 +17,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,8 +38,6 @@ import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.Variant;
-import net.minecraft.client.resources.model.UnbakedModel.GuiLight;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
@@ -57,6 +48,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -69,36 +62,20 @@ import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.TheEndBiomeSource;
-import net.minecraft.world.level.block.BarrelBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ButtonBlock;
-import net.minecraft.world.level.block.CeilingHangingSignBlock;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.FurnaceBlock;
-import net.minecraft.world.level.block.IronBarsBlock;
-import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.RotatedPillarBlock;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.StandingSignBlock;
-import net.minecraft.world.level.block.TrapDoorBlock;
-import net.minecraft.world.level.block.WallHangingSignBlock;
-import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -108,23 +85,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
-import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
-import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.GeneratingOverlayMetadataSection;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.ParticleDescriptionProvider;
@@ -175,16 +142,12 @@ public class DataGeneratorTest {
                         DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
-        // Let blockstate provider see generated item models by passing its existing file helper
-        ItemModelProvider itemModels = new ItemModels(packOutput, event.getExistingFileHelper());
-        gen.addProvider(true, itemModels);
-        gen.addProvider(true, new BlockStates(packOutput, itemModels.existingFileHelper));
-        gen.addProvider(true, new SoundDefinitions(packOutput, event.getExistingFileHelper()));
-        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getExistingFileHelper()));
+        gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
+        gen.addProvider(true, new ParticleDescriptions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
 
         gen.addProvider(true, new Recipes.Runner(packOutput, lookupProvider));
-        gen.addProvider(true, new Tags(packOutput, lookupProvider, event.getExistingFileHelper()));
-        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, event.getExistingFileHelper(), List.of(new Advancements())));
+        gen.addProvider(true, new Tags(packOutput, lookupProvider));
+        gen.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, List.of(new Advancements())));
         gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, BUILDER, Set.of(MODID)));
     }
 
@@ -321,11 +284,13 @@ public class DataGeneratorTest {
 
     public static class SoundDefinitions extends SoundDefinitionsProvider {
         private static final Logger LOGGER = LogManager.getLogger();
-        private final ExistingFileHelper helper;
 
-        public SoundDefinitions(final PackOutput output, final ExistingFileHelper helper) {
-            super(output, MODID, helper);
-            this.helper = helper;
+        private final ResourceManager resourceManager;
+
+        public SoundDefinitions(final PackOutput output, final ResourceManager resourceManager) {
+            super(output, MODID);
+
+            this.resourceManager = resourceManager;
         }
 
         @Override
@@ -399,7 +364,7 @@ public class DataGeneratorTest {
             }
             final JsonObject actual;
             try {
-                List<Resource> resourceStack = this.helper.getResourceStack(ResourceLocation.withDefaultNamespace("sounds.json"), PackType.CLIENT_RESOURCES);
+                List<Resource> resourceStack = this.resourceManager.getResourceStack(ResourceLocation.withDefaultNamespace("sounds.json"));
                 // Get the first resource in the stack
                 // This guarantees vanilla even when a forge sounds.json is present because getResourceStack reverses the list
                 // so that the lower priority resources are first (to allow overwriting data in later entries)
@@ -513,8 +478,8 @@ public class DataGeneratorTest {
     }
 
     public static class Tags extends BlockTagsProvider {
-        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-            super(output, lookupProvider, MODID, existingFileHelper);
+        public Tags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+            super(output, lookupProvider, MODID);
         }
 
         @Override
@@ -524,7 +489,7 @@ public class DataGeneratorTest {
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
                     .addOptional(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw"))
-                    .addOptionalTag(ResourceLocation.fromNamespaceAndPath("neoforge", "storage_blocks/ruby"));
+                    .addOptionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "storage_blocks/ruby"));
 
             // Hopefully sorting issues
             tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/one")))
@@ -557,414 +522,9 @@ public class DataGeneratorTest {
         }
     }
 
-    public static class ItemModels extends ItemModelProvider {
-        private static final Logger LOGGER = LogManager.getLogger();
-
-        public ItemModels(PackOutput generator, ExistingFileHelper existingFileHelper) {
-            super(generator, MODID, existingFileHelper);
-        }
-
+    private static class Advancements implements AdvancementSubProvider {
         @Override
-        protected void registerModels() {
-            getBuilder("test_generated_model")
-                    .parent(new UncheckedModelFile("item/generated"))
-                    .texture("layer0", mcLoc("block/stone"));
-
-            getBuilder("test_runtime_texture_model")
-                    .parent(new UncheckedModelFile("item/generated"))
-                    .texture("layer0", mcLoc("item/netherite_boots"))
-                    .texture("layer1", mcLoc("trims/items/boots_trim_amethyst"));
-
-            getBuilder("test_block_model")
-                    .parent(getExistingFile(mcLoc("block/block")))
-                    .texture("all", mcLoc("block/dirt"))
-                    .texture("top", mcLoc("block/stone"))
-                    .element()
-                    .cube("#all")
-                    .face(Direction.UP)
-                    .texture("#top")
-                    .tintindex(0)
-                    .end()
-                    .end();
-
-            // Testing consistency
-
-            // Test overrides
-            ModelFile fishingRod = withExistingParent("fishing_rod", "handheld_rod")
-                    .texture("layer0", mcLoc("item/fishing_rod"))
-                    .override()
-                    .predicate(mcLoc("cast"), 1)
-                    .model(getExistingFile(mcLoc("item/fishing_rod_cast"))) // Use the vanilla model for validation
-                    .end();
-
-            withExistingParent("fishing_rod_cast", modLoc("fishing_rod"))
-                    .parent(fishingRod)
-                    .texture("layer0", mcLoc("item/fishing_rod_cast"));
-        }
-
-        private static final Set<String> IGNORED_MODELS = ImmutableSet.of("test_generated_model", "test_runtime_texture_model", "test_block_model",
-                "fishing_rod", "fishing_rod_cast" // Vanilla doesn't generate these yet, so they don't match due to having the minecraft domain
-        );
-
-        @Override
-        public CompletableFuture<?> run(CachedOutput cache) {
-            var output = super.run(cache);
-            List<String> errors = testModelResults(this.generatedModels, existingFileHelper, IGNORED_MODELS.stream().map(s -> ResourceLocation.fromNamespaceAndPath(MODID, folder + "/" + s)).collect(Collectors.toSet()));
-            if (!errors.isEmpty()) {
-                LOGGER.error("Found {} discrepancies between generated and vanilla item models: ", errors.size());
-                for (String s : errors) {
-                    LOGGER.error("    {}", s);
-                }
-                throw new AssertionError("Generated item models differed from vanilla equivalents, check above errors.");
-            }
-
-            return output;
-        }
-
-        @Override
-        public String getName() {
-            return "Forge Test Item Models";
-        }
-    }
-
-    public static class BlockStates extends BlockStateProvider {
-        private static final Logger LOGGER = LogManager.getLogger();
-
-        public BlockStates(PackOutput output, ExistingFileHelper exFileHelper) {
-            super(output, MODID, exFileHelper);
-        }
-
-        @Override
-        protected void registerStatesAndModels() {
-            // Unnecessarily complicated example to showcase how manual building works
-            ModelFile birchFenceGate = models().fenceGate("birch_fence_gate", mcLoc("block/birch_planks"));
-            ModelFile birchFenceGateOpen = models().fenceGateOpen("birch_fence_gate_open", mcLoc("block/birch_planks"));
-            ModelFile birchFenceGateWall = models().fenceGateWall("birch_fence_gate_wall", mcLoc("block/birch_planks"));
-            ModelFile birchFenceGateWallOpen = models().fenceGateWallOpen("birch_fence_gate_wall_open", mcLoc("block/birch_planks"));
-            ModelFile invisbleModel = new UncheckedModelFile(ResourceLocation.withDefaultNamespace("builtin/generated"));
-            VariantBlockStateBuilder builder = getVariantBuilder(Blocks.BIRCH_FENCE_GATE);
-            for (Direction dir : FenceGateBlock.FACING.getPossibleValues()) {
-                int angle = (int) dir.toYRot();
-                builder
-                        .partialState()
-                        .with(FenceGateBlock.FACING, dir)
-                        .with(FenceGateBlock.IN_WALL, false)
-                        .with(FenceGateBlock.OPEN, false)
-                        .modelForState()
-                        .modelFile(invisbleModel)
-                        .nextModel()
-                        .modelFile(birchFenceGate)
-                        .rotationY(angle)
-                        .uvLock(true)
-                        .weight(100)
-                        .addModel()
-                        .partialState()
-                        .with(FenceGateBlock.FACING, dir)
-                        .with(FenceGateBlock.IN_WALL, false)
-                        .with(FenceGateBlock.OPEN, true)
-                        .modelForState()
-                        .modelFile(birchFenceGateOpen)
-                        .rotationY(angle)
-                        .uvLock(true)
-                        .addModel()
-                        .partialState()
-                        .with(FenceGateBlock.FACING, dir)
-                        .with(FenceGateBlock.IN_WALL, true)
-                        .with(FenceGateBlock.OPEN, false)
-                        .modelForState()
-                        .modelFile(birchFenceGateWall)
-                        .rotationY(angle)
-                        .uvLock(true)
-                        .addModel()
-                        .partialState()
-                        .with(FenceGateBlock.FACING, dir)
-                        .with(FenceGateBlock.IN_WALL, true)
-                        .with(FenceGateBlock.OPEN, true)
-                        .modelForState()
-                        .modelFile(birchFenceGateWallOpen)
-                        .rotationY(angle)
-                        .uvLock(true)
-                        .addModel();
-            }
-
-            // Realistic examples using helpers
-            simpleBlock(Blocks.STONE, model -> ObjectArrays.concat(
-                    ConfiguredModel.allYRotations(model, 0, false),
-                    ConfiguredModel.allYRotations(model, 180, false),
-                    ConfiguredModel.class));
-
-            // From here on, models are 1-to-1 copies of vanilla (except for model locations) and will be tested as such below
-            ModelFile block = models().getBuilder("block")
-                    .guiLight(GuiLight.SIDE)
-                    .transforms()
-                    .transform(ItemDisplayContext.GUI)
-                    .rotation(30, 225, 0)
-                    .scale(0.625f)
-                    .end()
-                    .transform(ItemDisplayContext.GROUND)
-                    .translation(0, 3, 0)
-                    .scale(0.25f)
-                    .end()
-                    .transform(ItemDisplayContext.FIXED)
-                    .scale(0.5f)
-                    .end()
-                    .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
-                    .rotation(75, 45, 0)
-                    .translation(0, 2.5f, 0)
-                    .scale(0.375f)
-                    .end()
-                    .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-                    .rotation(0, 45, 0)
-                    .scale(0.4f)
-                    .end()
-                    .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
-                    .rotation(0, 225, 0)
-                    .scale(0.4f)
-                    .end()
-                    .end();
-
-            models().getBuilder("cube")
-                    .parent(block)
-                    .element()
-                    .allFaces((dir, face) -> face.texture("#" + dir.getSerializedName()).cullface(dir));
-
-            ModelFile furnace = models().orientable("furnace", mcLoc("block/furnace_side"), mcLoc("block/furnace_front"), mcLoc("block/furnace_top"));
-            ModelFile furnaceLit = models().orientable("furnace_on", mcLoc("block/furnace_side"), mcLoc("block/furnace_front_on"), mcLoc("block/furnace_top"));
-
-            getVariantBuilder(Blocks.FURNACE)
-                    .forAllStates(state -> ConfiguredModel.builder()
-                            .modelFile(state.getValue(FurnaceBlock.LIT) ? furnaceLit : furnace)
-                            .rotationY((int) state.getValue(FurnaceBlock.FACING).getOpposite().toYRot())
-                            .build());
-
-            ModelFile barrel = models().cubeBottomTop("barrel", mcLoc("block/barrel_side"), mcLoc("block/barrel_bottom"), mcLoc("block/barrel_top"));
-            ModelFile barrelOpen = models().cubeBottomTop("barrel_open", mcLoc("block/barrel_side"), mcLoc("block/barrel_bottom"), mcLoc("block/barrel_top_open"));
-            directionalBlock(Blocks.BARREL, state -> state.getValue(BarrelBlock.OPEN) ? barrelOpen : barrel); // Testing custom state interpreter
-
-            logBlock((RotatedPillarBlock) Blocks.ACACIA_LOG);
-
-            stairsBlock((StairBlock) Blocks.ACACIA_STAIRS, "acacia", mcLoc("block/acacia_planks"));
-            slabBlock((SlabBlock) Blocks.ACACIA_SLAB, BuiltInRegistries.BLOCK.getKey(Blocks.ACACIA_PLANKS), mcLoc("block/acacia_planks"));
-
-            // TODO 1.19: fix fenceBlock, wallBlock, and co -SS
-            // fenceBlock((FenceBlock) Blocks.ACACIA_FENCE, "acacia", mcLoc("block/acacia_planks"));
-            fenceGateBlock((FenceGateBlock) Blocks.ACACIA_FENCE_GATE, "acacia", mcLoc("block/acacia_planks"));
-
-            // wallBlock((WallBlock) Blocks.COBBLESTONE_WALL, "cobblestone", mcLoc("block/cobblestone"));
-
-            paneBlock((IronBarsBlock) Blocks.GLASS_PANE, "glass", mcLoc("block/glass"), mcLoc("block/glass_pane_top"));
-
-            doorBlock((DoorBlock) Blocks.ACACIA_DOOR, "acacia", mcLoc("block/acacia_door_bottom"), mcLoc("block/acacia_door_top"));
-            trapdoorBlock((TrapDoorBlock) Blocks.ACACIA_TRAPDOOR, "acacia", mcLoc("block/acacia_trapdoor"), true);
-            trapdoorBlock((TrapDoorBlock) Blocks.OAK_TRAPDOOR, "oak", mcLoc("block/oak_trapdoor"), false); // Test a non-orientable trapdoor
-
-            buttonBlock((ButtonBlock) Blocks.ACACIA_BUTTON, blockTexture(Blocks.ACACIA_PLANKS));
-            itemModels().buttonInventory("acacia_button_inventory", blockTexture(Blocks.ACACIA_PLANKS));
-
-            pressurePlateBlock((PressurePlateBlock) Blocks.ACACIA_PRESSURE_PLATE, blockTexture(Blocks.ACACIA_PLANKS));
-
-            signBlock((StandingSignBlock) Blocks.ACACIA_SIGN, (WallSignBlock) Blocks.ACACIA_WALL_SIGN, blockTexture(Blocks.ACACIA_PLANKS));
-            hangingSignBlock((CeilingHangingSignBlock) Blocks.ACACIA_HANGING_SIGN, (WallHangingSignBlock) Blocks.ACACIA_WALL_HANGING_SIGN, blockTexture(Blocks.STRIPPED_ACACIA_LOG));
-
-            simpleBlock(Blocks.TORCH, models().torch("torch", mcLoc("block/torch")));
-            horizontalBlock(Blocks.WALL_TORCH, models().torchWall("wall_torch", mcLoc("block/torch")), 90);
-
-            models().cubeAll("test_block", mcLoc("block/stone"));
-            itemModels().withExistingParent("test_block", modLoc("block/test_block"));
-        }
-
-        // Testing the outputs
-
-        private static final Set<Block> IGNORED_BLOCKS = ImmutableSet.of(Blocks.BIRCH_FENCE_GATE, Blocks.STONE);
-        // Vanilla doesn't generate these models yet, so they have minor discrepancies that are hard to test
-        // This list should probably be cleared and investigated after each major version update
-        private static final Set<ResourceLocation> IGNORED_MODELS = ImmutableSet.of(ResourceLocation.fromNamespaceAndPath(MODID, "block/cube"));
-        private static final Set<ResourceLocation> CUSTOM_MODELS = ImmutableSet.of(ResourceLocation.fromNamespaceAndPath(MODID, "block/test_block"));
-
-        private List<String> errors = new ArrayList<>();
-
-        @Override
-        public CompletableFuture<?> run(CachedOutput cache) {
-            return super.run(cache).thenRun(() -> {
-                this.errors.addAll(testModelResults(models().generatedModels, models().existingFileHelper, Sets.union(IGNORED_MODELS, CUSTOM_MODELS)));
-                this.registeredBlocks.forEach((block, state) -> {
-                    if (IGNORED_BLOCKS.contains(block)) return;
-                    JsonObject generated = state.toJson();
-                    try {
-                        Resource vanillaResource = models().existingFileHelper.getResource(BuiltInRegistries.BLOCK.getKey(block), PackType.CLIENT_RESOURCES, ".json", "blockstates");
-                        JsonObject existing = GSON.fromJson(vanillaResource.openAsReader(), JsonObject.class);
-                        if (state instanceof VariantBlockStateBuilder) {
-                            compareVariantBlockstates(block, generated, existing);
-                        } else if (state instanceof MultiPartBlockStateBuilder) {
-                            compareMultipartBlockstates(block, generated, existing);
-                        } else {
-                            throw new IllegalStateException("Unknown blockstate type: " + state.getClass());
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-                if (!errors.isEmpty()) {
-                    LOGGER.error("Found {} discrepancies between generated and vanilla models/blockstates: ", errors.size());
-                    for (String s : errors) {
-                        LOGGER.error("    {}", s);
-                    }
-                    throw new AssertionError("Generated blockstates/models differed from vanilla equivalents, check above errors.");
-                }
-
-            });
-        }
-
-        private void compareVariantBlockstates(Block block, JsonObject generated, JsonObject vanilla) {
-            JsonObject generatedVariants = generated.getAsJsonObject("variants");
-            JsonObject vanillaVariants = vanilla.getAsJsonObject("variants");
-            Stream.concat(generatedVariants.entrySet().stream(), vanillaVariants.entrySet().stream())
-                    .map(e -> e.getKey())
-                    .distinct()
-                    .forEach(key -> {
-                        JsonElement generatedVariant = generatedVariants.get(key);
-                        JsonElement vanillaVariant = vanillaVariants.get(key);
-                        if (generatedVariant.isJsonArray()) {
-                            compareArrays(block, "key " + key, "random variants", generatedVariant, vanillaVariant);
-                            for (int i = 0; i < generatedVariant.getAsJsonArray().size(); i++) {
-                                compareVariant(block, key + "[" + i + "]", generatedVariant.getAsJsonArray().get(i).getAsJsonObject(), vanillaVariant.getAsJsonArray().get(i).getAsJsonObject());
-                            }
-                        }
-                        if (generatedVariant.isJsonObject()) {
-                            if (!vanillaVariant.isJsonObject()) {
-                                blockstateError(block, "incorrectly does not have an array of variants for key %s", key);
-                                return;
-                            }
-                            compareVariant(block, key, generatedVariant.getAsJsonObject(), vanillaVariant.getAsJsonObject());
-                        }
-                    });
-        }
-
-        private void compareVariant(Block block, String key, JsonObject generatedVariant, JsonObject vanillaVariant) {
-            if (generatedVariant == null) {
-                blockstateError(block, "missing variant for %s", key);
-                return;
-            }
-            if (vanillaVariant == null) {
-                blockstateError(block, "has extra variant %s", key);
-                return;
-            }
-            String generatedModel = toVanillaModel(generatedVariant.get("model").getAsString());
-            String vanillaModel = vanillaVariant.get("model").getAsString();
-            if (!generatedModel.equals(vanillaModel)) {
-                blockstateError(block, "has incorrect model \"%s\" for variant %s. Expecting: %s", generatedModel, key, vanillaModel);
-                return;
-            }
-            generatedVariant.addProperty("model", generatedModel);
-            // Parse variants to objects to handle default values in vanilla jsons
-            Variant parsedGeneratedVariant = GSON.fromJson(generatedVariant, Variant.class);
-            Variant parsedVanillaVariant = GSON.fromJson(vanillaVariant, Variant.class);
-            if (!parsedGeneratedVariant.equals(parsedVanillaVariant)) {
-                blockstateError(block, "has incorrect variant %s. Expecting: %s, Found: %s", key, vanillaVariant, generatedVariant);
-                return;
-            }
-        }
-
-        private void compareMultipartBlockstates(Block block, JsonObject generated, JsonObject vanilla) {
-            JsonElement generatedPartsElement = generated.get("multipart");
-            JsonElement vanillaPartsElement = vanilla.getAsJsonArray("multipart");
-            compareArrays(block, "parts", "multipart", generatedPartsElement, vanillaPartsElement);
-            // String instead of JSON types due to inconsistent hashing
-            Multimap<String, String> generatedPartsByCondition = HashMultimap.create();
-            Multimap<String, String> vanillaPartsByCondition = HashMultimap.create();
-
-            JsonArray generatedParts = generatedPartsElement.getAsJsonArray();
-            JsonArray vanillaParts = vanillaPartsElement.getAsJsonArray();
-            for (int i = 0; i < generatedParts.size(); i++) {
-                JsonObject generatedPart = generatedParts.get(i).getAsJsonObject();
-                String generatedCondition = toEquivalentString(generatedPart.get("when"));
-                JsonElement generatedVariants = generatedPart.get("apply");
-                if (generatedVariants.isJsonObject()) {
-                    correctVariant(generatedVariants.getAsJsonObject());
-                } else if (generatedVariants.isJsonArray()) {
-                    for (int j = 0; j < generatedVariants.getAsJsonArray().size(); j++) {
-                        correctVariant(generatedVariants.getAsJsonArray().get(i).getAsJsonObject());
-                    }
-                }
-                generatedPartsByCondition.put(generatedCondition, toEquivalentString(generatedVariants));
-
-                JsonObject vanillaPart = vanillaParts.get(i).getAsJsonObject();
-                String vanillaCondition = toEquivalentString(vanillaPart.get("when"));
-                String vanillaVariants = toEquivalentString(vanillaPart.get("apply"));
-
-                vanillaPartsByCondition.put(vanillaCondition, vanillaVariants);
-            }
-
-            Stream.concat(generatedPartsByCondition.keySet().stream(), vanillaPartsByCondition.keySet().stream())
-                    .distinct()
-                    .forEach(cond -> {
-                        Collection<String> generatedVariants = generatedPartsByCondition.get(cond);
-                        Collection<String> vanillaVariants = vanillaPartsByCondition.get(cond);
-                        if (generatedVariants.size() != vanillaVariants.size()) {
-                            if (vanillaVariants.isEmpty()) {
-                                blockstateError(block, " has extra condition %s", cond);
-                            } else if (generatedVariants.isEmpty()) {
-                                blockstateError(block, " is missing condition %s", cond);
-                            } else {
-                                blockstateError(block, " has differing amounts of variant lists matching condition %s. Expected: %d, Found: %d", cond, vanillaVariants.size(), generatedVariants.size());
-                            }
-                            return;
-                        }
-
-                        if (!vanillaVariants.containsAll(generatedVariants) || !generatedVariants.containsAll(vanillaVariants)) {
-                            List<String> extra = new ArrayList<>(generatedVariants);
-                            extra.removeAll(vanillaVariants);
-                            List<String> missing = new ArrayList<>(vanillaVariants);
-                            missing.removeAll(generatedVariants);
-                            if (!extra.isEmpty()) {
-                                blockstateError(block, " has extra variants for condition %s: %s", cond, extra);
-                            }
-                            if (!missing.isEmpty()) {
-                                blockstateError(block, " has missing variants for condition %s: %s", cond, missing);
-                            }
-                        }
-                    });
-        }
-
-        // Eliminate some formatting differences that are not meaningful
-        private String toEquivalentString(JsonElement element) {
-            return Objects.toString(element)
-                    .replaceAll("\"(true|false)\"", "$1") // Unwrap booleans in strings
-                    .replaceAll("\"(-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)\"", "$1"); // Unwrap numbers in strings, regex from https://stackoverflow.com/questions/13340717/json-numbers-regular-expression
-        }
-
-        private void correctVariant(JsonObject variant) {
-            variant.addProperty("model", toVanillaModel(variant.get("model").getAsString()));
-        }
-
-        private boolean compareArrays(Block block, String key, String name, JsonElement generated, JsonElement vanilla) {
-            if (!vanilla.isJsonArray()) {
-                blockstateError(block, "incorrectly has an array of %s for %s", name, key);
-                return false;
-            }
-            JsonArray generatedArray = generated.getAsJsonArray();
-            JsonArray vanillaArray = vanilla.getAsJsonArray();
-            if (generatedArray.size() != vanillaArray.size()) {
-                blockstateError(block, "has incorrect number of %s for %s. Expecting: %s, Found: %s", name, key, vanillaArray.size(), generatedArray.size());
-                return false;
-            }
-            return true;
-        }
-
-        private void blockstateError(Block block, String fmt, Object... args) {
-            errors.add("Generated blockstate for block " + block + " " + String.format(Locale.ENGLISH, fmt, args));
-        }
-
-        @Override
-        public String getName() {
-            return "Forge Test Blockstates";
-        }
-    }
-
-    private static class Advancements implements AdvancementProvider.AdvancementGenerator {
-        @Override
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
+        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             var obtainDirt = Advancement.Builder.advancement()
                     .display(Items.DIRT,
                             Component.translatable(Items.DIRT.getDescriptionId()),
@@ -975,7 +535,7 @@ public class DataGeneratorTest {
                             true,
                             false)
                     .addCriterion("has_dirt", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIRT))
-                    .save(saver, ResourceLocation.fromNamespaceAndPath(MODID, "obtain_dirt"), existingFileHelper);
+                    .save(saver, ResourceLocation.fromNamespaceAndPath(MODID, "obtain_dirt"));
 
             Advancement.Builder.advancement()
                     .parent(obtainDirt)
@@ -988,7 +548,7 @@ public class DataGeneratorTest {
                             true,
                             false)
                     .addCriterion("obtained_diamond_block", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND_BLOCK))
-                    .save(saver, ResourceLocation.withDefaultNamespace("obtain_diamond_block"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("obtain_diamond_block"));
 
             Advancement.Builder.advancement()
                     .display(Blocks.GRASS_BLOCK,
@@ -1000,7 +560,7 @@ public class DataGeneratorTest {
                             false,
                             false)
                     .addCriterion("crafting_table", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.CRAFTING_TABLE))
-                    .save(saver, ResourceLocation.withDefaultNamespace("story/root"), existingFileHelper);
+                    .save(saver, ResourceLocation.withDefaultNamespace("story/root"));
 
             // This should cause an error because of the parent not existing
 /*            Advancement.Builder.advancement().display(Blocks.COBBLESTONE,
@@ -1024,14 +584,18 @@ public class DataGeneratorTest {
                     false,
                     false)
                     .addCriterion("get_cobbleStone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.COBBLESTONE))
-                    .parent(ResourceLocation.fromNamespaceAndPath("neoforge", "dummy_parent"))
-                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"), existingFileHelper);
+                    .parent(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "dummy_parent"))
+                    .save(saver, ResourceLocation.withDefaultNamespace("good_parent"));
         }
     }
 
     private static class ParticleDescriptions extends ParticleDescriptionProvider {
-        public ParticleDescriptions(PackOutput output, ExistingFileHelper fileHelper) {
-            super(output, fileHelper);
+        private final ResourceManager resourceManager;
+
+        public ParticleDescriptions(PackOutput output, ResourceManager resourceManager) {
+            super(output);
+
+            this.resourceManager = resourceManager;
         }
 
         @Override
@@ -1070,7 +634,7 @@ public class DataGeneratorTest {
         private void validateResults() {
             var errors = Stream.of(ParticleTypes.DRIPPING_LAVA, ParticleTypes.CLOUD, ParticleTypes.FISHING, ParticleTypes.ENCHANT)
                     .map(BuiltInRegistries.PARTICLE_TYPE::getKey).map(particle -> {
-                        try (var resource = this.fileHelper.getResource(particle, PackType.CLIENT_RESOURCES, ".json", "particles").openAsReader()) {
+                        try (var resource = this.resourceManager.openAsReader(particle.withPath(path -> "particles/" + path + ".json"))) {
                             var existingTextures = GSON.fromJson(resource, JsonObject.class).get("textures").getAsJsonArray();
                             var generatedTextures = this.descriptions.get(particle);
 
@@ -1098,70 +662,5 @@ public class DataGeneratorTest {
                 throw new AssertionError(String.format("Validation errors found in %s; see above for details", errors.stream().reduce("", (str, rl) -> str + ", " + rl, (str1, str2) -> str1 + ", " + str2)));
             }
         }
-    }
-
-    private static <T extends ModelBuilder<T>> List<String> testModelResults(Map<ResourceLocation, T> models, ExistingFileHelper existingFileHelper, Set<ResourceLocation> toIgnore) {
-        List<String> ret = new ArrayList<>();
-        models.forEach((loc, model) -> {
-            if (toIgnore.contains(loc)) return;
-            JsonObject generated = model.toJson();
-            if (generated.has("parent")) {
-                generated.addProperty("parent", toVanillaModel(generated.get("parent").getAsString()));
-            }
-            try {
-                Resource vanillaResource = existingFileHelper.getResource(ResourceLocation.parse(loc.getPath()), PackType.CLIENT_RESOURCES, ".json", "models");
-                JsonObject existing = GSON.fromJson(vanillaResource.openAsReader(), JsonObject.class);
-
-                JsonElement generatedDisplay = generated.remove("display");
-                JsonElement vanillaDisplay = existing.remove("display");
-                if (generatedDisplay == null && vanillaDisplay != null) {
-                    ret.add("Model " + loc + " is missing transforms");
-                    return;
-                } else if (generatedDisplay != null && vanillaDisplay == null) {
-                    ret.add("Model " + loc + " has transforms when vanilla equivalent does not");
-                    return;
-                } else if (generatedDisplay != null) { // Both must be non-null
-                    ItemTransforms generatedTransforms = GSON.fromJson(generatedDisplay, ItemTransforms.class);
-                    ItemTransforms vanillaTransforms = GSON.fromJson(vanillaDisplay, ItemTransforms.class);
-                    for (ItemDisplayContext type : ItemDisplayContext.values()) {
-                        if (!generatedTransforms.getTransform(type).equals(vanillaTransforms.getTransform(type))) {
-                            ret.add("Model " + loc + " has transforms that differ from vanilla equivalent for perspective " + type.name());
-                            return;
-                        }
-                    }
-                }
-
-                JsonElement generatedTextures = generated.remove("textures");
-                JsonElement vanillaTextures = existing.remove("textures");
-                if (generatedTextures == null && vanillaTextures != null) {
-                    ret.add("Model " + loc + " is missing textures");
-                } else if (generatedTextures != null && vanillaTextures == null) {
-                    ret.add("Model " + loc + " has textures when vanilla equivalent does not");
-                } else if (generatedTextures != null) { // Both must be non-null
-                    for (Map.Entry<String, JsonElement> e : generatedTextures.getAsJsonObject().entrySet()) {
-                        String vanillaTexture = vanillaTextures.getAsJsonObject().get(e.getKey()).getAsString();
-                        if (!e.getValue().getAsString().equals(vanillaTexture)) {
-                            ret.add("Texture for variable '" + e.getKey() + "' for model " + loc + " does not match vanilla equivalent");
-                        }
-                    }
-                    if (generatedTextures.getAsJsonObject().size() != vanillaTextures.getAsJsonObject().size()) {
-                        ret.add("Model " + loc + " is missing textures from vanilla equivalent");
-                    }
-                }
-
-                if (!existing.equals(generated)) {
-                    ret.add("Model " + loc + " does not match vanilla equivalent");
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return ret;
-    }
-
-    private static String toVanillaModel(String model) {
-        // We generate our own model jsons to test model building, but otherwise our blockstates should be identical
-        // So remove modid to match
-        return model.replaceAll("^\\w+:", "minecraft:");
     }
 }

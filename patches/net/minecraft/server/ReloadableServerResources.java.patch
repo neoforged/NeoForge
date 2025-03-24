@@ -36,22 +36,28 @@
      public static CompletableFuture<ReloadableServerResources> loadResources(
          ResourceManager p_248588_,
          LayeredRegistryAccess<RegistryLayer> p_335667_,
-@@ -83,10 +_,24 @@
+@@ -83,10 +_,30 @@
                      ReloadableServerResources reloadableserverresources = new ReloadableServerResources(
                          p_359514_.layers(), p_359514_.lookupWithUpdatedTags(), p_250212_, p_249301_, p_363739_, p_251126_
                      );
-+                    List<PreparableReloadListener> listeners = new java.util.ArrayList<>(reloadableserverresources.listeners());
-+                    listeners.addAll(net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_359514_.layers().compositeAccess()));
-+                    listeners.forEach(rl -> {
-+                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) srl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
-+                    });
++
++                    // Neo: Fire the AddServerReloadListenersEvent and use the resulting listeners instead of the vanilla listener list.
++                    List<PreparableReloadListener> listeners = net.neoforged.neoforge.event.EventHooks.onResourceReload(reloadableserverresources, p_359514_.layers().compositeAccess());
++
++                    // Neo: Inject the ConditionContext and RegistryLookup to any resource listener that requests it.
++                    for (PreparableReloadListener rl : listeners) {
++                        if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener carl) {
++                            carl.injectContext(reloadableserverresources.context, reloadableserverresources.registryLookup);
++                        }
++                    }
++
                      return SimpleReloadInstance.create(
 -                            p_248588_, reloadableserverresources.listeners(), p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
 +                            p_248588_, listeners, p_249136_, p_249601_, DATA_RELOAD_INITIAL_TASK, LOGGER.isDebugEnabled()
                          )
                          .done()
 +                        .thenRun(() -> {
-+                            // Clear context after reload completes
++                            // Neo: Clear context after reload completes
 +                            reloadableserverresources.context.clear();
 +                            listeners.forEach(rl -> {
 +                                if (rl instanceof net.neoforged.neoforge.resource.ContextAwareReloadListener srl) {

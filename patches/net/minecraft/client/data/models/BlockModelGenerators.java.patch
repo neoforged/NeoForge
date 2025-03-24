@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/data/models/BlockModelGenerators.java
++++ b/net/minecraft/client/data/models/BlockModelGenerators.java
+@@ -5819,4 +_,16 @@
+             return this;
+         }
+     }
++
++    /**
++     * Neo: create a {@link BlockModelGenerators.BlockFamilyProvider} which re-uses the existing model of the given full
++     * block instead of creating a model and blockstate file for it. Intended for use cases where the full block is
++     * separately generated or otherwise exists such as when a dummy {@link BlockFamily} is used to create additional
++     * variants for existing vanilla block families
++     */
++    public BlockModelGenerators.BlockFamilyProvider familyWithExistingFullBlock(Block fullBlock) {
++        var provider = new BlockModelGenerators.BlockFamilyProvider(TextureMapping.cube(fullBlock));
++        provider.fullBlock = ModelLocationUtils.getModelLocation(fullBlock);
++        return provider;
++    }
+ }

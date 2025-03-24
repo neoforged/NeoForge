@@ -8,61 +8,70 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.Nullable;
 
-public class ObjModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
-    public static <T extends ModelBuilder<T>> ObjModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new ObjModelBuilder<>(parent, existingFileHelper);
-    }
-
+public class ObjModelBuilder extends CustomLoaderBuilder {
+    @Nullable
     private ResourceLocation modelLocation;
+    @Nullable
     private Boolean automaticCulling;
+    @Nullable
     private Boolean shadeQuads;
+    @Nullable
     private Boolean flipV;
+    @Nullable
     private Boolean emissiveAmbient;
+    @Nullable
     private ResourceLocation mtlOverride;
 
-    protected ObjModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "obj"), parent, existingFileHelper, false);
+    public ObjModelBuilder() {
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "obj"), false);
     }
 
-    public ObjModelBuilder<T> modelLocation(ResourceLocation modelLocation) {
+    public ObjModelBuilder modelLocation(ResourceLocation modelLocation) {
         Preconditions.checkNotNull(modelLocation, "modelLocation must not be null");
-        Preconditions.checkArgument(existingFileHelper.exists(modelLocation, PackType.CLIENT_RESOURCES),
-                "OBJ Model %s does not exist in any known resource pack", modelLocation);
         this.modelLocation = modelLocation;
         return this;
     }
 
-    public ObjModelBuilder<T> automaticCulling(boolean automaticCulling) {
+    public ObjModelBuilder automaticCulling(boolean automaticCulling) {
         this.automaticCulling = automaticCulling;
         return this;
     }
 
-    public ObjModelBuilder<T> shadeQuads(boolean shadeQuads) {
+    public ObjModelBuilder shadeQuads(boolean shadeQuads) {
         this.shadeQuads = shadeQuads;
         return this;
     }
 
-    public ObjModelBuilder<T> flipV(boolean flipV) {
+    public ObjModelBuilder flipV(boolean flipV) {
         this.flipV = flipV;
         return this;
     }
 
-    public ObjModelBuilder<T> emissiveAmbient(boolean ambientEmissive) {
+    public ObjModelBuilder emissiveAmbient(boolean ambientEmissive) {
         this.emissiveAmbient = ambientEmissive;
         return this;
     }
 
-    public ObjModelBuilder<T> overrideMaterialLibrary(ResourceLocation mtlOverride) {
+    public ObjModelBuilder overrideMaterialLibrary(ResourceLocation mtlOverride) {
         Preconditions.checkNotNull(mtlOverride, "mtlOverride must not be null");
-        Preconditions.checkArgument(existingFileHelper.exists(mtlOverride, PackType.CLIENT_RESOURCES),
-                "OBJ Model %s does not exist in any known resource pack", mtlOverride);
         this.mtlOverride = mtlOverride;
         return this;
+    }
+
+    @Override
+    protected CustomLoaderBuilder copyInternal() {
+        ObjModelBuilder builder = new ObjModelBuilder();
+        builder.modelLocation = this.modelLocation;
+        builder.automaticCulling = this.automaticCulling;
+        builder.shadeQuads = this.shadeQuads;
+        builder.flipV = this.flipV;
+        builder.emissiveAmbient = this.emissiveAmbient;
+        builder.mtlOverride = this.mtlOverride;
+        return builder;
     }
 
     @Override

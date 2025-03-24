@@ -1,11 +1,29 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
-@@ -214,6 +_,8 @@
+@@ -194,7 +_,8 @@
+         ServerLevel p_335887_, BlockPos p_307620_, CrafterBlockEntity p_307387_, ItemStack p_307296_, BlockState p_307501_, RecipeHolder<?> p_335494_
+     ) {
+         Direction direction = p_307501_.getValue(ORIENTATION).front();
+-        Container container = HopperBlockEntity.getContainerAt(p_335887_, p_307620_.relative(direction));
++        var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_335887_, p_307620_.relative(direction), direction.getOpposite());
++        Container container = containerOrHandler.container();
+         ItemStack itemstack = p_307296_.copy();
+         if (container != null && (container instanceof CrafterBlockEntity || p_307296_.getCount() > container.getMaxStackSize(p_307296_))) {
+             while (!itemstack.isEmpty()) {
+@@ -206,10 +_,14 @@
+ 
+                 itemstack.shrink(1);
+             }
+-        } else if (container != null) {
++        } else if (!containerOrHandler.isEmpty()) {
+             while (!itemstack.isEmpty()) {
+                 int i = itemstack.getCount();
+-                itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
++                if (container != null) {
++                    itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
++                } else {
++                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack, false);
++                }
+                 if (i == itemstack.getCount()) {
                      break;
                  }
-             }
-+        } else {
-+            itemstack = net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertCrafterOutput(p_335887_, p_307620_, p_307387_, itemstack);
-         }
- 
-         if (!itemstack.isEmpty()) {

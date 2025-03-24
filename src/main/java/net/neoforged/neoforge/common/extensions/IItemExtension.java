@@ -461,7 +461,7 @@ public interface IItemExtension {
      * @return True to play the item change animation
      */
     default boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
+        return oldStack != newStack;
     }
 
     /**

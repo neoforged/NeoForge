@@ -76,3 +76,24 @@
                  if (p_109372_.isUsingItem() && p_109372_.getUseItemRemainingTicks() > 0 && p_109372_.getUsedItemHand() == p_109375_) {
                      switch (p_109377_.getUseAnimation()) {
                          case NONE:
+@@ -595,9 +_,18 @@
+             this.mainHandHeight = Mth.clamp(this.mainHandHeight - 0.4F, 0.0F, 1.0F);
+             this.offHandHeight = Mth.clamp(this.offHandHeight - 0.4F, 0.0F, 1.0F);
+         } else {
++            // Neo: allow suppressing re-equip animation when only the stack's data changes
++            boolean swapAnimMain = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.mainHandItem, itemstack, localplayer.getInventory().selected);
++            boolean swapAnimOff = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.offHandItem, itemstack1, -1);
++
++            if (!swapAnimMain && this.mainHandItem != itemstack)
++                this.mainHandItem = itemstack;
++            if (!swapAnimOff && this.offHandItem != itemstack1)
++                this.offHandItem = itemstack1;
++
+             float f = localplayer.getAttackStrengthScale(1.0F);
+-            float f1 = this.mainHandItem != itemstack ? 0.0F : f * f * f;
+-            float f2 = this.offHandItem != itemstack1 ? 0.0F : 1.0F;
++            float f1 = swapAnimMain ? 0.0F : f * f * f;
++            float f2 = swapAnimOff ? 0.0F : 1.0F;
+             this.mainHandHeight = this.mainHandHeight + Mth.clamp(f1 - this.mainHandHeight, -0.4F, 0.4F);
+             this.offHandHeight = this.offHandHeight + Mth.clamp(f2 - this.offHandHeight, -0.4F, 0.4F);
+         }

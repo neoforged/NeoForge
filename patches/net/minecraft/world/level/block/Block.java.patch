@@ -1,11 +1,6 @@
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
-@@ -60,11 +_,11 @@
- import net.minecraft.world.phys.shapes.VoxelShape;
- import org.slf4j.Logger;
- 
--public class Block extends BlockBehaviour implements ItemLike {
-+public class Block extends BlockBehaviour implements ItemLike, net.neoforged.neoforge.common.extensions.IBlockExtension {
+@@ -64,7 +_,7 @@
      public static final MapCodec<Block> CODEC = simpleCodec(Block::new);
      private static final Logger LOGGER = LogUtils.getLogger();
      private final Holder.Reference<Block> builtInRegistryHolder = BuiltInRegistries.BLOCK.createIntrusiveHolder(this);

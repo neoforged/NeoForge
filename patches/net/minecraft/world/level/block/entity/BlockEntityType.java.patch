@@ -1,35 +1,63 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -230,6 +_,7 @@
+@@ -230,8 +_,11 @@
      public static final BlockEntityType<VaultBlockEntity> VAULT = register("vault", VaultBlockEntity::new, Blocks.VAULT);
      private static final Set<BlockEntityType<?>> OP_ONLY_CUSTOM_DATA = Set.of(COMMAND_BLOCK, LECTERN, SIGN, HANGING_SIGN, MOB_SPAWNER, TRIAL_SPAWNER);
      private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
 +    // Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
      private final Set<Block> validBlocks;
      private final Holder.Reference<BlockEntityType<?>> builtInRegistryHolder = BuiltInRegistries.BLOCK_ENTITY_TYPE.createIntrusiveHolder(this);
++    // Neo: Allow modded BE types to declare that they have NBT data only OPs can set
++    private final boolean onlyOpCanSetNbt;
  
-@@ -254,9 +_,24 @@
-         this.validBlocks = p_155260_;
+     @Nullable
+     public static ResourceLocation getKey(BlockEntityType<?> p_58955_) {
+@@ -250,8 +_,26 @@
      }
  
+     public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Set<Block> p_155260_) {
++        this(p_155259_, p_155260_, false);
++    }
++
++    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Set<Block> p_155260_, boolean onlyOpCanSetNbt) {
+         this.factory = p_155259_;
+         this.validBlocks = p_155260_;
++        this.onlyOpCanSetNbt = onlyOpCanSetNbt;
++    }
++
 +    // Neo: Additional constructor for convenience.
 +    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Block... p_155260_) {
-+        this(p_155259_, Set.of(p_155260_));
++        this(p_155259_, false, p_155260_);
++    }
++
++    // Neo: Additional constructor for convenience.
++    public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, boolean onlyOpCanSetNbt, Block... p_155260_) {
++        this(p_155259_, Set.of(p_155260_), onlyOpCanSetNbt);
 +        if (p_155260_.length == 0) {
 +            throw new IllegalArgumentException("Block entity type instantiated without valid blocks. If this is intentional, pass Set.of() instead of an empty varag.");
 +        }
-+    }
-+
+     }
+ 
      @Nullable
-     public T create(BlockPos p_155265_, BlockState p_155266_) {
+@@ -259,6 +_,13 @@
          return (T)this.factory.create(p_155265_, p_155266_);
-+    }
-+
+     }
+ 
 +    /**
 +     * Neo: Add getter for an immutable view of the set of valid blocks.
 +     */
 +    public Set<Block> getValidBlocks() {
 +        return java.util.Collections.unmodifiableSet(this.validBlocks);
++    }
++
+     public boolean isValid(BlockState p_155263_) {
+         return this.validBlocks.contains(p_155263_.getBlock());
+     }
+@@ -275,6 +_,7 @@
      }
  
-     public boolean isValid(BlockState p_155263_) {
+     public boolean onlyOpCanSetNbt() {
++        if (onlyOpCanSetNbt) return true;
+         return OP_ONLY_CUSTOM_DATA.contains(this);
+     }
+ 

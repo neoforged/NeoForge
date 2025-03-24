@@ -25,7 +25,6 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -69,19 +68,15 @@ import org.jetbrains.annotations.VisibleForTesting;
 public abstract class ParticleDescriptionProvider implements DataProvider {
     private final PackOutput.PathProvider particlesPath;
     @VisibleForTesting
-    protected final ExistingFileHelper fileHelper;
-    @VisibleForTesting
     protected final Map<ResourceLocation, List<String>> descriptions;
 
     /**
      * Creates an instance of the data provider.
      *
-     * @param output     the expected root directory the data generator outputs to
-     * @param fileHelper the helper used to validate a texture's existence
+     * @param output the expected root directory the data generator outputs to
      */
-    protected ParticleDescriptionProvider(PackOutput output, ExistingFileHelper fileHelper) {
+    protected ParticleDescriptionProvider(PackOutput output) {
         this.particlesPath = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "particles");
-        this.fileHelper = fileHelper;
         this.descriptions = new HashMap<>();
     }
 
@@ -200,8 +195,6 @@ public abstract class ParticleDescriptionProvider implements DataProvider {
         // Validate textures
         List<String> desc = new ArrayList<>();
         for (var texture : textures) {
-            Preconditions.checkArgument(this.fileHelper.exists(texture, PackType.CLIENT_RESOURCES, ".png", "textures/particle"),
-                    "Texture '%s' does not exist in any known resource pack", texture);
             desc.add(texture.toString());
         }
         Preconditions.checkArgument(desc.size() > 0, "The particle type '%s' must have one texture", particle);

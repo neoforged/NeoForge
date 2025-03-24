@@ -35,6 +35,7 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -79,6 +80,7 @@ import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinNeutralArmorEntityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.SnowBootsEntityPredicate;
+import net.neoforged.neoforge.common.advancements.critereon.TridentEntityPredicate;
 import net.neoforged.neoforge.common.conditions.AlwaysCondition;
 import net.neoforged.neoforge.common.conditions.AndCondition;
 import net.neoforged.neoforge.common.conditions.FeatureFlagsEnabledCondition;
@@ -369,6 +371,7 @@ public class NeoForgeMod {
     private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<SnowBootsEntityPredicate>> SNOW_BOOTS_PREDICATE = ENTITY_PREDICATE_CODECS.register("snow_boots", () -> SnowBootsEntityPredicate.CODEC);
+    public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<TridentEntityPredicate>> IS_TRIDENT_PREDICATE = ENTITY_PREDICATE_CODECS.register("is_trident", () -> TridentEntityPredicate.CODEC);
 
     private static final DeferredRegister<ItemSubPredicate.Type<?>> ITEM_SUB_PREDICATES = DeferredRegister.create(Registries.ITEM_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<ItemSubPredicate.Type<?>, ItemSubPredicate.Type<ItemAbilityPredicate>> ITEM_ABILITY_PREDICATE = ITEM_SUB_PREDICATES.register("item_ability", () -> ItemAbilityPredicate.TYPE);
@@ -449,6 +452,12 @@ public class NeoForgeMod {
         public void setItemMovement(ItemEntity entity) {
             Vec3 vec3 = entity.getDeltaMovement();
             entity.setDeltaMovement(vec3.x * (double) 0.95F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.95F);
+        }
+
+        @Override
+        public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
+            // Prevent water movement logic (which is denoted by returning false) being used for lava
+            return true;
         }
     });
 
@@ -535,6 +544,7 @@ public class NeoForgeMod {
         ITEM_SUB_PREDICATES.register(modEventBus);
         SLOT_DISPLAY_TYPES.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
+        FLUID_INGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);

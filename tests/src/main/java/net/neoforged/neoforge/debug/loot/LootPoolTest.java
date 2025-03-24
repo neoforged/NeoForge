@@ -92,7 +92,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 event.setCanceled(true);
             }
         });
@@ -131,7 +131,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.BLUE_CONCRETE);
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.setTable(new LootTable.Builder().withPool(pool).build());
@@ -172,7 +172,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.YELLOW_CONCRETE);
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.getTable().addPool(pool.build());

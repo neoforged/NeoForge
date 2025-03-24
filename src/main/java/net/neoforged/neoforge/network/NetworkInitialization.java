@@ -29,6 +29,7 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
+import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.ClientRegistryManager;
@@ -105,6 +106,10 @@ public class NetworkInitialization {
                 .playToClient(
                         ClientboundCustomSetTimePayload.TYPE,
                         ClientboundCustomSetTimePayload.STREAM_CODEC,
+                        ClientPayloadHandler::handle)
+                .playToClient(
+                        RecipeContentPayload.TYPE,
+                        RecipeContentPayload.STREAM_CODEC,
                         ClientPayloadHandler::handle);
     }
 }

@@ -8,38 +8,57 @@ package net.neoforged.neoforge.client.model.generators.loaders;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.template.CustomLoaderBuilder;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
-    public static <T extends ModelBuilder<T>> CompositeModelBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new CompositeModelBuilder<>(parent, existingFileHelper);
-    }
-
-    private final Map<String, ResourceLocation> childModels = new LinkedHashMap<>();
+public class CompositeModelBuilder extends CustomLoaderBuilder {
+    private final Map<String, Either<ResourceLocation, InlineChild>> childModels = new LinkedHashMap<>();
     private final List<String> itemRenderOrder = new ArrayList<>();
 
-    protected CompositeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ResourceLocation.fromNamespaceAndPath("neoforge", "composite"), parent, existingFileHelper, false);
+    public CompositeModelBuilder() {
+        super(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "composite"), false);
     }
 
-    public CompositeModelBuilder<T> child(String name, ModelFile model) {
+    /**
+     * Add a child model by reference. The child model will be loaded from a separate file at the given location
+     * 
+     * @param name  The part name of the child
+     * @param model The child model's path relative to the models folder
+     */
+    public CompositeModelBuilder child(String name, ResourceLocation model) {
         Preconditions.checkNotNull(name, "name must not be null");
         Preconditions.checkNotNull(model, "model must not be null");
-        childModels.put(name, model.getLocation());
+        childModels.put(name, Either.left(model));
         itemRenderOrder.add(name);
         return this;
     }
 
-    public CompositeModelBuilder<T> itemRenderOrder(String... names) {
+    /**
+     * Add an inline child model. The child model will be loaded from a nested object in the same JSON file
+     *
+     * @param name     The part name of the child
+     * @param template The {@link ModelTemplate} to create the child model from
+     * @param textures The {@link TextureMapping} this child model uses
+     */
+    public CompositeModelBuilder inlineChild(String name, ModelTemplate template, TextureMapping textures) {
+        Preconditions.checkNotNull(name, "name must not be null");
+        Preconditions.checkNotNull(template, "model template must not be null");
+        Preconditions.checkNotNull(textures, "textures must not be null");
+        childModels.put(name, Either.right(new InlineChild(template, textures)));
+        itemRenderOrder.add(name);
+        return this;
+    }
+
+    public CompositeModelBuilder itemRenderOrder(String... names) {
         Preconditions.checkNotNull(names, "names must not be null");
         Preconditions.checkArgument(names.length > 0, "names must contain at least one element");
         for (String name : names)
@@ -51,12 +70,22 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
     }
 
     @Override
+    protected CustomLoaderBuilder copyInternal() {
+        CompositeModelBuilder builder = new CompositeModelBuilder();
+        builder.childModels.putAll(this.childModels);
+        builder.itemRenderOrder.addAll(this.itemRenderOrder);
+        return builder;
+    }
+
+    @Override
     public JsonObject toJson(JsonObject json) {
         json = super.toJson(json);
 
         JsonObject children = new JsonObject();
-        for (Map.Entry<String, ResourceLocation> entry : childModels.entrySet()) {
-            children.addProperty(entry.getKey(), entry.getValue().toString());
+        for (Map.Entry<String, Either<ResourceLocation, InlineChild>> entry : childModels.entrySet()) {
+            entry.getValue()
+                    .ifLeft(reference -> children.addProperty(entry.getKey(), reference.toString()))
+                    .ifRight(inline -> serializeNestedTemplate(inline.template, inline.textures, inlineJson -> children.add(entry.getKey(), inlineJson)));
         }
         json.add("children", children);
 
@@ -68,4 +97,6 @@ public class CompositeModelBuilder<T extends ModelBuilder<T>> extends CustomLoad
 
         return json;
     }
+
+    private record InlineChild(ModelTemplate template, TextureMapping textures) {}
 }

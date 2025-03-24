@@ -14,6 +14,13 @@ repositories {
             includeGroup "net.neoforged"
         }
     }
+    maven {
+        name = "MojangMeta"
+        url = "https://maven.neoforged.net/mojang-meta"
+        content {
+            includeModule("net.neoforged", "minecraft-dependencies")
+        }
+    }
 }
 
 dependencies {
@@ -21,7 +28,11 @@ dependencies {
     // ../settings.gradle sets these version properties accordingly
     implementation "net.neoforged:moddev-gradle:${gradle.parent.ext.moddevgradle_plugin_version}"
 
-    implementation "com.google.code.gson:gson:${gradle.parent.ext.gson_version}"
+    implementation(platform("net.neoforged:minecraft-dependencies:${gradle.parent.ext.minecraft_version}") {
+        exclude group: 'org.ow2.asm' // The platform requests a strictly lower version of ASM and we bump it
+    })
+
+    implementation "com.google.code.gson:gson"
     implementation "io.codechicken:DiffPatch:${gradle.parent.ext.diffpatch_version}"
 
     implementation "org.ow2.asm:asm:${gradle.parent.ext.asm_version}"

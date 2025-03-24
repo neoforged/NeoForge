@@ -11,6 +11,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Either;
 import com.mojang.math.Transformation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +30,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -47,10 +50,10 @@ import org.jetbrains.annotations.Nullable;
  * A model composed of several named children.
  */
 public class UnbakedCompositeModel extends AbstractUnbakedModel {
-    private final ImmutableMap<String, ResourceLocation> children;
+    private final ImmutableMap<String, Either<ResourceLocation, UnbakedModel>> children;
     private final ImmutableList<String> itemPasses;
 
-    public UnbakedCompositeModel(ImmutableMap<String, ResourceLocation> children, ImmutableList<String> itemPasses, StandardModelParameters parameters) {
+    public UnbakedCompositeModel(ImmutableMap<String, Either<ResourceLocation, UnbakedModel>> children, ImmutableList<String> itemPasses, StandardModelParameters parameters) {
         super(parameters);
         this.children = children;
         this.itemPasses = itemPasses;
@@ -72,12 +75,15 @@ public class UnbakedCompositeModel extends AbstractUnbakedModel {
 
         Map<String, Boolean> partVisibility = additionalProperties.getOrDefault(NeoForgeModelProperties.PART_VISIBILITY, Map.of());
         var bakedPartsBuilder = ImmutableMap.<String, BakedModel>builder();
+        ModelState fstate = state;
         for (var entry : children.entrySet()) {
             var name = entry.getKey();
             if (!partVisibility.getOrDefault(name, true))
                 continue;
-            var model = entry.getValue();
-            bakedPartsBuilder.put(name, baker.bake(model, state));
+            Either<ResourceLocation, UnbakedModel> model = entry.getValue();
+            bakedPartsBuilder.put(name, model.map(
+                    reference -> baker.bake(reference, fstate),
+                    inline -> UnbakedModel.bakeWithTopModelValues(inline, baker, fstate)));
         }
         var bakedParts = bakedPartsBuilder.build();
 
@@ -94,8 +100,9 @@ public class UnbakedCompositeModel extends AbstractUnbakedModel {
 
     @Override
     public void resolveDependencies(Resolver resolver) {
-        for (ResourceLocation path : children.values()) {
-            resolver.resolve(path);
+        super.resolveDependencies(resolver);
+        for (Either<ResourceLocation, UnbakedModel> child : children.values()) {
+            child.ifLeft(resolver::resolve).ifRight(model -> model.resolveDependencies(resolver));
         }
     }
 
@@ -312,8 +319,8 @@ public class UnbakedCompositeModel extends AbstractUnbakedModel {
         @Override
         public UnbakedCompositeModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             List<String> itemPasses = new ArrayList<>();
-            ImmutableMap.Builder<String, ResourceLocation> childrenBuilder = ImmutableMap.builder();
-            readChildren(jsonObject, "children", childrenBuilder, itemPasses);
+            ImmutableMap.Builder<String, Either<ResourceLocation, UnbakedModel>> childrenBuilder = ImmutableMap.builder();
+            readChildren(jsonObject, "children", childrenBuilder, itemPasses, jsonDeserializationContext);
 
             var children = childrenBuilder.build();
             if (children.isEmpty())
@@ -334,13 +341,22 @@ public class UnbakedCompositeModel extends AbstractUnbakedModel {
             return new UnbakedCompositeModel(children, ImmutableList.copyOf(itemPasses), parameters);
         }
 
-        private void readChildren(JsonObject jsonObject, String name, ImmutableMap.Builder<String, ResourceLocation> children, List<String> itemPasses) {
+        private static void readChildren(
+                JsonObject jsonObject,
+                String name,
+                ImmutableMap.Builder<String, Either<ResourceLocation, UnbakedModel>> children,
+                List<String> itemPasses,
+                JsonDeserializationContext context) {
             if (!jsonObject.has(name))
                 return;
             var childrenJsonObject = jsonObject.getAsJsonObject(name);
             for (Map.Entry<String, JsonElement> entry : childrenJsonObject.entrySet()) {
-                ResourceLocation location = ResourceLocation.parse(entry.getValue().getAsString());
-                children.put(entry.getKey(), location);
+                Either<ResourceLocation, UnbakedModel> child = switch (entry.getValue()) {
+                    case JsonPrimitive reference -> Either.left(ResourceLocation.parse(reference.getAsString()));
+                    case JsonObject inline -> Either.right(context.deserialize(inline, UnbakedModel.class));
+                    default -> throw new IllegalArgumentException("");
+                };
+                children.put(entry.getKey(), child);
                 itemPasses.add(entry.getKey()); // We can do this because GSON preserves ordering during deserialization
             }
         }

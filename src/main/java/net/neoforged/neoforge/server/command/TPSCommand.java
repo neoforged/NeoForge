@@ -72,21 +72,21 @@ class TPSCommand {
         MutableComponent component;
 
         if (dimension == null) {
-            component = Component.translatable("commands.neoforge.tps.overall", tpsComponent, tickTimeComponent);
+            component = CommandUtils.makeTranslatableWithFallback("commands.neoforge.tps.overall", tpsComponent, tickTimeComponent);
         } else {
             var dimensionType = dimension.dimensionTypeRegistration();
 
             var dimensionName = Component.empty().append(dimension.getDescription()).withStyle(style -> style
                     .withColor(ChatFormatting.GREEN)
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable(
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, CommandUtils.makeTranslatableWithFallback(
                             "commands.neoforge.tps.dimension.tooltip",
                             dimension.dimension().location().toString(),
                             dimensionType.getRegisteredName()))));
 
-            component = Component.translatable("commands.neoforge.tps.dimension", dimensionName, tpsComponent, tickTimeComponent);
+            component = CommandUtils.makeTranslatableWithFallback("commands.neoforge.tps.dimension", dimensionName, tpsComponent, tickTimeComponent);
         }
 
-        return component.withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("commands.neoforge.tps.tooltip", tickRateManager.tickrate()))));
+        return component.withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, CommandUtils.makeTranslatableWithFallback("commands.neoforge.tps.tooltip", tickRateManager.tickrate()))));
     }
 
     private static int calculateTPSColor(TickRateManager tickRateManager, double tps) {

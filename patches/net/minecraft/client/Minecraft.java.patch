@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
-@@ -250,7 +_,7 @@
- import org.slf4j.Logger;
- 
- @OnlyIn(Dist.CLIENT)
--public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler {
-+public class Minecraft extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler, net.neoforged.neoforge.client.extensions.IMinecraftExtension {
-     static Minecraft instance;
-     private static final Logger LOGGER = LogUtils.getLogger();
-     public static final boolean ON_OSX = Util.getPlatform() == Util.OS.OSX;
 @@ -432,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
@@ -17,7 +8,7 @@
          this.demo = p_91084_.game.demo;
          this.allowsMultiplayer = !p_91084_.game.disableMultiplayer;
          this.allowsChat = !p_91084_.game.disableChat;
-@@ -483,15 +_,17 @@
+@@ -483,15 +_,18 @@
              LOGGER.error("Couldn't set icon", (Throwable)ioexception);
          }
  
@@ -27,11 +18,13 @@
          this.keyboardHandler = new KeyboardHandler(this);
 -        this.keyboardHandler.setup(this.window.getWindow());
          RenderSystem.initRenderer(this.options.glDebugVerbosity, false);
-         this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
+-        this.mainRenderTarget = new MainTarget(this.window.getWidth(), this.window.getHeight());
++        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this);
++        this.mainRenderTarget = net.neoforged.neoforge.client.ClientHooks.instantiateMainTarget(this.window.getWidth(), this.window.getHeight());
          this.mainRenderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
          this.mainRenderTarget.clear();
          this.resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES);
-+        net.neoforged.neoforge.client.loading.ClientModLoader.begin(this, this.resourcePackRepository, this.resourceManager);
++        net.neoforged.neoforge.client.loading.ClientModLoader.finish(this.resourcePackRepository, this.resourceManager);
 +        //Move client bootstrap to after mod loading so that events can be fired for it.
 +        ClientBootstrap.bootstrap();
          this.resourcePackRepository.reload();
@@ -186,7 +179,7 @@
          this.deltaTracker.updatePauseState(this.pause);
          this.deltaTracker.updateFrozenState(!this.isLevelRunningNormally());
          long l = Util.getNanos();
-@@ -1351,10 +_,12 @@
+@@ -1351,10 +_,13 @@
          this.window.setGuiScale((double)i);
          if (this.screen != null) {
              this.screen.resize(this, this.window.getGuiScaledWidth(), this.window.getGuiScaledHeight());
@@ -194,6 +187,7 @@
          }
  
          RenderTarget rendertarget = this.getMainRenderTarget();
++        if (rendertarget != null)
          rendertarget.resize(this.window.getWidth(), this.window.getHeight());
 +        if (this.gameRenderer != null)
          this.gameRenderer.resize(this.window.getWidth(), this.window.getHeight());
@@ -331,7 +325,7 @@
          this.level = p_91157_;
          this.updateLevelInEngines(p_91157_);
          if (!this.isLocalServer) {
-@@ -2030,6 +_,7 @@
+@@ -2030,13 +_,16 @@
          IntegratedServer integratedserver = this.singleplayerServer;
          this.singleplayerServer = null;
          this.gameRenderer.resetData();
@@ -339,7 +333,8 @@
          this.gameMode = null;
          this.narrator.clear();
          this.clientLevelTeardownInProgress = true;
-@@ -2037,6 +_,7 @@
+ 
++        var shouldRevertRegistriesToFrozen = this.getConnection() != null && this.getConnection().getConnection() != null; // Neo: Track whether to revert registries after disconnect
          try {
              this.updateScreenAndTick(p_320248_);
              if (this.level != null) {
@@ -347,6 +342,14 @@
                  if (integratedserver != null) {
                      ProfilerFiller profilerfiller = Profiler.get();
                      profilerfiller.push("waitForServer");
+@@ -2060,6 +_,7 @@
+         }
+ 
+         SkullBlockEntity.clear();
++        if(shouldRevertRegistriesToFrozen) net.neoforged.neoforge.registries.RegistryManager.revertToFrozen(); // Neo: Revert registries to frozen on disconnect
+     }
+ 
+     public void clearDownloadedResourcePacks() {
 @@ -2197,6 +_,7 @@
  
      private void pickBlock() {

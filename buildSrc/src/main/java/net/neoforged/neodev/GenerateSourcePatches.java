@@ -9,6 +9,8 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
@@ -25,8 +27,13 @@ abstract class GenerateSourcePatches extends DefaultTask {
     @PathSensitive(PathSensitivity.RELATIVE)
     public abstract DirectoryProperty getModifiedSources();
 
+    @Optional
     @OutputFile
     public abstract RegularFileProperty getPatchesJar();
+
+    @Optional
+    @OutputDirectory
+    public abstract DirectoryProperty getPatchesFolder();
 
     @Inject
     public GenerateSourcePatches() {}
@@ -37,7 +44,7 @@ abstract class GenerateSourcePatches extends DefaultTask {
                 .logTo(getLogger()::lifecycle)
                 .baseInput(MultiInput.detectedArchive(getOriginalJar().get().getAsFile().toPath()))
                 .changedInput(MultiInput.folder(getModifiedSources().get().getAsFile().toPath()))
-                .patchesOutput(MultiOutput.detectedArchive(getPatchesJar().get().getAsFile().toPath()))
+                .patchesOutput(getPatchesJar().isPresent() ? MultiOutput.detectedArchive(getPatchesJar().get().getAsFile().toPath()) : MultiOutput.folder(getPatchesFolder().getAsFile().get().toPath()))
                 .autoHeader(true)
                 .level(io.codechicken.diffpatch.util.LogLevel.WARN)
                 .summary(false)

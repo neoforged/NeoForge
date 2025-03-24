@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -136,7 +_,7 @@
- import net.minecraft.world.scores.Scoreboard;
- import org.slf4j.Logger;
- 
--public abstract class LivingEntity extends Entity implements Attackable {
-+public abstract class LivingEntity extends Entity implements Attackable, net.neoforged.neoforge.common.extensions.ILivingEntityExtension {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final String TAG_ACTIVE_EFFECTS = "active_effects";
-     private static final ResourceLocation SPEED_MODIFIER_POWDER_SNOW_ID = ResourceLocation.withDefaultNamespace("powder_snow");
 @@ -178,13 +_,18 @@
      public static final float EXTRA_RENDER_CULLING_SIZE_WITH_BIG_HAT = 0.5F;
      public static final float DEFAULT_BABY_SCALE = 0.5F;
@@ -61,8 +52,8 @@
                  double d4 = Math.min((double)(0.2F + f / 15.0F), 2.5);
                  int i = (int)(150.0 * d4);
 -                serverlevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, p_20992_), d0, d1, d2, i, 0.0, 0.0, 0.0, 0.15F);
-+                if (!p_20992_.addLandingEffects((ServerLevel) this.level(), p_20993_, p_20992_, this, i))
-+                ((ServerLevel)this.level()).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, p_20992_).setPos(p_20993_), d0, d1, d2, i, 0.0, 0.0, 0.0, 0.15F);
++                if (!p_20992_.addLandingEffects(serverlevel, p_20993_, p_20992_, this, i))
++                serverlevel.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, p_20992_, p_20993_), d0, d1, d2, i, 0.0, 0.0, 0.0, 0.15F);
              }
          }
  
@@ -233,7 +224,7 @@
              }
  
              if (p_376460_.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-@@ -1135,10 +_,12 @@
+@@ -1135,24 +_,28 @@
              if (Float.isNaN(p_376610_) || Float.isInfinite(p_376610_)) {
                  p_376610_ = Float.MAX_VALUE;
              }
@@ -246,7 +237,9 @@
                      return false;
                  }
  
-@@ -1147,12 +_,13 @@
++                this.damageContainers.peek().setReduction(net.neoforged.neoforge.common.damagesource.DamageContainer.Reduction.INVULNERABILITY, this.lastHurt);
+                 this.actuallyHurt(p_376221_, p_376460_, p_376610_ - this.lastHurt);
+                 this.lastHurt = p_376610_;
                  flag1 = false;
              } else {
                  this.lastHurt = p_376610_;
@@ -501,6 +494,18 @@
      }
  
      protected float getWaterSlowDown() {
+@@ -2193,8 +_,9 @@
+     public void travel(Vec3 p_21280_) {
+         if (this.isControlledByLocalInstance()) {
+             FluidState fluidstate = this.level().getFluidState(this.blockPosition());
+-            if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+-                this.travelInFluid(p_21280_);
++            // Neo: Call (patched-in overload of) #travelInFluid for custom fluid types
++            if ((this.isInWater() || this.isInLava() || this.isInFluidType(fluidstate)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
++                this.travelInFluid(p_21280_, fluidstate);
+             } else if (this.isFallFlying()) {
+                 this.travelFallFlying();
+             } else {
 @@ -2205,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {

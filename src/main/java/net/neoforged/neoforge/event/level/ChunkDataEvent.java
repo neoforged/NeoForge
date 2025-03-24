@@ -17,7 +17,7 @@ import net.neoforged.neoforge.common.NeoForge;
 /**
  * ChunkDataEvent is fired when a chunk is about to be loaded from disk or saved to disk.
  */
-public abstract class ChunkDataEvent extends ChunkEvent {
+public abstract class ChunkDataEvent extends ChunkEvent<ChunkAccess> {
     private final SerializableChunkData data;
 
     public ChunkDataEvent(ChunkAccess chunk, SerializableChunkData data) {

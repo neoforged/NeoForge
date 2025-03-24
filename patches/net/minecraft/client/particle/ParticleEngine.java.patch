@@ -53,7 +53,7 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -426,28 +_,48 @@
+@@ -426,28 +_,45 @@
          }
      }
  
@@ -64,9 +64,6 @@
 +    }
 +
 +    public void render(Camera p_107340_, float p_107341_, MultiBufferSource.BufferSource p_383193_, @Nullable net.minecraft.client.renderer.culling.Frustum frustum, java.util.function.Predicate<ParticleRenderType> renderTypePredicate) {
-+        //TODO porting: is this even needed with the particle render order fix???
-+        com.mojang.blaze3d.systems.RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE2);
-+        com.mojang.blaze3d.systems.RenderSystem.activeTexture(org.lwjgl.opengl.GL13.GL_TEXTURE0);
 +        for (ParticleRenderType particlerendertype : this.particles.keySet()) { // Neo: allow custom IParticleRenderType's
 +            if (particlerendertype == ParticleRenderType.NO_RENDER || particlerendertype == ParticleRenderType.CUSTOM || !renderTypePredicate.test(particlerendertype)) continue;
              Queue<Particle> queue = this.particles.get(particlerendertype);
