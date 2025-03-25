@@ -78,26 +78,18 @@
          this.window.updateVsync(this.options.enableVsync().get());
          this.window.updateRawMouseInput(this.options.rawMouseInput().get());
          this.window.setDefaultErrorCallback();
-@@ -646,8 +_,8 @@
+@@ -646,9 +_,9 @@
          GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
          Minecraft.GameLoadCookie minecraft$gameloadcookie = new Minecraft.GameLoadCookie(realmsclient, p_91084_.quickPlay);
          this.setOverlay(
 -            new LoadingOverlay(
--                this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
-+                net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(
-+                        this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
-                     if (SharedConstants.IS_RUNNING_IN_IDE) {
++            net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(
+                 this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
+-                    if (SharedConstants.IS_RUNNING_IN_IDE) {
++                    if (SharedConstants.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
                          this.selfTest();
                      }
-@@ -655,7 +_,7 @@
-                     this.reloadStateTracker.finishReload();
-                     this.onResourceLoadFinished(minecraft$gameloadcookie);
-                 }), false
--            )
-+                )
-         );
-         this.quickPlayLog = QuickPlayLog.of(p_91084_.quickPlay.path());
-         this.framerateLimitTracker = new FramerateLimitTracker(this.options, this);
+ 
 @@ -704,6 +_,8 @@
              runnable = () -> this.setScreen(screen);
          }

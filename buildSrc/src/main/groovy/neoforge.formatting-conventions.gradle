@@ -16,12 +16,6 @@ abstract class GeneratePackageInfos extends DefaultTask {
                 pkgName = pkgName.substring(pkgName.indexOf('net/neoforged/'), pkgName.lastIndexOf('/'))
                 pkgName = pkgName.replaceAll('/', '.')
 
-                if (pkgName == "net.neoforged.neoforge.client.loading") {
-                    // Package is split across main and client source sets for now.
-                    // Make sure we don't generate the package-info twice.
-                    return;
-                }
-
                 def pkgInfoText = """
                     |@FieldsAreNonnullByDefault
                     |@MethodsReturnNonnullByDefault

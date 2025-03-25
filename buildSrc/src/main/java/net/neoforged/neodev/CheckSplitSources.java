@@ -36,7 +36,6 @@ public abstract class CheckSplitSources extends DefaultTask {
             var filesInServer = getServerClientFolder()
                     .getAsFileTree()
                     .filter(File::isFile)
-                    .filter(f -> !f.getName().endsWith("NoVizFallback.java"))
                     .getFiles()
                     .stream()
                     .map(File::toString)
