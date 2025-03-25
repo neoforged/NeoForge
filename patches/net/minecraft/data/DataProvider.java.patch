@@ -12,8 +12,8 @@
      ToIntFunction<String> FIXED_ORDER_FIELDS = Util.make(new Object2IntOpenHashMap<>(), p_236070_ -> {
 +        // Neo: conditions go first
 +        p_236070_.put("neoforge:conditions", -1);
-+        p_236070_.put("neoforge:ingredient_type", 0);
 +        p_236070_.put("neoforge:definition_type", 0);
++        p_236070_.put("neoforge:ingredient_type", 0);
          p_236070_.put("type", 0);
          p_236070_.put("parent", 1);
          p_236070_.defaultReturnValue(2);

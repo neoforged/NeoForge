@@ -12,7 +12,7 @@
              p_409074_ -> p_409074_.group(
                      BlockModelDefinition.SimpleModelSelectors.CODEC.optionalFieldOf("variants").forGetter(BlockModelDefinition::simpleModels),
                      BlockModelDefinition.MultiPartDefinition.CODEC.optionalFieldOf("multipart").forGetter(BlockModelDefinition::multiPart)
-@@ -42,8 +_,21 @@
+@@ -42,8 +_,26 @@
                  ? DataResult.error(() -> "Neither 'variants' nor 'multipart' found")
                  : DataResult.success(p_409078_)
          );
@@ -20,6 +20,11 @@
 +
 +    public BlockModelDefinition(Optional<BlockModelDefinition.SimpleModelSelectors> simpleModels, Optional<BlockModelDefinition.MultiPartDefinition> multiPart) {
 +        this(simpleModels, multiPart, Optional.empty());
++    }
++
++    // Neo: convenience constructor for datagen of custom definitions
++    public BlockModelDefinition(net.neoforged.neoforge.client.model.block.CustomBlockModelDefinition customDefinition) {
++        this(Optional.empty(), Optional.empty(), Optional.of(customDefinition));
 +    }
  
      public Map<BlockState, BlockStateModel.UnbakedRoot> instantiate(StateDefinition<Block, BlockState> p_360641_, Supplier<String> p_405739_) {
