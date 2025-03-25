@@ -1,12 +1,12 @@
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import net.neoforged.neodev.CheckSplitSources
 
 plugins {
     id 'net.neoforged.gradleutils' version '4.0.1'
     id 'dev.lukebemish.immaculate' version '0.1.6' apply false
     id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
-    id 'neoforge.split-sources-checks'
     id 'neoforge.versioning'
 }
 
@@ -160,4 +160,14 @@ immaculate {
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
     }
+}
+
+final task = tasks.register('checkSourcesAreSplit', CheckSplitSources) {
+    serverClientFolder = project.provider { project.layout.projectDirectory.dir('src/main/java/net/neoforged/neoforge/client') }
+            .map { it.asFile.exists() ? it : null }
+    clientClientFolder = project.layout.projectDirectory.dir('src/client/java/net/neoforged/neoforge/client')
+}
+
+tasks.named('checkFormatting') {
+    dependsOn(task)
 }

@@ -157,12 +157,15 @@ dependencies {
         capabilities {
             requireCapability 'net.neoforged:neoforge'
         }
-        // Select runtimeElements rather than universalJar
-        // If you don't believe it... try to remove this block, and run the following command:
-        // gradlew :neoforge:dependencyInsight --configuration clientRuntimeClasspath --dependency net.neoforged:neoforge --scan
-        attributes {
-            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
-        }
+    }
+}
+
+// Select runtimeElements rather than universalJar from the main source set
+// If you don't believe it... try to remove this block, and run the following command:
+// gradlew :neoforge:dependencyInsight --configuration clientRuntimeClasspath --dependency net.neoforged:neoforge --scan
+configurations.clientRuntimeClasspath {
+    attributes {
+        attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
     }
 }
 
