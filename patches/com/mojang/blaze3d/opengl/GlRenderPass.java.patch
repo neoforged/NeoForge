@@ -9,6 +9,14 @@
  
      public GlRenderPass(GlCommandEncoder p_409888_, boolean p_410304_) {
          this.encoder = p_409888_;
+@@ -46,6 +_,7 @@
+ 
+     @Override
+     public void setPipeline(RenderPipeline p_409823_) {
++        p_409823_ = com.mojang.blaze3d.systems.RenderSystem.applyPipelineModifiers(p_409823_);
+         if (this.pipeline == null || this.pipeline.info() != p_409823_) {
+             this.dirtyUniforms.addAll(this.uniforms.keySet());
+             this.dirtySamplers.addAll(this.samplers.keySet());
 @@ -91,6 +_,16 @@
      @Override
      public void disableScissor() {
