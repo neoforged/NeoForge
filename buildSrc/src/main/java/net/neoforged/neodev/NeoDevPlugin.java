@@ -222,8 +222,8 @@ public class NeoDevPlugin implements Plugin<Project> {
         var joinedJar = tasks.register("joinedJar", Jar.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getArchiveClassifier().set("joined");
-            task.from(tasks.named("jar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile));
-            task.from(tasks.named("clientJar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile));
+            task.from(project.zipTree(tasks.named("jar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+            task.from(project.zipTree(tasks.named("clientJar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
         });
 
         var mergeSources = tasks.register("mergePatchedSources", Zip.class, task -> {
