@@ -446,9 +446,6 @@ configurations {
     }
 }
 
-jar {
-    from sourceSets.client.output
-}
 sourcesJar {
     from sourceSets.client.allSource
 }
