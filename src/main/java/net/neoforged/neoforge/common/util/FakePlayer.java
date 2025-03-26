@@ -309,9 +309,6 @@ public class FakePlayer extends ServerPlayer {
         public void handleChatAck(ServerboundChatAckPacket packet) {}
 
         @Override
-        public void addPendingMessage(PlayerChatMessage message) {}
-
-        @Override
         public void sendPlayerChatMessage(PlayerChatMessage message, ChatType.Bound boundChatType) {}
 
         @Override

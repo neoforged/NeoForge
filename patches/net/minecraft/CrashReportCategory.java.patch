@@ -40,4 +40,4 @@
 +        this.stackTrace = stackTrace;
      }
  
-     public static void populateBlockDetails(CrashReportCategory p_178951_, LevelHeightAccessor p_178952_, BlockPos p_178953_, @Nullable BlockState p_178954_) {
+     public static void populateBlockDetails(CrashReportCategory p_178951_, LevelHeightAccessor p_178952_, BlockPos p_178953_, BlockState p_178954_) {

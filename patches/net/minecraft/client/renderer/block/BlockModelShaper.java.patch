@@ -1,19 +1,18 @@
 --- a/net/minecraft/client/renderer/block/BlockModelShaper.java
 +++ b/net/minecraft/client/renderer/block/BlockModelShaper.java
-@@ -22,8 +_,15 @@
+@@ -17,8 +_,14 @@
          this.modelManager = p_110880_;
      }
  
 +    @Deprecated
      public TextureAtlasSprite getParticleIcon(BlockState p_110883_) {
--        return this.getBlockModel(p_110883_).getParticleIcon();
-+        return this.getBlockModel(p_110883_).getParticleIcon(net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
+-        return this.getBlockModel(p_110883_).particleIcon();
++        return getParticleIcon(p_110883_, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
 +    }
 +
-+    public TextureAtlasSprite getTexture(BlockState p_110883_, net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
-+        var data = level.getModelData(pos);
-+        BakedModel model = this.getBlockModel(p_110883_);
-+        return model.getParticleIcon(model.getModelData(level, pos, p_110883_, data));
++    public TextureAtlasSprite getParticleIcon(BlockState p_110883_, net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
++        var model = this.getBlockModel(p_110883_);
++        return model.particleIcon(level, pos, p_110883_);
      }
  
-     public BakedModel getBlockModel(BlockState p_110894_) {
+     public BlockStateModel getBlockModel(BlockState p_110894_) {

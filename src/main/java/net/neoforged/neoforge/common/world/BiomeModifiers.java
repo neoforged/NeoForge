@@ -7,11 +7,12 @@ package net.neoforged.neoforge.common.world;
 
 import com.mojang.serialization.MapCodec;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
@@ -142,27 +143,27 @@ public final class BiomeModifiers {
      * </pre>
      *
      * @param biomes   Biomes to add mob spawns to.
-     * @param spawners List of SpawnerDatas specifying EntityType, weight, and pack size.
+     * @param spawners List of Weighted SpawnerDatas specifying EntityType, weight, and pack size.
      */
-    public record AddSpawnsBiomeModifier(HolderSet<Biome> biomes, List<SpawnerData> spawners) implements BiomeModifier {
+    public record AddSpawnsBiomeModifier(HolderSet<Biome> biomes, WeightedList<SpawnerData> spawners) implements BiomeModifier {
         /**
          * Convenience method for using a single {@linkplain SpawnerData}s.
          *
          * @param biomes  Biomes to add mob spawns to.
-         * @param spawner SpawnerData specifying EntityTYpe, weight, and pack size.
+         * @param spawner Weighted SpawnerData specifying EntityTYpe, weight, and pack size.
          * @return AddSpawnsBiomeModifier that adds a single spawn entry to the specified biomes.
          */
-        public static AddSpawnsBiomeModifier singleSpawn(HolderSet<Biome> biomes, SpawnerData spawner) {
-            return new AddSpawnsBiomeModifier(biomes, List.of(spawner));
+        public static AddSpawnsBiomeModifier singleSpawn(HolderSet<Biome> biomes, Weighted<SpawnerData> spawner) {
+            return new AddSpawnsBiomeModifier(biomes, WeightedList.<SpawnerData>of(spawner));
         }
 
         @Override
         public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
             if (phase == Phase.ADD && this.biomes.contains(biome)) {
                 MobSpawnSettingsBuilder spawns = builder.getMobSpawnSettings();
-                for (SpawnerData spawner : this.spawners) {
-                    EntityType<?> type = spawner.type;
-                    spawns.addSpawn(type.getCategory(), spawner);
+                for (Weighted<SpawnerData> spawner : this.spawners.unwrap()) {
+                    EntityType<?> type = spawner.value().type();
+                    spawns.addSpawn(type.getCategory(), spawner.weight(), spawner.value());
                 }
             }
         }
@@ -194,8 +195,8 @@ public final class BiomeModifiers {
             if (phase == Phase.REMOVE && this.biomes.contains(biome)) {
                 MobSpawnSettingsBuilder spawnBuilder = builder.getMobSpawnSettings();
                 for (MobCategory category : MobCategory.values()) {
-                    List<SpawnerData> spawns = spawnBuilder.getSpawner(category);
-                    spawns.removeIf(spawnerData -> this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.type)));
+                    WeightedList.Builder<SpawnerData> spawns = spawnBuilder.getSpawner(category);
+                    spawns.removeIf(spawnerData -> this.entityTypes.contains(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(spawnerData.value().type())));
                 }
             }
         }

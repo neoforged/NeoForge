@@ -52,8 +52,14 @@
     "minecraft:brown_mushroom_block": {
       "chance": 0.85
     },
+    "minecraft:bush": {
+      "chance": 0.3
+    },
     "minecraft:cactus": {
       "chance": 0.5
+    },
+    "minecraft:cactus_flower": {
+      "chance": 0.3
     },
     "minecraft:cake": {
       "chance": 1.0
@@ -106,6 +112,9 @@
     "minecraft:fern": {
       "chance": 0.65
     },
+    "minecraft:firefly_bush": {
+      "chance": 0.3
+    },
     "minecraft:flowering_azalea": {
       "chance": 0.85
     },
@@ -135,6 +144,9 @@
     },
     "minecraft:large_fern": {
       "chance": 0.65
+    },
+    "minecraft:leaf_litter": {
+      "chance": 0.3
     },
     "minecraft:lilac": {
       "chance": 0.65
@@ -259,6 +271,9 @@
     "minecraft:seagrass": {
       "chance": 0.3
     },
+    "minecraft:short_dry_grass": {
+      "chance": 0.3
+    },
     "minecraft:short_grass": {
       "chance": 0.3
     },
@@ -284,6 +299,9 @@
       "chance": 0.65
     },
     "minecraft:sweet_berries": {
+      "chance": 0.3
+    },
+    "minecraft:tall_dry_grass": {
       "chance": 0.3
     },
     "minecraft:tall_grass": {
@@ -322,6 +340,9 @@
     },
     "minecraft:white_tulip": {
       "chance": 0.65
+    },
+    "minecraft:wildflowers": {
+      "chance": 0.3
     },
     "minecraft:wither_rose": {
       "chance": 0.65

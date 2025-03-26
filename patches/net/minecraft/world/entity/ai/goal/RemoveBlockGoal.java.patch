@@ -9,7 +9,7 @@
              return false;
          } else if (this.nextStartTick > 0) {
              this.nextStartTick--;
-@@ -158,7 +_,8 @@
+@@ -148,7 +_,8 @@
          );
          return chunkaccess == null
              ? false

@@ -7,9 +7,9 @@
 -            this.setSuccess(tryShearBeehive(serverlevel, blockpos) || tryShearLivingEntity(serverlevel, blockpos, p_123581_));
 +            this.setSuccess(net.neoforged.neoforge.common.CommonHooks.tryDispenseShearsHarvestBlock(p_302443_, p_123581_, serverlevel, blockpos) || tryShearBeehive(serverlevel, blockpos) || tryShearLivingEntity(serverlevel, blockpos, p_123581_));
              if (this.isSuccess()) {
-                 p_123581_.hurtAndBreak(1, serverlevel, null, p_348118_ -> {
-                 });
-@@ -53,8 +_,9 @@
+                 p_123581_.hurtAndBreak(1, serverlevel, null, p_348118_ -> {});
+             }
+@@ -52,8 +_,9 @@
  
      private static boolean tryShearLivingEntity(ServerLevel p_123583_, BlockPos p_123584_, ItemStack p_372883_) {
          for (LivingEntity livingentity : p_123583_.getEntitiesOfClass(LivingEntity.class, new AABB(p_123584_), EntitySelector.NO_SPECTATORS)) {

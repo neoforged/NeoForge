@@ -1,37 +1,21 @@
 --- a/net/minecraft/client/renderer/block/model/BakedQuad.java
 +++ b/net/minecraft/client/renderer/block/model/BakedQuad.java
-@@ -13,14 +_,20 @@
-     protected final TextureAtlasSprite sprite;
-     private final boolean shade;
-     private final int lightEmission;
-+    private final boolean hasAmbientOcclusion;
+@@ -5,8 +_,17 @@
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
  
-     public BakedQuad(int[] p_111298_, int p_111299_, Direction p_111300_, TextureAtlasSprite p_111301_, boolean p_111302_, int p_361140_) {
-+        this(p_111298_, p_111299_, p_111300_, p_111301_, p_111302_, p_361140_, true);
++/**
++ * @param hasAmbientOcclusion {@code false} to force-disable AO for this quad
++ *                            or {@code true} to use the behavior dictated by
++ *                            {@link net.neoforged.neoforge.client.extensions.IBakedModelExtension#useAmbientOcclusion(net.minecraft.world.level.block.state.BlockState, net.neoforged.neoforge.model.data.ModelData, net.minecraft.client.renderer.RenderType)}
++ */
+ @OnlyIn(Dist.CLIENT)
+-public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
++public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission, boolean hasAmbientOcclusion) {
++    public BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
++        this(vertices, tintIndex, direction, sprite, shade, lightEmission, true);
 +    }
 +
-+    public BakedQuad(int[] p_111298_, int p_111299_, Direction p_111300_, TextureAtlasSprite p_111301_, boolean p_111302_, int p_361140_, boolean hasAmbientOcclusion) {
-         this.vertices = p_111298_;
-         this.tintIndex = p_111299_;
-         this.direction = p_111300_;
-         this.sprite = p_111301_;
-         this.shade = p_111302_;
-         this.lightEmission = p_361140_;
-+        this.hasAmbientOcclusion = hasAmbientOcclusion;
+     public boolean isTinted() {
+         return this.tintIndex != -1;
      }
- 
-     public TextureAtlasSprite getSprite() {
-@@ -49,5 +_,13 @@
- 
-     public int getLightEmission() {
-         return this.lightEmission;
-+    }
-+
-+    /**
-+     * {@return false to force-disable AO for this quad or true to use the behavior dictated by
-+     * {@link net.neoforged.neoforge.client.extensions.IBakedModelExtension#useAmbientOcclusion(net.minecraft.world.level.block.state.BlockState, net.neoforged.neoforge.client.model.data.ModelData, net.minecraft.client.renderer.RenderType)}}
-+     */
-+    public boolean hasAmbientOcclusion() {
-+        return this.hasAmbientOcclusion;
-     }
- }

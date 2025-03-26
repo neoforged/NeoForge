@@ -37,13 +37,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
@@ -88,6 +88,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
     private boolean inClientWorld = false;
 
     private @UnknownNullability String commandName;
+
+    private final SavedDataType<PlayerTestStore> playerTestStoreType;
 
     public TestFrameworkImpl(FrameworkConfiguration configuration) {
         FRAMEWORKS.add(this);
@@ -173,6 +175,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 ((ServerPlayer) event.getEntity()).sendSystemMessage(message);
             });
         }
+
+        this.playerTestStoreType = new SavedDataType<>(
+                "tests/" + id().getNamespace() + "_" + id().getPath(),
+                PlayerTestStore::new, PlayerTestStore.FACTORY);
     }
 
     private void processSummary(TestSummary summary) {
@@ -190,8 +196,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     @Override
     public PlayerTestStore playerTestStore() {
-        return server.overworld().getDataStorage()
-                .computeIfAbsent(PlayerTestStore.FACTORY, "tests/" + id().getNamespace() + "_" + id().getPath());
+        return server.overworld().getDataStorage().computeIfAbsent(playerTestStoreType);
     }
 
     @Override
@@ -237,7 +242,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         });
 
         modBus.addListener(new TestFrameworkPayloadInitialization(this)::onNetworkSetup);
-        modBus.addListener((final RegisterGameTestsEvent event) -> event.register(GameTestRegistration.REGISTER_METHOD));
+        modBus.addListener(GameTestRegistration::register);
 
         synchronized (tests().enabled) {
             List.copyOf(tests().enabled).forEach(tests()::disable);

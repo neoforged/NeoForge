@@ -251,5 +251,7 @@ modId="client_information_updated_test"
 [[mods]]
 modId="custom_feature_flags_pack_test"
 featureFlags="game_test_feature_flags.json"
+[[mods]]
+modId="recipe_sync_test"
 
 # ADD ABOVE THIS LINE

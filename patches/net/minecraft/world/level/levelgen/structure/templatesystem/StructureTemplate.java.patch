@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -248,6 +_,10 @@
+@@ -250,6 +_,10 @@
          return transform(p_74565_, p_74564_.getMirror(), p_74564_.getRotation(), p_74564_.getRotationPivot());
      }
  
@@ -11,7 +11,7 @@
      public boolean placeInWorld(
          ServerLevelAccessor p_230329_, BlockPos p_230330_, BlockPos p_230331_, StructurePlaceSettings p_230332_, RandomSource p_230333_, int p_230334_
      ) {
-@@ -271,7 +_,7 @@
+@@ -273,7 +_,7 @@
                  int j1 = Integer.MIN_VALUE;
  
                  for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : processBlockInfos(
@@ -106,7 +106,7 @@
 +            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockpos)) {
                  CompoundTag compoundtag = structuretemplate$structureentityinfo.nbt.copy();
 -                Vec3 vec3 = transform(structuretemplate$structureentityinfo.pos, p_74526_, p_74527_, p_74528_);
--                Vec3 vec31 = vec3.add((double)p_74525_.getX(), (double)p_74525_.getY(), (double)p_74525_.getZ());
+-                Vec3 vec31 = vec3.add(p_74525_.getX(), p_74525_.getY(), p_74525_.getZ());
 +                Vec3 vec31 = structuretemplate$structureentityinfo.pos; // FORGE: Position will have already been transformed by processEntityInfos
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
@@ -119,13 +119,13 @@
 -                            f += p_275190_.mirror(p_74526_) - p_275190_.getYRot();
 +                            float f = p_275190_.rotate(placementIn.getRotation());
 +                            f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
-                             p_275190_.moveTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
+                             p_275190_.snapTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
 -                            if (p_74530_ && p_275190_ instanceof Mob) {
 +                            if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
                                  ((Mob)p_275190_)
                                      .finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
                              }
-@@ -867,7 +_,7 @@
+@@ -852,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

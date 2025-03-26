@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.resources;
 
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -16,6 +15,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 @ForEachTest(groups = RichTranslationsTest.GROUP)

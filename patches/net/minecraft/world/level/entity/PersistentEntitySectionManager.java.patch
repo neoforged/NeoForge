@@ -17,7 +17,7 @@
          if (!this.addEntityUuid(p_157539_)) {
              return false;
          } else {
-@@ -101,11 +_,17 @@
+@@ -105,11 +_,17 @@
      }
  
      public void addLegacyChunkEntities(Stream<T> p_157553_) {
@@ -37,7 +37,7 @@
      }
  
      void startTicking(T p_157565_) {
-@@ -228,7 +_,10 @@
+@@ -232,7 +_,10 @@
      private void processPendingLoads() {
          ChunkEntities<T> chunkentities;
          while ((chunkentities = this.loadingInbox.poll()) != null) {
@@ -49,7 +49,7 @@
              this.chunkLoadStatuses.put(chunkentities.getPos().toLong(), PersistentEntitySectionManager.ChunkLoadStatus.LOADED);
          }
      }
-@@ -367,11 +_,13 @@
+@@ -369,11 +_,13 @@
  
      class Callback implements EntityInLevelCallback {
          private final T entity;
@@ -63,7 +63,7 @@
              this.currentSectionKey = p_157615_;
              this.currentSection = p_157616_;
          }
-@@ -390,9 +_,11 @@
+@@ -392,9 +_,11 @@
                  PersistentEntitySectionManager.this.removeSectionIfEmpty(this.currentSectionKey, this.currentSection);
                  EntitySection<T> entitysection = PersistentEntitySectionManager.this.sectionStorage.getOrCreateSection(i);
                  entitysection.add(this.entity);

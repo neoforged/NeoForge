@@ -10,7 +10,7 @@
                  abstractwidget.render(p_387127_, p_388038_, p_386932_, p_388026_);
              }
 @@ -188,6 +_,44 @@
-                     this.setScrollAmount(this.scrollAmount() + (double)j + 14.0);
+                     this.setScrollAmount(this.scrollAmount() + j + 14.0);
                  }
              }
 +        }

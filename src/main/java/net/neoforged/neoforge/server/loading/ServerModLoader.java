@@ -12,7 +12,6 @@ import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
@@ -26,9 +25,6 @@ public class ServerModLoader extends CommonModLoader {
     private static boolean hasErrors = false;
 
     public static void load() {
-        LogicalSidedProvider.setServer(() -> {
-            throw new IllegalStateException("Unable to access server yet");
-        });
         LanguageHook.loadBuiltinLanguages();
         try {
             begin(() -> {}, false);

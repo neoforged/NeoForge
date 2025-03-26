@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "neotests_forge_spawn_egg_test:item/test_spawn_egg"
+  }
+}

@@ -8,16 +8,16 @@
  public final class NaturalSpawner {
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int MIN_SPAWN_DISTANCE = 24;
-@@ -73,7 +_,7 @@
-                 continue;
-             }
+@@ -71,7 +_,7 @@
  
--            MobCategory mobcategory = entity.getType().getCategory();
-+            MobCategory mobcategory = entity.getClassification(true);
-             if (mobcategory != MobCategory.MISC) {
-                 BlockPos blockpos = entity.blockPosition();
-                 p_186527_.query(
-@@ -214,7 +_,7 @@
+         for (Entity entity : p_186526_) {
+             if (!(entity instanceof Mob mob && (mob.isPersistenceRequired() || mob.requiresCustomPersistence()))) {
+-                MobCategory mobcategory = entity.getType().getCategory();
++                MobCategory mobcategory = entity.getClassification(true);
+                 if (mobcategory != MobCategory.MISC) {
+                     BlockPos blockpos = entity.blockPosition();
+                     p_186527_.query(
+@@ -212,7 +_,7 @@
                                      l1++;
                                      p_47040_.addFreshEntityWithPassengers(mob);
                                      p_47044_.run(mob, p_47041_);
@@ -26,8 +26,8 @@
                                          return;
                                      }
  
-@@ -287,7 +_,7 @@
-         return p_46994_ > (double)(p_46993_.getType().getCategory().getDespawnDistance() * p_46993_.getType().getCategory().getDespawnDistance())
+@@ -284,7 +_,7 @@
+         return p_46994_ > p_46993_.getType().getCategory().getDespawnDistance() * p_46993_.getType().getCategory().getDespawnDistance()
                  && p_46993_.removeWhenFarAway(p_46994_)
              ? false
 -            : p_46993_.checkSpawnRules(p_46992_, EntitySpawnReason.NATURAL) && p_46993_.checkSpawnObstruction(p_46992_);
@@ -35,7 +35,7 @@
      }
  
      private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAt(
-@@ -318,9 +_,14 @@
+@@ -315,9 +_,14 @@
          BlockPos p_220448_,
          @Nullable Holder<Biome> p_220449_
      ) {
@@ -53,9 +53,9 @@
      }
  
      public static boolean isInNetherFortressBounds(BlockPos p_220456_, ServerLevel p_220457_, MobCategory p_220458_, StructureManager p_220459_) {
-@@ -407,8 +_,7 @@
+@@ -404,8 +_,7 @@
  
-                                 entity.moveTo(d0, (double)blockpos.getY(), d1, p_220454_.nextFloat() * 360.0F, 0.0F);
+                                 entity.snapTo(d0, blockpos.getY(), d1, p_220454_.nextFloat() * 360.0F, 0.0F);
                                  if (entity instanceof Mob mob
 -                                    && mob.checkSpawnRules(p_220451_, EntitySpawnReason.CHUNK_GENERATION)
 -                                    && mob.checkSpawnObstruction(p_220451_)) {

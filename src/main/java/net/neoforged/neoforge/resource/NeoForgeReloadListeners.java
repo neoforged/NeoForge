@@ -19,6 +19,8 @@ public class NeoForgeReloadListeners {
     // Server Listeners
     public static final ResourceLocation LOOT_MODIFIERS = key("loot_modifiers");
 
+    public static final ResourceLocation RECIPE_PRIORITIES = key("recipe_priorities");
+
     public static final ResourceLocation DATA_MAPS = key("data_maps");
 
     public static final ResourceLocation CREATIVE_TABS = key("creative_tabs");

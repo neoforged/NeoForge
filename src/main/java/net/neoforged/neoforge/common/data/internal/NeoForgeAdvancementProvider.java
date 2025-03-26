@@ -26,6 +26,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DamagePredicate;
 import net.minecraft.advancements.critereon.DamageSourcePredicate;
+import net.minecraft.advancements.critereon.DataComponentMatchers;
 import net.minecraft.advancements.critereon.EntityEquipmentPredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
@@ -76,8 +77,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     private static List<AdvancementSubProvider> getVanillaAdvancementProviders(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         List<BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>>> criteriaReplacers = new ArrayList<>();
         criteriaReplacers.add(replaceMatchToolCriteria(ItemAbilities.AXE_WAX_OFF, getPrivateValue(VanillaHusbandryAdvancements.class, null, "WAX_SCRAPING_TOOLS")));
-        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build(), Items.SHEARS));
-        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withSubPredicate(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build(), PiglinAi.BARTERING_ITEM));
+        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(ItemAbilities.SHEARS_REMOVE_ARMOR)).build()).build(), Items.SHEARS));
+        criteriaReplacers.add(replaceInteractCriteria(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(PiglinCurrencyItemPredicate.TYPE, PiglinCurrencyItemPredicate.INSTANCE).build()).build(), PiglinAi.BARTERING_ITEM));
         criteriaReplacers.add(replaceLootEntityPredicate(helper -> {
             if (helper.clearEquipmentIfMatches(predicate -> {
                 if (predicate.head().filter(item -> predicateMatches(item, ItemTags.PIGLIN_SAFE_ARMOR)).isPresent()) {
@@ -119,7 +120,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
     private static BiFunction<Criterion<?>, HolderLookup.Provider, Criterion<?>> replaceMatchToolCriteria(ItemAbility itemAbility, ItemLike... targetItem) {
         UnaryOperator<LootItemCondition> replacer = condition -> {
             if (condition instanceof MatchTool toolMatch && toolMatch.predicate().filter(predicate -> predicateMatches(predicate, targetItem)).isPresent()) {
-                return new MatchTool(Optional.of(ItemPredicate.Builder.item().withSubPredicate(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(itemAbility)).build()));
+                return new MatchTool(Optional.of(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(ItemAbilityPredicate.TYPE, new ItemAbilityPredicate(itemAbility)).build()).build()));
             }
             return null;
         };
@@ -416,7 +417,8 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
                     source.passenger(),
                     source.targetedEntity(),
                     source.team(),
-                    source.slots());
+                    source.slots(),
+                    source.components());
         }
     }
 }

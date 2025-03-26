@@ -24,7 +24,7 @@
  
 -        for (RecipeBookType recipebooktype : RecipeBookType.values()) {
 +        // Neo: filter out modded RecipeBookTypes when connected to a vanilla server
-+        for (RecipeBookType recipebooktype : net.neoforged.neoforge.common.CommonHooks.getFilteredRecipeBookTypeValues()) {
++        for (RecipeBookType recipebooktype : net.neoforged.neoforge.internal.NeoForgeProxy.INSTANCE.getFilteredRecipeBookTypeValues()) {
              boolean flag = p_12753_.readBoolean();
              boolean flag1 = p_12753_.readBoolean();
              if (flag || flag1) {

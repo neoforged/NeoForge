@@ -8,13 +8,13 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.entity.CowRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
-import net.neoforged.neoforge.common.util.TriState;
 
 @Mod(NameplateRenderingEventTest.MODID)
 @EventBusSubscriber(value = Dist.CLIENT)

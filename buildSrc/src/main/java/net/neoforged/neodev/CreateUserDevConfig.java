@@ -82,7 +82,8 @@ abstract class CreateUserDevConfig extends DefaultTask {
                 case CLIENT -> "neoforgeclientdev";
                 case CLIENT_DATA -> "neoforgeclientdatadev";
                 case SERVER_DATA -> "neoforgeserverdatadev";
-                case GAME_TEST_SERVER, SERVER -> "neoforgeserverdev";
+                case SERVER -> "neoforgeserverdev";
+                case GAME_TEST_SERVER -> "neoforgegametestserverdev";
                 case JUNIT -> "neoforgejunitdev";
             };
 
@@ -103,7 +104,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
             }
 
             Collections.addAll(args,
-                    "--gameDir", ".",
                     "--fml.fmlVersion", getFmlVersion().get(),
                     "--fml.mcVersion", getMinecraftVersion().get(),
                     "--fml.neoForgeVersion", getNeoForgeVersion().get(),
@@ -116,10 +116,6 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
             if (runType == RunType.CLIENT || runType == RunType.GAME_TEST_SERVER) {
                 systemProperties.put("neoforge.enableGameTest", "true");
-
-                if (runType == RunType.GAME_TEST_SERVER) {
-                    systemProperties.put("neoforge.gameTestServer", "true");
-                }
             }
 
             config.runs().put(runType.jsonName, new UserDevRunType(

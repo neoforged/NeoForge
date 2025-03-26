@@ -10,7 +10,11 @@ java.withSourcesJar()
 apply plugin : net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin
 
 dependencies {
-    compileOnly project(path: ':neoforge')
+    compileOnly(project(path: ':neoforge')) {
+        capabilities {
+            requireFeature('client')
+        }
+    }
 
     compileOnly(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     compileOnly "org.junit.jupiter:junit-jupiter-params"

@@ -25,7 +25,7 @@
              LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
              this.loadLevel();
              long j = Util.getNanos() - i;
-             String s = String.format(Locale.ROOT, "%.3fs", (double)j / 1.0E9);
+             String s = String.format(Locale.ROOT, "%.3fs", j / 1.0E9);
              LOGGER.info("Done ({})! For help, type \"help\"", s);
 +            this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spaming during long load.
              if (dedicatedserverproperties.announcePlayerAchievements != null) {

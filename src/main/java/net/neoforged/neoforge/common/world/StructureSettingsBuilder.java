@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.common.world;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.core.HolderSet;
-import net.minecraft.util.random.WeightedRandomList;
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -76,7 +76,7 @@ public class StructureSettingsBuilder {
      * @param category Mob category
      */
     public StructureSpawnOverrideBuilder getOrAddSpawnOverrides(MobCategory category) {
-        return spawnOverrides.computeIfAbsent(category, c -> new StructureSpawnOverrideBuilder(StructureSpawnOverride.BoundingBoxType.PIECE, Collections.emptyList()));
+        return spawnOverrides.computeIfAbsent(category, c -> new StructureSpawnOverrideBuilder(StructureSpawnOverride.BoundingBoxType.PIECE, WeightedList.of()));
     }
 
     /**
@@ -120,21 +120,21 @@ public class StructureSettingsBuilder {
 
     public static class StructureSpawnOverrideBuilder {
         private StructureSpawnOverride.BoundingBoxType boundingBox;
-        private final List<MobSpawnSettings.SpawnerData> spawns;
-        private final List<MobSpawnSettings.SpawnerData> spawnsView;
+        private final WeightedList.Builder<MobSpawnSettings.SpawnerData> spawns = WeightedList.builder();
+        private final List<Weighted<MobSpawnSettings.SpawnerData>> spawnsView;
 
         /**
          * @param override Existing spawn override data.
          * @return A new builder with a copy of that StructureSpawnOverride's values.
          */
         public static StructureSpawnOverrideBuilder copyOf(StructureSpawnOverride override) {
-            return new StructureSpawnOverrideBuilder(override.boundingBox(), override.spawns().unwrap());
+            return new StructureSpawnOverrideBuilder(override.boundingBox(), override.spawns());
         }
 
-        private StructureSpawnOverrideBuilder(StructureSpawnOverride.BoundingBoxType boundingBox, List<MobSpawnSettings.SpawnerData> spawns) {
+        private StructureSpawnOverrideBuilder(StructureSpawnOverride.BoundingBoxType boundingBox, WeightedList<MobSpawnSettings.SpawnerData> spawns) {
             this.boundingBox = boundingBox;
-            this.spawns = new ArrayList<>(spawns);
-            this.spawnsView = Collections.unmodifiableList(this.spawns);
+            this.spawns.addAll(spawns);
+            this.spawnsView = this.spawns.getList();
         }
 
         /**
@@ -154,15 +154,29 @@ public class StructureSettingsBuilder {
         /**
          * Unmodifiable view of the possible spawns.
          */
-        public List<MobSpawnSettings.SpawnerData> getSpawns() {
+        public List<Weighted<MobSpawnSettings.SpawnerData>> getSpawns() {
             return spawnsView;
         }
 
         /**
          * Adds a spawn to the overrides.
          */
-        public void addSpawn(MobSpawnSettings.SpawnerData spawn) {
+        public void addSpawn(Weighted<MobSpawnSettings.SpawnerData> spawn) {
             this.spawns.add(spawn);
+        }
+
+        /**
+         * Adds a spawn to the overrides.
+         */
+        public void addSpawn(MobSpawnSettings.SpawnerData spawn, int weight) {
+            this.spawns.add(spawn, weight);
+        }
+
+        /**
+         * Removes a given spawn from the list of overrides. Use {@link #getSpawns()} to get instances of spawn data to remove.
+         */
+        public void removeSpawn(Weighted<MobSpawnSettings.SpawnerData> spawn) {
+            this.spawns.remove(spawn);
         }
 
         /**
@@ -172,7 +186,7 @@ public class StructureSettingsBuilder {
             this.spawns.remove(spawn);
         }
 
-        public void removeSpawns(Predicate<MobSpawnSettings.SpawnerData> spawnPredicate) {
+        public void removeSpawns(Predicate<Weighted<MobSpawnSettings.SpawnerData>> spawnPredicate) {
             this.spawns.removeIf(spawnPredicate);
         }
 
@@ -180,7 +194,7 @@ public class StructureSettingsBuilder {
          * @return A new StructureSpawnOverride with the finalized values.
          */
         public StructureSpawnOverride build() {
-            return new StructureSpawnOverride(boundingBox, WeightedRandomList.create(spawns));
+            return new StructureSpawnOverride(boundingBox, spawns.build());
         }
     }
 }

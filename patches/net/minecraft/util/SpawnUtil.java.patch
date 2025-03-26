@@ -1,6 +1,6 @@
 --- a/net/minecraft/util/SpawnUtil.java
 +++ b/net/minecraft/util/SpawnUtil.java
-@@ -47,7 +_,7 @@
+@@ -45,7 +_,7 @@
                  )) {
                  T t = (T)p_216404_.create(p_216406_, null, blockpos$mutableblockpos, p_364255_, false, false);
                  if (t != null) {

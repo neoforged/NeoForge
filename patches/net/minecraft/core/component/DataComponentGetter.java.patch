@@ -1,0 +1,25 @@
+--- a/net/minecraft/core/component/DataComponentGetter.java
++++ b/net/minecraft/core/component/DataComponentGetter.java
+@@ -16,4 +_,22 @@
+         T t = this.get(p_397753_);
+         return t != null ? new TypedDataComponent<>(p_397753_, t) : null;
+     }
++
++    // Neo: Utility for modded component types, to remove the need to invoke '.value()'
++    @Nullable
++    default <T> T get(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType) {
++        return get(componentType.get());
++    }
++
++    default <T> T getOrDefault(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType, T value) {
++        return getOrDefault(componentType.get(), value);
++    }
++
++    default <T> boolean has(java.util.function.Supplier<? extends DataComponentType<? extends T>> componentType) {
++        return get(componentType) != null;
++    }
++
++    default boolean has(DataComponentType<?> componentType) {
++        return get(componentType) != null;
++    }
+ }

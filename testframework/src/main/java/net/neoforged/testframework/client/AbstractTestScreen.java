@@ -7,7 +7,6 @@ package net.neoforged.testframework.client;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,8 +28,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.group.Group;
@@ -88,16 +89,16 @@ public abstract class AbstractTestScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            super.renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
-            renderTooltips(pPoseStack, pMouseX, pMouseY);
+        public void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+            super.renderWidget(graphics, pMouseX, pMouseY, pPartialTick);
+            renderTooltips(graphics, pMouseX, pMouseY);
         }
 
-        private void renderTooltips(GuiGraphics poseStack, int mouseX, int mouseY) {
+        private void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
             if (this.isMouseOver(mouseX, mouseY)) {
                 Entry entry = this.getEntryAtPosition(mouseX, mouseY);
                 if (entry != null) {
-                    entry.renderTooltips(poseStack, mouseX, mouseY);
+                    entry.renderTooltips(graphics, mouseX, mouseY);
                 }
             }
         }
@@ -161,7 +162,7 @@ public abstract class AbstractTestScreen extends Screen {
                 return false;
             }
 
-            protected void renderTooltips(GuiGraphics poseStack, int mouseX, int mouseY) {}
+            protected void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {}
         }
 
         protected final class TestEntry extends Entry {
@@ -172,24 +173,24 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void render(GuiGraphics pPoseStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void render(GuiGraphics graphics, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
                 pLeft += 2;
                 pTop += 2;
 
                 final Test.Status status = framework.tests().getStatus(test.id());
 
-                final float alpha = .45f;
+                final int alpha = 0x73000000;
                 final boolean renderTransparent = !isEnabled();
-                RenderSystem.setShaderTexture(0, TestsOverlay.ICON_BY_RESULT.get(status.result()));
-                if (renderTransparent) RenderSystem.enableBlend();
-                ClientUtils.blitAlpha(pPoseStack, pLeft, pTop, 0, 0, 9, 9, 9, 9, renderTransparent ? alpha : 1f);
-                if (renderTransparent) RenderSystem.disableBlend();
+
+                ResourceLocation icon = TestsOverlay.ICON_BY_RESULT.get(status.result());
+                graphics.blitSprite(RenderType::guiTextured, icon, pLeft, pTop, 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
+
                 final Component title = TestsOverlay.statusColoured(test.visuals().title(), status);
-                pPoseStack.drawString(font, title, pLeft + 11, pTop, renderTransparent ? ((((int) (alpha * 255f)) << 24) | 0xffffff0) : 0xffffff);
+                graphics.drawString(font, title, pLeft + 11, pTop, renderTransparent ? (alpha | 0xffffff0) : 0xffffff);
             }
 
             @Override
-            protected void renderTooltips(GuiGraphics poseStack, int mouseX, int mouseY) {
+            protected void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
                 final List<FormattedCharSequence> tooltip = new ArrayList<>();
                 if (!isEnabled()) {
                     tooltip.add(Component.literal("DISABLED").withStyle(ChatFormatting.GRAY).getVisualOrderText());
@@ -205,7 +206,7 @@ public abstract class AbstractTestScreen extends Screen {
                 }
 
                 if (!tooltip.isEmpty()) {
-                    poseStack.renderTooltip(font, tooltip, mouseX, mouseY);
+                    graphics.renderTooltip(font, tooltip, mouseX, mouseY);
                 }
             }
 
@@ -247,31 +248,31 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             @Override
-            public void render(GuiGraphics pPoseStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
+            public void render(GuiGraphics graphics, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
                 if (isTitle) {
-                    pPoseStack.drawCenteredString(font, getTitle(), pLeft + pWidth / 2, pTop + 2, 0xffffff);
+                    graphics.drawCenteredString(font, getTitle(), pLeft + pWidth / 2, pTop + 2, 0xffffff);
                 } else {
-                    pPoseStack.drawString(font, getTitle(), pLeft + 11, pTop + 2, 0xffffff);
+                    graphics.drawString(font, getTitle(), pLeft + 11, pTop + 2, 0xffffff);
                     this.browseButton.setX(pLeft + pWidth - 53);
                     this.browseButton.setY(pTop - 1);
-                    pPoseStack.pose().pushPose();
-                    pPoseStack.pose().translate(0, 0, 100);
-                    browseButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-                    pPoseStack.pose().popPose();
+                    graphics.pose().pushPose();
+                    graphics.pose().translate(0, 0, 100);
+                    browseButton.render(graphics, pMouseX, pMouseY, pPartialTick);
+                    graphics.pose().popPose();
                 }
             }
 
             @Override
-            protected void renderTooltips(GuiGraphics poseStack, int mouseX, int mouseY) {
+            protected void renderTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
                 if (isTitle) return;
                 final List<Test> all = group.resolveAll();
                 final int enabledCount = (int) all.stream().filter(it -> framework.tests().isEnabled(it.id())).count();
                 if (enabledCount == all.size()) {
-                    poseStack.renderTooltip(font, Component.literal("All tests in group are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
+                    graphics.renderTooltip(font, Component.literal("All tests in group are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
                 } else if (enabledCount == 0) {
-                    poseStack.renderTooltip(font, Component.literal("All tests in group are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
+                    graphics.renderTooltip(font, Component.literal("All tests in group are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
                 } else {
-                    poseStack.renderTooltip(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
+                    graphics.renderTooltip(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
                 }
             }
 

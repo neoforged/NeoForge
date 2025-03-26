@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/ResourceLocation.java
 +++ b/net/minecraft/resources/ResourceLocation.java
-@@ -165,6 +_,12 @@
+@@ -156,6 +_,12 @@
          return i;
      }
  

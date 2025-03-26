@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -58,7 +_,14 @@
+@@ -74,7 +_,14 @@
              recalculateWinding(aint, direction);
          }
  
@@ -15,4 +15,4 @@
 +        return quad;
      }
  
-     public static BlockFaceUV recomputeUVs(BlockFaceUV p_111582_, Direction p_111583_, Transformation p_111584_) {
+     private static BlockElementFace.UVs shrinkUVs(TextureAtlasSprite p_404992_, BlockElementFace.UVs p_405227_) {

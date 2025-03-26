@@ -63,7 +63,7 @@
  
          if (this.tabs.size() > 1) {
              for (AdvancementTab advancementtab : this.tabs.values()) {
--                if (advancementtab.isMouseOver(p_281519_, p_283371_, (double)p_283556_, (double)p_282458_)) {
+-                if (advancementtab.isMouseOver(p_281519_, p_283371_, p_283556_, p_282458_)) {
 +                if (advancementtab.getPage() == tabPage && advancementtab.isMouseOver(p_281519_, p_283371_, (double)p_283556_, (double)p_282458_)) {
                      p_282784_.renderTooltip(this.font, advancementtab.getTitle(), p_283556_, p_282458_);
                  }

@@ -22,7 +22,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -451,14 +450,14 @@ public class FluidType {
      * Returns a sound to play when a certain action is performed at a
      * position. If no sound is present, then the sound will be {@code null}.
      *
-     * @param player the player listening to the sound
+     * @param entity the entity listening to the sound
      * @param getter the getter which can get the fluid
      * @param pos    the position of the fluid
      * @param action the action being performed
      * @return the sound to play when performing the action
      */
     @Nullable
-    public SoundEvent getSound(@Nullable Player player, BlockGetter getter, BlockPos pos, SoundAction action) {
+    public SoundEvent getSound(@Nullable LivingEntity entity, BlockGetter getter, BlockPos pos, SoundAction action) {
         return this.getSound(action);
     }
 
@@ -808,7 +807,7 @@ public class FluidType {
      * @param stack the stack holding the fluid being placed
      * @return {@code true} if this fluid should be vaporized on placement, {@code false} otherwise
      *
-     * @see BucketItem#emptyContents(Player, Level, BlockPos, BlockHitResult)
+     * @see BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult)
      */
     public boolean isVaporizedOnPlacement(Level level, BlockPos pos, FluidStack stack) {
         if (level.dimensionType().ultraWarm()) {
@@ -822,16 +821,15 @@ public class FluidType {
      *
      * <p>Note: The fluid will already have been drained from the stack.
      *
-     * @param player the player placing the fluid, may be {@code null} for blocks like dispensers
+     * @param entity the player placing the fluid, may be {@code null} for blocks like dispensers
      * @param level  the level the fluid is vaporized in
      * @param pos    the position the fluid is vaporized at
      * @param stack  the stack holding the fluid being vaporized
-     *
-     * @see BucketItem#emptyContents(Player, Level, BlockPos, BlockHitResult)
+     * @see BucketItem#emptyContents(LivingEntity, Level, BlockPos, BlockHitResult)
      */
-    public void onVaporize(@Nullable Player player, Level level, BlockPos pos, FluidStack stack) {
-        SoundEvent sound = this.getSound(player, level, pos, SoundActions.FLUID_VAPORIZE);
-        level.playSound(player, pos, sound != null ? sound : SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (level.random.nextFloat() - level.random.nextFloat()) * 0.8F);
+    public void onVaporize(@Nullable LivingEntity entity, Level level, BlockPos pos, FluidStack stack) {
+        SoundEvent sound = this.getSound(entity, level, pos, SoundActions.FLUID_VAPORIZE);
+        level.playSound(entity, pos, sound != null ? sound : SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (level.random.nextFloat() - level.random.nextFloat()) * 0.8F);
 
         for (int l = 0; l < 8; ++l)
             level.addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, (double) pos.getX() + Math.random(), (double) pos.getY() + Math.random(), (double) pos.getZ() + Math.random(), 0.0D, 0.0D, 0.0D);

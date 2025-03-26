@@ -10,10 +10,10 @@
 +    @Deprecated
      public static final Supplier<BiMap<Block, Block>> WAXABLES = Suppliers.memoize(
          () -> ImmutableBiMap.<Block, Block>builder()
-                 .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
+             .put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
 @@ -60,6 +_,10 @@
-                 .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
-                 .build()
+             .put(Blocks.OXIDIZED_COPPER_BULB, Blocks.WAXED_OXIDIZED_COPPER_BULB)
+             .build()
      );
 +    /**
 +     * @deprecated Use the {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_WAXABLES_DATAMAP inverse map} generated from the data map, this field will be ignored in a future version

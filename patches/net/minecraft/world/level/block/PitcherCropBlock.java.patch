@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/block/PitcherCropBlock.java
 +++ b/net/minecraft/world/level/block/PitcherCropBlock.java
-@@ -93,12 +_,13 @@
+@@ -102,12 +_,13 @@
  
      @Override
      public boolean canSurvive(BlockState p_277671_, LevelReader p_277477_, BlockPos p_278085_) {
 -        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? false : super.canSurvive(p_277671_, p_277477_, p_278085_);
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_277477_.getBlockState(p_278085_.below()).canSustainPlant(p_277477_, p_278085_.below(), Direction.UP, p_277671_);
++        var soilDecision = p_277477_.getBlockState(p_278085_.below()).canSustainPlant(p_277477_, p_278085_.below(), Direction.UP, p_277671_);
 +        return isLower(p_277671_) && !sufficientLight(p_277477_, p_278085_) ? soilDecision.isTrue() : super.canSurvive(p_277671_, p_277477_, p_278085_);
      }
  
@@ -16,7 +16,7 @@
      }
  
      @Override
-@@ -132,7 +_,7 @@
+@@ -139,7 +_,7 @@
  
      @Override
      public void randomTick(BlockState p_277950_, ServerLevel p_277589_, BlockPos p_277937_, RandomSource p_277887_) {

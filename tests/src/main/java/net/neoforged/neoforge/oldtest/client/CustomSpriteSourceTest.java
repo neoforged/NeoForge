@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.oldtest.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +14,6 @@ import java.util.Optional;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteTicker;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
-import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +25,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
+import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
@@ -47,15 +47,14 @@ public class CustomSpriteSourceTest {
         ITEMS.register(modEventBus);
     }
 
-    private void registerTextureAtlasSpriteLoaders(RegisterSpriteSourceTypesEvent event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_sprite_source"), CustomSpriteSource.TYPE);
+    private void registerTextureAtlasSpriteLoaders(RegisterSpriteSourcesEvent event) {
+        event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "custom_sprite_source"), CustomSpriteSource.CODEC);
     }
 
     private record CustomSpriteSource(ResourceLocation id) implements SpriteSource {
         private static final Logger LOGGER = LogUtils.getLogger();
         private static final MapCodec<CustomSpriteSource> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 ResourceLocation.CODEC.fieldOf("id").forGetter(CustomSpriteSource::id)).apply(inst, CustomSpriteSource::new));
-        private static final SpriteSourceType TYPE = new SpriteSourceType(CustomSpriteSource.CODEC);
 
         @Override
         public void run(ResourceManager manager, Output output) {
@@ -70,8 +69,8 @@ public class CustomSpriteSourceTest {
         }
 
         @Override
-        public SpriteSourceType type() {
-            return TYPE;
+        public MapCodec<CustomSpriteSource> codec() {
+            return CODEC;
         }
 
         static final class CustomSpriteContents extends SpriteContents {
@@ -88,9 +87,9 @@ public class CustomSpriteSourceTest {
                 final RandomSource random = RandomSource.create();
 
                 @Override
-                public void tickAndUpload(int x, int y) {
+                public void tickAndUpload(int x, int y, GpuTexture texture) {
                     CustomSpriteContents.this.byMipLevel[0].fillRect(0, 0, 16, 16, 0xFF000000 | random.nextInt(0xFFFFFF));
-                    CustomSpriteContents.this.uploadFirstFrame(x, y);
+                    CustomSpriteContents.this.uploadFirstFrame(x, y, texture);
                 }
 
                 @Override

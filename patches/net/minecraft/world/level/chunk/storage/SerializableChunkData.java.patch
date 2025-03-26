@@ -11,7 +11,7 @@
  ) {
      private static final Codec<PalettedContainer<BlockState>> BLOCK_STATE_CODEC = PalettedContainer.codecRW(
          Block.BLOCK_STATE_REGISTRY, BlockState.CODEC, PalettedContainer.Strategy.SECTION_STATES, Blocks.AIR.defaultBlockState()
-@@ -108,6 +_,33 @@
+@@ -110,6 +_,33 @@
      public static final String BLOCK_LIGHT_TAG = "BlockLight";
      public static final String SKY_LIGHT_TAG = "SkyLight";
  
@@ -44,35 +44,29 @@
 +
      @Nullable
      public static SerializableChunkData parse(LevelHeightAccessor p_361938_, RegistryAccess p_365010_, CompoundTag p_362040_) {
-         if (!p_362040_.contains("Status", 8)) {
-@@ -224,6 +_,15 @@
-                 list.add(new SerializableChunkData.SectionData(j1, levelchunksection, datalayer, datalayer1));
+         if (p_362040_.getString("Status").isEmpty()) {
+@@ -195,6 +_,9 @@
+                 }
              }
  
-+            CompoundTag attachmentData = null;
-+            if (p_362040_.contains(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY, Tag.TAG_COMPOUND)) {
-+                attachmentData = p_362040_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY);
-+            }
-+            ListTag auxLightData = null;
-+            if (p_362040_.contains(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, Tag.TAG_LIST)) {
-+                auxLightData = p_362040_.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY, Tag.TAG_COMPOUND);
-+            }
++            CompoundTag attachmentData = p_362040_.getCompound(net.neoforged.neoforge.attachment.AttachmentHolder.ATTACHMENTS_NBT_KEY).orElse(null);
++            ListTag auxLightData = p_362040_.getList(net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager.LIGHT_NBT_KEY).orElse(null);
 +
              return new SerializableChunkData(
                  registry,
                  chunkpos,
-@@ -242,7 +_,9 @@
-                 list,
+@@ -213,7 +_,9 @@
+                 list2,
                  list3,
                  list4,
--                compoundtag2
-+                compoundtag2,
+-                compoundtag1
++                compoundtag1,
 +                attachmentData,
 +                auxLightData
              );
          }
      }
-@@ -302,6 +_,9 @@
+@@ -273,6 +_,9 @@
                  postLoadChunk(p_360452_, this.entities, this.blockEntities),
                  BlendingData.unpack(this.blendingData)
              );
@@ -82,7 +76,7 @@
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(this.packedTicks.blocks());
              ProtoChunkTicks<Fluid> protochunkticks1 = ProtoChunkTicks.load(this.packedTicks.fluids());
-@@ -340,6 +_,10 @@
+@@ -311,6 +_,10 @@
              chunkaccess.addPackedPostProcess(this.postProcessingSections[j], j);
          }
  
@@ -93,7 +87,7 @@
          if (chunktype == ChunkType.LEVELCHUNK) {
              return new ImposterProtoChunk((LevelChunk)chunkaccess, false);
          } else {
-@@ -429,6 +_,17 @@
+@@ -400,6 +_,17 @@
              CompoundTag compoundtag1 = packStructureData(
                  StructurePieceSerializationContext.fromLevel(p_365319_), chunkpos, p_362284_.getAllStarts(), p_362284_.getAllReferences()
              );
@@ -111,7 +105,7 @@
              return new SerializableChunkData(
                  p_365319_.registryAccess().lookupOrThrow(Registries.BIOME),
                  chunkpos,
-@@ -447,7 +_,9 @@
+@@ -418,7 +_,9 @@
                  list,
                  list2,
                  list1,
@@ -122,7 +116,7 @@
              );
          }
      }
-@@ -526,6 +_,14 @@
+@@ -485,6 +_,14 @@
          this.heightmaps.forEach((p_362472_, p_363515_) -> compoundtag2.put(p_362472_.getSerializationKey(), new LongArrayTag(p_363515_)));
          compoundtag.put("Heightmaps", compoundtag2);
          compoundtag.put("structures", this.structureData);

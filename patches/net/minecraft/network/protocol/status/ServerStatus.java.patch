@@ -11,14 +11,14 @@
      public static final Codec<ServerStatus> CODEC = RecordCodecBuilder.create(
          p_337519_ -> p_337519_.group(
 @@ -29,10 +_,19 @@
-                     ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
-                     ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
-                     ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
--                    Codec.BOOL.lenientOptionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat)
-+                    Codec.BOOL.optionalFieldOf("enforcesSecureChat", Boolean.valueOf(false)).forGetter(ServerStatus::enforcesSecureChat),
-+                    Codec.BOOL.optionalFieldOf("isModded", Boolean.FALSE).forGetter(ServerStatus::isModded)
-                 )
-                 .apply(p_337519_, ServerStatus::new)
+                 ServerStatus.Players.CODEC.lenientOptionalFieldOf("players").forGetter(ServerStatus::players),
+                 ServerStatus.Version.CODEC.lenientOptionalFieldOf("version").forGetter(ServerStatus::version),
+                 ServerStatus.Favicon.CODEC.lenientOptionalFieldOf("favicon").forGetter(ServerStatus::favicon),
+-                Codec.BOOL.lenientOptionalFieldOf("enforcesSecureChat", false).forGetter(ServerStatus::enforcesSecureChat)
++                Codec.BOOL.lenientOptionalFieldOf("enforcesSecureChat", false).forGetter(ServerStatus::enforcesSecureChat),
++                Codec.BOOL.lenientOptionalFieldOf("isModded", Boolean.FALSE).forGetter(ServerStatus::isModded)
+             )
+             .apply(p_337519_, ServerStatus::new)
      );
 +
 +    /**
@@ -29,5 +29,5 @@
 +        this(description, players, version, favicon, enforcesSecureChat, false);
 +    }
  
-     public static record Favicon(byte[] iconBytes) {
+     public record Favicon(byte[] iconBytes) {
          private static final String PREFIX = "data:image/png;base64,";

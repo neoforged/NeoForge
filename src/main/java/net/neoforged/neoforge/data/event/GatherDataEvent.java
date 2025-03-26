@@ -25,8 +25,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.DetectedVersion;
-import net.minecraft.client.resources.ClientPackSource;
-import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
@@ -52,6 +50,7 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;
@@ -145,7 +144,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
 
             clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, consumer -> {
                 if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
-                    consumer.accept(ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex)));
+                    consumer.accept(NeoForgeProxy.INSTANCE.createVanillaPackSource(assetsDir, assetIndex));
             });
 
             serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));

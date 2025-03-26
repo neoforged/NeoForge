@@ -1,24 +1,24 @@
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -493,7 +_,7 @@
+@@ -503,7 +_,7 @@
              int k = 0;
  
              for (int l = 0; l < j; l++) {
--                Raider raider = raid$raidertype.entityType.create(this.level, EntitySpawnReason.EVENT);
-+                Raider raider = raid$raidertype.entityTypeSupplier.get().create(this.level, EntitySpawnReason.EVENT);
+-                Raider raider = raid$raidertype.entityType.create(p_401196_, EntitySpawnReason.EVENT);
++                Raider raider = raid$raidertype.entityTypeSupplier.get().create(p_401196_, EntitySpawnReason.EVENT);
                  if (raider == null) {
                      break;
                  }
-@@ -505,7 +_,7 @@
+@@ -515,7 +_,7 @@
                  }
  
-                 this.joinRaid(i, raider, p_37756_, false);
+                 this.joinRaid(p_401196_, i, raider, p_37756_, false);
 -                if (raid$raidertype.entityType == EntityType.RAVAGER) {
 +                if (raid$raidertype.entityTypeSupplier.get() == EntityType.RAVAGER) {
                      Raider raider1 = null;
                      if (i == this.getNumGroups(Difficulty.NORMAL)) {
-                         raider1 = EntityType.PILLAGER.create(this.level, EntitySpawnReason.EVENT);
-@@ -836,12 +_,26 @@
+                         raider1 = EntityType.PILLAGER.create(p_401196_, EntitySpawnReason.EVENT);
+@@ -808,12 +_,26 @@
          RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  
          static final Raid.RaiderType[] VALUES = values();

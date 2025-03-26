@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
-@@ -11,6 +_,7 @@
+@@ -12,6 +_,7 @@
  
  public class AABB {
      private static final double EPSILON = 1.0E-7;
@@ -8,7 +8,7 @@
      public final double minX;
      public final double minY;
      public final double minZ;
-@@ -584,5 +_,13 @@
+@@ -571,6 +_,14 @@
              p_165883_.y + p_165885_ / 2.0,
              p_165883_.z + p_165886_ / 2.0
          );
@@ -21,4 +21,5 @@
 +        return this == INFINITE || (Double.isInfinite(this.minX) && Double.isInfinite(this.minY) && Double.isInfinite(this.minZ)
 +                && Double.isInfinite(this.maxX) && Double.isInfinite(this.maxY) && Double.isInfinite(this.maxZ));
      }
- }
+ 
+     public static class Builder {

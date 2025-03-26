@@ -8,12 +8,11 @@ package net.neoforged.neoforge.debug.level;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.worldgen.features.TreeFeatures;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Shearable;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
@@ -31,6 +30,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { LevelTests.GROUP + ".event", "event" })
@@ -106,7 +106,7 @@ public class LevelEventTests {
                 // Prepare a dispenser to shear the sheep in the second phase
                 .thenSequence(sequence -> sequence
                         .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
-                        .thenMap(() -> helper.requireBlockEntity(1, 1, 1, DispenserBlockEntity.class))
+                        .thenMap(() -> helper.getBlockEntity(1, 1, 1, DispenserBlockEntity.class))
                         .thenExecute(dispenser -> dispenser.setItem(1, Items.SHEARS.getDefaultInstance())))
 
                 .thenIdle(5)

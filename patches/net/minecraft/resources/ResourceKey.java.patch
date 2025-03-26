@@ -11,6 +11,6 @@
 +        return ret;
 +    }
 +
-     static record InternKey(ResourceLocation registry, ResourceLocation location) {
+     record InternKey(ResourceLocation registry, ResourceLocation location) {
      }
  }

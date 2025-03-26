@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -74,6 +_,7 @@
+@@ -73,6 +_,7 @@
      private boolean wasModded;
      private final Set<String> removedFeatureFlags;
      private final TimerQueue<MinecraftServer> scheduledEvents;
@@ -8,7 +8,7 @@
  
      private PrimaryLevelData(
          @Nullable CompoundTag p_277888_,
-@@ -169,7 +_,7 @@
+@@ -168,7 +_,7 @@
          Dynamic<T> p_78531_, LevelSettings p_78535_, PrimaryLevelData.SpecialWorldProperty p_250651_, WorldOptions p_251864_, Lifecycle p_78538_
      ) {
          long i = p_78531_.get("Time").asLong(0L);
@@ -17,7 +17,7 @@
              p_78531_.get("Player").flatMap(CompoundTag.CODEC::parse).result().orElse(null),
              p_78531_.get("WasModded").asBoolean(false),
              new BlockPos(p_78531_.get("SpawnX").asInt(0), p_78531_.get("SpawnY").asInt(0), p_78531_.get("SpawnZ").asInt(0)),
-@@ -192,7 +_,8 @@
+@@ -191,7 +_,8 @@
                  .asStream()
                  .flatMap(p_338118_ -> p_338118_.asString().result().stream())
                  .collect(Collectors.toCollection(Sets::newLinkedHashSet)),
@@ -27,7 +27,7 @@
              new TimerQueue<>(TimerCallbacks.SERVER_CALLBACKS, p_78531_.get("ScheduledEvents").asStream()),
              (CompoundTag)p_78531_.get("CustomBossEvents").orElseEmptyMap().getValue(),
              p_78531_.get("DragonFight").read(EndDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EndDragonFight.Data.DEFAULT),
-@@ -200,7 +_,11 @@
+@@ -199,7 +_,11 @@
              p_251864_,
              p_250651_,
              p_78538_
@@ -40,19 +40,20 @@
      }
  
      @Override
-@@ -273,6 +_,11 @@
-         if (this.wanderingTraderId != null) {
-             p_78547_.putUUID("WanderingTraderId", this.wanderingTraderId);
-         }
+@@ -267,6 +_,12 @@
+         p_78547_.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
+         p_78547_.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
+         p_78547_.storeNullable("WanderingTraderId", UUIDUtil.CODEC, this.wanderingTraderId);
++
++        // Neo:
 +        p_78547_.putString("forgeLifecycle", net.neoforged.neoforge.common.CommonHooks.encodeLifecycle(this.settings.getLifecycle()));
 +        p_78547_.putBoolean("confirmedExperimentalSettings", this.confirmedExperimentalWarning);
-+        // Neo:
 +        p_78547_.putFloat("neoDayTimeFraction", dayTimeFraction);
 +        p_78547_.putFloat("neoDayTimePerTick", dayTimePerTick);
      }
  
      private static ListTag stringCollectionToTag(Set<String> p_277880_) {
-@@ -572,10 +_,58 @@
+@@ -566,10 +_,58 @@
          return this.settings.copy();
      }
  

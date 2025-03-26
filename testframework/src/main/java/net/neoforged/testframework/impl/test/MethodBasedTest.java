@@ -7,9 +7,9 @@ package net.neoforged.testframework.impl.test;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import net.minecraft.gametest.framework.GameTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.impl.ReflectionUtils;
 
 public class MethodBasedTest extends AbstractTest.Dynamic {

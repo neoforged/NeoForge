@@ -7,7 +7,7 @@
 -        if (!p_23174_.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 +        if (!net.neoforged.neoforge.event.EventHooks.canEntityGrief(p_23174_, p_23175_)) {
              return false;
-         } else if (p_23175_.getVillagerData().getProfession() != VillagerProfession.FARMER) {
+         } else if (!p_23175_.getVillagerData().profession().is(VillagerProfession.FARMER)) {
              return false;
 @@ -82,7 +_,7 @@
          BlockState blockstate = p_23182_.getBlockState(p_23181_);

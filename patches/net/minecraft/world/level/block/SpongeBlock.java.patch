@@ -15,5 +15,5 @@
 -                        if (!fluidstate.is(FluidTags.WATER)) {
 +                        if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_294069_)) {
                              return BlockPos.TraversalNodeStatus.SKIP;
-                         } else {
-                             if (blockstate.getBlock() instanceof BucketPickup bucketpickup
+                         } else if (blockstate.getBlock() instanceof BucketPickup bucketpickup
+                             && !bucketpickup.pickupBlock(null, p_56808_, p_294069_, blockstate).isEmpty()) {

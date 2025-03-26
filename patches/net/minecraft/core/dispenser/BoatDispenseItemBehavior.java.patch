@@ -1,8 +1,8 @@
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 @@ -29,27 +_,33 @@
-         double d2 = vec3.y() + (double)((float)direction.getStepY() * 1.125F);
-         double d3 = vec3.z() + (double)direction.getStepZ() * d0;
+         double d2 = vec3.y() + direction.getStepY() * 1.125F;
+         double d3 = vec3.z() + direction.getStepZ() * d0;
          BlockPos blockpos = p_302460_.pos().relative(direction);
 +        AbstractBoat abstractboat = this.type.create(serverlevel, EntitySpawnReason.DISPENSER);
 +        if (abstractboat != null) {

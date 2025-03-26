@@ -19,8 +19,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -38,6 +36,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = HolderSetTests.GROUP)
 public class HolderSetTests {
@@ -61,15 +60,12 @@ public class HolderSetTests {
         return holderSet0.getClass() == holderSet1.getClass() && holderSet0.unwrap().equals(holderSet1.unwrap());
     }
 
-    private static <T, A> void testHolderSetCodecWithOps(DynamicOps<T> ops, HolderLookup.Provider lookup, Codec<HolderSet<A>> codec, HolderSet<A> holderSet) {
+    private static <T, A> void testHolderSetCodecWithOps(ExtendedGameTestHelper helper, DynamicOps<T> ops, HolderLookup.Provider lookup, Codec<HolderSet<A>> codec, HolderSet<A> holderSet) {
         RegistryOps<T> registryOps = RegistryOps.create(ops, lookup);
         T encoded = codec.encodeStart(registryOps, holderSet).getOrThrow(EncoderException::new);
         HolderSet<A> decoded = codec.parse(registryOps, encoded).getOrThrow(DecoderException::new);
         if (!areHolderSetsEqual(holderSet, decoded)) {
-            throw new GameTestAssertException(holderSet + " failed Codec test with "
-                    + (ops.compressMaps() ? "compressed " + ops : ops)
-                    + ", encoded result: " + encoded
-                    + ", decoded result: " + decoded);
+            throw helper.assertionException("%s failed Codec test with %s, encoded result: %s, decoded result: %s", holderSet, (ops.compressMaps() ? "compressed " + ops : ops), encoded, decoded);
         }
     }
 
@@ -81,9 +77,9 @@ public class HolderSetTests {
         Codec<HolderSet<Item>> codec = RegistryCodecs.homogeneousList(Registries.ITEM);
         HolderLookup.Provider lookup = test.getLevel().registryAccess();
         for (HolderSet<Item> holderSet : holderSets) {
-            testHolderSetCodecWithOps(NbtOps.INSTANCE, lookup, codec, holderSet);
-            testHolderSetCodecWithOps(JsonOps.INSTANCE, lookup, codec, holderSet);
-            testHolderSetCodecWithOps(JsonOps.COMPRESSED, lookup, codec, holderSet);
+            testHolderSetCodecWithOps(test, NbtOps.INSTANCE, lookup, codec, holderSet);
+            testHolderSetCodecWithOps(test, JsonOps.INSTANCE, lookup, codec, holderSet);
+            testHolderSetCodecWithOps(test, JsonOps.COMPRESSED, lookup, codec, holderSet);
         }
         test.succeed();
     }
@@ -100,7 +96,7 @@ public class HolderSetTests {
             streamCodec.encode(buf, holderSet);
             HolderSet<Item> decoded = streamCodec.decode(buf);
             if (!areHolderSetsEqual(holderSet, decoded)) {
-                throw new GameTestAssertException(holderSet + " failed StreamCodec test, decoded result: " + decoded);
+                throw test.assertionException("%s failed StreamCodec test, decoded result: %s", holderSet, decoded);
             }
         }
         test.succeed();

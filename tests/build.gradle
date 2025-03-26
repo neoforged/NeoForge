@@ -22,7 +22,11 @@ sourceSets {
 }
 
 dependencies {
-    implementation(neoforgeProject)
+    implementation(neoforgeProject) {
+        capabilities {
+            requireFeature('client')
+        }
+    }
     implementation(testframeworkProject)
 
     junitImplementation(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
@@ -31,13 +35,18 @@ dependencies {
 
     junitImplementation("org.assertj:assertj-core:${project.assertj_core}")
     junitImplementation "net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}"
-    junitImplementation(neoforgeProject)
+    junitImplementation(neoforgeProject) {
+        capabilities {
+            requireFeature('client')
+        }
+    }
     junitImplementation(testframeworkProject)
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 }
 
 // Select runtimeElements rather than universalJar from the neoforge project
+// (transitive dependency of the NeoForge client sourceset)
 sourceSets.each {
     configurations.named(it.runtimeClasspathConfigurationName) {
         attributes {
@@ -107,14 +116,14 @@ neoDev {
 
     runs.configureEach {
         // Add NeoForge and Minecraft (both under the "minecraft" mod), and exclude junit.
-        loadedMods = [neoforgeProject.neoDev.mods.minecraft, mods.neotests, mods.testframework, mods.coremods]
+        loadedMods = [neoforgeProject.joinedMod, mods.neotests, mods.testframework, mods.coremods]
 
         gameDirectory.set project.file("runs/${it.name}") as File
     }
 }
 
 neoDevTest {
-    loadedMods = [ project(":neoforge").neoDev.mods.minecraft, neoDev.mods.testframework, neoDev.mods.coremods, neoDev.mods.junit ]
+    loadedMods = [ neoforgeProject.joinedMod, neoDev.mods.testframework, neoDev.mods.coremods, neoDev.mods.junit ]
 }
 
 license {

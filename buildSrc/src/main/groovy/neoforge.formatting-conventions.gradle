@@ -34,6 +34,9 @@ abstract class GeneratePackageInfos extends DefaultTask {
 }
 final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePackageInfos) {
     it.files.from fileTree("src/main/java")
+    if (file("src/client/java").exists()) {
+        it.files.from fileTree("src/client/java")
+    }
 }
 
 immaculate {

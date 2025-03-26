@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -88,7 +89,7 @@ public class CustomItemDisplayContextTest {
             public ItemHangerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
             @Override
-            public void render(ItemHangerBlockEntity blocken, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int overlayCoord) {
+            public void render(ItemHangerBlockEntity blocken, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int overlayCoord, Vec3 cameraPos) {
                 var state = blocken.getBlockState();
 
                 if (!(state.getBlock() instanceof ItemHangerBlock)) return;
@@ -229,9 +230,9 @@ public class CustomItemDisplayContextTest {
         @Override
         public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.loadAdditional(tag, holderLookup);
-            if (tag.contains("item")) {
-                var c = tag.getCompound("item");
-                heldItem = ItemStack.parse(holderLookup, c).orElseThrow();
+            var itemTag = tag.getCompound("item").orElse(null);
+            if (itemTag != null) {
+                heldItem = ItemStack.parse(holderLookup, itemTag).orElseThrow();
             }
         }
     }

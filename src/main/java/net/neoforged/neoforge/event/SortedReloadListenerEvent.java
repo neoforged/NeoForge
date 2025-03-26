@@ -18,11 +18,10 @@ import java.util.function.Function;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Base class for {@link AddServerReloadListenersEvent} and {@link AddClientReloadListenersEvent}.
+ * Base class for {@link AddServerReloadListenersEvent} and {@code AddClientReloadListenersEvent}.
  * <p>
  * This class holds the sorting logic that allows for the creation of dependency ordering.
  */
