@@ -262,8 +262,8 @@
 +                        var ev = net.neoforged.neoforge.common.CommonHooks.onDamageBlock(this, this.damageContainers.peek(), f, !blocksattacks.bypassedBy().map(p_401067_::is).orElse(false));
 +                        if (!ev.getBlocked()) return 0.0F;
 +
-+                        this.damageContainers.peek().setBlockedDamage(ev);
 +                        f = ev.getBlockedDamage();
++                        this.damageContainers.peek().setBlockedDamage(ev);
 +
 +                        blocksattacks.hurtBlockingItem(this.level(), itemstack, this, this.getUsedItemHand(), f, ev.shieldDamage());
                          if (!p_401067_.is(DamageTypeTags.IS_PROJECTILE) && p_401067_.getDirectEntity() instanceof LivingEntity livingentity) {
