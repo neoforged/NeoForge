@@ -217,7 +217,7 @@ public class NeoDevPlugin implements Plugin<Project> {
          */
 
         // Task to create a jar with both common and client classes.
-        // We cannot the client classes in the default `jar` task because it might be used
+        // We cannot add the client classes to the default `jar` task because it might be used
         // as a dependency for the compilation of the client classes, leading to a circular dependency.
         var joinedJar = tasks.register("joinedJar", Jar.class, task -> {
             task.setGroup(INTERNAL_GROUP);
