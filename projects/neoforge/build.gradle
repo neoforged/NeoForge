@@ -191,6 +191,10 @@ runTypes {
         arguments.addAll '--fml.mcVersion', project.minecraft_version
         arguments.addAll '--fml.neoFormVersion', project.neoform_version
     }
+
+    configureEach {
+        systemProperty("terminal.ansi", "true")
+    }
 }
 
 runs {
