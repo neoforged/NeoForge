@@ -20,6 +20,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -495,7 +496,7 @@ public final class TagConventionLogWarning {
         // Log tags that are still using legacy 'forge' namespace
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            LogWarningMode legacyTagWarningMode = NeoForgeConfig.COMMON.logLegacyTagWarnings.get();
+            LogWarningMode legacyTagWarningMode = NeoForgeCommonConfig.COMMON.logLegacyTagWarnings.get();
             if (legacyTagWarningMode != LogWarningMode.SILENCED) {
                 boolean isConfigSetToDev = legacyTagWarningMode == LogWarningMode.DEV_SHORT ||
                         legacyTagWarningMode == LogWarningMode.DEV_VERBOSE;

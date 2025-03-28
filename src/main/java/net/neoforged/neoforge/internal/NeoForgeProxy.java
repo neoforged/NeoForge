@@ -63,10 +63,6 @@ public class NeoForgeProxy {
         throw new UnsupportedOperationException("Cannot handle client payload on the server");
     }
 
-    public void reloadRenderer() {
-        throw new UnsupportedOperationException("Cannot reload renderer on the server");
-    }
-
     public BlockableEventLoop<Runnable> getClientExecutor() {
         throw new UnsupportedOperationException("Cannot access client on the server");
     }

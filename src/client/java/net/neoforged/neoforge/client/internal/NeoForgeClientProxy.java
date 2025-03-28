@@ -58,11 +58,6 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
     }
 
     @Override
-    public void reloadRenderer() {
-        ClientHooks.reloadRenderer();
-    }
-
-    @Override
     public BlockableEventLoop<Runnable> getClientExecutor() {
         return Minecraft.getInstance();
     }
