@@ -17,8 +17,8 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public final class NeoForgeClientConfig {
     @ApiStatus.Internal
-    public static final ModConfigSpec CLIENT_SPEC;
-    public static final NeoForgeClientConfig CLIENT;
+    public static final ModConfigSpec SPEC;
+    public static final NeoForgeClientConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue experimentalForgeLightPipelineEnabled;
     boolean experimentalPipelineActive;
@@ -53,17 +53,17 @@ public final class NeoForgeClientConfig {
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent.Loading configEvent) {
-        if (configEvent.getConfig().getSpec() == CLIENT_SPEC) {
-            CLIENT.experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
+        if (configEvent.getConfig().getSpec() == SPEC) {
+            INSTANCE.experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
         }
     }
 
     @SubscribeEvent
     static void onFileChange(final ModConfigEvent.Reloading configEvent) {
-        if (configEvent.getConfig().getSpec() == CLIENT_SPEC) {
-            boolean experimentalPipelineActive = CLIENT.experimentalForgeLightPipelineEnabled.getAsBoolean();
-            if (experimentalPipelineActive != CLIENT.experimentalPipelineActive) {
-                CLIENT.experimentalPipelineActive = experimentalPipelineActive;
+        if (configEvent.getConfig().getSpec() == SPEC) {
+            boolean experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            if (experimentalPipelineActive != INSTANCE.experimentalPipelineActive) {
+                INSTANCE.experimentalPipelineActive = experimentalPipelineActive;
                 ClientHooks.reloadRenderer();
             }
         }
@@ -71,7 +71,7 @@ public final class NeoForgeClientConfig {
 
     static {
         final Pair<NeoForgeClientConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeClientConfig::new);
-        CLIENT_SPEC = specPair.getRight();
-        CLIENT = specPair.getLeft();
+        SPEC = specPair.getRight();
+        INSTANCE = specPair.getLeft();
     }
 }

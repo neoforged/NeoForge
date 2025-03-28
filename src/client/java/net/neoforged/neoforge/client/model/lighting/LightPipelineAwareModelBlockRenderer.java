@@ -39,7 +39,7 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
 
     @Override
     public void tesselateWithoutAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay) {
-        if (NeoForgeClientConfig.CLIENT.experimentalForgeLightPipelineEnabled.get()) {
+        if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.get()) {
             render(bufferLookup, flatLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay);
         } else {
             super.tesselateWithoutAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay);
@@ -48,7 +48,7 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
 
     @Override
     public void tesselateWithAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay) {
-        if (NeoForgeClientConfig.CLIENT.experimentalForgeLightPipelineEnabled.get()) {
+        if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.get()) {
             render(bufferLookup, smoothLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay);
         } else {
             super.tesselateWithAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay);

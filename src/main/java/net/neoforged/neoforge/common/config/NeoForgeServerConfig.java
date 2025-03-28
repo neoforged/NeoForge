@@ -9,10 +9,13 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * General configuration that needs to be synchronized to the server and/or is desirable to be configurable per world
+ */
 public final class NeoForgeServerConfig {
     @ApiStatus.Internal
-    public static final ModConfigSpec SERVER_SPEC;
-    public static final NeoForgeServerConfig SERVER;
+    public static final ModConfigSpec SPEC;
+    public static final NeoForgeServerConfig INSTANCE;
 
     public final ModConfigSpec.BooleanValue removeErroringBlockEntities;
 
@@ -56,7 +59,7 @@ public final class NeoForgeServerConfig {
 
     static {
         final Pair<NeoForgeServerConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeServerConfig::new);
-        SERVER_SPEC = specPair.getRight();
-        SERVER = specPair.getLeft();
+        SPEC = specPair.getRight();
+        INSTANCE = specPair.getLeft();
     }
 }

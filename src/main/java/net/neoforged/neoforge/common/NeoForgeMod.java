@@ -566,8 +566,8 @@ public class NeoForgeMod {
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
-        container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SERVER_SPEC);
-        container.registerConfig(ModConfig.Type.COMMON, NeoForgeCommonConfig.COMMON_SPEC);
+        container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
+        container.registerConfig(ModConfig.Type.COMMON, NeoForgeCommonConfig.SPEC);
         NeoForgeRegistriesSetup.setup(modEventBus);
         StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 

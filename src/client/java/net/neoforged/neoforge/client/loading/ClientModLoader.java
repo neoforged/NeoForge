@@ -115,7 +115,7 @@ public class ClientModLoader extends CommonModLoader {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         boolean showWarnings = true;
         try {
-            showWarnings = NeoForgeClientConfig.CLIENT.showLoadWarnings.get();
+            showWarnings = NeoForgeClientConfig.INSTANCE.showLoadWarnings.get();
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
         }

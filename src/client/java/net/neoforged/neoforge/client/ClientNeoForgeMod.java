@@ -92,7 +92,7 @@ public class ClientNeoForgeMod {
 
         modEventBus.register(ClientNeoForgeMod.class);
 
-        container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.CLIENT_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
         modEventBus.register(NeoForgeClientConfig.class);
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);

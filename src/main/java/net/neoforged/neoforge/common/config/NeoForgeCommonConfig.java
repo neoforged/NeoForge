@@ -10,10 +10,13 @@ import net.neoforged.neoforge.common.TagConventionLogWarning;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * General configuration that doesn't need to be synchronized but needs to be available before server startup
+ */
 public final class NeoForgeCommonConfig {
     @ApiStatus.Internal
-    public static final ModConfigSpec COMMON_SPEC;
-    public static final NeoForgeCommonConfig COMMON;
+    public static final ModConfigSpec SPEC;
+    public static final NeoForgeCommonConfig INSTANCE;
 
     public final ModConfigSpec.EnumValue<TagConventionLogWarning.LogWarningMode> logUntranslatedItemTagWarnings;
 
@@ -40,7 +43,7 @@ public final class NeoForgeCommonConfig {
 
     static {
         final Pair<NeoForgeCommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(NeoForgeCommonConfig::new);
-        COMMON_SPEC = specPair.getRight();
-        COMMON = specPair.getLeft();
+        SPEC = specPair.getRight();
+        INSTANCE = specPair.getLeft();
     }
 }

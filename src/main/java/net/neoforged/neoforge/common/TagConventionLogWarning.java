@@ -496,7 +496,7 @@ public final class TagConventionLogWarning {
         // Log tags that are still using legacy 'forge' namespace
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            LogWarningMode legacyTagWarningMode = NeoForgeCommonConfig.COMMON.logLegacyTagWarnings.get();
+            LogWarningMode legacyTagWarningMode = NeoForgeCommonConfig.INSTANCE.logLegacyTagWarnings.get();
             if (legacyTagWarningMode != LogWarningMode.SILENCED) {
                 boolean isConfigSetToDev = legacyTagWarningMode == LogWarningMode.DEV_SHORT ||
                         legacyTagWarningMode == LogWarningMode.DEV_VERBOSE;

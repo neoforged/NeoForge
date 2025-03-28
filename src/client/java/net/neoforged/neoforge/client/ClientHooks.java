@@ -1142,7 +1142,7 @@ public class ClientHooks {
 
     @ApiStatus.Internal
     public static TextureFormat getStencilFormat() {
-        var reducedPrecision = NeoForgeClientConfig.CLIENT.reducedDepthStencilFormat.getAsBoolean();
+        var reducedPrecision = NeoForgeClientConfig.INSTANCE.reducedDepthStencilFormat.getAsBoolean();
         return reducedPrecision ? TextureFormat.DEPTH24_STENCIL8 : TextureFormat.DEPTH32_STENCIL8;
     }
 

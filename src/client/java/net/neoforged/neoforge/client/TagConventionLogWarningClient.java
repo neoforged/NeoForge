@@ -42,7 +42,7 @@ public final class TagConventionLogWarningClient {
         // Log missing item tag translations only in integrated server so we can safely get translations.
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeCommonConfig.COMMON.logUntranslatedItemTagWarnings.get();
+            TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeCommonConfig.INSTANCE.logUntranslatedItemTagWarnings.get();
             if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningMode.SILENCED) {
                 boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_SHORT ||
                         untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE;
