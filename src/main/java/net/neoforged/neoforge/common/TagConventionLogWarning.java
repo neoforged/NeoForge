@@ -224,7 +224,6 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "fences/nether_brick", Tags.Items.FENCES_NETHER_BRICK),
             createForgeMapEntry(Registries.ITEM, "fences/wooden", Tags.Items.FENCES_WOODEN),
             createMapEntry(Registries.ITEM, "minecraft", "tall_flowers", Tags.Items.FLOWERS_TALL),
-            createMapEntry(Registries.ITEM, "minecraft", "flowers", Tags.Items.FLOWERS),
             createForgeMapEntry(Registries.ITEM, "furnace", Tags.Items.PLAYER_WORKSTATIONS_FURNACES),
             createForgeMapEntry(Registries.ITEM, "furnaces", Tags.Items.PLAYER_WORKSTATIONS_FURNACES),
             createForgeMapEntry(Registries.ITEM, "gems", Tags.Items.GEMS),
