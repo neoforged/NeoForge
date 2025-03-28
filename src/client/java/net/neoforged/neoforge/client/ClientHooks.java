@@ -487,6 +487,45 @@ public class ClientHooks {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
     }
 
+    public static int computeQuadNormal(int[] vertices) {
+        float x0 = Float.intBitsToFloat(vertices[0]);
+        float y0 = Float.intBitsToFloat(vertices[1]);
+        float z0 = Float.intBitsToFloat(vertices[2]);
+        float x1 = Float.intBitsToFloat(vertices[8]);
+        float y1 = Float.intBitsToFloat(vertices[9]);
+        float z1 = Float.intBitsToFloat(vertices[10]);
+        float x2 = Float.intBitsToFloat(vertices[16]);
+        float y2 = Float.intBitsToFloat(vertices[17]);
+        float z2 = Float.intBitsToFloat(vertices[18]);
+        float x3 = Float.intBitsToFloat(vertices[24]);
+        float y3 = Float.intBitsToFloat(vertices[25]);
+        float z3 = Float.intBitsToFloat(vertices[26]);
+
+        float dx0 = x3 - x1;
+        float dy0 = y3 - y1;
+        float dz0 = z3 - z1;
+        float dx1 = x2 - x0;
+        float dy1 = y2 - y0;
+        float dz1 = z2 - z0;
+
+        float nx = dy1 * dz0 - dz1 * dy0;
+        float ny = dz1 * dx0 - dx1 * dz0;
+        float nz = dx1 * dy0 - dy1 * dx0;
+
+        float length = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+        if (length > 0) {
+            nx /= length;
+            ny /= length;
+            nz /= length;
+        }
+
+        int packedx = ((byte) Math.round(nx * 127)) & 0xFF;
+        int packedy = ((byte) Math.round(ny * 127)) & 0xFF;
+        int packedz = ((byte) Math.round(nz * 127)) & 0xFF;
+
+        return packedx | (packedy << 8) | (packedz << 16);
+    }
+
     /**
      * internal, relies on fixed format of FaceBakery
      */

@@ -74,6 +74,7 @@
          boolean p_234397_,
          int p_234400_
      ) {
+-        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
 +        this.tesselateWithAO(p_234391_, p_410478_, p_234393_, p_234394_, p_234395_, type -> p_234396_, p_234397_, p_234400_);
 +    }
 +
@@ -87,7 +88,7 @@
 +        boolean p_234397_,
 +        int p_234400_
 +    ) {
-         ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
++        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage();// new ModelBlockRenderer.AmbientOcclusionRenderStorage();
          int i = 0;
          int j = 0;
  
@@ -147,14 +148,50 @@
                              i |= k;
                              if (flag1) {
                                  j |= k;
-@@ -192,6 +_,7 @@
+@@ -192,7 +_,10 @@
      ) {
          for (BakedQuad bakedquad : p_111018_) {
              calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.vertices(), bakedquad.direction(), p_412172_);
-+            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_412172_.cache, p_412172_.faceCubic, p_412172_.brightness, p_412172_.lightmap))
-             p_412172_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.direction(), bakedquad.shade());
+-            p_412172_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.direction(), bakedquad.shade());
++            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_412172_.cache, p_412172_.faceCubic, p_412172_.brightness, p_412172_.lightmap)) {
++                p_412172_.captureQuad(bakedquad);
++                p_412172_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.direction(), bakedquad.shade());
++            }
              this.putQuadData(p_111013_, p_111014_, p_111015_, p_111017_, p_111016_.last(), bakedquad, p_412172_, p_111022_);
          }
+     }
+@@ -284,14 +_,23 @@
+             case WEST, EAST -> f1 >= 1.0E-4F || f2 >= 1.0E-4F || f4 <= 0.9999F || f5 <= 0.9999F;
+         };
+ 
+-        p_412438_.faceCubic = switch (p_111044_) {
+-            case DOWN -> f1 == f4 && (f1 < 1.0E-4F || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+-            case UP -> f1 == f4 && (f4 > 0.9999F || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+-            case NORTH -> f2 == f5 && (f2 < 1.0E-4F || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+-            case SOUTH -> f2 == f5 && (f5 > 0.9999F || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+-            case WEST -> f == f3 && (f < 1.0E-4F || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+-            case EAST -> f == f3 && (f3 > 0.9999F || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+-        };
++        p_412438_.faceAxisAligned = switch (p_111044_) {
++            case DOWN -> f1 == f4;
++            case UP -> f1 == f4;
++            case NORTH -> f2 == f5;
++            case SOUTH -> f2 == f5;
++            case WEST -> f == f3;
++            case EAST -> f == f3;
++        };
++        p_412438_.faceCoordinateCubic = p_412438_.faceAxisAligned && switch (p_111044_) {
++            case DOWN -> f1 < 1.0E-4F;
++            case UP -> f4 > 0.9999F;
++            case NORTH -> f2 < 1.0E-4F;
++            case SOUTH -> f5 > 0.9999F;
++            case WEST -> f < 1.0E-4F;
++            case EAST -> f3 > 0.9999F;
++        };
++        p_412438_.faceCubic = p_412438_.faceAxisAligned && (p_412438_.faceCoordinateCubic || p_111041_.isCollisionShapeFullBlock(p_111040_, p_111042_));
+     }
+ 
+     private void renderModelFaceFlat(
 @@ -326,6 +_,7 @@
          }
      }
@@ -189,6 +226,57 @@
              for (Direction direction : DIRECTIONS) {
                  renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, blockmodelpart.getQuads(direction), p_111075_, p_111076_);
              }
+@@ -381,8 +_,9 @@
+         CACHE.get().disable();
+     }
+ 
++    // TODO: AT
+     @OnlyIn(Dist.CLIENT)
+-    protected static enum AdjacencyInfo {
++    public static enum AdjacencyInfo {
+         DOWN(
+             new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH},
+             0.5F,
+@@ -654,12 +_,13 @@
+             }
+         );
+ 
+-        final Direction[] corners;
++        // TODO: AT
++        public final Direction[] corners;
+         final boolean doNonCubicWeight;
+-        final ModelBlockRenderer.SizeInfo[] vert0Weights;
+-        final ModelBlockRenderer.SizeInfo[] vert1Weights;
+-        final ModelBlockRenderer.SizeInfo[] vert2Weights;
+-        final ModelBlockRenderer.SizeInfo[] vert3Weights;
++        public final ModelBlockRenderer.SizeInfo[] vert0Weights;
++        public final ModelBlockRenderer.SizeInfo[] vert1Weights;
++        public final ModelBlockRenderer.SizeInfo[] vert2Weights;
++        public final ModelBlockRenderer.SizeInfo[] vert3Weights;
+         private static final ModelBlockRenderer.AdjacencyInfo[] BY_FACING = Util.make(new ModelBlockRenderer.AdjacencyInfo[6], p_111134_ -> {
+             p_111134_[Direction.DOWN.get3DDataValue()] = DOWN;
+             p_111134_[Direction.UP.get3DDataValue()] = UP;
+@@ -691,13 +_,18 @@
+         }
+     }
+ 
++    // TODO: AT
+     @OnlyIn(Dist.CLIENT)
+-    static class AmbientOcclusionRenderStorage extends ModelBlockRenderer.CommonRenderStorage {
+-        final float[] faceShape = new float[ModelBlockRenderer.SizeInfo.COUNT];
++    public static class AmbientOcclusionRenderStorage extends ModelBlockRenderer.CommonRenderStorage {
++        // TODO: AT
++        protected final float[] faceShape = new float[ModelBlockRenderer.SizeInfo.COUNT];
+ 
+         public AmbientOcclusionRenderStorage() {
+         }
+ 
++        // Neo: yay!
++        public void captureQuad(BakedQuad quad) {}
++
+         public void calculate(BlockAndTintGetter p_412286_, BlockState p_412102_, BlockPos p_412730_, Direction p_412336_, boolean p_412430_) {
+             BlockPos blockpos = this.faceCubic ? p_412730_.relative(p_412336_) : p_412730_;
+             ModelBlockRenderer.AdjacencyInfo modelblockrenderer$adjacencyinfo = ModelBlockRenderer.AdjacencyInfo.fromFacing(p_412336_);
 @@ -719,19 +_,19 @@
              int l = this.cache.getLightColor(blockstate3, p_412286_, blockpos$mutableblockpos);
              float f3 = this.cache.getShadeBrightness(blockstate3, p_412286_, blockpos$mutableblockpos);
@@ -213,3 +301,87 @@
              );
              boolean flag3 = !blockstate7.isViewBlocking(p_412286_, blockpos$mutableblockpos) || blockstate7.getLightBlock() == 0;
              float f4;
+@@ -880,7 +_,7 @@
+             return p_412676_ + p_412469_ + p_412736_ + p_412253_ >> 2 & 16711935;
+         }
+ 
+-        private static int blend(int p_412759_, int p_412518_, int p_412118_, int p_412415_, float p_412783_, float p_412051_, float p_412530_, float p_412587_) {
++        protected static int blend(int p_412759_, int p_412518_, int p_412118_, int p_412415_, float p_412783_, float p_412051_, float p_412530_, float p_412587_) {
+             int i = (int)(
+                     (p_412759_ >> 16 & 0xFF) * p_412783_
+                         + (p_412518_ >> 16 & 0xFF) * p_412051_
+@@ -894,8 +_,9 @@
+         }
+     }
+ 
++    // TODO: AT
+     @OnlyIn(Dist.CLIENT)
+-    static enum AmbientVertexRemap {
++    public static enum AmbientVertexRemap {
+         DOWN(0, 1, 2, 3),
+         UP(2, 3, 0, 1),
+         NORTH(3, 0, 1, 2),
+@@ -903,10 +_,11 @@
+         WEST(3, 0, 1, 2),
+         EAST(1, 2, 3, 0);
+ 
+-        final int vert0;
+-        final int vert1;
+-        final int vert2;
+-        final int vert3;
++        // TODO: AT
++        public final int vert0;
++        public final int vert1;
++        public final int vert2;
++        public final int vert3;
+         private static final ModelBlockRenderer.AmbientVertexRemap[] BY_FACING = Util.make(new ModelBlockRenderer.AmbientVertexRemap[6], p_111204_ -> {
+             p_111204_[Direction.DOWN.get3DDataValue()] = DOWN;
+             p_111204_[Direction.UP.get3DDataValue()] = UP;
+@@ -916,6 +_,16 @@
+             p_111204_[Direction.EAST.get3DDataValue()] = EAST;
+         });
+ 
++        public int vert(int index) {
++            switch (index) {
++                case 0: return vert0;
++                case 1: return vert1;
++                case 2: return vert2;
++                case 3: return vert3;
++                default: throw new IndexOutOfBoundsException();
++            }
++        }
++
+         private AmbientVertexRemap(int p_111195_, int p_111196_, int p_111197_, int p_111198_) {
+             this.vert0 = p_111195_;
+             this.vert1 = p_111196_;
+@@ -1011,6 +_,9 @@
+         public final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
+         public boolean faceCubic;
+         public boolean facePartial;
++        // Neo: extra geometry for use in the enhanced AO pipeline
++        public boolean faceAxisAligned;
++        public boolean faceCoordinateCubic;
+         public final float[] brightness = new float[4];
+         public final int[] lightmap = new int[4];
+         public int tintCacheIndex = -1;
+@@ -1018,8 +_,9 @@
+         public final ModelBlockRenderer.Cache cache = ModelBlockRenderer.CACHE.get();
+     }
+ 
++    // TODO: AT
+     @OnlyIn(Dist.CLIENT)
+-    protected static enum SizeInfo {
++    public static enum SizeInfo {
+         DOWN(0),
+         UP(1),
+         NORTH(2),
+@@ -1034,7 +_,8 @@
+         FLIP_EAST(11);
+ 
+         public static final int COUNT = values().length;
+-        final int index;
++        // TODO: AT
++        public final int index;
+ 
+         private SizeInfo(int p_412421_) {
+             this.index = p_412421_;

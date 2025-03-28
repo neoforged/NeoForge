@@ -143,7 +143,8 @@ dependencies {
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
 
-    userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}")
+    // TODO: temp
+    runtimeOnly userdevCompileOnly(jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"))
 
     userdevTestFixtures("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}") {
         endorseStrictVersions()

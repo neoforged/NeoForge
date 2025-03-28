@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/BakedQuad.java
 +++ b/net/minecraft/client/renderer/block/model/BakedQuad.java
-@@ -5,8 +_,17 @@
+@@ -5,8 +_,21 @@
  import net.neoforged.api.distmarker.Dist;
  import net.neoforged.api.distmarker.OnlyIn;
  
@@ -11,9 +11,13 @@
 + */
  @OnlyIn(Dist.CLIENT)
 -public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
-+public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission, boolean hasAmbientOcclusion) {
++public record BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission, boolean hasAmbientOcclusion, net.neoforged.neoforge.client.model.LightingMode lightingMode) {
 +    public BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission) {
-+        this(vertices, tintIndex, direction, sprite, shade, lightEmission, true);
++        this(vertices, tintIndex, direction, sprite, shade, lightEmission, true, net.neoforged.neoforge.client.model.LightingMode.VANILLA);
++    }
++    // TODO: remove?
++    public BakedQuad(int[] vertices, int tintIndex, Direction direction, TextureAtlasSprite sprite, boolean shade, int lightEmission, boolean hasAmbientOcclusion) {
++        this(vertices, tintIndex, direction, sprite, shade, lightEmission, hasAmbientOcclusion, net.neoforged.neoforge.client.model.LightingMode.VANILLA);
 +    }
 +
      public boolean isTinted() {
