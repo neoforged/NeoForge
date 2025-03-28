@@ -172,6 +172,8 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.NUGGETS_IRON).add(Items.IRON_NUGGET);
         tag(Tags.Items.NUGGETS_GOLD).add(Items.GOLD_NUGGET);
         copy(Tags.Blocks.OBSIDIANS, Tags.Items.OBSIDIANS);
+        copy(Tags.Blocks.OBSIDIANS_NORMAL, Tags.Items.OBSIDIANS_NORMAL);
+        copy(Tags.Blocks.OBSIDIANS_CRYING, Tags.Items.OBSIDIANS_CRYING);
         copy(Tags.Blocks.ORE_BEARING_GROUND_DEEPSLATE, Tags.Items.ORE_BEARING_GROUND_DEEPSLATE);
         copy(Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK, Tags.Items.ORE_BEARING_GROUND_NETHERRACK);
         copy(Tags.Blocks.ORE_BEARING_GROUND_STONE, Tags.Items.ORE_BEARING_GROUND_STONE);
@@ -208,8 +210,6 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         copy(Tags.Blocks.SANDS, Tags.Items.SANDS);
         copy(Tags.Blocks.SANDS_COLORLESS, Tags.Items.SANDS_COLORLESS);
         copy(Tags.Blocks.SANDS_RED, Tags.Items.SANDS_RED);
-        copy(Tags.Blocks.OBSIDIANS_NORMAL, Tags.Items.OBSIDIANS_NORMAL);
-        copy(Tags.Blocks.OBSIDIANS_CRYING, Tags.Items.OBSIDIANS_CRYING);
         copy(Tags.Blocks.PUMPKINS, Tags.Items.PUMPKINS);
         copy(Tags.Blocks.PUMPKINS_NORMAL, Tags.Items.PUMPKINS_NORMAL);
         copy(Tags.Blocks.PUMPKINS_CARVED, Tags.Items.PUMPKINS_CARVED);

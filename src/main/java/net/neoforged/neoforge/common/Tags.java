@@ -622,6 +622,20 @@ public class Tags {
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTION_BOTTLE = tag("potions/bottle");
+        public static final TagKey<Item> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Item> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -708,20 +722,6 @@ public class Tags {
         public static final TagKey<Item> VILLAGER_JOB_SITES = tag("villager_job_sites");
 
         // Tools and Armors
-        public static final TagKey<Item> PUMPKINS = tag("pumpkins");
-        /**
-         * For pumpkins that are not carved.
-         */
-        public static final TagKey<Item> PUMPKINS_NORMAL = tag("pumpkins/normal");
-        /**
-         * For pumpkins that are already carved but not a light source.
-         */
-        public static final TagKey<Item> PUMPKINS_CARVED = tag("pumpkins/carved");
-
-        /**
-         * For pumpkins that are already carved and a light source.
-         */
-        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         /**
          * A tag containing all existing tools. Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.

@@ -282,6 +282,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
         add(Tags.Items.POTIONS, "Potions");
         add(Tags.Items.POTION_BOTTLE, "Bottled Potions");
+        add(Tags.Items.PUMPKINS, "Pumpkins");
+        add(Tags.Items.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Items.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Items.PUMPKINS_JACK_O_LANTERNS, "Jack o'Lanterns");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
@@ -298,10 +302,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SANDSTONE_SLABS, "Sandstone Slabs");
         add(Tags.Items.SANDSTONE_STAIRS, "Sandstone Stairs");
         add(Tags.Items.SANDSTONE_RED_BLOCKS, "Red Sandstone Blocks");
-        add(Tags.Items.PUMPKINS, "Pumpkins");
-        add(Tags.Items.PUMPKINS_NORMAL, "Normal Pumpkins");
-        add(Tags.Items.PUMPKINS_CARVED, "Carved Pumpkins");
-        add(Tags.Items.PUMPKINS_JACK_O_LANTERNS, "Jack o'Lanterns");
         add(Tags.Items.SANDSTONE_RED_SLABS, "Red Sandstone Slabs");
         add(Tags.Items.SANDSTONE_RED_STAIRS, "Red Sandstone Stairs");
         add(Tags.Items.SANDSTONE_UNCOLORED_BLOCKS, "Uncolored Sandstone Blocks");
