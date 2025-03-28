@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.internal;
 
-import java.io.File;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -16,7 +15,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.inventory.RecipeBookType;
@@ -69,10 +67,6 @@ public class NeoForgeProxy {
 
     public TooltipFlag getTooltipFlag() {
         return TooltipFlag.NORMAL;
-    }
-
-    public PackResources createVanillaPackSource(File assetsDir, String assetIndex) {
-        throw new UnsupportedOperationException("Cannot instantiate vanilla pack source on the server");
     }
 
     public RecipeBookType[] getFilteredRecipeBookTypeValues() {
