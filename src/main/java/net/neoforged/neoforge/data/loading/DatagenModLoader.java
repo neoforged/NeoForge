@@ -46,22 +46,6 @@ public class DatagenModLoader extends CommonModLoader {
             final boolean flat,
             Runnable setup,
             GatherDataEvent.GatherDataEventGenerator eventGenerator,
-            DataGenerator vanillaGenerator) {
-        begin(mods, path, inputs, existingPacks, devToolGenerators, reportsGenerator, structureValidator, flat, setup, eventGenerator, vanillaGenerator, c -> {});
-    }
-
-    @ApiStatus.Internal
-    protected static void begin(
-            final Set<String> mods,
-            final Path path,
-            final Collection<Path> inputs,
-            Collection<Path> existingPacks,
-            final boolean devToolGenerators,
-            final boolean reportsGenerator,
-            final boolean structureValidator,
-            final boolean flat,
-            Runnable setup,
-            GatherDataEvent.GatherDataEventGenerator eventGenerator,
             DataGenerator vanillaGenerator,
             Consumer<Consumer<PackResources>> vanillaClientAssets) {
         if (mods.contains("minecraft") && mods.size() == 1)
