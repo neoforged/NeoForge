@@ -70,7 +70,7 @@
      public void tesselateWithAO(
          BlockAndTintGetter p_234391_,
          List<BlockModelPart> p_410478_,
-@@ -86,11 +_,25 @@
+@@ -86,11 +_,26 @@
          boolean p_234397_,
          int p_234400_
      ) {
@@ -88,7 +88,8 @@
 +        boolean p_234397_,
 +        int p_234400_
 +    ) {
-+        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage();// new ModelBlockRenderer.AmbientOcclusionRenderStorage();
++        // Neo: Inject enhanced AO pipeline
++        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage();
          int i = 0;
          int j = 0;
  
@@ -194,43 +195,11 @@
              for (Direction direction : DIRECTIONS) {
                  renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, blockmodelpart.getQuads(direction), p_111075_, p_111076_);
              }
-@@ -381,8 +_,9 @@
-         CACHE.get().disable();
-     }
- 
-+    // TODO: AT
-     @OnlyIn(Dist.CLIENT)
--    protected static enum AdjacencyInfo {
-+    public static enum AdjacencyInfo {
-         DOWN(
-             new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH},
-             0.5F,
-@@ -654,7 +_,8 @@
-             }
-         );
- 
--        final Direction[] corners;
-+        // TODO: AT
-+        public final Direction[] corners;
-         final boolean doNonCubicWeight;
-         final ModelBlockRenderer.SizeInfo[] vert0Weights;
-         final ModelBlockRenderer.SizeInfo[] vert1Weights;
-@@ -691,13 +_,18 @@
-         }
-     }
- 
-+    // TODO: AT
-     @OnlyIn(Dist.CLIENT)
--    static class AmbientOcclusionRenderStorage extends ModelBlockRenderer.CommonRenderStorage {
--        final float[] faceShape = new float[ModelBlockRenderer.SizeInfo.COUNT];
-+    public static class AmbientOcclusionRenderStorage extends ModelBlockRenderer.CommonRenderStorage {
-+        // TODO: AT
-+        protected final float[] faceShape = new float[ModelBlockRenderer.SizeInfo.COUNT];
- 
+@@ -698,6 +_,9 @@
          public AmbientOcclusionRenderStorage() {
          }
  
-+        // Neo: yay!
++        // Neo: Call this before calling calculate if the render storage is an EnhancedAoRenderStorage!
 +        public void captureQuad(BakedQuad quad) {}
 +
          public void calculate(BlockAndTintGetter p_412286_, BlockState p_412102_, BlockPos p_412730_, Direction p_412336_, boolean p_412430_) {
@@ -269,24 +238,3 @@
              int i = (int)(
                      (p_412759_ >> 16 & 0xFF) * p_412783_
                          + (p_412518_ >> 16 & 0xFF) * p_412051_
-@@ -1018,8 +_,9 @@
-         public final ModelBlockRenderer.Cache cache = ModelBlockRenderer.CACHE.get();
-     }
- 
-+    // TODO: AT
-     @OnlyIn(Dist.CLIENT)
--    protected static enum SizeInfo {
-+    public static enum SizeInfo {
-         DOWN(0),
-         UP(1),
-         NORTH(2),
-@@ -1034,7 +_,8 @@
-         FLIP_EAST(11);
- 
-         public static final int COUNT = values().length;
--        final int index;
-+        // TODO: AT
-+        public final int index;
- 
-         private SizeInfo(int p_412421_) {
-             this.index = p_412421_;
