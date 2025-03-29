@@ -1,15 +1,20 @@
 package net.neoforged.neoforge.client.model.ao;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.LightingMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Entrypoint for our enhanced ambient occlusion pipeline.
@@ -17,8 +22,12 @@ import net.neoforged.neoforge.client.model.LightingMode;
  * TODO explain what's going on
  */
 public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusionRenderStorage {
-    // TODO: move to proper config
-    private static final AoConfig config = AoConfig.ENHANCED;
+    /**
+     * Debug option to compare the emulated vanilla AO with the actual vanilla AO.
+     * Only does something if emulated AO is enabled.
+     */
+    private static final boolean COMPARE_WITH_VANILLA = Boolean.getBoolean("neoforge.ao.compareWithVanilla");
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final AoCalculator calculator;
     private BakedQuad currentQuad;
@@ -35,6 +44,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     @Override
     public void calculate(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
         boolean vanillaRequested = currentQuad.lightingMode() == LightingMode.VANILLA;
+        AoConfig config = NeoForgeClientConfig.INSTANCE.ambientOcclusion.get();
 
         if (config == AoConfig.VANILLA) {
             super.calculate(level, state, pos, direction, shade);
@@ -63,6 +73,27 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         // Vanilla will always compute a single face; outside is decided by this.faceCubic
         var fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, this.faceCubic);
         interpolateFace(fullFace, direction);
+
+        // Debug option to compare emulated vanilla AO with actual vanilla AO.
+        // We are not interested in assuming a quad winding order,
+        // so quads that have the wrong winding might trigger the warning.
+        if (COMPARE_WITH_VANILLA) {
+            // This is a debug option, so allocations are fine
+            float[] emulatedBrightness = brightness.clone();
+            int[] emulatedLightmap = lightmap.clone();
+
+            super.calculate(level, state, pos, direction, shade);
+
+            for (int vertex = 0; vertex < 4; ++vertex) {
+                if (!Mth.equal(emulatedBrightness[vertex], brightness[vertex]) || emulatedLightmap[vertex] != lightmap[vertex]) {
+                    LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
+                            + "Vanilla: lightmap = {}, brightness = {}\n"
+                            + "Emulated: lightmap = {}, brightness = {}\n",
+                            vertex, direction, state.getBlock(), pos, lightmap[vertex], brightness[vertex], emulatedLightmap[vertex], emulatedBrightness[vertex]);
+                    break;
+                }
+            }
+        }
     }
 
     /**

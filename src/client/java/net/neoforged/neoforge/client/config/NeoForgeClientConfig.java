@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.config;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.model.ao.AoConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
@@ -20,8 +21,8 @@ public final class NeoForgeClientConfig {
     public static final ModConfigSpec SPEC;
     public static final NeoForgeClientConfig INSTANCE;
 
-    public final ModConfigSpec.BooleanValue experimentalForgeLightPipelineEnabled;
-    boolean experimentalPipelineActive;
+    public final ModConfigSpec.EnumValue<AoConfig> ambientOcclusion;
+    private AoConfig aoConfig;
 
     public final ModConfigSpec.BooleanValue showLoadWarnings;
 
@@ -30,10 +31,15 @@ public final class NeoForgeClientConfig {
     public final ModConfigSpec.BooleanValue reducedDepthStencilFormat;
 
     private NeoForgeClientConfig(ModConfigSpec.Builder builder) {
-        experimentalForgeLightPipelineEnabled = builder
-                .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
-                .translation("neoforge.configgui.forgeLightPipelineEnabled")
-                .define("experimentalForgeLightPipelineEnabled", false);
+        ambientOcclusion = builder
+                .comment("Configures NeoForge's enhanced ambient occlusion pipeline for block models.",
+                        "- VANILLA: Disables NeoForge's pipeline.",
+                        "- EMULATE: Emulates the ambient occlusion in vanilla Minecraft.",
+                        "- HYBRID: Uses the enhanced pipeline for quads that request it, and emulate vanilla otherwise.",
+                        "- ENHANCED: Uses the enhanced pipeline for all quads. This provides the most consistent ambient occlusion, but might alter the look of some blocks compared to vanilla.",
+                        "HYBRID or ENHANCED are recommended for complex models to look reasonable.")
+                .translation("neoforge.configgui.ambientOcclusion")
+                .defineEnum("ambientOcclusion", AoConfig.HYBRID);
 
         showLoadWarnings = builder
                 .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
@@ -54,16 +60,16 @@ public final class NeoForgeClientConfig {
     @SubscribeEvent
     static void onLoad(final ModConfigEvent.Loading configEvent) {
         if (configEvent.getConfig().getSpec() == SPEC) {
-            INSTANCE.experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            INSTANCE.aoConfig = INSTANCE.ambientOcclusion.get();
         }
     }
 
     @SubscribeEvent
     static void onFileChange(final ModConfigEvent.Reloading configEvent) {
         if (configEvent.getConfig().getSpec() == SPEC) {
-            boolean experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
-            if (experimentalPipelineActive != INSTANCE.experimentalPipelineActive) {
-                INSTANCE.experimentalPipelineActive = experimentalPipelineActive;
+            AoConfig aoConfig = INSTANCE.ambientOcclusion.get();
+            if (aoConfig != INSTANCE.aoConfig) {
+                INSTANCE.aoConfig = aoConfig;
                 ClientHooks.reloadRenderer();
             }
         }
