@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/block/BlockRenderDispatcher.java
-@@ -41,7 +_,7 @@
-         this.blockModelShaper = p_173399_;
-         this.specialBlockModelRenderer = p_386717_;
-         this.blockColors = p_173401_;
--        this.modelRenderer = new ModelBlockRenderer(this.blockColors);
-+        this.modelRenderer = new net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer(this.blockColors);
-         this.liquidBlockRenderer = new LiquidBlockRenderer();
-     }
- 
 @@ -54,12 +_,13 @@
              BlockStateModel blockstatemodel = this.blockModelShaper.getBlockModel(p_110919_);
              this.singleThreadRandom.setSeed(p_110919_.getSeed(p_110920_));
