@@ -42,6 +42,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * Cache these objects so that they don't need to be reallocated for every {@link EnhancedAoRenderStorage}.
      */
     private record AoObjectCache(FullFaceCalculator calculator, AoCalculatedFace tempFace, float[] weights) {}
+
     private static final ThreadLocal<AoObjectCache> AO_OBJECT_CACHE = ThreadLocal.withInitial(() -> new AoObjectCache(
             new FullFaceCalculator(),
             new AoCalculatedFace(),
@@ -259,8 +260,8 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * Extracts the position of a vertex from quad data.
      *
      * @param vertices quad data
-     * @param vertex vertex index, from 0 to 3 included
-     * @param axis axis index, for 0 to 2 included
+     * @param vertex   vertex index, from 0 to 3 included
+     * @param axis     axis index, for 0 to 2 included
      */
     private static float vertexPos(int[] vertices, int vertex, int axis) {
         return Float.intBitsToFloat(vertices[vertex * 8 + axis]);

@@ -63,7 +63,7 @@ class FullFaceCalculator {
     /**
      * Computes the AO for a full face.
      *
-     * @param out storage for the computed lightmap and brightness.
+     * @param out           storage for the computed lightmap and brightness.
      * @param sampleOutside {@code true} to sample the light outside the block, {@code false} to sample the light inside the block.
      *                      In vanilla, this is equivalent to {@code faceCubic}.
      */

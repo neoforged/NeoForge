@@ -5,12 +5,8 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
-import net.minecraft.Util;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Establishes the mapping between 3D world coordinates and AO faces.

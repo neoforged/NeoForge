@@ -229,12 +229,3 @@
              );
              boolean flag3 = !blockstate7.isViewBlocking(p_412286_, blockpos$mutableblockpos) || blockstate7.getLightBlock() == 0;
              float f4;
-@@ -880,7 +_,7 @@
-             return p_412676_ + p_412469_ + p_412736_ + p_412253_ >> 2 & 16711935;
-         }
- 
--        private static int blend(int p_412759_, int p_412518_, int p_412118_, int p_412415_, float p_412783_, float p_412051_, float p_412530_, float p_412587_) {
-+        protected static int blend(int p_412759_, int p_412518_, int p_412118_, int p_412415_, float p_412783_, float p_412051_, float p_412530_, float p_412587_) {
-             int i = (int)(
-                     (p_412759_ >> 16 & 0xFF) * p_412783_
-                         + (p_412518_ >> 16 & 0xFF) * p_412051_
