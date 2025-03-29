@@ -23,6 +23,7 @@ public class AoCalculator {
 
     /**
      * Mostly derived from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate}, with a number of fixes applied.
+     * TODO list fixes if any.
      *
      * @param out storage for the computed lightmap and brightness.
      * @param sampleOutside {@code true} to sample the light outside the block, {@code false} to sample the light inside the block.
@@ -124,29 +125,29 @@ public class AoCalculator {
             cornerLightmap3 = this.cache.getLightColor(blockstate12, level, blockpos$mutableblockpos);
         }
 
-        // Wrap things up
-
-        int faceLightmap = this.cache.getLightColor(renderedState, level, renderedPos);
+        // Process the inside of the block
+        int insideLightmap = this.cache.getLightColor(renderedState, level, renderedPos);
         blockpos$mutableblockpos.setWithOffset(renderedPos, direction);
         BlockState blockstate9 = level.getBlockState(blockpos$mutableblockpos);
         if (sampleOutside || !blockstate9.isSolidRender()) {
-            faceLightmap = this.cache.getLightColor(blockstate9, level, blockpos$mutableblockpos);
+            insideLightmap = this.cache.getLightColor(blockstate9, level, blockpos$mutableblockpos);
         }
 
-        float faceBrightness = sampleOutside
+        float insideBrightness = sampleOutside
                 ? this.cache.getShadeBrightness(level.getBlockState(samplePos), level, samplePos)
                 : this.cache.getShadeBrightness(level.getBlockState(renderedPos), level, renderedPos);
 
+        // Wrap up
         float levelBrightness = level.getShade(direction, shade);
 
-        out.brightness0 = ((sideBrightness3 + sideBrightness0 + cornerBrightness1 + faceBrightness) * 0.25F) * levelBrightness;
-        out.brightness1 = ((sideBrightness2 + sideBrightness0 + cornerBrightness0 + faceBrightness) * 0.25F) * levelBrightness;
-        out.brightness2 = ((sideBrightness2 + sideBrightness1 + cornerBrightness2 + faceBrightness) * 0.25F) * levelBrightness;
-        out.brightness3 = ((sideBrightness3 + sideBrightness1 + cornerBrightness3 + faceBrightness) * 0.25F) * levelBrightness;
-        out.lightmap0 = blend(sideLightmap3, sideLightmap0, cornerLightmap1, faceLightmap);
-        out.lightmap1 = blend(sideLightmap2, sideLightmap0, cornerLightmap0, faceLightmap);
-        out.lightmap2 = blend(sideLightmap2, sideLightmap1, cornerLightmap2, faceLightmap);
-        out.lightmap3 = blend(sideLightmap3, sideLightmap1, cornerLightmap3, faceLightmap);
+        out.brightness0 = ((sideBrightness3 + sideBrightness0 + cornerBrightness1 + insideBrightness) * 0.25F) * levelBrightness;
+        out.brightness1 = ((sideBrightness2 + sideBrightness0 + cornerBrightness0 + insideBrightness) * 0.25F) * levelBrightness;
+        out.brightness2 = ((sideBrightness2 + sideBrightness1 + cornerBrightness2 + insideBrightness) * 0.25F) * levelBrightness;
+        out.brightness3 = ((sideBrightness3 + sideBrightness1 + cornerBrightness3 + insideBrightness) * 0.25F) * levelBrightness;
+        out.lightmap0 = blend(sideLightmap3, sideLightmap0, cornerLightmap1, insideLightmap);
+        out.lightmap1 = blend(sideLightmap2, sideLightmap0, cornerLightmap0, insideLightmap);
+        out.lightmap2 = blend(sideLightmap2, sideLightmap1, cornerLightmap2, insideLightmap);
+        out.lightmap3 = blend(sideLightmap3, sideLightmap1, cornerLightmap3, insideLightmap);
     }
 
     private static int blend(int sideLightmapA, int sideLightmapB, int cornerLightmap, int faceLightmap) {
