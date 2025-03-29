@@ -1,5 +1,8 @@
 package net.neoforged.neoforge.client.model.ao;
 
+/**
+ * Calculated AO values for a full face. Mutable so that instances can be reused.
+ */
 class AoCalculatedFace {
     float brightness0;
     float brightness1;

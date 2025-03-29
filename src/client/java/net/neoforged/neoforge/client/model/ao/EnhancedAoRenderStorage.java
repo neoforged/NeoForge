@@ -14,12 +14,16 @@ import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.LightingMode;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Entrypoint for our enhanced ambient occlusion pipeline.
+ * Entrypoint and main class of our enhanced AO pipeline.
  *
- * TODO explain what's going on
+ * <p>Vanilla's AO logic works well for faces that are on a cube's face.
+ * That computation is replicated in {@link FullFaceCalculator}.
+ * The job of the enhanced pipeline is to handle faces that are more complicated,
+ * by combining multiple full faces as needed using interpolation.
+ *
+ * <p>Compared to vanilla, we also remove any assumption about vertex order in the quad.
  */
 public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusionRenderStorage {
     /**
@@ -29,11 +33,32 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     private static final boolean COMPARE_WITH_VANILLA = Boolean.getBoolean("neoforge.ao.compareWithVanilla");
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final AoCalculator calculator;
+    /**
+     * Cache these objects so that they don't need to be reallocated for every {@link EnhancedAoRenderStorage}.
+     */
+    private record AoObjectCache(FullFaceCalculator calculator, AoCalculatedFace tempFace, float[] weights) {}
+    private static final ThreadLocal<AoObjectCache> AO_OBJECT_CACHE = ThreadLocal.withInitial(() -> new AoObjectCache(
+            new FullFaceCalculator(),
+            new AoCalculatedFace(),
+            new float[4]));
+
+    /**
+     * Calculator for full faces.
+     */
+    private final FullFaceCalculator calculator;
+    // Avoid repeated allocations of these objects
+    private final float[] weights;
+    private final AoCalculatedFace tempFace;
+
     private BakedQuad currentQuad;
 
     public EnhancedAoRenderStorage() {
-        this.calculator = new AoCalculator(this.cache);
+        var cache = AO_OBJECT_CACHE.get();
+        this.calculator = cache.calculator;
+        this.tempFace = cache.tempFace;
+        this.weights = cache.weights;
+        // Reset AO Face cache
+        this.calculator.startBlock(this.cache);
     }
 
     @Override
@@ -43,6 +68,10 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
     @Override
     public void calculate(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
+        if (this.currentQuad == null) {
+            throw new IllegalStateException("Make sure to pass the quad via captureQuad before calling calculate.");
+        }
+
         boolean vanillaRequested = currentQuad.lightingMode() == LightingMode.VANILLA;
         AoConfig config = NeoForgeClientConfig.INSTANCE.ambientOcclusion.get();
 
@@ -67,8 +96,12 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         }
     }
 
-    private final float[] weights = new float[4];
-
+    /**
+     * Emulates vanilla lighting in the sense that a single AO face is evaluated,
+     * on the outside of the block if {@link #faceCubic} is true.
+     *
+     * <p>However we still use our own interpolation logic which does not make any assumption about vertex winding order.
+     */
     private void calculateEmulatedVanilla(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
         // Vanilla will always compute a single face; outside is decided by this.faceCubic
         var fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, this.faceCubic);
@@ -112,9 +145,12 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     }
 
     private static final float AO_EPS = 1e-4f;
-    // Avoid repeated allocations
-    private final AoCalculatedFace temp = new AoCalculatedFace();
 
+    /**
+     * Computes an axis-aligned AO face that might be inside the block.
+     * Performs linear interpolation between the face using inside sampling and outside sampling,
+     * depending on the depth of the quad.
+     */
     private AoCalculatedFace gatherAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade, int vertex) {
         int[] vertices = currentQuad.vertices();
         float depth = AoFace.fromDirection(direction).computeDepth(
@@ -130,23 +166,23 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         } else {
             AoCalculatedFace faceInner = this.calculator.calculateFace(level, state, pos, direction, shade, false);
             AoCalculatedFace faceOuter = this.calculator.calculateFace(level, state, pos, direction, shade, true);
-            return combineLinearly(temp, faceInner, depth, faceOuter, 1 - depth);
+            return combineLinearly(tempFace, faceInner, depth, faceOuter, 1 - depth);
         }
     }
 
     /**
-     * Calculate AO for a face that is axis-aligned, but not coplanar with the light face.
-     * This means that it is parallel to the light face, but inside the block.
+     * Computes AO for an axis-aligned quad.
+     * Calls {@link #gatherAxisAligned}, then interpolate to handle partial quads.
      */
     private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
         // Pass vertex 0: it's only used for depth and since the face is axis-aligned all vertices have the same depth.
         var fullFace = gatherAxisAligned(level, state, pos, direction, shade, 0);
-
         interpolateFace(fullFace, direction);
     }
 
     /**
-     * Non axis-aligned face. Project onto each axis, compute the AO, then combine proportionally to the square of each normal component.
+     * Computes AO for a general quad.
+     * Projects onto each axis, computes the AO, then combines proportionally to the square of each normal component.
      */
     private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, boolean shade) {
         int quadNormal = -1;
@@ -178,16 +214,17 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                     continue;
                 }
 
-                Direction lightFace = switch (axis) {
+                // Choose AO face based on normal sign
+                Direction direction = switch (axis) {
                     case 0 -> normalComponent > 0 ? Direction.EAST : Direction.WEST;
                     case 1 -> normalComponent > 0 ? Direction.UP : Direction.DOWN;
                     case 2 -> normalComponent > 0 ? Direction.SOUTH : Direction.NORTH;
                     default -> throw new AssertionError();
                 };
-                AoCalculatedFace fullFace = gatherAxisAligned(level, state, pos, lightFace, shade, vertex);
+                AoCalculatedFace fullFace = gatherAxisAligned(level, state, pos, direction, shade, vertex);
 
                 // Perform bilinear interpolation to map full AO face to this vertex.
-                AoFace aoFace = AoFace.fromDirection(lightFace);
+                AoFace aoFace = AoFace.fromDirection(direction);
                 int[] vertices = this.currentQuad.vertices();
                 float[] weights = this.weights;
                 aoFace.computeCornerWeights(weights, vertexPos(vertices, vertex, 0), vertexPos(vertices, vertex, 1), vertexPos(vertices, vertex, 2));
@@ -199,8 +236,11 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                 // Blend proportionally to the square of the normal component
                 float axisWeight = normalComponent * normalComponent;
                 vertexBrightness += brightness * axisWeight;
-                maxBrightness = Math.max(maxBrightness, brightness);
                 vertexLightmap = lerpLightmap(vertexLightmap, 1, lightmap, axisWeight);
+
+                // Also keep track of the max, which will be used later
+                // to make sure the quad does not get too dark.
+                maxBrightness = Math.max(maxBrightness, brightness);
                 maxBlock = Math.max(maxBlock, LightTexture.block(lightmap));
                 maxSky = Math.max(maxSky, LightTexture.sky(lightmap));
             }
@@ -210,19 +250,35 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         }
     }
 
+    /**
+     * Extracts the position of a vertex from quad data.
+     *
+     * @param vertices quad data
+     * @param vertex vertex index, from 0 to 3 included
+     * @param axis axis index, for 0 to 2 included
+     */
     private static float vertexPos(int[] vertices, int vertex, int axis) {
         return Float.intBitsToFloat(vertices[vertex * 8 + axis]);
     }
 
-    private float interpolateBrightness(AoCalculatedFace in, float[] weights) {
+    /**
+     * Interpolates brightness from the 4 corners of a face.
+     */
+    private static float interpolateBrightness(AoCalculatedFace in, float[] weights) {
         return Math.clamp(in.brightness0 * weights[0] + in.brightness1 * weights[1] + in.brightness2 * weights[2] + in.brightness3 * weights[3], 0.0F, 1.0F);
     }
 
-    private int interpolateLightmap(AoCalculatedFace in, float[] weights) {
+    /**
+     * Interpolates lightmap from the 4 corners of a face.
+     */
+    private static int interpolateLightmap(AoCalculatedFace in, float[] weights) {
         return blend(in.lightmap0, in.lightmap1, in.lightmap2, in.lightmap3, weights[0], weights[1], weights[2], weights[3]);
     }
 
-    private AoCalculatedFace combineLinearly(AoCalculatedFace out, AoCalculatedFace in1, float w1, AoCalculatedFace in2, float w2) {
+    /**
+     * Interpolates two AO faces linearly.
+     */
+    private static AoCalculatedFace combineLinearly(AoCalculatedFace out, AoCalculatedFace in1, float w1, AoCalculatedFace in2, float w2) {
         out.brightness0 = in1.brightness0 * w1 + in2.brightness0 * w2;
         out.brightness1 = in1.brightness1 * w1 + in2.brightness1 * w2;
         out.brightness2 = in1.brightness2 * w1 + in2.brightness2 * w2;
@@ -236,7 +292,10 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         return out;
     }
 
-    private int lerpLightmap(int lightmap1, float w1, int lightmap2, float w2) {
+    /**
+     * Interpolates two lightmaps linearly.
+     */
+    private static int lerpLightmap(int lightmap1, float w1, int lightmap2, float w2) {
         // Interpolate the two components separately
         int block1 = LightTexture.block(lightmap1);
         int block2 = LightTexture.block(lightmap2);

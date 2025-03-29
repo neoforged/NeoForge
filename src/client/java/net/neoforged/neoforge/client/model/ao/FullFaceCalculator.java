@@ -6,30 +6,63 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class AoCalculator {
-    private final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
-    private final ModelBlockRenderer.Cache cache;
+/**
+ * Calculates AO for a full cube face.
+ * There are 24 possible configurations for each block, depending on: the direction,
+ * whether the quad wants to be shaded, and whether the sample is taken outside the block.
+ *
+ * <p>The {@link EnhancedAoRenderStorage} then works by combining the results of multiple configurations,
+ * using various interpolation schemes depending on the quad.
+ *
+ * <p>The logic is mostly contained in {@link #calculateFaceUncached},
+ * and derives from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate},
+ * with a number of fixes applied.
+ * TODO list fixes if any
+ */
+class FullFaceCalculator {
+    final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
+    private ModelBlockRenderer.Cache cache;
 
-    public AoCalculator(ModelBlockRenderer.Cache cache) {
+    private final AoCalculatedFace[] aoFaces = new AoCalculatedFace[24];
+    {
+        for (int i = 0; i < 24; ++i) {
+            aoFaces[i] = new AoCalculatedFace();
+        }
+    }
+    private int calculatedAoFaces = 0;
+
+    void startBlock(ModelBlockRenderer.Cache cache) {
+        this.calculatedAoFaces = 0;
         this.cache = cache;
     }
 
     AoCalculatedFace calculateFace(BlockAndTintGetter level, BlockState renderedState, BlockPos renderedPos, Direction direction, boolean shade, boolean sampleOutside) {
-        // TODO: cache :D
-        AoCalculatedFace face = new AoCalculatedFace();
-        calculateFace(face, level, renderedState, renderedPos, direction, shade, sampleOutside);
-        return face;
+        int cacheIndex = direction.get3DDataValue();
+        if (sampleOutside) {
+            cacheIndex += 6;
+        }
+        if (shade) {
+            cacheIndex += 12;
+        }
+
+        if ((this.calculatedAoFaces & (1 << cacheIndex)) != 0) {
+            return this.aoFaces[cacheIndex];
+        }
+
+        var fullFace = this.aoFaces[cacheIndex];
+        calculateFaceUncached(fullFace, level, renderedState, renderedPos, direction, shade, sampleOutside);
+        this.calculatedAoFaces |= 1 << cacheIndex;
+        return fullFace;
     }
 
     /**
-     * Mostly derived from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate}, with a number of fixes applied.
-     * TODO list fixes if any.
+     * Computes the AO for a full face.
      *
      * @param out storage for the computed lightmap and brightness.
      * @param sampleOutside {@code true} to sample the light outside the block, {@code false} to sample the light inside the block.
      *                      In vanilla, this is equivalent to {@code faceCubic}.
      */
-    private void calculateFace(AoCalculatedFace out, BlockAndTintGetter level, BlockState renderedState, BlockPos renderedPos, Direction direction, boolean shade, boolean sampleOutside) {
+    private void calculateFaceUncached(AoCalculatedFace out, BlockAndTintGetter level, BlockState renderedState, BlockPos renderedPos, Direction direction, boolean shade, boolean sampleOutside) {
         BlockPos samplePos = sampleOutside ? renderedPos.relative(direction) : renderedPos;
         ModelBlockRenderer.AdjacencyInfo modelblockrenderer$adjacencyinfo = ModelBlockRenderer.AdjacencyInfo.fromFacing(direction);
         BlockPos.MutableBlockPos blockpos$mutableblockpos = this.scratchPos;
