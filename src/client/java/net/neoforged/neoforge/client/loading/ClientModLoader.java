@@ -24,9 +24,9 @@ import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
 import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -115,7 +115,7 @@ public class ClientModLoader extends CommonModLoader {
         List<ModLoadingIssue> warnings = ModLoader.getLoadingIssues();
         boolean showWarnings = true;
         try {
-            showWarnings = NeoForgeConfig.CLIENT.showLoadWarnings.get();
+            showWarnings = NeoForgeClientConfig.INSTANCE.showLoadWarnings.get();
         } catch (NullPointerException | IllegalStateException e) {
             // We're in an early error state, config is not available. Assume true.
         }

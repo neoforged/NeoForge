@@ -112,7 +112,7 @@ public final class NeoForgeItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.DUSTS_REDSTONE).add(Items.REDSTONE);
         addColored(Tags.Items.DYES, "{color}_dye");
         addColoredTags(tag(Tags.Items.DYES)::addTags, Tags.Items.DYES);
-        tag(Tags.Items.EGGS).add(Items.EGG);
+        tag(Tags.Items.EGGS).add(Items.EGG, Items.BROWN_EGG, Items.BLUE_EGG);
         tag(Tags.Items.ENCHANTING_FUELS).addTag(Tags.Items.GEMS_LAPIS);
         copy(Tags.Blocks.END_STONES, Tags.Items.END_STONES);
         tag(Tags.Items.ENDER_PEARLS).add(Items.ENDER_PEARL);

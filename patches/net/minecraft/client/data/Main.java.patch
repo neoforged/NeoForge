@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -30,16 +_,29 @@
+@@ -30,16 +_,34 @@
          OptionSpec<Void> optionspec1 = optionparser.accepts("client", "Include client generators");
          OptionSpec<Void> optionspec2 = optionparser.accepts("all", "Include all generators");
          OptionSpec<String> optionspec3 = optionparser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
@@ -27,10 +27,15 @@
              addClientProviders(datagenerator, flag1);
 -            datagenerator.run();
 +            }
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, java.util.List.of(), existingPacks, false, false, validate, isFlat, optionset.valueOf(assetIndex), optionset.valueOf(assetsDir), () -> {
++            java.io.File assetsDirValue = optionset.valueOf(assetsDir);
++            String assetIndexValue = optionset.valueOf(assetIndex);
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, java.util.List.of(), existingPacks, false, false, validate, isFlat, () -> {
 +                ClientBootstrap.bootstrap();
 +                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
-+            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, datagenerator);
++            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, datagenerator, packConsumer -> {
++                if (assetsDirValue != null && assetIndexValue != null)
++                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)));
++            });
          } else {
              optionparser.printHelpOn(System.out);
          }

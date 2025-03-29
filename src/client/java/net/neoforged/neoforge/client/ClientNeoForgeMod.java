@@ -24,9 +24,11 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
 import net.neoforged.neoforge.client.command.ClientConfigCommand;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -89,6 +91,9 @@ public class ClientNeoForgeMod {
         TagConventionLogWarningClient.init();
 
         modEventBus.register(ClientNeoForgeMod.class);
+
+        container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
+        modEventBus.register(NeoForgeClientConfig.class);
 
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 

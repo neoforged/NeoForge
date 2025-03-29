@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.data.event;
 
 import com.google.common.collect.Lists;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -47,10 +46,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
-import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.ApiStatus;
@@ -131,8 +128,18 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
         private final ResourceManager clientResourceManager;
         private final ResourceManager serverResourceManager;
 
-        public DataGeneratorConfig(final Set<String> mods, final Path path, final Collection<Path> inputs, final CompletableFuture<HolderLookup.Provider> lookupProvider,
-                final boolean dev, final boolean reports, final boolean validate, final boolean flat, final DataGenerator vanillaGenerator, final @Nullable String assetIndex, final @Nullable File assetsDir, Collection<Path> existingPacks) {
+        public DataGeneratorConfig(
+                final Set<String> mods,
+                final Path path,
+                final Collection<Path> inputs,
+                final CompletableFuture<HolderLookup.Provider> lookupProvider,
+                final boolean dev,
+                final boolean reports,
+                final boolean validate,
+                final boolean flat,
+                final DataGenerator vanillaGenerator,
+                Collection<Path> existingPacks,
+                Consumer<Consumer<PackResources>> vanillaClientAssets) {
             this.mods = mods;
             this.path = path;
             this.inputs = inputs;
@@ -142,10 +149,7 @@ public abstract class GatherDataEvent extends Event implements IModBusEvent {
             this.validate = validate;
             this.flat = flat;
 
-            clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, consumer -> {
-                if (FMLEnvironment.dist.isClient() && assetIndex != null && assetsDir != null)
-                    consumer.accept(NeoForgeProxy.INSTANCE.createVanillaPackSource(assetsDir, assetIndex));
-            });
+            clientResourceManager = createResourceManager(PackType.CLIENT_RESOURCES, mods::contains, existingPacks, vanillaClientAssets);
 
             serverResourceManager = createResourceManager(PackType.SERVER_DATA, mods::contains, existingPacks, consumer -> consumer.accept(ServerPacksSource.createVanillaPackSource()));
 

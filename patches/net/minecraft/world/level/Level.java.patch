@@ -114,7 +114,7 @@
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking entity");
              CrashReportCategory crashreportcategory = crashreport.addCategory("Entity being ticked");
              p_46655_.fillCrashReportCategory(crashreportcategory);
-+            if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.removeErroringEntities.get()) {
++            if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.removeErroringEntities.get()) {
 +                com.mojang.logging.LogUtils.getLogger().error("{}", crashreport.getFriendlyReport(net.minecraft.ReportType.CRASH));
 +                p_46655_.discard();
 +            } else

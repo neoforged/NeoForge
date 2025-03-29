@@ -216,6 +216,16 @@ public class NeoDevPlugin implements Plugin<Project> {
          * OTHER TASKS
          */
 
+        // Task to create a jar with both common and client classes.
+        // We cannot add the client classes to the default `jar` task because it might be used
+        // as a dependency for the compilation of the client classes, leading to a circular dependency.
+        var joinedJar = tasks.register("joinedJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getArchiveClassifier().set("joined");
+            task.from(project.zipTree(tasks.named("jar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+            task.from(project.zipTree(tasks.named("clientJar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+        });
+
         var mergeSources = tasks.register("mergePatchedSources", Zip.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.from(project.files("src/main/java", "src/client/java"));
@@ -253,7 +263,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getArchiveClassifier().set("universal");
 
             task.from(project.zipTree(
-                    tasks.named("jar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+                    joinedJar.flatMap(AbstractArchiveTask::getArchiveFile)));
             task.exclude("net/minecraft/**");
             task.exclude("com/**");
             task.exclude("mcp/**");
@@ -290,6 +300,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 project,
                 configurations,
                 createCleanArtifacts,
+                joinedJar,
                 neoDevBuildDir,
                 genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
         );
@@ -514,6 +525,7 @@ public class NeoDevPlugin implements Plugin<Project> {
     private static BinaryPatchOutputs configureBinaryPatchCreation(Project project,
                                                                    NeoDevConfigurations configurations,
                                                                    TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
+                                                                   TaskProvider<Jar> joinedJar,
                                                                    Provider<Directory> neoDevBuildDir,
                                                                    Provider<Directory> sourcesPatchesFolder) {
         var tasks = project.getTasks();
@@ -557,7 +569,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             generateBinPatchesTask.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
                 task.classpath(binpatcherConfig);
-                task.getPatchedJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
+                task.getPatchedJar().set(joinedJar.flatMap(Jar::getArchiveFile));
                 task.getSourcePatchesFolder().set(sourcesPatchesFolder);
                 task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             });
