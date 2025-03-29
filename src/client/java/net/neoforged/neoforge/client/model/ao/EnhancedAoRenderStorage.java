@@ -206,11 +206,10 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                 normal = quadNormal;
             }
 
-            float vertexBrightness = 0;
+            float weightedBrightness = 0;
+            int weightedLightmap = 0;
             float maxBrightness = 0;
-            int vertexLightmap = 0;
-            int maxBlock = 0;
-            int maxSky = 0;
+            int maxLightmap = 0;
 
             for (int axis = 0; axis < 3; ++axis) {
                 int encodedNormalComponent = (normal >> (axis * 8)) & 0xFF;
@@ -241,18 +240,19 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
                 // Blend proportionally to the square of the normal component
                 float axisWeight = normalComponent * normalComponent;
-                vertexBrightness += brightness * axisWeight;
-                vertexLightmap = lerpLightmap(vertexLightmap, 1, lightmap, axisWeight);
+                weightedBrightness += brightness * axisWeight;
+                weightedLightmap = lerpLightmap(weightedLightmap, 1, lightmap, axisWeight);
 
                 // Also keep track of the max, which will be used later
                 // to make sure the quad does not get too dark.
                 maxBrightness = Math.max(maxBrightness, brightness);
-                maxBlock = Math.max(maxBlock, LightTexture.block(lightmap));
-                maxSky = Math.max(maxSky, LightTexture.sky(lightmap));
+                maxLightmap = maxLightmap(maxLightmap, lightmap);
             }
 
-            brightness[vertex] = vertexBrightness; // (vertexBrightness + maxBrightness) * 0.5f;
-            lightmap[vertex] = vertexLightmap; // lerpLightmap(vertexLightmap, 0.5f, LightTexture.pack(maxBlock, maxSky), 0.5f);
+            // Do an average between the max and the weighted average.
+            // Using only the weighted average looks a bit too dark.
+            brightness[vertex] = (weightedBrightness + maxBrightness) * 0.5f;
+            lightmap[vertex] = lerpLightmap(weightedLightmap, 0.5f, maxLightmap, 0.5f);
         }
     }
 
@@ -305,12 +305,18 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         // Interpolate the two components separately
         int block1 = LightTexture.block(lightmap1);
         int block2 = LightTexture.block(lightmap2);
-        int block = (int) (block1 * w1 + block2 * w2);
+        int block = 0xFF & Math.round(block1 * w1 + block2 * w2);
 
         int sky1 = LightTexture.sky(lightmap1);
         int sky2 = LightTexture.sky(lightmap2);
-        int sky = (int) (sky1 * w1 + sky2 * w2);
+        int sky = 0xFF & Math.round(sky1 * w1 + sky2 * w2);
 
         return LightTexture.pack(block, sky);
+    }
+
+    static int maxLightmap(int lightmap1, int lightmap2) {
+        return LightTexture.pack(
+                Math.max(LightTexture.block(lightmap1), LightTexture.block(lightmap2)),
+                Math.max(LightTexture.sky(lightmap1), LightTexture.sky(lightmap2)));
     }
 }

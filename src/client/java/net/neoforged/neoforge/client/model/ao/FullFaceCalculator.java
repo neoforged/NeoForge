@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.model.ao;
 
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -202,25 +203,34 @@ class FullFaceCalculator {
                 cornerLightmap = faceLightmap;
             }
 
-            return sideLightmapA + sideLightmapB + cornerLightmap + faceLightmap >> 2 & 16711935;
+            return sideLightmapA + sideLightmapB + cornerLightmap + faceLightmap >> 2 & 0xFF00FF;
         } else {
             // Taken from Indigo
             if (sideLightmapA == 0 || sideLightmapB == 0 || cornerLightmap == 0 || faceLightmap == 0) {
                 // Compute non-zero min
-                int min = Math.max(Math.max(sideLightmapA, sideLightmapB), Math.max(cornerLightmap, faceLightmap));
-                if (sideLightmapA != 0) min = Math.min(min, sideLightmapA);
-                if (sideLightmapB != 0) min = Math.min(min, sideLightmapB);
-                if (cornerLightmap != 0) min = Math.min(min, cornerLightmap);
-                if (faceLightmap != 0) min = Math.min(min, faceLightmap);
+                int min = nonZeroMinLightmap(
+                        nonZeroMinLightmap(sideLightmapA, sideLightmapB),
+                        nonZeroMinLightmap(cornerLightmap, faceLightmap));
 
                 // Apply min
-                sideLightmapA = Math.max(min, sideLightmapA);
-                sideLightmapB = Math.max(min, sideLightmapB);
-                cornerLightmap = Math.max(min, cornerLightmap);
-                faceLightmap = Math.max(min, faceLightmap);
+                sideLightmapA = EnhancedAoRenderStorage.maxLightmap(min, sideLightmapA);
+                sideLightmapB = EnhancedAoRenderStorage.maxLightmap(min, sideLightmapB);
+                cornerLightmap = EnhancedAoRenderStorage.maxLightmap(min, cornerLightmap);
+                faceLightmap = EnhancedAoRenderStorage.maxLightmap(min, faceLightmap);
             }
 
-            return sideLightmapA + sideLightmapB + cornerLightmap + faceLightmap >> 2 & 16711935;
+            return sideLightmapA + sideLightmapB + cornerLightmap + faceLightmap >> 2 & 0xFF00FF;
         }
+    }
+
+    static int nonZeroMin(int a, int b) {
+        if (a == 0) return b;
+        return Math.min(a, b);
+    }
+
+    static int nonZeroMinLightmap(int lightmap1, int lightmap2) {
+        return LightTexture.pack(
+                nonZeroMin(LightTexture.block(lightmap1), LightTexture.block(lightmap2)),
+                nonZeroMin(LightTexture.sky(lightmap1), LightTexture.sky(lightmap2)));
     }
 }
