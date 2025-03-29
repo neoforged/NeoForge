@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/MultiVariant.java
 +++ b/net/minecraft/client/data/models/MultiVariant.java
-@@ -12,20 +_,50 @@
+@@ -12,20 +_,54 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -30,9 +30,13 @@
 +        this(variants, WeightedList.of());
 +    }
 +
-+    // Neo: convenience function for datagen with custom blockstate models
++    // Neo: convenience functions for datagen with custom blockstate models
 +    public static MultiVariant of(WeightedList<net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder> customBlockStateModels) {
 +        return new MultiVariant(WeightedList.of(), customBlockStateModels);
++    }
++
++    public static MultiVariant of(net.neoforged.neoforge.client.model.generators.blockstate.CustomBlockStateModelBuilder customBlockStateModel) {
++        return new MultiVariant(WeightedList.of(), WeightedList.of(customBlockStateModel));
      }
  
      public MultiVariant with(VariantMutator p_409928_) {
