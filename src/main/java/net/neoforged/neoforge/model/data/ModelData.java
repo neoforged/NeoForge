@@ -116,7 +116,7 @@ public final class ModelData {
                 return ModelData.EMPTY;
             } else {
                 return new ModelData(properties);
-                }
+            }
         }
     }
 }
