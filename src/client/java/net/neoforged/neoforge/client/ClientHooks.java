@@ -139,6 +139,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
@@ -192,7 +193,6 @@ import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -1142,7 +1142,7 @@ public class ClientHooks {
 
     @ApiStatus.Internal
     public static TextureFormat getStencilFormat() {
-        var reducedPrecision = NeoForgeConfig.CLIENT.reducedDepthStencilFormat.getAsBoolean();
+        var reducedPrecision = NeoForgeClientConfig.INSTANCE.reducedDepthStencilFormat.getAsBoolean();
         return reducedPrecision ? TextureFormat.DEPTH24_STENCIL8 : TextureFormat.DEPTH32_STENCIL8;
     }
 

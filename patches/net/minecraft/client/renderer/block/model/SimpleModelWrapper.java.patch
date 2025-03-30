@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
 +++ b/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
-@@ -13,18 +_,30 @@
+@@ -13,18 +_,35 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -13,6 +13,11 @@
 +
      public static SimpleModelWrapper bake(ModelBaker p_405335_, ResourceLocation p_405098_, ModelState p_405869_) {
          ResolvedModel resolvedmodel = p_405335_.getModel(p_405098_);
++        return bake(p_405335_, resolvedmodel, p_405869_);
++    }
++
++    // Neo: split off to allow baking an existing ResolvedModel into a BlockModelPart
++    public static SimpleModelWrapper bake(ModelBaker p_405335_, ResolvedModel resolvedmodel, ModelState p_405869_) {
          TextureSlots textureslots = resolvedmodel.getTopTextureSlots();
          boolean flag = resolvedmodel.getTopAmbientOcclusion();
          TextureAtlasSprite textureatlassprite = resolvedmodel.resolveParticleSprite(textureslots, p_405335_);

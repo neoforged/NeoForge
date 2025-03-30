@@ -152,6 +152,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
@@ -378,7 +379,7 @@ public class CommonHooks {
         boolean isSpectator = (entity instanceof Player && entity.isSpectator());
         if (isSpectator)
             return Optional.empty();
-        if (!NeoForgeConfig.SERVER.fullBoundingBoxLadders.get()) {
+        if (!NeoForgeServerConfig.INSTANCE.fullBoundingBoxLadders.get()) {
             return state.isLadder(level, pos, entity) ? Optional.of(pos) : Optional.empty();
         } else {
             AABB bb = entity.getBoundingBox();

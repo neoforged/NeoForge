@@ -139,7 +139,7 @@
                          CrashReportCategory crashreportcategory = crashreport.addCategory("Block entity being ticked");
                          this.blockEntity.fillCrashReportCategory(crashreportcategory);
 +
-+                        if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.removeErroringBlockEntities.get()) {
++                        if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.removeErroringBlockEntities.get()) {
 +                            LOGGER.error("{}", crashreport.getFriendlyReport(net.minecraft.ReportType.CRASH));
 +                            blockEntity.setRemoved();
 +                            LevelChunk.this.removeBlockEntity(blockEntity.getBlockPos());

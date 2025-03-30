@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.client.gui;
 
-import static net.neoforged.neoforge.common.NeoForgeConfig.CLIENT;
-
 import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.UnmodifiableConfig.Entry;
@@ -64,6 +62,7 @@ import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen.ConfigurationSectionScreen.Filter;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
@@ -171,7 +170,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
         }
 
         public void finish() {
-            if (CLIENT.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
+            if (NeoForgeClientConfig.INSTANCE.logUntranslatedConfigurationWarnings.get() && !FMLLoader.isProduction() && (!untranslatables.isEmpty() || !untranslatablesWithFallback.isEmpty())) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("""
                         \n	Dev warning - Untranslated configuration keys encountered. Please translate your configuration keys so users can properly configure your mod.

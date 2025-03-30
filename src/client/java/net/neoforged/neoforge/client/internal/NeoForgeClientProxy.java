@@ -5,25 +5,16 @@
 
 package net.neoforged.neoforge.client.internal;
 
-import java.io.File;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.resources.ClientPackSource;
-import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.TooltipFlag;
@@ -58,11 +49,6 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
     }
 
     @Override
-    public void reloadRenderer() {
-        ClientHooks.reloadRenderer();
-    }
-
-    @Override
     public BlockableEventLoop<Runnable> getClientExecutor() {
         return Minecraft.getInstance();
     }
@@ -70,11 +56,6 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
     @Override
     public TooltipFlag getTooltipFlag() {
         return Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL;
-    }
-
-    @Override
-    public PackResources createVanillaPackSource(File assetsDir, String assetIndex) {
-        return ClientPackSource.createVanillaPackSource(IndexedAssetSource.createIndexFs(assetsDir.toPath(), assetIndex));
     }
 
     @Override
@@ -93,10 +74,5 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
             }
         }
         return null;
-    }
-
-    @Override
-    public Supplier<?> instantiateLoadingOverlay(Supplier<?> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> ex, boolean fadein) {
-        return () -> new LoadingOverlay((Minecraft) mc.get(), ri.get(), ex, fadein);
     }
 }

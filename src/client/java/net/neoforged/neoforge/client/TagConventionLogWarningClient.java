@@ -18,9 +18,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.TagConventionLogWarning;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,7 +42,7 @@ public final class TagConventionLogWarningClient {
         // Log missing item tag translations only in integrated server so we can safely get translations.
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeConfig.COMMON.logUntranslatedItemTagWarnings.get();
+            TagConventionLogWarning.LogWarningMode untranslatedTagWarningMode = NeoForgeCommonConfig.INSTANCE.logUntranslatedItemTagWarnings.get();
             if (FMLEnvironment.dist == Dist.CLIENT && untranslatedTagWarningMode != TagConventionLogWarning.LogWarningMode.SILENCED) {
                 boolean isConfigSetToDev = untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_SHORT ||
                         untranslatedTagWarningMode == TagConventionLogWarning.LogWarningMode.DEV_VERBOSE;

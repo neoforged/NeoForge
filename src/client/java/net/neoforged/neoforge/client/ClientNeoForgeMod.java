@@ -24,8 +24,11 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
+import net.neoforged.neoforge.client.command.ClientConfigCommand;
+import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -72,7 +75,6 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.internal.BrandingControl;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
-import net.neoforged.neoforge.server.command.ConfigCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -90,6 +92,9 @@ public class ClientNeoForgeMod {
 
         modEventBus.register(ClientNeoForgeMod.class);
 
+        container.registerConfig(ModConfig.Type.CLIENT, NeoForgeClientConfig.SPEC);
+        modEventBus.register(NeoForgeClientConfig.class);
+
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         // Reset WORLD type config caches
@@ -102,7 +107,7 @@ public class ClientNeoForgeMod {
         });
 
         NeoForge.EVENT_BUS.addListener(RegisterClientCommandsEvent.class, event -> {
-            ConfigCommand.register(event.getDispatcher());
+            ClientConfigCommand.register(event.getDispatcher());
         });
     }
 

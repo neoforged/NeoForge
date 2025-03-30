@@ -29,8 +29,8 @@
              addServerProviders(datagenerator, collection, flag1, flag2, flag3);
 -            datagenerator.run();
 +            }
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, collection, existingPacks, flag2, flag3, validate, isFlat, null, null, () -> {},
-+                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, datagenerator);
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, collection, existingPacks, flag2, flag3, validate, isFlat, () -> {},
++                    net.neoforged.neoforge.data.event.GatherDataEvent.Server::new, datagenerator, packConsumer -> {});
          } else {
              optionparser.printHelpOn(System.out);
          }

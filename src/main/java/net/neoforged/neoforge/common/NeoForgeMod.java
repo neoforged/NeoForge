@@ -68,6 +68,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
+import net.neoforged.fml.Logging;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
@@ -75,6 +76,7 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
@@ -94,6 +96,8 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.OrCondition;
 import net.neoforged.neoforge.common.conditions.RegisteredCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
+import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.CustomDisplayIngredient;
@@ -545,6 +549,8 @@ public class NeoForgeMod {
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::registerFluids);
         modEventBus.addListener(this::registerLootData);
+        modEventBus.addListener(NeoForgeMod::onConfigLoad);
+        modEventBus.addListener(NeoForgeMod::onConfigFileChange);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
@@ -560,10 +566,8 @@ public class NeoForgeMod {
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
-        container.registerConfig(ModConfig.Type.CLIENT, NeoForgeConfig.clientSpec);
-        container.registerConfig(ModConfig.Type.SERVER, NeoForgeConfig.serverSpec);
-        container.registerConfig(ModConfig.Type.COMMON, NeoForgeConfig.commonSpec);
-        modEventBus.register(NeoForgeConfig.class);
+        container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
+        container.registerConfig(ModConfig.Type.COMMON, NeoForgeCommonConfig.SPEC);
         NeoForgeRegistriesSetup.setup(modEventBus);
         StartupNotificationManager.addModMessage("NeoForge version " + NeoForgeVersion.getVersion());
 
@@ -644,6 +648,14 @@ public class NeoForgeMod {
 
         event.register(Registries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "loot_table_id"), () -> LootTableIdCondition.LOOT_TABLE_ID);
         event.register(Registries.LOOT_CONDITION_TYPE, ResourceLocation.fromNamespaceAndPath("neoforge", "can_item_perform_ability"), () -> CanItemPerformAbility.LOOT_CONDITION_TYPE);
+    }
+
+    private static void onConfigLoad(final ModConfigEvent.Loading configEvent) {
+        LogManager.getLogger().debug(Logging.FORGEMOD, "Loaded NeoForge config file {}", configEvent.getConfig().getFileName());
+    }
+
+    private static void onConfigFileChange(final ModConfigEvent.Reloading configEvent) {
+        LogManager.getLogger().debug(Logging.FORGEMOD, "NeoForge config just got changed on the file system!");
     }
 
     public static final PermissionNode<Boolean> USE_SELECTORS_PERMISSION = new PermissionNode<>(NeoForgeVersion.MOD_ID, "use_entity_selectors",
