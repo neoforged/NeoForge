@@ -22,10 +22,19 @@ import net.minecraft.world.level.block.state.BlockState;
  *
  * <p>The logic is mostly contained in {@link #calculateFaceUncached},
  * and derives from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate},
- * with a number of fixes applied.
- * TODO list fixes if any
+ * with a few fixes applied:
+ * <ul>
+ *     <li>Fix vanilla sampling adjacent blocks 2 blocks away instead of 1 block away.</li>
+ *     <li>Fix vanilla using the wrong edges when computing some corners when both `sideClear`s are false.</li>
+ *     <li>Replace vanilla lightmap blending formula which can cause seams by an improved formula.</li>
+ * </ul>
  */
 class FullFaceCalculator {
+    /**
+     * Debug option to disable the lightmap blending formula fix. See below for an explanation.
+     */
+    private static final boolean DISABLE_LIGHTMAP_BLENDING_FIX = Boolean.getBoolean("neoforge.ao.disableLightmapBlendingFix");
+
     final BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
     private ModelBlockRenderer.Cache cache;
 
@@ -118,58 +127,77 @@ class FullFaceCalculator {
 
         float cornerBrightness0;
         int cornerLightmap0;
+        boolean cornerClear0;
         if (!sideClear2 && !sideClear0) {
             cornerBrightness0 = sideBrightness0;
             cornerLightmap0 = sideLightmap0;
+            cornerClear0 = false;
         } else {
             blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[0]).move(modelblockrenderer$adjacencyinfo.corners[2]);
             BlockState blockstate8 = level.getBlockState(blockpos$mutableblockpos);
             cornerBrightness0 = this.cache.getShadeBrightness(blockstate8, level, blockpos$mutableblockpos);
             cornerLightmap0 = this.cache.getLightColor(blockstate8, level, blockpos$mutableblockpos);
+            cornerClear0 = !blockstate8.isViewBlocking(level, blockpos$mutableblockpos) || blockstate8.getLightBlock() == 0;
         }
 
         float cornerBrightness1;
         int cornerLightmap1;
+        boolean cornerClear1;
         if (!sideClear3 && !sideClear0) {
             cornerBrightness1 = sideBrightness0;
             cornerLightmap1 = sideLightmap0;
+            cornerClear1 = false;
         } else {
             blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[0]).move(modelblockrenderer$adjacencyinfo.corners[3]);
             BlockState blockstate10 = level.getBlockState(blockpos$mutableblockpos);
             cornerBrightness1 = this.cache.getShadeBrightness(blockstate10, level, blockpos$mutableblockpos);
             cornerLightmap1 = this.cache.getLightColor(blockstate10, level, blockpos$mutableblockpos);
+            cornerClear1 = !blockstate10.isViewBlocking(level, blockpos$mutableblockpos) || blockstate10.getLightBlock() == 0;
         }
 
         float cornerBrightness2;
         int cornerLightmap2;
+        boolean cornerClear2;
         if (!sideClear2 && !sideClear1) {
-            cornerBrightness2 = sideBrightness0;
-            cornerLightmap2 = sideLightmap0;
+            // Vanilla used side0 here, which is not adjacent to this face. Use 1 instead, which is.
+            cornerBrightness2 = sideBrightness1;
+            cornerLightmap2 = sideLightmap1;
+            cornerClear2 = false;
         } else {
             blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[1]).move(modelblockrenderer$adjacencyinfo.corners[2]);
             BlockState blockstate11 = level.getBlockState(blockpos$mutableblockpos);
             cornerBrightness2 = this.cache.getShadeBrightness(blockstate11, level, blockpos$mutableblockpos);
             cornerLightmap2 = this.cache.getLightColor(blockstate11, level, blockpos$mutableblockpos);
+            cornerClear2 = !blockstate11.isViewBlocking(level, blockpos$mutableblockpos) || blockstate11.getLightBlock() == 0;
         }
 
         float cornerBrightness3;
         int cornerLightmap3;
+        boolean cornerClear3;
         if (!sideClear3 && !sideClear1) {
-            cornerBrightness3 = sideBrightness0;
-            cornerLightmap3 = sideLightmap0;
+            // Vanilla used side0 here, which is not adjacent to this face. Use 1 instead, which is.
+            cornerBrightness3 = sideBrightness1;
+            cornerLightmap3 = sideLightmap1;
+            cornerClear3 = false;
         } else {
             blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[1]).move(modelblockrenderer$adjacencyinfo.corners[3]);
             BlockState blockstate12 = level.getBlockState(blockpos$mutableblockpos);
             cornerBrightness3 = this.cache.getShadeBrightness(blockstate12, level, blockpos$mutableblockpos);
             cornerLightmap3 = this.cache.getLightColor(blockstate12, level, blockpos$mutableblockpos);
+            cornerClear3 = !blockstate12.isViewBlocking(level, blockpos$mutableblockpos) || blockstate12.getLightBlock() == 0;
         }
 
         // Process the inside of the block
-        int insideLightmap = this.cache.getLightColor(renderedState, level, renderedPos);
+        int insideLightmap;
+        boolean insideClear;
         blockpos$mutableblockpos.setWithOffset(renderedPos, direction);
         BlockState blockstate9 = level.getBlockState(blockpos$mutableblockpos);
         if (sampleOutside || !blockstate9.isSolidRender()) {
             insideLightmap = this.cache.getLightColor(blockstate9, level, blockpos$mutableblockpos);
+            insideClear = !blockstate9.isViewBlocking(level, blockpos$mutableblockpos) || blockstate9.getLightBlock() == 0;
+        } else {
+            insideLightmap = this.cache.getLightColor(renderedState, level, renderedPos);
+            insideClear = !renderedState.isViewBlocking(level, renderedPos) || renderedState.getLightBlock() == 0;
         }
 
         float insideBrightness = sampleOutside
@@ -183,54 +211,85 @@ class FullFaceCalculator {
         out.brightness1 = ((sideBrightness2 + sideBrightness0 + cornerBrightness0 + insideBrightness) * 0.25F) * levelBrightness;
         out.brightness2 = ((sideBrightness2 + sideBrightness1 + cornerBrightness2 + insideBrightness) * 0.25F) * levelBrightness;
         out.brightness3 = ((sideBrightness3 + sideBrightness1 + cornerBrightness3 + insideBrightness) * 0.25F) * levelBrightness;
-        out.lightmap0 = blend(sideLightmap3, sideLightmap0, cornerLightmap1, insideLightmap);
-        out.lightmap1 = blend(sideLightmap2, sideLightmap0, cornerLightmap0, insideLightmap);
-        out.lightmap2 = blend(sideLightmap2, sideLightmap1, cornerLightmap2, insideLightmap);
-        out.lightmap3 = blend(sideLightmap3, sideLightmap1, cornerLightmap3, insideLightmap);
+        out.lightmap0 = blend(sideLightmap3, sideLightmap0, cornerLightmap1, insideLightmap, sideClear3, sideClear0, cornerClear1, insideClear);
+        out.lightmap1 = blend(sideLightmap2, sideLightmap0, cornerLightmap0, insideLightmap, sideClear2, sideClear0, cornerClear0, insideClear);
+        out.lightmap2 = blend(sideLightmap2, sideLightmap1, cornerLightmap2, insideLightmap, sideClear2, sideClear1, cornerClear2, insideClear);
+        out.lightmap3 = blend(sideLightmap3, sideLightmap1, cornerLightmap3, insideLightmap, sideClear3, sideClear1, cornerClear3, insideClear);
     }
 
-    private static int blend(int sideLightmapA, int sideLightmapB, int cornerLightmap, int faceLightmap) {
-        if (true) {
+    /**
+     * Computes the lightmap of the corner of an AO face,
+     * by combining the lightmap values on the two neighbor blocks, on the corner block, and inside the block.
+     */
+    private static int blend(
+            int sideLightmapA, int sideLightmapB, int cornerLightmap, int insideLightmap,
+            boolean sideClearA, boolean sideClearB, boolean cornerClear, boolean insideClear) {
+        if (DISABLE_LIGHTMAP_BLENDING_FIX) {
+            // This is the vanilla lightmap blending for each AO face corner.
+            // - It special-cases 0 to prevent solid blocks from making adjacent blocks too dark.
+            //   This special casing is bad because it does not distinguish natural light levels of 0 and solid blocks.
+            // - The second problem is that the formula gives special treatment to the lightmap inside the block.
+            //   The same corner of two adjacent faces receives the same 4 lightmaps to blend, but in a different order.
+            //   When the 4 values are not treated equally, seams can appear.
+
             if (sideLightmapA == 0) {
-                sideLightmapA = faceLightmap;
+                sideLightmapA = insideLightmap;
             }
 
             if (sideLightmapB == 0) {
-                sideLightmapB = faceLightmap;
+                sideLightmapB = insideLightmap;
             }
 
             if (cornerLightmap == 0) {
-                cornerLightmap = faceLightmap;
+                cornerLightmap = insideLightmap;
             }
-
-            return sideLightmapA + sideLightmapB + cornerLightmap + faceLightmap >> 2 & 0xFF00FF;
         } else {
-            // Taken from Indigo
-            if (sideLightmapA == 0 || sideLightmapB == 0 || cornerLightmap == 0 || faceLightmap == 0) {
-                // Compute non-zero min
-                int min = nonZeroMinLightmap(
-                        nonZeroMinLightmap(sideLightmapA, sideLightmapB),
-                        nonZeroMinLightmap(cornerLightmap, faceLightmap));
+            // This is the improved lightmap blending, which fixes both issues:
+            // - It properly ignores lightmaps coming from solid blocks, but it does not ignore 0 values otherwise,
+            //   which means that a natural 0 value will not get ignored in the blending.
+            // - It treats all 4 lightmaps equally.
 
-                // Apply min
-                sideLightmapA = EnhancedAoRenderStorage.maxLightmap(min, sideLightmapA);
-                sideLightmapB = EnhancedAoRenderStorage.maxLightmap(min, sideLightmapB);
-                cornerLightmap = EnhancedAoRenderStorage.maxLightmap(min, cornerLightmap);
-                faceLightmap = EnhancedAoRenderStorage.maxLightmap(min, faceLightmap);
+            int sideBlockA = LightTexture.block(sideLightmapA);
+            int sideBlockB = LightTexture.block(sideLightmapB);
+            int cornerBlock = LightTexture.block(cornerLightmap);
+            int insideBlock = LightTexture.block(insideLightmap);
+            int sideSkyA = LightTexture.sky(sideLightmapA);
+            int sideSkyB = LightTexture.sky(sideLightmapB);
+            int cornerSky = LightTexture.sky(cornerLightmap);
+            int insideSky = LightTexture.sky(insideLightmap);
+
+            // Compute per-component minimum light, only including values from clear positions
+            int minBlock = 0x10000;
+            int minSky = 0x10000;
+
+            if (sideClearA) {
+                minBlock = sideBlockA;
+                minSky = sideSkyA;
+            }
+            if (sideClearB) {
+                minBlock = Math.min(minBlock, sideBlockB);
+                minSky = Math.min(minSky, sideSkyB);
+            }
+            if (cornerClear) {
+                minBlock = Math.min(minBlock, cornerBlock);
+                minSky = Math.min(minSky, cornerSky);
+            }
+            if (insideClear) {
+                minBlock = Math.min(minBlock, insideBlock);
+                minSky = Math.min(minSky, insideSky);
             }
 
-            return sideLightmapA + sideLightmapB + cornerLightmap + faceLightmap >> 2 & 0xFF00FF;
+            // Ensure that if no positions were clear, minimum is 0
+            minBlock &= 0xFFFF;
+            minSky &= 0xFFFF;
+
+            // Increase all components of non-clear blocks to the minimum light value
+            sideLightmapA = LightTexture.pack(Math.max(minBlock, sideBlockA), Math.max(minSky, sideSkyA));
+            sideLightmapB = LightTexture.pack(Math.max(minBlock, sideBlockB), Math.max(minSky, sideSkyB));
+            cornerLightmap = LightTexture.pack(Math.max(minBlock, cornerBlock), Math.max(minSky, cornerSky));
+            insideLightmap = LightTexture.pack(Math.max(minBlock, insideBlock), Math.max(minSky, insideSky));
         }
-    }
 
-    static int nonZeroMin(int a, int b) {
-        if (a == 0) return b;
-        return Math.min(a, b);
-    }
-
-    static int nonZeroMinLightmap(int lightmap1, int lightmap2) {
-        return LightTexture.pack(
-                nonZeroMin(LightTexture.block(lightmap1), LightTexture.block(lightmap2)),
-                nonZeroMin(LightTexture.sky(lightmap1), LightTexture.sky(lightmap2)));
+        return sideLightmapA + sideLightmapB + cornerLightmap + insideLightmap >> 2 & 0xFF00FF;
     }
 }

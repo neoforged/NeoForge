@@ -236,8 +236,6 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                 float brightness = interpolateBrightness(fullFace, weights);
                 int lightmap = interpolateLightmap(fullFace, weights);
 
-                // TODO: indigo does an average between the max and the average; maybe it looks better?
-
                 // Blend proportionally to the square of the normal component
                 float axisWeight = normalComponent * normalComponent;
                 weightedBrightness += brightness * axisWeight;
