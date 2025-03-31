@@ -40,22 +40,22 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
     @Override
     public void tesselateWithoutAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay) {
         if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.get()) {
-            render(bufferLookup, flatLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay);
+            render(bufferLookup, flatLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay, false, -1);
         } else {
             super.tesselateWithoutAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay);
         }
     }
 
     @Override
-    public void tesselateWithAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay) {
+    public void tesselateWithAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay, boolean perPartAO, int lightEmission) {
         if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.get()) {
-            render(bufferLookup, smoothLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay);
+            render(bufferLookup, smoothLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay, perPartAO, lightEmission);
         } else {
-            super.tesselateWithAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay);
+            super.tesselateWithAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay, perPartAO, lightEmission);
         }
     }
 
-    public static boolean render(Function<RenderType, VertexConsumer> bufferLookup, QuadLighter lighter, BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, boolean checkSides, int packedOverlay) {
+    public static boolean render(Function<RenderType, VertexConsumer> bufferLookup, QuadLighter lighter, BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, boolean checkSides, int packedOverlay, boolean perPartAO, int lightEmission) {
         LightPipelineAwareModelBlockRenderer renderer = (LightPipelineAwareModelBlockRenderer) Minecraft.getInstance().getBlockRenderer().getModelRenderer();
         ModelBlockRenderer.Cache cache = ModelBlockRenderer.CACHE.get();
         var pose = poseStack.last();
@@ -68,13 +68,23 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
 
         for (BlockModelPart part : modelParts) {
             VertexConsumer vertexConsumer = bufferLookup.apply(part.getRenderType(state));
+            boolean ao = !perPartAO || switch (part.ambientOcclusion()) {
+                case TRUE -> true;
+                case DEFAULT -> {
+                    if (lightEmission == -1) {
+                        lightEmission = state.getLightEmission(level, pos);
+                    }
+                    yield lightEmission == 0;
+                }
+                case FALSE -> false;
+            };
 
             List<BakedQuad> quads = part.getQuads(null);
             if (!quads.isEmpty()) {
                 empty = false;
                 lighter.setup(level, pos, state, cache);
                 for (BakedQuad quad : quads) {
-                    if (smoothLighter && !quad.hasAmbientOcclusion()) {
+                    if (smoothLighter && (!ao || !quad.hasAmbientOcclusion())) {
                         if (flatLighter == null) {
                             flatLighter = renderer.flatLighter.get();
                             flatLighter.setup(level, pos, state, cache);
@@ -109,7 +119,7 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
                         lighter.setup(level, pos, state, cache);
                     }
                     for (BakedQuad quad : quads) {
-                        if (smoothLighter && !quad.hasAmbientOcclusion()) {
+                        if (smoothLighter && (!ao || !quad.hasAmbientOcclusion())) {
                             if (flatLighter == null) {
                                 flatLighter = renderer.flatLighter.get();
                                 flatLighter.setup(level, pos, state, cache);

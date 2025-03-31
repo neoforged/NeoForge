@@ -29,6 +29,8 @@ public final class NeoForgeClientConfig {
 
     public final ModConfigSpec.BooleanValue reducedDepthStencilFormat;
 
+    public final ModConfigSpec.BooleanValue handleAmbientOcclusionPerPart;
+
     private NeoForgeClientConfig(ModConfigSpec.Builder builder) {
         experimentalForgeLightPipelineEnabled = builder
                 .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
@@ -49,6 +51,11 @@ public final class NeoForgeClientConfig {
                 .comment("Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.")
                 .translation("neoforge.configgui.reducedDepthStencilFormat")
                 .define("reducedDepthStencilFormat", false);
+
+        handleAmbientOcclusionPerPart = builder
+                .comment("When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting")
+                .translation("neoforge.configgui.handleAmbientOcclusionPerPart")
+                .define("handleAmbientOcclusionPerPart", true);
     }
 
     @SubscribeEvent
