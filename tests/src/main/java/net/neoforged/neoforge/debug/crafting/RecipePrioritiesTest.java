@@ -34,7 +34,7 @@ public class RecipePrioritiesTest {
     @EmptyTemplate()
     @TestHolder(description = "Tests creating a recipe with a higher priority than vanilla recipes")
     static void testOverridingRecipe(final DynamicTest test, final RegistrationHelper reg) {
-        reg.addClientProvider(event -> new RecipePrioritiesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), "neotests_recipe_priorities") {
+        reg.addClientProvider(event -> new RecipePrioritiesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
             protected void start() {
                 add("higher_priority_test", 1);
