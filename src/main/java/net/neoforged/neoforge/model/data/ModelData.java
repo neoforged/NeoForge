@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * @see BlockAndTintGetter#getModelData(BlockPos)
  */
 public final class ModelData {
-    public static final ModelData EMPTY = new ModelData(Map.of());
+    public static final ModelData EMPTY = new ModelData(new Reference2ReferenceArrayMap<>());
 
     private final Map<ModelProperty<?>, Object> properties;
 
