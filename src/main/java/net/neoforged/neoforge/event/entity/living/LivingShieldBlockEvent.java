@@ -24,7 +24,7 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * 
  * @see DamageContainer for more information on the damage sequence
  */
-public class LivingShieldBlockEvent extends LivingEvent implements ICancellableEvent {
+public class LivingShieldBlockEvent extends LivingEvent {
     private final DamageContainer container;
     private float dmgBlocked;
     private final float originalDmgBlocked;
