@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.config;
 
+import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -64,7 +65,7 @@ public final class NeoForgeClientConfig {
             boolean experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
             if (experimentalPipelineActive != INSTANCE.experimentalPipelineActive) {
                 INSTANCE.experimentalPipelineActive = experimentalPipelineActive;
-                ClientHooks.reloadRenderer();
+                Minecraft.getInstance().submit(ClientHooks::reloadRenderer);
             }
         }
     }
