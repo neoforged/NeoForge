@@ -32,10 +32,10 @@ public abstract class RecipePrioritiesProvider implements DataProvider {
     private final Map<ResourceLocation, Integer> toSerialize = new LinkedHashMap<>();
     private boolean replace = false;
 
-    public RecipePrioritiesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
+    public RecipePrioritiesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         this.output = output;
         this.registriesLookup = registries;
-        this.modid = modid;
+        this.modid = "neoforge";
     }
 
     /**
