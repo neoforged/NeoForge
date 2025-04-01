@@ -32,10 +32,10 @@ public abstract class RecipePrioritiesProvider implements DataProvider {
     private final Map<ResourceLocation, Integer> toSerialize = new LinkedHashMap<>();
     private boolean replace = false;
 
-    public RecipePrioritiesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+    public RecipePrioritiesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
         this.output = output;
         this.registriesLookup = registries;
-        this.modid = "neoforge";
+        this.modid = modid;
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class RecipePrioritiesProvider implements DataProvider {
         this.registries = registries;
         this.start();
 
-        Path path = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve(this.modid).resolve("recipe_priorities.json");
+        Path path = this.output.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("neoforge").resolve("recipe_priorities.json");
 
         JsonObject entries = new JsonObject();
         this.toSerialize.forEach((key, value) -> entries.addProperty(key.toString(), value));
