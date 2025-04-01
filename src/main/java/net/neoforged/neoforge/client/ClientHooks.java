@@ -1123,7 +1123,7 @@ public class ClientHooks {
     }
 
     public static void reloadRenderer() {
-        Minecraft.getInstance().levelRenderer.allChanged();
+        Minecraft.getInstance().submit(Minecraft.getInstance().levelRenderer::allChanged);
     }
 
     public static Map<ResourceLocation, ResourceLocation> gatherMaterialAtlases(Map<ResourceLocation, ResourceLocation> vanillaAtlases) {
