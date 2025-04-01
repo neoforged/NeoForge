@@ -22,8 +22,8 @@ if (isPreReleaseVersion) {
 System.out.println("NeoForge version ${project.version}")
 
 allprojects {
-    version rootProject.version
-    group 'net.neoforged'
+    version = rootProject.version
+    group = 'net.neoforged'
 
     apply plugin: 'java'
 
