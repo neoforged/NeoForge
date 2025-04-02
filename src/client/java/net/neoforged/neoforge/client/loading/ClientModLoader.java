@@ -26,7 +26,6 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -127,9 +126,6 @@ public class ClientModLoader extends CommonModLoader {
             // Ignore incoming initial screens task, the subsequent screens are unreachable in an error state
             return () -> Minecraft.getInstance().setScreen(new LoadingErrorScreen(error.getIssues(), dumpedLocation, () -> {}));
         }
-
-        // We can finally start the game eventbus up
-        NeoForge.EVENT_BUS.start();
 
         if (!warnings.isEmpty()) {
             if (showWarnings) {

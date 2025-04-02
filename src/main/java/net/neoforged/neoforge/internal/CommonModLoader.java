@@ -20,6 +20,7 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.registries.GameData;
 import net.neoforged.neoforge.registries.RegistryManager;
@@ -63,6 +64,8 @@ public abstract class CommonModLoader {
                 ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.COMMON, FMLPaths.CONFIGDIR.get());
             });
         }
+
+        NeoForge.EVENT_BUS.start();
     }
 
     protected static void load(Executor syncExecutor, Executor parallelExecutor) {
