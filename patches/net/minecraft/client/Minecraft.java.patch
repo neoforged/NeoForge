@@ -1,3 +1,5 @@
+--- a/net/minecraft/client/Minecraft.java
++++ b/net/minecraft/client/Minecraft.java
 @@ -430,7 +_,6 @@
              }
          }, Util.nonCriticalIoPool());
