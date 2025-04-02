@@ -137,7 +137,7 @@
              if (!list1.isEmpty()) {
 +                if (!ao) {
 +                    this.renderModelFaceFlat(
-+                            p_234391_, p_234393_, p_234394_, -1, p_234400_, false, p_234395_, p_234396_, list1, modelblockrenderer$ambientocclusionrenderstorage
++                            p_234391_, p_234393_, p_234394_, -1, p_234400_, true, p_234395_, p_234396_, list1, modelblockrenderer$ambientocclusionrenderstorage
 +                    );
 +                } else
                  this.renderModelFaceAO(
