@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Schakel de NeoForge blok rendering pijplijn in - fixt verlichting bij aangepaste modellen.",
   "neoforge.configgui.fullBoundingBoxLadders": "Volledig Omgrensde Doos Ladders",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Zet dit op 'true' om de gehele entiteitsbotsingsdoos voor ladders te controleren, in plaats van alleen het blok waarin ze zich bevinden. Veroorzaakt merkbare verschillen in mechanismen, dus standaard is vanilla gedrag. Standaard: false.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "Verouderde Tags Loggen",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Onvertaalde Configuratie Sleutels Loggen",
