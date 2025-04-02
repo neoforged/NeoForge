@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Активує конвеєр NeoForge для рендерингу блоків — виправляє освітлення користувацьких моделей.",
   "neoforge.configgui.fullBoundingBoxLadders": "Повні області колізії з драбиною",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Встановіть значення \"true\", для повної перевірки колізії сутностей з драбинами, замість просто блоку, в якому вони знаходяться. Спричиняє помітні відмінності в механіці, тому за замовчуванням використовується ванільна поведінка. За замовчуванням: false.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "Записувати старі теги",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "Параметр конфігурації в основному для розробників. Виводить модифіковані теги, що використовують домен 'forge' при запуску на інтегрованому сервері. Усталене значення — DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Записувати ключі неперекладених конфігурацій",
