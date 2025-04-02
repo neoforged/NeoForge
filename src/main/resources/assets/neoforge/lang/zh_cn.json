@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "启用 NeoForge 方块渲染管线 - 修复自定义模型的光照问题。",
   "neoforge.configgui.fullBoundingBoxLadders": "梯子使用完整实体碰撞箱",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "将此项设置为true，以使梯子检查整个实体的碰撞箱，而不仅仅是它们所处的方块。这将导致明显的机制差异，因此默认使用原版行为。默认：false。",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "记录旧标签",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "一个主要面向开发者的配置选项。在内置服务端上运行时，在日志中记录那些使用“forge”命名空间的模组环境标签。默认值为DEV_SHORT。",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "记录未翻译的配置键",
