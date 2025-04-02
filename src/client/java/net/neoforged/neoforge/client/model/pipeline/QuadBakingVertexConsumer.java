@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.LightingMode;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 
 /**
@@ -44,7 +43,6 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
     private boolean shade;
     private int lightEmission;
     private boolean hasAmbientOcclusion;
-    private LightingMode lightingMode = LightingMode.VANILLA;
 
     @Override
     public VertexConsumer addVertex(float x, float y, float z) {
@@ -139,16 +137,12 @@ public class QuadBakingVertexConsumer implements VertexConsumer {
         this.hasAmbientOcclusion = hasAmbientOcclusion;
     }
 
-    public void setLightingMode(LightingMode lightingMode) {
-        this.lightingMode = lightingMode;
-    }
-
     public BakedQuad bakeQuad() {
         if (!building || ++vertexIndex != 4) {
             throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + vertexIndex);
         }
 
-        BakedQuad quad = new BakedQuad(quadData.clone(), tintIndex, direction, sprite, shade, lightEmission, hasAmbientOcclusion, lightingMode);
+        BakedQuad quad = new BakedQuad(quadData.clone(), tintIndex, direction, sprite, shade, lightEmission, hasAmbientOcclusion);
         vertexIndex = 0;
         building = false;
         Arrays.fill(quadData, 0);

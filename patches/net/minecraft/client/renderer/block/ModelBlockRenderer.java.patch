@@ -89,7 +89,7 @@
 +        int p_234400_
 +    ) {
 +        // Neo: Inject enhanced AO pipeline
-+        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage();
++        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.newInstance();
          int i = 0;
          int j = 0;
  

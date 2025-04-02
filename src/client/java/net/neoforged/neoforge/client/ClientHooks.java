@@ -487,6 +487,9 @@ public class ClientHooks {
         return new Material(TextureAtlas.LOCATION_BLOCKS, loc);
     }
 
+    /**
+     * Computes the packed normal of a quad based on the stored vertex positions.
+     */
     public static int computeQuadNormal(int[] vertices) {
         float x0 = Float.intBitsToFloat(vertices[0]);
         float y0 = Float.intBitsToFloat(vertices[1]);
@@ -531,34 +534,11 @@ public class ClientHooks {
      */
     // TODO Do we need this?
     public static void fillNormal(int[] faceData, Direction facing) {
-        Vector3f v1 = getVertexPos(faceData, 3);
-        Vector3f t1 = getVertexPos(faceData, 1);
-        Vector3f v2 = getVertexPos(faceData, 2);
-        Vector3f t2 = getVertexPos(faceData, 0);
-        v1.sub(t1);
-        v2.sub(t2);
-        v2.cross(v1);
-        v2.normalize();
-
-        int x = ((byte) Math.round(v2.x() * 127)) & 0xFF;
-        int y = ((byte) Math.round(v2.y() * 127)) & 0xFF;
-        int z = ((byte) Math.round(v2.z() * 127)) & 0xFF;
-
-        int normal = x | (y << 0x08) | (z << 0x10);
+        int normal = computeQuadNormal(faceData);
 
         for (int i = 0; i < 4; i++) {
             faceData[i * 8 + 7] = normal;
         }
-    }
-
-    private static Vector3f getVertexPos(int[] data, int vertex) {
-        int idx = vertex * 8;
-
-        float x = Float.intBitsToFloat(data[idx]);
-        float y = Float.intBitsToFloat(data[idx + 1]);
-        float z = Float.intBitsToFloat(data[idx + 2]);
-
-        return new Vector3f(x, y, z);
     }
 
     public static boolean calculateFaceWithoutAO(BlockAndTintGetter getter, BlockState state, BlockPos pos, BakedQuad quad, ModelBlockRenderer.Cache cache, boolean isFaceCubic, float[] brightness, int[] lightmap) {

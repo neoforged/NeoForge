@@ -33,7 +33,6 @@ public final class ElementBuilder {
     private int blockLight = 0;
     private int skyLight = 0;
     private boolean hasAmbientOcclusion = true;
-    private boolean enhancedLighting = false;
 
     /**
      * Set the "from" position for this element.
@@ -227,11 +226,6 @@ public final class ElementBuilder {
         return this;
     }
 
-    public ElementBuilder enhancedLighting(boolean enhancedLighting) {
-        this.enhancedLighting = enhancedLighting;
-        return this;
-    }
-
     private static BiConsumer<Direction, FaceBuilder> addTexture(TextureSlot texture) {
         return ($, f) -> f.texture(texture);
     }
@@ -250,7 +244,7 @@ public final class ElementBuilder {
         Map<Direction, BlockElementFace> faces = this.faces.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().build(), (k1, k2) -> {
             throw new IllegalArgumentException();
         }, LinkedHashMap::new));
-        return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion, this.enhancedLighting));
+        return new BlockElement(from, to, faces, rotation == null ? null : rotation.build(), shade, lightEmission, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion));
     }
 
     ElementBuilder copy() {

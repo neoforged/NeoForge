@@ -24,11 +24,10 @@ import org.jetbrains.annotations.Nullable;
  * @param blockLight       Block Light for this face from 0-15 (inclusive)
  * @param skyLight         Sky Light for this face from 0-15 (inclusive)
  * @param ambientOcclusion If this face has AO
- * @param enhancedLighting Whether to use an enhanced lighting algorithm for this face
  */
-public record ExtraFaceData(int color, int blockLight, int skyLight, boolean ambientOcclusion, boolean enhancedLighting) {
+public record ExtraFaceData(int color, int blockLight, int skyLight, boolean ambientOcclusion) {
 
-    public static final ExtraFaceData DEFAULT = new ExtraFaceData(0xFFFFFFFF, 0, 0, true, false);
+    public static final ExtraFaceData DEFAULT = new ExtraFaceData(0xFFFFFFFF, 0, 0, true);
 
     public static final Codec<Integer> COLOR = Codec.either(Codec.INT, Codec.STRING).xmap(
             either -> either.map(Function.identity(), str -> (int) Long.parseLong(str, 16)),
@@ -40,8 +39,7 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
                             COLOR.optionalFieldOf("color", 0xFFFFFFFF).forGetter(ExtraFaceData::color),
                             Codec.intRange(0, 15).optionalFieldOf("block_light", 0).forGetter(ExtraFaceData::blockLight),
                             Codec.intRange(0, 15).optionalFieldOf("sky_light", 0).forGetter(ExtraFaceData::skyLight),
-                            Codec.BOOL.optionalFieldOf("ambient_occlusion", true).forGetter(ExtraFaceData::ambientOcclusion),
-                            Codec.BOOL.optionalFieldOf("enhanced_lighting", false).forGetter(ExtraFaceData::enhancedLighting))
+                            Codec.BOOL.optionalFieldOf("ambient_occlusion", true).forGetter(ExtraFaceData::ambientOcclusion))
                     .apply(builder, ExtraFaceData::new));
     /**
      * Parses an ExtraFaceData from JSON
@@ -57,9 +55,5 @@ public record ExtraFaceData(int color, int blockLight, int skyLight, boolean amb
             return fallback;
         }
         return CODEC.parse(JsonOps.INSTANCE, obj).getOrThrow(JsonParseException::new);
-    }
-
-    public LightingMode lightingMode() {
-        return enhancedLighting ? LightingMode.ENHANCED : LightingMode.VANILLA;
     }
 }

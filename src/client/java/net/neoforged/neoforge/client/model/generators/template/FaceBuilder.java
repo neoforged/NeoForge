@@ -27,7 +27,6 @@ public final class FaceBuilder {
     private int blockLight = 0;
     private int skyLight = 0;
     private boolean hasAmbientOcclusion = true;
-    private boolean enhancedLighting = false;
 
     /**
      * Sets which direction should cull this face when fully occluded, or null to never cull.
@@ -115,16 +114,11 @@ public final class FaceBuilder {
         return this;
     }
 
-    public FaceBuilder enhancedLighting(boolean enhancedLighting) {
-        this.enhancedLighting = enhancedLighting;
-        return this;
-    }
-
     BlockElementFace build() {
         if (this.texture == null) {
             throw new IllegalStateException("A model face must have a texture");
         }
-        return new BlockElementFace(cullface, tintindex, texture.toString(), uvs, rotation, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion, this.enhancedLighting), new MutableObject<>());
+        return new BlockElementFace(cullface, tintindex, texture.toString(), uvs, rotation, new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion), new MutableObject<>());
     }
 
     FaceBuilder copy() {

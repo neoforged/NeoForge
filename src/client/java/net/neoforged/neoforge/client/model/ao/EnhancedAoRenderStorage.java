@@ -17,20 +17,27 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.LightingMode;
 import org.slf4j.Logger;
 
 /**
  * Entrypoint and main class of our enhanced AO pipeline.
  *
- * <p>Vanilla's AO logic works well for faces that are on a cube's face.
- * That computation is replicated in {@link FullFaceCalculator}.
+ * <p>Vanilla's AO logic works well for faces that are axis-aligned.
+ * That computation is replicated in {@link FullFaceCalculator}, with some bug fixes.
  * The job of the enhanced pipeline is to handle faces that are more complicated,
  * by combining multiple full faces as needed using interpolation.
  *
  * <p>Compared to vanilla, we also remove any assumption about vertex order in the quad.
  */
 public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusionRenderStorage {
+    public static ModelBlockRenderer.AmbientOcclusionRenderStorage newInstance() {
+        if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean()) {
+            return new EnhancedAoRenderStorage();
+        } else {
+            return new ModelBlockRenderer.AmbientOcclusionRenderStorage();
+        }
+    }
+
     /**
      * Debug option to compare the emulated vanilla AO with the actual vanilla AO.
      * Only does something if emulated AO is enabled.
@@ -41,27 +48,24 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     /**
      * Cache these objects so that they don't need to be reallocated for every {@link EnhancedAoRenderStorage}.
      */
-    private record AoObjectCache(FullFaceCalculator calculator, AoCalculatedFace tempFace, float[] weights) {}
+    private record AoObjectCache(FullFaceCalculator calculator, float[] weights) {}
 
     private static final ThreadLocal<AoObjectCache> AO_OBJECT_CACHE = ThreadLocal.withInitial(() -> new AoObjectCache(
             new FullFaceCalculator(),
-            new AoCalculatedFace(),
             new float[4]));
 
     /**
      * Calculator for full faces.
      */
     private final FullFaceCalculator calculator;
-    // Avoid repeated allocations of these objects
+    // Avoid repeated allocations of this array
     private final float[] weights;
-    private final AoCalculatedFace tempFace;
 
     private BakedQuad currentQuad;
 
     public EnhancedAoRenderStorage() {
         var cache = AO_OBJECT_CACHE.get();
         this.calculator = cache.calculator;
-        this.tempFace = cache.tempFace;
         this.weights = cache.weights;
         // Reset AO Face cache
         this.calculator.startBlock(this.cache);
@@ -78,40 +82,60 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             throw new IllegalStateException("Make sure to pass the quad via captureQuad before calling calculate.");
         }
 
-        boolean vanillaRequested = currentQuad.lightingMode() == LightingMode.VANILLA;
-        AoConfig config = NeoForgeClientConfig.INSTANCE.ambientOcclusion.get();
+        // Enhanced calculation
+        // Vanilla uses ==. We could add an epsilon to use the cheaper axis-aligned logic for almost axis-aligned faces.
+        boolean isAxisAligned = switch (direction) {
+            case DOWN, UP -> faceShape[ModelBlockRenderer.SizeInfo.DOWN.index] == faceShape[ModelBlockRenderer.SizeInfo.UP.index];
+            case NORTH, SOUTH -> faceShape[ModelBlockRenderer.SizeInfo.NORTH.index] == faceShape[ModelBlockRenderer.SizeInfo.SOUTH.index];
+            case WEST, EAST -> faceShape[ModelBlockRenderer.SizeInfo.WEST.index] == faceShape[ModelBlockRenderer.SizeInfo.EAST.index];
+        };
 
-        if (config == AoConfig.VANILLA) {
-            super.calculate(level, state, pos, direction, shade);
-        } else if (config == AoConfig.EMULATE || (config == AoConfig.HYBRID && vanillaRequested)) {
-            calculateEmulatedVanilla(level, state, pos, direction, shade);
+        if (isAxisAligned) {
+            calculateAxisAligned(level, state, pos, direction, shade);
         } else {
-            // Enhanced calculation
-            // Vanilla uses ==. We could add an epsilon to use the cheaper axis-aligned logic for almost axis-aligned faces.
-            boolean isAxisAligned = switch (direction) {
-                case DOWN, UP -> faceShape[ModelBlockRenderer.SizeInfo.DOWN.index] == faceShape[ModelBlockRenderer.SizeInfo.UP.index];
-                case NORTH, SOUTH -> faceShape[ModelBlockRenderer.SizeInfo.NORTH.index] == faceShape[ModelBlockRenderer.SizeInfo.SOUTH.index];
-                case WEST, EAST -> faceShape[ModelBlockRenderer.SizeInfo.WEST.index] == faceShape[ModelBlockRenderer.SizeInfo.EAST.index];
-            };
-
-            if (isAxisAligned) {
-                calculateAxisAligned(level, state, pos, direction, shade);
-            } else {
-                calculateIrregular(level, state, pos, shade);
-            }
+            calculateIrregular(level, state, pos, shade);
         }
     }
 
+    private static final float AO_EPS = 1e-4f;
+
     /**
-     * Emulates vanilla lighting in the sense that a single AO face is evaluated,
-     * on the outside of the block if {@link #faceCubic} is true.
+     * Computes an axis-aligned AO face that might be inside the block.
+     * Performs linear interpolation between the face using inside sampling and outside sampling,
+     * depending on the depth of the quad.
      *
-     * <p>However we still use our own interpolation logic which does not make any assumption about vertex winding order.
+     * <p>This is similar to vanilla in how we select whether to use the inside or outside light.
+     * However, we still use our own interpolation logic which does not make any assumption about vertex winding order.
      */
-    private void calculateEmulatedVanilla(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
-        // Vanilla will always compute a single face; outside is decided by this.faceCubic
-        var fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, this.faceCubic);
-        interpolateFace(fullFace, direction);
+    private AoCalculatedFace gatherAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade, int vertex) {
+        int[] vertices = currentQuad.vertices();
+        float depth = AoFace.fromDirection(direction).computeDepth(
+                vertexPos(vertices, vertex, 0),
+                vertexPos(vertices, vertex, 1),
+                vertexPos(vertices, vertex, 2));
+        // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block
+        boolean sampleOutside = depth < AO_EPS || state.isCollisionShapeFullBlock(level, pos);
+        return this.calculator.calculateFace(level, state, pos, direction, shade, sampleOutside);
+    }
+
+    /**
+     * Computes AO for an axis-aligned quad.
+     * Calls {@link #gatherAxisAligned}, then interpolate to handle partial quads.
+     */
+    private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
+        // Pass vertex 0: it's only used for depth and since the face is axis-aligned all vertices have the same depth.
+        var fullFace = gatherAxisAligned(level, state, pos, direction, shade, 0);
+
+        // Perform bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
+        // This will work regardless of the vertex order or position
+        AoFace aoFace = AoFace.fromDirection(direction);
+        int[] vertices = this.currentQuad.vertices();
+        float[] weights = this.weights;
+        for (int vertex = 0; vertex < 4; ++vertex) {
+            aoFace.computeCornerWeights(weights, vertexPos(vertices, vertex, 0), vertexPos(vertices, vertex, 1), vertexPos(vertices, vertex, 2));
+            brightness[vertex] = interpolateBrightness(fullFace, weights);
+            lightmap[vertex] = interpolateLightmap(fullFace, weights);
+        }
 
         // Debug option to compare emulated vanilla AO with actual vanilla AO.
         // We are not interested in assuming a quad winding order,
@@ -126,64 +150,13 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             for (int vertex = 0; vertex < 4; ++vertex) {
                 if (!Mth.equal(emulatedBrightness[vertex], brightness[vertex]) || emulatedLightmap[vertex] != lightmap[vertex]) {
                     LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
-                            + "Vanilla: lightmap = {}, brightness = {}\n"
-                            + "Emulated: lightmap = {}, brightness = {}\n",
+                                    + "Vanilla: lightmap = {}, brightness = {}\n"
+                                    + "Emulated: lightmap = {}, brightness = {}\n",
                             vertex, direction, state.getBlock(), pos, lightmap[vertex], brightness[vertex], emulatedLightmap[vertex], emulatedBrightness[vertex]);
                     break;
                 }
             }
         }
-    }
-
-    /**
-     * Performs bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
-     * This will work regardless of the vertex order and positions.
-     */
-    private void interpolateFace(AoCalculatedFace fullFace, Direction direction) {
-        AoFace aoFace = AoFace.fromDirection(direction);
-        int[] vertices = this.currentQuad.vertices();
-        float[] weights = this.weights;
-        for (int vertex = 0; vertex < 4; ++vertex) {
-            aoFace.computeCornerWeights(weights, vertexPos(vertices, vertex, 0), vertexPos(vertices, vertex, 1), vertexPos(vertices, vertex, 2));
-            brightness[vertex] = interpolateBrightness(fullFace, weights);
-            lightmap[vertex] = interpolateLightmap(fullFace, weights);
-        }
-    }
-
-    private static final float AO_EPS = 1e-4f;
-
-    /**
-     * Computes an axis-aligned AO face that might be inside the block.
-     * Performs linear interpolation between the face using inside sampling and outside sampling,
-     * depending on the depth of the quad.
-     */
-    private AoCalculatedFace gatherAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade, int vertex) {
-        int[] vertices = currentQuad.vertices();
-        float depth = AoFace.fromDirection(direction).computeDepth(
-                vertexPos(vertices, vertex, 0),
-                vertexPos(vertices, vertex, 1),
-                vertexPos(vertices, vertex, 2));
-
-        // Interpolate between inside and outside light, depending on depth
-        if (depth < AO_EPS) { // Avoid linear interpolation if we are exactly on one of the faces
-            return this.calculator.calculateFace(level, state, pos, direction, shade, true);
-        } else if (depth > 1 - AO_EPS) {
-            return this.calculator.calculateFace(level, state, pos, direction, shade, false);
-        } else {
-            AoCalculatedFace faceInner = this.calculator.calculateFace(level, state, pos, direction, shade, false);
-            AoCalculatedFace faceOuter = this.calculator.calculateFace(level, state, pos, direction, shade, true);
-            return combineLinearly(tempFace, faceInner, depth, faceOuter, 1 - depth);
-        }
-    }
-
-    /**
-     * Computes AO for an axis-aligned quad.
-     * Calls {@link #gatherAxisAligned}, then interpolate to handle partial quads.
-     */
-    private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
-        // Pass vertex 0: it's only used for depth and since the face is axis-aligned all vertices have the same depth.
-        var fullFace = gatherAxisAligned(level, state, pos, direction, shade, 0);
-        interpolateFace(fullFace, direction);
     }
 
     /**

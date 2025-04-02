@@ -27,6 +27,8 @@ import net.minecraft.world.level.block.state.BlockState;
  *     <li>Fix vanilla sampling adjacent blocks 2 blocks away instead of 1 block away.</li>
  *     <li>Fix vanilla using the wrong edges when computing some corners when both `sideClear`s are false.</li>
  *     <li>Replace vanilla lightmap blending formula which can cause seams by an improved formula.</li>
+ *     <li>Always use the sampling position to compute the inner light, even if the block outside of the face
+ *     is not solid. This is not guaranteed to be an improvement in all cases, but it does at least fix some cases.</li>
  * </ul>
  */
 class FullFaceCalculator {
@@ -188,21 +190,13 @@ class FullFaceCalculator {
         }
 
         // Process the inside of the block
-        int insideLightmap;
-        boolean insideClear;
-        blockpos$mutableblockpos.setWithOffset(renderedPos, direction);
-        BlockState blockstate9 = level.getBlockState(blockpos$mutableblockpos);
-        if (sampleOutside || !blockstate9.isSolidRender()) {
-            insideLightmap = this.cache.getLightColor(blockstate9, level, blockpos$mutableblockpos);
-            insideClear = !blockstate9.isViewBlocking(level, blockpos$mutableblockpos) || blockstate9.getLightBlock() == 0;
-        } else {
-            insideLightmap = this.cache.getLightColor(renderedState, level, renderedPos);
-            insideClear = !renderedState.isViewBlocking(level, renderedPos) || renderedState.getLightBlock() == 0;
-        }
-
-        float insideBrightness = sampleOutside
-                ? this.cache.getShadeBrightness(level.getBlockState(samplePos), level, samplePos)
-                : this.cache.getShadeBrightness(level.getBlockState(renderedPos), level, renderedPos);
+        // This here is changed compare to vanilla which would use the offset position if
+        // sampleOutside || !outsideState.isSolidRender
+        // which causes seams e.g. when a slab is placed below an active sculk sensor
+        BlockState insideState = sampleOutside ? level.getBlockState(samplePos) : renderedState;
+        float insideBrightness = this.cache.getShadeBrightness(insideState, level, samplePos);
+        int insideLightmap = this.cache.getLightColor(insideState, level, samplePos);
+        boolean insideClear = !insideState.isViewBlocking(level, samplePos) || insideState.getLightBlock() == 0;
 
         // Wrap up
         float levelBrightness = level.getShade(direction, shade);
