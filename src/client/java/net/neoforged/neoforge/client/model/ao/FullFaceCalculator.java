@@ -24,11 +24,11 @@ import net.minecraft.world.level.block.state.BlockState;
  * and derives from vanilla's {@link ModelBlockRenderer.AmbientOcclusionRenderStorage#calculate},
  * with a few fixes applied:
  * <ul>
- *     <li>Fix vanilla sampling adjacent blocks 2 blocks away instead of 1 block away.</li>
- *     <li>Fix vanilla using the wrong edges when computing some corners when both `sideClear`s are false.</li>
- *     <li>Replace vanilla lightmap blending formula which can cause seams by an improved formula.</li>
- *     <li>Always use the sampling position to compute the inner light, even if the block outside of the face
- *     is not solid. This is not guaranteed to be an improvement in all cases, but it does at least fix some cases.</li>
+ * <li>Fix vanilla sampling adjacent blocks 2 blocks away instead of 1 block away.</li>
+ * <li>Fix vanilla using the wrong edges when computing some corners when both `sideClear`s are false.</li>
+ * <li>Replace vanilla lightmap blending formula which can cause seams by an improved formula.</li>
+ * <li>Always use the sampling position to compute the inner light, even if the block outside of the face
+ * is not solid. This is not guaranteed to be an improvement in all cases, but it does at least fix some cases.</li>
  * </ul>
  */
 class FullFaceCalculator {

@@ -149,8 +149,8 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             for (int vertex = 0; vertex < 4; ++vertex) {
                 if (!Mth.equal(emulatedBrightness[vertex], brightness[vertex]) || emulatedLightmap[vertex] != lightmap[vertex]) {
                     LOGGER.warn("Emulated vanilla AO differs from actual AO at vertex {} of face {}, while lighting {}@{}\n"
-                                    + "Vanilla: lightmap = {}, brightness = {}\n"
-                                    + "Emulated: lightmap = {}, brightness = {}\n",
+                            + "Vanilla: lightmap = {}, brightness = {}\n"
+                            + "Emulated: lightmap = {}, brightness = {}\n",
                             vertex, direction, state.getBlock(), pos, lightmap[vertex], brightness[vertex], emulatedLightmap[vertex], emulatedBrightness[vertex]);
                     break;
                 }
