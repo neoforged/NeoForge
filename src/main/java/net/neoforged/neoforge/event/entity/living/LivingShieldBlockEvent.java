@@ -9,7 +9,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.component.BlocksAttacks;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
@@ -24,7 +23,7 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * 
  * @see DamageContainer for more information on the damage sequence
  */
-public class LivingShieldBlockEvent extends LivingEvent implements ICancellableEvent {
+public class LivingShieldBlockEvent extends LivingEvent {
     private final DamageContainer container;
     private float dmgBlocked;
     private final float originalDmgBlocked;
