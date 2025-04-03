@@ -8,7 +8,7 @@
      public void tesselateBlock(
          BlockAndTintGetter p_234380_,
          List<BlockModelPart> p_410025_,
-@@ -47,15 +_,34 @@
+@@ -47,15 +_,33 @@
          boolean p_234386_,
          int p_234389_
      ) {
@@ -28,10 +28,9 @@
          if (!p_410025_.isEmpty()) {
 -            boolean flag = Minecraft.useAmbientOcclusion() && p_234382_.getLightEmission() == 0 && p_410025_.getFirst().useAmbientOcclusion();
 +            boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
-+            int lightEmission = -1;
 +            boolean flag = Minecraft.useAmbientOcclusion() && (perPartAO || switch(p_410025_.getFirst().ambientOcclusion()) {
 +                case TRUE -> true;
-+                case DEFAULT -> (lightEmission = p_234382_.getLightEmission(p_234380_, p_234383_)) == 0;
++                case DEFAULT -> p_234382_.getLightEmission(p_234380_, p_234383_) == 0;
 +                case FALSE -> false;
 +            });
              p_234384_.translate(p_234382_.getOffset(p_234383_));
@@ -39,7 +38,7 @@
              try {
                  if (flag) {
 -                    this.tesselateWithAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234389_);
-+                    this.tesselateWithAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, bufferLookup, p_234386_, p_234389_, perPartAO, lightEmission);
++                    this.tesselateWithAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, bufferLookup, p_234386_, p_234389_);
                  } else {
 -                    this.tesselateWithoutAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234389_);
 +                    this.tesselateWithoutAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, bufferLookup, p_234386_, p_234389_);
@@ -76,7 +75,7 @@
          boolean p_234397_,
          int p_234400_
      ) {
-+        this.tesselateWithAO(p_234391_, p_410478_, p_234393_, p_234394_, p_234395_, type -> p_234396_, p_234397_, p_234400_, false, -1);
++        this.tesselateWithAO(p_234391_, p_410478_, p_234393_, p_234394_, p_234395_, type -> p_234396_, p_234397_, p_234400_);
 +    }
 +
 +    public void tesselateWithAO(
@@ -87,11 +86,11 @@
 +        PoseStack p_234395_,
 +        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
 +        boolean p_234397_,
-+        int p_234400_,
-+        boolean perPartAO,
-+        int lightEmission
++        int p_234400_
 +    ) {
          ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
++        boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
++        int lightEmission = -1;
          int i = 0;
          int j = 0;
  
@@ -137,7 +136,7 @@
              if (!list1.isEmpty()) {
 +                if (!ao) {
 +                    this.renderModelFaceFlat(
-+                            p_234391_, p_234393_, p_234394_, -1, p_234400_, false, p_234395_, p_234396_, list1, modelblockrenderer$ambientocclusionrenderstorage
++                            p_234391_, p_234393_, p_234394_, -1, p_234400_, true, p_234395_, p_234396_, list1, modelblockrenderer$ambientocclusionrenderstorage
 +                    );
 +                } else
                  this.renderModelFaceAO(

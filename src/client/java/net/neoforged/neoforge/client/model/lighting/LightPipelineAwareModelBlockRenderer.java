@@ -40,31 +40,33 @@ public class LightPipelineAwareModelBlockRenderer extends ModelBlockRenderer {
     @Override
     public void tesselateWithoutAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay) {
         if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.get()) {
-            render(bufferLookup, flatLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay, false, -1);
+            render(bufferLookup, flatLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay);
         } else {
             super.tesselateWithoutAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay);
         }
     }
 
     @Override
-    public void tesselateWithAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay, boolean perPartAO, int lightEmission) {
+    public void tesselateWithAO(BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, Function<RenderType, VertexConsumer> bufferLookup, boolean checkSides, int packedOverlay) {
         if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.get()) {
-            render(bufferLookup, smoothLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay, perPartAO, lightEmission);
+            render(bufferLookup, smoothLighter.get(), level, modelParts, state, pos, poseStack, checkSides, packedOverlay);
         } else {
-            super.tesselateWithAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay, perPartAO, lightEmission);
+            super.tesselateWithAO(level, modelParts, state, pos, poseStack, bufferLookup, checkSides, packedOverlay);
         }
     }
 
-    public static boolean render(Function<RenderType, VertexConsumer> bufferLookup, QuadLighter lighter, BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, boolean checkSides, int packedOverlay, boolean perPartAO, int lightEmission) {
+    public static boolean render(Function<RenderType, VertexConsumer> bufferLookup, QuadLighter lighter, BlockAndTintGetter level, List<BlockModelPart> modelParts, BlockState state, BlockPos pos, PoseStack poseStack, boolean checkSides, int packedOverlay) {
         LightPipelineAwareModelBlockRenderer renderer = (LightPipelineAwareModelBlockRenderer) Minecraft.getInstance().getBlockRenderer().getModelRenderer();
         ModelBlockRenderer.Cache cache = ModelBlockRenderer.CACHE.get();
         var pose = poseStack.last();
         var empty = true;
         var smoothLighter = lighter instanceof SmoothQuadLighter;
+        boolean perPartAO = smoothLighter && net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
         QuadLighter flatLighter = null;
         BlockPos.MutableBlockPos scratchPos = new BlockPos.MutableBlockPos();
         int checkedSides = 0;
         int visibleSides = 0;
+        int lightEmission = -1;
 
         for (BlockModelPart part : modelParts) {
             VertexConsumer vertexConsumer = bufferLookup.apply(part.getRenderType(state));
