@@ -283,13 +283,6 @@ generateAccessTransformers {
             classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
             named('<init>')
     )
-
-    // Make SplashManager.SPLASHES_LOCATION public so we can pull splashes from it
-    fieldGroup(
-            'splashes location', PUBLIC,
-            named('net/minecraft/client/resources/SplashManager'),
-            named('SPLASHES_LOCATION')
-    )
 }
 
 tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {

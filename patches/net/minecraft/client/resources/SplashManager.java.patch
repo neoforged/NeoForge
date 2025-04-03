@@ -6,7 +6,7 @@
          try {
 +            var splashes = Minecraft.getInstance().getResourceManager().getResourceOrThrow(SPLASHES_LOCATION);
 +            if (splashes.sourcePackId().equals("vanilla"))
-+                return net.neoforged.neoforge.client.resources.NeoSplashHooks.loadSplashes(p_118869_, p_118870_);
++                return net.neoforged.neoforge.client.resources.NeoForgeSplashHooks.loadSplashes(p_118869_);
 +
              List list;
 -            try (BufferedReader bufferedreader = Minecraft.getInstance().getResourceManager().openAsReader(SPLASHES_LOCATION)) {
