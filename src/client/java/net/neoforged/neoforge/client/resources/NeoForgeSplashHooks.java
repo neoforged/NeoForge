@@ -6,11 +6,10 @@
 package net.neoforged.neoforge.client.resources;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
-
-import com.mojang.logging.LogUtils;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
