@@ -5,16 +5,28 @@
 
 package net.neoforged.neoforge.client.model.generators.blockstate;
 
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.data.models.MultiVariant;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
+/**
+ * Builder for {@link CustomUnbakedBlockStateModel}s to allow using them with {@link MultiVariantGenerator} and
+ * {@link MultiPartGenerator} by plugging them into {@link MultiVariant}
+ */
 public abstract class CustomBlockStateModelBuilder {
     protected CustomBlockStateModelBuilder() {}
 
+    /**
+     * Apply the provided {@link VariantMutator} to this builder
+     */
     public abstract CustomBlockStateModelBuilder with(VariantMutator variantMutator);
 
-    public abstract BlockStateModel.Unbaked toUnbaked();
+    /**
+     * Convert this builder to the final {@link CustomUnbakedBlockStateModel} for serialization
+     */
+    public abstract CustomUnbakedBlockStateModel toUnbaked();
 
     public static final class Simple extends CustomBlockStateModelBuilder {
         private final CustomUnbakedBlockStateModel blockStateModel;
@@ -29,7 +41,7 @@ public abstract class CustomBlockStateModelBuilder {
         }
 
         @Override
-        public BlockStateModel.Unbaked toUnbaked() {
+        public CustomUnbakedBlockStateModel toUnbaked() {
             return this.blockStateModel;
         }
     }

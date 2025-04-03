@@ -12,11 +12,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,11 +25,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see ModelProperty
  * @see BlockEntity#getModelData()
- * @see BlockStateModel#getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)
- * @see BlockStateModel#getModelData(BlockAndTintGetter, BlockPos, BlockState, ModelData)
+ * @see BlockAndTintGetter#getModelData(BlockPos)
  */
 public final class ModelData {
-    public static final ModelData EMPTY = ModelData.builder().build();
+    public static final ModelData EMPTY = new ModelData(new Reference2ReferenceArrayMap<>());
 
     private final Map<ModelProperty<?>, Object> properties;
 
@@ -115,9 +111,12 @@ public final class ModelData {
             return this;
         }
 
-        @Contract("-> new")
         public ModelData build() {
-            return new ModelData(properties);
+            if (properties.isEmpty()) {
+                return ModelData.EMPTY;
+            } else {
+                return new ModelData(properties);
+            }
         }
     }
 }

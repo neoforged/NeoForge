@@ -134,7 +134,6 @@ dependencies {
     libraries "net.jodah:typetools:${project.typetools_version}"
     libraries "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
     libraries("net.fabricmc:sponge-mixin:${project.mixin_version}") { transitive = false }
-    libraries "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
     libraries ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
