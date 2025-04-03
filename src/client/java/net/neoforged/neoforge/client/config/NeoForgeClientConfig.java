@@ -31,6 +31,7 @@ public final class NeoForgeClientConfig {
     public final ModConfigSpec.BooleanValue reducedDepthStencilFormat;
 
     public final ModConfigSpec.BooleanValue handleAmbientOcclusionPerPart;
+    boolean perPartAoActive;
 
     private NeoForgeClientConfig(ModConfigSpec.Builder builder) {
         experimentalForgeLightPipelineEnabled = builder
@@ -63,6 +64,7 @@ public final class NeoForgeClientConfig {
     static void onLoad(final ModConfigEvent.Loading configEvent) {
         if (configEvent.getConfig().getSpec() == SPEC) {
             INSTANCE.experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            INSTANCE.perPartAoActive = INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
         }
     }
 
@@ -70,8 +72,10 @@ public final class NeoForgeClientConfig {
     static void onFileChange(final ModConfigEvent.Reloading configEvent) {
         if (configEvent.getConfig().getSpec() == SPEC) {
             boolean experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
-            if (experimentalPipelineActive != INSTANCE.experimentalPipelineActive) {
+            boolean perPartAoActive = INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
+            if (experimentalPipelineActive != INSTANCE.experimentalPipelineActive || perPartAoActive != INSTANCE.perPartAoActive) {
                 INSTANCE.experimentalPipelineActive = experimentalPipelineActive;
+                INSTANCE.perPartAoActive = perPartAoActive;
                 Minecraft.getInstance().submit(ClientHooks::reloadRenderer);
             }
         }
