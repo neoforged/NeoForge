@@ -138,8 +138,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         }
 
         // Debug option to compare emulated vanilla AO with actual vanilla AO.
-        // We are not interested in assuming a quad winding order,
-        // so quads that have the wrong winding might trigger the warning.
+        // Since we make changes compared to vanilla's AO, many quads will trigger the warning.
         if (COMPARE_WITH_VANILLA) {
             // This is a debug option, so allocations are fine
             float[] emulatedBrightness = brightness.clone();
@@ -155,6 +154,12 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                             vertex, direction, state.getBlock(), pos, lightmap[vertex], brightness[vertex], emulatedLightmap[vertex], emulatedBrightness[vertex]);
                     break;
                 }
+            }
+
+            // Revert to our AO
+            for (int vertex = 0; vertex < 4; ++vertex) {
+                brightness[vertex] = emulatedBrightness[vertex];
+                lightmap[vertex] = emulatedLightmap[vertex];
             }
         }
     }
