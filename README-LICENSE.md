@@ -1,9 +1,9 @@
 
 # Licensing
 
-Unless noted below, NeoForge and its all parts here in this repository are
+Unless noted below, NeoForge and all its parts here in this repository are
 licensed under the **GNU Lesser General Public License v2.1** (LGPL v2.1), as 
-seen  at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt and reproduced
+seen at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt and reproduced
 in the `LICENSE-LGPLv2.1` at the root of this repository.
 
 The version of the license is specifically v2.1, and no other version shall be
