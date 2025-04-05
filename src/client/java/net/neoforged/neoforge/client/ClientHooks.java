@@ -76,8 +76,6 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
@@ -123,7 +121,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -539,17 +536,6 @@ public class ClientHooks {
         for (int i = 0; i < 4; i++) {
             faceData[i * 8 + 7] = normal;
         }
-    }
-
-    public static boolean calculateFaceWithoutAO(BlockAndTintGetter getter, BlockState state, BlockPos pos, BakedQuad quad, ModelBlockRenderer.Cache cache, boolean isFaceCubic, float[] brightness, int[] lightmap) {
-        if (quad.hasAmbientOcclusion())
-            return false;
-
-        BlockPos lightmapPos = isFaceCubic ? pos.relative(quad.direction()) : pos;
-
-        brightness[0] = brightness[1] = brightness[2] = brightness[3] = getter.getShade(quad.direction(), quad.shade());
-        lightmap[0] = lightmap[1] = lightmap[2] = lightmap[3] = cache.getLightColor(state, getter, lightmapPos);
-        return true;
     }
 
     public static void loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {

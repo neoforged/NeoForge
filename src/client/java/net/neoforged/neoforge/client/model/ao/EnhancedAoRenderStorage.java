@@ -39,6 +39,40 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     }
 
     /**
+     * "Enhanced" flat shading logic.
+     */
+    public static void applyFlatQuadBrightness(BlockAndTintGetter level, BakedQuad quad, ModelBlockRenderer.CommonRenderStorage storage) {
+        if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean()) {
+            int quadNormal = -1;
+
+            for (int vertex = 0; vertex < 4; ++vertex) {
+                // Handle each vertex separately to apply vertex normals.
+
+                int normal = quad.vertices()[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
+                // The ignored byte is padding and may be filled with user data
+                if ((normal & 0x00FFFFFF) == 0) {
+                    // No normal! Try to use the quad normal.
+                    if (quadNormal == -1) {
+                        quadNormal = ClientHooks.computeQuadNormal(quad.vertices());
+                    }
+                    normal = quadNormal;
+                }
+
+                int nx = normal & 0xFF;
+                int ny = (normal >> 8) & 0xFF;
+                int nz = (normal >> 16) & 0xFF;
+                storage.brightness[vertex] = level.getShade(nx / 127.0f, ny / 127.0f, nz / 127.0f, quad.shade());
+            }
+        } else {
+            float f = level.getShade(quad.direction(), quad.shade());
+            storage.brightness[0] = f;
+            storage.brightness[1] = f;
+            storage.brightness[2] = f;
+            storage.brightness[3] = f;
+        }
+    }
+
+    /**
      * Debug option to compare the emulated vanilla AO with the actual vanilla AO.
      * Only does something if emulated AO is enabled.
      */
@@ -101,8 +135,6 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
     /**
      * Computes an axis-aligned AO face that might be inside the block.
-     * Performs linear interpolation between the face using inside sampling and outside sampling,
-     * depending on the depth of the quad.
      *
      * <p>This is similar to vanilla in how we select whether to use the inside or outside light.
      * However, we still use our own interpolation logic which does not make any assumption about vertex winding order.

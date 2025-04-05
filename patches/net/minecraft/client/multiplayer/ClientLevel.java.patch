@@ -136,7 +136,7 @@
              }
          }
  
-@@ -1130,10 +_,50 @@
+@@ -1130,10 +_,59 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -161,6 +161,15 @@
 +    @Override
 +    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
 +        return modelDataManager.getAt(pos);
++    }
++
++    @Override
++    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
++        boolean constantAmbientLight = this.effects().constantAmbientLight();
++        if (!shade)
++            return constantAmbientLight ? 0.9F : 1.0F;
++        float yFactor = constantAmbientLight ? 0.9F : normalY < 0 ? 0.5F : 1.0F;
++        return Math.min(normalX * normalX * 0.6F + normalY * normalY * yFactor + normalZ * normalZ * 0.8F, 1.0F);
 +    }
 +
 +    // Neo: Variable day time code
