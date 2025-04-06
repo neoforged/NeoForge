@@ -181,7 +181,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
     }
 
     private static final float AO_EPS = 1e-4f;
-    private static final float AVERAGE_WEIGHT = 0.5f;
+    private static final float AVERAGE_WEIGHT = 0.75f;
     private static final float MAX_WEIGHT = 1 - AVERAGE_WEIGHT;
 
     /**
