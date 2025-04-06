@@ -58,10 +58,11 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                     normal = quadNormal;
                 }
 
-                int nx = normal & 0xFF;
-                int ny = (normal >> 8) & 0xFF;
-                int nz = (normal >> 16) & 0xFF;
-                storage.brightness[vertex] = level.getShade(nx / 127.0f, ny / 127.0f, nz / 127.0f, quad.shade());
+                storage.brightness[vertex] = level.getShade(
+                        normalComponent(normal, 0),
+                        normalComponent(normal, 1),
+                        normalComponent(normal, 2),
+                        quad.shade());
             }
         } else {
             float f = level.getShade(quad.direction(), quad.shade());
@@ -211,9 +212,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             int maxLightmap = 0;
 
             for (int axis = 0; axis < 3; ++axis) {
-                int encodedNormalComponent = (normal >> (axis * 8)) & 0xFF;
-                // Casting to byte will cast to a signed int.
-                float normalComponent = ((byte) encodedNormalComponent) / 127.0f;
+                float normalComponent = normalComponent(normal, axis);
                 if (normalComponent == 0) {
                     continue;
                 }
@@ -269,6 +268,16 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      */
     private static float vertexPos(int[] vertices, int vertex, int axis) {
         return Float.intBitsToFloat(vertices[vertex * 8 + axis]);
+    }
+
+    /**
+     * Unpacks a normal component.
+     */
+    private static float normalComponent(int normal, int axis) {
+        int encodedNormalComponent = (normal >> (axis * 8)) & 0xFF;
+        // Casting to byte will cast to a signed int.
+        // This is really important, otherwise negative values will lead to above 1.0 normal components.
+        return ((byte) encodedNormalComponent) / 127.0f;
     }
 
     /**
