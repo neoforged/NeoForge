@@ -85,44 +85,31 @@ class FullFaceCalculator {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = this.scratchPos;
 
         // Sample light and brightness for each side of the face
+        // Also store clear here, whereas vanilla does it later
         // AdjacencyInfo calls them corners, but they are actually sides
         blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[0]);
         BlockState blockstate = level.getBlockState(blockpos$mutableblockpos);
         int sideLightmap0 = this.cache.getLightColor(blockstate, level, blockpos$mutableblockpos);
         float sideBrightness0 = this.cache.getShadeBrightness(blockstate, level, blockpos$mutableblockpos);
+        boolean sideClear0 = !blockstate.isViewBlocking(level, blockpos$mutableblockpos) || blockstate.getLightBlock() == 0;
 
         blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[1]);
         BlockState blockstate1 = level.getBlockState(blockpos$mutableblockpos);
         int sideLightmap1 = this.cache.getLightColor(blockstate1, level, blockpos$mutableblockpos);
         float sideBrightness1 = this.cache.getShadeBrightness(blockstate1, level, blockpos$mutableblockpos);
+        boolean sideClear1 = !blockstate1.isViewBlocking(level, blockpos$mutableblockpos) || blockstate1.getLightBlock() == 0;
 
         blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[2]);
         BlockState blockstate2 = level.getBlockState(blockpos$mutableblockpos);
         int sideLightmap2 = this.cache.getLightColor(blockstate2, level, blockpos$mutableblockpos);
         float sideBrightness2 = this.cache.getShadeBrightness(blockstate2, level, blockpos$mutableblockpos);
+        boolean sideClear2 = !blockstate2.isViewBlocking(level, blockpos$mutableblockpos) || blockstate2.getLightBlock() == 0;
 
         blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[3]);
         BlockState blockstate3 = level.getBlockState(blockpos$mutableblockpos);
         int sideLightmap3 = this.cache.getLightColor(blockstate3, level, blockpos$mutableblockpos);
         float sideBrightness3 = this.cache.getShadeBrightness(blockstate3, level, blockpos$mutableblockpos);
-
-        // Check if sides are clear
-        BlockState blockstate4 = level.getBlockState(
-                blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[0]) // Neo: remove move() to avoid oversampling (MC-43968)
-        );
-        boolean sideClear0 = !blockstate4.isViewBlocking(level, blockpos$mutableblockpos) || blockstate4.getLightBlock() == 0;
-        BlockState blockstate5 = level.getBlockState(
-                blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[1]) // Neo: remove move() to avoid oversampling (MC-43968)
-        );
-        boolean sideClear1 = !blockstate5.isViewBlocking(level, blockpos$mutableblockpos) || blockstate5.getLightBlock() == 0;
-        BlockState blockstate6 = level.getBlockState(
-                blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[2]) // Neo: remove move() to avoid oversampling (MC-43968)
-        );
-        boolean sideClear2 = !blockstate6.isViewBlocking(level, blockpos$mutableblockpos) || blockstate6.getLightBlock() == 0;
-        BlockState blockstate7 = level.getBlockState(
-                blockpos$mutableblockpos.setWithOffset(samplePos, modelblockrenderer$adjacencyinfo.corners[3]) // Neo: remove move() to avoid oversampling (MC-43968)
-        );
-        boolean sideClear3 = !blockstate7.isViewBlocking(level, blockpos$mutableblockpos) || blockstate7.getLightBlock() == 0;
+        boolean sideClear3 = !blockstate3.isViewBlocking(level, blockpos$mutableblockpos) || blockstate3.getLightBlock() == 0;
 
         // Process corners
         // Note that corners[0] and corners[1] are on the same axis, and same for corners[2] and corners[3].
