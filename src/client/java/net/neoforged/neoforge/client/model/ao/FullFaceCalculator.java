@@ -230,14 +230,14 @@ class FullFaceCalculator {
             //   which means that a natural 0 value will not get ignored in the blending.
             // - It treats all 4 lightmaps equally.
 
-            int sideBlockA = LightTexture.block(sideLightmapA);
-            int sideBlockB = LightTexture.block(sideLightmapB);
-            int cornerBlock = LightTexture.block(cornerLightmap);
-            int insideBlock = LightTexture.block(insideLightmap);
-            int sideSkyA = LightTexture.sky(sideLightmapA);
-            int sideSkyB = LightTexture.sky(sideLightmapB);
-            int cornerSky = LightTexture.sky(cornerLightmap);
-            int insideSky = LightTexture.sky(insideLightmap);
+            int sideBlockA = LightTexture.blockWithFraction(sideLightmapA);
+            int sideBlockB = LightTexture.blockWithFraction(sideLightmapB);
+            int cornerBlock = LightTexture.blockWithFraction(cornerLightmap);
+            int insideBlock = LightTexture.blockWithFraction(insideLightmap);
+            int sideSkyA = LightTexture.skyWithFraction(sideLightmapA);
+            int sideSkyB = LightTexture.skyWithFraction(sideLightmapB);
+            int cornerSky = LightTexture.skyWithFraction(cornerLightmap);
+            int insideSky = LightTexture.skyWithFraction(insideLightmap);
 
             // Compute per-component minimum light, only including values from clear positions
             int minBlock = 0x10000;
@@ -265,10 +265,10 @@ class FullFaceCalculator {
             minSky &= 0xFFFF;
 
             // Increase all components of non-clear blocks to the minimum light value
-            sideLightmapA = LightTexture.pack(Math.max(minBlock, sideBlockA), Math.max(minSky, sideSkyA));
-            sideLightmapB = LightTexture.pack(Math.max(minBlock, sideBlockB), Math.max(minSky, sideSkyB));
-            cornerLightmap = LightTexture.pack(Math.max(minBlock, cornerBlock), Math.max(minSky, cornerSky));
-            insideLightmap = LightTexture.pack(Math.max(minBlock, insideBlock), Math.max(minSky, insideSky));
+            sideLightmapA = LightTexture.packWithFraction(Math.max(minBlock, sideBlockA), Math.max(minSky, sideSkyA));
+            sideLightmapB = LightTexture.packWithFraction(Math.max(minBlock, sideBlockB), Math.max(minSky, sideSkyB));
+            cornerLightmap = LightTexture.packWithFraction(Math.max(minBlock, cornerBlock), Math.max(minSky, cornerSky));
+            insideLightmap = LightTexture.packWithFraction(Math.max(minBlock, insideBlock), Math.max(minSky, insideSky));
         }
 
         return sideLightmapA + sideLightmapB + cornerLightmap + insideLightmap >> 2 & 0xFF00FF;

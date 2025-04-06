@@ -311,20 +311,20 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      */
     private static int lerpLightmap(int lightmap1, float w1, int lightmap2, float w2) {
         // Interpolate the two components separately
-        int block1 = LightTexture.block(lightmap1);
-        int block2 = LightTexture.block(lightmap2);
+        int block1 = LightTexture.blockWithFraction(lightmap1);
+        int block2 = LightTexture.blockWithFraction(lightmap2);
         int block = 0xFF & Math.round(block1 * w1 + block2 * w2);
 
-        int sky1 = LightTexture.sky(lightmap1);
-        int sky2 = LightTexture.sky(lightmap2);
+        int sky1 = LightTexture.skyWithFraction(lightmap1);
+        int sky2 = LightTexture.skyWithFraction(lightmap2);
         int sky = 0xFF & Math.round(sky1 * w1 + sky2 * w2);
 
-        return LightTexture.pack(block, sky);
+        return LightTexture.packWithFraction(block, sky);
     }
 
     static int maxLightmap(int lightmap1, int lightmap2) {
-        return LightTexture.pack(
-                Math.max(LightTexture.block(lightmap1), LightTexture.block(lightmap2)),
-                Math.max(LightTexture.sky(lightmap1), LightTexture.sky(lightmap2)));
+        return LightTexture.packWithFraction(
+                Math.max(LightTexture.blockWithFraction(lightmap1), LightTexture.blockWithFraction(lightmap2)),
+                Math.max(LightTexture.skyWithFraction(lightmap1), LightTexture.skyWithFraction(lightmap2)));
     }
 }
