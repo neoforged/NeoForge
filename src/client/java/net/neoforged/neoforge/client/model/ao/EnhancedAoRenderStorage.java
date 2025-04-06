@@ -131,32 +131,16 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         }
     }
 
-    private static final float AO_EPS = 1e-4f;
-
     /**
-     * Computes an axis-aligned AO face that might be inside the block.
+     * Computes AO for an axis-aligned quad.
      *
      * <p>This is similar to vanilla in how we select whether to use the inside or outside light.
      * However, we still use our own interpolation logic which does not make any assumption about vertex winding order.
      */
-    private AoCalculatedFace gatherAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade, int vertex) {
-        int[] vertices = currentQuad.vertices();
-        float depth = AoFace.fromDirection(direction).computeDepth(
-                vertexPos(vertices, vertex, 0),
-                vertexPos(vertices, vertex, 1),
-                vertexPos(vertices, vertex, 2));
-        // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block
-        boolean sampleOutside = depth < AO_EPS || state.isCollisionShapeFullBlock(level, pos);
-        return this.calculator.calculateFace(level, state, pos, direction, shade, sampleOutside);
-    }
-
-    /**
-     * Computes AO for an axis-aligned quad.
-     * Calls {@link #gatherAxisAligned}, then interpolate to handle partial quads.
-     */
     private void calculateAxisAligned(BlockAndTintGetter level, BlockState state, BlockPos pos, Direction direction, boolean shade) {
-        // Pass vertex 0: it's only used for depth and since the face is axis-aligned all vertices have the same depth.
-        var fullFace = gatherAxisAligned(level, state, pos, direction, shade, 0);
+        // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
+        // This is already stored in the faceCubic field.
+        var fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, this.faceCubic);
 
         // Perform bilinear interpolation to map a full AO face to actual vertex brightness and lightmap.
         // This will work regardless of the vertex order or position
@@ -196,22 +180,27 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
         }
     }
 
+    private static final float AO_EPS = 1e-4f;
+    private static final float AVERAGE_WEIGHT = 0.5f;
+    private static final float MAX_WEIGHT = 1 - AVERAGE_WEIGHT;
+
     /**
      * Computes AO for a general quad.
      * Projects onto each axis, computes the AO, then combines proportionally to the square of each normal component.
      */
     private void calculateIrregular(BlockAndTintGetter level, BlockState state, BlockPos pos, boolean shade) {
+        int[] vertices = currentQuad.vertices();
         int quadNormal = -1;
 
         for (int vertex = 0; vertex < 4; ++vertex) {
             // Handle each vertex separately to apply vertex normals.
 
-            int normal = currentQuad.vertices()[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
+            int normal = vertices[IQuadTransformer.STRIDE * vertex + IQuadTransformer.NORMAL];
             // The ignored byte is padding and may be filled with user data
             if ((normal & 0x00FFFFFF) == 0) {
                 // No normal! Try to use the quad normal.
                 if (quadNormal == -1) {
-                    quadNormal = ClientHooks.computeQuadNormal(currentQuad.vertices());
+                    quadNormal = ClientHooks.computeQuadNormal(vertices);
                 }
                 normal = quadNormal;
             }
@@ -236,11 +225,18 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
                     case 2 -> normalComponent > 0 ? Direction.SOUTH : Direction.NORTH;
                     default -> throw new AssertionError();
                 };
-                AoCalculatedFace fullFace = gatherAxisAligned(level, state, pos, direction, shade, vertex);
+
+                // Compute full face
+                AoFace aoFace = AoFace.fromDirection(direction);
+                float depth = aoFace.computeDepth(
+                        vertexPos(vertices, vertex, 0),
+                        vertexPos(vertices, vertex, 1),
+                        vertexPos(vertices, vertex, 2));
+                // Same logic as vanilla: sample outside if the depth is small, or force outside if we are a full block.
+                boolean sampleOutside = depth < AO_EPS || state.isCollisionShapeFullBlock(level, pos);
+                AoCalculatedFace fullFace = this.calculator.calculateFace(level, state, pos, direction, shade, sampleOutside);
 
                 // Perform bilinear interpolation to map full AO face to this vertex.
-                AoFace aoFace = AoFace.fromDirection(direction);
-                int[] vertices = this.currentQuad.vertices();
                 float[] weights = this.weights;
                 aoFace.computeCornerWeights(weights, vertexPos(vertices, vertex, 0), vertexPos(vertices, vertex, 1), vertexPos(vertices, vertex, 2));
                 float brightness = interpolateBrightness(fullFace, weights);
@@ -259,8 +255,8 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
 
             // Do an average between the max and the weighted average.
             // Using only the weighted average looks a bit too dark.
-            brightness[vertex] = (weightedBrightness + maxBrightness) * 0.5f;
-            lightmap[vertex] = lerpLightmap(weightedLightmap, 0.5f, maxLightmap, 0.5f);
+            brightness[vertex] = Math.clamp(weightedBrightness * AVERAGE_WEIGHT + maxBrightness * MAX_WEIGHT, 0.0F, 1.0F);
+            lightmap[vertex] = lerpLightmap(weightedLightmap, AVERAGE_WEIGHT, maxLightmap, MAX_WEIGHT);
         }
     }
 
@@ -287,23 +283,6 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      */
     private static int interpolateLightmap(AoCalculatedFace in, float[] weights) {
         return blend(in.lightmap0, in.lightmap1, in.lightmap2, in.lightmap3, weights[0], weights[1], weights[2], weights[3]);
-    }
-
-    /**
-     * Interpolates two AO faces linearly.
-     */
-    private static AoCalculatedFace combineLinearly(AoCalculatedFace out, AoCalculatedFace in1, float w1, AoCalculatedFace in2, float w2) {
-        out.brightness0 = in1.brightness0 * w1 + in2.brightness0 * w2;
-        out.brightness1 = in1.brightness1 * w1 + in2.brightness1 * w2;
-        out.brightness2 = in1.brightness2 * w1 + in2.brightness2 * w2;
-        out.brightness3 = in1.brightness3 * w1 + in2.brightness3 * w2;
-
-        out.lightmap0 = lerpLightmap(in1.lightmap0, w1, in2.lightmap0, w2);
-        out.lightmap1 = lerpLightmap(in1.lightmap1, w1, in2.lightmap1, w2);
-        out.lightmap2 = lerpLightmap(in1.lightmap2, w1, in2.lightmap2, w2);
-        out.lightmap3 = lerpLightmap(in1.lightmap3, w1, in2.lightmap3, w2);
-
-        return out;
     }
 
     /**
