@@ -200,39 +200,26 @@
              p_412172_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.direction(), bakedquad.shade());
              this.putQuadData(p_111013_, p_111014_, p_111015_, p_111017_, p_111016_.last(), bakedquad, p_412172_, p_111022_);
          }
-@@ -295,6 +_,23 @@
-     }
- 
-     private void renderModelFaceFlat(
-+            BlockAndTintGetter p_111002_,
-+            BlockState p_111003_,
-+            BlockPos p_111004_,
-+            int p_111005_,
-+            int p_111006_,
-+            boolean p_111007_,
-+            PoseStack p_111008_,
-+            VertexConsumer p_111009_,
-+            List<BakedQuad> p_111010_,
-+            ModelBlockRenderer.CommonRenderStorage p_412163_
-+    ) {
-+        for (BakedQuad bakedquad : p_111010_) {
+@@ -307,17 +_,30 @@
+         ModelBlockRenderer.CommonRenderStorage p_412163_
+     ) {
+         for (BakedQuad bakedquad : p_111010_) {
 +            renderModelQuadFlat(p_111002_, p_111003_, p_111004_, p_111005_, p_111006_, p_111007_, p_111008_, p_111009_, bakedquad, p_412163_);
 +        }
 +    }
 +
 +    private void renderModelQuadFlat(
-         BlockAndTintGetter p_111002_,
-         BlockState p_111003_,
-         BlockPos p_111004_,
-@@ -303,21 +_,17 @@
-         boolean p_111007_,
-         PoseStack p_111008_,
-         VertexConsumer p_111009_,
--        List<BakedQuad> p_111010_,
++        BlockAndTintGetter p_111002_,
++        BlockState p_111003_,
++        BlockPos p_111004_,
++        int p_111005_,
++        int p_111006_,
++        boolean p_111007_,
++        PoseStack p_111008_,
++        VertexConsumer p_111009_,
 +        BakedQuad bakedquad,
-         ModelBlockRenderer.CommonRenderStorage p_412163_
-     ) {
--        for (BakedQuad bakedquad : p_111010_) {
++        ModelBlockRenderer.CommonRenderStorage p_412163_
++    ) {
 +        {
              if (p_111007_) {
                  calculateShape(p_111002_, p_111003_, p_111004_, bakedquad.vertices(), bakedquad.direction(), p_412163_);

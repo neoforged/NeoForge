@@ -186,6 +186,7 @@ import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
+import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -488,18 +489,18 @@ public class ClientHooks {
      * Computes the packed normal of a quad based on the stored vertex positions.
      */
     public static int computeQuadNormal(int[] vertices) {
-        float x0 = Float.intBitsToFloat(vertices[0]);
-        float y0 = Float.intBitsToFloat(vertices[1]);
-        float z0 = Float.intBitsToFloat(vertices[2]);
-        float x1 = Float.intBitsToFloat(vertices[8]);
-        float y1 = Float.intBitsToFloat(vertices[9]);
-        float z1 = Float.intBitsToFloat(vertices[10]);
-        float x2 = Float.intBitsToFloat(vertices[16]);
-        float y2 = Float.intBitsToFloat(vertices[17]);
-        float z2 = Float.intBitsToFloat(vertices[18]);
-        float x3 = Float.intBitsToFloat(vertices[24]);
-        float y3 = Float.intBitsToFloat(vertices[25]);
-        float z3 = Float.intBitsToFloat(vertices[26]);
+        float x0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION]);
+        float y0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION + 1]);
+        float z0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION + 2]);
+        float x1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
+        float y1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
+        float z1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
+        float x2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
+        float y2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
+        float z2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
+        float x3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
+        float y3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
+        float z3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
 
         float dx0 = x3 - x1;
         float dy0 = y3 - y1;
@@ -527,10 +528,10 @@ public class ClientHooks {
     }
 
     /**
-     * internal, relies on fixed format of FaceBakery
+     * Modifies the passed {@code faceData} to fill in the vertex normals.
+     * The normals are computed from the vertex positions, see {@link #computeQuadNormal}.
      */
-    // TODO Do we need this?
-    public static void fillNormal(int[] faceData, Direction facing) {
+    public static void fillNormal(int[] faceData) {
         int normal = computeQuadNormal(faceData);
 
         for (int i = 0; i < 4; i++) {

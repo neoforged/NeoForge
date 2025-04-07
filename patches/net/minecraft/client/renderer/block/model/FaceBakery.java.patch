@@ -5,7 +5,7 @@
          }
  
 -        return new BakedQuad(aint, p_111603_.tintIndex(), direction, p_111604_, p_111608_, p_364857_);
-+        net.neoforged.neoforge.client.ClientHooks.fillNormal(aint, direction);
++        net.neoforged.neoforge.client.ClientHooks.fillNormal(aint);
 +        var data = p_111603_.faceData();
 +        var quad = new BakedQuad(aint, p_111603_.tintIndex(), direction, p_111604_, p_111608_, p_364857_, data.ambientOcclusion());
 +        if (!net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT.equals(data)) {

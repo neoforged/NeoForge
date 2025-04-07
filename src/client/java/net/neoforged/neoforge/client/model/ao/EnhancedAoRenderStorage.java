@@ -174,10 +174,8 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
             }
 
             // Revert to our AO
-            for (int vertex = 0; vertex < 4; ++vertex) {
-                brightness[vertex] = emulatedBrightness[vertex];
-                lightmap[vertex] = emulatedLightmap[vertex];
-            }
+            System.arraycopy(emulatedBrightness, 0, brightness, 0, 4);
+            System.arraycopy(emulatedLightmap, 0, lightmap, 0, 4);
         }
     }
 
@@ -267,7 +265,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * @param axis     axis index, for 0 to 2 included
      */
     private static float vertexPos(int[] vertices, int vertex, int axis) {
-        return Float.intBitsToFloat(vertices[vertex * 8 + axis]);
+        return Float.intBitsToFloat(vertices[vertex * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + axis]);
     }
 
     /**
