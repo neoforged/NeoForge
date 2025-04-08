@@ -31,7 +31,7 @@ import org.slf4j.Logger;
  */
 public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusionRenderStorage {
     public static ModelBlockRenderer.AmbientOcclusionRenderStorage newInstance() {
-        if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean()) {
+        if (NeoForgeClientConfig.INSTANCE.enhancedLighting.getAsBoolean()) {
             return new EnhancedAoRenderStorage();
         } else {
             return new ModelBlockRenderer.AmbientOcclusionRenderStorage();
@@ -42,7 +42,7 @@ public class EnhancedAoRenderStorage extends ModelBlockRenderer.AmbientOcclusion
      * "Enhanced" flat shading logic.
      */
     public static void applyFlatQuadBrightness(BlockAndTintGetter level, BakedQuad quad, ModelBlockRenderer.CommonRenderStorage storage) {
-        if (NeoForgeClientConfig.INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean()) {
+        if (NeoForgeClientConfig.INSTANCE.enhancedLighting.getAsBoolean()) {
             int quadNormal = -1;
 
             for (int vertex = 0; vertex < 4; ++vertex) {
