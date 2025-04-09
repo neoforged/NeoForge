@@ -1,0 +1,37 @@
+--- a/net/minecraft/client/data/models/blockstates/PropertyDispatch.java
++++ b/net/minecraft/client/data/models/blockstates/PropertyDispatch.java
+@@ -103,6 +_,34 @@
+         return new PropertyDispatch.C5<>(p_404784_, p_405605_, p_405623_, p_404668_, p_404790_);
+     }
+ 
++    public static <T1 extends Comparable<T1>> PropertyDispatch.C1<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1> modifyUnbaked(Property<T1> p_386819_) {
++        return new PropertyDispatch.C1<>(p_386819_);
++    }
++
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>> PropertyDispatch.C2<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2> modifyUnbaked(
++        Property<T1> p_405839_, Property<T2> p_405127_
++    ) {
++        return new PropertyDispatch.C2<>(p_405839_, p_405127_);
++    }
++
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> PropertyDispatch.C3<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2, T3> modifyUnbaked(
++        Property<T1> p_386876_, Property<T2> p_387034_, Property<T3> p_387165_
++    ) {
++        return new PropertyDispatch.C3<>(p_386876_, p_387034_, p_387165_);
++    }
++
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>> PropertyDispatch.C4<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2, T3, T4> modifyUnbaked(
++        Property<T1> p_405364_, Property<T2> p_405658_, Property<T3> p_405625_, Property<T4> p_405082_
++    ) {
++        return new PropertyDispatch.C4<>(p_405364_, p_405658_, p_405625_, p_405082_);
++    }
++
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>> PropertyDispatch.C5<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2, T3, T4, T5> modifyUnbaked(
++        Property<T1> p_404784_, Property<T2> p_405605_, Property<T3> p_405623_, Property<T4> p_404668_, Property<T5> p_404790_
++    ) {
++        return new PropertyDispatch.C5<>(p_404784_, p_405605_, p_405623_, p_404668_, p_404790_);
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     public static class C1<V, T1 extends Comparable<T1>> extends PropertyDispatch<V> {
+         private final Property<T1> property1;
