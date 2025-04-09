@@ -21,7 +21,7 @@
      TextureAtlasSprite particleIcon();
  
      @OnlyIn(Dist.CLIENT)
-@@ -70,32 +_,43 @@
+@@ -70,36 +_,56 @@
                  )
                  .apply(p_409971_, Weighted::new)
          );
@@ -76,3 +76,16 @@
                  };
              });
  
+         BlockStateModel bake(ModelBaker p_405252_);
++
++        /**
++         * Tries to return a copy of this unbaked model with the given mutator applied.
++         *
++         * @throws UnsupportedOperationException If this unbaked model does not have anything it can apply the variant mutator to.
++         */
++        default BlockStateModel.Unbaked with(VariantMutator mutator) {
++            throw new UnsupportedOperationException("This unbaked block state model (" + getClass() + ") does not support applying variant mutators.");
++        }
+ 
+         default BlockStateModel.UnbakedRoot asRoot() {
+             return new BlockStateModel.SimpleCachedUnbakedRoot(this);

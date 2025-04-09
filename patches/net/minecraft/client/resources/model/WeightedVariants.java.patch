@@ -19,3 +19,15 @@
      }
  
      @OnlyIn(Dist.CLIENT)
+@@ -36,6 +_,11 @@
+         @Override
+         public BlockStateModel bake(ModelBaker p_410875_) {
+             return new WeightedVariants(this.entries.map(p_409707_ -> p_409707_.bake(p_410875_)));
++        }
++
++        @Override
++        public Unbaked with(net.minecraft.client.renderer.block.model.VariantMutator mutator) {
++            return new Unbaked(entries.map(u -> u.with(mutator)));
+         }
+ 
+         @Override

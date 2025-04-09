@@ -27,7 +27,9 @@ public class CompositeBlockStateModelBuilder extends CustomBlockStateModelBuilde
 
     @Override
     public CompositeBlockStateModelBuilder with(VariantMutator variantMutator) {
-        return this;
+        var result = new CompositeBlockStateModelBuilder();
+        result.models.addAll(models.stream().map(u -> u.with(variantMutator)).toList());
+        return result;
     }
 
     @Override

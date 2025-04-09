@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/block/model/SingleVariant.java
 +++ b/net/minecraft/client/renderer/block/model/SingleVariant.java
-@@ -23,13 +_,19 @@
+@@ -23,17 +_,28 @@
      }
  
      @Override
@@ -21,3 +21,12 @@
  
          @Override
          public BlockStateModel bake(ModelBaker p_410856_) {
+             return new SingleVariant(this.variant.bake(p_410856_));
++        }
++
++        @Override
++        public Unbaked with(net.minecraft.client.renderer.block.model.VariantMutator mutator) {
++            return new Unbaked(variant.with(mutator));
+         }
+ 
+         @Override

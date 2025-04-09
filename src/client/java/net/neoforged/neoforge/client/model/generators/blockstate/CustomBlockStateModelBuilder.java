@@ -42,7 +42,7 @@ public abstract class CustomBlockStateModelBuilder {
 
         @Override
         public Simple with(VariantMutator variantMutator) {
-            return this;
+            return new Simple(blockStateModel.with(variantMutator));
         }
 
         @Override
