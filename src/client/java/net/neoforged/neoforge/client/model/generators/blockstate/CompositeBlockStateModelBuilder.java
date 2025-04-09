@@ -31,6 +31,15 @@ public class CompositeBlockStateModelBuilder extends CustomBlockStateModelBuilde
     }
 
     @Override
+    public CustomBlockStateModelBuilder with(UnbakedMutator variantMutator) {
+        var result = new CompositeBlockStateModelBuilder();
+        for (var model : models) {
+            result.models.add(variantMutator.apply(model));
+        }
+        return result;
+    }
+
+    @Override
     public CustomUnbakedBlockStateModel toUnbaked() {
         return new CompositeBlockModel.Unbaked(this.models);
     }

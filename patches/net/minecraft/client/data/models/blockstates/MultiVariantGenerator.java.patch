@@ -1,0 +1,39 @@
+--- a/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
++++ b/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
+@@ -53,6 +_,17 @@
+         return new MultiVariantGenerator(this.block, list, this.seenProperties);
+     }
+ 
++    public MultiVariantGenerator withUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> p_388256_) {
++        Set<Property<?>> set = validateAndExpandProperties(this.seenProperties, this.block, p_388256_);
++        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(p_403955_ -> p_403955_.applyCustom(p_388256_)).toList();
++        return new MultiVariantGenerator(this.block, list, set);
++    }
++
++    public MultiVariantGenerator withUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator p_405854_) {
++        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(p_403950_ -> p_403950_.applyCustom(p_405854_)).toList();
++        return new MultiVariantGenerator(this.block, list, this.seenProperties);
++    }
++
+     @Override
+     public BlockModelDefinition create() {
+         Map<String, BlockStateModel.Unbaked> map = new HashMap<>();
+@@ -107,6 +_,18 @@
+         }
+ 
+         public Stream<MultiVariantGenerator.Entry> apply(VariantMutator p_404774_) {
++            return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(p_404774_)));
++        }
++
++        public Stream<MultiVariantGenerator.Entry> applyCustom(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> p_404760_) {
++            return p_404760_.getEntries().entrySet().stream().map(p_409007_ -> {
++                PropertyValueList propertyvaluelist = this.properties.extend(p_409007_.getKey());
++                MultiVariant multivariant = this.variant.with(p_409007_.getValue());
++                return new MultiVariantGenerator.Entry(propertyvaluelist, multivariant);
++            });
++        }
++
++        public Stream<MultiVariantGenerator.Entry> applyCustom(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator p_404774_) {
+             return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(p_404774_)));
+         }
+     }
