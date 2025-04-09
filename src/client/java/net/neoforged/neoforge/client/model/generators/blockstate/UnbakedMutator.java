@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.client.model.generators.blockstate;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.function.UnaryOperator;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.block.model.SingleVariant;
 import net.minecraft.client.renderer.block.model.Variant;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.function.UnaryOperator;
 
 public interface UnbakedMutator {
     default Variant apply(Variant variant) {
@@ -28,8 +27,7 @@ public interface UnbakedMutator {
     class Builder {
         private final Map<Class<?>, Handler<?>> handlers = new IdentityHashMap<>();
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public <T extends BlockStateModel.Unbaked> Builder add(Class<T> supportedClass, UnaryOperator<T> operator) {
             if (handlers.containsKey(supportedClass)) {
