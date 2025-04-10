@@ -80,7 +80,7 @@ public final class UnbakedMutator {
 
     private record Handler<T>(Class<T> supportedClass, UnaryOperator<T> operator) {
         public T apply(BlockStateModel.Unbaked unbaked) {
-            return supportedClass.cast(unbaked);
+            return operator.apply(supportedClass.cast(unbaked));
         }
     }
 }
