@@ -1,17 +1,18 @@
 --- a/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
 +++ b/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
-@@ -53,6 +_,17 @@
+@@ -53,6 +_,18 @@
          return new MultiVariantGenerator(this.block, list, this.seenProperties);
      }
  
-+    public MultiVariantGenerator withUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> p_388256_) {
-+        Set<Property<?>> set = validateAndExpandProperties(this.seenProperties, this.block, p_388256_);
-+        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(p_403955_ -> p_403955_.applyToUnbaked(p_388256_)).toList();
++    // Neo: copy of the apply(...VariantMutator...) methods to support UnbakedMutators. Must be renamed due to type erasure for PropertyDispatch
++    public MultiVariantGenerator withUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> dispatch) {
++        Set<Property<?>> set = validateAndExpandProperties(this.seenProperties, this.block, dispatch);
++        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(e -> e.applyToUnbaked(dispatch)).toList();
 +        return new MultiVariantGenerator(this.block, list, set);
 +    }
 +
-+    public MultiVariantGenerator withUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator p_405854_) {
-+        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(p_403950_ -> p_403950_.applyToUnbaked(p_405854_)).toList();
++    public MultiVariantGenerator withUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator dispatch) {
++        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(e -> e.applyToUnbaked(dispatch)).toList();
 +        return new MultiVariantGenerator(this.block, list, this.seenProperties);
 +    }
 +
