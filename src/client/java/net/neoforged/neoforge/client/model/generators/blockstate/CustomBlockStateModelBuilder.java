@@ -19,7 +19,7 @@ public abstract class CustomBlockStateModelBuilder {
     protected CustomBlockStateModelBuilder() {}
 
     /**
-     * Apply the provided {@link VariantMutator} to this builder,
+     * Apply the provided {@link VariantMutator} to this builder.
      */
     public abstract CustomBlockStateModelBuilder with(VariantMutator variantMutator);
 
