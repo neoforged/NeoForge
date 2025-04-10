@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -332,10 +_,19 @@
+@@ -332,10 +_,14 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -10,11 +10,6 @@
  
      public void findBlocks(Predicate<BlockState> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
 +        findBlocks(p_285343_, (state, pos) -> p_285343_.test(state), p_285030_);
-+    }
-+
-+    @Deprecated(forRemoval = true)
-+    public void findBlocks(java.util.function.BiPredicate<BlockState, BlockPos> p_285343_, BiConsumer<BlockPos, BlockState> p_285030_) {
-+        findBlocks(state -> p_285343_.test(state, BlockPos.ZERO), p_285343_, p_285030_);
 +    }
 +
 +    public void findBlocks(Predicate<BlockState> p_285343_, java.util.function.BiPredicate<BlockState, BlockPos> fineFilter, BiConsumer<BlockPos, BlockState> p_285030_) {

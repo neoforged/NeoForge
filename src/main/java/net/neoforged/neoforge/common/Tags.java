@@ -1356,13 +1356,6 @@ public class Tags {
          */
         public static final TagKey<Biome> IS_OUTER_END_ISLAND = tag("is_outer_end_island");
 
-        /**
-         * Old legacy tag that lost it's intended use case and is too unclear with regard to the current worldgen biome system today.
-         * TODO: remove in 1.22
-         */
-        @Deprecated(forRemoval = true, since = "21.1")
-        public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
-
         private static TagKey<Biome> tag(String name) {
             return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("c", name));
         }
@@ -1435,7 +1428,7 @@ public class Tags {
 
     /**
      * Use this to get a TagKey's translation key safely on any side.
-     * 
+     *
      * @return the translation key for a TagKey.
      */
     public static String getTagTranslationKey(TagKey<?> tagKey) {

@@ -137,17 +137,6 @@ public enum KeyModifier {
 
     public static final KeyModifier[] MODIFIER_VALUES = { SHIFT, CONTROL, ALT };
 
-    /** @deprecated Use {@link #getActiveModifiers()} instead. */
-    @Deprecated(forRemoval = true, since = "1.21.4")
-    public static KeyModifier getActiveModifier() {
-        for (KeyModifier keyModifier : MODIFIER_VALUES) {
-            if (keyModifier.isActive(null)) {
-                return keyModifier;
-            }
-        }
-        return NONE;
-    }
-
     public static List<KeyModifier> getActiveModifiers() {
         List<KeyModifier> modifiers = new ArrayList<>();
         for (KeyModifier keyModifier : MODIFIER_VALUES) {
