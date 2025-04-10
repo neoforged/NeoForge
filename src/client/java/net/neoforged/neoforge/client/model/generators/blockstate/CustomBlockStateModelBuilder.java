@@ -30,7 +30,7 @@ public abstract class CustomBlockStateModelBuilder {
     public abstract CustomBlockStateModelBuilder with(UnbakedMutator variantMutator);
 
     /**
-     * Convert this builder to the final {@link CustomUnbakedBlockStateModel} for serialization,
+     * Convert this builder to the final {@link CustomUnbakedBlockStateModel} for serialization.
      */
     public abstract CustomUnbakedBlockStateModel toUnbaked();
 
