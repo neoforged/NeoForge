@@ -134,7 +134,7 @@
 +    }
 +
 +    @Override
-+    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf> extraDataWriter) {
++    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.BiConsumer<AbstractContainerMenu, net.minecraft.network.RegistryFriendlyByteBuf> extraDataWriter) {
          if (p_9033_ == null) {
              return OptionalInt.empty();
          } else {
@@ -146,7 +146,7 @@
              }
  
              this.nextContainerCounter();
-@@ -1222,10 +_,16 @@
+@@ -1222,10 +_,25 @@
  
                  return OptionalInt.empty();
              } else {
@@ -154,8 +154,17 @@
                  this.connection
                      .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
 +                } else {
-+                    this.connection
-+                        .send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName(), net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(extraDataWriter, registryAccess())));
++                    this.connection.send(
++                        new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(
++                            abstractcontainermenu.containerId,
++                            abstractcontainermenu.getType(),
++                            p_9033_.getDisplayName(),
++                            net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
++                                    buffer -> extraDataWriter.accept(abstractcontainermenu, buffer),
++                                    registryAccess()
++                            )
++                        )
++                    );
 +                }
                  this.initMenu(abstractcontainermenu);
                  this.containerMenu = abstractcontainermenu;

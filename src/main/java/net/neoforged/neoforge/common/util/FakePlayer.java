@@ -6,15 +6,12 @@
 package net.neoforged.neoforge.common.util;
 
 import com.mojang.authlib.GameProfile;
-import java.util.OptionalInt;
 import java.util.Set;
-import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.PacketSendListener;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.PlayerChatMessage;
@@ -74,7 +71,6 @@ import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.stats.Stat;
 import net.minecraft.world.Container;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PositionMoveRotation;
@@ -113,11 +109,6 @@ public class FakePlayer extends ServerPlayer {
 
     @Override
     public void updateOptions(ClientInformation p_301998_) {}
-
-    @Override
-    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
-        return OptionalInt.empty();
-    }
 
     @Override
     public void openHorseInventory(AbstractHorse horse, Container container) {}

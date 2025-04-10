@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.OptionalInt;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -13,6 +14,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -66,6 +68,22 @@ public interface IPlayerExtension {
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
     default OptionalInt openMenu(MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
+        return openMenu(menuProvider, (menu, buffer) -> extraDataWriter.accept(buffer));
+    }
+
+    /**
+     * Request to open a GUI on the client, from the server
+     * <p>
+     * Refer to {@link MenuType#create(IContainerFactory)} for how to provide a function to consume
+     * these GUI requests on the client.
+     * <p>
+     * The maximum size for #extraDataWriter is 32600 bytes.
+     *
+     * @param menuProvider    A supplier of container properties including the registry name of the container
+     * @param extraDataWriter Consumer to write any additional data the GUI needs
+     * @return The window ID of the opened GUI, or empty if the GUI could not be opened
+     */
+    default OptionalInt openMenu(MenuProvider menuProvider, BiConsumer<AbstractContainerMenu, RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
 
