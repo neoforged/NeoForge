@@ -25,7 +25,7 @@ public abstract class CustomBlockStateModelBuilder {
 
     /**
      * Apply the provided {@link UnbakedMutator} to the model being built by this builder and
-     * return a new builder with the mutated state,
+     * return a new builder with the mutated state.
      */
     public abstract CustomBlockStateModelBuilder with(UnbakedMutator variantMutator);
 
