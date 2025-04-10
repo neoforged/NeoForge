@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/renderer/PanoramaRenderer.java
++++ b/net/minecraft/client/renderer/PanoramaRenderer.java
+@@ -10,7 +_,7 @@
+ @OnlyIn(Dist.CLIENT)
+ public class PanoramaRenderer {
+     public static final ResourceLocation PANORAMA_OVERLAY = ResourceLocation.withDefaultNamespace("textures/gui/title/background/panorama_overlay.png");
+-    private final Minecraft minecraft;
++    private Minecraft minecraft;
+     private final CubeMap cubeMap;
+     private float spin;
+ 
+@@ -20,6 +_,8 @@
+     }
+ 
+     public void render(GuiGraphics p_334063_, int p_333839_, int p_333923_, float p_110004_, float p_110005_) {
++        // Neo: This class is initialized in the static initializer of Screen, which may run before Minecrafts constructor
++        this.minecraft = Minecraft.getInstance();
+         float f = this.minecraft.getDeltaTracker().getRealtimeDeltaTicks();
+         float f1 = (float)(f * this.minecraft.options.panoramaSpeed().get());
+         this.spin = wrap(this.spin + f1 * 0.1F, 360.0F);
