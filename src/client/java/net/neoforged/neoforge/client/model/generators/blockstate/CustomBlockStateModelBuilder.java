@@ -19,17 +19,18 @@ public abstract class CustomBlockStateModelBuilder {
     protected CustomBlockStateModelBuilder() {}
 
     /**
-     * Apply the provided {@link VariantMutator} to this builder
+     * Apply the provided {@link VariantMutator} to this builder,
      */
     public abstract CustomBlockStateModelBuilder with(VariantMutator variantMutator);
 
     /**
-     * Apply the provided {@link UnbakedMutator} to this builder
+     * Apply the provided {@link UnbakedMutator} to the model being built by this builder and
+     * return a new builder with the mutated state,
      */
     public abstract CustomBlockStateModelBuilder with(UnbakedMutator variantMutator);
 
     /**
-     * Convert this builder to the final {@link CustomUnbakedBlockStateModel} for serialization
+     * Convert this builder to the final {@link CustomUnbakedBlockStateModel} for serialization,
      */
     public abstract CustomUnbakedBlockStateModel toUnbaked();
 

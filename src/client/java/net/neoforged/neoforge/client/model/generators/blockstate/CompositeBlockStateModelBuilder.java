@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
 /**
- * Builder for creating {@link CompositeBlockModel.Unbaked}s in datagen
+ * This builder creates a {@link CompositeBlockModel.Unbaked}.
  */
 public class CompositeBlockStateModelBuilder extends CustomBlockStateModelBuilder {
     private final List<BlockStateModel.Unbaked> models = new ArrayList<>();
