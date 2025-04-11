@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.common.extensions;
 
 import java.util.OptionalInt;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -51,7 +50,8 @@ public interface IPlayerExtension {
      * Use {@link FriendlyByteBuf#readBlockPos()} to read the position you pass to this method.
      *
      * @param menuProvider A supplier of container properties including the registry name of the container
-     * @param pos          A block pos, which will be encoded into the additional data for this request
+     * @param pos          A block pos, which will be encoded into the additional data for this request, after
+     *                     data written by {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
      *
      */
     default OptionalInt openMenu(MenuProvider menuProvider, BlockPos pos) {
@@ -67,26 +67,11 @@ public interface IPlayerExtension {
      * The maximum size for #extraDataWriter is 32600 bytes.
      *
      * @param menuProvider    A supplier of container properties including the registry name of the container
-     * @param extraDataWriter Consumer to write any additional data the GUI needs
+     * @param extraDataWriter Consumer to write any additional data the GUI needs.
+     *                        This data is written after {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
     default OptionalInt openMenu(MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
-        return openMenu(menuProvider, extraDataWriter != null ? (menu, buffer) -> extraDataWriter.accept(buffer) : null);
-    }
-
-    /**
-     * Request to open a GUI on the client, from the server
-     * <p>
-     * Refer to {@link MenuType#create(IContainerFactory)} for creating a {@link MenuType} that can consume the
-     * extra data sent to the client by this method.
-     * <p>
-     * The maximum size for #extraDataWriter is 32600 bytes.
-     *
-     * @param menuProvider    A supplier of container properties including the registry name of the container
-     * @param extraDataWriter Consumer to write any additional data the GUI needs
-     * @return The window ID of the opened GUI, or empty if the GUI could not be opened
-     */
-    default OptionalInt openMenu(MenuProvider menuProvider, BiConsumer<AbstractContainerMenu, RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
 

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.common.util;
 import com.mojang.authlib.GameProfile;
 import java.util.OptionalInt;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.network.Connection;
 import net.minecraft.network.DisconnectionDetails;
@@ -81,7 +81,6 @@ import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,7 +115,7 @@ public class FakePlayer extends ServerPlayer {
     public void updateOptions(ClientInformation p_301998_) {}
 
     @Override
-    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable BiConsumer<AbstractContainerMenu, RegistryFriendlyByteBuf> extraDataWriter) {
+    public OptionalInt openMenu(@Nullable MenuProvider menuProvider, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
 

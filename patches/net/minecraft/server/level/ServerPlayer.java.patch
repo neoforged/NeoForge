@@ -130,11 +130,11 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
-+        return openMenu(p_9033_, (java.util.function.BiConsumer<AbstractContainerMenu, net.minecraft.network.RegistryFriendlyByteBuf>) null);
++        return openMenu(p_9033_, (java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf>) null);
 +    }
 +
 +    @Override
-+    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.BiConsumer<AbstractContainerMenu, net.minecraft.network.RegistryFriendlyByteBuf> extraDataWriter) {
++    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf> extraDataWriter) {
          if (p_9033_ == null) {
              return OptionalInt.empty();
          } else {
@@ -146,11 +146,20 @@
              }
  
              this.nextContainerCounter();
-@@ -1222,10 +_,25 @@
+@@ -1222,10 +_,31 @@
  
                  return OptionalInt.empty();
              } else {
-+                if (extraDataWriter == null) {
++                var extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
++                        buffer -> {
++                            p_9033_.writeClientSideData(abstractcontainermenu, buffer);
++                            if (extraDataWriter != null) {
++                                extraDataWriter.accept(buffer);
++                            }
++                        },
++                        registryAccess()
++                );
++                if (extraData.length == 0) {
                  this.connection
                      .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
 +                } else {
@@ -159,10 +168,7 @@
 +                            abstractcontainermenu.containerId,
 +                            abstractcontainermenu.getType(),
 +                            p_9033_.getDisplayName(),
-+                            net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
-+                                    buffer -> extraDataWriter.accept(abstractcontainermenu, buffer),
-+                                    registryAccess()
-+                            )
++                            extraData
 +                        )
 +                    );
 +                }
