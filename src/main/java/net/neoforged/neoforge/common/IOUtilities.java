@@ -37,24 +37,37 @@ public final class IOUtilities {
     };
 
     private static CompletableFuture<Void> saveDataTasks = CompletableFuture.completedFuture(null);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IOUtilities.class);
 
     private IOUtilities() {}
 
     /**
-     * Cleans up any temporary files that may have been left over from interrupted
+     * Tries to clean up any temporary files that may have been left over from interrupted
      * calls to {@link #atomicWrite(Path, WriteCallback)}.
+     * <p>
+     * Failures to find or remove the temporary files are logged instead of thrown.
      *
      * @param targetPath The target path to clean up temporary files in.
      * @param prefix     The prefix of temporary files to clean up, or null if all
      *                   temporary files should be removed.
-     *
-     * @throws IOException if an I/O error occurs during deletion.
      */
-    public static void cleanupTempFiles(Path targetPath, @Nullable String prefix) throws IOException {
-        try (var filesToDelete = Files.find(targetPath, 1, createPredicate(prefix))) {
-            for (var file : filesToDelete.toList()) {
+    public static void tryCleanupTempFiles(Path targetPath, @Nullable String prefix) {
+        for (var file : tryListTempFiles(targetPath, prefix)) {
+            try {
                 Files.deleteIfExists(file);
+            } catch (IOException e) {
+                // Note: The stack trace of an I/O exception thrown by delete is not very useful, hence only logging the toString()
+                LOGGER.error("Could not delete temp file {}: {}", file, e.toString());
             }
+        }
+    }
+
+    private static List<Path> tryListTempFiles(Path targetPath, @Nullable String prefix) {
+        try (var stream = Files.find(targetPath, 1, createPredicate(prefix))) {
+            return stream.toList();
+        } catch (IOException e) {
+            LOGGER.error("Failed to list temporary files in {}", targetPath, e);
+            return List.of();
         }
     }
 

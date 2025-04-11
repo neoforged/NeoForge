@@ -1,0 +1,16 @@
+--- /dev/null
++++ b/net/minecraft/world/level/storage/DimensionDataStorage.java.rej
+@@ -1,0 +_,13 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/world/level/storage/DimensionDataStorage.java b/projects/neoforge/src/main/java/net/minecraft/world/level/storage/DimensionDataStorage.java	(rejected hunks)
++@@ -129,7 +129,10 @@ public class DimensionDataStorage implements AutoCloseable {
++         }
++ 
++         // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
++-        net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.dataFolder, p_78159_);
+++        this.pendingWriteFuture = this.pendingWriteFuture.thenRunAsync(
+++                () -> net.neoforged.neoforge.common.IOUtilities.tryCleanupTempFiles(this.dataFolder, p_78159_),
+++                Util.ioPool()
+++        );
++ 
++         return compoundtag1;
++     }

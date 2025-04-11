@@ -1,0 +1,17 @@
+diff a/src/main/java/net/neoforged/neoforge/common/IOUtilities.java b/src/main/java/net/neoforged/neoforge/common/IOUtilities.java	(rejected hunks)
+@@ -17,12 +17,15 @@ import java.nio.file.Path;
+ import java.nio.file.StandardCopyOption;
+ import java.nio.file.StandardOpenOption;
+ import java.nio.file.attribute.BasicFileAttributes;
++import java.util.List;
+ import java.util.function.BiPredicate;
+ import java.util.function.Consumer;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.nbt.NbtIo;
+ import org.apache.commons.io.output.CloseShieldOutputStream;
+ import org.jetbrains.annotations.Nullable;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ 
+ /**
+  * Contains helpers for performing file I/O in a resilient manner.
