@@ -9,6 +9,7 @@ import java.util.OptionalInt;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
@@ -44,8 +45,10 @@ public interface IPlayerExtension {
     /**
      * Request to open a GUI on the client, from the server
      * <p>
-     * Refer to {@link MenuType#create(IContainerFactory)} for how to provide a function to consume
-     * these GUI requests on the client.
+     * Refer to {@link MenuType#create(IContainerFactory)} for creating a {@link MenuType} that can consume the
+     * extra data sent to the client by this method.
+     * <p>
+     * Use {@link FriendlyByteBuf#readBlockPos()} to read the position you pass to this method.
      *
      * @param menuProvider A supplier of container properties including the registry name of the container
      * @param pos          A block pos, which will be encoded into the additional data for this request
@@ -58,8 +61,8 @@ public interface IPlayerExtension {
     /**
      * Request to open a GUI on the client, from the server
      * <p>
-     * Refer to {@link MenuType#create(IContainerFactory)} for how to provide a function to consume
-     * these GUI requests on the client.
+     * Refer to {@link MenuType#create(IContainerFactory)} for creating a {@link MenuType} that can consume the
+     * extra data sent to the client by this method.
      * <p>
      * The maximum size for #extraDataWriter is 32600 bytes.
      *
@@ -74,8 +77,8 @@ public interface IPlayerExtension {
     /**
      * Request to open a GUI on the client, from the server
      * <p>
-     * Refer to {@link MenuType#create(IContainerFactory)} for how to provide a function to consume
-     * these GUI requests on the client.
+     * Refer to {@link MenuType#create(IContainerFactory)} for creating a {@link MenuType} that can consume the
+     * extra data sent to the client by this method.
      * <p>
      * The maximum size for #extraDataWriter is 32600 bytes.
      *
