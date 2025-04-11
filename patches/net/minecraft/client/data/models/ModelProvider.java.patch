@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/ModelProvider.java
 +++ b/net/minecraft/client/data/models/ModelProvider.java
-@@ -34,20 +_,58 @@
+@@ -36,20 +_,58 @@
      private final PackOutput.PathProvider blockStatePathProvider;
      private final PackOutput.PathProvider itemInfoPathProvider;
      private final PackOutput.PathProvider modelPathProvider;
@@ -63,7 +63,7 @@
          modelprovider$blockstategeneratorcollector.validate();
          modelprovider$iteminfocollector.finalizeAndValidate();
          return CompletableFuture.allOf(
-@@ -63,12 +_,22 @@
+@@ -61,12 +_,22 @@
  
      @Override
      public String getName() {
@@ -72,8 +72,8 @@
      }
  
      @OnlyIn(Dist.CLIENT)
-     static class BlockStateGeneratorCollector implements Consumer<BlockStateGenerator> {
-         private final Map<Block, BlockStateGenerator> generators = new HashMap<>();
+     static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
+         private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
 +        private final Supplier<Stream<? extends Holder<Block>>> knownBlocks;
 +
 +        public BlockStateGeneratorCollector(Supplier<Stream<? extends Holder<Block>>> knownBlocks) {
@@ -85,9 +85,9 @@
 +            this(BuiltInRegistries.BLOCK::listElements);
 +        }
  
-         public void accept(BlockStateGenerator p_388748_) {
-             Block block = p_388748_.getBlock();
-@@ -79,9 +_,9 @@
+         public void accept(BlockModelDefinitionGenerator p_405192_) {
+             Block block = p_405192_.block();
+@@ -77,9 +_,9 @@
          }
  
          public void validate() {

@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormatElement.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormatElement.java
-@@ -78,6 +_,15 @@
+@@ -75,6 +_,15 @@
          return ELEMENTS.stream().filter(p_350573_ -> p_350573_ != null && (p_350349_ & p_350573_.mask()) != 0);
      }
  
@@ -14,24 +14,5 @@
 +    }
 +
      @OnlyIn(Dist.CLIENT)
+     @DontObfuscate
      public static enum Type {
-         FLOAT(4, "Float", 5126),
-@@ -113,6 +_,7 @@
-     }
- 
-     @OnlyIn(Dist.CLIENT)
-+    @net.neoforged.fml.common.asm.enumextension.NamedEnum
-     public static enum Usage implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
-         POSITION(
-             "Position",
-@@ -163,6 +_,10 @@
-         @OnlyIn(Dist.CLIENT)
-         public interface SetupState {
-             void setupBufferState(int p_167053_, int p_167054_, int p_167055_, long p_167056_, int p_167057_);
-+        }
-+
-+        public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
-+            return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(VertexFormatElement.Usage.class);
-         }
-     }
- }

@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Objects;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.critereon.DataComponentMatchers;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.ItemSubPredicate;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.AdvancementProvider;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,6 +30,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = PlayerTests.GROUP + ".advancement")
@@ -84,12 +86,12 @@ public class AdvancementTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom advancement predicates work")
     static void customPredicateTest(final DynamicTest test, final RegistrationHelper reg) {
-        ItemSubPredicate.Type<CustomNamePredicate> type = new ItemSubPredicate.Type<>(RecordCodecBuilder.create(g -> g.group(
+        DataComponentPredicate.Type<CustomNamePredicate> type = new DataComponentPredicate.Type<>(RecordCodecBuilder.create(g -> g.group(
                 Codec.INT.fieldOf("data1").forGetter(CustomNamePredicate::data1),
                 Codec.INT.fieldOf("data2").forGetter(CustomNamePredicate::data2))
                 .apply(g, CustomNamePredicate::new)));
 
-        reg.registrar(Registries.ITEM_SUB_PREDICATE_TYPE)
+        reg.registrar(Registries.DATA_COMPONENT_PREDICATE_TYPE)
                 .register("custom_name", () -> type);
 
         reg.addClientProvider(event -> new AdvancementProvider(
@@ -99,7 +101,7 @@ public class AdvancementTests {
                     Advancement.Builder.advancement()
                             .parent(ResourceLocation.withDefaultNamespace("story/root"))
                             .display(Items.ANVIL, Component.literal("Named!"), Component.literal("Get a named item"), null, AdvancementType.TASK, true, true, false)
-                            .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withSubPredicate(type, new CustomNamePredicate(1, 2))))
+                            .addCriterion("has_named_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(type, new CustomNamePredicate(1, 2)).build())))
                             .save(saver, ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"));
                 })));
 
@@ -118,10 +120,10 @@ public class AdvancementTests {
         });
     }
 
-    public record CustomNamePredicate(int data1, int data2) implements ItemSubPredicate {
+    public record CustomNamePredicate(int data1, int data2) implements DataComponentPredicate {
         @Override
-        public boolean matches(ItemStack itemStack) {
-            return itemStack.has(DataComponents.CUSTOM_NAME);
+        public boolean matches(DataComponentGetter dataComponentGetter) {
+            return dataComponentGetter.has(DataComponents.CUSTOM_NAME);
         }
     }
 }

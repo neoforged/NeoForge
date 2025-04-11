@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractBoat.java
-@@ -478,7 +_,7 @@
+@@ -420,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(l1, k1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -9,7 +9,7 @@
                          f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                      }
  
-@@ -524,7 +_,7 @@
+@@ -466,7 +_,7 @@
                                      voxelshape,
                                      BooleanOp.AND
                                  )) {
@@ -18,25 +18,25 @@
                                  k1++;
                              }
                          }
-@@ -553,7 +_,7 @@
+@@ -495,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(k1, l1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
 -                    if (fluidstate.is(FluidTags.WATER)) {
 +                    if (this.canBoatInFluid(fluidstate)) {
-                         float f = (float)l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
+                         float f = l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
                          this.waterLevel = Math.max((double)f, this.waterLevel);
-                         flag |= aabb.minY < (double)f;
-@@ -583,7 +_,7 @@
+                         flag |= aabb.minY < f;
+@@ -525,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(k1, l1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
--                    if (fluidstate.is(FluidTags.WATER)
-+                    if (this.canBoatInFluid(fluidstate)
-                         && d0 < (double)((float)blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos))) {
+-                    if (fluidstate.is(FluidTags.WATER) && d0 < blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos)) {
++                    if (this.canBoatInFluid(fluidstate) && d0 < blockpos$mutableblockpos.getY() + fluidstate.getHeight(this.level(), blockpos$mutableblockpos)) {
                          if (!fluidstate.isSource()) {
                              return AbstractBoat.Status.UNDER_FLOWING_WATER;
-@@ -790,7 +_,7 @@
+                         }
+@@ -727,7 +_,7 @@
          if (!this.isPassenger()) {
              if (p_376924_) {
                  this.resetFallDistance();
@@ -45,7 +45,7 @@
                  this.fallDistance -= (float)p_376661_;
              }
          }
-@@ -814,7 +_,7 @@
+@@ -751,7 +_,7 @@
  
      @Override
      protected boolean canAddPassenger(Entity p_376443_) {

@@ -18,7 +18,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.random.Weight;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.ai.behavior.WorkAtComposter;
@@ -59,7 +58,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
     @Override
     protected void gather(HolderLookup.Provider provider) {
         final var biomeVillagers = builder(NeoForgeDataMaps.VILLAGER_TYPES);
-        ObfuscationReflectionHelper.<Map<ResourceKey<Biome>, VillagerType>, VillagerType>getPrivateValue(VillagerType.class, null, "BY_BIOME")
+        ObfuscationReflectionHelper.<Map<ResourceKey<Biome>, ResourceKey<VillagerType>>, VillagerType>getPrivateValue(VillagerType.class, null, "BY_BIOME")
                 .forEach((biome, type) -> biomeVillagers.add(biome, new BiomeVillagerType(type), false));
 
         final var compostables = builder(NeoForgeDataMaps.COMPOSTABLES);
@@ -78,13 +77,13 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
                 .forEach((type, sound) -> imitations.add(type.builtInRegistryHolder(), new ParrotImitation(sound), false));
 
         final var raidHeroGifts = builder(NeoForgeDataMaps.RAID_HERO_GIFTS);
-        ObfuscationReflectionHelper.<Map<VillagerProfession, ResourceKey<LootTable>>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
-                .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(type), new RaidHeroGift(lootTable), false));
+        ObfuscationReflectionHelper.<Map<ResourceKey<VillagerProfession>, ResourceKey<LootTable>>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
+                .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(type), new RaidHeroGift(lootTable), false));
 
         final var monsterRoomMobs = builder(NeoForgeDataMaps.MONSTER_ROOM_MOBS);
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .forEach((type, weight) -> monsterRoomMobs.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type), new MonsterRoomMob(Weight.of((int) (weight * 100))), false));
+                .forEach((type, weight) -> monsterRoomMobs.add(BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(type), new MonsterRoomMob((int) (weight * 100)), false));
 
         final var oxidizables = builder(NeoForgeDataMaps.OXIDIZABLES);
         WeatheringCopper.NEXT_BY_BLOCK.get().forEach((now, after) -> {

@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipComponent.java
 +++ b/net/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipComponent.java
-@@ -25,7 +_,11 @@
+@@ -22,7 +_,11 @@
              case ClientActivePlayersTooltip.ActivePlayersTooltip clientactiveplayerstooltip$activeplayerstooltip -> new ClientActivePlayersTooltip(
-             clientactiveplayerstooltip$activeplayerstooltip
-         );
+                 clientactiveplayerstooltip$activeplayerstooltip
+             );
 -            default -> throw new IllegalArgumentException("Unknown TooltipComponent");
 +            default -> {
 +                ClientTooltipComponent result = net.neoforged.neoforge.client.gui.ClientTooltipComponentManager.createClientTooltipComponent(p_169951_);

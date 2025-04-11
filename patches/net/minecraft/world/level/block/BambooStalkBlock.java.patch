@@ -1,16 +1,16 @@
 --- a/net/minecraft/world/level/block/BambooStalkBlock.java
 +++ b/net/minecraft/world/level/block/BambooStalkBlock.java
-@@ -97,7 +_,8 @@
+@@ -87,7 +_,8 @@
              return null;
          } else {
              BlockState blockstate = p_261764_.getLevel().getBlockState(p_261764_.getClickedPos().below());
 -            if (blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON)) {
-+            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_261764_.getLevel(), p_261764_.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
++            var soilDecision = blockstate.canSustainPlant(p_261764_.getLevel(), p_261764_.getClickedPos().below(), net.minecraft.core.Direction.UP, this.defaultBlockState());
 +            if (soilDecision.isDefault() ? blockstate.is(BlockTags.BAMBOO_PLANTABLE_ON) : soilDecision.isTrue()) {
                  if (blockstate.is(Blocks.BAMBOO_SAPLING)) {
-                     return this.defaultBlockState().setValue(AGE, Integer.valueOf(0));
+                     return this.defaultBlockState().setValue(AGE, 0);
                  } else if (blockstate.is(Blocks.BAMBOO)) {
-@@ -130,10 +_,11 @@
+@@ -120,10 +_,11 @@
      @Override
      protected void randomTick(BlockState p_261931_, ServerLevel p_261751_, BlockPos p_261616_, RandomSource p_261766_) {
          if (p_261931_.getValue(STAGE) == 0) {
@@ -24,21 +24,12 @@
                  }
              }
          }
-@@ -141,6 +_,8 @@
+@@ -131,6 +_,8 @@
  
      @Override
      protected boolean canSurvive(BlockState p_261860_, LevelReader p_262154_, BlockPos p_261493_) {
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
++        var soilDecision = p_262154_.getBlockState(p_261493_.below()).canSustainPlant(p_262154_, p_261493_.below(), Direction.UP, p_261860_);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          return p_262154_.getBlockState(p_261493_.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
  
-@@ -198,7 +_,7 @@
- 
-     @Override
-     protected float getDestroyProgress(BlockState p_261691_, Player p_262171_, BlockGetter p_261621_, BlockPos p_261500_) {
--        return p_262171_.getMainHandItem().getItem() instanceof SwordItem ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
-+        return p_262171_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) ? 1.0F : super.getDestroyProgress(p_261691_, p_262171_, p_261621_, p_261500_);
-     }
- 
-     protected void growBamboo(BlockState p_261855_, Level p_262076_, BlockPos p_262109_, RandomSource p_261633_, int p_261759_) {

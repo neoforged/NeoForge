@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -105,6 +_,8 @@
+@@ -110,6 +_,8 @@
          }
  
          if (p_364816_.nameTag != null) {
@@ -9,7 +9,7 @@
              this.renderNameTag(p_364816_, p_364816_.nameTag, p_114488_, p_114489_, p_114490_);
          }
      }
-@@ -249,6 +_,7 @@
+@@ -254,6 +_,7 @@
      public final S createRenderState(T p_361382_, float p_360885_) {
          S s = this.reusedState;
          this.extractRenderState(p_361382_, s, p_360885_);
@@ -17,7 +17,7 @@
          return s;
      }
  
-@@ -274,9 +_,11 @@
+@@ -280,9 +_,11 @@
          }
  
          p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
@@ -31,11 +31,12 @@
              p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
          } else {
              p_361028_.nameTag = null;
-@@ -306,5 +_,7 @@
+@@ -319,6 +_,8 @@
+             p_361028_.hitboxesRenderState = null;
+             p_361028_.serverHitboxesRenderState = null;
          }
- 
-         p_361028_.displayFireAnimation = p_362104_.displayFireAnimation();
 +
 +        p_361028_.partialTick = p_362204_;
      }
- }
+ 
+     private void extractHitboxes(T p_412316_, S p_412142_, float p_412603_) {

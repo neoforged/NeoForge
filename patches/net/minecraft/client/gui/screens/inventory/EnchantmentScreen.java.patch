@@ -4,7 +4,7 @@
                  int l1 = 86 - this.font.width(s);
                  FormattedText formattedtext = EnchantmentNames.getInstance().getRandomName(this.font, l1);
                  int i2 = 6839882;
--                if ((k < l + 1 || this.minecraft.player.experienceLevel < k1) && !this.minecraft.player.getAbilities().instabuild) {
+-                if ((k < l + 1 || this.minecraft.player.experienceLevel < k1) && !this.minecraft.player.hasInfiniteMaterials()) {
 +                if (((k < l + 1 || this.minecraft.player.experienceLevel < k1) && !this.minecraft.player.getAbilities().instabuild) || this.menu.enchantClue[l] == -1) { // Forge: render buttons as disabled when enchantable but enchantability not met on lower levels
                      p_282430_.blitSprite(RenderType::guiTextured, ENCHANTMENT_SLOT_DISABLED_SPRITE, i1, j + 14 + 19 * l, 108, 19);
                      p_282430_.blitSprite(RenderType::guiTextured, DISABLED_LEVEL_SPRITES[l], i1 + 1, j + 15 + 19 * l, 16, 16);
@@ -17,8 +17,8 @@
 +            if (true) {
                  int l = this.menu.levelClue[j];
                  int i1 = j + 1;
--                if (this.isHovering(60, 14 + 19 * j, 108, 17, (double)p_282491_, (double)p_281953_) && k > 0 && l >= 0 && optional != null) {
-+                if (this.isHovering(60, 14 + 19 * j, 108, 17, (double)p_282491_, (double)p_281953_) && k > 0) {
+-                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0 && l >= 0 && optional != null) {
++                if (this.isHovering(60, 14 + 19 * j, 108, 17, p_282491_, p_281953_) && k > 0) {
                      List<Component> list = Lists.newArrayList();
 -                    list.add(Component.translatable("container.enchant.clue", Enchantment.getFullname(optional.get(), l)).withStyle(ChatFormatting.WHITE));
 -                    if (!flag) {

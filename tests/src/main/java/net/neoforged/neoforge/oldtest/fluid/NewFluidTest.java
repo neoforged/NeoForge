@@ -8,7 +8,7 @@ package net.neoforged.neoforge.oldtest.fluid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -129,7 +129,7 @@ public class NewFluidTest {
         }
 
         @Override
-        public boolean canPlaceLiquid(@Nullable Player player, BlockGetter worldIn, BlockPos pos, BlockState state, Fluid fluidIn) {
+        public boolean canPlaceLiquid(@Nullable LivingEntity entity, BlockGetter worldIn, BlockPos pos, BlockState state, Fluid fluidIn) {
             return !state.getValue(FLUIDLOGGED) && fluidIn == test_fluid.get();
         }
 
@@ -148,7 +148,7 @@ public class NewFluidTest {
         }
 
         @Override
-        public ItemStack pickupBlock(@Nullable Player player, LevelAccessor worldIn, BlockPos pos, BlockState state) {
+        public ItemStack pickupBlock(@Nullable LivingEntity entity, LevelAccessor worldIn, BlockPos pos, BlockState state) {
             if (state.getValue(FLUIDLOGGED)) {
                 worldIn.setBlock(pos, state.setValue(FLUIDLOGGED, false), 3);
                 return new ItemStack(TEST_FLUID_BUCKET.get());

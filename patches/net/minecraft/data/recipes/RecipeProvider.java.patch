@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -566,8 +_,7 @@
+@@ -569,8 +_,7 @@
      }
  
      protected void waxRecipes(FeatureFlagSet p_313879_) {
@@ -8,9 +8,9 @@
 -            .get()
 +        net.neoforged.neoforge.common.DataMapHooks.INVERSE_WAXABLES_DATAMAP
              .forEach(
-                 (p_359424_, p_359425_) -> {
-                     if (p_359425_.requiredFeatures().isSubsetOf(p_313879_)) {
-@@ -756,13 +_,13 @@
+                 (p_392602_, p_392603_) -> {
+                     if (p_392603_.requiredFeatures().isSubsetOf(p_313879_)) {
+@@ -759,13 +_,13 @@
                          final List<CompletableFuture<?>> list = new ArrayList<>();
                          RecipeOutput recipeoutput = new RecipeOutput() {
                              @Override
@@ -27,7 +27,7 @@
                                      }
                                  }
                              }
-@@ -781,15 +_,21 @@
+@@ -784,15 +_,21 @@
                              }
  
                              private void saveRecipe(ResourceKey<Recipe<?>> p_380099_, Recipe<?> p_364792_) {

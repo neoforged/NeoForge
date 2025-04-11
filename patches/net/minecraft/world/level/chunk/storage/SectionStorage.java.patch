@@ -17,6 +17,6 @@
 +        }
 +    }
 +
-     static record PackedChunk<T>(Int2ObjectMap<T> sectionsByY, boolean versionChanged) {
+     record PackedChunk<T>(Int2ObjectMap<T> sectionsByY, boolean versionChanged) {
          public static <T> SectionStorage.PackedChunk<T> parse(
              Codec<T> p_365233_, DynamicOps<Tag> p_363840_, Tag p_364375_, SimpleRegionStorage p_362076_, LevelHeightAccessor p_362314_

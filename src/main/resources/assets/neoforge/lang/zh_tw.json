@@ -252,7 +252,7 @@
   "neoforge.network.extensible_enums.enum_entry_mismatch": "用戶端和伺服器上新增至可擴充列舉值的值集合不相符。請確保您使用的模組和 NeoForge 版本與伺服器相同。查看記錄檔以取得詳細資訊",
   "neoforge.network.feature_flags.entry_mismatch": "伺服器與用戶端擁有不同的自訂 FeatureFlags 集合。請確認您使用的模組與 NeoForge 版本與伺服器相同。查看記錄檔以取得詳細資訊",
   "neoforge.network.feature_flags.no_vanilla_server": "由於這個用戶端擁有自訂 FeatureFlags，因此不支援原版伺服器",
-  "neoforge.attribute.debug.base": "[實體：%s | 物品：%s]",
+  "neoforge.attribute.debug.base": "[%s%s]",
   "neoforge.value.flat": "%s",
   "neoforge.value.percent": "%s%%",
   "neoforge.value.boolean.enabled": "已啟用",

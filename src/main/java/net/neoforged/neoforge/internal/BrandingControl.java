@@ -15,13 +15,19 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import org.jetbrains.annotations.Nullable;
 
 public class BrandingControl {
+    @Nullable
+    private static String forgeStatusLine;
+
+    @Nullable
     private static List<String> brandings;
+    @Nullable
     private static List<String> brandingsNoMC;
+    @Nullable
     private static List<String> overCopyrightBrandings;
 
     private static void computeBranding() {
@@ -44,10 +50,14 @@ public class BrandingControl {
         }
     }
 
+    public static void setForgeStatusLine(@Nullable String forgeStatusLine) {
+        BrandingControl.forgeStatusLine = forgeStatusLine;
+    }
+
     private static void computeOverCopyrightBrandings() {
         if (overCopyrightBrandings == null) {
             ImmutableList.Builder<String> brd = ImmutableList.builder();
-            if (ClientHooks.forgeStatusLine != null) brd.add(ClientHooks.forgeStatusLine);
+            if (forgeStatusLine != null) brd.add(forgeStatusLine);
             overCopyrightBrandings = brd.build();
         }
     }

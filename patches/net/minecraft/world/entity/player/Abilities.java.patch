@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/entity/player/Abilities.java
 +++ b/net/minecraft/world/entity/player/Abilities.java
-@@ -5,6 +_,10 @@
- public class Abilities {
+@@ -12,6 +_,10 @@
+     private static final float DEFAULT_WALKING_SPEED = 0.1F;
      public boolean invulnerable;
      public boolean flying;
 +    /**

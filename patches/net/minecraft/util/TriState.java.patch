@@ -1,0 +1,21 @@
+--- a/net/minecraft/util/TriState.java
++++ b/net/minecraft/util/TriState.java
+@@ -12,4 +_,18 @@
+             default -> p_361506_;
+         };
+     }
++
++    // Neo: Helper methods for use in patches
++
++    public boolean isTrue() {
++        return this == TRUE;
++    }
++
++    public boolean isDefault() {
++        return this == DEFAULT;
++    }
++
++    public boolean isFalse() {
++        return this == FALSE;
++    }
+ }

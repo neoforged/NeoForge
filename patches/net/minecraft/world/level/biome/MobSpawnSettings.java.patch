@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/biome/MobSpawnSettings.java
 +++ b/net/minecraft/world/level/biome/MobSpawnSettings.java
-@@ -51,6 +_,8 @@
+@@ -46,6 +_,8 @@
      private final float creatureGenerationProbability;
-     private final Map<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> spawners;
+     private final Map<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> spawners;
      private final Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> mobSpawnCosts;
 +    private final java.util.Set<MobCategory> typesView;
 +    private final java.util.Set<EntityType<?>> costView;
  
      MobSpawnSettings(
-         float p_196689_,
-@@ -60,15 +_,25 @@
+         float p_196689_, Map<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> p_196690_, Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> p_196691_
+@@ -53,15 +_,25 @@
          this.creatureGenerationProbability = p_196689_;
          this.spawners = ImmutableMap.copyOf(p_196690_);
          this.mobSpawnCosts = ImmutableMap.copyOf(p_196691_);
@@ -17,7 +17,7 @@
 +        this.costView = java.util.Collections.unmodifiableSet(this.mobSpawnCosts.keySet());
      }
  
-     public WeightedRandomList<MobSpawnSettings.SpawnerData> getMobs(MobCategory p_151799_) {
+     public WeightedList<MobSpawnSettings.SpawnerData> getMobs(MobCategory p_151799_) {
          return this.spawners.getOrDefault(p_151799_, EMPTY_MOB_LIST);
      }
  

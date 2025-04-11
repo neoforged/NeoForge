@@ -68,7 +68,7 @@ public class ScaffoldingTest {
             var stableModel = ModelLocationUtils.getModelLocation(SCAFFOLDING_METHOD_TEST.value(), "_stable");
             var unstableModel = ModelLocationUtils.getModelLocation(SCAFFOLDING_METHOD_TEST.value(), "_unstable");
             blockModels.registerSimpleItemModel(SCAFFOLDING_METHOD_TEST.value(), stableModel);
-            blockModels.blockStateOutput.accept(MultiVariantGenerator.multiVariant(SCAFFOLDING_METHOD_TEST.value()).with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.BOTTOM, unstableModel, stableModel)));
+            blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(SCAFFOLDING_METHOD_TEST.value()).with(BlockModelGenerators.createBooleanModelDispatch(BlockStateProperties.BOTTOM, BlockModelGenerators.plainVariant(unstableModel), BlockModelGenerators.plainVariant(stableModel))));
         }
     }
 

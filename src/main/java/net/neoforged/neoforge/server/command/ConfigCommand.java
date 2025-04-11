@@ -16,24 +16,12 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.StringUtils;
-import net.neoforged.neoforge.client.command.ClientConfigCommand;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
 public class ConfigCommand {
-    @SubscribeEvent
-    public static void onClientCommandsRegister(RegisterClientCommandsEvent event) {
-        ClientConfigCommand.register(event.getDispatcher());
-    }
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("config").then(ShowFile.register()));
@@ -65,14 +53,14 @@ public class ConfigCommand {
                 // Only provide click action for single player world owners calling this command from in-game.
                 ServerPlayer caller = context.getSource().getPlayer();
                 if (FMLLoader.getDist().isClient() && caller != null && caller.connection.getConnection().isMemoryConnection()) {
-                    fileComponent.withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, f.getAbsolutePath())));
+                    fileComponent.withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(f)));
                 }
 
-                context.getSource().sendSuccess(() -> Component.translatable("commands.config.getwithtype",
+                context.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.config.getwithtype",
                         modId, type.toString(), fileComponent), true);
             }
             if (configFileNames.isEmpty()) {
-                context.getSource().sendSuccess(() -> Component.translatable("commands.config.noconfig", modId, type.toString()),
+                context.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.config.noconfig", modId, type.toString()),
                         true);
             }
             return 0;

@@ -22,8 +22,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.gametest.framework.TestClassNameArgument;
-import net.minecraft.gametest.framework.TestFunctionArgument;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
@@ -87,9 +85,6 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
         CommandBuildContext commandBuildContext = Commands.createValidationContext(VanillaRegistries.createLookup());
         RootCommandNode<SharedSuggestionProvider> root = packet.getRoot(commandBuildContext);
         RootCommandNode<SharedSuggestionProvider> newRoot = CommandTreeCleaner.cleanArgumentTypes(root, argType -> {
-            if (argType instanceof TestFunctionArgument || argType instanceof TestClassNameArgument)
-                return false; // Vanilla connections should not have gametest on, so we should filter these out always
-
             ArgumentTypeInfo<?, ?> info = ArgumentTypeInfos.byClass(argType);
             ResourceLocation id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(info);
             return id != null && (id.getNamespace().equals("minecraft") || id.getNamespace().equals("brigadier"));

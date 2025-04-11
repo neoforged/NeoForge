@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/resources/model/ResolvedModel.java
++++ b/net/minecraft/client/resources/model/ResolvedModel.java
+@@ -86,7 +_,7 @@
+     }
+ 
+     default QuadCollection bakeTopGeometry(TextureSlots p_405784_, ModelBaker p_405450_, ModelState p_405844_) {
+-        return this.getTopGeometry().bake(p_405784_, p_405450_, p_405844_, this);
++        return this.getTopGeometry().bake(p_405784_, p_405450_, p_405844_, this, this.getTopAdditionalProperties());
+     }
+ 
+     static TextureAtlasSprite resolveParticleSprite(TextureSlots p_404698_, ModelBaker p_405533_, ModelDebugName p_405824_) {
+@@ -122,7 +_,16 @@
+         ItemTransform itemtransform5 = findTopTransform(p_404681_, ItemDisplayContext.GUI);
+         ItemTransform itemtransform6 = findTopTransform(p_404681_, ItemDisplayContext.GROUND);
+         ItemTransform itemtransform7 = findTopTransform(p_404681_, ItemDisplayContext.FIXED);
+-        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7);
++        com.google.common.collect.ImmutableMap.Builder<ItemDisplayContext, ItemTransform> moddedTransforms = com.google.common.collect.ImmutableMap.builder();
++        for (ItemDisplayContext context : ItemDisplayContext.values()) {
++            if (context.isModded()) {
++                ItemTransform transform = findTopTransform(p_404681_, context);
++                if (transform != ItemTransform.NO_TRANSFORM) {
++                    moddedTransforms.put(context, transform);
++                }
++            }
++        }
++        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7, moddedTransforms.build());
+     }
+ 
+     default ItemTransforms getTopTransforms() {

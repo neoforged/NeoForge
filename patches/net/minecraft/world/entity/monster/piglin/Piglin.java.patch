@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -363,7 +_,7 @@
+@@ -360,7 +_,7 @@
          } else if (this.isChargingCrossbow()) {
              return PiglinArmPose.CROSSBOW_CHARGE;
          } else {
@@ -9,7 +9,7 @@
          }
      }
  
-@@ -392,7 +_,7 @@
+@@ -389,7 +_,7 @@
  
      @Override
      public boolean canFireProjectileWeapon(ProjectileWeaponItem p_34715_) {
@@ -18,7 +18,7 @@
      }
  
      protected void holdInMainHand(ItemStack p_34784_) {
-@@ -400,7 +_,7 @@
+@@ -397,7 +_,7 @@
      }
  
      protected void holdInOffHand(ItemStack p_34786_) {
@@ -27,7 +27,7 @@
              this.setItemSlot(EquipmentSlot.OFFHAND, p_34786_);
              this.setGuaranteedDrop(EquipmentSlot.OFFHAND);
          } else {
-@@ -410,7 +_,7 @@
+@@ -407,7 +_,7 @@
  
      @Override
      public boolean wantsToPickUp(ServerLevel p_376232_, ItemStack p_34777_) {

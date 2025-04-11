@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.event;
 
 import java.util.Objects;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;

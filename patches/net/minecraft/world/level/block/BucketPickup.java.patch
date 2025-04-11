@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/level/block/BucketPickup.java
 @@ -12,5 +_,6 @@
  public interface BucketPickup extends net.neoforged.neoforge.common.extensions.IBucketPickupExtension {
-     ItemStack pickupBlock(@Nullable Player p_294682_, LevelAccessor p_152719_, BlockPos p_152720_, BlockState p_152721_);
+     ItemStack pickupBlock(@Nullable LivingEntity p_394251_, LevelAccessor p_152719_, BlockPos p_152720_, BlockState p_152721_);
  
 +    @Deprecated//Forge: Use state sensitive variant instead
      Optional<SoundEvent> getPickupSound();

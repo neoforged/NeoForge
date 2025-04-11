@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/biome/BiomeSpecialEffects.java
 +++ b/net/minecraft/world/level/biome/BiomeSpecialEffects.java
-@@ -242,6 +_,8 @@
+@@ -257,6 +_,8 @@
          }
      }
  
@@ -9,7 +9,7 @@
      public static enum GrassColorModifier implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          NONE("none") {
              @Override
-@@ -264,12 +_,22 @@
+@@ -279,12 +_,22 @@
          };
  
          private final String name;
@@ -33,7 +33,7 @@
          }
  
          public String getName() {
-@@ -279,6 +_,15 @@
+@@ -294,6 +_,15 @@
          @Override
          public String getSerializedName() {
              return this.name;

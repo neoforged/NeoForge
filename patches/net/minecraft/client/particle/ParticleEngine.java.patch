@@ -1,13 +1,12 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -74,11 +_,11 @@
+@@ -74,10 +_,10 @@
          ParticleRenderType.TERRAIN_SHEET, ParticleRenderType.PARTICLE_SHEET_OPAQUE, ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT
      );
      protected ClientLevel level;
 -    private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newIdentityHashMap();
 +    private final Map<ParticleRenderType, Queue<Particle>> particles = Maps.newTreeMap(net.neoforged.neoforge.client.ClientHooks.makeParticleRenderTypeComparator(RENDER_ORDER));
      private final Queue<TrackingEmitter> trackingEmitters = Queues.newArrayDeque();
-     private final TextureManager textureManager;
      private final RandomSource random = RandomSource.create();
 -    private final Int2ObjectMap<ParticleProvider<?>> providers = new Int2ObjectOpenHashMap<>();
 +    private final Map<ResourceLocation, ParticleProvider<?>> providers = new java.util.HashMap<>();
@@ -15,7 +14,7 @@
      private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
      private final TextureAtlas textureAtlas;
 @@ -207,10 +_,14 @@
-         this.register(ParticleTypes.BLOCK_CRUMBLE, new TerrainParticle.CrumblingProvider());
+         this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
      }
  
 +    /** @deprecated Register via {@link net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent} */
@@ -143,11 +142,11 @@
                              }
                          }
 @@ -560,12 +_,28 @@
-                 d0 = (double)i + aabb.maxX + 0.1F;
+                 d0 = i + aabb.maxX + 0.1F;
              }
  
 -            this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, p_107368_).setPower(0.2F).scale(0.6F));
-+            this.add((new TerrainParticle(this.level, d0, d1, d2, 0.0D, 0.0D, 0.0D, blockstate, p_107368_).updateSprite(blockstate, p_107368_)).setPower(0.2F).scale(0.6F));
++            this.add(new TerrainParticle(this.level, d0, d1, d2, 0.0, 0.0, 0.0, blockstate, p_107368_).updateSprite(blockstate, p_107368_).setPower(0.2F).scale(0.6F));
          }
      }
  

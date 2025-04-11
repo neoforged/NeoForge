@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -115,7 +_,7 @@
+@@ -117,7 +_,7 @@
      private final TickRateManager tickRateManager;
      private final Minecraft minecraft = Minecraft.getInstance();
      final List<AbstractClientPlayer> players = Lists.newArrayList();
@@ -9,23 +9,23 @@
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
      private static final int CLOUD_COLOR = -1;
      private int skyFlashTime;
-@@ -131,6 +_,7 @@
-             p_194170_.put(
+@@ -137,6 +_,7 @@
+             p_406186_.put(
                  BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(p_194168_ -> this.calculateBlockTint(p_194168_, BiomeColors.WATER_COLOR_RESOLVER))
              );
-+            net.neoforged.neoforge.client.ColorResolverManager.registerBlockTintCaches(ClientLevel.this, p_194170_);
++            net.neoforged.neoforge.client.ColorResolverManager.registerBlockTintCaches(ClientLevel.this, p_406186_);
          }
      );
      private final ClientChunkCache chunkSource;
-@@ -140,6 +_,7 @@
+@@ -146,6 +_,7 @@
      private final int seaLevel;
      private boolean tickDayTime;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
-+    private final net.neoforged.neoforge.client.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.client.model.data.ModelDataManager(this);
++    private final net.neoforged.neoforge.model.data.ModelDataManager modelDataManager = new net.neoforged.neoforge.model.data.ModelDataManager(this);
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
-@@ -169,10 +_,15 @@
+@@ -175,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, int p_233645_, int p_233646_) {
          if (this.blockStatePredictionHandler.isPredicting()) {
@@ -41,7 +41,7 @@
              }
  
              return flag;
-@@ -206,6 +_,7 @@
+@@ -212,6 +_,7 @@
          this.serverSimulationDistance = p_363776_;
          this.updateSkyBrightness();
          this.prepareWeather();
@@ -49,7 +49,7 @@
      }
  
      public void queueLightUpdate(Runnable p_194172_) {
-@@ -249,7 +_,7 @@
+@@ -255,7 +_,7 @@
      private void tickTime() {
          this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
          if (this.tickDayTime) {
@@ -58,7 +58,7 @@
          }
      }
  
-@@ -288,7 +_,11 @@
+@@ -294,7 +_,11 @@
          p_104640_.setOldPosAndRot();
          p_104640_.tickCount++;
          Profiler.get().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
@@ -71,7 +71,7 @@
          Profiler.get().pop();
  
          for (Entity entity : p_104640_.getPassengers()) {
-@@ -339,8 +_,10 @@
+@@ -345,8 +_,10 @@
      }
  
      public void addEntity(Entity p_104741_) {
@@ -82,7 +82,7 @@
      }
  
      public void removeEntity(int p_171643_, Entity.RemovalReason p_171644_) {
-@@ -511,6 +_,13 @@
+@@ -523,6 +_,13 @@
          float p_263349_,
          long p_263408_
      ) {
@@ -93,23 +93,23 @@
 +        p_263416_ = event.getNewVolume();
 +        p_263349_ = event.getNewPitch();
 +
-         if (p_263381_ == this.minecraft.player) {
+         if (p_393665_ == this.minecraft.player) {
              this.playSound(p_263372_, p_263404_, p_263365_, p_263335_.value(), p_263417_, p_263416_, p_263349_, false, p_263408_);
          }
-@@ -520,6 +_,12 @@
+@@ -532,6 +_,12 @@
      public void playSeededSound(
-         @Nullable Player p_263514_, Entity p_263536_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
+         @Nullable Entity p_263536_, Entity p_394209_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
      ) {
-+        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(p_263536_, p_263518_, p_263487_, p_263538_, p_263524_);
++        net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity event = net.neoforged.neoforge.event.EventHooks.onPlaySoundAtEntity(p_394209_, p_263518_, p_263487_, p_263538_, p_263524_);
 +        if (event.isCanceled() || event.getSound() == null) return;
 +        p_263518_ = event.getSound();
 +        p_263487_ = event.getSource();
 +        p_263538_ = event.getNewVolume();
 +        p_263524_ = event.getNewPitch();
-         if (p_263514_ == this.minecraft.player) {
-             this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_263536_, p_263509_));
+         if (p_263536_ == this.minecraft.player) {
+             this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_394209_, p_263509_));
          }
-@@ -731,7 +_,7 @@
+@@ -743,7 +_,7 @@
          return this.players;
      }
  
@@ -118,7 +118,7 @@
          return this.dragonParts;
      }
  
-@@ -1056,6 +_,7 @@
+@@ -1076,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty p_104852_) {
@@ -126,7 +126,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1098,6 +_,9 @@
+@@ -1117,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -136,7 +136,7 @@
              }
          }
  
-@@ -1112,10 +_,58 @@
+@@ -1130,10 +_,59 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -154,12 +154,12 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelDataManager getModelDataManager() {
++    public net.neoforged.neoforge.model.data.ModelDataManager getModelDataManager() {
 +        return modelDataManager;
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.model.data.ModelData getModelData(BlockPos pos) {
++    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
 +        return modelDataManager.getAt(pos);
 +    }
 +
@@ -168,7 +168,8 @@
 +        boolean constantAmbientLight = this.effects().constantAmbientLight();
 +        if (!shade)
 +            return constantAmbientLight ? 0.9F : 1.0F;
-+        return net.neoforged.neoforge.client.model.lighting.QuadLighter.calculateShade(normalX, normalY, normalZ, constantAmbientLight);
++        float yFactor = constantAmbientLight ? 0.9F : normalY < 0 ? 0.5F : 1.0F;
++        return Math.min(normalX * normalX * 0.6F + normalY * normalY * yFactor + normalZ * normalZ * 0.8F, 1.0F);
 +    }
 +
 +    // Neo: Variable day time code

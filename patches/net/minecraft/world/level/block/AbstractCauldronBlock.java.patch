@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/AbstractCauldronBlock.java
 +++ b/net/minecraft/world/level/block/AbstractCauldronBlock.java
-@@ -101,4 +_,22 @@
+@@ -104,4 +_,22 @@
  
      protected void receiveStalactiteDrip(BlockState p_151975_, Level p_151976_, BlockPos p_151977_, Fluid p_151978_) {
      }
@@ -15,11 +15,11 @@
 +    }
 +
 +    @Override
-+    public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
-+        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
++    protected void affectNeighborsAfterRemoval(BlockState p_394424_, ServerLevel p_394241_, BlockPos p_393520_, boolean p_394545_) {
++        super.affectNeighborsAfterRemoval(p_394424_, p_394241_, p_393520_, p_394545_);
 +        // Neo: Invalidate cauldron capabilities when a cauldron is removed
-+        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(p_60518_.getBlock()) == null) {
-+            p_60516_.invalidateCapabilities(p_60517_);
++        if (net.neoforged.neoforge.fluids.CauldronFluidContent.getForBlock(p_394241_.getBlockState(p_393520_).getBlock()) == null) {
++            p_394241_.invalidateCapabilities(p_393520_);
 +        }
 +    }
  }

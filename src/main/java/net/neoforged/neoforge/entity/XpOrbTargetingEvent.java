@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class XpOrbTargetingEvent extends Event {
     private final ExperienceOrb xpOrb;
     private final double scanDistance;
+    @Nullable
     private Optional<Player> followingPlayer = null;
 
     // Not internal, modded XP Orbs may call this.

@@ -6,15 +6,15 @@
 package net.neoforged.testframework.gametest;
 
 import java.util.function.Supplier;
-import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestSequence;
 
 public class ExtendedSequence extends GameTestSequence {
-    private final GameTestInfo gameTestInfo;
+    private final GameTestHelper gameTestHelper;
 
-    public ExtendedSequence(GameTestInfo p_177542_) {
-        super(p_177542_);
-        this.gameTestInfo = p_177542_;
+    public ExtendedSequence(GameTestHelper gameTestHelper) {
+        super(gameTestHelper.testInfo);
+        this.gameTestHelper = gameTestHelper;
     }
 
     @Override
@@ -48,12 +48,12 @@ public class ExtendedSequence extends GameTestSequence {
     }
 
     public <T> ParametrizedGameTestSequence<T> thenMap(Supplier<T> value) {
-        return new ParametrizedGameTestSequence<>(gameTestInfo, this, value);
+        return new ParametrizedGameTestSequence<>(gameTestHelper, this, value);
     }
 
     public ExtendedSequence thenSequence(java.util.function.Consumer<ExtendedSequence> consumer) {
-        final var sq = new ExtendedSequence(gameTestInfo);
-        gameTestInfo.sequences.add(sq);
+        final var sq = new ExtendedSequence(gameTestHelper);
+        gameTestHelper.testInfo.sequences.add(sq);
         consumer.accept(sq);
         return sq;
     }

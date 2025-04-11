@@ -77,10 +77,7 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, ListTag list) {
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag tag = list.getCompound(i);
-            lights.put(BlockPos.of(tag.getLong("pos")), tag.getByte("level"));
-        }
+        list.compoundStream().forEach(tag -> lights.put(BlockPos.of(tag.getLongOr("pos", 0)), tag.getByteOr("level", (byte) 0)));
     }
 
     public Packet<?> sendLightDataTo(ClientboundLevelChunkWithLightPacket chunkPacket) {

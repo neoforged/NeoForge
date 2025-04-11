@@ -116,7 +116,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @param fallDistance The fall distance
      * @return {@code true} if this entity can trample, {@code false} otherwise
      */
-    boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, float fallDistance);
+    boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, double fallDistance);
 
     /**
      * Returns The classification of this entity

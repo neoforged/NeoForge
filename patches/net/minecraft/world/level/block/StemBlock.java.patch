@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
-@@ -74,23 +_,23 @@
+@@ -64,23 +_,23 @@
  
      @Override
      protected boolean mayPlaceOn(BlockState p_57053_, BlockGetter p_57054_, BlockPos p_57055_) {
@@ -18,9 +18,9 @@
 +            if (net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_222539_, p_222540_, p_222538_, p_222541_.nextInt((int)(25.0F / f) + 1) == 0)) {
                  int i = p_222538_.getValue(AGE);
                  if (i < 7) {
--                    p_222538_ = p_222538_.setValue(AGE, Integer.valueOf(i + 1));
+-                    p_222538_ = p_222538_.setValue(AGE, i + 1);
 -                    p_222539_.setBlock(p_222540_, p_222538_, 2);
-+                    p_222539_.setBlock(p_222540_, p_222538_.setValue(AGE, Integer.valueOf(i + 1)), 2);
++                    p_222539_.setBlock(p_222540_, p_222538_.setValue(AGE, i + 1), 2);
                  } else {
                      Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(p_222541_);
                      BlockPos blockpos = p_222540_.relative(direction);
@@ -30,7 +30,7 @@
                          Registry<Block> registry = p_222539_.registryAccess().lookupOrThrow(Registries.BLOCK);
                          Optional<Block> optional = registry.getOptional(this.fruit);
                          Optional<Block> optional1 = registry.getOptional(this.attachedStem);
-@@ -100,6 +_,7 @@
+@@ -90,6 +_,7 @@
                          }
                      }
                  }

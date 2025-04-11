@@ -1,0 +1,94 @@
+--- a/net/minecraft/world/level/TicketStorage.java
++++ b/net/minecraft/world/level/TicketStorage.java
+@@ -34,7 +_,8 @@
+     private static final Codec<Pair<ChunkPos, Ticket>> TICKET_ENTRY = Codec.mapPair(ChunkPos.CODEC.fieldOf("chunk_pos"), Ticket.CODEC).codec();
+     public static final Codec<TicketStorage> CODEC = RecordCodecBuilder.create(
+         p_400948_ -> p_400948_.group(TICKET_ENTRY.listOf().optionalFieldOf("tickets", List.of()).forGetter(TicketStorage::packTickets))
+-            .apply(p_400948_, TicketStorage::fromPacked)
++            .and(net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.defineExtraStorageParams())
++            .apply(p_400948_, (tickets, neoData) -> net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.readStoredTickets(TicketStorage::fromPacked, tickets, neoData))
+     );
+     public static final SavedDataType<TicketStorage> TYPE = new SavedDataType<>("chunks", TicketStorage::new, CODEC, DataFixTypes.SAVED_DATA_FORCED_CHUNKS);
+     private final Long2ObjectOpenHashMap<List<Ticket>> tickets;
+@@ -49,6 +_,7 @@
+         this.tickets = p_393873_;
+         this.deactivatedTickets = p_394615_;
+         this.updateForcedChunks();
++        this.updateForcedNaturalSpawning();
+     }
+ 
+     public TicketStorage() {
+@@ -156,6 +_,7 @@
+         if (p_394469_.getType().equals(TicketType.FORCED)) {
+             this.chunksWithForcedTickets.add(p_394247_);
+         }
++        if (p_394469_.getType().forceNaturalSpawning()) chunksWithForceNaturalSpawning.add(p_394247_);
+ 
+         this.setDirty();
+         return true;
+@@ -239,6 +_,7 @@
+                 if (p_394054_.getType().equals(TicketType.FORCED)) {
+                     this.updateForcedChunks();
+                 }
++                if (p_394054_.getType().forceNaturalSpawning()) this.updateForcedNaturalSpawning();
+ 
+                 this.setDirty();
+                 return true;
+@@ -266,11 +_,14 @@
+ 
+     public void deactivateTicketsOnClosing() {
+         this.removeTicketIf(p_394604_ -> p_394604_.getType() != TicketType.UNKNOWN, this.deactivatedTickets);
++        blockForcedChunks.deactivateTicketsOnClosing();
++        entityForcedChunks.deactivateTicketsOnClosing();
+     }
+ 
+     public void removeTicketIf(Predicate<Ticket> p_393810_, @Nullable Long2ObjectOpenHashMap<List<Ticket>> p_393746_) {
+         ObjectIterator<Entry<List<Ticket>>> objectiterator = this.tickets.long2ObjectEntrySet().fastIterator();
+         boolean flag = false;
++        boolean updateNaturalSpawning = false;
+ 
+         while (objectiterator.hasNext()) {
+             Entry<List<Ticket>> entry = objectiterator.next();
+@@ -298,6 +_,7 @@
+                     if (ticket.getType().equals(TicketType.FORCED)) {
+                         flag = true;
+                     }
++                    if (ticket.getType().forceNaturalSpawning()) updateNaturalSpawning = true;
+                 }
+             }
+ 
+@@ -320,6 +_,7 @@
+         if (flag) {
+             this.updateForcedChunks();
+         }
++        if (updateNaturalSpawning) this.updateForcedNaturalSpawning();
+     }
+ 
+     public void replaceTicketLevelOfType(int p_393875_, TicketType p_394261_) {
+@@ -369,5 +_,26 @@
+     @FunctionalInterface
+     public interface ChunkUpdated {
+         void update(long p_393671_, int p_393764_, boolean p_393905_);
++    }
++
++    // Neo: Keep track of forced loaded chunks caused by entities or blocks.
++    private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> blockForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>(this, net.neoforged.neoforge.common.NeoForgeMod.BLOCK_TICKET, net.neoforged.neoforge.common.NeoForgeMod.BLOCK_WITH_NATURAL_SPAWNING_TICKET);
++    private final net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> entityForcedChunks = new net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<>(this, net.neoforged.neoforge.common.NeoForgeMod.ENTITY_TICKET, net.neoforged.neoforge.common.NeoForgeMod.ENTITY_WITH_NATURAL_SPAWNING_TICKET);
++    private LongSet chunksWithForceNaturalSpawning = new LongOpenHashSet();
++
++    public net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<net.minecraft.core.BlockPos> getBlockForcedChunks() {
++        return this.blockForcedChunks;
++    }
++
++    public net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.TicketTracker<java.util.UUID> getEntityForcedChunks() {
++        return this.entityForcedChunks;
++    }
++
++    private void updateForcedNaturalSpawning() {
++        this.chunksWithForceNaturalSpawning = this.getAllChunksWithTicketThat(ticket -> ticket.getType().forceNaturalSpawning());
++    }
++
++    public boolean shouldForceNaturalSpawning(ChunkPos chunkPos) {
++        return chunksWithForceNaturalSpawning.contains(chunkPos.toLong());
+     }
+ }
