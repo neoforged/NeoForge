@@ -197,6 +197,20 @@ public class Tags {
          * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final TagKey<Block> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Block> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Block> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
@@ -608,6 +622,20 @@ public class Tags {
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTION_BOTTLE = tag("potions/bottle");
+        public static final TagKey<Item> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Item> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");

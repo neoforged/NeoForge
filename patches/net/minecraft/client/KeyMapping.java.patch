@@ -31,7 +31,7 @@
 -        if (keymapping != null) {
 -            keymapping.setDown(p_90839_);
 -        }
-+        for (KeyMapping keymapping : MAP.getAll(p_90838_))
++        for (KeyMapping keymapping : MAP.getAll(p_90838_, !p_90839_))
 +            if (keymapping != null) {
 +                keymapping.setDown(p_90839_);
 +            }

@@ -1,11 +1,12 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -511,6 +_,11 @@
+@@ -511,6 +_,12 @@
      }
  
      private boolean tryItemClickBehaviourOverride(Player p_249615_, ClickAction p_250300_, Slot p_249384_, ItemStack p_251073_, ItemStack p_252026_) {
 +        // Neo: Fire the ItemStackedOnOtherEvent, and return true if it was cancelled (meaning the event was handled). Returning true will trigger the container to stop processing further logic.
-+        if (net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(p_251073_, p_252026_, p_249384_, p_250300_, p_249615_, createCarriedSlotAccess())) {
++        // The first parameter to onItemStackedOn is the "carried" (under-mouse) item, which is the second ItemStack parameter to this method.
++        if (net.neoforged.neoforge.common.CommonHooks.onItemStackedOn(p_252026_, p_251073_, p_249384_, p_250300_, p_249615_, createCarriedSlotAccess())) {
 +            return true;
 +        }
 +

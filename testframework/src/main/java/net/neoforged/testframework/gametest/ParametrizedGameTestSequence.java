@@ -24,11 +24,25 @@ public class ParametrizedGameTestSequence<T> {
         this.info = info;
         this.sequence = sequence;
 
+        final AtomicReference<Throwable> capturedException = new AtomicReference<>();
         final AtomicReference<T> val = new AtomicReference<>();
-        sequence.thenExecute(() -> val.set(value.get()));
+        sequence.thenExecute(() -> {
+            try {
+                val.set(value.get());
+            } catch (Throwable ex) {
+                // Capture the exception to rethrow later, to avoid overwriting it with our own
+                capturedException.set(ex);
+                throw ex;
+            }
+        });
         this.value = () -> {
             final var v = val.get();
             if (v == null) {
+                // Rethrow the captured exception if any before throwing our own exception
+                final var ex = capturedException.get();
+                if (ex != null) {
+                    sneakyThrow(ex);
+                }
                 throw new GameTestAssertException("Expected value to be non-null!");
             }
             return v;
@@ -136,5 +150,11 @@ public class ParametrizedGameTestSequence<T> {
 
     public GameTestSequence.Condition thenTrigger() {
         return sequence.thenTrigger();
+    }
+
+    // Never returns normally.
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> void sneakyThrow(Throwable exception) throws E {
+        throw (E) exception;
     }
 }
