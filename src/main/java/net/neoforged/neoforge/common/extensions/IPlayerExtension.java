@@ -68,7 +68,7 @@ public interface IPlayerExtension {
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
     default OptionalInt openMenu(MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
-        return openMenu(menuProvider, (menu, buffer) -> extraDataWriter.accept(buffer));
+        return openMenu(menuProvider, extraDataWriter != null ? (menu, buffer) -> extraDataWriter.accept(buffer) : null);
     }
 
     /**

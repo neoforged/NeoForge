@@ -130,7 +130,7 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
-+        return openMenu(p_9033_, (java.util.function.Consumer<net.minecraft.network.RegistryFriendlyByteBuf>) null);
++        return openMenu(p_9033_, (java.util.function.BiConsumer<AbstractContainerMenu, net.minecraft.network.RegistryFriendlyByteBuf>) null);
 +    }
 +
 +    @Override
