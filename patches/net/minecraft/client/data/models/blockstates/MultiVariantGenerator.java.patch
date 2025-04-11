@@ -19,22 +19,21 @@
      @Override
      public BlockModelDefinition create() {
          Map<String, BlockStateModel.Unbaked> map = new HashMap<>();
-@@ -107,6 +_,18 @@
-         }
+@@ -108,6 +_,17 @@
  
          public Stream<MultiVariantGenerator.Entry> apply(VariantMutator p_404774_) {
-+            return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(p_404774_)));
+             return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(p_404774_)));
 +        }
 +
-+        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> p_404760_) {
-+            return p_404760_.getEntries().entrySet().stream().map(p_409007_ -> {
-+                PropertyValueList propertyvaluelist = this.properties.extend(p_409007_.getKey());
-+                MultiVariant multivariant = this.variant.with(p_409007_.getValue());
-+                return new MultiVariantGenerator.Entry(propertyvaluelist, multivariant);
++        // Neo: Support for unbaked mutators
++        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> dispatch) {
++            return dispatch.getEntries().entrySet().stream().map(entry -> {
++                return new MultiVariantGenerator.Entry(properties.extend(entry.getKey()), variant.with(entry.getValue()));
 +            });
 +        }
 +
-+        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator p_404774_) {
-             return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(p_404774_)));
++        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator mutator) {
++            return Stream.of(new MultiVariantGenerator.Entry(properties, variant.with(mutator)));
          }
      }
+ }
