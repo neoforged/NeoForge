@@ -12,8 +12,8 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 /**
  * A key referring to a model file to be loaded and baked as a standalone model (not bound to a block or item).
  * <p>
- * This key is registered together with a {@link StandaloneModelBaker} in {@link ModelEvent.RegisterStandalone}
- * and later used to retrieve the model baked by the {@link StandaloneModelBaker},
+ * This key is registered together with a {@link StandaloneModelBaker} or {@link UnbakedStandaloneModel} in
+ * {@link ModelEvent.RegisterStandalone} and later used to retrieve the model baked by the {@link StandaloneModelBaker},
  * using {@link ModelManager#getStandaloneModel(StandaloneModelKey)}.
  * <p>
  * The key is compared by identity as multiple keys may refer to the same model file while using different bakers.
