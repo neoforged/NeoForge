@@ -197,6 +197,21 @@ public class BlockEventTests {
                 .thenSucceed());
     }
 
+    @GameTest
+    @EmptyTemplate(floor = true)
+    @TestHolder(description = "Tests if the shape update event is fired")
+    public static void shapeUpdateEvent(final DynamicTest test) {
+        test.eventListeners().forge().addListener((final BlockEvent.ShapeUpdateEvent event) -> {
+            if (event.getState().is(Blocks.ACACIA_FENCE)) test.pass();
+        });
+
+        test.onGameTest(helper -> helper.startSequence()
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 0), Blocks.ACACIA_FENCE))
+                .thenIdle(1)
+                .thenExecute(() -> helper.setBlock(new BlockPos(1, 1, 1), Blocks.OAK_FENCE))
+                .thenSucceed());
+    }
+
     @GameTest(timeoutTicks = 150)
     @TestHolder(description = "Tests if the farmland trample event is fired")
     public static void farmlandTrampleEvent(final DynamicTest test) {

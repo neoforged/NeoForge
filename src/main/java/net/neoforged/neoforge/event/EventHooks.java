@@ -163,6 +163,7 @@ import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityMultiPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent;
+import net.neoforged.neoforge.event.level.BlockEvent.ShapeUpdateEvent;
 import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkTicketLevelUpdatedEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
@@ -199,6 +200,10 @@ public class EventHooks {
         NeighborNotifyEvent event = new NeighborNotifyEvent(level, pos, state, notifiedSides, forceRedstoneUpdate);
         NeoForge.EVENT_BUS.post(event);
         return event;
+    }
+
+    public static void onShapeUpdate(Level level, BlockPos pos, BlockState oldState, BlockState newState) {
+        NeoForge.EVENT_BUS.post(new ShapeUpdateEvent(level, pos, oldState, newState));
     }
 
     public static boolean doPlayerHarvestCheck(Player player, BlockState state, BlockGetter level, BlockPos pos) {

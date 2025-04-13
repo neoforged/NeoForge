@@ -186,11 +186,34 @@ public abstract class BlockEvent extends Event {
 
         /**
          * Get if redstone update was forced during setBlock call (0x16 to flags)
-         * 
+         *
          * @return if the flag was set
          */
         public boolean getForceRedstoneUpdate() {
             return forceRedstoneUpdate;
+        }
+    }
+
+    /**
+     * Fired when a shape update occurs on a block. This event acts as
+     * a way for mods to detect shape updates, which are detected by observers but not
+     * BUDs, e.g. trapdoor toggling or fence shape changes. This event is only called on the server.
+     */
+    public static class ShapeUpdateEvent extends BlockEvent {
+        private final BlockState oldState;
+
+        public ShapeUpdateEvent(Level level, BlockPos pos, BlockState oldState, BlockState newState) {
+            super(level, pos, newState);
+            this.oldState = oldState;
+        }
+
+        /**
+         * Get the blockstate before the shape update.
+         *
+         * @return the blockstate before the shape update
+         */
+        public BlockState getOldState() {
+            return oldState;
         }
     }
 

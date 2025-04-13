@@ -58,7 +58,14 @@
                  if (blockstate1 == p_46606_) {
                      if (blockstate != blockstate1) {
                          this.setBlocksDirty(p_46605_, blockstate, blockstate1);
-@@ -251,9 +_,8 @@
+@@ -245,15 +_,15 @@
+ 
+                     if ((p_46607_ & 16) == 0 && p_46608_ > 0) {
+                         int i = p_46607_ & -34;
++                        net.neoforged.neoforge.event.EventHooks.onShapeUpdate(this, p_46605_, blockstate, p_46606_);
+                         blockstate.updateIndirectNeighbourShapes(this, p_46605_, i, p_46608_ - 1);
+                         p_46606_.updateNeighbourShapes(this, p_46605_, i, p_46608_ - 1);
+                         p_46606_.updateIndirectNeighbourShapes(this, p_46605_, i, p_46608_ - 1);
                      }
  
                      this.updatePOIOnBlockStateChange(p_46605_, blockstate, blockstate1);
