@@ -137,16 +137,32 @@
              }
  
              this.nextContainerCounter();
-@@ -1090,10 +_,16 @@
+@@ -1090,10 +_,32 @@
  
                  return OptionalInt.empty();
              } else {
-+                if (extraDataWriter == null) {
++                // Neo: Support sending additional arbitrary data to menu factories on the client-side
++                var extraData = net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(
++                        buffer -> {
++                            p_9033_.writeClientSideData(abstractcontainermenu, buffer);
++                            if (extraDataWriter != null) {
++                                extraDataWriter.accept(buffer);
++                            }
++                        },
++                        registryAccess()
++                );
++                if (extraData.length != 0) {
++                    this.connection.send(
++                        new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(
++                            abstractcontainermenu.containerId,
++                            abstractcontainermenu.getType(),
++                            p_9033_.getDisplayName(),
++                            extraData
++                        )
++                    );
++                } else {
                  this.connection
                      .send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName()));
-+                } else {
-+                    this.connection
-+                        .send(new net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload(abstractcontainermenu.containerId, abstractcontainermenu.getType(), p_9033_.getDisplayName(), net.neoforged.neoforge.common.util.FriendlyByteBufUtil.writeCustomData(extraDataWriter, registryAccess())));
 +                }
                  this.initMenu(abstractcontainermenu);
                  this.containerMenu = abstractcontainermenu;
