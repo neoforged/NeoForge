@@ -482,7 +482,6 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_MAGICAL, "Magical");
         add(Tags.Biomes.IS_RARE, "Rare");
         add(Tags.Biomes.IS_PLATEAU, "Plateau");
-        add(Tags.Biomes.IS_MODIFIED, "Modified");
         add(Tags.Biomes.IS_OLD_GROWTH, "Old Growth");
 
         add(Tags.Biomes.IS_AQUATIC, "Aquatic");

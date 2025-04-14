@@ -71,10 +71,11 @@
      public void tesselateWithAO(
          BlockAndTintGetter p_234391_,
          List<BlockModelPart> p_410478_,
-@@ -86,11 +_,37 @@
+@@ -86,11 +_,38 @@
          boolean p_234397_,
          int p_234400_
      ) {
+-        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
 +        this.tesselateWithAO(p_234391_, p_410478_, p_234393_, p_234394_, p_234395_, type -> p_234396_, p_234397_, p_234400_);
 +    }
 +
@@ -88,7 +89,8 @@
 +        boolean p_234397_,
 +        int p_234400_
 +    ) {
-         ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
++        // Neo: Inject enhanced AO pipeline
++        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.newInstance();
 +        boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
 +        int lightEmission = -1;
          int i = 0;
@@ -185,14 +187,55 @@
                              i |= k;
                              if (flag1) {
                                  j |= k;
-@@ -192,6 +_,7 @@
+@@ -191,7 +_,12 @@
+         int p_111022_
      ) {
          for (BakedQuad bakedquad : p_111018_) {
++            if (!bakedquad.hasAmbientOcclusion()) {
++                renderModelQuadFlat(p_111013_, p_111014_, p_111015_, -1, p_111022_, true, p_111016_, p_111017_, bakedquad, p_412172_);
++                continue;
++            }
              calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.vertices(), bakedquad.direction(), p_412172_);
-+            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_412172_.cache, p_412172_.faceCubic, p_412172_.brightness, p_412172_.lightmap))
++            p_412172_.captureQuad(bakedquad);
              p_412172_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.direction(), bakedquad.shade());
              this.putQuadData(p_111013_, p_111014_, p_111015_, p_111017_, p_111016_.last(), bakedquad, p_412172_, p_111022_);
          }
+@@ -307,17 +_,30 @@
+         ModelBlockRenderer.CommonRenderStorage p_412163_
+     ) {
+         for (BakedQuad bakedquad : p_111010_) {
++            renderModelQuadFlat(p_111002_, p_111003_, p_111004_, p_111005_, p_111006_, p_111007_, p_111008_, p_111009_, bakedquad, p_412163_);
++        }
++    }
++
++    private void renderModelQuadFlat(
++        BlockAndTintGetter p_111002_,
++        BlockState p_111003_,
++        BlockPos p_111004_,
++        int p_111005_,
++        int p_111006_,
++        boolean p_111007_,
++        PoseStack p_111008_,
++        VertexConsumer p_111009_,
++        BakedQuad bakedquad,
++        ModelBlockRenderer.CommonRenderStorage p_412163_
++    ) {
++        {
+             if (p_111007_) {
+                 calculateShape(p_111002_, p_111003_, p_111004_, bakedquad.vertices(), bakedquad.direction(), p_412163_);
+                 BlockPos blockpos = (BlockPos)(p_412163_.faceCubic ? p_412163_.scratchPos.setWithOffset(p_111004_, bakedquad.direction()) : p_111004_);
+                 p_111005_ = p_412163_.cache.getLightColor(p_111003_, p_111002_, blockpos);
+             }
+ 
+-            float f = p_111002_.getShade(bakedquad.direction(), bakedquad.shade());
+-            p_412163_.brightness[0] = f;
+-            p_412163_.brightness[1] = f;
+-            p_412163_.brightness[2] = f;
+-            p_412163_.brightness[3] = f;
++            net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.applyFlatQuadBrightness(p_111002_, bakedquad, p_412163_);
+             p_412163_.lightmap[0] = p_111005_;
+             p_412163_.lightmap[1] = p_111005_;
+             p_412163_.lightmap[2] = p_111005_;
 @@ -326,6 +_,7 @@
          }
      }
@@ -227,6 +270,16 @@
              for (Direction direction : DIRECTIONS) {
                  renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, blockmodelpart.getQuads(direction), p_111075_, p_111076_);
              }
+@@ -698,6 +_,9 @@
+         public AmbientOcclusionRenderStorage() {
+         }
+ 
++        // Neo: Call this before calling calculate if the render storage is an EnhancedAoRenderStorage!
++        public void captureQuad(BakedQuad quad) {}
++
+         public void calculate(BlockAndTintGetter p_412286_, BlockState p_412102_, BlockPos p_412730_, Direction p_412336_, boolean p_412430_) {
+             BlockPos blockpos = this.faceCubic ? p_412730_.relative(p_412336_) : p_412730_;
+             ModelBlockRenderer.AdjacencyInfo modelblockrenderer$adjacencyinfo = ModelBlockRenderer.AdjacencyInfo.fromFacing(p_412336_);
 @@ -719,19 +_,19 @@
              int l = this.cache.getLightColor(blockstate3, p_412286_, blockpos$mutableblockpos);
              float f3 = this.cache.getShadeBrightness(blockstate3, p_412286_, blockpos$mutableblockpos);

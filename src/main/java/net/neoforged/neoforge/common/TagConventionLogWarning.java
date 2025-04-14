@@ -465,7 +465,6 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.BIOME, "is_magical", Tags.Biomes.IS_MAGICAL),
             createForgeMapEntry(Registries.BIOME, "is_rare", Tags.Biomes.IS_RARE),
             createForgeMapEntry(Registries.BIOME, "is_plateau", Tags.Biomes.IS_PLATEAU),
-            createForgeMapEntry(Registries.BIOME, "is_modified", Tags.Biomes.IS_MODIFIED),
             createForgeMapEntry(Registries.BIOME, "is_water", Tags.Biomes.IS_AQUATIC),
             createForgeMapEntry(Registries.BIOME, "is_desert", Tags.Biomes.IS_DESERT),
             createForgeMapEntry(Registries.BIOME, "is_plains", Tags.Biomes.IS_PLAINS),

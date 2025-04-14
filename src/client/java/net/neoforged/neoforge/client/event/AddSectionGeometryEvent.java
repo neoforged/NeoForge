@@ -19,8 +19,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.client.model.lighting.LightPipelineAwareModelBlockRenderer;
-import net.neoforged.neoforge.client.model.lighting.QuadLighter;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
@@ -138,16 +136,6 @@ public class AddSectionGeometryEvent extends Event {
                     type.getChunkLayerId() != -1,
                     "Cannot create a chunk render buffer for a non-chunk render type");
             return getOrCreateLayer.apply(type);
-        }
-
-        /**
-         * @param smooth whether a lighter for "smooth"/"ambient occlusion" lighting should be returned rather than a
-         *               "flat" one
-         * @return a quad lighter usable on the current thread
-         */
-        public QuadLighter getQuadLighter(boolean smooth) {
-            final var renderer = (LightPipelineAwareModelBlockRenderer) Minecraft.getInstance().getBlockRenderer().getModelRenderer();
-            return renderer.getQuadLighter(smooth);
         }
 
         public PoseStack getPoseStack() {

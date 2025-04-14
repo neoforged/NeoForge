@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
 
 /**
- * Builder for creating {@link CompositeBlockModel.Unbaked}s in datagen
+ * This builder creates a {@link CompositeBlockModel.Unbaked}.
  */
 public class CompositeBlockStateModelBuilder extends CustomBlockStateModelBuilder {
     private final List<BlockStateModel.Unbaked> models = new ArrayList<>();
@@ -28,6 +28,15 @@ public class CompositeBlockStateModelBuilder extends CustomBlockStateModelBuilde
     @Override
     public CompositeBlockStateModelBuilder with(VariantMutator variantMutator) {
         return this;
+    }
+
+    @Override
+    public CustomBlockStateModelBuilder with(UnbakedMutator variantMutator) {
+        var result = new CompositeBlockStateModelBuilder();
+        for (var model : models) {
+            result.models.add(variantMutator.apply(model));
+        }
+        return result;
     }
 
     @Override

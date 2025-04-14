@@ -20,7 +20,7 @@
      public IntrinsicHolderTagsProvider(
          PackOutput p_275304_,
          ResourceKey<? extends Registry<T>> p_275709_,
-@@ -30,20 +_,29 @@
+@@ -30,7 +_,16 @@
          CompletableFuture<TagsProvider.TagLookup<T>> p_275311_,
          Function<T, ResourceKey<T>> p_275566_
      ) {
@@ -37,22 +37,6 @@
 +        super(p_275304_, p_275709_, p_275227_, p_275311_, modId);
          this.keyExtractor = p_275566_;
      }
- 
-     protected IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> tag(TagKey<T> p_255730_) {
-         TagBuilder tagbuilder = this.getOrCreateRawBuilder(p_255730_);
--        return new IntrinsicHolderTagsProvider.IntrinsicTagAppender<>(tagbuilder, this.keyExtractor);
-+        return new IntrinsicHolderTagsProvider.IntrinsicTagAppender<>(tagbuilder, this.keyExtractor, this.modId);
-     }
- 
-     public static class IntrinsicTagAppender<T> extends TagsProvider.TagAppender<T> implements net.neoforged.neoforge.common.extensions.IIntrinsicHolderTagAppenderExtension<T> {
-         private final Function<T, ResourceKey<T>> keyExtractor;
- 
--        IntrinsicTagAppender(TagBuilder p_256108_, Function<T, ResourceKey<T>> p_256433_) {
--            super(p_256108_);
-+        IntrinsicTagAppender(TagBuilder p_256108_, Function<T, ResourceKey<T>> p_256433_, String modId) {
-+            super(p_256108_, modId);
-             this.keyExtractor = p_256433_;
-         }
  
 @@ -61,6 +_,11 @@
          public final IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> add(T... p_255868_) {

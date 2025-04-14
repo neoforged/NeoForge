@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/MultiVariant.java
 +++ b/net/minecraft/client/data/models/MultiVariant.java
-@@ -12,20 +_,54 @@
+@@ -12,20 +_,67 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -46,6 +46,19 @@
          return new MultiVariant(this.variants.map(p_409928_));
      }
  
++    /**
++     * Applies the given unbaked mutator.
++     * <p>
++     * If this multi variant consists of plain Vanilla {@linkplain Variant variants}, each variant will be
++     * temporarily converted to a {@link SingleVariant.Unbaked}, mutated and then converted back to a plain variant.
++     */
++    public MultiVariant with(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator mutator) {
++        if (!this.customBlockStateModels.isEmpty()) {
++            return new MultiVariant(this.variants, this.customBlockStateModels.map(model -> model.with(mutator)));
++        }
++        return new MultiVariant(this.variants.map(v -> mutator.apply(new SingleVariant.Unbaked(v)).variant()));
++    }
++
      public BlockStateModel.Unbaked toUnbaked() {
 +        if (!this.customBlockStateModels.isEmpty()) {
 +            var builders = this.customBlockStateModels.unwrap();

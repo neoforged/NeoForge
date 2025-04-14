@@ -21,8 +21,8 @@ public final class NeoForgeClientConfig {
     public static final ModConfigSpec SPEC;
     public static final NeoForgeClientConfig INSTANCE;
 
-    public final ModConfigSpec.BooleanValue experimentalForgeLightPipelineEnabled;
-    boolean experimentalPipelineActive;
+    public final ModConfigSpec.BooleanValue enhancedLighting;
+    boolean enhancedLightingActive;
 
     public final ModConfigSpec.BooleanValue showLoadWarnings;
 
@@ -34,10 +34,10 @@ public final class NeoForgeClientConfig {
     boolean perPartAoActive;
 
     private NeoForgeClientConfig(ModConfigSpec.Builder builder) {
-        experimentalForgeLightPipelineEnabled = builder
-                .comment("EXPERIMENTAL: Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.")
+        enhancedLighting = builder
+                .comment("Enable the enhanced block model lighting pipeline - fixes the lighting of custom models, as well as many vanilla bugs.")
                 .translation("neoforge.configgui.forgeLightPipelineEnabled")
-                .define("experimentalForgeLightPipelineEnabled", false);
+                .define("enhancedLighting", true);
 
         showLoadWarnings = builder
                 .comment("When enabled, NeoForge will show any warnings that occurred during loading.")
@@ -63,7 +63,7 @@ public final class NeoForgeClientConfig {
     @SubscribeEvent
     static void onLoad(final ModConfigEvent.Loading configEvent) {
         if (configEvent.getConfig().getSpec() == SPEC) {
-            INSTANCE.experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            INSTANCE.enhancedLightingActive = INSTANCE.enhancedLighting.getAsBoolean();
             INSTANCE.perPartAoActive = INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
         }
     }
@@ -71,10 +71,10 @@ public final class NeoForgeClientConfig {
     @SubscribeEvent
     static void onFileChange(final ModConfigEvent.Reloading configEvent) {
         if (configEvent.getConfig().getSpec() == SPEC) {
-            boolean experimentalPipelineActive = INSTANCE.experimentalForgeLightPipelineEnabled.getAsBoolean();
+            boolean enhancedLightingActive = INSTANCE.enhancedLighting.getAsBoolean();
             boolean perPartAoActive = INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
-            if (experimentalPipelineActive != INSTANCE.experimentalPipelineActive || perPartAoActive != INSTANCE.perPartAoActive) {
-                INSTANCE.experimentalPipelineActive = experimentalPipelineActive;
+            if (enhancedLightingActive != INSTANCE.enhancedLightingActive || perPartAoActive != INSTANCE.perPartAoActive) {
+                INSTANCE.enhancedLightingActive = enhancedLightingActive;
                 INSTANCE.perPartAoActive = perPartAoActive;
                 Minecraft.getInstance().submit(ClientHooks::reloadRenderer);
             }

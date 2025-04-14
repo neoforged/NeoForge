@@ -228,35 +228,6 @@ public abstract class ScreenEvent extends Event {
     }
 
     /**
-     * Fired directly after the background of the screen is drawn. (Only when the screen calls {@link Screen#renderBackground})
-     * Can be used for drawing above the background but below the tooltips.
-     *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
-     *
-     * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
-     * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
-     * 
-     * @deprecated Planned on being removed in 1.21.1 due to extreme maintenance burden to make this event fire consistently for most screens.
-     */
-    @Deprecated(forRemoval = true, since = "21.0")
-    public static class BackgroundRendered extends ScreenEvent {
-        private final GuiGraphics guiGraphics;
-
-        @ApiStatus.Internal
-        public BackgroundRendered(Screen screen, GuiGraphics guiGraphics) {
-            super(screen);
-            this.guiGraphics = guiGraphics;
-        }
-
-        /**
-         * {@return the gui graphics used for rendering}
-         */
-        public GuiGraphics getGuiGraphics() {
-            return guiGraphics;
-        }
-    }
-
-    /**
      * Fired ahead of rendering any active mob effects in the {@link EffectsInInventory} held by a {@link AbstractContainerScreen}.
      * Can be used to select the size of the effects display (full or compact) or even hide or replace vanilla's rendering entirely.
      * This event can also be used to modify the horizontal position of the stack of effects being rendered.
@@ -426,7 +397,7 @@ public abstract class ScreenEvent extends Event {
 
             /**
              * Changes the result of this event.
-             * 
+             *
              * @see {@link Result} for the possible states.
              */
             public void setResult(Result result) {
@@ -458,7 +429,7 @@ public abstract class ScreenEvent extends Event {
 
                 /**
                  * The result of {@link Screen#mouseClicked(double, double, int)} will be used to determine if the click was handled.
-                 * 
+                 *
                  * @see {@link Post#wasClickHandled()}
                  */
                 DEFAULT,
@@ -539,7 +510,7 @@ public abstract class ScreenEvent extends Event {
 
             /**
              * Changes the result of this event.
-             * 
+             *
              * @see {@link Result} for the possible states.
              */
             public void setResult(Result result) {
@@ -571,7 +542,7 @@ public abstract class ScreenEvent extends Event {
 
                 /**
                  * The result of {@link Screen#mouseReleased(double, double, int)} will be used to determine if the click was handled.
-                 * 
+                 *
                  * @see {@link Post#wasReleaseHandled()}
                  */
                 DEFAULT,

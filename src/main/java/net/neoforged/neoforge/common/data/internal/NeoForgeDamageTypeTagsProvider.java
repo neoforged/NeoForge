@@ -34,7 +34,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
     @Override
     protected TagAppender<DamageType> tag(TagKey<DamageType> tag) {
         if (inVanilla) {
-            return new TagAppender<>(this.vanillaBuilders.computeIfAbsent(tag.location(), location -> TagBuilder.create()), "minecraft") {};
+            return new TagAppender<>(this.vanillaBuilders.computeIfAbsent(tag.location(), location -> TagBuilder.create())) {};
         }
         return super.tag(tag);
     }
@@ -131,7 +131,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
                 builders.forEach(builder -> builder.add(entry));
                 return super.add(entry);
             }
-        }, modId) {};
+        }) {};
     }
 
     @SafeVarargs

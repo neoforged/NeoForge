@@ -1,0 +1,52 @@
+--- a/net/minecraft/client/data/models/blockstates/PropertyDispatch.java
++++ b/net/minecraft/client/data/models/blockstates/PropertyDispatch.java
+@@ -103,6 +_,49 @@
+         return new PropertyDispatch.C5<>(p_404784_, p_405605_, p_405623_, p_404668_, p_404790_);
+     }
+ 
++    /**
++     * Creates a property dispatch on a single blockstate property that can be used to apply a {@link net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator}.
++     */
++    public static <T1 extends Comparable<T1>> PropertyDispatch.C1<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1> modifyUnbaked(Property<T1> p1) {
++        return new PropertyDispatch.C1<>(p1);
++    }
++
++    /**
++     * Creates a property dispatch on two blockstate properties that can be used to apply a {@link net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator}.
++     */
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>> PropertyDispatch.C2<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2> modifyUnbaked(
++        Property<T1> p1, Property<T2> p2
++    ) {
++        return new PropertyDispatch.C2<>(p1, p2);
++    }
++
++    /**
++     * Creates a property dispatch on three blockstate properties that can be used to apply a {@link net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator}.
++     */
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> PropertyDispatch.C3<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2, T3> modifyUnbaked(
++        Property<T1> p1, Property<T2> p2, Property<T3> p3
++    ) {
++        return new PropertyDispatch.C3<>(p1, p2, p3);
++    }
++
++    /**
++     * Creates a property dispatch on four blockstate properties that can be used to apply a {@link net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator}.
++     */
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>> PropertyDispatch.C4<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2, T3, T4> modifyUnbaked(
++        Property<T1> p1, Property<T2> p2, Property<T3> p3, Property<T4> p4
++    ) {
++        return new PropertyDispatch.C4<>(p1, p2, p3, p4);
++    }
++
++    /**
++     * Creates a property dispatch on five blockstate properties that can be used to apply a {@link net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator}.
++     */
++    public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>> PropertyDispatch.C5<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator, T1, T2, T3, T4, T5> modifyUnbaked(
++        Property<T1> p1, Property<T2> p2, Property<T3> p3, Property<T4> p4, Property<T5> p5
++    ) {
++        return new PropertyDispatch.C5<>(p1, p2, p3, p4, p5);
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     public static class C1<V, T1 extends Comparable<T1>> extends PropertyDispatch<V> {
+         private final Property<T1> property1;

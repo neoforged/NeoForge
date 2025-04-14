@@ -76,8 +76,6 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
@@ -123,7 +121,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -189,6 +186,7 @@ import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
+import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.block.BlockStateModelHooks;
 import net.neoforged.neoforge.client.pipeline.PipelineModifiers;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -488,49 +486,57 @@ public class ClientHooks {
     }
 
     /**
-     * internal, relies on fixed format of FaceBakery
+     * Computes the packed normal of a quad based on the stored vertex positions.
      */
-    // TODO Do we need this?
-    public static void fillNormal(int[] faceData, Direction facing) {
-        Vector3f v1 = getVertexPos(faceData, 3);
-        Vector3f t1 = getVertexPos(faceData, 1);
-        Vector3f v2 = getVertexPos(faceData, 2);
-        Vector3f t2 = getVertexPos(faceData, 0);
-        v1.sub(t1);
-        v2.sub(t2);
-        v2.cross(v1);
-        v2.normalize();
+    public static int computeQuadNormal(int[] vertices) {
+        float x0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION]);
+        float y0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION + 1]);
+        float z0 = Float.intBitsToFloat(vertices[IQuadTransformer.POSITION + 2]);
+        float x1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
+        float y1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
+        float z1 = Float.intBitsToFloat(vertices[IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
+        float x2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
+        float y2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
+        float z2 = Float.intBitsToFloat(vertices[2 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
+        float x3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION]);
+        float y3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 1]);
+        float z3 = Float.intBitsToFloat(vertices[3 * IQuadTransformer.STRIDE + IQuadTransformer.POSITION + 2]);
 
-        int x = ((byte) Math.round(v2.x() * 127)) & 0xFF;
-        int y = ((byte) Math.round(v2.y() * 127)) & 0xFF;
-        int z = ((byte) Math.round(v2.z() * 127)) & 0xFF;
+        float dx0 = x3 - x1;
+        float dy0 = y3 - y1;
+        float dz0 = z3 - z1;
+        float dx1 = x2 - x0;
+        float dy1 = y2 - y0;
+        float dz1 = z2 - z0;
 
-        int normal = x | (y << 0x08) | (z << 0x10);
+        float nx = dy1 * dz0 - dz1 * dy0;
+        float ny = dz1 * dx0 - dx1 * dz0;
+        float nz = dx1 * dy0 - dy1 * dx0;
+
+        float length = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+        if (length > 0) {
+            nx /= length;
+            ny /= length;
+            nz /= length;
+        }
+
+        int packedx = ((byte) Math.round(nx * 127)) & 0xFF;
+        int packedy = ((byte) Math.round(ny * 127)) & 0xFF;
+        int packedz = ((byte) Math.round(nz * 127)) & 0xFF;
+
+        return packedx | (packedy << 8) | (packedz << 16);
+    }
+
+    /**
+     * Modifies the passed {@code faceData} to fill in the vertex normals.
+     * The normals are computed from the vertex positions, see {@link #computeQuadNormal}.
+     */
+    public static void fillNormal(int[] faceData) {
+        int normal = computeQuadNormal(faceData);
 
         for (int i = 0; i < 4; i++) {
             faceData[i * 8 + 7] = normal;
         }
-    }
-
-    private static Vector3f getVertexPos(int[] data, int vertex) {
-        int idx = vertex * 8;
-
-        float x = Float.intBitsToFloat(data[idx]);
-        float y = Float.intBitsToFloat(data[idx + 1]);
-        float z = Float.intBitsToFloat(data[idx + 2]);
-
-        return new Vector3f(x, y, z);
-    }
-
-    public static boolean calculateFaceWithoutAO(BlockAndTintGetter getter, BlockState state, BlockPos pos, BakedQuad quad, ModelBlockRenderer.Cache cache, boolean isFaceCubic, float[] brightness, int[] lightmap) {
-        if (quad.hasAmbientOcclusion())
-            return false;
-
-        BlockPos lightmapPos = isFaceCubic ? pos.relative(quad.direction()) : pos;
-
-        brightness[0] = brightness[1] = brightness[2] = brightness[3] = getter.getShade(quad.direction(), quad.shade());
-        lightmap[0] = lightmap[1] = lightmap[2] = lightmap[3] = cache.getLightColor(state, getter, lightmapPos);
-        return true;
     }
 
     public static void loadEntityShader(@Nullable Entity entity, GameRenderer gameRenderer) {

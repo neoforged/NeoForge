@@ -258,7 +258,6 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tagWithOptionalLegacy(Tags.Biomes.IS_MAGICAL);
         tagWithOptionalLegacy(Tags.Biomes.IS_RARE);
         tagWithOptionalLegacy(Tags.Biomes.IS_PLATEAU);
-        tagWithOptionalLegacy(Tags.Biomes.IS_MODIFIED);
         tagWithOptionalLegacy(Tags.Biomes.IS_FLORAL);
         tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_water"));
         tagWithOptionalLegacy(Tags.Biomes.IS_DESERT);
