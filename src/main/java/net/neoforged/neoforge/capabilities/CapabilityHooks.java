@@ -114,6 +114,7 @@ public class CapabilityHooks {
                 EntityType.OAK_CHEST_BOAT,
                 EntityType.SPRUCE_CHEST_BOAT,
                 EntityType.BAMBOO_CHEST_RAFT,
+                EntityType.PALE_OAK_CHEST_BOAT,
                 EntityType.CHEST_MINECART,
                 EntityType.HOPPER_MINECART);
         for (var entityType : containerEntities) {
