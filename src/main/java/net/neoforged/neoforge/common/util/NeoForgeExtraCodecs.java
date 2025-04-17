@@ -16,7 +16,9 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -25,7 +27,7 @@ import net.minecraft.util.ExtraCodecs;
 
 /**
  * {@link Codec}-related helper functions that are not in {@link ExtraCodecs}, but useful to NeoForge and other mods.
- * 
+ *
  * @see ExtraCodecs
  */
 public class NeoForgeExtraCodecs {
@@ -67,14 +69,14 @@ public class NeoForgeExtraCodecs {
         return Codec.mapEither(codec.fieldOf(singularName), setOf(codec).fieldOf(pluralName)).xmap(
                 either -> either.map(ImmutableSet::of, ImmutableSet::copyOf),
                 set -> set.size() == 1 ? Either.left(set.iterator().next()) : Either.right(set)).flatXmap(ts -> {
-                    if (ts.isEmpty())
-                        return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
-                    return DataResult.success(ts);
-                }, ts -> {
-                    if (ts.isEmpty())
-                        return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
-                    return DataResult.success(ImmutableSet.copyOf(ts));
-                });
+            if (ts.isEmpty())
+                return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
+            return DataResult.success(ts);
+        }, ts -> {
+            if (ts.isEmpty())
+                return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
+            return DataResult.success(ImmutableSet.copyOf(ts));
+        });
     }
 
     public static <T> Codec<Set<T>> setOf(final Codec<T> codec) {
@@ -82,8 +84,7 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Creates a codec from a decoder.
-     * The returned codec can only decode, and will throw on any attempt to encode.
+     * Creates a codec from a decoder. The returned codec can only decode, and will throw on any attempt to encode.
      */
     public static <A> Codec<A> decodeOnly(Decoder<A> decoder) {
         return Codec.of(Codec.unit(() -> {
@@ -92,8 +93,7 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Creates a codec for a list from a codec of optional elements.
-     * The empty optionals are removed from the list when decoding.
+     * Creates a codec for a list from a codec of optional elements. The empty optionals are removed from the list when decoding.
      */
     public static <A> Codec<List<A>> listWithOptionalElements(Codec<Optional<A>> elementCodec) {
         return listWithoutEmpty(elementCodec.listOf());
@@ -111,11 +111,10 @@ public class NeoForgeExtraCodecs {
     /**
      * Codec with two alternatives.
      * <p>
-     * The vanilla {@link ExtraCodecs#withAlternative(Codec, Codec)} will try
-     * the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
+     * The vanilla {@link ExtraCodecs#withAlternative(Codec, Codec)} will try the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
      * <p>
      * Unlike vanilla, this alternative codec also tries to encode with the second codec if the first encode fails.
-     * 
+     *
      * @see #withAlternative(MapCodec, MapCodec) for keeping {@link com.mojang.serialization.MapCodec MapCodecs} as MapCodecs.
      */
     public static <T> Codec<T> withAlternative(final Codec<T> codec, final Codec<T> alternative) {
@@ -264,8 +263,7 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Codec that matches exactly one out of two map codecs.
-     * Same as {@link Codec#xor} but for {@link MapCodec}s.
+     * Codec that matches exactly one out of two map codecs. Same as {@link Codec#xor} but for {@link MapCodec}s.
      */
     public static <F, S> MapCodec<Either<F, S>> xor(MapCodec<F> first, MapCodec<S> second) {
         return new XorMapCodec<>(first, second);
@@ -314,5 +312,48 @@ public class NeoForgeExtraCodecs {
         public String toString() {
             return "XorMapCodec[" + first + ", " + second + "]";
         }
+    }
+
+    /**
+     * Creates a codec for an {@linkplain Codec#unboundedMap(Codec, Codec) unbounded map} whose underlying representation is a list of maps, with the given names for each key-element entry. Each key-element entry is encoded as a map with the given key and element names respectively.
+     * <p>
+     * This is useful for maps where the key does not encode to a string, which causes errors when trying to serialize to a format that requires maps to have string keys (such as JSON and NBT).
+     *
+     * @param keyName      the name of the key in the encoded map for each key-element entry
+     * @param keyCodec     codec for the key
+     * @param keyName      the name of the element in the encoded map for each key-element entry
+     * @param elementCodec codec for the element
+     * @param <K>          the key type
+     * @param <V>          the element type
+     * @return a codec for an unbounded map
+     */
+    public static <K, V> Codec<Map<K, V>> unboundedMapAsList(String keyName, Codec<K> keyCodec, String elementName, Codec<V> elementCodec) {
+        Codec<Pair<K, V>> pairCodec = RecordCodecBuilder.create(
+                instance -> instance.group(
+                        keyCodec.fieldOf(keyName).forGetter(Pair::getFirst),
+                        elementCodec.fieldOf(elementName).forGetter(Pair::getSecond)
+                ).apply(instance, Pair::of)
+        );
+        return Codec.list(pairCodec)
+                .xmap(
+                        entries -> entries.stream().collect(Pair.toMap()),
+                        map -> map.entrySet().stream().map(entry -> Pair.of(entry.getKey(), entry.getValue())).toList()
+                );
+    }
+
+    /**
+     * Creates a codec for an {@linkplain Codec#unboundedMap(Codec, Codec) unbounded map} whose underlying representation is a list of maps, with names of {@code "key"} and {@code "value"} for each key-element entry.
+     * <p>
+     * This is useful for maps where the key does not encode to a string, which causes errors when trying to serialize to a format that requires maps to have string keys (such as JSON and NBT).
+     *
+     * @param keyCodec     codec for the key
+     * @param elementCodec codec for the element
+     * @param <K>          the key type
+     * @param <V>          the element type
+     * @return a codec for an unbounded map
+     * @see #unboundedMapAsList(String, Codec, String, Codec)
+     */
+    public static <K, V> Codec<Map<K, V>> unboundedMapAsList(Codec<K> keyCodec, Codec<V> elementCodec) {
+        return unboundedMapAsList("key", keyCodec, "element", elementCodec);
     }
 }
