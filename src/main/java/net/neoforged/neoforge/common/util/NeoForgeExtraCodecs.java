@@ -84,7 +84,8 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Creates a codec from a decoder. The returned codec can only decode, and will throw on any attempt to encode.
+     * Creates a codec from a decoder.
+     * The returned codec can only decode, and will throw on any attempt to encode.
      */
     public static <A> Codec<A> decodeOnly(Decoder<A> decoder) {
         return Codec.of(Codec.unit(() -> {
@@ -93,7 +94,8 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Creates a codec for a list from a codec of optional elements. The empty optionals are removed from the list when decoding.
+     * Creates a codec for a list from a codec of optional elements.
+     * The empty optionals are removed from the list when decoding.
      */
     public static <A> Codec<List<A>> listWithOptionalElements(Codec<Optional<A>> elementCodec) {
         return listWithoutEmpty(elementCodec.listOf());
@@ -111,7 +113,8 @@ public class NeoForgeExtraCodecs {
     /**
      * Codec with two alternatives.
      * <p>
-     * The vanilla {@link ExtraCodecs#withAlternative(Codec, Codec)} will try the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
+     * The vanilla {@link ExtraCodecs#withAlternative(Codec, Codec)} will try
+     * the first codec and then the second codec for decoding, <b>but only the first for encoding</b>.
      * <p>
      * Unlike vanilla, this alternative codec also tries to encode with the second codec if the first encode fails.
      *
@@ -263,7 +266,8 @@ public class NeoForgeExtraCodecs {
     }
 
     /**
-     * Codec that matches exactly one out of two map codecs. Same as {@link Codec#xor} but for {@link MapCodec}s.
+     * Codec that matches exactly one out of two map codecs.
+     * Same as {@link Codec#xor} but for {@link MapCodec}s.
      */
     public static <F, S> MapCodec<Either<F, S>> xor(MapCodec<F> first, MapCodec<S> second) {
         return new XorMapCodec<>(first, second);
