@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.unittest;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
@@ -11,16 +18,13 @@ import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class ExtraCodecsTests {
     @Test
     public void test_unboundedMapAsList() {
         Map<BlockPos, String> values = Map.of(
                 new BlockPos(8, 0, 0), "testA",
                 new BlockPos(0, 8, 0), "testB",
-                new BlockPos(0, 0, 8), "testC"
-        );
+                new BlockPos(0, 0, 8), "testC");
         Codec<Map<BlockPos, String>> codec = NeoForgeExtraCodecs.unboundedMapAsList("position", BlockPos.CODEC, "value", Codec.STRING);
 
         DataResult<JsonElement> resultJson = codec.encodeStart(JsonOps.INSTANCE, values);

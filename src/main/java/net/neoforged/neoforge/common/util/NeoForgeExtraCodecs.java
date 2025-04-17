@@ -69,14 +69,14 @@ public class NeoForgeExtraCodecs {
         return Codec.mapEither(codec.fieldOf(singularName), setOf(codec).fieldOf(pluralName)).xmap(
                 either -> either.map(ImmutableSet::of, ImmutableSet::copyOf),
                 set -> set.size() == 1 ? Either.left(set.iterator().next()) : Either.right(set)).flatXmap(ts -> {
-            if (ts.isEmpty())
-                return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
-            return DataResult.success(ts);
-        }, ts -> {
-            if (ts.isEmpty())
-                return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
-            return DataResult.success(ImmutableSet.copyOf(ts));
-        });
+                    if (ts.isEmpty())
+                        return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
+                    return DataResult.success(ts);
+                }, ts -> {
+                    if (ts.isEmpty())
+                        return DataResult.error(() -> "The set for: %s can not be empty!".formatted(singularName));
+                    return DataResult.success(ImmutableSet.copyOf(ts));
+                });
     }
 
     public static <T> Codec<Set<T>> setOf(final Codec<T> codec) {
@@ -331,14 +331,11 @@ public class NeoForgeExtraCodecs {
         Codec<Pair<K, V>> pairCodec = RecordCodecBuilder.create(
                 instance -> instance.group(
                         keyCodec.fieldOf(keyName).forGetter(Pair::getFirst),
-                        elementCodec.fieldOf(elementName).forGetter(Pair::getSecond)
-                ).apply(instance, Pair::of)
-        );
+                        elementCodec.fieldOf(elementName).forGetter(Pair::getSecond)).apply(instance, Pair::of));
         return Codec.list(pairCodec)
                 .xmap(
                         entries -> entries.stream().collect(Pair.toMap()),
-                        map -> map.entrySet().stream().map(entry -> Pair.of(entry.getKey(), entry.getValue())).toList()
-                );
+                        map -> map.entrySet().stream().map(entry -> Pair.of(entry.getKey(), entry.getValue())).toList());
     }
 
     /**
