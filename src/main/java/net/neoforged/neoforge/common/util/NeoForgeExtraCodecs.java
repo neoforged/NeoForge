@@ -321,7 +321,7 @@ public class NeoForgeExtraCodecs {
      *
      * @param keyName      the name of the key in the encoded map for each key-element entry
      * @param keyCodec     codec for the key
-     * @param keyName      the name of the element in the encoded map for each key-element entry
+     * @param elementName  the name of the element in the encoded map for each key-element entry
      * @param elementCodec codec for the element
      * @param <K>          the key type
      * @param <V>          the element type
