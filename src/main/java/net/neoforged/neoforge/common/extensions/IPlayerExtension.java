@@ -13,10 +13,12 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.extensions.IMenuProviderExtension;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.network.IContainerFactory;
 
@@ -108,7 +110,7 @@ public interface IPlayerExtension {
      *
      * @param menuProvider A supplier of container properties including the registry name of the container
      * @param pos          A block pos, which will be encoded into the additional data for this request, after
-     *                     data written by {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
+     *                     data written by {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, FriendlyByteBuf)}.
      *
      */
     default OptionalInt openMenu(MenuProvider menuProvider, BlockPos pos) {
@@ -125,7 +127,7 @@ public interface IPlayerExtension {
      *
      * @param menuProvider    A supplier of container properties including the registry name of the container
      * @param extraDataWriter Consumer to write any additional data the GUI needs.
-     *                        This data is written after {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, RegistryFriendlyByteBuf)}.
+     *                        This data is written after {@link IMenuProviderExtension#writeClientSideData(AbstractContainerMenu, FriendlyByteBuf)}.
      * @return The window ID of the opened GUI, or empty if the GUI could not be opened
      */
     default OptionalInt openMenu(MenuProvider menuProvider, Consumer<FriendlyByteBuf> extraDataWriter) {
