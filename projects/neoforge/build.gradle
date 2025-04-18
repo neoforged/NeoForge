@@ -102,6 +102,10 @@ dependencies {
     }
 }
 
+tasks.register('genPatches') {
+    dependsOn(tasks.named('unpackSourcePatches'))
+}
+
 runTypes {
     client {
         singleInstance false
