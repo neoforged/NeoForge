@@ -172,7 +172,7 @@ runs {
     server { }
     gameTestServer { }
     gameTestClient { }
-    "Data" {
+    data {
         configure project.runTypes.data
 
         programArguments.addAll '--mod', 'neoforge'
