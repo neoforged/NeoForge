@@ -12,6 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
