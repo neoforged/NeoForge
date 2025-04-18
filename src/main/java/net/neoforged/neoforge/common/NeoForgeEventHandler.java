@@ -39,6 +39,7 @@ import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
+import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.server.command.ConfigCommand;
@@ -121,8 +122,10 @@ public class NeoForgeEventHandler {
                 if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {
                     return;
                 }
-                if (player.connection.getConnection().isMemoryConnection()) {
-                    // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
+
+                // Note: don't send data maps over in-memory connections for normal registries, else the client-side handling will wipe non-synced data maps.
+                // Sending them for synced datapack registries is fine and required as those registries are recreated on the client
+                if (player.connection.getConnection().isMemoryConnection() && DataPackRegistriesHooks.getSyncedRegistry((ResourceKey) registry) == null) {
                     return;
                 }
                 final var playerMaps = player.connection.getConnection().channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
