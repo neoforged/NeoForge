@@ -19,8 +19,15 @@ repositories {
     }
 }
 
+configurations {
+    // An alternative to implementation that doesn't expose its dependencies as transitive runtime dependencies
+    localImplementation
+    compileOnly.extendsFrom localImplementation
+    runtimeClasspath.extendsFrom localImplementation
+}
+
 dependencies {
-    implementation project(path: ':neoforge', configuration: 'runtimeElements')
+    localImplementation project(path: ':neoforge', configuration: 'runtimeElements')
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
