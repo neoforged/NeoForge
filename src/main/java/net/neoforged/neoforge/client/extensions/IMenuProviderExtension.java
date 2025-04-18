@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.client.extensions;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.network.IContainerFactory;
@@ -24,11 +24,11 @@ public interface IMenuProviderExtension {
     }
 
     /**
-     * Allows the menu provider to write additional data to be read by {@link IContainerFactory#create(int, Inventory, RegistryFriendlyByteBuf)}
+     * Allows the menu provider to write additional data to be read by {@link IContainerFactory#create(int, Inventory, FriendlyByteBuf)}
      * when the menu is created on the client-side.
      *
      * @param menu   A server-side menu created by this menu provider.
      * @param buffer Additional data that will be sent to the client.
      */
-    default void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {}
+    default void writeClientSideData(AbstractContainerMenu menu, FriendlyByteBuf buffer) {}
 }
