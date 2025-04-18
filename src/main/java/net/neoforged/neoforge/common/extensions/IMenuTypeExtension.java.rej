@@ -1,0 +1,11 @@
+diff a/src/main/java/net/neoforged/neoforge/common/extensions/IMenuTypeExtension.java b/src/main/java/net/neoforged/neoforge/common/extensions/IMenuTypeExtension.java	(rejected hunks)
+@@ -5,7 +5,9 @@
+ 
+ package net.neoforged.neoforge.common.extensions;
+ 
++import java.util.function.Consumer;
+ import net.minecraft.network.RegistryFriendlyByteBuf;
++import net.minecraft.world.MenuProvider;
+ import net.minecraft.world.entity.player.Inventory;
+ import net.minecraft.world.flag.FeatureFlags;
+ import net.minecraft.world.inventory.AbstractContainerMenu;
