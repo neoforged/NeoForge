@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew :neoforge:setup
 
       - name: Build with Gradle
-        run: ./gradlew assemble checkFormatting
+        run: ./gradlew build
 
       - name: Run JCC
         if: ${{ ! startsWith(github.event.pull_request.head.ref, 'port/') && ! startsWith(github.ref_name, 'port/') && ! startsWith(github.event.pull_request.base.ref, 'port/') }}
