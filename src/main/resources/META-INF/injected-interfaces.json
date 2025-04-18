@@ -74,6 +74,9 @@
   "net/minecraft/core/Registry": [
     "net/neoforged/neoforge/registries/IRegistryExtension<T>"
   ],
+  "net/minecraft/core/RegistrySetBuilder$UniversalLookup": [
+    "net/minecraft/core/HolderLookup<java.lang.Object>"
+  ],
   "net/minecraft/core/component/DataComponentHolder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentHolderExtension"
   ],
