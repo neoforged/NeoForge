@@ -19,13 +19,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AdventureModePredicate;
-import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -43,6 +40,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -184,18 +182,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Can this Item disable a shield
-     *
-     * @param shield   The shield in question
-     * @param entity   The LivingEntity holding the shield
-     * @param attacker The LivingEntity holding the ItemStack
-     * @return True if this ItemStack can disable the shield in question.
-     */
-    default boolean canDisableShield(ItemStack shield, LivingEntity entity, LivingEntity attacker) {
-        return self().getItem().canDisableShield(self(), shield, entity, attacker);
-    }
-
-    /**
      * Called when a entity tries to play the 'swing' animation.
      *
      * @param entity The entity swinging the item.
@@ -248,9 +234,7 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor()} that can wear armor}.
-     * <p>
-     * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
+     * Called every tick when this item is {@link DataComponents#EQUIPPABLE equipped} {@link EquipmentSlot#BODY as an armor item} by a {@link Mob} that can wear armor.
      *
      * @param level The level the horse is in
      * @param horse The horse wearing this item
@@ -422,13 +406,13 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents.ATTRIBUTE_MODIFIERS}
+     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents#ATTRIBUTE_MODIFIERS}
      * or {@link Item#getDefaultAttributeModifiers(ItemStack)} when querying attributes for gameplay purposes.
      * <p>
-     * This method first computes the default modifiers, using {@link DataComponents.ATTRIBUTE_MODIFIERS} if present, otherwise
+     * This method first computes the default modifiers, using {@link DataComponents#ATTRIBUTE_MODIFIERS} if present, otherwise
      * falling back to {@link Item#getDefaultAttributeModifiers(ItemStack)}.
      * <p>
-     * The {@link ItemAttributeModifiersEvent} is then fired to allow external adjustments.
+     * The {@link ItemAttributeModifierEvent} is then fired to allow external adjustments.
      */
     default ItemAttributeModifiers getAttributeModifiers() {
         ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);

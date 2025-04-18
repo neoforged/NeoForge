@@ -7,7 +7,7 @@
 +                i = net.neoforged.neoforge.event.EventHooks.onArrowLoose(p_40667_, p_40668_, player, i, !itemstack.isEmpty());
 +                if (i < 0) return false;
                  float f = getPowerForTime(i);
-                 if ((double)f < 0.1) {
+                 if (f < 0.1) {
                      return false;
 @@ -89,6 +_,10 @@
      public InteractionResult use(Level p_40672_, Player p_40673_, InteractionHand p_40674_) {

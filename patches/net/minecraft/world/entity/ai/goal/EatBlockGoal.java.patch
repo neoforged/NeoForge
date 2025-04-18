@@ -3,7 +3,7 @@
 @@ -61,7 +_,7 @@
          if (this.eatAnimationTick == this.adjustedTickDelay(4)) {
              BlockPos blockpos = this.mob.blockPosition();
-             if (IS_TALL_GRASS.test(this.level.getBlockState(blockpos))) {
+             if (IS_EDIBLE.test(this.level.getBlockState(blockpos))) {
 -                if (getServerLevel(this.level).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 +                if (net.neoforged.neoforge.event.EventHooks.canEntityGrief(getServerLevel(this.level), this.mob)) {
                      this.level.destroyBlock(blockpos, false);

@@ -1,0 +1,33 @@
+--- a/com/mojang/blaze3d/textures/TextureFormat.java
++++ b/com/mojang/blaze3d/textures/TextureFormat.java
+@@ -9,12 +_,15 @@
+ public enum TextureFormat {
+     RGBA8(4),
+     RED8(1),
+-    DEPTH32(4);
++    DEPTH32(4),
++    // Neo: Add depth+stencil formats
++    DEPTH24_STENCIL8(4),
++    DEPTH32_STENCIL8(8);
+ 
+     private final int pixelSize;
+ 
+-    private TextureFormat(int p_404990_) {
+-        this.pixelSize = p_404990_;
++    private TextureFormat(int pixelSize) {
++        this.pixelSize = pixelSize;
+     }
+ 
+     public int pixelSize() {
+@@ -26,6 +_,10 @@
+     }
+ 
+     public boolean hasDepthAspect() {
+-        return this == DEPTH32;
++        return this == DEPTH32 || this == DEPTH24_STENCIL8 || this == DEPTH32_STENCIL8;
++    }
++
++    public boolean hasStencilAspect() {
++        return this == DEPTH24_STENCIL8 || this == DEPTH32_STENCIL8;
+     }
+ }

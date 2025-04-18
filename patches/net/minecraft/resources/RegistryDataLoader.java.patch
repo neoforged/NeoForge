@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -112,7 +_,7 @@
+@@ -128,7 +_,7 @@
      public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
          new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
      );
@@ -9,16 +9,59 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -125,7 +_,7 @@
-         new RegistryDataLoader.RegistryData<>(Registries.ENCHANTMENT, Enchantment.DIRECT_CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.JUKEBOX_SONG, JukeboxSong.DIRECT_CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.INSTRUMENT, Instrument.DIRECT_CODEC)
+@@ -149,12 +_,12 @@
+         new RegistryDataLoader.RegistryData<>(Registries.INSTRUMENT, Instrument.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.TEST_ENVIRONMENT, TestEnvironmentDefinition.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.TEST_INSTANCE, GameTestInstance.DIRECT_CODEC)
 -    );
 +    )); // Neo: Keep the list so custom registries can be added later
  
      public static RegistryAccess.Frozen load(
          ResourceManager p_364116_, List<HolderLookup.RegistryLookup<?>> p_321716_, List<RegistryDataLoader.RegistryData<?>> p_365382_
-@@ -247,11 +_,16 @@
+     ) {
+-        return load((p_321412_, p_321413_) -> p_321412_.loadFromResources(p_364116_, p_321413_), p_321716_, p_365382_);
++        return load((p_321412_, p_321413_) -> p_321412_.loadFromResources(p_364116_, p_321413_), p_321716_, p_365382_, true);
+     }
+ 
+     public static RegistryAccess.Frozen load(
+@@ -163,18 +_,35 @@
+         List<HolderLookup.RegistryLookup<?>> p_250344_,
+         List<RegistryDataLoader.RegistryData<?>> p_363651_
+     ) {
+-        return load((p_325557_, p_325558_) -> p_325557_.loadFromNetwork(p_364449_, p_360464_, p_325558_), p_250344_, p_363651_);
++        return load((p_325557_, p_325558_) -> p_325557_.loadFromNetwork(p_364449_, p_360464_, p_325558_), p_250344_, p_363651_, false);
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #load(LoadingFunction, List, List, boolean) the source-aware variant}
++     */
++    @Deprecated
+     private static RegistryAccess.Frozen load(
+         RegistryDataLoader.LoadingFunction p_321713_, List<HolderLookup.RegistryLookup<?>> p_321856_, List<RegistryDataLoader.RegistryData<?>> p_364355_
+     ) {
++        return load(p_321713_, p_321856_, p_364355_, false);
++    }
++    private static RegistryAccess.Frozen load(
++        RegistryDataLoader.LoadingFunction p_321713_, List<HolderLookup.RegistryLookup<?>> p_321856_, List<RegistryDataLoader.RegistryData<?>> p_364355_, boolean fromResources
++    ) {
+         Map<ResourceKey<?>, Exception> map = new HashMap<>();
+         List<RegistryDataLoader.Loader<?>> list = p_364355_.stream()
+             .map(p_321410_ -> p_321410_.create(Lifecycle.stable(), map))
+             .collect(Collectors.toUnmodifiableList());
+         RegistryOps.RegistryInfoLookup registryops$registryinfolookup = createContext(p_321856_, list);
+         list.forEach(p_321416_ -> p_321713_.apply((RegistryDataLoader.Loader<?>)p_321416_, registryops$registryinfolookup));
++        if (fromResources && net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
++            var byKeyMap = list.stream().collect(java.util.stream.Collectors.toMap(d -> d.registry().key(), d -> d.registry));
++            var envRegistry = (WritableRegistry) byKeyMap.get(Registries.TEST_ENVIRONMENT);
++            var testsRegistry = (WritableRegistry) byKeyMap.get(Registries.TEST_INSTANCE);
++            if (envRegistry != null && testsRegistry != null) {
++                net.neoforged.fml.ModLoader.postEvent(new net.neoforged.neoforge.event.RegisterGameTestsEvent(envRegistry, testsRegistry));
++            }
++        }
+         list.forEach(p_396495_ -> {
+             Registry<?> registry = p_396495_.registry();
+ 
+@@ -271,11 +_,16 @@
          Resource p_326141_,
          RegistrationInfo p_326033_
      ) throws IOException {
@@ -37,7 +80,7 @@
          }
      }
  
-@@ -263,7 +_,7 @@
+@@ -287,7 +_,7 @@
          Map<ResourceKey<?>, Exception> p_321649_
      ) {
          FileToIdConverter filetoidconverter = FileToIdConverter.registry(p_321557_.key());
@@ -46,12 +89,12 @@
  
          for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
-@@ -352,13 +_,20 @@
-     public static record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
+@@ -376,13 +_,20 @@
+     public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
  
--    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
-+    public static record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty, java.util.function.Consumer<net.neoforged.neoforge.registries.RegistryBuilder<T>> registryBuilderConsumer) {
+-    public record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
++    public record RegistryData<T>(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty, java.util.function.Consumer<net.neoforged.neoforge.registries.RegistryBuilder<T>> registryBuilderConsumer) {
 +        public RegistryData(ResourceKey<? extends Registry<T>> key, Codec<T> elementCodec, boolean requiredNonEmpty) {
 +            this(key, elementCodec, requiredNonEmpty, registryBuilder -> {});
 +        }

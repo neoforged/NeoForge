@@ -1,11 +1,10 @@
 --- a/net/minecraft/client/data/Main.java
 +++ b/net/minecraft/client/data/Main.java
-@@ -30,16 +_,31 @@
+@@ -30,16 +_,34 @@
          OptionSpec<Void> optionspec1 = optionparser.accepts("client", "Include client generators");
          OptionSpec<Void> optionspec2 = optionparser.accepts("all", "Include all generators");
          OptionSpec<String> optionspec3 = optionparser.accepts("output", "Output folder").withRequiredArg().defaultsTo("generated");
 +        OptionSpec<String> existing = optionparser.accepts("existing", "Existing resource packs that generated resources can reference").withRequiredArg();
-+        optionparser.accepts("gameDir").withRequiredArg().ofType(java.io.File.class).defaultsTo(new java.io.File(".")).required(); //Need by modlauncher, so lets just eat it
 +        OptionSpec<String> mod = optionparser.accepts("mod", "A modid to dump").withRequiredArg().withValuesSeparatedBy(",");
 +        OptionSpec<Void> flat = optionparser.accepts("flat", "Do not append modid prefix to output directory when generating for multiple mods");
 +        OptionSpec<String> assetIndex = optionparser.accepts("assetIndex").withRequiredArg();
@@ -28,11 +27,15 @@
              addClientProviders(datagenerator, flag1);
 -            datagenerator.run();
 +            }
-+            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, java.util.List.of(), existingPacks, false, false, validate, isFlat, optionset.valueOf(assetIndex), optionset.valueOf(assetsDir), () -> {
++            java.io.File assetsDirValue = optionset.valueOf(assetsDir);
++            String assetIndexValue = optionset.valueOf(assetIndex);
++            net.neoforged.neoforge.data.loading.DatagenModLoader.begin(mods, path, java.util.List.of(), existingPacks, false, false, validate, isFlat, () -> {
 +                ClientBootstrap.bootstrap();
-+                net.neoforged.neoforge.client.ClientHooks.registerSpriteSourceTypes();
-+                net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager.init();
-+            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, datagenerator);
++                net.neoforged.neoforge.client.ClientHooks.initClientRegistries();
++            }, net.neoforged.neoforge.data.event.GatherDataEvent.Client::new, datagenerator, packConsumer -> {
++                if (assetsDirValue != null && assetIndexValue != null)
++                    packConsumer.accept(net.minecraft.client.resources.ClientPackSource.createVanillaPackSource(net.minecraft.client.resources.IndexedAssetSource.createIndexFs(assetsDirValue.toPath(), assetIndexValue)));
++            });
          } else {
              optionparser.printHelpOn(System.out);
          }

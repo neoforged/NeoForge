@@ -1,14 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-@@ -53,6 +_,7 @@
-     public static final int NUM_DATA_VALUES = 4;
-     public static final int BURN_TIME_STANDARD = 200;
-     public static final int BURN_COOL_SPEED = 2;
-+    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
-     protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
-     int litTimeRemaining;
-     int litTotalTime;
-@@ -63,9 +_,14 @@
+@@ -68,9 +_,14 @@
          public int get(int p_58431_) {
              switch (p_58431_) {
                  case 0:
@@ -24,7 +16,14 @@
                  case 2:
                      return AbstractFurnaceBlockEntity.this.cookingTimer;
                  case 3:
-@@ -105,6 +_,7 @@
+@@ -104,12 +_,14 @@
+     };
+     private final Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Reference2IntOpenHashMap<>();
+     private final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
++    private final RecipeType<? extends AbstractCookingRecipe> recipeType;
+ 
+     protected AbstractFurnaceBlockEntity(
+         BlockEntityType<?> p_154991_, BlockPos p_154992_, BlockState p_154993_, RecipeType<? extends AbstractCookingRecipe> p_154994_
      ) {
          super(p_154991_, p_154992_, p_154993_);
          this.quickCheck = RecipeManager.createCheck((RecipeType<AbstractCookingRecipe>)p_154994_);
@@ -32,22 +31,22 @@
      }
  
      private boolean isLit() {
-@@ -116,10 +_,10 @@
+@@ -121,10 +_,10 @@
          super.loadAdditional(p_155025_, p_323468_);
          this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
          ContainerHelper.loadAllItems(p_155025_, this.items, p_323468_);
--        this.cookingTimer = p_155025_.getShort("cooking_time_spent");
--        this.cookingTotalTime = p_155025_.getShort("cooking_total_time");
--        this.litTimeRemaining = p_155025_.getShort("lit_time_remaining");
--        this.litTotalTime = p_155025_.getShort("lit_total_time");
-+        this.cookingTimer = p_155025_.getInt("cooking_time_spent");
-+        this.cookingTotalTime = p_155025_.getInt("cooking_total_time");
-+        this.litTimeRemaining = p_155025_.getInt("lit_time_remaining");
-+        this.litTotalTime = p_155025_.getInt("lit_total_time");
-         CompoundTag compoundtag = p_155025_.getCompound("RecipesUsed");
- 
-         for (String s : compoundtag.getAllKeys()) {
-@@ -130,10 +_,10 @@
+-        this.cookingTimer = p_155025_.getShortOr("cooking_time_spent", (short)0);
+-        this.cookingTotalTime = p_155025_.getShortOr("cooking_total_time", (short)0);
+-        this.litTimeRemaining = p_155025_.getShortOr("lit_time_remaining", (short)0);
+-        this.litTotalTime = p_155025_.getShortOr("lit_total_time", (short)0);
++        this.cookingTimer = p_155025_.getIntOr("cooking_time_spent", (short)0);
++        this.cookingTotalTime = p_155025_.getIntOr("cooking_total_time", (short)0);
++        this.litTimeRemaining = p_155025_.getIntOr("lit_time_remaining", (short)0);
++        this.litTotalTime = p_155025_.getIntOr("lit_total_time", (short)0);
+         this.recipesUsed.clear();
+         this.recipesUsed.putAll(p_155025_.read("RecipesUsed", RECIPES_USED_CODEC).orElse(Map.of()));
+     }
+@@ -132,10 +_,10 @@
      @Override
      protected void saveAdditional(CompoundTag p_187452_, HolderLookup.Provider p_323656_) {
          super.saveAdditional(p_187452_, p_323656_);
@@ -60,8 +59,8 @@
 +        p_187452_.putInt("lit_time_remaining", this.litTimeRemaining);
 +        p_187452_.putInt("lit_total_time", this.litTotalTime);
          ContainerHelper.saveAllItems(p_187452_, this.items, p_323656_);
-         CompoundTag compoundtag = new CompoundTag();
-         this.recipesUsed.forEach((p_380898_, p_380899_) -> compoundtag.putInt(p_380898_.location().toString(), p_380899_));
+         p_187452_.store("RecipesUsed", RECIPES_USED_CODEC, this.recipesUsed);
+     }
 @@ -166,11 +_,15 @@
                  p_155017_.litTotalTime = p_155017_.litTimeRemaining;
                  if (p_155017_.isLit()) {

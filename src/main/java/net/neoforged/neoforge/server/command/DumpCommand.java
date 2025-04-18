@@ -93,7 +93,7 @@ class DumpCommand {
 
             // Click action not allow on dedicated servers as client cannot click link to a server's file path.
             if (!FMLLoader.getDist().isDedicatedServer()) {
-                filePathComponent.withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, registryDumpFile.toString())));
+                filePathComponent.withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(registryDumpFile)));
             }
 
             ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback(

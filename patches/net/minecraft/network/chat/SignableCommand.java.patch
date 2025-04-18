@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/chat/SignableCommand.java
 +++ b/net/minecraft/network/chat/SignableCommand.java
-@@ -24,7 +_,8 @@
+@@ -23,7 +_,8 @@
  
          CommandContextBuilder<S> commandcontextbuilder2;
          while (

@@ -9,7 +9,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -153,16 +152,14 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        setSize(nbt.contains("Size", Tag.TAG_INT) ? nbt.getInt("Size") : stacks.size());
-        ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); i++) {
-            CompoundTag itemTags = tagList.getCompound(i);
-            int slot = itemTags.getInt("Slot");
+        setSize(nbt.getIntOr("Size", stacks.size()));
+        nbt.getListOrEmpty("Items").compoundStream().forEach(itemTags -> {
+            int slot = itemTags.getIntOr("Slot", -1);
 
             if (slot >= 0 && slot < stacks.size()) {
                 ItemStack.parse(provider, itemTags).ifPresent(stack -> stacks.set(slot, stack));
             }
-        }
+        });
         onLoad();
     }
 

@@ -1,34 +1,28 @@
 --- a/net/minecraft/client/renderer/block/model/BlockElement.java
 +++ b/net/minecraft/client/renderer/block/model/BlockElement.java
-@@ -31,6 +_,7 @@
-     public final BlockElementRotation rotation;
-     public final boolean shade;
-     public final int lightEmission;
-+    private net.neoforged.neoforge.client.model.ExtraFaceData faceData;
+@@ -22,12 +_,20 @@
  
-     public BlockElement(Vector3f p_253626_, Vector3f p_254426_, Map<Direction, BlockElementFace> p_254454_) {
-         this(p_253626_, p_254426_, p_254454_, null, true, 0);
-@@ -44,6 +_,10 @@
-         boolean p_361372_,
-         int p_361908_
-     ) {
-+        this(p_361324_, p_363867_, p_362722_, p_360926_, p_361372_, p_361908_, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
+ @OnlyIn(Dist.CLIENT)
+ public record BlockElement(
+-    Vector3fc from, Vector3fc to, Map<Direction, BlockElementFace> faces, @Nullable BlockElementRotation rotation, boolean shade, int lightEmission
++    Vector3fc from, Vector3fc to, Map<Direction, BlockElementFace> faces, @Nullable BlockElementRotation rotation, boolean shade, int lightEmission, net.neoforged.neoforge.client.model.ExtraFaceData faceData
+ ) {
+     private static final boolean DEFAULT_RESCALE = false;
+     private static final float MIN_EXTENT = -16.0F;
+     private static final float MAX_EXTENT = 32.0F;
+ 
++    public BlockElement {
++        faces.values().forEach(face -> face.parent().setValue(this));
 +    }
 +
-+    public BlockElement(Vector3f p_361324_, Vector3f p_363867_, Map<Direction, BlockElementFace> p_362722_, @Nullable BlockElementRotation p_360926_, boolean p_361372_, int p_361908_, net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
-         this.from = p_361324_;
-         this.to = p_363867_;
-         this.faces = p_362722_;
-@@ -51,6 +_,8 @@
-         this.shade = p_361372_;
-         this.lightEmission = p_361908_;
-         this.fillUvs();
-+        this.setFaceData(faceData);
-+        this.faces.values().forEach(face -> face.parent().setValue(this));
++    public BlockElement(Vector3fc from, Vector3fc to, Map<Direction, BlockElementFace> faces, @Nullable BlockElementRotation rotation, boolean shade, int lightEmission) {
++        this(from, to, faces, rotation, shade, lightEmission, net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT);
++    }
++
+     public BlockElement(Vector3fc p_405527_, Vector3fc p_405454_, Map<Direction, BlockElementFace> p_362722_) {
+         this(p_405527_, p_405454_, p_362722_, null, true, 0);
      }
- 
-     private void fillUvs() {
-@@ -98,7 +_,8 @@
+@@ -59,7 +_,8 @@
                      }
                  }
  
@@ -38,17 +32,3 @@
              }
          }
  
-@@ -209,5 +_,13 @@
-                 return new Vector3f(afloat[0], afloat[1], afloat[2]);
-             }
-         }
-+    }
-+
-+    public net.neoforged.neoforge.client.model.ExtraFaceData getFaceData() {
-+        return this.faceData;
-+    }
-+
-+    public void setFaceData(net.neoforged.neoforge.client.model.ExtraFaceData faceData) {
-+        this.faceData = java.util.Objects.requireNonNull(faceData);
-     }
- }

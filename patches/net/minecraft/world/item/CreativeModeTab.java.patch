@@ -81,7 +81,7 @@
          this.displayItems = creativemodetab$itemdisplaybuilder.tabContents;
          this.displayItemsSearchTab = creativemodetab$itemdisplaybuilder.searchTabContents;
      }
-@@ -123,9 +_,37 @@
+@@ -123,8 +_,36 @@
          return this.displayItemsSearchTab.contains(p_259317_);
      }
  
@@ -106,20 +106,19 @@
 +    }
 +
 +    public net.minecraft.resources.ResourceLocation getScrollerSprite() {
-+         if (scrollerSpriteLocation == null)
-+              return this.canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
-+         return scrollerSpriteLocation;
++        if (scrollerSpriteLocation == null)
++            return this.canScroll() ? SCROLLER_SPRITE : SCROLLER_DISABLED_SPRITE;
++        return scrollerSpriteLocation;
 +    }
 +
      public static class Builder {
-         private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (p_270422_, p_259433_) -> {
-         };
+         private static final CreativeModeTab.DisplayItemsGenerator EMPTY_GENERATOR = (p_270422_, p_259433_) -> {};
 +        private static final net.minecraft.resources.ResourceLocation CREATIVE_INVENTORY_TABS_IMAGE = net.minecraft.resources.ResourceLocation.withDefaultNamespace("textures/gui/container/creative_inventory/tabs.png");
 +        private static final net.minecraft.resources.ResourceLocation CREATIVE_ITEM_SEARCH_BACKGROUND = createTextureLocation("item_search");
          private final CreativeModeTab.Row row;
          private final int column;
          private Component displayName = Component.empty();
-@@ -136,6 +_,16 @@
+@@ -135,6 +_,16 @@
          private boolean alignedRight = false;
          private CreativeModeTab.Type type = CreativeModeTab.Type.CATEGORY;
          private ResourceLocation backgroundTexture = CreativeModeTab.DEFAULT_BACKGROUND;
@@ -136,7 +135,7 @@
  
          public Builder(CreativeModeTab.Row p_259171_, int p_259661_) {
              this.row = p_259171_;
-@@ -174,6 +_,8 @@
+@@ -173,6 +_,8 @@
  
          protected CreativeModeTab.Builder type(CreativeModeTab.Type p_259283_) {
              this.type = p_259283_;
@@ -145,7 +144,7 @@
              return this;
          }
  
-@@ -182,13 +_,94 @@
+@@ -181,13 +_,94 @@
              return this;
          }
  

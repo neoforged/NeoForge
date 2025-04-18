@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/BookCloningRecipe.java
 +++ b/net/minecraft/world/item/crafting/BookCloningRecipe.java
-@@ -88,7 +_,7 @@
+@@ -87,7 +_,7 @@
  
          for (int i = 0; i < nonnulllist.size(); i++) {
              ItemStack itemstack = p_344763_.getItem(i);
@@ -8,4 +8,4 @@
 +            ItemStack itemstack1 = itemstack.getCraftingRemainder();
              if (!itemstack1.isEmpty()) {
                  nonnulllist.set(i, itemstack1);
-             } else if (itemstack.getItem() instanceof WrittenBookItem) {
+             } else if (itemstack.has(DataComponents.WRITTEN_BOOK_CONTENT)) {

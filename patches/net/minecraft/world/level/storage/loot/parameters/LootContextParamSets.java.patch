@@ -1,15 +1,15 @@
 --- a/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
 +++ b/net/minecraft/world/level/storage/loot/parameters/LootContextParamSets.java
-@@ -21,7 +_,7 @@
-     public static final ContextKeySet EMPTY = register("empty", p_381149_ -> {
-     });
+@@ -20,7 +_,7 @@
+         );
+     public static final ContextKeySet EMPTY = register("empty", p_381149_ -> {});
      public static final ContextKeySet CHEST = register(
 -        "chest", p_380909_ -> p_380909_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
-+        "chest", p_81452_ -> p_81452_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY) //Forge: Chest minecarts can have killer entities
++        "chest", p_380909_ -> p_380909_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY).optional(LootContextParams.ATTACKING_ENTITY) //Forge: Chest minecarts can have killer entities
      );
      public static final ContextKeySet COMMAND = register(
          "command", p_380924_ -> p_380924_.required(LootContextParams.ORIGIN).optional(LootContextParams.THIS_ENTITY)
-@@ -30,7 +_,7 @@
+@@ -29,7 +_,7 @@
          "selector", p_380913_ -> p_380913_.required(LootContextParams.ORIGIN).required(LootContextParams.THIS_ENTITY)
      );
      public static final ContextKeySet FISHING = register(

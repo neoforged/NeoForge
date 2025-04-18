@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/ItemInHandRenderer.java
 +++ b/net/minecraft/client/renderer/ItemInHandRenderer.java
-@@ -172,11 +_,11 @@
+@@ -165,11 +_,11 @@
          ResourceLocation resourcelocation = this.minecraft.player.getSkin().texture();
          if (p_109365_ == HumanoidArm.RIGHT) {
              playerrenderer.renderRightHand(
@@ -14,7 +14,7 @@
              );
          }
  
-@@ -238,7 +_,7 @@
+@@ -231,7 +_,7 @@
          p_109367_.translate(-0.5F, -0.5F, 0.0F);
          p_109367_.scale(0.0078125F, 0.0078125F, 0.0078125F);
          MapId mapid = p_109370_.get(DataComponents.MAP_ID);
@@ -23,7 +23,7 @@
          VertexConsumer vertexconsumer = p_109368_.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
          Matrix4f matrix4f = p_109367_.last().pose();
          vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(p_109369_);
-@@ -275,10 +_,10 @@
+@@ -268,10 +_,10 @@
          ResourceLocation resourcelocation = abstractclientplayer.getSkin().texture();
          if (flag) {
              playerrenderer.renderRightHand(
@@ -36,7 +36,7 @@
          }
      }
  
-@@ -351,12 +_,14 @@
+@@ -344,12 +_,14 @@
          if (iteminhandrenderer$handrenderselection.renderMainHand) {
              float f4 = interactionhand == InteractionHand.MAIN_HAND ? f : 0.0F;
              float f5 = 1.0F - Mth.lerp(p_109315_, this.oMainHandHeight, this.mainHandHeight);
@@ -51,7 +51,7 @@
              this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.OFF_HAND, f6, this.offHandItem, f7, p_109316_, p_109317_, p_109319_);
          }
  
-@@ -416,13 +_,13 @@
+@@ -409,13 +_,13 @@
                  if (flag && !p_109372_.isInvisible()) {
                      this.renderPlayerArm(p_109379_, p_109380_, p_109381_, p_109378_, p_109376_, humanoidarm);
                  }
@@ -67,7 +67,7 @@
                  boolean flag1 = CrossbowItem.isCharged(p_109377_);
                  boolean flag2 = humanoidarm == HumanoidArm.RIGHT;
                  int i = flag2 ? 1 : -1;
-@@ -468,6 +_,8 @@
+@@ -460,6 +_,8 @@
              } else {
                  boolean flag3 = humanoidarm == HumanoidArm.RIGHT;
                  int j = flag3 ? 1 : -1;
@@ -76,3 +76,24 @@
                  if (p_109372_.isUsingItem() && p_109372_.getUseItemRemainingTicks() > 0 && p_109372_.getUsedItemHand() == p_109375_) {
                      switch (p_109377_.getUseAnimation()) {
                          case NONE:
+@@ -586,9 +_,18 @@
+             this.mainHandHeight = Mth.clamp(this.mainHandHeight - 0.4F, 0.0F, 1.0F);
+             this.offHandHeight = Mth.clamp(this.offHandHeight - 0.4F, 0.0F, 1.0F);
+         } else {
++            // Neo: allow suppressing re-equip animation when only the stack's data changes
++            boolean swapAnimMain = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.mainHandItem, itemstack, localplayer.getInventory().getSelectedSlot());
++            boolean swapAnimOff = net.neoforged.neoforge.client.ClientHooks.shouldCauseReequipAnimation(this.offHandItem, itemstack1, -1);
++
++            if (!swapAnimMain && this.mainHandItem != itemstack)
++                this.mainHandItem = itemstack;
++            if (!swapAnimOff && this.offHandItem != itemstack1)
++                this.offHandItem = itemstack1;
++
+             float f = localplayer.getAttackStrengthScale(1.0F);
+-            float f1 = this.mainHandItem != itemstack ? 0.0F : f * f * f;
+-            float f2 = this.offHandItem != itemstack1 ? 0.0F : 1.0F;
++            float f1 = swapAnimMain ? 0.0F : f * f * f;
++            float f2 = swapAnimOff ? 0.0F : 1.0F;
+             this.mainHandHeight = this.mainHandHeight + Mth.clamp(f1 - this.mainHandHeight, -0.4F, 0.4F);
+             this.offHandHeight = this.offHandHeight + Mth.clamp(f2 - this.offHandHeight, -0.4F, 0.4F);
+         }

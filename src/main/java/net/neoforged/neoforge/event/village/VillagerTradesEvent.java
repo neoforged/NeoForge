@@ -8,6 +8,7 @@ package net.neoforged.neoforge.event.village;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
@@ -29,11 +30,11 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class VillagerTradesEvent extends Event {
     protected Int2ObjectMap<List<ItemListing>> trades;
-    protected VillagerProfession type;
+    protected ResourceKey<VillagerProfession> type;
     private final HolderLookup.Provider registries;
 
     @ApiStatus.Internal
-    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type, HolderLookup.Provider registries) {
+    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, ResourceKey<VillagerProfession> type, HolderLookup.Provider registries) {
         this.trades = trades;
         this.type = type;
         this.registries = registries;
@@ -43,7 +44,7 @@ public class VillagerTradesEvent extends Event {
         return trades;
     }
 
-    public VillagerProfession getType() {
+    public ResourceKey<VillagerProfession> getType() {
         return type;
     }
 

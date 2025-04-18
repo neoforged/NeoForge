@@ -1,0 +1,17 @@
+--- a/net/minecraft/core/component/predicates/AttributeModifiersPredicate.java
++++ b/net/minecraft/core/component/predicates/AttributeModifiersPredicate.java
+@@ -41,6 +_,14 @@
+         return !this.modifiers.isPresent() || this.modifiers.get().test(p_399563_.modifiers());
+     }
+ 
++    @Override
++    public boolean matches(net.minecraft.core.component.DataComponentGetter getter) {
++        if (getter instanceof net.minecraft.world.item.ItemStack stack) {
++            return this.matches(stack.getAttributeModifiers());
++        }
++        return SingleComponentItemPredicate.super.matches(getter);
++    }
++
+     public record EntryPredicate(
+         Optional<HolderSet<Attribute>> attribute,
+         Optional<ResourceLocation> id,

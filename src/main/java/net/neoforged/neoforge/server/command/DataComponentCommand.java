@@ -94,6 +94,6 @@ class DataComponentCommand {
     private static Component print(DataComponentType<?> type, Object data, ChatFormatting color, Component tooltip) {
         MutableComponent entry = CommandUtils.makeTranslatableWithFallback("commands.neoforge.data_components.list.entry.key_value", getTypeId(type), data.toString());
         return CommandUtils.makeTranslatableWithFallback("commands.neoforge.data_components.list.entry", entry.withStyle(color))
-                .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip)));
+                .withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(tooltip)));
     }
 }

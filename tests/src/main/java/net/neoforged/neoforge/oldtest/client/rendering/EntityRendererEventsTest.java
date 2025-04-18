@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.Collections;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -149,11 +148,6 @@ public class EntityRendererEventsTest {
     private static class MyEntity extends LivingEntity {
         protected MyEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
             super(p_20966_, p_20967_);
-        }
-
-        @Override
-        public Iterable<ItemStack> getArmorSlots() {
-            return Collections.emptyList();
         }
 
         @Override

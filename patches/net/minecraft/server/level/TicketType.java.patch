@@ -1,0 +1,14 @@
+--- a/net/minecraft/server/level/TicketType.java
++++ b/net/minecraft/server/level/TicketType.java
+@@ -3,7 +_,10 @@
+ import net.minecraft.core.Registry;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ 
+-public record TicketType(long timeout, boolean persist, TicketType.TicketUse use) {
++public record TicketType(long timeout, boolean persist, TicketType.TicketUse use, boolean forceNaturalSpawning) {
++    public TicketType(long timeout, boolean persist, TicketType.TicketUse use) {
++        this(timeout, persist, use, false);
++    }
+     public static final long NO_TIMEOUT = 0L;
+     public static final TicketType START = register("start", 0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION);
+     public static final TicketType DRAGON = register("dragon", 0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION);

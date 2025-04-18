@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/FogRenderer.java
 +++ b/net/minecraft/client/renderer/FogRenderer.java
-@@ -196,7 +_,7 @@
+@@ -191,7 +_,7 @@
              f2 = f2 * (1.0F - f10) + f2 * f12 * f10;
          }
  
@@ -9,7 +9,7 @@
      }
  
      public static boolean toggleFog() {
-@@ -274,9 +_,9 @@
+@@ -269,9 +_,9 @@
                  fogrenderer$fogdata.shape = FogShape.CYLINDER;
              }
  

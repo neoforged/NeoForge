@@ -16,6 +16,7 @@ import net.minecraft.client.resources.MapDecorationTextureManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.player.Player;
@@ -56,7 +57,7 @@ public class MapDecorationRenderTests {
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             Player player = event.getEntity();
-            ItemStack mapItem = MapItem.create(player.level(), player.getBlockX(), player.getBlockZ(), (byte) 0, true, false);
+            ItemStack mapItem = MapItem.create((ServerLevel) player.level(), player.getBlockX(), player.getBlockZ(), (byte) 0, true, false);
             MapItemSavedData data = MapItem.getSavedData(mapItem, player.level());
             if (data == null) {
                 test.fail("Map data missing for new map");
@@ -93,7 +94,7 @@ public class MapDecorationRenderTests {
 
         test.eventListeners().forge().addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             Player player = event.getEntity();
-            ItemStack mapItem = MapItem.create(player.level(), player.getBlockX(), player.getBlockZ(), (byte) 0, true, false);
+            ItemStack mapItem = MapItem.create((ServerLevel) player.level(), player.getBlockX(), player.getBlockZ(), (byte) 0, true, false);
             MapItemSavedData data = MapItem.getSavedData(mapItem, player.level());
             if (data == null) {
                 test.fail("Map data missing for new map");

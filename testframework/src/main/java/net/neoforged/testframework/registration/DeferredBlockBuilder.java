@@ -91,7 +91,7 @@ public class DeferredBlockBuilder<T extends Block> extends DeferredBlock<T> {
                 }
 
                 var modelPath = template.create(value(), TextureMapping.cube(ResourceLocation.fromNamespaceAndPath("testframework", "block/white")), blockModels.modelOutput);
-                blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(value(), modelPath));
+                blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(value(), BlockModelGenerators.plainVariant(modelPath)));
             }
 
             @Override

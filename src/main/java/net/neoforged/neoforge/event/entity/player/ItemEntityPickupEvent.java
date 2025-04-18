@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.common.util.TriState;
 
 /**
  * Parent class of the two events that fire when a {@link Player} collides with an {@link ItemEntity}.

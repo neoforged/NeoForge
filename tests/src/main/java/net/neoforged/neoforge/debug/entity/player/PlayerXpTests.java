@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.entity.player;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -15,6 +14,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = { PlayerTests.GROUP + ".event.xp", "event" })
 public class PlayerXpTests {
@@ -30,8 +30,8 @@ public class PlayerXpTests {
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
                 // Move the player to the centre
-                .thenExecute(player -> player.moveTo(helper.absoluteVec(new BlockPos(1, 2, 1).getCenter().subtract(0, 0.5, 0))))
-                .thenExecuteFor(5, () -> helper.spawn(EntityType.EXPERIENCE_ORB, 1, 2, 1).value = 10)
+                .thenExecute(player -> player.snapTo(helper.absoluteVec(new BlockPos(1, 2, 1).getCenter().subtract(0, 0.5, 0))))
+                .thenExecuteFor(5, () -> helper.spawn(EntityType.EXPERIENCE_ORB, 1, 2, 1).setValue(10))
                 .thenIdle(40)
                 // The player is only allowed 2 levels of xp, as any further progress will be cancelled in the event listener
                 .thenExecute(player -> helper.assertEntityProperty(player, p -> p.experienceLevel, "experience level", 2))

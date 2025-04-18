@@ -23,7 +23,7 @@
                          }
                      }
  
-                     this.random.setSeed((long)this.enchantmentSeed.get());
+                     this.random.setSeed(this.enchantmentSeed.get());
  
                      for (int k = 0; k < 3; k++) {
 -                        this.costs[k] = EnchantmentHelper.getEnchantmentCost(this.random, k, j, itemstack);
@@ -47,7 +47,7 @@
 -                                }
 -
 -                                for (EnchantmentInstance enchantmentinstance : list) {
--                                    itemstack2.enchant(enchantmentinstance.enchantment, enchantmentinstance.level);
+-                                    itemstack2.enchant(enchantmentinstance.enchantment(), enchantmentinstance.level());
 -                                }
 +                                // Neo: Allow items to transform themselves when enchanted, instead of relying on hardcoded transformations for Items.BOOK
 +                                itemstack2 = itemstack.getItem().applyEnchantments(itemstack, list);

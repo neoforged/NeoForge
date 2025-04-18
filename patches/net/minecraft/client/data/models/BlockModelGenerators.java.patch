@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/data/models/BlockModelGenerators.java
 +++ b/net/minecraft/client/data/models/BlockModelGenerators.java
-@@ -5819,4 +_,16 @@
+@@ -4463,4 +_,16 @@
              return this;
          }
      }
@@ -13,7 +13,7 @@
 +     */
 +    public BlockModelGenerators.BlockFamilyProvider familyWithExistingFullBlock(Block fullBlock) {
 +        var provider = new BlockModelGenerators.BlockFamilyProvider(TextureMapping.cube(fullBlock));
-+        provider.fullBlock = ModelLocationUtils.getModelLocation(fullBlock);
++        provider.fullBlock = BlockModelGenerators.plainModel(ModelLocationUtils.getModelLocation(fullBlock));
 +        return provider;
 +    }
  }

@@ -19,7 +19,7 @@
 +            this.setRotation(cameraSetup.getYaw(), cameraSetup.getPitch(), cameraSetup.getRoll());
              this.setPosition(
                  Mth.lerp((double)p_90580_, p_90577_.xo, p_90577_.getX()),
-                 Mth.lerp((double)p_90580_, p_90577_.yo, p_90577_.getY()) + (double)Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight),
+                 Mth.lerp((double)p_90580_, p_90577_.yo, p_90577_.getY()) + Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight),
 @@ -72,11 +_,11 @@
  
          if (p_90578_) {
@@ -35,7 +35,7 @@
              Direction direction = ((LivingEntity)p_90577_).getBedOrientation();
              this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
 @@ -117,10 +_,17 @@
-         this.setPosition(new Vec3(this.position.x + (double)vector3f.x, this.position.y + (double)vector3f.y, this.position.z + (double)vector3f.z));
+         this.setPosition(new Vec3(this.position.x + vector3f.x, this.position.y + vector3f.y, this.position.z + vector3f.z));
      }
  
 +    /** @deprecated Neo: call {@link #setRotation(float, float, float)} instead */
@@ -53,7 +53,7 @@
          FORWARDS.rotate(this.rotation, this.forwards);
          UP.rotate(this.rotation, this.up);
          LEFT.rotate(this.rotation, this.left);
-@@ -236,6 +_,17 @@
+@@ -235,6 +_,17 @@
  
      public float getPartialTickTime() {
          return this.partialTickTime;

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -126,7 +_,7 @@
+@@ -161,7 +_,7 @@
  
          for (int k = 0; k < 9; k++) {
              int l = (this.selected + k) % 9;
@@ -9,24 +9,7 @@
                  return l;
              }
          }
-@@ -198,11 +_,15 @@
-     }
- 
-     public void tick() {
-+        int slot = 0;
-         for (NonNullList<ItemStack> nonnulllist : this.compartments) {
-             for (int i = 0; i < nonnulllist.size(); i++) {
-                 if (!nonnulllist.get(i).isEmpty()) {
--                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, i, this.selected == i);
-+                    // Neo: Fix the slot param to be the global index instead of the per-compartment index.
-+                    // Neo: Fix the selected param to only be true for hotbar slots.
-+                    nonnulllist.get(i).inventoryTick(this.player.level(), this.player, slot, this.selected == slot);
-                 }
-+                slot++;
-             }
-         }
-     }
-@@ -252,6 +_,8 @@
+@@ -282,6 +_,8 @@
              } catch (Throwable throwable) {
                  CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                  CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");

@@ -20,6 +20,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -224,7 +225,6 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.ITEM, "fences/nether_brick", Tags.Items.FENCES_NETHER_BRICK),
             createForgeMapEntry(Registries.ITEM, "fences/wooden", Tags.Items.FENCES_WOODEN),
             createMapEntry(Registries.ITEM, "minecraft", "tall_flowers", Tags.Items.FLOWERS_TALL),
-            createMapEntry(Registries.ITEM, "minecraft", "flowers", Tags.Items.FLOWERS),
             createForgeMapEntry(Registries.ITEM, "furnace", Tags.Items.PLAYER_WORKSTATIONS_FURNACES),
             createForgeMapEntry(Registries.ITEM, "furnaces", Tags.Items.PLAYER_WORKSTATIONS_FURNACES),
             createForgeMapEntry(Registries.ITEM, "gems", Tags.Items.GEMS),
@@ -465,7 +465,6 @@ public final class TagConventionLogWarning {
             createForgeMapEntry(Registries.BIOME, "is_magical", Tags.Biomes.IS_MAGICAL),
             createForgeMapEntry(Registries.BIOME, "is_rare", Tags.Biomes.IS_RARE),
             createForgeMapEntry(Registries.BIOME, "is_plateau", Tags.Biomes.IS_PLATEAU),
-            createForgeMapEntry(Registries.BIOME, "is_modified", Tags.Biomes.IS_MODIFIED),
             createForgeMapEntry(Registries.BIOME, "is_water", Tags.Biomes.IS_AQUATIC),
             createForgeMapEntry(Registries.BIOME, "is_desert", Tags.Biomes.IS_DESERT),
             createForgeMapEntry(Registries.BIOME, "is_plains", Tags.Biomes.IS_PLAINS),
@@ -496,7 +495,7 @@ public final class TagConventionLogWarning {
         // Log tags that are still using legacy 'forge' namespace
         forgeBus.addListener((ServerStartingEvent serverStartingEvent) -> {
             // We have to wait for server start to read the server config.
-            LogWarningMode legacyTagWarningMode = NeoForgeConfig.COMMON.logLegacyTagWarnings.get();
+            LogWarningMode legacyTagWarningMode = NeoForgeCommonConfig.INSTANCE.logLegacyTagWarnings.get();
             if (legacyTagWarningMode != LogWarningMode.SILENCED) {
                 boolean isConfigSetToDev = legacyTagWarningMode == LogWarningMode.DEV_SHORT ||
                         legacyTagWarningMode == LogWarningMode.DEV_VERBOSE;

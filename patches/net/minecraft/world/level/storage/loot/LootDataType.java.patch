@@ -29,17 +29,3 @@
  
      public void runValidation(ValidationContext p_279366_, ResourceKey<T> p_336149_, T p_279124_) {
          this.validator.run(p_279366_, p_336149_, p_279124_);
-@@ -33,9 +_,11 @@
-     }
- 
-     private static LootDataType.Validator<LootTable> createLootTableValidator() {
--        return (p_380902_, p_380903_, p_380904_) -> p_380904_.validate(
--                p_380902_.setContextKeySet(p_380904_.getParamSet()).enterElement("{" + p_380903_.registry() + "/" + p_380903_.location() + "}", p_380903_)
-+        return (p_279333_, p_279227_, p_279406_) -> {
-+            p_279406_.validate(
-+                    p_279333_.setContextKeySet(p_279406_.getParamSet()).enterElement("{" + p_279227_.registry() + ":" + p_279227_.location() + "}", p_279227_)
-             );
-+        };
-     }
- 
-     @FunctionalInterface

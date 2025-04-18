@@ -1,9 +1,9 @@
 --- a/net/minecraft/world/item/DispensibleContainerItem.java
 +++ b/net/minecraft/world/item/DispensibleContainerItem.java
 @@ -10,5 +_,6 @@
-     default void checkExtraContent(@Nullable Player p_150817_, Level p_150818_, ItemStack p_150819_, BlockPos p_150820_) {
+     default void checkExtraContent(@Nullable LivingEntity p_394463_, Level p_150818_, ItemStack p_150819_, BlockPos p_150820_) {
      }
  
 +    @Deprecated //Forge: use the ItemStack sensitive version
-     boolean emptyContents(@Nullable Player p_150821_, Level p_150822_, BlockPos p_150823_, @Nullable BlockHitResult p_150824_);
+     boolean emptyContents(@Nullable LivingEntity p_394105_, Level p_150822_, BlockPos p_150823_, @Nullable BlockHitResult p_150824_);
  }

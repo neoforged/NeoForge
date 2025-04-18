@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -37,6 +_,7 @@
+@@ -36,6 +_,7 @@
+     );
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
-     public static final float AABB_SIZE = 3.0F;
-     protected static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
+     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
 +    /** Neo: Field accesses are redirected to {@link #getPotted()} with a coremod. */
      private final Block potted;
  
      @Override
-@@ -44,10 +_,31 @@
+@@ -43,10 +_,31 @@
          return CODEC;
      }
  
@@ -43,7 +43,7 @@
      }
  
      @Override
-@@ -60,7 +_,7 @@
+@@ -59,7 +_,7 @@
          ItemStack p_316610_, BlockState p_316240_, Level p_316456_, BlockPos p_316502_, Player p_316491_, InteractionHand p_316444_, BlockHitResult p_316826_
      ) {
          BlockState blockstate = (p_316610_.getItem() instanceof BlockItem blockitem
@@ -52,7 +52,7 @@
                  : Blocks.AIR)
              .defaultBlockState();
          if (blockstate.isAir()) {
-@@ -86,7 +_,7 @@
+@@ -85,7 +_,7 @@
                  p_316338_.drop(itemstack, false);
              }
  
@@ -61,7 +61,7 @@
              p_316655_.gameEvent(p_316338_, GameEvent.BLOCK_CHANGE, p_316654_);
              return InteractionResult.SUCCESS;
          }
-@@ -118,12 +_,45 @@
+@@ -117,12 +_,45 @@
      }
  
      public Block getPotted() {

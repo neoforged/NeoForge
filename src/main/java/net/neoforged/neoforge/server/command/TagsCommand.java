@@ -213,9 +213,8 @@ class TagsCommand {
 
             containsComponent = ComponentUtils.wrapInSquareBrackets(containsComponent.withStyle(s -> s
                     .withColor(ChatFormatting.GREEN)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, clipboardText))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                            CommandUtils.makeTranslatableWithFallback(copyHoverText)))));
+                    .withClickEvent(new ClickEvent.CopyToClipboard(clipboardText))
+                    .withHoverEvent(new HoverEvent.ShowText(CommandUtils.makeTranslatableWithFallback(copyHoverText)))));
             containsComponent = CommandUtils.makeTranslatableWithFallback("commands.neoforge.tags.page_info",
                     containsComponent, actualPage, totalPages);
         }

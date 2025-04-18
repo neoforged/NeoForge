@@ -5,22 +5,26 @@
 
 package net.neoforged.testframework.impl;
 
+import com.mojang.serialization.Codec;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerTestStore extends SavedData {
-    public static final Factory<PlayerTestStore> FACTORY = new Factory<>(PlayerTestStore::new, (compoundTag, provider) -> new PlayerTestStore().decode(compoundTag));
+    public static final Codec<PlayerTestStore> FACTORY = ExtraCodecs.converter(NbtOps.INSTANCE)
+            .xmap(PlayerTestStore::decode, PlayerTestStore::save);
 
     private final Map<UUID, Set<String>> playerToTests = new HashMap<>();
 
@@ -34,16 +38,19 @@ public class PlayerTestStore extends SavedData {
         setDirty(true);
     }
 
-    public PlayerTestStore decode(CompoundTag tag) {
-        final CompoundTag testsTag = tag.getCompound("tests");
-        testsTag.getAllKeys().forEach(uuid -> {
-            put(UUID.fromString(uuid), testsTag.getList(uuid, Tag.TAG_STRING).stream().map(Tag::getAsString).toList());
+    public static PlayerTestStore decode(Tag tag) {
+        var compound = (CompoundTag) tag;
+
+        var store = new PlayerTestStore();
+        final CompoundTag testsTag = compound.getCompoundOrEmpty("tests");
+        testsTag.keySet().forEach(uuid -> {
+            store.put(UUID.fromString(uuid), testsTag.getListOrEmpty(uuid).stream().map(Tag::asString).filter(Optional::isPresent).map(Optional::get).toList());
         });
-        return this;
+        return store;
     }
 
-    @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+    public CompoundTag save() {
+        var tag = new CompoundTag();
         final CompoundTag testsTag = new CompoundTag();
         playerToTests.forEach((uuid, tests) -> {
             final ListTag testsNbt = new ListTag();

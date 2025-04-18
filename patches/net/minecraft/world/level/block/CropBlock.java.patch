@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CropBlock.java
 +++ b/net/minecraft/world/level/block/CropBlock.java
-@@ -54,7 +_,7 @@
+@@ -46,7 +_,7 @@
  
      @Override
      protected boolean mayPlaceOn(BlockState p_52302_, BlockGetter p_52303_, BlockPos p_52304_) {
@@ -9,7 +9,7 @@
      }
  
      protected IntegerProperty getAgeProperty() {
-@@ -84,12 +_,14 @@
+@@ -76,12 +_,14 @@
  
      @Override
      protected void randomTick(BlockState p_221050_, ServerLevel p_221051_, BlockPos p_221052_, RandomSource p_221053_) {
@@ -26,7 +26,7 @@
                  }
              }
          }
-@@ -109,7 +_,8 @@
+@@ -96,7 +_,8 @@
          return Mth.nextInt(p_52262_.random, 2, 5);
      }
  
@@ -36,12 +36,12 @@
          float f = 1.0F;
          BlockPos blockpos = p_52275_.below();
  
-@@ -117,9 +_,10 @@
+@@ -104,9 +_,10 @@
              for (int j = -1; j <= 1; j++) {
                  float f1 = 0.0F;
                  BlockState blockstate = p_52274_.getBlockState(blockpos.offset(i, 0, j));
 -                if (blockstate.is(Blocks.FARMLAND)) {
-+                net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, blockState);
++                var soilDecision = blockstate.canSustainPlant(p_52274_, blockpos.offset(i, 0, j), net.minecraft.core.Direction.UP, blockState);
 +                if (soilDecision.isDefault() ? blockstate.getBlock() instanceof net.minecraft.world.level.block.FarmBlock : soilDecision.isTrue()) {
                      f1 = 1.0F;
 -                    if (blockstate.getValue(FarmBlock.MOISTURE) > 0) {
@@ -49,19 +49,19 @@
                          f1 = 3.0F;
                      }
                  }
-@@ -155,6 +_,8 @@
+@@ -142,6 +_,8 @@
  
      @Override
      protected boolean canSurvive(BlockState p_52282_, LevelReader p_52283_, BlockPos p_52284_) {
-+        net.neoforged.neoforge.common.util.TriState soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
++        var soilDecision = p_52283_.getBlockState(p_52284_.below()).canSustainPlant(p_52283_, p_52284_.below(), net.minecraft.core.Direction.UP, p_52282_);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          return hasSufficientLight(p_52283_, p_52284_) && super.canSurvive(p_52282_, p_52283_, p_52284_);
      }
  
-@@ -164,7 +_,7 @@
+@@ -151,7 +_,7 @@
  
      @Override
-     protected void entityInside(BlockState p_52277_, Level p_52278_, BlockPos p_52279_, Entity p_52280_) {
+     protected void entityInside(BlockState p_52277_, Level p_52278_, BlockPos p_52279_, Entity p_52280_, InsideBlockEffectApplier p_405324_) {
 -        if (p_52278_ instanceof ServerLevel serverlevel && p_52280_ instanceof Ravager && serverlevel.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 +        if (p_52278_ instanceof ServerLevel serverlevel && p_52280_ instanceof Ravager && net.neoforged.neoforge.event.EventHooks.canEntityGrief(serverlevel, p_52280_)) {
              serverlevel.destroyBlock(p_52279_, true, p_52280_);

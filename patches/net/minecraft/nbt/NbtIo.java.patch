@@ -1,8 +1,8 @@
 --- a/net/minecraft/nbt/NbtIo.java
 +++ b/net/minecraft/nbt/NbtIo.java
-@@ -178,10 +_,12 @@
- 
-     private static Tag readUnnamedTag(DataInput p_128931_, NbtAccounter p_128933_) throws IOException {
+@@ -180,10 +_,12 @@
+     @VisibleForTesting
+     public static Tag readUnnamedTag(DataInput p_128931_, NbtAccounter p_128933_) throws IOException {
          byte b0 = p_128931_.readByte();
 +        p_128933_.accountBytes(1); // Forge: Count everything!
          if (b0 == 0) {

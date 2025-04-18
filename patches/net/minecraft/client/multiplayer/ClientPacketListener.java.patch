@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -368,6 +_,7 @@
+@@ -376,6 +_,7 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final DebugSampleSubscriber debugSampleSubscriber;
@@ -8,7 +8,7 @@
      @Nullable
      private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -389,7 +_,8 @@
+@@ -402,7 +_,8 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
@@ -18,7 +18,7 @@
          this.fuelValues = FuelValues.vanillaBurnTimes(p_295121_.receivedRegistries(), this.enabledFeatures);
      }
  
-@@ -452,12 +_,13 @@
+@@ -477,12 +_,13 @@
  
          this.minecraft.debugRenderer.clear();
          this.minecraft.player.resetPos();
@@ -33,7 +33,7 @@
          this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
          this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
          this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
-@@ -902,7 +_,8 @@
+@@ -909,7 +_,8 @@
                          this.serverCookies,
                          chatcomponent$state,
                          this.customReportDetails,
@@ -43,7 +43,7 @@
                      )
                  )
              );
-@@ -1217,7 +_,7 @@
+@@ -1231,7 +_,7 @@
              localplayer1 = this.minecraft.gameMode.createPlayer(this.level, localplayer.getStats(), localplayer.getRecipeBook());
          }
  
@@ -52,7 +52,7 @@
          localplayer1.setId(localplayer.getId());
          this.minecraft.player = localplayer1;
          if (flag) {
-@@ -1245,6 +_,7 @@
+@@ -1259,6 +_,7 @@
              localplayer1.getAttributes().assignBaseValues(localplayer.getAttributes());
          }
  
@@ -60,19 +60,16 @@
          this.level.addEntity(localplayer1);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(localplayer1);
-@@ -1391,10 +_,7 @@
+@@ -1405,7 +_,7 @@
          PacketUtils.ensureRunningOnSameThread(p_104976_, this, this.minecraft);
          BlockPos blockpos = p_104976_.getPos();
-         this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_337415_ -> {
--            CompoundTag compoundtag = p_104976_.getTag();
--            if (!compoundtag.isEmpty()) {
--                p_337415_.loadWithComponents(compoundtag, this.registryAccess);
--            }
-+            p_337415_.onDataPacket(connection, p_104976_, this.registryAccess);
- 
-             if (p_337415_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
+         this.minecraft.level.getBlockEntity(blockpos, p_104976_.getType()).ifPresent(p_399316_ -> {
+-            p_399316_.loadWithComponents(p_104976_.getTag(), this.registryAccess);
++            p_399316_.onDataPacket(connection, p_104976_, this.registryAccess);
+             if (p_399316_ instanceof CommandBlockEntity && this.minecraft.screen instanceof CommandBlockEditScreen) {
                  ((CommandBlockEditScreen)this.minecraft.screen).updateGui();
-@@ -1505,9 +_,15 @@
+             }
+@@ -1515,9 +_,15 @@
          }
      }
  
@@ -89,7 +86,7 @@
      }
  
      @Override
-@@ -1555,7 +_,9 @@
+@@ -1565,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -100,19 +97,16 @@
      }
  
      @Override
-@@ -1574,6 +_,11 @@
+@@ -1584,6 +_,8 @@
      public void handleUpdateRecipes(ClientboundUpdateRecipesPacket p_105132_) {
          PacketUtils.ensureRunningOnSameThread(p_105132_, this, this.minecraft);
          this.recipes = new ClientRecipeContainer(p_105132_.itemSets(), p_105132_.stonecutterRecipes());
 +
-+        // Neo: abuse recipe sync to overwrite fuel values with datamap values after their sync (tag update doesn't fire on initial sync and the constructor is too early)
-+        if (this.connectionType.isNeoForge()) {
-+            this.fuelValues = net.neoforged.neoforge.common.DataMapHooks.populateFuelValues(this.registryAccess, this.enabledFeatures);
-+        }
++        net.neoforged.neoforge.client.ClientHooks.handleUpdateRecipes(this, v -> this.fuelValues = v);
      }
  
      @Override
-@@ -1698,8 +_,11 @@
+@@ -1708,8 +_,11 @@
          });
          list.forEach(Registry.PendingTags::apply);
          this.fuelValues = FuelValues.vanillaBurnTimes(this.registryAccess, this.enabledFeatures);
@@ -126,7 +120,7 @@
      }
  
      @Override
-@@ -2540,6 +_,8 @@
+@@ -2558,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -135,7 +129,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2549,6 +_,7 @@
+@@ -2567,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -143,7 +137,7 @@
          SignableCommand<SharedSuggestionProvider> signablecommand = SignableCommand.of(this.parseCommand(p_250092_));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2565,6 +_,8 @@
+@@ -2583,6 +_,8 @@
      }
  
      public boolean sendUnsignedCommand(String p_251509_) {
@@ -152,7 +146,7 @@
          if (!SignableCommand.hasSignableArguments(this.parseCommand(p_251509_))) {
              this.send(new ServerboundChatCommandPacket(p_251509_));
              return true;
-@@ -2640,6 +_,10 @@
+@@ -2658,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

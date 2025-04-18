@@ -18,7 +18,7 @@
      @OnlyIn(Dist.CLIENT)
      public static enum DisplayMode {
          NORMAL,
-@@ -403,7 +_,7 @@
+@@ -402,7 +_,7 @@
                      p_381032_ - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, this.getUnderTextEffectDepth(), this.backgroundColor
                  );
                  bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
@@ -27,7 +27,7 @@
                  bakedglyph.renderEffect(bakedglyph$effect, this.pose, vertexconsumer, this.packedLightCoords);
              }
  
-@@ -413,7 +_,7 @@
+@@ -412,7 +_,7 @@
                      bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
                  }
  
@@ -36,7 +36,7 @@
  
                  for (BakedGlyph.Effect bakedglyph$effect1 : this.effects) {
                      bakedglyph.renderEffect(bakedglyph$effect1, this.pose, vertexconsumer1, this.packedLightCoords);
-@@ -447,7 +_,7 @@
+@@ -446,7 +_,7 @@
          void renderCharacters() {
              for (BakedGlyph.GlyphInstance bakedglyph$glyphinstance : this.glyphInstances) {
                  BakedGlyph bakedglyph = bakedglyph$glyphinstance.glyph();

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,7 +27,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -73,9 +71,6 @@ public class GameData {
 
         RegistryManager.takeFrozenSnapshot();
 
-        // the id mapping is finalized, no ids actually changed but this is a good place to tell everyone to 'bake' their stuff.
-        fireRemapEvent(ImmutableMap.of(), true);
-
         LOGGER.debug(REGISTRIES, "All registries frozen");
     }
 
@@ -107,10 +102,6 @@ public class GameData {
             ModLoader.postEvent(new BlockEntityTypeAddBlocksEvent());
             CreativeModeTabRegistry.sortTabs();
         }
-    }
-
-    static void fireRemapEvent(final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps, final boolean isFreezing) {
-        NeoForge.EVENT_BUS.post(new IdMappingEvent(remaps, isFreezing));
     }
 
     /**

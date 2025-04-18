@@ -160,6 +160,10 @@ public abstract class GenerateAccessTransformers extends DefaultTask {
         return value -> true;
     }
 
+    public <T extends Named> SerializablePredicate<T> not(SerializablePredicate<T> pred) {
+        return target -> !pred.test(target);
+    }
+
     public record AtGroup(String name, Modifier modifier, SerializablePredicate<ClassInfo> classMatch,
                           @Nullable SerializablePredicate<MethodInfo> methodMatch, @Nullable SerializablePredicate<FieldInfo> fieldMatch) implements Serializable {
     }

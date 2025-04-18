@@ -28,7 +28,6 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
@@ -61,6 +60,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledIngredient;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +96,7 @@ public class IngredientTests {
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
 
-                .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
+                .thenMap(() -> helper.getBlockEntity(1, 1, 1, CrafterBlockEntity.class))
                 .thenExecute(crafter -> crafter.setItem(0, Items.DIRT.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(1, Items.WATER_BUCKET.getDefaultInstance()))
                 .thenIdle(3)
@@ -141,7 +141,7 @@ public class IngredientTests {
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
 
-                .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
+                .thenMap(() -> helper.getBlockEntity(1, 1, 1, CrafterBlockEntity.class))
                 .thenExecute(crafter -> crafter.setItem(0, Items.IRON_AXE.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(1, Items.DIAMOND.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(2, Items.EMERALD.getDefaultInstance()))
@@ -195,7 +195,7 @@ public class IngredientTests {
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
 
-                .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
+                .thenMap(() -> helper.getBlockEntity(1, 1, 1, CrafterBlockEntity.class))
                 .thenExecute(crafter -> crafter.setItem(1, new ItemStack(Items.DIAMOND_PICKAXE.builtInRegistryHolder(), 1, net.minecraft.core.component.DataComponentPatch.builder().set(net.minecraft.core.component.DataComponents.DAMAGE, 1).build())))
                 .thenExecute(crafter -> crafter.setItem(0, Items.ACACIA_PLANKS.getDefaultInstance()))
                 .thenIdle(3)
@@ -405,7 +405,7 @@ public class IngredientTests {
                 .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.CRAFTER.defaultBlockState().setValue(BlockStateProperties.ORIENTATION, FrontAndTop.UP_NORTH).setValue(CrafterBlock.CRAFTING, true)))
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST))
 
-                .thenMap(() -> helper.requireBlockEntity(1, 1, 1, CrafterBlockEntity.class))
+                .thenMap(() -> helper.getBlockEntity(1, 1, 1, CrafterBlockEntity.class))
                 .thenExecute(crafter -> crafter.setItem(1, Items.DIAMOND_PICKAXE.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(2, Items.DIAMOND_PICKAXE.getDefaultInstance()))
                 .thenExecute(crafter -> crafter.setItem(0, Items.COAL.getDefaultInstance()))
