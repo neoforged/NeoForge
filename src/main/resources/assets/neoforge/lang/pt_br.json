@@ -90,7 +90,7 @@
   "commands.neoforge.tracking.be.reset": "Block entity timings data has been cleared!",
   "commands.neoforge.tracking.timing_entry": "%1$s - %2$s [%3$s, %4$s, %5$s]: %6$s",
   "commands.neoforge.tracking.no_data": "No data has been recorded yet.",
-  "commands.neoforge.tags.error.unknown_registry": "Unknown registry '%s'",
+  "commands.neoforge.tags.error.unknown_registry": "Registro '%s' desconhecido",
   "commands.neoforge.tags.error.unknown_tag": "Unknown tag '%s' in registry '%s'",
   "commands.neoforge.tags.error.unknown_element": "Unknown element '%s' in registry '%s'",
   "commands.neoforge.tags.registry_key": "%s",
