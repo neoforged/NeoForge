@@ -179,6 +179,11 @@ runs {
 
         modSources.add project.sourceSets.main
 
+        final File gameDir = project.file("run/${name}") as File
+        gameDir.mkdirs()
+
+        workingDirectory.set gameDir
+
         idea {
             primarySourceSet project.sourceSets.main
         }
