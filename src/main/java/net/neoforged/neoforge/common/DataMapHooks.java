@@ -88,6 +88,7 @@ public class DataMapHooks {
                 INVERSE_OXIDIZABLES_DATAMAP_INTERNAL.put(oxidizable.nextOxidationStage(), block);
 
                 // Rebuild blockstate caches of oxidizables after datamaps are loaded so that they can recompute isRandomlyTicking while having access to the data map value
+                // TODO - revisit this in the future if other datamaps will require rebuilding caches to avoid doing it multiple times
                 for (BlockState state : block.getStateDefinition().getPossibleStates()) {
                     state.initCache();
                 }
