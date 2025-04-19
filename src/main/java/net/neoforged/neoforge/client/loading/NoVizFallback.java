@@ -38,7 +38,10 @@ public final class NoVizFallback {
             var min = GLFW.glfwGetWindowAttrib(WINDOW, GLFW.GLFW_CONTEXT_VERSION_MINOR);
             return maj + "." + min;
         } else {
-            return "3.2";
+            // During datagen, we return 4.6 here to allow mods with high OpenGL requirements to load,
+            // since no OpenGL context is provided anyway (datagen runs as client but the feature test
+            // should not apply, similar to the dedicated server).
+            return "4.6";
         }
     }
 }
