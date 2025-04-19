@@ -5,10 +5,7 @@
 
 package net.neoforged.neoforge.debug.entity.player;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -42,7 +39,6 @@ public class PlayerXpTests {
 //                        "Expected 3 orbs to remain"))
 //                .thenSucceed());
 //    }
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests if the player xp level change event is fired")
