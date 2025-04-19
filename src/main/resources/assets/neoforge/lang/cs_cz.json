@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Povolit NeoForge pipelinu renderování blocků - opraví osvětlení různých modelů.",
   "neoforge.configgui.fullBoundingBoxLadders": "Plně Ohraničující Box u Žebříků",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Zapněte tuto možnost pro kontrolu celého kolizního pole entity u žebříku, místo pouhého bloku ve kterém se nachází. Způsobí znatelné rozdíly v mechanice, takže výchozí chování je vanilla. Výchozí hodnota: false.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Zpracování AO pro jednotlivé části bloku",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "Když je povoleno, AO bude zpracováno pro každou BlockModelPart namísto použití nastavení AO první části.",
   "neoforge.configgui.logLegacyTagWarnings": "Starší Štítky Logu",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "Konfigurační možnost především pro vývojáře. Na integrovaném serveru zaznamenává v logu módované tagy které používají 'forge' namespace. Výchozí nastavení je DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Zaznamenat v logu nepřeložené konfigurační klíče",

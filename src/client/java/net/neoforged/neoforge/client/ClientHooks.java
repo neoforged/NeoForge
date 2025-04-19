@@ -147,6 +147,7 @@ import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPauseChangeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent;
@@ -1056,6 +1057,13 @@ public class ClientHooks {
     public static void fireRenderFramePost(DeltaTracker partialTick) {
         NeoForge.EVENT_BUS.post(new RenderFrameEvent.Post(partialTick));
         RenderSystem.ensurePipelineModifiersEmpty();
+    }
+
+    /**
+     * Fires {@link ClientResourceLoadFinishedEvent}.
+     */
+    public static void fireResourceLoadFinishedEvent(boolean initial) {
+        NeoForge.EVENT_BUS.post(new ClientResourceLoadFinishedEvent(initial));
     }
 
     /**

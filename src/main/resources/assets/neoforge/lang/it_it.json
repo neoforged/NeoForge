@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Abilita la pipeline di rendering dei blocchi NeoForge - risolve l'illuminazione dei modelli personalizzati.",
   "neoforge.configgui.fullBoundingBoxLadders": "Scale Tutta la Bounding Box",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Impostare a Vero per controllare la casella di delimitazione della collisione di tutta l'entità per le scale anziché solo il blocco in cui si trovano. Causa differenze evidenti nella meccanica quindi il comportamento predefinito è quello della vanilla. Predefinito: falso.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",

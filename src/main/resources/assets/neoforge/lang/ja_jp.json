@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "NeoForgeのブロックレンダリングパイプラインを有効にします。この機能は、カスタムモデルの光の修正を行います。",
   "neoforge.configgui.fullBoundingBoxLadders": "はしごの動作条件の変更",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "これをtrueに設定すると、はしごに対するエンティティの当たり判定挙動が変更されます。通常、はしごはその1ブロック内にエンティティの中心位置がないと機能しませんが、当たり判定が一部でもあれば機能するようになります。そのため、バニラの挙動とは異なるものになります。初期値はfalseです。",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
