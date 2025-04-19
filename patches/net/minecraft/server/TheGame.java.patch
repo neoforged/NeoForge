@@ -1,13 +1,5 @@
 --- a/net/minecraft/server/TheGame.java
 +++ b/net/minecraft/server/TheGame.java
-@@ -95,6 +_,7 @@
- import net.minecraft.world.level.storage.WorldData;
- import net.minecraft.world.phys.Vec2;
- import net.minecraft.world.phys.Vec3;
-+import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
- import org.slf4j.Logger;
- 
- public class TheGame implements AutoCloseable {
 @@ -144,9 +_,9 @@
                  .lookupOrThrow(Registries.BLOCK)
                  .filterFeatures(this.worldData.enabledFeatures());
@@ -118,7 +110,7 @@
 +        net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload neoPacket = new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_419872_.getGameTime(), p_419872_.getDayTime(), p_419872_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_419872_.getDayTimeFraction(), p_419872_.getDayTimePerTick());
 +        for (ServerPlayer serverplayer : playerList.getPlayers()) {
 +            if (serverplayer.level().dimension() == p_419872_.dimension()) {
-+                if (serverplayer.connection.hasChannel(ClientboundCustomSetTimePayload.TYPE)) {
++                if (serverplayer.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
 +                    serverplayer.connection.send(neoPacket);
 +                } else {
 +                    serverplayer.connection.send(vanillaPacket);

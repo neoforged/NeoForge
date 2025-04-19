@@ -1,13 +1,5 @@
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -101,6 +_,7 @@
- import net.minecraft.world.scores.Objective;
- import net.minecraft.world.scores.PlayerTeam;
- import net.minecraft.world.scores.Team;
-+import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
- import org.slf4j.Logger;
- 
- public abstract class PlayerList implements net.neoforged.neoforge.common.extensions.IPlayerListExtension {
 @@ -131,6 +_,7 @@
      private boolean allowCommandsForAllPlayers;
      private static final boolean ALLOW_LOGOUTIVATOR = false;
@@ -115,7 +107,7 @@
          TheGame thegame = p_11231_.theGame();
          WorldBorder worldborder = thegame.overworld().getWorldBorder();
          p_11230_.connection.send(new ClientboundInitializeBorderPacket(worldborder));
-+        if (p_11230_.connection.hasChannel(ClientboundCustomSetTimePayload.TYPE)) {
++        if (p_11230_.connection.hasChannel(net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload.TYPE)) {
 +            p_11230_.connection.send(new net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload(p_11231_.getGameTime(), p_11231_.getDayTime(), p_11231_.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT), p_11231_.getDayTimeFraction(), p_11231_.getDayTimePerTick()));
 +        } else {
          p_11230_.connection

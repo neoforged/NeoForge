@@ -1,18 +1,5 @@
 --- a/net/minecraft/util/random/WeightedList.java
 +++ b/net/minecraft/util/random/WeightedList.java
-@@ -4,10 +_,8 @@
- import com.google.common.collect.Lists;
- import com.mojang.serialization.Codec;
- import com.mojang.serialization.MapCodec;
--import java.util.Arrays;
--import java.util.List;
--import java.util.Objects;
--import java.util.Optional;
-+
-+import java.util.*;
- import java.util.function.Function;
- import javax.annotation.Nullable;
- import net.minecraft.util.ExtraCodecs;
 @@ -127,7 +_,7 @@
      }
  

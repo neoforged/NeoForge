@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/FlintAndSteelItem.java
 +++ b/net/minecraft/world/item/FlintAndSteelItem.java
-@@ -17,6 +_,8 @@
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.properties.BlockStateProperties;
- import net.minecraft.world.level.gameevent.GameEvent;
-+import net.neoforged.neoforge.common.ItemAbilities;
-+import net.neoforged.neoforge.common.ItemAbility;
- 
- public class FlintAndSteelItem extends Item {
-     public FlintAndSteelItem(Item.Properties p_41295_) {
 @@ -33,7 +_,8 @@
          Level level = p_421800_.getLevel();
          BlockPos blockpos = p_421800_.getClickedPos();
@@ -35,7 +26,7 @@
 +    }
 +
 +    @Override
-+    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
-+        return ItemAbilities.DEFAULT_FLINT_ACTIONS.contains(itemAbility);
++    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
++        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_FLINT_ACTIONS.contains(itemAbility);
      }
  }
