@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
     private final PackOutput output;
     private final CompletableFuture<HolderLookup.Provider> registries;
     private final String modid;
-    private final Map<String, WithConditions<IGlobalLootModifier>> toSerialize = new HashMap<>();
+    private final Map<String, WithConditions<IGlobalLootModifier>> toSerialize = new LinkedHashMap<>();
     private boolean replace = false;
 
     public GlobalLootModifierProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modid) {
