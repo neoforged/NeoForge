@@ -5,6 +5,10 @@
 
 package net.neoforged.neoforge.unittest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -18,10 +22,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class ExtraCodecsTests {
     private final Map<BlockPos, String> values = Map.of(
@@ -48,7 +48,6 @@ public class ExtraCodecsTests {
     private static Stream<Arguments> provideDynamicOps() {
         return Stream.of(
                 arguments(NbtOps.INSTANCE, "NBT"),
-                arguments(JsonOps.INSTANCE, "JSON")
-        );
+                arguments(JsonOps.INSTANCE, "JSON"));
     }
 }
