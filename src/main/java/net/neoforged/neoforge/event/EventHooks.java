@@ -450,8 +450,7 @@ public class EventHooks {
      */
     @Deprecated(forRemoval = true)
     public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration) {
-        var event = new LivingEntityUseItemEvent.Start(entity, item, duration);
-        return NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
+        return onItemUseStart(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
     }
 
     public static int onItemUseStart(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
