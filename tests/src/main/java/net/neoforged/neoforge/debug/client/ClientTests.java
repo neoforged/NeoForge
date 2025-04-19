@@ -9,8 +9,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import javax.sound.sampled.AudioFormat;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
@@ -21,7 +24,10 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -29,7 +35,10 @@ import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -104,6 +113,33 @@ public class ClientTests {
                 return;
             }
             test.pass();
+        });
+    }
+
+    @TestHolder(description = "Tests that helmets with custom rendering work", enabledByDefault = true)
+    static void customHelmetRendering(final DynamicTest test) {
+        var item = test.registrationHelper().items().registerItem("neo_helmet", properties -> new Item(properties.equippable(EquipmentSlot.HEAD)));
+        test.framework().modEventBus().addListener((final RegisterClientExtensionsEvent event) -> {
+            event.registerItem(new IClientItemExtensions() {
+                @Override
+                public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+                    guiGraphics.blit(
+                            RenderType::guiTexturedOverlay,
+                            ResourceLocation.withDefaultNamespace("textures/block/stone.png"),
+                            0,
+                            0,
+                            0,
+                            0,
+                            guiGraphics.guiWidth(),
+                            guiGraphics.guiHeight(),
+                            guiGraphics.guiWidth(),
+                            guiGraphics.guiHeight(),
+                            -1);
+                }
+            }, item);
+        });
+        test.eventListeners().forge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
+            test.requestConfirmation(event.getEntity(), Component.literal("Does stone cover the screen when wearing the *_custom_helmet_rendering:neo_helmet?"));
         });
     }
 

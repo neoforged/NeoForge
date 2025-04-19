@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -39,6 +38,7 @@ import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
@@ -173,7 +173,7 @@ public class BlockPropertyTests {
         public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
             CompoundTag tag = pkt.getTag();
             if (!tag.isEmpty()) {
-                setLit(tag.getBoolean("lit"));
+                setLit(tag.getBooleanOr("lit", false));
             }
         }
 
@@ -187,7 +187,7 @@ public class BlockPropertyTests {
         @Override
         public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.loadAdditional(tag, holderLookup);
-            lit = tag.getBoolean("lit");
+            lit = tag.getBooleanOr("lit", false);
         }
 
         @Override

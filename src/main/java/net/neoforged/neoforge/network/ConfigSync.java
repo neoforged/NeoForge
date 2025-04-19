@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import net.minecraft.client.Minecraft;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
@@ -37,8 +36,6 @@ public final class ConfigSync {
     }
 
     public static void receiveSyncedConfig(final byte[] contents, final String fileName) {
-        if (!Minecraft.getInstance().isLocalServer()) {
-            Optional.ofNullable(ModConfigs.getFileMap().get(fileName)).ifPresent(mc -> ConfigTracker.INSTANCE.acceptSyncedConfig(mc, contents));
-        }
+        Optional.ofNullable(ModConfigs.getFileMap().get(fileName)).ifPresent(mc -> ConfigTracker.acceptSyncedConfig(mc, contents));
     }
 }

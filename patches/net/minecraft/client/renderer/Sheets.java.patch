@@ -1,24 +1,20 @@
 --- a/net/minecraft/client/renderer/Sheets.java
 +++ b/net/minecraft/client/renderer/Sheets.java
-@@ -156,7 +_,7 @@
+@@ -158,11 +_,11 @@
      }
  
      private static Material createSignMaterial(WoodType p_173386_) {
--        return createSignMaterial(ResourceLocation.withDefaultNamespace(p_173386_.name()));
-+        return createSignMaterial(ResourceLocation.parse(p_173386_.name()));
-     }
- 
-     public static Material createSignMaterial(ResourceLocation p_389416_) {
-@@ -164,7 +_,7 @@
+-        return SIGN_MAPPER.defaultNamespaceApply(p_173386_.name());
++        return SIGN_MAPPER.apply(ResourceLocation.parse(p_173386_.name()));
      }
  
      private static Material createHangingSignMaterial(WoodType p_251735_) {
--        return createHangingSignMaterial(ResourceLocation.withDefaultNamespace(p_251735_.name()));
-+        return createHangingSignMaterial(ResourceLocation.parse(p_251735_.name()));
+-        return HANGING_SIGN_MAPPER.defaultNamespaceApply(p_251735_.name());
++        return HANGING_SIGN_MAPPER.apply(ResourceLocation.parse(p_251735_.name()));
      }
  
-     public static Material createHangingSignMaterial(ResourceLocation p_389413_) {
-@@ -231,6 +_,23 @@
+     public static Material getSignMaterial(WoodType p_173382_) {
+@@ -207,6 +_,23 @@
              case SINGLE:
              default:
                  return p_110773_;

@@ -17,7 +17,7 @@ public class PlayerMainInvWrapper extends RangedWrapper {
     private final Inventory inventoryPlayer;
 
     public PlayerMainInvWrapper(Inventory inv) {
-        super(new InvWrapper(inv), 0, inv.items.size());
+        super(new InvWrapper(inv), 0, Inventory.INVENTORY_SIZE);
         inventoryPlayer = inv;
     }
 

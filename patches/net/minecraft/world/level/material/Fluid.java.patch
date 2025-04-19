@@ -1,16 +1,38 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -102,6 +_,13 @@
+@@ -64,6 +_,9 @@
+     }
+ 
+     protected void entityInside(Level p_405852_, BlockPos p_405588_, Entity p_405079_, InsideBlockEffectApplier p_404803_) {
++        if (p_405079_.canFluidExtinguish(getFluidType())) {
++            p_404803_.apply(net.minecraft.world.entity.InsideBlockEffectType.EXTINGUISH);
++        }
+     }
+ 
+     @Nullable
+@@ -108,6 +_,11 @@
  
      public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
  
++    @Override
++    public String toString() {// Neo: Patch in a toString similar to Item#toString so that FluidStack#toStringis more readable
++        return BuiltInRegistries.FLUID.wrapAsHolder(this).getRegisteredName();
++    }
++
+     @Nullable
+     public AABB getAABB(FluidState p_397902_, BlockGetter p_397853_, BlockPos p_397764_) {
+         if (this.isEmpty()) {
+@@ -125,5 +_,13 @@
+     @Deprecated
+     public Holder.Reference<Fluid> builtInRegistryHolder() {
+         return this.builtInRegistryHolder;
++    }
++
 +    private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
++
 +    @Override
 +    public net.neoforged.neoforge.fluids.FluidType getFluidType() {
 +        if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
 +        return forgeFluidType;
-+    }
-+
-     public Optional<SoundEvent> getPickupSound() {
-         return Optional.empty();
      }
+ }

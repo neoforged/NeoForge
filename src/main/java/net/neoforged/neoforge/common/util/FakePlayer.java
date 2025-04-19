@@ -115,7 +115,7 @@ public class FakePlayer extends ServerPlayer {
     public void updateOptions(ClientInformation p_301998_) {}
 
     @Override
-    public OptionalInt openMenu(@Nullable MenuProvider p_9033_, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
+    public OptionalInt openMenu(@Nullable MenuProvider menuProvider, @Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
         return OptionalInt.empty();
     }
 
@@ -307,9 +307,6 @@ public class FakePlayer extends ServerPlayer {
 
         @Override
         public void handleChatAck(ServerboundChatAckPacket packet) {}
-
-        @Override
-        public void addPendingMessage(PlayerChatMessage message) {}
 
         @Override
         public void sendPlayerChatMessage(PlayerChatMessage message, ChatType.Bound boundChatType) {}

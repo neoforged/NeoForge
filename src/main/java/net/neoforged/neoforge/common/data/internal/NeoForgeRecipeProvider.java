@@ -93,6 +93,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONES_NORMAL);
         replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
 
+        replace(Items.EGG, Tags.Items.EGGS);
         replace(Items.STRING, Tags.Items.STRINGS);
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
 

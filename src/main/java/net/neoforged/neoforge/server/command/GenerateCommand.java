@@ -15,7 +15,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.server.command.generation.GenerationBar;
@@ -61,7 +60,7 @@ class GenerateCommand {
 
     private static int executeGeneration(CommandSourceStack source, BlockPos pos, int chunkRadius, boolean progressBar) {
         if (activeTask != null) {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.already_running"), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.already_running"), true);
             return Command.SINGLE_SUCCESS;
         }
 
@@ -78,7 +77,7 @@ class GenerateCommand {
             }
         }
 
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.started",
+        source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.started",
                 activeTask.getTotalCount(), diameter, diameter, diameter * 16, diameter * 16), true);
 
         activeTask.run(createPregenListener(source));
@@ -94,7 +93,7 @@ class GenerateCommand {
             int total = activeTask.getTotalCount();
 
             double percent = (double) count / total * 100.0;
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.stopped", count, total, percent), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.stopped", count, total, percent), true);
 
             if (generationBar != null) {
                 generationBar.close();
@@ -102,7 +101,7 @@ class GenerateCommand {
             }
             activeTask = null;
         } else {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.not_running"), false);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.not_running"), false);
         }
 
         return Command.SINGLE_SUCCESS;
@@ -114,16 +113,16 @@ class GenerateCommand {
             int total = activeTask.getTotalCount();
 
             double percent = (double) count / total * 100.0;
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.status", count, total, percent), true);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.status", count, total, percent), true);
         } else {
-            source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.not_running"), false);
+            source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.not_running"), false);
         }
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int getGenerationHelp(CommandSourceStack source) {
-        source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.help_line"), false);
+        source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.help_line"), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -138,10 +137,10 @@ class GenerateCommand {
 
             @Override
             public void complete(int error) {
-                source.sendSuccess(() -> Component.translatable("commands.neoforge.chunkgen.success"), true);
+                source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.success"), true);
 
                 if (error > 0) {
-                    source.sendFailure(Component.translatable("commands.neoforge.chunkgen.error"));
+                    source.sendFailure(CommandUtils.makeTranslatableWithFallback("commands.neoforge.chunkgen.error"));
                 }
 
                 if (generationBar != null) {

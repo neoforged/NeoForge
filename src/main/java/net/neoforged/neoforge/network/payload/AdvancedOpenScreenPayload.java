@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @param additionalData The additional data to pass to the screen.
  */
 @ApiStatus.Internal
-public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, byte[] additionalData) implements CustomPacketPayload {
+public record AdvancedOpenScreenPayload(int windowId, MenuType<?> menuType, Component name, byte[] additionalData) implements ClientDispatchPayload {
 
     public static final Type<AdvancedOpenScreenPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "advanced_open_screen"));
     public static final StreamCodec<RegistryFriendlyByteBuf, AdvancedOpenScreenPayload> STREAM_CODEC = StreamCodec.composite(

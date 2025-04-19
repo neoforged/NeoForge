@@ -9,9 +9,9 @@
 +                    continue;
 +                }
                  p_362483_.pushPose();
-                 p_362483_.translate(
-                     (float)maprenderstate$mapdecorationrenderstate.x / 2.0F + 64.0F, (float)maprenderstate$mapdecorationrenderstate.y / 2.0F + 64.0F, -0.02F
-@@ -109,13 +_,15 @@
+                 p_362483_.translate(maprenderstate$mapdecorationrenderstate.x / 2.0F + 64.0F, maprenderstate$mapdecorationrenderstate.y / 2.0F + 64.0F, -0.02F);
+                 p_362483_.mulPose(Axis.ZP.rotationDegrees(maprenderstate$mapdecorationrenderstate.rot * 360 / 16.0F));
+@@ -107,13 +_,15 @@
          p_364922_.texture = this.mapTextureManager.prepareMapTexture(p_361383_, p_363500_);
          p_364922_.decorations.clear();
  

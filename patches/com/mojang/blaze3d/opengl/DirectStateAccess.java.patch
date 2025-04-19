@@ -1,0 +1,44 @@
+--- a/com/mojang/blaze3d/opengl/DirectStateAccess.java
++++ b/com/mojang/blaze3d/opengl/DirectStateAccess.java
+@@ -19,7 +_,11 @@
+ 
+     abstract int createFrameBufferObject();
+ 
+-    abstract void bindFrameBufferTextures(int p_412046_, int p_412388_, int p_412116_, int p_412536_, int p_412779_);
++    abstract void bindFrameBufferTextures(int p_412046_, int p_412388_, int p_412116_, int p_412536_, int p_412779_, boolean useStencil);
++
++    public void bindFrameBufferTextures(int p_412046_, int p_412388_, int p_412116_, int p_412536_, int p_412779_) {
++        bindFrameBufferTextures(p_412046_, p_412388_, p_412116_, p_412536_, p_412779_, false);
++    }
+ 
+     abstract void blitFrameBuffers(
+         int p_412546_,
+@@ -44,9 +_,10 @@
+         }
+ 
+         @Override
+-        public void bindFrameBufferTextures(int p_412474_, int p_412101_, int p_412181_, int p_412742_, int p_412591_) {
++        public void bindFrameBufferTextures(int p_412474_, int p_412101_, int p_412181_, int p_412742_, int p_412591_, boolean useStencil) {
+             ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36064, p_412101_, p_412742_);
+-            ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, 36096, p_412181_, p_412742_);
++            int depthAttachment = useStencil ? org.lwjgl.opengl.GL32C.GL_DEPTH_STENCIL_ATTACHMENT : org.lwjgl.opengl.GL32C.GL_DEPTH_ATTACHMENT;
++            ARBDirectStateAccess.glNamedFramebufferTexture(p_412474_, depthAttachment, p_412181_, p_412742_);
+             if (p_412591_ != 0) {
+                 GlStateManager._glBindFramebuffer(p_412591_, p_412474_);
+             }
+@@ -81,12 +_,13 @@
+         }
+ 
+         @Override
+-        public void bindFrameBufferTextures(int p_412192_, int p_412614_, int p_412332_, int p_412295_, int p_412775_) {
++        public void bindFrameBufferTextures(int p_412192_, int p_412614_, int p_412332_, int p_412295_, int p_412775_, boolean useStencil) {
+             int i = p_412775_ == 0 ? '\u8ca9' : p_412775_;
+             int j = GlStateManager.getFrameBuffer(i);
+             GlStateManager._glBindFramebuffer(i, p_412192_);
+             GlStateManager._glFramebufferTexture2D(i, 36064, 3553, p_412614_, p_412295_);
+-            GlStateManager._glFramebufferTexture2D(i, 36096, 3553, p_412332_, p_412295_);
++            int depthAttachment = useStencil ? org.lwjgl.opengl.GL32C.GL_DEPTH_STENCIL_ATTACHMENT : org.lwjgl.opengl.GL32C.GL_DEPTH_ATTACHMENT;
++            GlStateManager._glFramebufferTexture2D(i, depthAttachment, 3553, p_412332_, p_412295_);
+             if (p_412775_ == 0) {
+                 GlStateManager._glBindFramebuffer(i, j);
+             }

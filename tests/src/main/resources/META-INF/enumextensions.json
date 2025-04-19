@@ -1,15 +1,6 @@
 {
     "entries": [
         {
-            "enum": "com/mojang/blaze3d/vertex/VertexFormatElement$Usage",
-            "name": "NEOTESTS_TEST_USAGE",
-            "constructor": "(Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormatElement$Usage$SetupState;)V",
-            "parameters": {
-                "class": "net/neoforged/neoforge/debug/client/RenderTests",
-                "field": "USAGE_ENUM_PARAMS"
-            }
-        },
-        {
             "enum": "net/minecraft/world/damagesource/DamageEffects",
             "name": "NEOTESTS_TEST_EFFECTS",
             "constructor": "(Ljava/lang/String;Ljava/util/function/Supplier;)V",

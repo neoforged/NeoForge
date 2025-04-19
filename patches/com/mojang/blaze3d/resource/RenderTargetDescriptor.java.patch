@@ -1,0 +1,36 @@
+--- a/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
++++ b/com/mojang/blaze3d/resource/RenderTargetDescriptor.java
+@@ -7,9 +_,13 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record RenderTargetDescriptor(int width, int height, boolean useDepth, int clearColor) implements ResourceDescriptor<RenderTarget> {
++public record RenderTargetDescriptor(int width, int height, boolean useDepth, int clearColor, boolean useStencil) implements ResourceDescriptor<RenderTarget> {
++    public RenderTargetDescriptor(int width, int height, boolean useDepth, int clearColor) {
++        this(width, height, useDepth, clearColor, false);
++    }
++
+     public RenderTarget allocate() {
+-        return new TextureTarget(null, this.width, this.height, this.useDepth);
++        return new TextureTarget(null, this.width, this.height, this.useDepth, this.useStencil);
+     }
+ 
+     public void prepare(RenderTarget p_393765_) {
+@@ -20,6 +_,9 @@
+         } else {
+             RenderSystem.getDevice().createCommandEncoder().clearColorTexture(p_393765_.getColorTexture(), this.clearColor);
+         }
++        if (this.useStencil) {
++            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(p_393765_.getDepthTexture(), 0);
++        }
+     }
+ 
+     public void free(RenderTarget p_363223_) {
+@@ -30,6 +_,6 @@
+     public boolean canUsePhysicalResource(ResourceDescriptor<?> p_394237_) {
+         return !(p_394237_ instanceof RenderTargetDescriptor rendertargetdescriptor)
+             ? false
+-            : this.width == rendertargetdescriptor.width && this.height == rendertargetdescriptor.height && this.useDepth == rendertargetdescriptor.useDepth;
++            : this.width == rendertargetdescriptor.width && this.height == rendertargetdescriptor.height && this.useDepth == rendertargetdescriptor.useDepth && this.useStencil == rendertargetdescriptor.useStencil;
+     }
+ }

@@ -13,10 +13,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.util.Optional;
-import net.minecraft.client.multiplayer.resolver.ResolvedServerAddress;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.client.multiplayer.resolver.ServerNameResolver;
 import net.minecraft.util.HttpUtil;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
@@ -36,22 +32,6 @@ public class DualStackUtils {
      */
     @ApiStatus.Internal
     public static void initialise() {}
-
-    /**
-     * Resolve the address and see if Java and the OS return an IPv6 or IPv4 one, then let Netty know
-     * accordingly (it doesn't understand the {@code java.net.preferIPv6Addresses=system} property).
-     *
-     * @param hostAddress The address you want to check
-     * @return true if IPv6, false if IPv4
-     */
-    public static boolean checkIPv6(final String hostAddress) {
-        final Optional<InetSocketAddress> hostAddr = ServerNameResolver.DEFAULT
-                .resolveAddress(ServerAddress.parseString(hostAddress))
-                .map(ResolvedServerAddress::asInetSocketAddress);
-
-        if (hostAddr.isPresent()) return checkIPv6(hostAddr.get().getAddress());
-        else return false;
-    }
 
     /**
      * Checks if an address is an IPv6 one or an IPv4 one, lets Netty know accordingly and returns the result.

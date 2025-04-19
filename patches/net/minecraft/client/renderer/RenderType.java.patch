@@ -1,9 +1,20 @@
 --- a/net/minecraft/client/renderer/RenderType.java
 +++ b/net/minecraft/client/renderer/RenderType.java
-@@ -1847,4 +_,16 @@
+@@ -1210,6 +_,9 @@
+                     if (RenderSystem.SCISSOR_STATE.isEnabled()) {
+                         renderpass.enableScissor(RenderSystem.SCISSOR_STATE);
+                     }
++                    if (RenderSystem.STENCIL_TEST != null) {
++                        renderpass.enableStencilTest(RenderSystem.STENCIL_TEST);
++                    }
+ 
+                     for (int i = 0; i < 12; i++) {
+                         GpuTexture gputexture = RenderSystem.getShaderTexture(i);
+@@ -1366,5 +_,17 @@
+         public String toString() {
              return this.name;
          }
-     }
++    }
 +
 +    // Neo: Assign internal IDs for RenderType to be used in rendering
 +    private int chunkLayerId = -1;
@@ -15,5 +26,5 @@
 +        int i = 0;
 +        for (var layer : chunkBufferLayers())
 +            layer.chunkLayerId = i++;
-+    }
+     }
  }

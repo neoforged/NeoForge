@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
 +++ b/net/minecraft/client/gui/screens/options/controls/KeyBindsList.java
+@@ -45,7 +_,7 @@
+                 this.addEntry(new KeyBindsList.CategoryEntry(Component.translatable(s1)));
+             }
+ 
+-            Component component = Component.translatable(keymapping.getName());
++            Component component = keymapping.getDisplayName();
+             int i = p_346132_.font.width(component);
+             if (i > this.maxNameWidth) {
+                 this.maxNameWidth = i;
 @@ -156,6 +_,7 @@
                  )
                  .build();
@@ -8,7 +17,7 @@
                  p_345998_.setKey(p_345998_.getDefaultKey());
                  KeyBindsList.this.resetMappingAndUpdateButtons();
              }).bounds(0, 0, 50, 20).createNarration(p_344899_ -> Component.translatable("narrator.controls.reset", p_345196_)).build();
-@@ -208,7 +_,7 @@
+@@ -208,13 +_,13 @@
              MutableComponent mutablecomponent = Component.empty();
              if (!this.key.isUnbound()) {
                  for (KeyMapping keymapping : KeyBindsList.this.minecraft.options.keyMappings) {
@@ -17,3 +26,10 @@
                          if (this.hasCollision) {
                              mutablecomponent.append(", ");
                          }
+ 
+                         this.hasCollision = true;
+-                        mutablecomponent.append(Component.translatable(keymapping.getName()));
++                        mutablecomponent.append(keymapping.getDisplayName());
+                     }
+                 }
+             }

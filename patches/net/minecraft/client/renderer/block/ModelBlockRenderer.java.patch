@@ -1,230 +1,282 @@
 --- a/net/minecraft/client/renderer/block/ModelBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/ModelBlockRenderer.java
-@@ -39,6 +_,7 @@
+@@ -37,6 +_,7 @@
          this.blockColors = p_110999_;
      }
  
-+    @Deprecated //Forge: Model data and render type parameter
++    @Deprecated // Neo: Buffer lookup parameter
      public void tesselateBlock(
          BlockAndTintGetter p_234380_,
-         BakedModel p_234381_,
-@@ -51,14 +_,35 @@
-         long p_234388_,
+         List<BlockModelPart> p_410025_,
+@@ -47,15 +_,33 @@
+         boolean p_234386_,
          int p_234389_
      ) {
--        boolean flag = Minecraft.useAmbientOcclusion() && p_234382_.getLightEmission() == 0 && p_234381_.useAmbientOcclusion();
-+        tesselateBlock(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
++        tesselateBlock(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, type -> p_234385_, p_234386_, p_234389_);
 +    }
 +
 +    public void tesselateBlock(
-+            BlockAndTintGetter p_234380_,
-+            BakedModel p_234381_,
-+            BlockState p_234382_,
-+            BlockPos p_234383_,
-+            PoseStack p_234384_,
-+            VertexConsumer p_234385_,
-+            boolean p_234386_,
-+            RandomSource p_234387_,
-+            long p_234388_,
-+            int p_234389_,
-+            net.neoforged.neoforge.client.model.data.ModelData modelData,
-+            net.minecraft.client.renderer.RenderType renderType
++        BlockAndTintGetter p_234380_,
++        List<BlockModelPart> p_410025_,
++        BlockState p_234382_,
++        BlockPos p_234383_,
++        PoseStack p_234384_,
++        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
++        boolean p_234386_,
++        int p_234389_
 +    ) {
-+        boolean flag = Minecraft.useAmbientOcclusion() && switch(p_234381_.useAmbientOcclusion(p_234382_, modelData, renderType)) {
-+            case TRUE -> true;
-+            case DEFAULT -> p_234382_.getLightEmission(p_234380_, p_234383_) == 0;
-+            case FALSE -> false;
-+        };
-         p_234384_.translate(p_234382_.getOffset(p_234383_));
+         if (!p_410025_.isEmpty()) {
+-            boolean flag = Minecraft.useAmbientOcclusion() && p_234382_.getLightEmission() == 0 && p_410025_.getFirst().useAmbientOcclusion();
++            boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
++            boolean flag = Minecraft.useAmbientOcclusion() && (perPartAO || switch(p_410025_.getFirst().ambientOcclusion()) {
++                case TRUE -> true;
++                case DEFAULT -> p_234382_.getLightEmission(p_234380_, p_234383_) == 0;
++                case FALSE -> false;
++            });
+             p_234384_.translate(p_234382_.getOffset(p_234383_));
  
-         try {
-             if (flag) {
--                this.tesselateWithAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_);
-+                this.tesselateWithAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_, modelData, renderType);
-             } else {
--                this.tesselateWithoutAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_);
-+                this.tesselateWithoutAO(p_234380_, p_234381_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234387_, p_234388_, p_234389_, modelData, renderType);
-             }
-         } catch (Throwable throwable) {
-             CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block model");
-@@ -69,6 +_,7 @@
+             try {
+                 if (flag) {
+-                    this.tesselateWithAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234389_);
++                    this.tesselateWithAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, bufferLookup, p_234386_, p_234389_);
+                 } else {
+-                    this.tesselateWithoutAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, p_234385_, p_234386_, p_234389_);
++                    this.tesselateWithoutAO(p_234380_, p_410025_, p_234382_, p_234383_, p_234384_, bufferLookup, p_234386_, p_234389_);
+                 }
+             } catch (Throwable throwable) {
+                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Tesselating block model");
+@@ -67,6 +_,8 @@
          }
      }
  
-+    @Deprecated //Forge: Model data and render type parameter
++    /** @deprecated Neo: use {@link #shouldRenderFace(BlockAndTintGetter, BlockPos, BlockState, boolean, Direction, BlockPos)} instead */
++    @Deprecated
+     private static boolean shouldRenderFace(BlockAndTintGetter p_412640_, BlockState p_412168_, boolean p_412054_, Direction p_412130_, BlockPos p_412608_) {
+         if (!p_412054_) {
+             return true;
+@@ -76,6 +_,16 @@
+         }
+     }
+ 
++    protected static boolean shouldRenderFace(BlockAndTintGetter p_412640_, BlockPos pos, BlockState p_412168_, boolean p_412054_, Direction p_412130_, BlockPos p_412608_) {
++        if (!p_412054_) {
++            return true;
++        } else {
++            BlockState blockstate = p_412640_.getBlockState(p_412608_);
++            return Block.shouldRenderFace(p_412640_, pos, p_412168_, blockstate, p_412130_);
++        }
++    }
++
++    @Deprecated // Neo: Buffer lookup parameter
      public void tesselateWithAO(
          BlockAndTintGetter p_234391_,
-         BakedModel p_234392_,
-@@ -81,6 +_,23 @@
-         long p_234399_,
+         List<BlockModelPart> p_410478_,
+@@ -86,11 +_,38 @@
+         boolean p_234397_,
          int p_234400_
      ) {
-+         tesselateWithAO(p_234391_, p_234392_, p_234393_, p_234394_, p_234395_, p_234396_, p_234397_, p_234398_, p_234399_, p_234400_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
+-        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = new ModelBlockRenderer.AmbientOcclusionRenderStorage();
++        this.tesselateWithAO(p_234391_, p_410478_, p_234393_, p_234394_, p_234395_, type -> p_234396_, p_234397_, p_234400_);
 +    }
 +
 +    public void tesselateWithAO(
 +        BlockAndTintGetter p_234391_,
-+        BakedModel p_234392_,
++        List<BlockModelPart> p_410478_,
 +        BlockState p_234393_,
 +        BlockPos p_234394_,
 +        PoseStack p_234395_,
-+        VertexConsumer p_234396_,
++        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
 +        boolean p_234397_,
-+        RandomSource p_234398_,
-+        long p_234399_,
-+        int p_234400_,
-+        net.neoforged.neoforge.client.model.data.ModelData modelData,
-+        net.minecraft.client.renderer.RenderType renderType
++        int p_234400_
 +    ) {
-         float[] afloat = new float[DIRECTIONS.length * 2];
-         BitSet bitset = new BitSet(3);
-         ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
-@@ -88,10 +_,10 @@
++        // Neo: Inject enhanced AO pipeline
++        ModelBlockRenderer.AmbientOcclusionRenderStorage modelblockrenderer$ambientocclusionrenderstorage = net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.newInstance();
++        boolean perPartAO = net.neoforged.neoforge.client.config.NeoForgeClientConfig.INSTANCE.handleAmbientOcclusionPerPart.getAsBoolean();
++        int lightEmission = -1;
+         int i = 0;
+         int j = 0;
  
-         for (Direction direction : DIRECTIONS) {
-             p_234398_.setSeed(p_234399_);
--            List<BakedQuad> list = p_234392_.getQuads(p_234393_, direction, p_234398_);
-+            List<BakedQuad> list = p_234392_.getQuads(p_234393_, direction, p_234398_, modelData, renderType);
-             if (!list.isEmpty()) {
-                 blockpos$mutableblockpos.setWithOffset(p_234394_, direction);
--                if (!p_234397_ || Block.shouldRenderFace(p_234393_, p_234391_.getBlockState(blockpos$mutableblockpos), direction)) {
-+                if (!p_234397_ || Block.shouldRenderFace(p_234391_, p_234394_, p_234393_, p_234391_.getBlockState(blockpos$mutableblockpos), direction)) {
-                     this.renderModelFaceAO(
-                         p_234391_, p_234393_, p_234394_, p_234395_, p_234396_, list, afloat, bitset, modelblockrenderer$ambientocclusionface, p_234400_
-                     );
-@@ -100,7 +_,7 @@
-         }
+         for (BlockModelPart blockmodelpart : p_410478_) {
++            VertexConsumer p_234396_ = bufferLookup.apply(blockmodelpart.getRenderType(p_234393_));
++            boolean ao = !perPartAO || switch (blockmodelpart.ambientOcclusion()) {
++                case TRUE -> true;
++                case DEFAULT -> {
++                    if (lightEmission == -1) {
++                        lightEmission = p_234393_.getLightEmission(p_234391_, p_234394_);
++                    }
++                    yield lightEmission == 0;
++                }
++                case FALSE -> false;
++            };
+             for (Direction direction : DIRECTIONS) {
+                 int k = 1 << direction.ordinal();
+                 boolean flag = (i & k) == 1;
+@@ -101,6 +_,7 @@
+                         if (!flag) {
+                             flag1 = shouldRenderFace(
+                                 p_234391_,
++                                p_234394_,
+                                 p_234393_,
+                                 p_234397_,
+                                 direction,
+@@ -113,6 +_,12 @@
+                         }
  
-         p_234398_.setSeed(p_234399_);
--        List<BakedQuad> list1 = p_234392_.getQuads(p_234393_, null, p_234398_);
-+        List<BakedQuad> list1 = p_234392_.getQuads(p_234393_, (Direction)null, p_234398_, modelData, renderType);
-         if (!list1.isEmpty()) {
-             this.renderModelFaceAO(
-                 p_234391_, p_234393_, p_234394_, p_234395_, p_234396_, list1, afloat, bitset, modelblockrenderer$ambientocclusionface, p_234400_
-@@ -108,6 +_,7 @@
+                         if (flag1) {
++                            if (!ao) {
++                                int light = modelblockrenderer$ambientocclusionrenderstorage.cache.getLightColor(p_234393_, p_234391_, modelblockrenderer$ambientocclusionrenderstorage.scratchPos.setWithOffset(p_234394_, direction));
++                                this.renderModelFaceFlat(
++                                        p_234391_, p_234393_, p_234394_, light, p_234400_, false, p_234395_, p_234396_, list, modelblockrenderer$ambientocclusionrenderstorage
++                                );
++                            } else
+                             this.renderModelFaceAO(
+                                 p_234391_, p_234393_, p_234394_, p_234395_, p_234396_, list, modelblockrenderer$ambientocclusionrenderstorage, p_234400_
+                             );
+@@ -123,6 +_,11 @@
+ 
+             List<BakedQuad> list1 = blockmodelpart.getQuads(null);
+             if (!list1.isEmpty()) {
++                if (!ao) {
++                    this.renderModelFaceFlat(
++                            p_234391_, p_234393_, p_234394_, -1, p_234400_, true, p_234395_, p_234396_, list1, modelblockrenderer$ambientocclusionrenderstorage
++                    );
++                } else
+                 this.renderModelFaceAO(
+                     p_234391_, p_234393_, p_234394_, p_234395_, p_234396_, list1, modelblockrenderer$ambientocclusionrenderstorage, p_234400_
+                 );
+@@ -130,6 +_,7 @@
          }
      }
  
-+    @Deprecated //Forge: Model data and render type parameter
++    @Deprecated // Neo: Buffer lookup parameter
      public void tesselateWithoutAO(
          BlockAndTintGetter p_234402_,
-         BakedModel p_234403_,
-@@ -120,15 +_,32 @@
-         long p_234410_,
+         List<BlockModelPart> p_410604_,
+@@ -140,11 +_,25 @@
+         boolean p_234408_,
          int p_234411_
      ) {
-+        tesselateWithoutAO(p_234402_, p_234403_, p_234404_, p_234405_, p_234406_, p_234407_, p_234408_, p_234409_, p_234410_, p_234411_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
++        this.tesselateWithoutAO(p_234402_, p_410604_, p_234404_, p_234405_, p_234406_, type -> p_234407_, p_234408_, p_234411_);
 +    }
 +
 +    public void tesselateWithoutAO(
 +        BlockAndTintGetter p_234402_,
-+        BakedModel p_234403_,
++        List<BlockModelPart> p_410604_,
 +        BlockState p_234404_,
 +        BlockPos p_234405_,
 +        PoseStack p_234406_,
-+        VertexConsumer p_234407_,
++        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
 +        boolean p_234408_,
-+        RandomSource p_234409_,
-+        long p_234410_,
-+        int p_234411_,
-+        net.neoforged.neoforge.client.model.data.ModelData modelData,
-+        net.minecraft.client.renderer.RenderType renderType
++        int p_234411_
 +    ) {
-         BitSet bitset = new BitSet(3);
-         BlockPos.MutableBlockPos blockpos$mutableblockpos = p_234405_.mutable();
+         ModelBlockRenderer.CommonRenderStorage modelblockrenderer$commonrenderstorage = new ModelBlockRenderer.CommonRenderStorage();
+         int i = 0;
+         int j = 0;
  
-         for (Direction direction : DIRECTIONS) {
-             p_234409_.setSeed(p_234410_);
--            List<BakedQuad> list = p_234403_.getQuads(p_234404_, direction, p_234409_);
-+            List<BakedQuad> list = p_234403_.getQuads(p_234404_, direction, p_234409_, modelData, renderType);
-             if (!list.isEmpty()) {
-                 blockpos$mutableblockpos.setWithOffset(p_234405_, direction);
--                if (!p_234408_ || Block.shouldRenderFace(p_234404_, p_234402_.getBlockState(blockpos$mutableblockpos), direction)) {
-+                if (!p_234408_ || Block.shouldRenderFace(p_234402_, p_234405_, p_234404_, p_234402_.getBlockState(blockpos$mutableblockpos), direction)) {
-                     int i = LevelRenderer.getLightColor(p_234402_, p_234404_, blockpos$mutableblockpos);
-                     this.renderModelFaceFlat(p_234402_, p_234404_, p_234405_, i, p_234411_, false, p_234406_, p_234407_, list, bitset);
-                 }
-@@ -136,7 +_,7 @@
-         }
- 
-         p_234409_.setSeed(p_234410_);
--        List<BakedQuad> list1 = p_234403_.getQuads(p_234404_, null, p_234409_);
-+        List<BakedQuad> list1 = p_234403_.getQuads(p_234404_, null, p_234409_, modelData, renderType);
-         if (!list1.isEmpty()) {
-             this.renderModelFaceFlat(p_234402_, p_234404_, p_234405_, -1, p_234411_, true, p_234406_, p_234407_, list1, bitset);
-         }
-@@ -156,6 +_,7 @@
+         for (BlockModelPart blockmodelpart : p_410604_) {
++            VertexConsumer p_234407_ = bufferLookup.apply(blockmodelpart.getRenderType(p_234404_));
+             for (Direction direction : DIRECTIONS) {
+                 int k = 1 << direction.ordinal();
+                 boolean flag = (i & k) == 1;
+@@ -154,7 +_,7 @@
+                     if (!list.isEmpty()) {
+                         BlockPos blockpos = modelblockrenderer$commonrenderstorage.scratchPos.setWithOffset(p_234405_, direction);
+                         if (!flag) {
+-                            flag1 = shouldRenderFace(p_234402_, p_234404_, p_234408_, direction, blockpos);
++                            flag1 = shouldRenderFace(p_234402_, p_234405_, p_234404_, p_234408_, direction, blockpos);
+                             i |= k;
+                             if (flag1) {
+                                 j |= k;
+@@ -191,7 +_,12 @@
+         int p_111022_
      ) {
          for (BakedQuad bakedquad : p_111018_) {
-             this.calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.getVertices(), bakedquad.getDirection(), p_111019_, p_111020_);
-+            if (!net.neoforged.neoforge.client.ClientHooks.calculateFaceWithoutAO(p_111013_, p_111014_, p_111015_, bakedquad, p_111020_.get(0), p_111021_.brightness, p_111021_.lightmap))
-             p_111021_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.getDirection(), p_111019_, p_111020_, bakedquad.isShade());
-             this.putQuadData(
-                 p_111013_,
-@@ -321,6 +_,7 @@
++            if (!bakedquad.hasAmbientOcclusion()) {
++                renderModelQuadFlat(p_111013_, p_111014_, p_111015_, -1, p_111022_, true, p_111016_, p_111017_, bakedquad, p_412172_);
++                continue;
++            }
+             calculateShape(p_111013_, p_111014_, p_111015_, bakedquad.vertices(), bakedquad.direction(), p_412172_);
++            p_412172_.captureQuad(bakedquad);
+             p_412172_.calculate(p_111013_, p_111014_, p_111015_, bakedquad.direction(), bakedquad.shade());
+             this.putQuadData(p_111013_, p_111014_, p_111015_, p_111017_, p_111016_.last(), bakedquad, p_412172_, p_111022_);
+         }
+@@ -307,17 +_,30 @@
+         ModelBlockRenderer.CommonRenderStorage p_412163_
+     ) {
+         for (BakedQuad bakedquad : p_111010_) {
++            renderModelQuadFlat(p_111002_, p_111003_, p_111004_, p_111005_, p_111006_, p_111007_, p_111008_, p_111009_, bakedquad, p_412163_);
++        }
++    }
++
++    private void renderModelQuadFlat(
++        BlockAndTintGetter p_111002_,
++        BlockState p_111003_,
++        BlockPos p_111004_,
++        int p_111005_,
++        int p_111006_,
++        boolean p_111007_,
++        PoseStack p_111008_,
++        VertexConsumer p_111009_,
++        BakedQuad bakedquad,
++        ModelBlockRenderer.CommonRenderStorage p_412163_
++    ) {
++        {
+             if (p_111007_) {
+                 calculateShape(p_111002_, p_111003_, p_111004_, bakedquad.vertices(), bakedquad.direction(), p_412163_);
+                 BlockPos blockpos = (BlockPos)(p_412163_.faceCubic ? p_412163_.scratchPos.setWithOffset(p_111004_, bakedquad.direction()) : p_111004_);
+                 p_111005_ = p_412163_.cache.getLightColor(p_111003_, p_111002_, blockpos);
+             }
+ 
+-            float f = p_111002_.getShade(bakedquad.direction(), bakedquad.shade());
+-            p_412163_.brightness[0] = f;
+-            p_412163_.brightness[1] = f;
+-            p_412163_.brightness[2] = f;
+-            p_412163_.brightness[3] = f;
++            net.neoforged.neoforge.client.model.ao.EnhancedAoRenderStorage.applyFlatQuadBrightness(p_111002_, bakedquad, p_412163_);
+             p_412163_.lightmap[0] = p_111005_;
+             p_412163_.lightmap[1] = p_111005_;
+             p_412163_.lightmap[2] = p_111005_;
+@@ -326,6 +_,7 @@
          }
      }
  
-+    @Deprecated //Forge: Model data and render type parameter
-     public void renderModel(
++    @Deprecated // Neo: Level, position, and buffer source parameters
+     public static void renderModel(
          PoseStack.Pose p_111068_,
          VertexConsumer p_111069_,
-@@ -332,16 +_,32 @@
+@@ -336,7 +_,24 @@
          int p_111075_,
          int p_111076_
      ) {
-+        renderModel(p_111068_, p_111069_, p_111070_, p_111071_, p_111072_, p_111073_, p_111074_, p_111075_, p_111076_, net.neoforged.neoforge.client.model.data.ModelData.EMPTY, null);
+-        for (BlockModelPart blockmodelpart : p_405848_.collectParts(RandomSource.create(42L))) {
++        renderModel(p_111068_, type -> p_111069_, p_405848_, p_111072_, p_111073_, p_111074_, p_111075_, p_111076_, net.minecraft.world.level.EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
 +    }
 +
-+    public void renderModel(
++    public static void renderModel(
 +        PoseStack.Pose p_111068_,
-+        VertexConsumer p_111069_,
-+        @Nullable BlockState p_111070_,
-+        BakedModel p_111071_,
++        net.minecraft.client.renderer.MultiBufferSource bufferSource,
++        BlockStateModel p_405848_,
 +        float p_111072_,
 +        float p_111073_,
 +        float p_111074_,
 +        int p_111075_,
 +        int p_111076_,
-+        net.neoforged.neoforge.client.model.data.ModelData modelData,
-+        net.minecraft.client.renderer.RenderType renderType
++        net.minecraft.world.level.BlockAndTintGetter level,
++        BlockPos pos,
++        BlockState state
 +    ) {
-         RandomSource randomsource = RandomSource.create();
-         long i = 42L;
++        for (BlockModelPart blockmodelpart : p_405848_.collectParts(level, pos, state, RandomSource.create(42L))) {
++            VertexConsumer p_111069_ = bufferSource.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getEntityRenderType(blockmodelpart.getRenderType(state)));
+             for (Direction direction : DIRECTIONS) {
+                 renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, blockmodelpart.getQuads(direction), p_111075_, p_111076_);
+             }
+@@ -697,6 +_,9 @@
  
-         for (Direction direction : DIRECTIONS) {
-             randomsource.setSeed(42L);
--            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, direction, randomsource), p_111075_, p_111076_);
-+            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, direction, randomsource, modelData, renderType), p_111075_, p_111076_);
+         public AmbientOcclusionRenderStorage() {
          }
++
++        // Neo: Call this before calling calculate if the render storage is an EnhancedAoRenderStorage!
++        public void captureQuad(BakedQuad quad) {}
  
-         randomsource.setSeed(42L);
--        renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, null, randomsource), p_111075_, p_111076_);
-+        renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, p_111071_.getQuads(p_111070_, null, randomsource, modelData, renderType), p_111075_, p_111076_);
-     }
- 
-     private static void renderQuadList(
-@@ -722,19 +_,19 @@
-             int l = modelblockrenderer$cache.getLightColor(blockstate3, p_111168_, blockpos$mutableblockpos);
-             float f3 = modelblockrenderer$cache.getShadeBrightness(blockstate3, p_111168_, blockpos$mutableblockpos);
-             BlockState blockstate4 = p_111168_.getBlockState(
--                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[0]).move(p_366875_)
-+                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[0]) // Neo: remove move() to avoid oversampling (MC-43968)
-             );
-             boolean flag = !blockstate4.isViewBlocking(p_111168_, blockpos$mutableblockpos) || blockstate4.getLightBlock() == 0;
-             BlockState blockstate5 = p_111168_.getBlockState(
--                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[1]).move(p_366875_)
-+                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[1]) // Neo: remove move() to avoid oversampling (MC-43968)
-             );
-             boolean flag1 = !blockstate5.isViewBlocking(p_111168_, blockpos$mutableblockpos) || blockstate5.getLightBlock() == 0;
-             BlockState blockstate6 = p_111168_.getBlockState(
--                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[2]).move(p_366875_)
-+                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[2]) // Neo: remove move() to avoid oversampling (MC-43968)
-             );
-             boolean flag2 = !blockstate6.isViewBlocking(p_111168_, blockpos$mutableblockpos) || blockstate6.getLightBlock() == 0;
-             BlockState blockstate7 = p_111168_.getBlockState(
--                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[3]).move(p_366875_)
-+                blockpos$mutableblockpos.setWithOffset(blockpos, modelblockrenderer$adjacencyinfo.corners[3]) // Neo: remove move() to avoid oversampling (MC-43968)
-             );
-             boolean flag3 = !blockstate7.isViewBlocking(p_111168_, blockpos$mutableblockpos) || blockstate7.getLightBlock() == 0;
-             float f4;
+         public void calculate(BlockAndTintGetter p_412286_, BlockState p_412102_, BlockPos p_412730_, Direction p_412336_, boolean p_412430_) {
+             BlockPos blockpos = this.faceCubic ? p_412730_.relative(p_412336_) : p_412730_;

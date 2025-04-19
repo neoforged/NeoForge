@@ -121,12 +121,17 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         CompoundTag tag = null;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
+            var key = NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type);
             if (type.serializer != null) {
-                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
-                if (serialized != null) {
-                    if (tag == null)
-                        tag = new CompoundTag();
-                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
+                try {
+                    Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
+                    if (serialized != null) {
+                        if (tag == null)
+                            tag = new CompoundTag();
+                        tag.put(key.toString(), serialized);
+                    }
+                } catch (Exception exception) {
+                    LOGGER.error("Failed to serialize data attachment {}. Skipping.", key, exception);
                 }
             }
         }
@@ -137,7 +142,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider)}.
      */
     protected final void deserializeAttachments(HolderLookup.Provider provider, CompoundTag tag) {
-        for (var key : tag.getAllKeys()) {
+        for (var key : tag.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
             if (keyLocation == null) {

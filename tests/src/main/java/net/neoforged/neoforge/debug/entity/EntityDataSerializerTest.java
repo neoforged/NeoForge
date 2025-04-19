@@ -9,7 +9,6 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -34,6 +33,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = EntityDataSerializerTest.GROUP)
@@ -54,8 +54,8 @@ public class EntityDataSerializerTest {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if custom EntityDataSerializers are properly handled")
     static void customEntityDataSerializer(final DynamicTest test, final RegistrationHelper reg) {
-        var testEntity = reg.entityTypes().registerType("serializer_test_entity", () -> EntityType.Builder.of(TestEntity::new, MobCategory.CREATURE)
-                .sized(1, 1)).withRenderer(() -> TestEntityRenderer::new);
+        var testEntity = reg.entityTypes().registerEntityType("serializer_test_entity", TestEntity::new, MobCategory.CREATURE, builder -> builder.sized(1, 1))
+                .withRenderer(() -> TestEntityRenderer::new);
 
         test.onGameTest(helper -> {
             var entity = helper.spawn(testEntity.get(), 1, 2, 1);

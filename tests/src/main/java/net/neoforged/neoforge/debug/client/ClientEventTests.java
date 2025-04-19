@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.entity.state.HoglinRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.hoglin.HoglinBase;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.EmptyBlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
@@ -38,7 +40,6 @@ import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
@@ -104,17 +105,16 @@ public class ClientEventTests {
                                 testBlockAt.getX() - sectionOrigin.getX(),
                                 testBlockAt.getY() - sectionOrigin.getY(),
                                 testBlockAt.getZ() - sectionOrigin.getZ());
-                        var renderType = RenderType.solid();
+                        var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState())
+                                .collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, Blocks.DIAMOND_BLOCK.defaultBlockState(), new SingleThreadedRandomSource(0));
                         Minecraft.getInstance().getBlockRenderer().renderBatched(
                                 Blocks.DIAMOND_BLOCK.defaultBlockState(),
                                 testBlockAt,
                                 context.getRegion(),
                                 poseStack,
-                                context.getOrCreateChunkBuffer(renderType),
+                                context::getOrCreateChunkBuffer,
                                 false,
-                                new SingleThreadedRandomSource(0),
-                                ModelData.EMPTY,
-                                renderType);
+                                parts);
                         poseStack.popPose();
                     });
                 }
@@ -173,6 +173,7 @@ public class ClientEventTests {
                     test.fail("Custom render data not set for player");
                     return;
                 }
+
                 var poseStack = event.getPoseStack();
                 poseStack.pushPose();
                 poseStack.scale(0.3f, 0.3f, 0.3f);
@@ -180,11 +181,61 @@ public class ClientEventTests {
                     poseStack.translate(0, 1, 0);
                     poseStack.pushPose();
                     poseStack.mulPose(Axis.XP.rotation(xRotation));
-                    Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.CALCITE.defaultBlockState(), poseStack, event.getMultiBufferSource(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());
+                    Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
+                            Blocks.CALCITE.defaultBlockState(),
+                            poseStack,
+                            event.getMultiBufferSource(),
+                            event.getPackedLight(),
+                            OverlayTexture.NO_OVERLAY,
+                            EmptyBlockAndTintGetter.INSTANCE,
+                            BlockPos.ZERO);
                     poseStack.popPose();
                 }
                 poseStack.popPose();
                 test.pass();
+            });
+        });
+    }
+
+    @TestHolder(description = { "Tests if rendering custom geometry on visible chunks works", "When the message \"gold block\" is sent in chat, gold blocks should render at the origin of every visible section with blocks" })
+    static void renderLevelStageWithSectionData(final DynamicTest test) {
+        test.whenEnabled(listeners -> {
+            listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
+                if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
+                    var player = Minecraft.getInstance().player;
+                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent event) -> {
+                        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+                            var randomSource = new SingleThreadedRandomSource(0);
+                            var state = Blocks.GOLD_BLOCK.defaultBlockState();
+                            var stack = event.getPoseStack();
+                            var camera = event.getCamera().getPosition();
+                            event.getRenderableSections().forEach(section -> {
+                                if (section.isEmpty()) {
+                                    return;
+                                }
+
+                                stack.pushPose();
+                                stack.translate(
+                                        section.getRenderOrigin().getX() - camera.x,
+                                        section.getRenderOrigin().getY() - camera.y,
+                                        section.getRenderOrigin().getZ() - camera.z);
+
+                                var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(state).collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state, randomSource);
+                                Minecraft.getInstance().getBlockRenderer().renderBatched(
+                                        state,
+                                        section.getRenderOrigin(),
+                                        Minecraft.getInstance().level,
+                                        stack,
+                                        Minecraft.getInstance().renderBuffers().bufferSource()::getBuffer,
+                                        false,
+                                        parts);
+                                stack.popPose();
+
+                                test.pass();
+                            });
+                        }
+                    });
+                }
             });
         });
     }

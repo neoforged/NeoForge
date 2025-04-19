@@ -1,6 +1,6 @@
 --- a/net/minecraft/network/chat/ComponentSerialization.java
 +++ b/net/minecraft/network/chat/ComponentSerialization.java
-@@ -104,7 +_,7 @@
+@@ -96,7 +_,7 @@
  
      private static Codec<Component> createCodec(Codec<Component> p_304554_) {
          ComponentContents.Type<?>[] type = new ComponentContents.Type[]{

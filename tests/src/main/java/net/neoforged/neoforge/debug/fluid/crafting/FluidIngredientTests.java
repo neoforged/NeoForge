@@ -9,8 +9,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
@@ -21,6 +19,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 
 // TODO(max): move rest of these to unit tests!
 @ForEachTest(groups = { "fluid.crafting", "crafting.ingredient" })
@@ -74,7 +73,7 @@ public class FluidIngredientTests {
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests serialization format of sized fluid ingredients")
-    static void sizedFluidIngredientSerialization(final GameTestHelper helper) {
+    static void sizedFluidIngredientSerialization(final ExtendedGameTestHelper helper) {
         var sized = SizedFluidIngredient.of(Fluids.WATER, 1000);
 
         var nestedResult = SizedFluidIngredient.CODEC.encodeStart(JsonOps.INSTANCE, sized);
@@ -88,7 +87,7 @@ public class FluidIngredientTests {
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Tests matching of sized fluid ingredients")
-    static void sizedFluidIngredientMatching(final GameTestHelper helper) {
+    static void sizedFluidIngredientMatching(final ExtendedGameTestHelper helper) {
         var sized = SizedFluidIngredient.of(Fluids.WATER, 2);
 
         helper.assertFalse(sized.test(new FluidStack(Fluids.LAVA, 1000)), "SizedFluidIngredient should not match incorrect fluid!");

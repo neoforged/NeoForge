@@ -8,7 +8,7 @@
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
  public enum DamageEffects implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      HURT("hurt", SoundEvents.PLAYER_HURT),
-     THORNS("thorns", SoundEvents.THORNS_HIT),
+     THORNS("thorns", SoundEvents.PLAYER_HURT),
 @@ -15,11 +_,33 @@
  
      public static final Codec<DamageEffects> CODEC = StringRepresentable.fromEnum(DamageEffects::values);

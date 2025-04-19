@@ -5,21 +5,21 @@
 
 package net.neoforged.neoforge.common.util;
 
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceLinkedOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -33,16 +33,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.AddAttributeTooltipsEvent;
-import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.extensions.IAttributeExtension;
+import net.neoforged.neoforge.event.AddAttributeTooltipsEvent;
+import net.neoforged.neoforge.event.GatherSkippedAttributeTooltipsEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,9 +89,8 @@ public class AttributeUtil {
      * @param tooltip A consumer to add the tooltip lines to.
      * @param ctx     The tooltip context.
      */
-    public static void addAttributeTooltips(ItemStack stack, Consumer<Component> tooltip, AttributeTooltipContext ctx) {
-        ItemAttributeModifiers modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        if (modifiers.showInTooltip()) {
+    public static void addAttributeTooltips(ItemStack stack, Consumer<Component> tooltip, TooltipDisplay tooltipDisplay, AttributeTooltipContext ctx) {
+        if (tooltipDisplay.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
             applyModifierTooltips(stack, tooltip, ctx);
         }
         NeoForge.EVENT_BUS.post(new AddAttributeTooltipsEvent(stack, tooltip, ctx));
@@ -153,7 +151,7 @@ public class AttributeUtil {
         }
 
         // Collect all the base modifiers
-        Map<Holder<Attribute>, BaseModifier> baseModifs = new IdentityHashMap<>();
+        Map<Holder<Attribute>, BaseModifier> baseModifs = new Reference2ReferenceLinkedOpenHashMap<>();
 
         var it = modifierMap.entries().iterator();
         while (it.hasNext()) {
@@ -279,7 +277,7 @@ public class AttributeUtil {
      */
     public static void addPotionTooltip(List<Pair<Holder<Attribute>, AttributeModifier>> list, Consumer<Component> tooltips) {
         for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
-            tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), getTooltipFlag()));
+            tooltips.accept(pair.getFirst().value().toComponent(pair.getSecond(), NeoForgeProxy.INSTANCE.getTooltipFlag()));
         }
     }
 
@@ -299,7 +297,7 @@ public class AttributeUtil {
      * @param slot  The slot group to query modifiers for.
      */
     public static Multimap<Holder<Attribute>, AttributeModifier> getSortedModifiers(ItemStack stack, EquipmentSlotGroup slot) {
-        Multimap<Holder<Attribute>, AttributeModifier> map = sortedMap();
+        Multimap<Holder<Attribute>, AttributeModifier> map = LinkedListMultimap.create();
         stack.forEachModifier(slot, (attr, modif) -> {
             if (attr != null && modif != null) {
                 map.put(attr, modif);
@@ -318,18 +316,6 @@ public class AttributeUtil {
     }
 
     /**
-     * Gets the current global tooltip flag. Used by {@link AttributeUtil#addPotionTooltip} since one isn't available locally.
-     * 
-     * @return If called on the client, the current tooltip flag, otherwise {@link TooltipFlag#NORMAL}
-     */
-    private static TooltipFlag getTooltipFlag() {
-        if (FMLEnvironment.dist.isClient()) {
-            return ClientAccess.getTooltipFlag();
-        }
-        return TooltipFlag.NORMAL;
-    }
-
-    /**
      * Stores a single base modifier (determined by {@link IAttributeExtension#getBaseId()}) and any other children non-base modifiers for the same attribute.
      * <p>
      * Used during attribute merging logic within {@link AttributeUtil#applyTextFor}.
@@ -343,14 +329,5 @@ public class AttributeUtil {
         double sum = 0;
         boolean isMerged = false;
         private List<AttributeModifier> children = new LinkedList<>();
-    }
-
-    /**
-     * Client bouncer class to avoid class loading issues. Access to this class still needs a dist check.
-     */
-    private static class ClientAccess {
-        static TooltipFlag getTooltipFlag() {
-            return Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL;
-        }
     }
 }

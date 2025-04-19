@@ -1,14 +1,14 @@
 --- a/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemFrameRenderer.java
-@@ -95,6 +_,7 @@
+@@ -93,6 +_,7 @@
              p_115079_.translate(0.0F, 0.0F, 0.4375F);
          }
  
 +        if (!net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderItemInFrameEvent(p_364723_, this, p_115079_, p_115080_, p_115081_)).isCanceled()) {
          if (p_364723_.mapId != null) {
              int j = p_364723_.rotation % 4 * 2;
-             p_115079_.mulPose(Axis.ZP.rotationDegrees((float)j * 360.0F / 8.0F));
-@@ -111,6 +_,7 @@
+             p_115079_.mulPose(Axis.ZP.rotationDegrees(j * 360.0F / 8.0F));
+@@ -109,6 +_,7 @@
              p_115079_.scale(0.5F, 0.5F, 0.5F);
              p_364723_.item.render(p_115079_, p_115080_, k, OverlayTexture.NO_OVERLAY);
          }
@@ -16,7 +16,7 @@
  
          p_115079_.popPose();
      }
-@@ -154,7 +_,7 @@
+@@ -144,7 +_,7 @@
          if (!itemstack.isEmpty()) {
              MapId mapid = p_363125_.getFramedMapId(itemstack);
              if (mapid != null) {

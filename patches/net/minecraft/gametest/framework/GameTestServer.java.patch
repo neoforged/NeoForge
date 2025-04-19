@@ -1,16 +1,13 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -155,6 +_,7 @@
+@@ -152,10 +_,12 @@
+     @Override
      public boolean initServer() {
-         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {
-         });
+         this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {});
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerAboutToStart(this);
          this.loadLevel();
          ServerLevel serverlevel = this.overworld();
-         this.testBatches = Lists.newArrayList(GameTestBatchFactory.fromTestFunction(this.testFunctions, serverlevel));
-@@ -162,6 +_,7 @@
-         int i = 20000000;
-         serverlevel.setWeatherParameters(20000000, 20000000, false, false);
+         this.testBatches = this.evaluateTestsToRun(serverlevel);
          LOGGER.info("Started game test server");
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
          return true;

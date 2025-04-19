@@ -7,8 +7,8 @@
 -        if (!p_172458_.is(Blocks.GRASS_BLOCK)) {
 +        if (net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(p_172458_).areBreakingParticlesTinted(p_172458_, p_172451_, p_172459_)) {
              int i = Minecraft.getInstance().getBlockColors().getColor(p_172458_, p_172451_, p_172459_, 0);
-             this.rCol *= (float)(i >> 16 & 0xFF) / 255.0F;
-             this.gCol *= (float)(i >> 8 & 0xFF) / 255.0F;
+             this.rCol *= (i >> 16 & 0xFF) / 255.0F;
+             this.gCol *= (i >> 8 & 0xFF) / 255.0F;
 @@ -97,8 +_,14 @@
      ) {
          BlockState blockstate = p_338588_.getState();
@@ -20,7 +20,7 @@
 +
 +    public TerrainParticle updateSprite(BlockState state, BlockPos pos) { //FORGE: we cannot assume that the x y z of the particles match the block pos of the block.
 +        if (pos != null) // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
-+            this.setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(state, level, pos));
++            this.setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getParticleIcon(state, level, pos));
 +        return this;
      }
  

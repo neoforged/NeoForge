@@ -13,7 +13,7 @@ import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeConfig;
+import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.exceptions.UnregisteredPermissionException;
@@ -98,7 +98,7 @@ public final class PermissionAPI {
         Map<ResourceLocation, IPermissionHandlerFactory> availableHandlers = handlerEvent.getAvailablePermissionHandlerFactories();
 
         try {
-            ResourceLocation selectedPermissionHandler = ResourceLocation.parse(NeoForgeConfig.SERVER.permissionHandler.get());
+            ResourceLocation selectedPermissionHandler = ResourceLocation.parse(NeoForgeServerConfig.INSTANCE.permissionHandler.get());
             if (!availableHandlers.containsKey(selectedPermissionHandler)) {
                 LOGGER.error("Unable to find configured permission handler {}, will use {}", selectedPermissionHandler, DefaultPermissionHandler.IDENTIFIER);
                 selectedPermissionHandler = DefaultPermissionHandler.IDENTIFIER;

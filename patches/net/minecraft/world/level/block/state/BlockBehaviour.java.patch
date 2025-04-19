@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -182,7 +_,7 @@
+@@ -180,7 +_,7 @@
          if (!p_311951_.isAir() && p_312925_.getBlockInteraction() != Explosion.BlockInteraction.TRIGGER_BLOCK) {
              Block block = p_311951_.getBlock();
              boolean flag = p_312925_.getIndirectSourceEntity() instanceof Player;
@@ -9,7 +9,7 @@
                  BlockEntity blockentity = p_311951_.hasBlockEntity() ? p_365148_.getBlockEntity(p_312489_) : null;
                  LootParams.Builder lootparams$builder = new LootParams.Builder(p_365148_)
                      .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(p_312489_))
-@@ -197,8 +_,7 @@
+@@ -195,8 +_,7 @@
                  p_311951_.getDrops(lootparams$builder).forEach(p_311752_ -> p_312073_.accept(p_311752_, p_312489_));
              }
  
@@ -19,32 +19,32 @@
          }
      }
  
-@@ -344,8 +_,8 @@
+@@ -346,8 +_,8 @@
          if (f == -1.0F) {
              return 0.0F;
          } else {
 -            int i = p_60467_.hasCorrectToolForDrops(p_60466_) ? 30 : 100;
--            return p_60467_.getDestroySpeed(p_60466_) / f / (float)i;
+-            return p_60467_.getDestroySpeed(p_60466_) / f / i;
 +            int i = net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(p_60467_, p_60466_, p_60468_, p_60469_) ? 30 : 100;
 +            return p_60467_.getDestroySpeed(p_60466_, p_60469_) / f / (float)i;
          }
      }
  
-@@ -389,10 +_,13 @@
+@@ -387,10 +_,13 @@
          return this.isRandomlyTicking;
      }
  
-+    @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
++    @Deprecated //Neo: Use more sensitive version {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
  
 +    @Deprecated
-+    /** @deprecated NeoForge: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(BlockState, LevelReader, BlockPos, Player, boolean) player-sensitive version} */
++    /** @deprecated Neo: use {@link net.neoforged.neoforge.common.extensions.IBlockExtension#getCloneItemStack(LevelReader, BlockPos, BlockState, boolean, Player) player-sensitive version} */
      protected ItemStack getCloneItemStack(LevelReader p_382795_, BlockPos p_383120_, BlockState p_382830_, boolean p_388788_) {
          return new ItemStack(this.asItem());
      }
-@@ -409,6 +_,10 @@
+@@ -407,6 +_,10 @@
          return this.properties.destroyTime;
      }
  
@@ -55,11 +55,11 @@
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
          private static final Direction[] DIRECTIONS = Direction.values();
          private static final VoxelShape[] EMPTY_OCCLUSION_SHAPES = Util.make(
-@@ -565,12 +_,14 @@
+@@ -563,12 +_,14 @@
              return this.useShapeForLightOcclusion;
          }
  
-+        /** @deprecated Forge: Use {@link BlockState#getLightEmission(BlockGetter, BlockPos)} instead */
++        /** @deprecated Neo: Use {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getLightEmission(BlockGetter, BlockPos)} instead */
 +        @Deprecated
          public int getLightEmission() {
              return this.lightEmission;
@@ -71,7 +71,7 @@
          }
  
          public boolean ignitedByLava() {
-@@ -583,9 +_,11 @@
+@@ -581,9 +_,11 @@
          }
  
          public MapColor getMapColor(BlockGetter p_285002_, BlockPos p_285293_) {
@@ -84,7 +84,7 @@
          public BlockState rotate(Rotation p_60718_) {
              return this.getBlock().rotate(this.asState(), p_60718_);
          }
-@@ -639,6 +_,8 @@
+@@ -637,6 +_,8 @@
          }
  
          public PushReaction getPistonPushReaction() {
@@ -93,7 +93,7 @@
              return this.pushReaction;
          }
  
-@@ -766,6 +_,9 @@
+@@ -764,6 +_,9 @@
          }
  
          public InteractionResult useItemOn(ItemStack p_316374_, Level p_316651_, Player p_316623_, InteractionHand p_316469_, BlockHitResult p_316877_) {
@@ -103,20 +103,20 @@
              return this.getBlock().useItemOn(p_316374_, this.asState(), p_316651_, p_316877_.getBlockPos(), p_316623_, p_316469_, p_316877_);
          }
  
-@@ -875,6 +_,7 @@
+@@ -873,6 +_,7 @@
              return this.getBlock().getSeed(this.asState(), p_60727_);
          }
  
-+        @Deprecated //Forge: Use more sensitive version {@link IForgeBlockState#getSoundType(IWorldReader, BlockPos, Entity) }
++        @Deprecated //Neo: Use more sensitive version {@link net.neoforged.neoforge.common.extensions.IBlockStateExtension#getSoundType(LevelReader, BlockPos, Entity) }
          public SoundType getSoundType() {
              return this.getBlock().getSoundType(this.asState());
          }
-@@ -1004,7 +_,7 @@
+@@ -1002,7 +_,7 @@
          BlockBehaviour.StateArgumentPredicate<EntityType<?>> isValidSpawn = (p_360193_, p_360194_, p_360195_, p_360196_) -> p_360193_.isFaceSturdy(
-                     p_360194_, p_360195_, Direction.UP
-                 )
--                && p_360193_.getLightEmission() < 14;
-+                && p_360193_.getLightEmission(p_360194_, p_360195_) < 14;
+                 p_360194_, p_360195_, Direction.UP
+             )
+-            && p_360193_.getLightEmission() < 14;
++            && p_360193_.getLightEmission(p_360194_, p_360195_) < 14;
          BlockBehaviour.StatePredicate isRedstoneConductor = (p_360190_, p_360191_, p_360192_) -> p_360190_.isCollisionShapeFullBlock(p_360191_, p_360192_);
          BlockBehaviour.StatePredicate isSuffocating = (p_360187_, p_360188_, p_360189_) -> p_360187_.blocksMotion()
-                 && p_360187_.isCollisionShapeFullBlock(p_360188_, p_360189_);
+             && p_360187_.isCollisionShapeFullBlock(p_360188_, p_360189_);

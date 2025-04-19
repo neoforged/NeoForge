@@ -14,7 +14,7 @@
              }
          } else {
              level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
--            level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)), 11);
+-            level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, true), 11);
 +            level.setBlock(blockpos, blockstate2, 11);
              level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockpos);
              if (player != null) {

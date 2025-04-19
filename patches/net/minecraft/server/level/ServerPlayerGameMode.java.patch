@@ -26,7 +26,7 @@
                          blockstate,
                          p_348149_ -> this.player.onEquippedItemBroken(p_348149_, EquipmentSlot.MAINHAND)
                      );
-+                    if (event.getUseBlock() != net.neoforged.neoforge.common.util.TriState.FALSE)
++                    if (event.getUseBlock() != net.minecraft.util.TriState.FALSE)
                      blockstate.attack(this.level, p_215120_, this.player);
                      f = blockstate.getDestroyProgress(this.player, this.player.level(), p_215120_);
                  }
@@ -34,7 +34,7 @@
  
      public boolean destroyBlock(BlockPos p_9281_) {
          BlockState blockstate1 = this.level.getBlockState(p_9281_);
--        if (!this.player.getMainHandItem().getItem().canAttackBlock(blockstate1, this.level, p_9281_, this.player)) {
+-        if (!this.player.getMainHandItem().canDestroyBlock(blockstate1, this.level, p_9281_, this.player)) {
 +        var event = net.neoforged.neoforge.common.CommonHooks.fireBlockBreak(level, gameModeForPlayer, player, p_9281_, blockstate1);
 +        if (event.isCanceled()) {
              return false;
@@ -49,7 +49,7 @@
 -                    block.destroy(this.level, p_9281_, blockstate);
 -                }
  
-                 if (this.isCreative()) {
+                 if (this.player.preventsBlockDrops()) {
 +                    removeBlock(p_9281_, blockstate, false);
                      return true;
                  } else {
@@ -117,7 +117,7 @@
              }
          } else {
 +            UseOnContext useoncontext = new UseOnContext(p_9266_, p_9269_, p_9270_);
-+            if (event.getUseItem() != net.neoforged.neoforge.common.util.TriState.FALSE) {
++            if (event.getUseItem() != net.minecraft.util.TriState.FALSE) {
 +                InteractionResult result = p_9268_.onItemUseFirst(useoncontext);
 +                if (result != InteractionResult.PASS) return result;
 +            }
@@ -139,5 +139,5 @@
 +            if (event.getUseItem().isTrue() || (!p_9268_.isEmpty() && !p_9266_.getCooldowns().isOnCooldown(p_9268_))) {
 +                if (event.getUseItem().isFalse()) return InteractionResult.PASS;
                  InteractionResult interactionresult2;
-                 if (this.isCreative()) {
+                 if (p_9266_.hasInfiniteMaterials()) {
                      int i = p_9268_.getCount();

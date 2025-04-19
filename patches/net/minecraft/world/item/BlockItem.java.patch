@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -79,11 +_,11 @@
+@@ -77,11 +_,11 @@
                          }
                      }
  
@@ -14,7 +14,7 @@
                          SoundSource.BLOCKS,
                          (soundtype.getVolume() + 1.0F) / 2.0F,
                          soundtype.getPitch() * 0.8F
-@@ -96,8 +_,14 @@
+@@ -94,8 +_,14 @@
          }
      }
  

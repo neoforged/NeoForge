@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
 +++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
-@@ -228,7 +_,7 @@
+@@ -221,7 +_,7 @@
              this.handlePortal();
          }
  

@@ -1,0 +1,39 @@
+--- a/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
++++ b/net/minecraft/client/data/models/blockstates/MultiVariantGenerator.java
+@@ -53,6 +_,18 @@
+         return new MultiVariantGenerator(this.block, list, this.seenProperties);
+     }
+ 
++    // Neo: copy of the apply(...VariantMutator...) methods to support UnbakedMutators. Must be renamed due to type erasure for PropertyDispatch
++    public MultiVariantGenerator withUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> dispatch) {
++        Set<Property<?>> set = validateAndExpandProperties(this.seenProperties, this.block, dispatch);
++        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(e -> e.applyToUnbaked(dispatch)).toList();
++        return new MultiVariantGenerator(this.block, list, set);
++    }
++
++    public MultiVariantGenerator withUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator dispatch) {
++        List<MultiVariantGenerator.Entry> list = this.entries.stream().flatMap(e -> e.applyToUnbaked(dispatch)).toList();
++        return new MultiVariantGenerator(this.block, list, this.seenProperties);
++    }
++
+     @Override
+     public BlockModelDefinition create() {
+         Map<String, BlockStateModel.Unbaked> map = new HashMap<>();
+@@ -108,6 +_,17 @@
+ 
+         public Stream<MultiVariantGenerator.Entry> apply(VariantMutator p_404774_) {
+             return Stream.of(new MultiVariantGenerator.Entry(this.properties, this.variant.with(p_404774_)));
++        }
++
++        // Neo: Support for unbaked mutators
++        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(PropertyDispatch<net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator> dispatch) {
++            return dispatch.getEntries().entrySet().stream().map(entry -> {
++                return new MultiVariantGenerator.Entry(properties.extend(entry.getKey()), variant.with(entry.getValue()));
++            });
++        }
++
++        public Stream<MultiVariantGenerator.Entry> applyToUnbaked(net.neoforged.neoforge.client.model.generators.blockstate.UnbakedMutator mutator) {
++            return Stream.of(new MultiVariantGenerator.Entry(properties, variant.with(mutator)));
+         }
+     }
+ }

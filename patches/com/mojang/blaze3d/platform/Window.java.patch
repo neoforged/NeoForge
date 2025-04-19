@@ -1,28 +1,60 @@
 --- a/com/mojang/blaze3d/platform/Window.java
 +++ b/com/mojang/blaze3d/platform/Window.java
-@@ -91,7 +_,8 @@
+@@ -90,6 +_,10 @@
          GLFW.glfwWindowHint(139267, 2);
          GLFW.glfwWindowHint(139272, 204801);
          GLFW.glfwWindowHint(139270, 1);
--        this.window = GLFW.glfwCreateWindow(this.width, this.height, p_85376_, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
-+        this.window = net.neoforged.fml.loading.ImmediateWindowHandler.setupMinecraftWindow(()->this.width, ()->this.height, ()->p_85376_, ()->this.fullscreen && monitor != null ? monitor.getMonitor() : 0L);
-+        if (!net.neoforged.fml.loading.ImmediateWindowHandler.positionWindow(Optional.ofNullable(monitor), w->this.width = this.windowedWidth = w, h->this.height = this.windowedHeight = h, x->this.x = this.windowedX = x, y->this.y = this.windowedY = y)) {
++        var earlyLoadingScreen = net.neoforged.fml.loading.EarlyLoadingScreenController.current();
++        if (earlyLoadingScreen != null) {
++            this.window = takeOverWindow(earlyLoadingScreen, p_85376_);
++        } else {
+         this.window = GLFW.glfwCreateWindow(this.width, this.height, p_85376_, this.fullscreen && monitor != null ? monitor.getMonitor() : 0L, 0L);
          if (monitor != null) {
              VideoMode videomode = monitor.getPreferredVidMode(this.fullscreen ? this.preferredFullscreenVideoMode : Optional.empty());
-             this.windowedX = this.x = monitor.getX() + videomode.getWidth() / 2 - this.width / 2;
-@@ -103,6 +_,7 @@
+@@ -102,6 +_,7 @@
              this.windowedX = this.x = aint1[0];
              this.windowedY = this.y = aint[0];
          }
 +        }
  
-         GLFW.glfwMakeContextCurrent(this.window);
-         GL.createCapabilities();
-@@ -273,6 +_,7 @@
-         GLFW.glfwGetFramebufferSize(this.window, aint, aint1);
-         this.framebufferWidth = aint[0] > 0 ? aint[0] : 1;
-         this.framebufferHeight = aint1[0] > 0 ? aint1[0] : 1;
-+        if (this.framebufferHeight == 0 || this.framebufferWidth==0) net.neoforged.fml.loading.ImmediateWindowHandler.updateFBSize(w->this.framebufferWidth=w, h->this.framebufferHeight=h);
+         this.setMode();
+         this.refreshFramebufferSize();
+@@ -203,8 +_,10 @@
      }
  
-     private void onResize(long p_85428_, int p_85429_, int p_85430_) {
+     public void defaultErrorCallback(int p_85383_, long p_85384_) {
+-        RenderSystem.assertOnRenderThread();
+         String s = MemoryUtil.memUTF8(p_85384_);
++        if (!RenderSystem.isOnRenderThread()) {
++            throw new IllegalStateException("Encountered GL error off-thread @ " + errorSection + ": " + p_85383_ + ": " + s);
++        }
+         LOGGER.error("########## GL ERROR ##########");
+         LOGGER.error("@ {}", this.errorSection);
+         LOGGER.error("{}: {}", p_85383_, s);
+@@ -494,5 +_,26 @@
+         WindowInitFailed(String p_85455_) {
+             super(p_85455_);
+         }
++    }
++
++    // Neo take over window and its properties from early display
++    private long takeOverWindow(net.neoforged.fml.loading.EarlyLoadingScreenController earlyLoadingScreen, String title) {
++        long window = earlyLoadingScreen.takeOverGlfwWindow();
++
++        GLFW.glfwSetWindowTitle(window, title);
++
++        var x = new int[1];
++        var y = new int[1];
++        GLFW.glfwGetWindowPos(window, x, y);
++        this.x = this.windowedX = x[0];
++        this.y = this.windowedY = y[0];
++
++        var width = new int[1];
++        var height = new int[1];
++        GLFW.glfwGetWindowSize(window, width, height);
++        this.width = this.windowedWidth = width[0];
++        this.height = this.windowedHeight = height[0];
++
++        return window;
+     }
+ }
