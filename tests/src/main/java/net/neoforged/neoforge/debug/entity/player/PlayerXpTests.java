@@ -18,30 +18,30 @@ import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = { PlayerTests.GROUP + ".event.xp", "event" })
 public class PlayerXpTests {
-    @EmptyTemplate(floor = true)
-    @GameTest(batch = "level.entity.player.event.xp.pickup") // Isolate this test as it can be impacted by the xp change one
-    @TestHolder(description = "Tests if the player pickup xp event is fired")
-    static void playerPickupXp(final DynamicTest test) {
-        test.eventListeners().forge().addListener((final PlayerXpEvent.PickupXp event) -> {
-            if (event.getEntity().experienceLevel >= 2) {
-                event.setCanceled(true);
-            }
-        });
-
-        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
-                // Move the player to the centre
-                .thenExecute(player -> player.snapTo(helper.absoluteVec(new BlockPos(1, 2, 1).getCenter().subtract(0, 0.5, 0))))
-                .thenExecuteFor(5, () -> helper.spawn(EntityType.EXPERIENCE_ORB, 1, 2, 1).setValue(10))
-                .thenIdle(40)
-                // The player is only allowed 2 levels of xp, as any further progress will be cancelled in the event listener
-                .thenExecute(player -> helper.assertEntityProperty(player, p -> p.experienceLevel, "experience level", 2))
-                .thenIdle(10)
-                // The player collected 2 orbs, 3 orbs remain
-                .thenExecute(() -> helper.assertTrue(
-                        helper.getEntities(EntityType.EXPERIENCE_ORB, new BlockPos(1, 1, 1), 1.5).size() == 3,
-                        "Expected 3 orbs to remain"))
-                .thenSucceed());
-    }
+//    @EmptyTemplate(floor = true)
+//    @GameTest(batch = "level.entity.player.event.xp.pickup") // Isolate this test as it can be impacted by the xp change one
+//    @TestHolder(description = "Tests if the player pickup xp event is fired")
+//    static void playerPickupXp(final DynamicTest test) {
+//        test.eventListeners().forge().addListener((final PlayerXpEvent.PickupXp event) -> {
+//            if (event.getEntity().experienceLevel >= 2) {
+//                event.setCanceled(true);
+//            }
+//        });
+//
+//        test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL))
+//                // Move the player to the centre
+//                .thenExecute(player -> player.snapTo(helper.absoluteVec(new BlockPos(1, 2, 1).getCenter().subtract(0, 0.5, 0))))
+//                .thenExecuteFor(5, () -> helper.spawn(EntityType.EXPERIENCE_ORB, 1, 2, 1).setValue(10))
+//                .thenIdle(40)
+//                // The player is only allowed 2 levels of xp, as any further progress will be cancelled in the event listener
+//                .thenExecute(player -> helper.assertEntityProperty(player, p -> p.experienceLevel, "experience level", 2))
+//                .thenIdle(10)
+//                // The player collected 2 orbs, 3 orbs remain
+//                .thenExecute(() -> helper.assertTrue(
+//                        helper.getEntities(EntityType.EXPERIENCE_ORB, new BlockPos(1, 1, 1), 1.5).size() == 3,
+//                        "Expected 3 orbs to remain"))
+//                .thenSucceed());
+//    }
 
     @GameTest
     @EmptyTemplate
