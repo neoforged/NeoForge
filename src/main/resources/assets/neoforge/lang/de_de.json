@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Aktiviert die NeoForge Block-Darstellungs-Pipeline - korrigiert die Beleuchtung von benutzerdefinierten Modellen.",
   "neoforge.configgui.fullBoundingBoxLadders": "Leitern im gesamten Kollisionsbereich",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Ändere dies zu 'true', um den gesamten Kollisionsbereich einer Entität, anstatt nur den Block, in dem sie sich befindet, auf Leitern zu überprüfen. Verursacht merkliche Unterschiede in der Spielmechanik, daher ist die Standardeinstellung die Vanilla-Funktionsweise. Standardwert: 'false'.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Ambient Occlusion-Berücksichtigung pro Teil",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "Wenn aktiviert, wird Ambient Occlusion für jeden Block-Modell-Teil separat berücksichtigt, statt die AO-Einstellung des ersten Block-Modell-Teils zu verwenden.",
   "neoforge.configgui.logLegacyTagWarnings": "Veraltete Tags protokollieren",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "Eine Konfiguration, die hauptsächlich für Entwickler gedacht ist. Meldet Tags von Mods im Log, die den 'forge'-Namensraum verwenden, wenn man der integrierte Server verwendet. Standard ist DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Nicht übersetzte Konfigurationsschlüssel protokollieren",

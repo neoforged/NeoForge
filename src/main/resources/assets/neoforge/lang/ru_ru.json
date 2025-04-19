@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Активирует конвейер NeoForge для рендеринга блоков - исправляет освещение кастомных моделей.",
   "neoforge.configgui.fullBoundingBoxLadders": "Полная область коллизии для лестниц",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "Установите значение true, чтобы проверять всю коробку столкновений сущности на соприкосновение с лестницами, а не только блоками, в котором они находятся. Это вызывает заметные изменения в механике, поэтому по умолчанию используется ванильное поведение. По умолчанию: false.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "Логировать устаревшие теги",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "Опция конфигурации, предназначенная в основном для разработчиков. Выводит в лог теги модов, использующие пространство имен 'forge' при работе на интегрированном сервере. По умолчанию имеет значение DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Логировать непереведенные ключи настроек",
