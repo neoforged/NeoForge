@@ -342,20 +342,4 @@ public class NeoForgeExtraCodecs {
                         entries -> Map.ofEntries(entries.toArray(Map.Entry[]::new)),
                         map -> List.copyOf(map.entrySet()));
     }
-
-    /**
-     * Creates a codec for an {@linkplain Codec#unboundedMap(Codec, Codec) unbounded map} whose underlying representation is a list of maps, with names of {@code "key"} and {@code "value"} for each key-element entry.
-     * <p>
-     * This is useful for maps where the key does not encode to a string, which causes errors when trying to serialize to a format that requires maps to have string keys (such as JSON and NBT).
-     *
-     * @param keyCodec     codec for the key
-     * @param elementCodec codec for the element
-     * @param <K>          the key type
-     * @param <V>          the element type
-     * @return a codec for an unbounded map
-     * @see #unboundedMapAsList(String, Codec, String, Codec)
-     */
-    public static <K, V> Codec<Map<K, V>> unboundedMapAsList(Codec<K> keyCodec, Codec<V> elementCodec) {
-        return unboundedMapAsList("key", keyCodec, "element", elementCodec);
-    }
 }
