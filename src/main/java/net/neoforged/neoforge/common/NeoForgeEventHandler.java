@@ -36,6 +36,7 @@ import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
+import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
@@ -83,6 +84,7 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void postServerTick(ServerTickEvent.Post event) {
         WorldWorkerManager.tick(false);
+        ConfigSync.syncPendingConfigs(event.getServer());
     }
 
     @SubscribeEvent
