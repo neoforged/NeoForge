@@ -331,15 +331,16 @@ public class NeoForgeExtraCodecs {
      * @param <V>          the element type
      * @return a codec for an unbounded map
      */
+    @SuppressWarnings("unchecked")
     public static <K, V> Codec<Map<K, V>> unboundedMapAsList(String keyName, Codec<K> keyCodec, String elementName, Codec<V> elementCodec) {
-        Codec<Pair<K, V>> pairCodec = RecordCodecBuilder.create(
+        Codec<Map.Entry<K, V>> entryCodec = RecordCodecBuilder.create(
                 instance -> instance.group(
-                        keyCodec.fieldOf(keyName).forGetter(Pair::getFirst),
-                        elementCodec.fieldOf(elementName).forGetter(Pair::getSecond)).apply(instance, Pair::of));
-        return Codec.list(pairCodec)
+                        keyCodec.fieldOf(keyName).forGetter(Map.Entry::getKey),
+                        elementCodec.fieldOf(elementName).forGetter(Map.Entry::getValue)).apply(instance, Map::entry));
+        return Codec.list(entryCodec)
                 .xmap(
-                        entries -> entries.stream().collect(Pair.toMap()),
-                        map -> map.entrySet().stream().map(entry -> Pair.of(entry.getKey(), entry.getValue())).toList());
+                        entries -> Map.ofEntries(entries.toArray(Map.Entry[]::new)),
+                        map -> List.copyOf(map.entrySet()));
     }
 
     /**
