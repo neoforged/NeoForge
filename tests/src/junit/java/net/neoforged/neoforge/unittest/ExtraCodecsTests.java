@@ -30,7 +30,6 @@ public class ExtraCodecsTests {
 
         DataResult<JsonElement> resultJson = codec.encodeStart(JsonOps.INSTANCE, values);
         assertTrue(resultJson.isSuccess(), "Encode to JSON should succeed");
-        System.out.println(resultJson.getOrThrow());
 
         DataResult<Tag> resultTag = codec.encodeStart(NbtOps.INSTANCE, values);
         assertTrue(resultTag.isSuccess(), "Encode to NBT should succeed");
