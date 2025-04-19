@@ -39,7 +39,7 @@ public abstract class GlobalLootModifierProvider implements DataProvider {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final PackOutput output;
     private final String modid;
-    private final Map<String, JsonElement> toSerialize = new HashMap<>();
+    private final Map<String, JsonElement> toSerialize = new LinkedHashMap<>();
     private boolean replace = false;
 
     public GlobalLootModifierProvider(PackOutput output, String modid) {
