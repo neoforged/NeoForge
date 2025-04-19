@@ -432,6 +432,7 @@ public class DataMapTests {
             helper.setBlock(blockPos, lightlyOxidizedIron.value());
             if (DataMapHooks.getNextOxidizedStage(lightlyOxidizedIron.value()) == null)
                 helper.fail("Next oxidization state for lightly oxidized iron was null!");
+            helper.assertTrue(lightlyOxidizedIron.value().defaultBlockState().isRandomlyTicking(), "Lightly Oxidized Iron is not randomly ticking. Its state cache was not invalidated!");
             helper.setBlock(blockPos, DataMapHooks.getNextOxidizedStage(lightlyOxidizedIron.value()));
             helper.assertBlock(blockPos, block -> moreOxidizedIron.value().equals(block), "Wanted: More Oxidized Iron but found something else!");
 
