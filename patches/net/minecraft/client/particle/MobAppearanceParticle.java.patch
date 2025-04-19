@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/particle/MobAppearanceParticle.java
++++ b/net/minecraft/client/particle/MobAppearanceParticle.java
+@@ -52,6 +_,13 @@
+         multibuffersource$buffersource.endBatch();
+     }
+ 
++    // Neo: this "particle" is locked to the player's camera, a render BB at the particle's in-world position
++    // therefore makes no sense
++    @Override
++    public net.minecraft.world.phys.AABB getRenderBoundingBox(float partialTicks) {
++        return net.minecraft.world.phys.AABB.INFINITE;
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     public static class Provider implements ParticleProvider<SimpleParticleType> {
+         public Particle createParticle(
