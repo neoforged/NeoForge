@@ -1,24 +1,17 @@
 --- a/net/minecraft/world/inventory/MenuType.java
 +++ b/net/minecraft/world/inventory/MenuType.java
-@@ -1,5 +_,6 @@
- package net.minecraft.world.inventory;
+@@ -58,6 +_,14 @@
+     }
  
-+import java.util.ArrayList;
- import java.util.List;
- import net.minecraft.core.Registry;
- import net.minecraft.core.registries.BuiltInRegistries;
-@@ -55,6 +_,14 @@
- 
-     public T create(int p_39986_, Inventory p_39987_, List<Integer> p_420622_) {
-         return this.constructor.create(p_39986_, p_39987_, p_420622_);
-+    }
-+
-+    @Override
+     @Override
 +    public T create(int windowId, Inventory playerInv, net.minecraft.network.RegistryFriendlyByteBuf extraData) {
 +        if (this.constructor instanceof net.neoforged.neoforge.network.IContainerFactory) {
 +            return ((net.neoforged.neoforge.network.IContainerFactory<T>) this.constructor).create(windowId, playerInv, extraData);
 +        }
-+        return create(windowId, playerInv, new ArrayList<>()); // TODO: we need to read the List<Integer> from the extraData? -C
++        return create(windowId, playerInv, new java.util.ArrayList<>()); // TODO: we need to read the List<Integer> from the extraData? -C
++    }
++
++    @Override
+     public FeatureFlagSet requiredFeatures() {
+         return this.requiredFeatures;
      }
- 
-     @Override

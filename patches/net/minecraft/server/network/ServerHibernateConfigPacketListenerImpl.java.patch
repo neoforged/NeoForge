@@ -1,19 +1,9 @@
 --- a/net/minecraft/server/network/ServerHibernateConfigPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerHibernateConfigPacketListenerImpl.java
-@@ -14,6 +_,8 @@
- import net.minecraft.network.protocol.configuration.ServerboundSelectKnownPacks;
- import net.minecraft.server.TheGame;
- import net.minecraft.server.level.ClientInformation;
-+import net.minecraft.util.thread.ReentrantBlockableEventLoop;
-+import net.neoforged.neoforge.network.connection.ConnectionType;
- import org.slf4j.Logger;
- 
- public class ServerHibernateConfigPacketListenerImpl extends ServerLessCommonPacketListenerImpl implements ServerConfigurationPacketListener {
-@@ -77,5 +_,25 @@
- 
+@@ -78,4 +_,24 @@
      public ServerConfigurationPacketListenerImpl unfreeze(TheGame p_420243_) {
          return new ServerConfigurationPacketListenerImpl(p_420243_, this.connection, this.createCookie(this.clientInformation));
-+    }
+     }
 +
 +    @Override
 +    public Connection getConnection() {
@@ -21,17 +11,17 @@
 +    }
 +
 +    @Override
-+    public ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
++    public net.minecraft.util.thread.ReentrantBlockableEventLoop<?> getMainThreadEventLoop() {
 +        return null;
 +    }
 +
 +    @Override
-+    public ConnectionType getConnectionType() {
-+        return ConnectionType.NEOFORGE;
++    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
++        return net.neoforged.neoforge.network.connection.ConnectionType.NEOFORGE;
 +    }
 +
 +    @Override
 +    public void finishCurrentTask(ConfigurationTask.Type task) {
 +
-     }
++    }
  }

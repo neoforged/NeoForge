@@ -38,11 +38,11 @@ public class DynamicStructureTemplates {
 
         final Class sourceClazz = Stream.of(StructureTemplateManager.class.getDeclaredClasses())
                 .filter(it -> it.getSimpleName().equals("Source")).findFirst().orElseThrow();
-        final MethodHandle ctor = ReflectionUtils.constructor(sourceClazz, MethodType.methodType(void.class, Function.class, Supplier.class));
+        final MethodHandle ctor = ReflectionUtils.constructor(sourceClazz, MethodType.methodType(void.class, StructureTemplateManager.SourceType.class, Function.class, Supplier.class));
 
         final Function<ResourceLocation, Optional<StructureTemplate>> loader = this::load;
         final Supplier<Stream<ResourceLocation>> lister = this::list;
-        sources.add(ctor.invokeWithArguments(loader, lister));
+        sources.add(ctor.invokeWithArguments(StructureTemplateManager.SourceType.TEST, loader, lister));
 
         ObfuscationReflectionHelper.setPrivateValue(StructureTemplateManager.class, manager, sources, SOURCES_FIELD);
 

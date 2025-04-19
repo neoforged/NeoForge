@@ -1,14 +1,5 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -268,7 +_,7 @@
-     private ServerPlayer.RespawnConfig respawnConfig;
-     private final TextFilter textFilter;
-     private boolean textFilteringEnabled;
--    public boolean allowsListing;
-+    private boolean allowsListing;
-     private boolean spawnExtraParticlesOnFall = false;
-     private WardenSpawnTracker wardenSpawnTracker = new WardenSpawnTracker();
-     @Nullable
 @@ -320,6 +_,10 @@
          }
  

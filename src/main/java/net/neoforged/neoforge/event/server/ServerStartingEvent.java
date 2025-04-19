@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.event.server;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TheGame;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 

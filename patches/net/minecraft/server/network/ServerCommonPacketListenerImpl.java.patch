@@ -1,13 +1,6 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -8,16 +_,23 @@
- import net.minecraft.network.protocol.Packet;
- import net.minecraft.network.protocol.PacketUtils;
- import net.minecraft.network.protocol.common.ClientboundDisconnectPacket;
-+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
- import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
- import net.minecraft.server.TheGame;
- 
+@@ -14,10 +_,16 @@
  public abstract class ServerCommonPacketListenerImpl extends ServerLessCommonPacketListenerImpl {
      protected final TheGame theGame;
      private volatile boolean suspendFlushingOnServerThread = false;
@@ -31,7 +24,7 @@
 +    }
 +
 +    @Override
-+    public void handleCustomPayload(ServerboundCustomPayloadPacket p_423488_) {
++    public void handleCustomPayload(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket p_423488_) {
 +        // Neo: Unconditionally handle register/unregister payloads.
 +        if (p_423488_.payload() instanceof net.neoforged.neoforge.network.payload.MinecraftRegisterPayload minecraftRegisterPayload) {
 +            net.neoforged.neoforge.network.registration.NetworkRegistry.onMinecraftRegister(this.getConnection(), minecraftRegisterPayload.newChannels());

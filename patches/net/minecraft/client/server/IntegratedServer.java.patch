@@ -1,13 +1,5 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -76,6 +_,7 @@
-         String s = thegame.getWorldData().getLevelName();
-         this.setMotd(gameprofile != null ? gameprofile.getName() + " - " + s : s);
-         this.previousSimulationDistance = 0;
-+        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(thegame);
-         return thegame;
-     }
- 
 @@ -216,6 +_,7 @@
  
      @Override

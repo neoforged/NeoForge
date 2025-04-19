@@ -74,7 +74,7 @@
              getDrops(p_49882_, serverlevel, p_49884_, p_49885_, p_49886_, p_49887_).forEach(p_49944_ -> popResource(p_49883_, p_49884_, p_49944_));
 -            p_49882_.spawnAfterBreak(serverlevel, p_49884_, p_49887_, true);
 +            List<ItemEntity> captured = stopCapturingDrops();
-+            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops(serverlevel, p_49884_, p_49882_, null, captured, null, ItemStack.EMPTY);
++            net.neoforged.neoforge.common.CommonHooks.handleBlockDrops(serverlevel, p_49884_, p_49882_, null, captured, null, p_49887_);
          }
      }
  

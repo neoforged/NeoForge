@@ -9,7 +9,22 @@
          thread.setUncaughtExceptionHandler((p_177909_, p_177910_) -> LOGGER.error("Uncaught exception in server thread", p_177910_));
          if (Runtime.getRuntime().availableProcessors() > 4) {
              thread.setPriority(8);
-@@ -358,6 +_,9 @@
+@@ -345,6 +_,7 @@
+ 
+     protected void runServer(PackRepository p_423231_, WorldStem p_421508_, MinecraftServer.WorldReloader p_421684_, ChunkProgressListenerFactory p_419541_) {
+         try {
++            net.neoforged.neoforge.server.ServerLifecycleHooks.loadConfigs(this);
+             if (!this.initServer()) {
+                 throw new IllegalStateException("Failed to initialize server");
+             }
+@@ -352,12 +_,16 @@
+             while (this.running) {
+                 TheGame thegame = this.initGame(p_423231_, p_421508_, p_419541_);
+                 this.theGame = thegame;
++                net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(thegame);
+                 if (this.reloadFuture != null) {
+                     this.restoreAllPlayersConfigPlayers(thegame);
+                     this.rejoinFuture = this.reloadFuture;
                      this.reloadFuture = null;
                  }
  

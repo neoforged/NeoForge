@@ -17,6 +17,7 @@ public abstract class ServerLifecycleEvent extends Event {
         this.server = server;
         this.game = server.theGame();
     }
+
     public ServerLifecycleEvent(TheGame game) {
         this.server = game.server();
         this.game = game;
@@ -25,5 +26,8 @@ public abstract class ServerLifecycleEvent extends Event {
     public MinecraftServer getServer() {
         return server;
     }
-    public TheGame getTheGame() { return game; }
+
+    public TheGame getTheGame() {
+        return game;
+    }
 }

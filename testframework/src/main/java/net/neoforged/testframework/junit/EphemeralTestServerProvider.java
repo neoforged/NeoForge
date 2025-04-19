@@ -307,8 +307,7 @@ public class EphemeralTestServerProvider implements ParameterResolver, Extension
 
         @Override
         protected TheGame initGame(PackRepository p_420852_, WorldStem p_419940_, ChunkProgressListenerFactory p_422003_) throws IOException {
-            return TheGame.create(this, p_420852_, p_419940_, this.storageSource, p_422003_, game -> new PlayerList(game, this.playerDataStorage, 1) {
-            });
+            return TheGame.create(this, p_420852_, p_419940_, this.storageSource, p_422003_, game -> new PlayerList(game, this.playerDataStorage, 1) {});
         }
 
         @Override

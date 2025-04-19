@@ -1,11 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/Structure.java
 +++ b/net/minecraft/world/level/levelgen/structure/Structure.java
-@@ -43,14 +_,16 @@
- import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
- import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
- import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-+import net.neoforged.neoforge.common.world.ModifiableStructureInfo;
- 
+@@ -47,10 +_,11 @@
  public abstract class Structure {
      public static final Codec<Structure> DIRECT_CODEC = BuiltInRegistries.STRUCTURE_TYPE.byNameCodec().dispatch(Structure::type, StructureType::codec);
      public static final Codec<Holder<Structure>> CODEC = RegistryFileCodec.create(Registries.STRUCTURE, DIRECT_CODEC);
@@ -23,7 +18,7 @@
  
      protected Structure(Structure.StructureSettings p_226558_) {
          this.settings = p_226558_;
-+        this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
++        this.modifiableStructureInfo = new net.neoforged.neoforge.common.world.ModifiableStructureInfo(new net.neoforged.neoforge.common.world.ModifiableStructureInfo.StructureInfo(p_226558_)); // FORGE: cache original structure info on construction so we can bypass our field read coremods where necessary
      }
  
      public HolderSet<Biome> filteredBiomes(HolderSet<Biome> p_421728_) {

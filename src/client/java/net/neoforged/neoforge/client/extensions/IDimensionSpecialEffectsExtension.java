@@ -19,7 +19,6 @@ public interface IDimensionSpecialEffectsExtension {
     //private DimensionSpecialEffects self() {
     //    return (DimensionSpecialEffects) this;
     //}
-
     /**
      * Renders the clouds of this dimension.
      *

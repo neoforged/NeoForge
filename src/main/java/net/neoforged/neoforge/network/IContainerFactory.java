@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.network;
 
+import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-
-import java.util.List;
 
 public interface IContainerFactory<T extends AbstractContainerMenu> extends MenuType.MenuSupplier<T> {
     T create(int windowId, Inventory inv, RegistryFriendlyByteBuf data);

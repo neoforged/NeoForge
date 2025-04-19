@@ -25,6 +25,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
@@ -325,8 +326,8 @@ public class DataMapTests {
 
         test.eventListeners().forge().addListener((final BlockEvent.EntityPlaceEvent event) -> {
             var table = event.getPlacedBlock().getBlock().getLootTable();
-            if (table.isEmpty()) return;
-            final var grant = event.getLevel().registryAccess().lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(table.get()).getData(effectGrant);
+            if (table.isEmpty() || !(event.getLevel() instanceof ServerLevel level)) return;
+            final var grant = level.theGame().reloadableRegistries().lookup().lookupOrThrow(Registries.LOOT_TABLE).getOrThrow(table.get()).getData(effectGrant);
             if (grant != null && event.getEntity() instanceof Player player) {
                 player.addEffect(grant);
             }

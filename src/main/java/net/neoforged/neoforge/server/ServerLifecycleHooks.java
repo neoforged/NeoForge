@@ -55,6 +55,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerLifecycleHooks {
@@ -90,10 +91,13 @@ public class ServerLifecycleHooks {
         return serverConfig;
     }
 
+    @ApiStatus.Internal
+    public static void loadConfigs(MinecraftServer server) {
+        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(server));
+    }
+
     public static void handleServerAboutToStart(final TheGame game) {
         currentServer = game.server();
-        // on the dedi server we need to force the stuff to setup properly
-        ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(game.server()));
         //runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(game));
     }

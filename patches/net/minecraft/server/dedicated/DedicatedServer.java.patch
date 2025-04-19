@@ -29,7 +29,7 @@
              return true;
          }
      }
-@@ -208,9 +_,11 @@
+@@ -208,6 +_,7 @@
          long j = Util.getNanos() - i;
          String s = String.format(Locale.ROOT, "%.3fs", j / 1.0E9);
          LOGGER.info("Done ({})! For help, type \"help\"", s);
@@ -37,10 +37,6 @@
          if (dedicatedserverproperties.announcePlayerAchievements != null) {
              thegame.getGameRules().getRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS).set(dedicatedserverproperties.announcePlayerAchievements, thegame);
          }
-+        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(thegame);
- 
-         long k = this.getMaxTickLength();
-         if (k > 0L) {
 @@ -281,6 +_,13 @@
          if (this.queryThreadGs4 != null) {
              this.queryThreadGs4.stop();
