@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/item/ItemUseAnimation.java
++++ b/net/minecraft/world/item/ItemUseAnimation.java
+@@ -8,6 +_,9 @@
+ import net.minecraft.util.ByIdMap;
+ import net.minecraft.util.StringRepresentable;
+ 
++@net.neoforged.fml.common.asm.enumextension.IndexedEnum
++@net.neoforged.fml.common.asm.enumextension.NamedEnum(1)
++@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.BIDIRECTIONAL)
+ public enum ItemUseAnimation implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+     NONE(0, "none"),
+     EAT(1, "eat"),
+@@ -39,5 +_,9 @@
+     @Override
+     public String getSerializedName() {
+         return this.name;
++    }
++
++    public static net.neoforged.fml.common.asm.enumextension.ExtensionInfo getExtensionInfo() {
++        return net.neoforged.fml.common.asm.enumextension.ExtensionInfo.nonExtended(ItemUseAnimation.class);
+     }
+ }

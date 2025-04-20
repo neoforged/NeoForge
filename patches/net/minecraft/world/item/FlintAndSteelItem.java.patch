@@ -14,14 +14,14 @@
              }
          } else {
              level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
--            level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)), 11);
+-            level.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, true), 11);
 +            level.setBlock(blockpos, blockstate2, 11);
              level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockpos);
              if (player != null) {
                  p_41297_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
 @@ -56,5 +_,10 @@
  
-             return InteractionResult.sidedSuccess(level.isClientSide());
+             return InteractionResult.SUCCESS;
          }
 +    }
 +

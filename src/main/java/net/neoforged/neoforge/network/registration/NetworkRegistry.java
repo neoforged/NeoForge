@@ -46,12 +46,15 @@ import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.extensions.ICommonPacketListener;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
+import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
+import net.neoforged.neoforge.network.configuration.CommonRegisterTask;
+import net.neoforged.neoforge.network.configuration.CommonVersionTask;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
-import net.neoforged.neoforge.network.handling.ClientPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.ServerPayloadContext;
@@ -302,23 +305,24 @@ public class NetworkRegistry {
             return;
         }
 
-        ClientPayloadContext context = new ClientPayloadContext(listener, packet.payload().type().id());
+        var payloadId = packet.payload().type().id();
+        IPayloadContext context = NeoForgeProxy.INSTANCE.newClientPayloadContext(listener, payloadId);
 
         if (PAYLOAD_REGISTRATIONS.containsKey(listener.protocol())) {
             // Get the configuration channel for the packet.
-            NetworkChannel channel = payloadSetup.getChannel(listener.protocol(), context.payloadId());
+            NetworkChannel channel = payloadSetup.getChannel(listener.protocol(), payloadId);
 
             // Check if the channel should even be processed.
             if (channel == null && !hasAdhocChannel(listener.protocol(), packet.payload().type().id(), PacketFlow.CLIENTBOUND)) {
                 LOGGER.warn("Received a modded payload with an unknown or unaccepted channel; disconnecting.");
-                listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (No Channel for %s)".formatted(NeoForgeVersion.getVersion(), context.payloadId().toString())));
+                listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (No Channel for %s)".formatted(NeoForgeVersion.getVersion(), payloadId.toString())));
                 return;
             }
 
-            PayloadRegistration registration = PAYLOAD_REGISTRATIONS.get(listener.protocol()).get(context.payloadId());
+            PayloadRegistration registration = PAYLOAD_REGISTRATIONS.get(listener.protocol()).get(payloadId);
             if (registration == null) {
                 LOGGER.error("Received a modded payload with no registration; disconnecting.");
-                listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (No Handler for %s)".formatted(NeoForgeVersion.getVersion(), context.payloadId().toString())));
+                listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (No Handler for %s)".formatted(NeoForgeVersion.getVersion(), payloadId.toString())));
                 dumpStackToLog(); // This case is only likely when handling packets without serialization, i.e. from a compound listener, so this can help debug why.
                 return;
             }
@@ -379,7 +383,6 @@ public class NetworkRegistry {
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         nowListeningOn.addAll(setup.getChannels(ConnectionProtocol.CONFIGURATION).keySet());
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
-        sendCommonPayloads(listener);
     }
 
     /**
@@ -419,7 +422,6 @@ public class NetworkRegistry {
                 .filter(registration -> registration.getValue().optional())
                 .forEach(registration -> nowListeningOn.add(registration.getKey()));
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
-        sendCommonPayloads(listener);
 
         return true;
     }
@@ -516,7 +518,6 @@ public class NetworkRegistry {
         nowListeningOn.addAll(getInitialListeningChannels(listener.flow()));
         nowListeningOn.addAll(setup.getChannels(ConnectionProtocol.CONFIGURATION).keySet());
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
-        sendCommonPayloads(listener);
     }
 
     /**
@@ -556,6 +557,10 @@ public class NetworkRegistry {
         if (!CheckExtensibleEnums.handleVanillaServerConnection(listener)) {
             return;
         }
+        // We are on the client, connected to a vanilla server, make sure we don't have any modded feature flags
+        if (!CheckFeatureFlags.handleVanillaServerConnection(listener)) {
+            return;
+        }
 
         // We are on the client, connected to a vanilla server, We have to load the default configs.
         ConfigTracker.INSTANCE.loadDefaultServerConfigs();
@@ -569,7 +574,6 @@ public class NetworkRegistry {
                 .filter(registration -> registration.getValue().optional())
                 .forEach(registration -> nowListeningOn.add(registration.getKey()));
         listener.send(new MinecraftRegisterPayload(nowListeningOn.build()));
-        sendCommonPayloads(listener);
     }
 
     /**
@@ -724,14 +728,22 @@ public class NetworkRegistry {
      * <p>
      * Invoked on the network thread.
      * 
-     * @param connection The current connection.
-     * @param payload    The incoming version payload.
+     * @param listener The receiving listener.
+     * @param payload  The incoming version payload.
      */
-    public static void checkCommonVersion(Connection connection, CommonVersionPayload payload) {
+    public static void checkCommonVersion(ICommonPacketListener listener, CommonVersionPayload payload) {
         List<Integer> otherVersions = payload.versions();
         if (otherVersions.stream().noneMatch(SUPPORTED_COMMON_NETWORKING_VERSIONS::contains)) {
             String versions = String.join(", ", SUPPORTED_COMMON_NETWORKING_VERSIONS.stream().map(i -> i.toString()).toList());
-            connection.disconnect(Component.literal("Unsupported common network version. This installation of NeoForge only supports: " + versions));
+            listener.disconnect(Component.literal("Unsupported common network version. This installation of NeoForge only supports: " + versions));
+        }
+
+        if (listener.protocol() == ConnectionProtocol.CONFIGURATION) {
+            if (listener.flow() == PacketFlow.SERVERBOUND) {
+                ((ServerConfigurationPacketListener) listener).finishCurrentTask(CommonVersionTask.TYPE);
+            } else {
+                listener.send(new CommonVersionPayload());
+            }
         }
     }
 
@@ -740,13 +752,21 @@ public class NetworkRegistry {
      * <p>
      * Invoked on the network thread.
      *
-     * @param connection The connection to add the channels to.
-     * @param payload    The incoming register payload.
+     * @param listener The receiving listener.
+     * @param payload  The incoming register payload.
      */
-    public static void onCommonRegister(Connection connection, CommonRegisterPayload payload) {
-        Set<ResourceLocation> channels = ChannelAttributes.getOrCreateCommonChannels(connection, payload.protocol());
+    public static void onCommonRegister(ICommonPacketListener listener, CommonRegisterPayload payload) {
+        Set<ResourceLocation> channels = ChannelAttributes.getOrCreateCommonChannels(listener.getConnection(), payload.protocol());
         channels.clear();
         channels.addAll(payload.channels());
+
+        if (listener.protocol() == ConnectionProtocol.CONFIGURATION) {
+            if (listener.flow() == PacketFlow.SERVERBOUND) {
+                ((ServerConfigurationPacketListener) listener).finishCurrentTask(CommonRegisterTask.TYPE);
+            } else {
+                listener.send(new CommonRegisterPayload(1, ConnectionProtocol.PLAY, getCommonPlayChannels(PacketFlow.CLIENTBOUND)));
+            }
+        }
     }
 
     public static Set<ResourceLocation> getCommonPlayChannels(PacketFlow flow) {
@@ -756,16 +776,6 @@ public class NetworkRegistry {
                 .filter(registration -> registration.getValue().optional())
                 .map(registration -> registration.getKey())
                 .collect(Collectors.toSet());
-    }
-
-    public static void sendCommonPayloads(ICommonPacketListener listener) {
-        if (listener.hasChannel(CommonVersionPayload.ID)) {
-            listener.send(new CommonVersionPayload());
-        }
-
-        if (listener.hasChannel(CommonRegisterPayload.ID)) {
-            listener.send(new CommonRegisterPayload(1, ConnectionProtocol.PLAY, getCommonPlayChannels(listener.flow())));
-        }
     }
 
     /**

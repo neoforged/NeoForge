@@ -1,0 +1,24 @@
+--- a/net/minecraft/world/entity/ai/attributes/Attribute.java
++++ b/net/minecraft/world/entity/ai/attributes/Attribute.java
+@@ -52,6 +_,21 @@
+         return this.sentiment.getStyle(p_347715_);
+     }
+ 
++    // Neo: Patch in the default implementation of IAttributeExtension#getMergedStyle since we need access to Attribute#sentiment
++
++    protected static final net.minecraft.network.chat.TextColor MERGED_RED = net.minecraft.network.chat.TextColor.fromRgb(0xF93131);
++    protected static final net.minecraft.network.chat.TextColor MERGED_BLUE = net.minecraft.network.chat.TextColor.fromRgb(0x7A7AF9);
++    protected static final net.minecraft.network.chat.TextColor MERGED_GRAY = net.minecraft.network.chat.TextColor.fromRgb(0xCCCCCC);
++
++    @Override
++    public net.minecraft.network.chat.TextColor getMergedStyle(boolean isPositive) {
++        return switch (this.sentiment) {
++            case POSITIVE -> isPositive ? MERGED_BLUE : MERGED_RED;
++            case NEGATIVE -> isPositive ? MERGED_RED : MERGED_BLUE;
++            case NEUTRAL -> MERGED_GRAY;
++        };
++    }
++
+     public static enum Sentiment {
+         POSITIVE,
+         NEUTRAL,

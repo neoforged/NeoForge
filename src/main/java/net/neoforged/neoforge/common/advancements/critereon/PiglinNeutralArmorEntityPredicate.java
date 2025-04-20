@@ -9,6 +9,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -28,9 +30,12 @@ public class PiglinNeutralArmorEntityPredicate implements EntitySubPredicate {
     @Override
     public boolean matches(Entity entity, ServerLevel level, @Nullable Vec3 position) {
         if (entity instanceof LivingEntity living) {
-            for (ItemStack armor : living.getArmorSlots()) {
-                if (!armor.isEmpty() && armor.makesPiglinsNeutral(living)) {
-                    return true;
+            for (EquipmentSlot equipmentSlot : EquipmentSlotGroup.ARMOR) {
+                if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+                    ItemStack armor = living.getItemBySlot(equipmentSlot);
+                    if (!armor.isEmpty() && armor.makesPiglinsNeutral(living)) {
+                        return true;
+                    }
                 }
             }
         }

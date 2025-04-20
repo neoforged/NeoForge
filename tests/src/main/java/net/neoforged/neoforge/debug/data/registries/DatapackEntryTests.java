@@ -8,18 +8,17 @@ package net.neoforged.neoforge.debug.data.registries;
 import java.util.Set;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageEffects;
 import net.minecraft.world.damagesource.DamageType;
-import net.neoforged.neoforge.common.conditions.FalseCondition;
-import net.neoforged.neoforge.common.conditions.TrueCondition;
+import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = DatapackEntryTests.GROUP)
@@ -41,18 +40,18 @@ public class DatapackEntryTests {
                     bootstrap.register(REGULAR_DAMAGE_TYPE, new DamageType("inFire", 0.1f, DamageEffects.BURNING));
                 });
 
-        reg.addProvider(event -> new DatapackBuiltinEntriesProvider(
+        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 builder,
                 conditions -> {
-                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, FalseCondition.INSTANCE);
-                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, TrueCondition.INSTANCE);
+                    conditions.accept(CONDITIONAL_FALSE_DAMAGE_TYPE, NeoForgeConditions.never());
+                    conditions.accept(CONDITIONAL_TRUE_DAMAGE_TYPE, NeoForgeConditions.always());
                 },
                 Set.of(reg.modId())));
 
         test.onGameTest(helper -> {
-            var damageTypes = helper.getLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+            var damageTypes = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
 
             helper.assertTrue(!damageTypes.containsKey(CONDITIONAL_FALSE_DAMAGE_TYPE),
                     "Damage type was loaded despite a FalseCondition");

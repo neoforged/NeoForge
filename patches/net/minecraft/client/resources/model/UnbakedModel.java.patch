@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/resources/model/UnbakedModel.java
++++ b/net/minecraft/client/resources/model/UnbakedModel.java
+@@ -64,5 +_,9 @@
+         public boolean lightLikeBlock() {
+             return this == SIDE;
+         }
++
++        public String getSerializedName() {
++            return name;
++        }
+     }
+ }

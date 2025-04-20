@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/alchemy/PotionContents.java
++++ b/net/minecraft/world/item/alchemy/PotionContents.java
+@@ -192,6 +_,10 @@
+             p_331296_.accept(CommonComponents.EMPTY);
+             p_331296_.accept(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
+ 
++            // Neo: Override handling of potion attribute tooltips to support IAttributeExtension
++            net.neoforged.neoforge.common.util.AttributeUtil.addPotionTooltip(list, p_331296_);
++            if (true) return;
++
+             for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
+                 AttributeModifier attributemodifier = pair.getSecond();
+                 double d1 = attributemodifier.amount();

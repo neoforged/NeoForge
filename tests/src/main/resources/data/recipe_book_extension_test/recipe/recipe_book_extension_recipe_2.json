@@ -1,0 +1,18 @@
+{
+  "type": "recipe_book_extension_test:test_recipe",
+  "result": {
+    "id": "diamond_block"
+  },
+  "group": "test_1",
+  "pattern": [
+    "TA",
+    "T#",
+    "TT",
+    "A "
+  ],
+  "key": {
+    "#": "minecraft:cobblestone",
+    "T": "minecraft:stone",
+    "A" : "gold_ingot"
+  }
+}

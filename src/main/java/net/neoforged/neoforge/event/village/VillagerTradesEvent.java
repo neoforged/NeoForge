@@ -7,6 +7,8 @@ package net.neoforged.neoforge.event.village;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades.ItemListing;
@@ -14,6 +16,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * VillagerTradesEvent is fired during reload by {@link TagsUpdatedEvent}. It is used to gather the trade lists for each profession.
@@ -27,18 +30,25 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
  */
 public class VillagerTradesEvent extends Event {
     protected Int2ObjectMap<List<ItemListing>> trades;
-    protected VillagerProfession type;
+    protected ResourceKey<VillagerProfession> type;
+    private final HolderLookup.Provider registries;
 
-    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, VillagerProfession type) {
+    @ApiStatus.Internal
+    public VillagerTradesEvent(Int2ObjectMap<List<ItemListing>> trades, ResourceKey<VillagerProfession> type, HolderLookup.Provider registries) {
         this.trades = trades;
         this.type = type;
+        this.registries = registries;
     }
 
     public Int2ObjectMap<List<ItemListing>> getTrades() {
         return trades;
     }
 
-    public VillagerProfession getType() {
+    public ResourceKey<VillagerProfession> getType() {
         return type;
+    }
+
+    public HolderLookup.Provider getRegistries() {
+        return registries;
     }
 }

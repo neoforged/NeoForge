@@ -1,70 +1,82 @@
 --- a/net/minecraft/client/resources/model/ModelBakery.java
 +++ b/net/minecraft/client/resources/model/ModelBakery.java
-@@ -117,6 +_,12 @@
-         p_252014_.popPush("special");
-         this.loadSpecialItemModelAndDependencies(ItemRenderer.TRIDENT_IN_HAND_MODEL);
-         this.loadSpecialItemModelAndDependencies(ItemRenderer.SPYGLASS_IN_HAND_MODEL);
-+        Set<ModelResourceLocation> additionalModels = new HashSet<>();
-+        net.neoforged.neoforge.client.ClientHooks.onRegisterAdditionalModels(additionalModels);
-+        for (ModelResourceLocation rl : additionalModels) {
-+            UnbakedModel unbakedmodel = this.getModel(rl.id());
-+            this.registerModelAndLoadDependencies(rl, unbakedmodel);
-+        }
-         this.topLevelModels.values().forEach(p_247954_ -> p_247954_.resolveParents(this::getModel));
-         p_252014_.pop();
-     }
-@@ -246,14 +_,30 @@
-         }
+@@ -55,7 +_,12 @@
+     private final Map<ResourceLocation, ClientItem> clientInfos;
+     final Map<ResourceLocation, ResolvedModel> resolvedModels;
+     final ResolvedModel missingModel;
++    private final net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels;
  
-         @Override
-+        @Nullable
-+        public UnbakedModel getTopLevelModel(ModelResourceLocation location) {
-+            return topLevelModels.get(location);
-+        }
++    /**
++     * @deprecated Neo: use {@link #ModelBakery(EntityModelSet, Map, Map, Map, ResolvedModel, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels)} instead
++     */
++    @Deprecated
+     public ModelBakery(
+         EntityModelSet p_388903_,
+         Map<BlockState, BlockStateModel.UnbakedRoot> p_251087_,
+@@ -63,11 +_,23 @@
+         Map<ResourceLocation, ResolvedModel> p_388404_,
+         ResolvedModel p_404940_
+     ) {
++        this(p_388903_, p_251087_, p_250416_, p_388404_, p_404940_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY);
++    }
 +
-+        @Override
-+        public Function<Material, TextureAtlasSprite> getModelTextureGetter() {
-+            return this.modelTextureGetter;
-+        }
-+
-+        @Override
-         public BakedModel bake(ResourceLocation p_252176_, ModelState p_249765_) {
-+            return bake(p_252176_, p_249765_, this.modelTextureGetter);
-+        }
-+
-+        @Override
-+        public BakedModel bake(ResourceLocation p_252176_, ModelState p_249765_, Function<Material, TextureAtlasSprite> sprites) {
-             ModelBakery.BakedCacheKey modelbakery$bakedcachekey = new ModelBakery.BakedCacheKey(p_252176_, p_249765_.getRotation(), p_249765_.isUvLocked());
-             BakedModel bakedmodel = ModelBakery.this.bakedCache.get(modelbakery$bakedcachekey);
-             if (bakedmodel != null) {
-                 return bakedmodel;
-             } else {
-                 UnbakedModel unbakedmodel = this.getModel(p_252176_);
--                BakedModel bakedmodel1 = this.bakeUncached(unbakedmodel, p_249765_);
-+                BakedModel bakedmodel1 = this.bakeUncached(unbakedmodel, p_249765_, sprites);
-                 ModelBakery.this.bakedCache.put(modelbakery$bakedcachekey, bakedmodel1);
-                 return bakedmodel1;
-             }
-@@ -261,13 +_,19 @@
- 
-         @Nullable
-         BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_) {
-+            return bakeUncached(p_352386_, p_352194_, this.modelTextureGetter);
-+        }
-+
-+        @Override
-+        @Nullable
-+        public BakedModel bakeUncached(UnbakedModel p_352386_, ModelState p_352194_, Function<Material, TextureAtlasSprite> sprites) {
-             if (p_352386_ instanceof BlockModel blockmodel && blockmodel.getRootModel() == ModelBakery.GENERATION_MARKER) {
-                 return ModelBakery.ITEM_MODEL_GENERATOR
--                    .generateBlockModel(this.modelTextureGetter, blockmodel)
--                    .bake(this, blockmodel, this.modelTextureGetter, p_352194_, false);
-+                    .generateBlockModel(sprites, blockmodel)
-+                    .bake(this, blockmodel, sprites, p_352194_, false);
-             }
- 
--            return p_352386_.bake(this, this.modelTextureGetter, p_352194_);
-+            return p_352386_.bake(this, sprites, p_352194_);
-         }
++    public ModelBakery(
++            EntityModelSet p_388903_,
++            Map<BlockState, BlockStateModel.UnbakedRoot> p_251087_,
++            Map<ResourceLocation, ClientItem> p_250416_,
++            Map<ResourceLocation, ResolvedModel> p_388404_,
++            ResolvedModel p_404940_,
++            net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels
++    ) {
+         this.entityModelSet = p_388903_;
+         this.unbakedBlockStateModels = p_251087_;
+         this.clientInfos = p_250416_;
+         this.resolvedModels = p_388404_;
+         this.missingModel = p_404940_;
++        this.standaloneModels = standaloneModels;
      }
  
+     public CompletableFuture<ModelBakery.BakingResult> bakeModels(SpriteGetter p_404922_, Executor p_405407_) {
+@@ -100,6 +_,8 @@
+             },
+             p_405407_
+         );
++        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels> standaloneModelsFuture =
++                net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.bake(this.standaloneModels, modelbakery$modelbakerimpl, p_405407_);
+         Map<ResourceLocation, ClientItem.Properties> map = new HashMap<>(this.clientInfos.size());
+         this.clientInfos.forEach((p_404116_, p_404117_) -> {
+             ClientItem.Properties clientitem$properties = p_404117_.properties();
+@@ -107,10 +_,11 @@
+                 map.put(p_404116_, clientitem$properties);
+             }
+         });
++        completablefuture = completablefuture.thenCombine(standaloneModelsFuture, (stateModels, standaloneModels) -> stateModels);
+         return completablefuture.thenCombine(
+             completablefuture1,
+             (p_404127_, p_404128_) -> new ModelBakery.BakingResult(
+-                modelbakery$missingmodels, (Map<BlockState, BlockStateModel>)p_404127_, (Map<ResourceLocation, ItemModel>)p_404128_, map
++                modelbakery$missingmodels, (Map<BlockState, BlockStateModel>)p_404127_, (Map<ResourceLocation, ItemModel>)p_404128_, map, standaloneModelsFuture.join()
+             )
+         );
+     }
+@@ -121,7 +_,20 @@
+         Map<BlockState, BlockStateModel> blockStateModels,
+         Map<ResourceLocation, ItemModel> itemStackModels,
+         Map<ResourceLocation, ClientItem.Properties> itemProperties
++        , net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels standaloneModels
+     ) {
++        /**
++         * @deprecated Neo: use {@link #BakingResult(ModelBakery.MissingModels, Map, Map, Map, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels)} instead
++         */
++        @Deprecated
++        public BakingResult(
++                ModelBakery.MissingModels missingModels,
++                Map<BlockState, BlockStateModel> blockStateModels,
++                Map<ResourceLocation, ItemModel> itemStackModels,
++                Map<ResourceLocation, ClientItem.Properties> itemProperties
++        ) {
++            this(missingModels, blockStateModels, itemStackModels, itemProperties, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels.EMPTY);
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

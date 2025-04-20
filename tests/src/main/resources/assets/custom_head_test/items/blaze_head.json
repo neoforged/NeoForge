@@ -1,0 +1,10 @@
+{
+    "model": {
+        "type": "minecraft:special",
+        "base": "custom_head_test:item/blaze_head",
+        "model": {
+            "type": "minecraft:head",
+            "kind": "blaze"
+        }
+    }
+}

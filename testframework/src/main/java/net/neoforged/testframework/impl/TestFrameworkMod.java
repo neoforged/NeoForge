@@ -5,7 +5,9 @@
 
 package net.neoforged.testframework.impl;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -24,8 +26,12 @@ public class TestFrameworkMod {
     public static final DeferredRegister<IngredientType<?>> INGREDIENTS = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, "testframework");
     public static final DeferredHolder<IngredientType<?>, IngredientType<TestEnabledIngredient>> TEST_ENABLED_INGREDIENT = INGREDIENTS.register("test_enabled", () -> new IngredientType<>(TestEnabledIngredient.CODEC));
 
+    public static final DeferredRegister<MapCodec<? extends GameTestInstance>> TEST_INSTANCES = DeferredRegister.create(Registries.TEST_INSTANCE_TYPE, "testframework");
+    public static final DeferredHolder<MapCodec<? extends GameTestInstance>, MapCodec<GameTestRegistration.Instance>> DELEGATING_INSTANCE = TEST_INSTANCES.register("delegate_to_test", () -> GameTestRegistration.Instance.CODEC);
+
     public TestFrameworkMod(IEventBus bus) {
         LOOT_CONDITIONS.register(bus);
         INGREDIENTS.register(bus);
+        TEST_INSTANCES.register(bus);
     }
 }

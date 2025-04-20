@@ -14,17 +14,19 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentExactPredicate;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 
 /**
  * Fluid ingredient that matches the given set of fluids, additionally performing either a
@@ -39,17 +41,17 @@ public class DataComponentFluidIngredient extends FluidIngredient {
     public static final MapCodec<DataComponentFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
-                            HolderSetCodec.create(Registries.FLUID, BuiltInRegistries.FLUID.holderByNameCodec(), false).fieldOf("fluids").forGetter(DataComponentFluidIngredient::fluids),
-                            DataComponentPredicate.CODEC.fieldOf("components").forGetter(DataComponentFluidIngredient::components),
+                            HolderSetCodec.create(Registries.FLUID, BuiltInRegistries.FLUID.holderByNameCodec(), false).fieldOf("fluids").forGetter(DataComponentFluidIngredient::fluidSet),
+                            DataComponentExactPredicate.CODEC.fieldOf("components").forGetter(DataComponentFluidIngredient::components),
                             Codec.BOOL.optionalFieldOf("strict", false).forGetter(DataComponentFluidIngredient::isStrict))
                     .apply(builder, DataComponentFluidIngredient::new));
 
     private final HolderSet<Fluid> fluids;
-    private final DataComponentPredicate components;
+    private final DataComponentExactPredicate components;
     private final boolean strict;
     private final FluidStack[] stacks;
 
-    public DataComponentFluidIngredient(HolderSet<Fluid> fluids, DataComponentPredicate components, boolean strict) {
+    public DataComponentFluidIngredient(HolderSet<Fluid> fluids, DataComponentExactPredicate components, boolean strict) {
         this.fluids = fluids;
         this.components = components;
         this.strict = strict;
@@ -70,8 +72,15 @@ public class DataComponentFluidIngredient extends FluidIngredient {
         }
     }
 
-    public Stream<FluidStack> generateStacks() {
-        return Stream.of(stacks);
+    public Stream<Holder<Fluid>> generateFluids() {
+        return fluids.stream();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return new SlotDisplay.Composite(Stream.of(stacks)
+                .map(stack -> (SlotDisplay) new FluidStackSlotDisplay(stack))
+                .toList());
     }
 
     @Override
@@ -98,11 +107,11 @@ public class DataComponentFluidIngredient extends FluidIngredient {
                 && other.strict == this.strict;
     }
 
-    public HolderSet<Fluid> fluids() {
+    public HolderSet<Fluid> fluidSet() {
         return fluids;
     }
 
-    public DataComponentPredicate components() {
+    public DataComponentExactPredicate components() {
         return components;
     }
 
@@ -121,7 +130,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
      * Creates a new ingredient matching any fluid from the list, containing the given components
      */
     public static <T> FluidIngredient of(boolean strict, DataComponentType<? super T> type, T value, Fluid... fluids) {
-        return of(strict, DataComponentPredicate.builder().expect(type, value).build(), fluids);
+        return of(strict, DataComponentExactPredicate.builder().expect(type, value).build(), fluids);
     }
 
     /**
@@ -135,7 +144,7 @@ public class DataComponentFluidIngredient extends FluidIngredient {
      * Creates a new ingredient matching any fluid from the list, containing the given components
      */
     public static FluidIngredient of(boolean strict, DataComponentMap map, Fluid... fluids) {
-        return of(strict, DataComponentPredicate.allOf(map), fluids);
+        return of(strict, DataComponentExactPredicate.allOf(map), fluids);
     }
 
     /**
@@ -143,35 +152,35 @@ public class DataComponentFluidIngredient extends FluidIngredient {
      */
     @SafeVarargs
     public static FluidIngredient of(boolean strict, DataComponentMap map, Holder<Fluid>... fluids) {
-        return of(strict, DataComponentPredicate.allOf(map), fluids);
+        return of(strict, DataComponentExactPredicate.allOf(map), fluids);
     }
 
     /**
      * Creates a new ingredient matching any fluid from the list, containing the given components
      */
     public static FluidIngredient of(boolean strict, DataComponentMap map, HolderSet<Fluid> fluids) {
-        return of(strict, DataComponentPredicate.allOf(map), fluids);
+        return of(strict, DataComponentExactPredicate.allOf(map), fluids);
     }
 
     /**
      * Creates a new ingredient matching any fluid from the list, containing the given components
      */
     @SafeVarargs
-    public static FluidIngredient of(boolean strict, DataComponentPredicate predicate, Holder<Fluid>... fluids) {
+    public static FluidIngredient of(boolean strict, DataComponentExactPredicate predicate, Holder<Fluid>... fluids) {
         return of(strict, predicate, HolderSet.direct(fluids));
     }
 
     /**
      * Creates a new ingredient matching any fluid from the list, containing the given components
      */
-    public static FluidIngredient of(boolean strict, DataComponentPredicate predicate, Fluid... fluids) {
+    public static FluidIngredient of(boolean strict, DataComponentExactPredicate predicate, Fluid... fluids) {
         return of(strict, predicate, HolderSet.direct(Arrays.stream(fluids).map(Fluid::builtInRegistryHolder).toList()));
     }
 
     /**
      * Creates a new ingredient matching any fluid from the list, containing the given components
      */
-    public static FluidIngredient of(boolean strict, DataComponentPredicate predicate, HolderSet<Fluid> fluids) {
+    public static FluidIngredient of(boolean strict, DataComponentExactPredicate predicate, HolderSet<Fluid> fluids) {
         return new DataComponentFluidIngredient(fluids, predicate, strict);
     }
 }

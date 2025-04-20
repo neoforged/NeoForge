@@ -1,18 +1,19 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -14,9 +_,9 @@
- import net.neoforged.api.distmarker.OnlyIn;
+@@ -16,9 +_,9 @@
  
  @OnlyIn(Dist.CLIENT)
--public class KeyMapping implements Comparable<KeyMapping> {
-+public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
-     private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
+ public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
+-    private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -    private static final Map<InputConstants.Key, KeyMapping> MAP = Maps.newHashMap();
+-    private static final Set<String> CATEGORIES = Sets.newHashSet();
++    private static final Map<String, KeyMapping> ALL = Maps.newConcurrentMap();
 +    private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();
-     private static final Set<String> CATEGORIES = Sets.newHashSet();
++    private static final Set<String> CATEGORIES = Sets.newConcurrentHashSet();
      public static final String CATEGORY_MOVEMENT = "key.categories.movement";
      public static final String CATEGORY_MISC = "key.categories.misc";
-@@ -42,17 +_,17 @@
+     public static final String CATEGORY_MULTIPLAYER = "key.categories.multiplayer";
+@@ -43,17 +_,17 @@
      private int clickCount;
  
      public static void click(InputConstants.Key p_90836_) {
@@ -28,14 +29,14 @@
 -        if (keymapping != null) {
 -            keymapping.setDown(p_90839_);
 -        }
-+        for (KeyMapping keymapping : MAP.getAll(p_90838_))
++        for (KeyMapping keymapping : MAP.getAll(p_90838_, !p_90839_))
 +            if (keymapping != null) {
 +                keymapping.setDown(p_90839_);
 +            }
      }
  
      public static void setAll() {
-@@ -100,7 +_,7 @@
+@@ -101,7 +_,7 @@
      }
  
      public boolean isDown() {
@@ -44,7 +45,7 @@
      }
  
      public String getCategory() {
-@@ -134,9 +_,13 @@
+@@ -135,9 +_,13 @@
      }
  
      public int compareTo(KeyMapping p_90841_) {
@@ -61,7 +62,7 @@
      }
  
      public static Supplier<Component> createNameSupplier(String p_90843_) {
-@@ -145,6 +_,20 @@
+@@ -146,6 +_,20 @@
      }
  
      public boolean same(KeyMapping p_90851_) {
@@ -82,7 +83,7 @@
          return this.key.equals(p_90851_.key);
      }
  
-@@ -163,11 +_,13 @@
+@@ -164,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -97,10 +98,10 @@
      }
  
      public String saveString() {
-@@ -176,5 +_,86 @@
- 
-     public void setDown(boolean p_90846_) {
-         this.isDown = p_90846_;
+@@ -182,5 +_,86 @@
+     @Nullable
+     public static KeyMapping get(String p_389468_) {
+         return ALL.get(p_389468_);
 +    }
 +
 +    // Neo: Injected Key Mapping controls

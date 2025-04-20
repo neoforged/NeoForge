@@ -11,11 +11,11 @@
           }
         },
         {
-          "type": "neoforge:item_exists",
-          "item": "minecraft:dirt"
+          "type": "neoforge:registered",
+          "value": "minecraft:dirt"
         },
         {
-          "type": "neoforge:false"
+          "type": "neoforge:never"
         }
       ]
     }
@@ -23,9 +23,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "X": {
-      "item": "minecraft:dirt"
-    }
+    "X": "minecraft:dirt"
   },
   "pattern": [
     "XXX",

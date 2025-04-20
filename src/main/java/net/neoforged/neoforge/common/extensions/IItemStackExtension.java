@@ -12,21 +12,17 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.AdventureModePredicate;
-import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -36,6 +32,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.ItemCapability;
@@ -43,6 +40,7 @@ import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -55,22 +53,13 @@ public interface IItemStackExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#getCraftingRemainingItem()}.
+     * ItemStack sensitive version of {@link Item#getCraftingRemainder()}.
      * Returns a full ItemStack instance of the result.
      *
      * @return The resulting ItemStack
      */
-    default ItemStack getCraftingRemainingItem() {
-        return self().getItem().getCraftingRemainingItem(self());
-    }
-
-    /**
-     * ItemStack sensitive version of {@link Item#hasCraftingRemainingItem()}.
-     *
-     * @return True if this item has a crafting remaining item
-     */
-    default boolean hasCraftingRemainingItem() {
-        return self().getItem().hasCraftingRemainingItem(self());
+    default ItemStack getCraftingRemainder() {
+        return self().getItem().getCraftingRemainder(self());
     }
 
     /**
@@ -82,15 +71,15 @@ public interface IItemStackExtension {
      * @apiNote This method by default returns the {@code burn_time} specified in
      *          the {@code furnace_fuels.json} file.
      */
-    default int getBurnTime(@Nullable RecipeType<?> recipeType) {
+    default int getBurnTime(@Nullable RecipeType<?> recipeType, FuelValues fuelValues) {
         if (self().isEmpty()) {
             return 0;
         }
-        int burnTime = self().getItem().getBurnTime(self(), recipeType);
+        int burnTime = self().getItem().getBurnTime(self(), recipeType, fuelValues);
         if (burnTime < 0) {
             throw new IllegalStateException("Stack of item " + BuiltInRegistries.ITEM.getKey(self().getItem()) + " has a negative burn time");
         }
-        return EventHooks.getItemBurnTime(self(), burnTime, recipeType);
+        return EventHooks.getItemBurnTime(self(), burnTime, recipeType, fuelValues);
     }
 
     default InteractionResult onItemUseFirst(UseOnContext context) {
@@ -179,15 +168,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * ItemStack sensitive version of {@link Item#getEnchantmentValue()}.
-     *
-     * @return the enchantment value of this ItemStack
-     */
-    default int getEnchantmentValue() {
-        return self().getItem().getEnchantmentValue(self());
-    }
-
-    /**
      * Override this to set a non-default armor slot for an ItemStack, but <em>do
      * not use this to get the armor slot of said stack; for that, use
      * {@link LivingEntity#getEquipmentSlotForItem(ItemStack)}.</em>
@@ -202,25 +182,14 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Can this Item disable a shield
-     *
-     * @param shield   The shield in question
-     * @param entity   The LivingEntity holding the shield
-     * @param attacker The LivingEntity holding the ItemStack
-     * @return True if this ItemStack can disable the shield in question.
-     */
-    default boolean canDisableShield(ItemStack shield, LivingEntity entity, LivingEntity attacker) {
-        return self().getItem().canDisableShield(self(), shield, entity, attacker);
-    }
-
-    /**
      * Called when a entity tries to play the 'swing' animation.
      *
      * @param entity The entity swinging the item.
-     * @return True to cancel any further processing by EntityLiving
+     * @param hand   The hand the item is held in.
+     * @return True to cancel any further processing by {@link LivingEntity}
      */
-    default boolean onEntitySwing(LivingEntity entity) {
-        return self().getItem().onEntitySwing(self(), entity);
+    default boolean onEntitySwing(LivingEntity entity, InteractionHand hand) {
+        return self().getItem().onEntitySwing(self(), entity, hand);
     }
 
     /**
@@ -265,9 +234,7 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Called every tick when this item is equipped {@linkplain Mob#isBodyArmorItem(ItemStack) as an armor item} by a horse {@linkplain Mob#canWearBodyArmor()} that can wear armor}.
-     * <p>
-     * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
+     * Called every tick when this item is {@link DataComponents#EQUIPPABLE equipped} {@link EquipmentSlot#BODY as an armor item} by a {@link Mob} that can wear armor.
      *
      * @param level The level the horse is in
      * @param horse The horse wearing this item
@@ -334,12 +301,12 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Determines if a item is reparable, used by Repair recipes and Grindstone.
+     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
      *
-     * @return True if reparable
+     * @return True if repairable by combining
      */
-    default boolean isRepairable() {
-        return self().getItem().isRepairable(self());
+    default boolean isCombineRepairable() {
+        return self().getItem().isCombineRepairable(self());
     }
 
     /**
@@ -364,40 +331,14 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Whether this Item can be used to hide player head for enderman.
+     * Whether this {@link Item} can be used to hide player's gaze from Endermen and Creakings.
      *
-     * @param player         The player watching the enderman
-     * @param endermanEntity The enderman that the player look
-     * @return true if this Item can be used.
+     * @param player The player watching the entity
+     * @param entity The entity the player is looking at, may be null
+     * @return true if this {@link Item} hides the player's gaze from the given entity
      */
-    default boolean isEnderMask(Player player, EnderMan endermanEntity) {
-        return self().getItem().isEnderMask(self(), player, endermanEntity);
-    }
-
-    /**
-     * Used to determine if the player can use Elytra flight.
-     * This is called Client and Server side.
-     *
-     * @param entity The entity trying to fly.
-     * @return True if the entity can use Elytra flight.
-     */
-    default boolean canElytraFly(LivingEntity entity) {
-        return self().getItem().canElytraFly(self(), entity);
-    }
-
-    /**
-     * Used to determine if the player can continue Elytra flight,
-     * this is called each tick, and can be used to apply ItemStack damage,
-     * consume Energy, or what have you.
-     * For example the Vanilla implementation of this, applies damage to the
-     * ItemStack every 20 ticks.
-     *
-     * @param entity      The entity currently in Elytra flight.
-     * @param flightTicks The number of ticks the entity has been Elytra flying for.
-     * @return True if the entity should continue Elytra flight or False to stop.
-     */
-    default boolean elytraFlightTick(LivingEntity entity, int flightTicks) {
-        return self().getItem().elytraFlightTick(self(), entity, flightTicks);
+    default boolean isGazeDisguise(Player player, @Nullable LivingEntity entity) {
+        return self().getItem().isGazeDisguise(self(), player, entity);
     }
 
     /**
@@ -435,21 +376,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Get the food properties for this item.
-     * This is a bouncer for easier use of {@link IItemExtension#getFoodProperties(ItemStack, LivingEntity)}
-     *
-     * The @Nullable annotation was only added, due to the default method, also being @Nullable.
-     * Use this with a grain of salt, as if you return null here and true at {@link Item#isEdible()}, NPEs will occur!
-     *
-     * @param entity The entity which wants to eat the food. Be aware that this can be null!
-     * @return The current FoodProperties for the item.
-     */
-    @Nullable // read javadoc to find a potential problem
-    default FoodProperties getFoodProperties(@Nullable LivingEntity entity) {
-        return self().getItem().getFoodProperties(self(), entity);
-    }
-
-    /**
      * Whether this stack should be excluded (if possible) when selecting the target hotbar slot of a "pick" action.
      * By default, this returns true for enchanted stacks.
      *
@@ -480,13 +406,13 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents.ATTRIBUTE_MODIFIERS}
+     * Computes the gameplay attribute modifiers for this item stack. Used in place of direct access to {@link DataComponents#ATTRIBUTE_MODIFIERS}
      * or {@link Item#getDefaultAttributeModifiers(ItemStack)} when querying attributes for gameplay purposes.
      * <p>
-     * This method first computes the default modifiers, using {@link DataComponents.ATTRIBUTE_MODIFIERS} if present, otherwise
+     * This method first computes the default modifiers, using {@link DataComponents#ATTRIBUTE_MODIFIERS} if present, otherwise
      * falling back to {@link Item#getDefaultAttributeModifiers(ItemStack)}.
      * <p>
-     * The {@link ItemAttributeModifiersEvent} is then fired to allow external adjustments.
+     * The {@link ItemAttributeModifierEvent} is then fired to allow external adjustments.
      */
     default ItemAttributeModifiers getAttributeModifiers() {
         ItemAttributeModifiers defaultModifiers = self().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);

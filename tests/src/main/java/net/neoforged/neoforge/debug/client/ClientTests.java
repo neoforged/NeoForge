@@ -9,8 +9,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import javax.sound.sampled.AudioFormat;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -19,14 +24,21 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -53,7 +65,7 @@ public class ClientTests {
         final KeyMapping stickKey = new KeyMapping("stick_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
         final KeyMapping rockKey = new KeyMapping("rock_key", InputConstants.KEY_BACKSLASH, KeyMapping.CATEGORY_MISC);
 
-        test.registrationHelper().provider(LanguageProvider.class, lang -> {
+        test.registrationHelper().clientProvider(LanguageProvider.class, lang -> {
             lang.add(stickKey.getName(), "Stick key");
             lang.add(rockKey.getName(), "Rock key");
         });
@@ -67,17 +79,67 @@ public class ClientTests {
             if (stickKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.STICK)) {
-                    player.sendSystemMessage(Component.literal("stick found!"));
+                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal("stick found!"));
                     test.pass();
                 }
             }
             if (rockKey.consumeClick()) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null && player.getMainHandItem().is(Items.COBBLESTONE)) {
-                    player.sendSystemMessage(Component.literal("rock found!"));
+                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal("rock found!"));
                     test.pass();
                 }
             }
+        });
+    }
+
+    @TestHolder(description = "Tests that the NamespacedDirectoryLister only collects resources from the specified namespace", enabledByDefault = true)
+    static void namespacedDirectoryListerTest(final DynamicTest test) {
+        final ResourceLocation MUST_BE_PRESENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_present", "test/dir_list_test_present");
+        final ResourceLocation MUST_BE_ABSENT = ResourceLocation.fromNamespaceAndPath("neotests_dir_list_absent", "test/dir_list_test_absent");
+
+        test.framework().modEventBus().addListener((final TextureAtlasStitchedEvent event) -> {
+            if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
+                return;
+            }
+
+            ResourceLocation missing = MissingTextureAtlasSprite.getLocation();
+            if (event.getAtlas().getSprite(MUST_BE_PRESENT).contents().name().equals(missing)) {
+                test.fail("dir_list_test_present.png must be present but returned the missing texture");
+                return;
+            }
+            if (!event.getAtlas().getSprite(MUST_BE_ABSENT).contents().name().equals(missing)) {
+                test.fail("dir_list_test_absent.png must be absent but returned something other than the missing texture");
+                return;
+            }
+            test.pass();
+        });
+    }
+
+    @TestHolder(description = "Tests that helmets with custom rendering work", enabledByDefault = true)
+    static void customHelmetRendering(final DynamicTest test) {
+        var item = test.registrationHelper().items().registerItem("neo_helmet", properties -> new Item(properties.equippable(EquipmentSlot.HEAD)));
+        test.framework().modEventBus().addListener((final RegisterClientExtensionsEvent event) -> {
+            event.registerItem(new IClientItemExtensions() {
+                @Override
+                public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+                    guiGraphics.blit(
+                            RenderType::guiTexturedOverlay,
+                            ResourceLocation.withDefaultNamespace("textures/block/stone.png"),
+                            0,
+                            0,
+                            0,
+                            0,
+                            guiGraphics.guiWidth(),
+                            guiGraphics.guiHeight(),
+                            guiGraphics.guiWidth(),
+                            guiGraphics.guiHeight(),
+                            -1);
+                }
+            }, item);
+        });
+        test.eventListeners().forge().addListener((final PlayerEvent.PlayerLoggedInEvent event) -> {
+            test.requestConfirmation(event.getEntity(), Component.literal("Does stone cover the screen when wearing the *_custom_helmet_rendering:neo_helmet?"));
         });
     }
 

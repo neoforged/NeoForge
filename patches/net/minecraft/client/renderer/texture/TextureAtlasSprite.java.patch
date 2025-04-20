@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-@@ -127,4 +_,14 @@
+@@ -128,4 +_,14 @@
          @Override
          void close();
      }
@@ -12,6 +12,6 @@
 +              y += this.contents.animatedTexture.getFrameY(frameIndex) * this.contents.height;
 +         }
 +
-+         return this.contents.getOriginalImage().getPixelRGBA(x, y);
++         return this.contents.getOriginalImage().getPixel(x, y);
 +    }
  }

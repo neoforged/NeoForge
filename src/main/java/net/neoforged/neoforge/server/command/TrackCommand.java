@@ -45,7 +45,7 @@ class TrackCommand {
                                         int duration = IntegerArgumentType.getInteger(ctx, "duration");
                                         TimeTracker.BLOCK_ENTITY_UPDATE.reset();
                                         TimeTracker.BLOCK_ENTITY_UPDATE.enable(duration);
-                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tracking.be.enabled", duration), true);
+                                        ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.be.enabled", duration), true);
                                         return 0;
                                     })))
                     .then(Commands.literal("entity")
@@ -54,7 +54,7 @@ class TrackCommand {
                                         int duration = IntegerArgumentType.getInteger(ctx, "duration");
                                         TimeTracker.ENTITY_UPDATE.reset();
                                         TimeTracker.ENTITY_UPDATE.enable(duration);
-                                        ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tracking.entity.enabled", duration), true);
+                                        ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.entity.enabled", duration), true);
                                         return 0;
                                     })));
         }
@@ -67,13 +67,13 @@ class TrackCommand {
                     .then(Commands.literal("blockentity")
                             .executes(ctx -> {
                                 TimeTracker.BLOCK_ENTITY_UPDATE.reset();
-                                ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tracking.be.reset"), true);
+                                ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.be.reset"), true);
                                 return 0;
                             }))
                     .then(Commands.literal("entity")
                             .executes(ctx -> {
                                 TimeTracker.ENTITY_UPDATE.reset();
-                                ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.tracking.entity.reset"), true);
+                                ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.entity.reset"), true);
                                 return 0;
                             }));
         }
@@ -98,7 +98,7 @@ class TrackCommand {
         private static <T> int execute(CommandSourceStack source, TimeTracker<T> tracker, Function<ObjectTimings<T>, Component> toString) {
             List<ObjectTimings<T>> timingsList = getSortedTimings(tracker);
             if (timingsList.isEmpty()) {
-                source.sendSuccess(() -> Component.translatable("commands.neoforge.tracking.no_data"), true);
+                source.sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.no_data"), true);
             } else {
                 timingsList.stream()
                         .filter(timings -> timings.getObject().get() != null)
@@ -114,13 +114,13 @@ class TrackCommand {
             return Commands.literal("entity").executes(ctx -> TrackResults.execute(ctx.getSource(), TimeTracker.ENTITY_UPDATE, data -> {
                 Entity entity = data.getObject().get();
                 if (entity == null)
-                    return Component.translatable("commands.neoforge.tracking.invalid");
+                    return CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.invalid");
 
                 BlockPos pos = entity.blockPosition();
                 double averageTimings = data.getAverageTimings();
                 String tickTime = (averageTimings > 1000 ? TIME_FORMAT.format(averageTimings / 1000) : TIME_FORMAT.format(averageTimings)) + (averageTimings < 1000 ? "\u03bcs" : "ms");
 
-                return Component.translatable("commands.neoforge.tracking.timing_entry", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString(), entity.level().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
+                return CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.timing_entry", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString(), entity.level().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
             }));
         }
     }
@@ -130,13 +130,13 @@ class TrackCommand {
             return Commands.literal("blockentity").executes(ctx -> TrackResults.execute(ctx.getSource(), TimeTracker.BLOCK_ENTITY_UPDATE, data -> {
                 BlockEntity be = data.getObject().get();
                 if (be == null)
-                    return Component.translatable("commands.neoforge.tracking.invalid");
+                    return CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.invalid");
 
                 BlockPos pos = be.getBlockPos();
 
                 double averageTimings = data.getAverageTimings();
                 String tickTime = (averageTimings > 1000 ? TIME_FORMAT.format(averageTimings / 1000) : TIME_FORMAT.format(averageTimings)) + (averageTimings < 1000 ? "\u03bcs" : "ms");
-                return Component.translatable("commands.neoforge.tracking.timing_entry", BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()).toString(), be.getLevel().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
+                return CommandUtils.makeTranslatableWithFallback("commands.neoforge.tracking.timing_entry", BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()).toString(), be.getLevel().dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), tickTime);
             }));
         }
     }

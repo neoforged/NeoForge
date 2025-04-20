@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.event.entity.player;
 
-import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
@@ -30,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link Player#attack(Entity)},
  * {@code Player#hurtCurrentlyUsedShield(float)},
  * {@link Player#interactOn(Entity, InteractionHand)},
- * {@link CommonHooks#getCraftingRemainingItem(ItemStack)},
+ * {@link CommonHooks#getCraftingRemainder(ItemStack)},
  * {@link ServerPlayerGameMode#useItem(ServerPlayer, Level, ItemStack, InteractionHand)} ,
  * {@link ServerPlayerGameMode#useItemOn(ServerPlayer, Level, ItemStack, InteractionHand, BlockHitResult)}
  * and {@link ServerPlayerGameMode#destroyBlock(BlockPos)}.<br>

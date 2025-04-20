@@ -7,12 +7,12 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,13 +39,11 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -223,11 +221,10 @@ public interface IBlockStateExtension {
      *
      * Called when A user uses the creative pick block button on this block
      *
-     * @param target The full target the player is looking at
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
-    default ItemStack getCloneItemStack(HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return self().getBlock().getCloneItemStack(self(), target, level, pos, player);
+    default ItemStack getCloneItemStack(BlockPos pos, LevelReader level, boolean includeData, Player player) {
+        return self().getBlock().getCloneItemStack(level, pos, self(), includeData, player);
     }
 
     /**
@@ -489,14 +486,17 @@ public interface IBlockStateExtension {
 
     /**
      * If the block is flammable, this is called when it gets lit on fire.
+     * <p>
+     * The return value determines whether a flint-and-steel in a dispenser was used successfully and should be damaged
      *
      * @param level   The current level
      * @param pos     Block position in level
      * @param face    The face that the fire is coming from
      * @param igniter The entity that lit the fire
+     * @return whether the block was successfully set on fire (i.e. TNT is allowed to explode and was primed)
      */
-    default void onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        self().getBlock().onCaughtFire(self(), level, pos, face, igniter);
+    default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
+        return self().getBlock().onCaughtFire(self(), level, pos, face, igniter);
     }
 
     /**
@@ -596,7 +596,7 @@ public interface IBlockStateExtension {
      * @param pos       Block position in level
      * @param explosion The explosion instance affecting the block
      */
-    default void onBlockExploded(Level level, BlockPos pos, Explosion explosion) {
+    default void onBlockExploded(ServerLevel level, BlockPos pos, Explosion explosion) {
         self().getBlock().onBlockExploded(self(), level, pos, explosion);
     }
 
@@ -754,5 +754,16 @@ public interface IBlockStateExtension {
      */
     default BubbleColumnDirection getBubbleColumnDirection() {
         return self().getBlock().getBubbleColumnDirection(self());
+    }
+
+    /**
+     * Determines if a fluid adjacent to the block on the given side should not be rendered.
+     * 
+     * @param selfFace      the face of this block that the fluid is adjacent to
+     * @param adjacentFluid the fluid that is touching that face
+     * @return true if this block should cause the fluid's face to not render
+     */
+    default boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
+        return self().getBlock().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
     }
 }

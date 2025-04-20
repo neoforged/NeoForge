@@ -1,67 +1,27 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+import net.neoforged.moddevgradle.dsl.ModModel
+import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.jarcompatibilitychecker' version '0.1.9'
+    id 'net.neoforged.jarcompatibilitychecker' version '0.1.12'
     id 'net.neoforged.gradleutils'
     id 'neoforge.versioning'
 }
 
+apply plugin : net.neoforged.neodev.NeoDevPlugin
+
+// Because of the source set reference.
+evaluationDependsOn(":neoforge-coremods")
+
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '21.0'
+    from '21.4'
     disableAutomaticPublicationRegistration()
-}
-
-dynamicProject {
-    runtime("${project.minecraft_version}-${project.neoform_version}",
-            rootProject.layout.projectDirectory.dir('patches'),
-            rootProject.layout.projectDirectory.dir('rejects'))
-}
-
-final checkVersion = JCCPlugin.providePreviousVersion(
-        project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'})
-)
-final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
-    // Use the same jar that the patches were generated against
-    cleanJar.set(tasks.generateClientBinaryPatches.clean)
-    maven.set('https://maven.neoforged.net/releases')
-    artifact.set('net.neoforged:neoforge')
-    version.set(checkVersion)
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(java_version)
-    }
-}
-checkJarCompatibility {
-    isAPI = true
-    baseJar = createCompatJar.flatMap { it.output }
-}
-
-installerProfile {
-    profile = 'NeoForge'
-}
-
-minecraft {
-    // FML looks for this mod id to find the minecraft classes
-    modIdentifier 'minecraft'
-
-    accessTransformers {
-        file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
-    }
-}
-
-tasks.configureEach { tsk ->
-    if (tsk.name == 'neoFormApplyUserAccessTransformer' && project.hasProperty('validateAccessTransformers')) {
-        tsk.inputs.property('validation', 'error')
-        tsk.logLevel('ERROR')
-        tsk.doFirst {
-            tsk.getRuntimeProgramArguments().addAll(tsk.getRuntimeProgramArguments().get())
-            tsk.getRuntimeProgramArguments().add('--access-transformer-validation=error')
-        }
-    }
 }
 
 sourceSets {
@@ -73,168 +33,268 @@ sourceSets {
             srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources')
         }
     }
-}
-
-dependencies {
-    runtimeOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
-
-    moduleOnly "cpw.mods:securejarhandler:${project.securejarhandler_version}"
-    moduleOnly "org.ow2.asm:asm:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-commons:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-tree:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-util:${project.asm_version}"
-    moduleOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
-    moduleOnly "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
-    moduleOnly "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
-
-    installer ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
-        exclude group: 'org.slf4j'
-        exclude group: 'net.fabricmc'
-    }
-    installer ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
-        exclude group: 'org.lwjgl'
-        exclude group: 'org.slf4j'
-        exclude group: 'net.fabricmc'
-    }
-    installer "cpw.mods:securejarhandler:${project.securejarhandler_version}"
-    installer "org.ow2.asm:asm:${project.asm_version}"
-    installer "org.ow2.asm:asm-commons:${project.asm_version}"
-    installer "org.ow2.asm:asm-tree:${project.asm_version}"
-    installer "org.ow2.asm:asm-util:${project.asm_version}"
-    installer "org.ow2.asm:asm-analysis:${project.asm_version}"
-    installer "net.neoforged:accesstransformers:${project.accesstransformers_version}"
-    installer "net.neoforged:bus:${project.eventbus_version}"
-    installer "net.neoforged:coremods:${project.coremods_version}"
-    installer "cpw.mods:modlauncher:${project.modlauncher_version}"
-    installer "net.neoforged:mergetool:${project.mergetool_version}:api"
-    installer "com.electronwill.night-config:core:${project.nightconfig_version}"
-    installer "com.electronwill.night-config:toml:${project.nightconfig_version}"
-    installer "org.apache.maven:maven-artifact:${project.apache_maven_artifact_version}"
-    installer "net.jodah:typetools:${project.typetools_version}"
-    installer "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
-    installer("net.fabricmc:sponge-mixin:${project.mixin_version}") { transitive = false }
-    installer "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
-    installer ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
-        exclude group: 'org.slf4j'
-    }
-    // We depend on apache commons directly as there is a difference between the version the server uses and the one the client does
-    installer "org.apache.commons:commons-lang3:${project.apache_commons_lang3_version}"
-    installer ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
-        exclude group: 'org.slf4j'
-    }
-    // Manually override log4j since the version coming from other `installer` dependencies is outdated
-    installer "org.apache.logging.log4j:log4j-api:${project.log4j_version}"
-    installer "org.apache.logging.log4j:log4j-core:${project.log4j_version}"
-
-    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
-
-    userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}"), {
-        jarJar.ranged(it, "[${project.mixin_extras_version},)")
-    }
-
-    userdevTestImplementation("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}")
-}
-
-runTypes {
     client {
-        singleInstance false
-        client true
-
-        arguments.addAll '--fml.neoForgeVersion', project.version
-        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
-        arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.neoFormVersion', project.neoform_version
-    }
-
-    server {
-        server true
-
-        arguments.addAll '--fml.neoForgeVersion', project.version
-        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
-        arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.neoFormVersion', project.neoform_version
-    }
-
-    gameTestServer {
-        from project.runTypes.server
-
-        gameTest true
-    }
-
-    gameTestClient {
-        from project.runTypes.client
-
-        gameTest true
-    }
-
-    data {
-        dataGenerator true
-
-        // Don't set modid here so we can reuse this runType for test datagen
-        arguments.addAll '--fml.neoForgeVersion', project.version
-        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
-        arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.neoFormVersion', project.neoform_version
-    }
-
-    junit {
-        junit true
-        arguments.addAll '--fml.neoForgeVersion', project.version
-        arguments.addAll '--fml.fmlVersion', project.fancy_mod_loader_version
-        arguments.addAll '--fml.mcVersion', project.minecraft_version
-        arguments.addAll '--fml.neoFormVersion', project.neoform_version
-    }
-}
-
-runs {
-    client { }
-    server { }
-    gameTestServer { }
-    gameTestClient { }
-    data {
-        programArguments.addAll '--mod', 'neoforge'
-
-        modSources.add project.sourceSets.main
-
-        idea {
-            primarySourceSet project.sourceSets.main
+        java {
+            srcDirs rootProject.file('src/client/java')
         }
     }
 }
 
-runs.configureEach { it ->
-    final File gameDir = project.file("run/${it.name}") as File
-    gameDir.mkdirs();
-
-    it.workingDirectory.set gameDir
-    it.programArguments.addAll '--gameDir', gameDir.absolutePath
-}
-
-launcherProfile {
-    arguments {
-        game '--fml.neoForgeVersion'
-        game project.version
-        game '--fml.fmlVersion'
-        game project.fancy_mod_loader_version
-        game '--fml.mcVersion'
-        game project.minecraft_version
-        game '--fml.neoFormVersion'
-        game project.neoform_version
+java {
+    registerFeature('client') {
+        usingSourceSet(sourceSets.client)
+        disablePublication()
     }
 }
 
-userdevProfile {
-    runTypes.configureEach {
-        argument '--fml.neoForgeVersion'
-        argument project.version
-        argument '--fml.fmlVersion'
-        argument project.fancy_mod_loader_version
-        argument '--fml.mcVersion'
-        argument project.minecraft_version
-        argument '--fml.neoFormVersion'
-        argument project.neoform_version
+final checkVersion = JCCPlugin.providePreviousVersion(
+        project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
+        project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
+)
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
+    // Use the same jar that the patches were generated against
+    cleanJar.set(tasks.generateClientBinPatches.cleanJar)
+    maven.set('https://maven.neoforged.net/releases')
+    artifact.set('net.neoforged:neoforge')
+    version.set(checkVersion)
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(java_version)
     }
-    additionalTestDependencyArtifactCoordinate "net.neoforged:testframework:${project.version}"
+}
+checkJarCompatibility {
+    isAPI = true
+    baseJar = createCompatJar.flatMap { it.output }
+    inputJar = tasks.named("joinedJar", Jar).flatMap { it.archiveFile }
+}
+
+// We don't want to include client in non-client runs,
+// however the name of the ModModel must be minecraft for FML to work.
+// Since we need both mods to be named minecraft we create them manually.
+ext.commonMod = objects.newInstance(ModModel, "minecraft")
+commonMod.sourceSet sourceSets.main
+ext.joinedMod = objects.newInstance(ModModel, "minecraft")
+joinedMod.sourceSet sourceSets.main
+joinedMod.sourceSet sourceSets.client
+
+neoDev {
+    mods {
+        "neoforge-coremods" {
+            sourceSet project(":neoforge-coremods").sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    // For an overview of what the nonstandard configurations do,
+    // have a look at NeoDevConfigurations.java in the buildSrc folder.
+
+    neoFormData("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform'
+        }
+        endorseStrictVersions()
+    }
+    neoFormDependencies("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform-dependencies'
+        }
+        endorseStrictVersions()
+    }
+
+    moduleLibraries "cpw.mods:securejarhandler:${project.securejarhandler_version}"
+    for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
+        moduleLibraries(asmModule) {
+            // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
+            // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
+            version {
+                strictly project.asm_version
+            }
+        }
+    }
+    moduleLibraries "cpw.mods:bootstraplauncher:${project.bootstraplauncher_version}"
+    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+
+    libraries ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
+        exclude group: 'org.slf4j'
+        exclude group: 'net.fabricmc'
+    }
+    libraries ("net.neoforged.fancymodloader:earlydisplay:${project.fancy_mod_loader_version}") {
+        exclude group: 'org.lwjgl'
+        exclude group: 'org.slf4j'
+        exclude group: 'net.fabricmc'
+    }
+    libraries "net.neoforged:accesstransformers:${project.accesstransformers_version}"
+    libraries "net.neoforged:bus:${project.eventbus_version}"
+    libraries "net.neoforged:coremods:${project.coremods_version}"
+    libraries "cpw.mods:modlauncher:${project.modlauncher_version}"
+    libraries "net.neoforged:mergetool:${project.mergetool_version}:api"
+    libraries "com.electronwill.night-config:core:${project.nightconfig_version}"
+    libraries "com.electronwill.night-config:toml:${project.nightconfig_version}"
+    libraries "org.apache.maven:maven-artifact:${project.apache_maven_artifact_version}"
+    libraries "net.jodah:typetools:${project.typetools_version}"
+    libraries "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
+    libraries("net.fabricmc:sponge-mixin:${project.mixin_version}") { transitive = false }
+    libraries ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
+        exclude group: 'org.slf4j'
+    }
+    libraries ("net.neoforged:JarJarMetadata:${project.jarjar_version}") {
+        exclude group: 'org.slf4j'
+    }
+
+    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+
+    userdevCompileOnly jarJar("io.github.llamalad7:mixinextras-neoforge:${project.mixin_extras_version}")
+
+    userdevTestFixtures("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}") {
+        endorseStrictVersions()
+    }
+
+    // Must be implementation instead of compileOnly so that running dependent projects such as tests will trigger (re)compilation of coremods.
+    // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
+    implementation(jarJar(project(":neoforge-coremods")))
+
+    clientApi(project(":neoforge")) {
+        capabilities {
+            requireCapability 'net.neoforged:neoforge'
+        }
+    }
+}
+
+// Select runtimeElements rather than universalJar from the main source set
+// If you don't believe it... try to remove this block, and run the following command:
+// gradlew :neoforge:dependencyInsight --configuration clientRuntimeClasspath --dependency net.neoforged:neoforge --scan
+configurations.clientRuntimeClasspath {
+    attributes {
+        attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
+    }
+}
+
+neoDev {
+    runs {
+        configureEach {
+            gameDirectory = layout.projectDir.dir("run/$name")
+            systemProperty("terminal.ansi", "true")
+        }
+        client {
+            client()
+            sourceSet = sourceSets.client
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
+        }
+        server {
+            server()
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
+        }
+        gameTestServer {
+            type = "gameTestServer"
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
+        }
+        data {
+            // We perform client and server datagen in a single clientData run to avoid
+            // having to juggle two generated resources folders and two runs for no additional benefit.
+            clientData()
+            sourceSet = sourceSets.main
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
+            programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
+                    '--existing', rootProject.file("src/main/resources").absolutePath,
+                    '--output', rootProject.file("src/generated/resources").absolutePath
+        }
+    }
+}
+
+generateAccessTransformers {
+    // Make all state shards public
+    classGroup(
+            'render state shard classes', PUBLIC,
+            innerClassesOf('net/minecraft/client/renderer/RenderStateShard')
+    )
+    // Make all state shard fields public
+    fieldGroup(
+            'render state shards', PUBLIC,
+            named('net/minecraft/client/renderer/RenderStateShard'),
+            fieldsOfType(classesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
+    )
+    // Make all composite state builder methods public
+    methodGroup(
+            'composite state builder methods', PUBLIC,
+            named('net/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder'),
+            not(named('<init>'))
+    )
+    // Make all render pipeline snippet fields public
+    fieldGroup(
+            'render pipeline snippets', PUBLIC,
+            named('net/minecraft/client/renderer/RenderPipelines'),
+            fieldsOfType(named('com/mojang/blaze3d/pipeline/RenderPipeline$Snippet'))
+    )
+
+    // Make all block constructors public so they can be used by mods
+    methodGroup(
+            'block constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/level/block/Block'),
+            named('<init>')
+    )
+    // Make all particle constructors public so they can be used by mods
+    methodGroup(
+            'particle constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/client/particle/Particle'),
+            named('<init>')
+    )
+
+    // Make all criteria methods in the recipe provider protected so mods can use them
+    methodGroup(
+            'recipe criteria', PROTECTED,
+            named('net/minecraft/data/recipes/RecipeProvider'),
+            methodsReturning('net/minecraft/advancements/Criterion')
+    )
+
+    // getStepSound is package-private and abstract, so mods couldn't otherwise extend from AbstractSkeleton
+    methodGroup(
+            'skeleton step sound', PROTECTED,
+            classesWithSuperclass('net/minecraft/world/entity/monster/AbstractSkeleton'),
+            named('getStepSound')
+    )
+
+    // Make all noise generator setting factories public so mods can use them for custom dimensions
+    methodGroup(
+            'noise generator', PUBLIC,
+            named('net/minecraft/world/level/levelgen/NoiseGeneratorSettings'),
+            methodsReturning('net/minecraft/world/level/levelgen/NoiseGeneratorSettings')
+    )
+
+    fieldGroup(
+            'biome effects builder', PROTECTED,
+            named('net/minecraft/world/level/biome/BiomeSpecialEffects$Builder'),
+            matchAny()
+    )
+
+    // Make all creative tab ids accessible
+    fieldGroup(
+            'creative tabs', PUBLIC,
+            named('net/minecraft/world/item/CreativeModeTabs'),
+            fieldsOfType(named('net/minecraft/resources/ResourceKey'))
+    )
+
+    // Make all villager item listings classes and constructors public for use in custom trades
+    classGroup(
+            'villager item listings', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing')
+    )
+    methodGroup(
+            'villager item listing constructors', PUBLIC,
+            classesWithSuperclass('net/minecraft/world/entity/npc/VillagerTrades$ItemListing'),
+            named('<init>')
+    )
+}
+
+tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.class) {
+    group generateAccessTransformers.group
+    description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
+    input = generateAccessTransformers.input
+    output = rootProject.file("coremods/src/main/resources/net/neoforged/neoforge/coremods/finalize_spawn_targets.json")
+}
+
+tasks.withType(JavaCompile.class).configureEach {
+    // Increase memory used during compilation, to avoid OutOfMemoryErrors
+    options.forkOptions.memoryMaximumSize = '2g'
 }
 
 tasks.withType(Javadoc.class).configureEach {
@@ -244,27 +304,6 @@ tasks.withType(Javadoc.class).configureEach {
             'implNote:a:<em>Implementation Note:</em>'
     ]
     options.addStringOption('Xdoclint:all,-missing', '-public')
-}
-
-configurations {
-    forValidation {
-        canBeConsumed = true
-        canBeResolved = false
-        attributes {
-            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
-            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
-            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
-            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
-        }
-
-        extendsFrom api, runtimeOnly
-    }
-}
-
-artifacts {
-    forValidation(jar.archiveFile) {
-        builtBy(jar)
-    }
 }
 
 AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.components.findByName("java")
@@ -277,10 +316,18 @@ javaComponent.withVariantsFromConfiguration(configurations.runtimeElements) {
     it.skip()
 }
 
+// Resolvable configurations only
 configurations {
+    runtimeElements {
+        attributes {
+            // Add an attribute to disambiguate with the universalJar
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
+        }
+    }
     modDevBundle {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
+        extendsFrom neoFormData
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, "data"))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -291,8 +338,8 @@ configurations {
         javaComponent.addVariantsFromConfiguration(it) {} // Publish it
     }
     modDevConfig {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, "data"))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -303,8 +350,8 @@ configurations {
         javaComponent.addVariantsFromConfiguration(it) {} // Publish it
     }
     installerJar {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
@@ -319,21 +366,21 @@ configurations {
         javaComponent.addVariantsFromConfiguration(it) {}
     }
     universalJar {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, JavaVersion.current().majorVersion.toInteger())
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, java_version as Integer)
             attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
         }
         // Publish it
         javaComponent.addVariantsFromConfiguration(it) {}
     }
     changelog {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
             attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, "changelog"))
@@ -344,11 +391,9 @@ configurations {
         }
     }
     modDevApiElements {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
-        afterEvaluate {
-            extendsFrom userdevCompileOnly, installerLibraries, moduleOnly
-        }
+        extendsFrom libraries, moduleLibraries, userdevCompileOnly, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -360,11 +405,9 @@ configurations {
         javaComponent.addVariantsFromConfiguration(it) {}
     }
     modDevRuntimeElements {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
-        afterEvaluate {
-            extendsFrom installerLibraries, moduleOnly
-        }
+        extendsFrom libraries, moduleLibraries, neoFormDependencies
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -376,11 +419,9 @@ configurations {
         javaComponent.addVariantsFromConfiguration(it) {}
     }
     modDevModulePath {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
-        afterEvaluate {
-            extendsFrom moduleOnly
-        }
+        extendsFrom moduleLibraries
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -391,8 +432,9 @@ configurations {
         javaComponent.addVariantsFromConfiguration(it) {}
     }
     modDevTestFixtures {
+        canBeDeclared = false
         canBeResolved = false
-        canBeConsumed = true
+        extendsFrom userdevTestFixtures
         attributes {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
@@ -405,63 +447,42 @@ configurations {
     }
 }
 
-dependencies {
-    modDevBundle("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
-        capabilities {
-            requireCapability 'net.neoforged:neoform'
-        }
-        endorseStrictVersions()
-    }
-    modDevApiElements("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
-        capabilities {
-            requireCapability 'net.neoforged:neoform-dependencies'
-        }
-        endorseStrictVersions()
-    }
-    modDevRuntimeElements("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
-        capabilities {
-            requireCapability 'net.neoforged:neoform-dependencies'
-        }
-        endorseStrictVersions()
-    }
-    modDevTestFixtures("net.neoforged.fancymodloader:junit-fml:${project.fancy_mod_loader_version}") {
-        endorseStrictVersions()
-    }
+sourcesJar {
+    from sourceSets.client.allSource
+}
+javadoc {
+    source += sourceSets.client.allSource
 }
 
 processResources {
     inputs.property("version", project.version)
+    final version = project.version
     filesMatching("META-INF/neoforge.mods.toml") {
         expand([
                 "global": [
-                        "neoForgeVersion": project.version
+                        "neoForgeVersion": version
                 ]
         ])
     }
 }
 
-afterEvaluate {
-    artifacts {
-        modDevBundle(userdevJar) {
-            setClassifier("userdev") // Legacy
-        }
-        modDevConfig(createUserdevJson.output) {
-            builtBy(createUserdevJson)
-            setClassifier("moddev-config")
-        }
-        universalJar(signUniversalJar.output) {
-            builtBy(signUniversalJar)
-            setClassifier("universal")
-        }
-        installerJar(signInstallerJar.output) {
-            builtBy(signInstallerJar)
-            setClassifier("installer")
-        }
-        changelog(createChangelog.outputFile) {
-            builtBy(createChangelog)
-            setClassifier("changelog")
-            setExtension("txt")
-        }
+artifacts {
+    modDevBundle(userdevJar) {
+        setClassifier("userdev") // Legacy
+    }
+    modDevConfig(writeUserDevConfig.userDevConfig) {
+        setClassifier("moddev-config")
+    }
+    universalJar(universalJar) {
+        setClassifier("universal")
+    }
+    installerJar(installerJar) {
+        setClassifier("installer")
+    }
+    changelog(createChangelog.outputFile) {
+        builtBy(createChangelog)
+        setClassifier("changelog")
+        setExtension("txt")
     }
 }
 

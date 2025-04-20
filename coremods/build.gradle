@@ -1,0 +1,38 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.licenser'
+    id 'neoforge.formatting-conventions'
+}
+
+jar {
+    manifest {
+        attributes(
+                "Automatic-Module-Name": "neoforge.coremods",
+                FMLModType: "LIBRARY",
+        )
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(project.java_version))
+    }
+}
+
+dependencies {
+    compileOnly(platform("net.neoforged:minecraft-dependencies:${project.minecraft_version}"))
+    compileOnly "org.slf4j:slf4j-api"
+    compileOnly "com.google.code.gson:gson"
+
+    compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
+    compileOnly "net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}"
+}
+
+license {
+    header = rootProject.file('codeformat/HEADER.txt')
+    include '**/*.java'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

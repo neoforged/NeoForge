@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.function.Consumer;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -16,6 +15,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = EventTests.GROUP)
 public class EventTests {

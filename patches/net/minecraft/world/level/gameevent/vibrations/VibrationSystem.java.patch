@@ -3,7 +3,7 @@
 @@ -52,6 +_,8 @@
          GameEvent.RESONATE_15.key()
      );
-     int DEFAULT_VIBRATION_FREQUENCY = 0;
+     int NO_VIBRATION_FREQUENCY = 0;
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#VIBRATION_FREQUENCIES data map} instead. */
 +    @Deprecated
      ToIntFunction<ResourceKey<GameEvent>> VIBRATION_FREQUENCY_FOR_EVENT = Util.make(new Reference2IntOpenHashMap<>(), p_316653_ -> {
@@ -20,7 +20,7 @@
  
      static int getGameEventFrequency(ResourceKey<GameEvent> p_316800_) {
 -        return VIBRATION_FREQUENCY_FOR_EVENT.applyAsInt(p_316800_);
-+        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.getHolder(p_316800_);
++        var holder = net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.get(p_316800_);
 +        return holder.map(VibrationSystem::getGameEventFrequency).orElse(0);
      }
  

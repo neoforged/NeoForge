@@ -1,0 +1,73 @@
+--- a/net/minecraft/client/resources/model/ModelDiscovery.java
++++ b/net/minecraft/client/resources/model/ModelDiscovery.java
+@@ -55,7 +_,13 @@
+     }
+ 
+     private ModelDiscovery.ModelWrapper getOrCreateModel(ResourceLocation p_405299_) {
+-        return this.modelWrappers.computeIfAbsent(p_405299_, this.uncachedResolver);
++        // Neo: Remove computeIfAbsent, might cause problems with nested model discovery.
++        var wrapper = this.modelWrappers.get(p_405299_);
++        if (wrapper == null) {
++            wrapper = this.uncachedResolver.get(p_405299_);
++            this.modelWrappers.put(p_405299_, wrapper);
++        }
++        return wrapper;
+     }
+ 
+     private ModelDiscovery.ModelWrapper createAndQueueWrapper(ResourceLocation p_405734_, UnbakedModel p_404997_) {
+@@ -64,6 +_,8 @@
+         if (!flag) {
+             this.parentDiscoveryQueue.add(modeldiscovery$modelwrapper);
+         }
++        // Neo: Allow UnbakedModels to resolve additional dependencies
++        p_404997_.resolveDependencies(this.resolver);
+ 
+         return modeldiscovery$modelwrapper;
+     }
+@@ -143,17 +_,19 @@
+         private static final ModelDiscovery.Slot<TextureSlots> KEY_TEXTURE_SLOTS = slot(4);
+         private static final ModelDiscovery.Slot<TextureAtlasSprite> KEY_PARTICLE_SPRITE = slot(5);
+         private static final ModelDiscovery.Slot<QuadCollection> KEY_DEFAULT_GEOMETRY = slot(6);
+-        private static final int SLOT_COUNT = 7;
++        // Neo: Cache additional properties too
++        private static final ModelDiscovery.Slot<net.minecraft.util.context.ContextMap> KEY_ADDITIONAL_PROPERTIES = slot(7);
++        private static final int SLOT_COUNT = 8;
+         private final ResourceLocation id;
+         boolean valid;
+         @Nullable
+         ModelDiscovery.ModelWrapper parent;
+         final UnbakedModel wrapped;
+-        private final AtomicReferenceArray<Object> fixedSlots = new AtomicReferenceArray<>(7);
++        private final AtomicReferenceArray<Object> fixedSlots = new AtomicReferenceArray<>(SLOT_COUNT);
+         private final Map<ModelState, QuadCollection> modelBakeCache = new ConcurrentHashMap<>();
+ 
+         private static <T> ModelDiscovery.Slot<T> slot(int p_405746_) {
+-            Objects.checkIndex(p_405746_, 7);
++            Objects.checkIndex(p_405746_, SLOT_COUNT);
+             return new ModelDiscovery.Slot<>(p_405746_);
+         }
+ 
+@@ -231,7 +_,7 @@
+             QuadCollection quadcollection = this.getSlot(KEY_DEFAULT_GEOMETRY);
+             return quadcollection != null
+                 ? quadcollection
+-                : this.updateSlot(KEY_DEFAULT_GEOMETRY, this.getTopGeometry().bake(p_405546_, p_404641_, p_405363_, this));
++                : this.updateSlot(KEY_DEFAULT_GEOMETRY, this.getTopGeometry().bake(p_405546_, p_404641_, p_405363_, this, this.getTopAdditionalProperties()));
+         }
+ 
+         @Override
+@@ -240,8 +_,13 @@
+                 ? this.bakeDefaultState(p_405587_, p_405166_, p_405646_)
+                 : this.modelBakeCache.computeIfAbsent(p_405646_, p_405723_ -> {
+                     UnbakedGeometry unbakedgeometry = this.getTopGeometry();
+-                    return unbakedgeometry.bake(p_405587_, p_405166_, p_405723_, this);
++                    return unbakedgeometry.bake(p_405587_, p_405166_, p_405723_, this, this.getTopAdditionalProperties());
+                 });
++        }
++
++        @Override
++        public net.minecraft.util.context.ContextMap getTopAdditionalProperties() {
++            return this.getSimpleProperty(KEY_ADDITIONAL_PROPERTIES, net.neoforged.neoforge.client.extensions.ResolvedModelExtension::findTopAdditionalProperties);
+         }
+     }
+ 

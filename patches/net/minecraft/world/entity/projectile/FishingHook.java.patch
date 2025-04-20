@@ -33,7 +33,7 @@
                      .withParameter(LootContextParams.TOOL, p_37157_)
                      .withParameter(LootContextParams.THIS_ENTITY, this)
 +                    .withParameter(LootContextParams.ATTACKING_ENTITY, this.getOwner())
-                     .withLuck((float)this.luck + player.getLuck())
+                     .withLuck(this.luck + player.getLuck())
                      .create(LootContextParamSets.FISHING);
                  LootTable loottable = this.level().getServer().reloadableRegistries().getLootTable(BuiltInLootTables.FISHING);
                  List<ItemStack> list = loottable.getRandomItems(lootparams);

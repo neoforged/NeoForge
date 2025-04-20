@@ -19,13 +19,13 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
      * Sets a data component.
      */
     @Nullable
-    <T> T set(DataComponentType<? super T> componentType, @Nullable T value);
+    <T> T set(DataComponentType<T> componentType, @Nullable T value);
 
     /**
      * Sets a data component.
      */
     @Nullable
-    default <T> T set(Supplier<? extends DataComponentType<? super T>> componentType, @Nullable T value) {
+    default <T> T set(Supplier<? extends DataComponentType<T>> componentType, @Nullable T value) {
         return set(componentType.get(), value);
     }
 

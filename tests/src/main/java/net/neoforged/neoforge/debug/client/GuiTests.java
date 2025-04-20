@@ -57,7 +57,7 @@ public class GuiTests {
         } else {
             event.setCompact(false); // Force classic mode for 4 or more active effects
         }
-        if (player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+        if (player.hasEffect(MobEffects.SLOWNESS)) {
             event.addHorizontalOffset(20); // Move the effect rendering to the right when slowness is enabled
         }
 

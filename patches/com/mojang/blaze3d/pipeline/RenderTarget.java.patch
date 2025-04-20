@@ -1,57 +1,37 @@
 --- a/com/mojang/blaze3d/pipeline/RenderTarget.java
 +++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
-@@ -104,7 +_,10 @@
-                 GlStateManager._texParameter(3553, 34892, 0);
-                 GlStateManager._texParameter(3553, 10242, 33071);
-                 GlStateManager._texParameter(3553, 10243, 33071);
-+            if (!stencilEnabled)
-                 GlStateManager._texImage2D(3553, 0, 6402, this.width, this.height, 0, 6402, 5126, null);
-+            else
-+                GlStateManager._texImage2D(3553, 0, org.lwjgl.opengl.GL30.GL_DEPTH32F_STENCIL8, this.width, this.height, 0, org.lwjgl.opengl.GL30.GL_DEPTH_STENCIL, org.lwjgl.opengl.GL30.GL_FLOAT_32_UNSIGNED_INT_24_8_REV, null);
-             }
+@@ -23,6 +_,7 @@
+     public int viewHeight;
+     protected final String label;
+     public final boolean useDepth;
++    public final boolean useStencil;
+     @Nullable
+     protected GpuTexture colorTexture;
+     @Nullable
+@@ -30,8 +_,16 @@
+     public FilterMode filterMode;
  
-             this.setFilterMode(9728, true);
-@@ -115,7 +_,14 @@
-             GlStateManager._glBindFramebuffer(36160, this.frameBufferId);
-             GlStateManager._glFramebufferTexture2D(36160, 36064, 3553, this.colorTextureId, 0);
-             if (this.useDepth) {
-+            if(!stencilEnabled)
-                 GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthBufferId, 0);
-+            else if(net.neoforged.neoforge.common.NeoForgeConfig.CLIENT.useCombinedDepthStencilAttachment.get()) {
-+                GlStateManager._glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_DEPTH_STENCIL_ATTACHMENT, 3553, this.depthBufferId, 0);
-+            } else {
-+                GlStateManager._glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_DEPTH_ATTACHMENT, 3553, this.depthBufferId, 0);
-+                GlStateManager._glFramebufferTexture2D(org.lwjgl.opengl.GL30.GL_FRAMEBUFFER, org.lwjgl.opengl.GL30.GL_STENCIL_ATTACHMENT, 3553, this.depthBufferId, 0);
-+            }
-             }
- 
-             this.checkStatus();
-@@ -257,5 +_,28 @@
- 
-     public int getDepthTextureId() {
-         return this.depthBufferId;
+     public RenderTarget(@Nullable String p_405387_, boolean p_166199_) {
++        this(p_405387_, p_166199_, false);
 +    }
 +
-+    // Neo: Injected stencil control
-+    private boolean stencilEnabled = false;
-+
-+    /**
-+     * Attempts to enable 8 bits of stencil buffer on this FrameBuffer.
-+     * Modders must call this directly to set things up.
-+     * This is to prevent the default cause where graphics cards do not support stencil bits.
-+     * <b>Make sure to call this on the main render thread!</b>
-+     */
-+    public void enableStencil() {
-+        if(stencilEnabled) return;
-+        stencilEnabled = true;
-+        this.resize(viewWidth, viewHeight, net.minecraft.client.Minecraft.ON_OSX);
-+    }
-+
-+    /**
-+     * Returns whether this FBO has been successfully initialized with stencil bits.
-+     * If not, and a modder wishes it to be, they must call enableStencil.
-+     */
-+    public boolean isStencilEnabled() {
-+        return this.stencilEnabled;
++    public RenderTarget(@Nullable String p_405387_, boolean p_166199_, boolean useStencil) {
++        if (useStencil && !p_166199_) {
++            throw new IllegalArgumentException("Stencil can only be enabled if depth is enabled.");
++        }
+         this.label = p_405387_ == null ? "FBO " + UNNAMED_RENDER_TARGETS++ : p_405387_;
+         this.useDepth = p_166199_;
++        this.useStencil = useStencil;
      }
- }
+ 
+     public void resize(int p_83942_, int p_83943_) {
+@@ -75,7 +_,8 @@
+             this.width = p_83951_;
+             this.height = p_83952_;
+             if (this.useDepth) {
+-                this.depthTexture = RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", TextureFormat.DEPTH32, p_83951_, p_83952_, 1);
++                var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : TextureFormat.DEPTH32;
++                this.depthTexture = RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", format, p_83951_, p_83952_, 1);
+                 this.depthTexture.setTextureFilter(FilterMode.NEAREST, false);
+                 this.depthTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
+             }

@@ -1,0 +1,49 @@
+--- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
++++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
+@@ -162,6 +_,46 @@
+             || this.writeDepth;
+     }
+ 
++    /**
++     * Neo: Create a {@link RenderPipeline.Builder} from this {@link RenderPipeline} to adjust its configuration and
++     * build a new, modified {@link RenderPipeline} from it
++     */
++    public RenderPipeline.Builder toBuilder() {
++        RenderPipeline.Builder builder = new RenderPipeline.Builder();
++        builder.location = Optional.of(this.location);
++        builder.fragmentShader = Optional.of(this.fragmentShader);
++        builder.vertexShader = Optional.of(this.vertexShader);
++        if (!this.shaderDefines.isEmpty()) {
++            ShaderDefines.Builder defBuilder = ShaderDefines.builder();
++            for (Entry<String, String> entry : this.shaderDefines.values().entrySet()) {
++                defBuilder.define(entry.getKey(), entry.getValue());
++            }
++            for (String flag : this.shaderDefines.flags()) {
++                defBuilder.define(flag);
++            }
++            builder.definesBuilder = Optional.of(defBuilder);
++        }
++        if (!this.samplers.isEmpty()) {
++            builder.samplers = Optional.of(new ArrayList<>(this.samplers));
++        }
++        if (!this.uniforms.isEmpty()) {
++            builder.uniforms = Optional.of(new ArrayList<>(this.uniforms));
++        }
++        builder.depthTestFunction = Optional.of(this.depthTestFunction);
++        builder.polygonMode = Optional.of(this.polygonMode);
++        builder.cull = Optional.of(this.cull);
++        builder.writeColor = Optional.of(this.writeColor);
++        builder.writeAlpha = Optional.of(this.writeAlpha);
++        builder.writeDepth = Optional.of(this.writeDepth);
++        builder.colorLogic = Optional.of(this.colorLogic);
++        builder.blendFunction = this.blendFunction;
++        builder.vertexFormat = Optional.of(this.vertexFormat);
++        builder.vertexFormatMode = Optional.of(this.vertexFormatMode);
++        builder.depthBiasScaleFactor = this.depthBiasScaleFactor;
++        builder.depthBiasConstant = this.depthBiasConstant;
++        return builder;
++    }
++
+     public static RenderPipeline.Builder builder(RenderPipeline.Snippet... p_405781_) {
+         RenderPipeline.Builder renderpipeline$builder = new RenderPipeline.Builder();
+ 

@@ -27,7 +27,7 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
         this.helper = helper;
     }
 
-    public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E>>> renderer) {
+    public DeferredEntityTypeBuilder<E, T> withRenderer(Supplier<Function<EntityRendererProvider.Context, EntityRenderer<E, ?>>> renderer) {
         if (FMLLoader.getDist().isClient()) {
             helper.eventListeners().accept((final EntityRenderersEvent.RegisterRenderers event) -> event.registerEntityRenderer(value(), renderer.get()::apply));
         }
@@ -40,7 +40,7 @@ public class DeferredEntityTypeBuilder<E extends Entity, T extends EntityType<E>
     }
 
     public DeferredEntityTypeBuilder<E, T> withLang(String name) {
-        helper.provider(LanguageProvider.class, prov -> prov.add(value(), name));
+        helper.clientProvider(LanguageProvider.class, prov -> prov.add(value(), name));
         return this;
     }
 }

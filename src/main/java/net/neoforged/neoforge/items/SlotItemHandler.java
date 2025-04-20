@@ -58,29 +58,7 @@ public class SlotItemHandler extends Slot {
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        ItemStack maxAdd = stack.copy();
-        int maxInput = stack.getMaxStackSize();
-        maxAdd.setCount(maxInput);
-
-        IItemHandler handler = this.getItemHandler();
-        ItemStack currentStack = handler.getStackInSlot(index);
-        if (handler instanceof IItemHandlerModifiable) {
-            IItemHandlerModifiable handlerModifiable = (IItemHandlerModifiable) handler;
-
-            handlerModifiable.setStackInSlot(index, ItemStack.EMPTY);
-
-            ItemStack remainder = handlerModifiable.insertItem(index, maxAdd, true);
-
-            handlerModifiable.setStackInSlot(index, currentStack);
-
-            return maxInput - remainder.getCount();
-        } else {
-            ItemStack remainder = handler.insertItem(index, maxAdd, true);
-
-            int current = currentStack.getCount();
-            int added = maxInput - remainder.getCount();
-            return current + added;
-        }
+        return Math.min(stack.getMaxStackSize(), this.itemHandler.getSlotLimit(this.index));
     }
 
     @Override

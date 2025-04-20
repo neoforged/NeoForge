@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ai/village/VillageSiege.java
 +++ b/net/minecraft/world/entity/ai/village/VillageSiege.java
-@@ -77,7 +_,9 @@
+@@ -71,7 +_,9 @@
                          this.spawnX = blockpos.getX() + Mth.floor(Mth.cos(f) * 32.0F);
                          this.spawnY = blockpos.getY();
                          this.spawnZ = blockpos.getZ() + Mth.floor(Mth.sin(f) * 32.0F);
@@ -11,12 +11,12 @@
                              this.nextSpawnTime = 0;
                              this.zombiesToSpawn = 20;
                              break;
-@@ -97,7 +_,7 @@
+@@ -91,7 +_,7 @@
          if (vec3 != null) {
              Zombie zombie;
              try {
 -                zombie = new Zombie(p_27017_);
-+                zombie = EntityType.ZOMBIE.create(p_27017_); //Forge: Direct Initialization is deprecated, use EntityType.
-                 zombie.finalizeSpawn(p_27017_, p_27017_.getCurrentDifficultyAt(zombie.blockPosition()), MobSpawnType.EVENT, null);
++                zombie = EntityType.ZOMBIE.create(p_27017_, EntitySpawnReason.EVENT); //Forge: Direct Initialization is deprecated, use EntityType.
+                 zombie.finalizeSpawn(p_27017_, p_27017_.getCurrentDifficultyAt(zombie.blockPosition()), EntitySpawnReason.EVENT, null);
              } catch (Exception exception) {
                  LOGGER.warn("Failed to create zombie for village siege at {}", vec3, exception);

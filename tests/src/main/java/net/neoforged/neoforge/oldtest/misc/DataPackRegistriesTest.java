@@ -81,7 +81,7 @@ public class DataPackRegistriesTest {
         }
     }
 
-    private void onGatherData(final GatherDataEvent event) {
+    private void onGatherData(final GatherDataEvent.Client event) {
         // Example of how to datagen datapack registry objects.
         // Objects to be datagenerated must be registered (e.g. via DeferredRegister above).
         // This outputs to data/data_pack_registries_test/data_pack_registries_test/unsyncable/datagen_test.json
@@ -95,7 +95,7 @@ public class DataPackRegistriesTest {
         final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(), id.getNamespace(), registryId.getNamespace(), registryId.getPath(), id.getPath() + ".json");
         final Path path = outputFolder.resolve(pathString);
 
-        generator.addProvider(event.includeServer(), new DataProvider() {
+        generator.addProvider(true, new DataProvider() {
             @Override
             public CompletableFuture<?> run(final CachedOutput cache) {
                 return providerCompletableFuture.thenCompose(provider -> {
@@ -122,14 +122,14 @@ public class DataPackRegistriesTest {
     private void onServerStarting(final ServerStartingEvent event) {
         // Assert existence of json objects and tags.
         final RegistryAccess registries = event.getServer().registryAccess();
-        final Registry<Unsyncable> registry = registries.registryOrThrow(Unsyncable.REGISTRY_KEY);
+        final Registry<Unsyncable> registry = registries.lookupOrThrow(Unsyncable.REGISTRY_KEY);
         final ResourceKey<Unsyncable> key = ResourceKey.create(Unsyncable.REGISTRY_KEY, TEST_RL);
-        final Holder<Unsyncable> holder = registry.getHolderOrThrow(key);
-        final Unsyncable testObject = registry.get(TEST_RL);
+        final Holder<Unsyncable> holder = registry.getOrThrow(key);
+        final Unsyncable testObject = registry.getValue(TEST_RL);
         if (!testObject.value().equals("success"))
             throw new IllegalStateException("Incorrect value loaded: " + testObject.value());
         final TagKey<Unsyncable> tag = TagKey.create(Unsyncable.REGISTRY_KEY, TEST_RL);
-        if (!registry.getTag(tag).get().contains(holder))
+        if (!registry.get(tag).get().contains(holder))
             throw new IllegalStateException(String.format(Locale.ENGLISH, "Tag %s does not contain %s", tag, TEST_RL));
 
         LOGGER.info("DataPackRegistriesTest server data loaded successfully!");
@@ -153,14 +153,14 @@ public class DataPackRegistriesTest {
             // but we should check the player's connection's RegistryAccess as that's where the client's copy
             // lives during game runtime, and where mods should be querying on the client in most cases.
             RegistryAccess registries = player.connection.registryAccess();
-            final Registry<Syncable> registry = registries.registryOrThrow(Syncable.REGISTRY_KEY);
+            final Registry<Syncable> registry = registries.lookupOrThrow(Syncable.REGISTRY_KEY);
             final ResourceKey<Syncable> key = ResourceKey.create(Syncable.REGISTRY_KEY, TEST_RL);
-            final Holder<Syncable> holder = registry.getHolderOrThrow(key);
-            final Syncable testObject = registry.get(TEST_RL);
+            final Holder<Syncable> holder = registry.getOrThrow(key);
+            final Syncable testObject = registry.getValue(TEST_RL);
             if (!testObject.value().equals("success"))
                 throw new IllegalStateException("Incorrect value synced: " + testObject.value());
             final TagKey<Syncable> tag = TagKey.create(Syncable.REGISTRY_KEY, TEST_RL);
-            if (!registry.getTag(tag).get().contains(holder))
+            if (!registry.get(tag).get().contains(holder))
                 throw new IllegalStateException(String.format(Locale.ENGLISH, "Tag %s does not contain %s", tag, TEST_RL));
 
             LOGGER.info("DataPackRegistriesTest client data synced successfully!");

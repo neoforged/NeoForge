@@ -22,11 +22,10 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider {
-    public NeoForgeDamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, "neoforge", existingFileHelper);
+    public NeoForgeDamageTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, "neoforge");
     }
 
     private final Map<ResourceLocation, TagBuilder> vanillaBuilders = Maps.newLinkedHashMap();
@@ -35,7 +34,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
     @Override
     protected TagAppender<DamageType> tag(TagKey<DamageType> tag) {
         if (inVanilla) {
-            return new TagAppender<>(this.vanillaBuilders.computeIfAbsent(tag.location(), location -> TagBuilder.create()), "minecraft") {};
+            return new TagAppender<>(this.vanillaBuilders.computeIfAbsent(tag.location(), location -> TagBuilder.create())) {};
         }
         return super.tag(tag);
     }
@@ -48,7 +47,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
         super.addTags(lookupProvider);
         inVanilla = false;
 
-        tag(NeoForgeMod.POISON_DAMAGE, Tags.DamageTypes.IS_POISON);
+        tag(Tags.DamageTypes.IS_POISON).addOptional(NeoForgeMod.POISON_DAMAGE.location());
 
         tag(DamageTypes.WITHER, Tags.DamageTypes.IS_WITHER);
         tag(DamageTypes.WITHER_SKULL, Tags.DamageTypes.IS_WITHER);
@@ -132,7 +131,7 @@ public final class NeoForgeDamageTypeTagsProvider extends DamageTypeTagsProvider
                 builders.forEach(builder -> builder.add(entry));
                 return super.add(entry);
             }
-        }, modId) {};
+        }) {};
     }
 
     @SafeVarargs

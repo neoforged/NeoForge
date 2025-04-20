@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/entity/ai/attributes/Attributes.java
++++ b/net/minecraft/world/entity/ai/attributes/Attributes.java
+@@ -45,7 +_,7 @@
+         "jump_strength", new RangedAttribute("attribute.name.jump_strength", 0.42F, 0.0, 32.0).setSyncable(true)
+     );
+     public static final Holder<Attribute> KNOCKBACK_RESISTANCE = register(
+-        "knockback_resistance", new RangedAttribute("attribute.name.knockback_resistance", 0.0, 0.0, 1.0)
++        "knockback_resistance", new net.neoforged.neoforge.common.PercentageAttribute("attribute.name.knockback_resistance", 0.0, 0.0, 1.0)
+     );
+     public static final Holder<Attribute> LUCK = register("luck", new RangedAttribute("attribute.name.luck", 0.0, -1024.0, 1024.0).setSyncable(true));
+     public static final Holder<Attribute> MAX_ABSORPTION = register(
+@@ -61,7 +_,8 @@
+         "movement_efficiency", new RangedAttribute("attribute.name.movement_efficiency", 0.0, 0.0, 1.0).setSyncable(true)
+     );
+     public static final Holder<Attribute> MOVEMENT_SPEED = register(
+-        "movement_speed", new RangedAttribute("attribute.name.movement_speed", 0.7, 0.0, 1024.0).setSyncable(true)
++        // Neo: Convert Movement Speed to percent-based for more appropriate display using IAttributeExtension. Use a scale factor of 1000 since movement speed has 0.001 units.
++        "movement_speed", new net.neoforged.neoforge.common.PercentageAttribute("attribute.name.movement_speed", 0.7, 0.0, 1024.0, 1000).setSyncable(true)
+     );
+     public static final Holder<Attribute> OXYGEN_BONUS = register(
+         "oxygen_bonus", new RangedAttribute("attribute.name.oxygen_bonus", 0.0, 0.0, 1024.0).setSyncable(true)

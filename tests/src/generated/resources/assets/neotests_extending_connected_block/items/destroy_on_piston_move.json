@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "neotests_extending_connected_block:block/destroy_on_piston_move"
+  }
+}

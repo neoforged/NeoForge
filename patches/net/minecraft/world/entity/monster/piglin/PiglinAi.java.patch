@@ -26,13 +26,13 @@
 +        return !isAdmiringDisabled(p_34910_) && !isAdmiringItem(p_34910_) && p_34910_.isAdult() && p_34911_.isPiglinCurrency();
      }
  
-     protected static void wasHurtBy(Piglin p_34838_, LivingEntity p_34839_) {
-@@ -641,7 +_,7 @@
-     public static boolean isWearingGold(LivingEntity p_34809_) {
-         for (ItemStack itemstack : p_34809_.getArmorAndBodyArmorSlots()) {
-             Item item = itemstack.getItem();
--            if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial().is(ArmorMaterials.GOLD)) {
-+            if (itemstack.makesPiglinsNeutral(p_34809_)) {
+     protected static void wasHurtBy(ServerLevel p_376829_, Piglin p_34838_, LivingEntity p_34839_) {
+@@ -640,7 +_,7 @@
+ 
+     public static boolean isWearingSafeArmor(LivingEntity p_371788_) {
+         for (EquipmentSlot equipmentslot : EquipmentSlotGroup.ARMOR) {
+-            if (p_371788_.getItemBySlot(equipmentslot).is(ItemTags.PIGLIN_SAFE_ARMOR)) {
++            if (p_371788_.getItemBySlot(equipmentslot).makesPiglinsNeutral(p_371788_)) {
                  return true;
              }
          }

@@ -75,7 +75,7 @@ public class JsonUtils {
     public static CompoundTag readNBT(JsonObject json, String key) {
         if (net.minecraft.util.GsonHelper.isValidNode(json, key)) {
             try {
-                return TagParser.parseTag(net.minecraft.util.GsonHelper.getAsString(json, key));
+                return TagParser.parseCompoundFully(net.minecraft.util.GsonHelper.getAsString(json, key));
             } catch (CommandSyntaxException e) {
                 throw new JsonSyntaxException("Malformed NBT tag", e);
             }

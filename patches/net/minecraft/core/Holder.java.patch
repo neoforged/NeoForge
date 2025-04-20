@@ -1,15 +1,6 @@
 --- a/net/minecraft/core/Holder.java
 +++ b/net/minecraft/core/Holder.java
-@@ -11,7 +_,7 @@
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.tags.TagKey;
- 
--public interface Holder<T> {
-+public interface Holder<T> extends net.neoforged.neoforge.common.extensions.IHolderExtension<T> {
-     T value();
- 
-     boolean isBound();
-@@ -220,6 +_,14 @@
+@@ -229,6 +_,14 @@
              }
          }
  
@@ -24,7 +15,7 @@
          void bindTags(Collection<TagKey<T>> p_205770_) {
              this.tags = Set.copyOf(p_205770_);
          }
-@@ -232,6 +_,33 @@
+@@ -241,6 +_,33 @@
          @Override
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";

@@ -14,7 +14,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -33,6 +32,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "attachment")
@@ -56,7 +56,7 @@ public class AttachmentTests {
 
             public void setValue(int value) {
                 this.value = value;
-                chunk.setUnsaved(true);
+                chunk.markUnsaved();
             }
 
             @Override
@@ -66,7 +66,7 @@ public class AttachmentTests {
 
             @Override
             public void deserializeNBT(HolderLookup.Provider provider, IntTag nbt) {
-                this.value = nbt.getAsInt();
+                this.value = nbt.asInt().orElse(0);
             }
         }
 
@@ -144,7 +144,7 @@ public class AttachmentTests {
             var player = helper.makeMockPlayer();
             var stack = new ItemStack(Items.IRON_SWORD);
             var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-            enchantments.set(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SHARPNESS), 3);
+            enchantments.set(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SHARPNESS), 3);
             stack.set(DataComponents.ENCHANTMENTS, enchantments.toImmutable());
             player.setData(stackType, stack);
             helper.catchException(() -> {

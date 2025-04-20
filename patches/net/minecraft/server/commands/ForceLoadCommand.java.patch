@@ -1,0 +1,64 @@
+--- a/net/minecraft/server/commands/ForceLoadCommand.java
++++ b/net/minecraft/server/commands/ForceLoadCommand.java
+@@ -106,13 +_,13 @@
+         if (flag) {
+             p_137683_.sendSuccess(
+                 () -> Component.translatable(
+-                    "commands.forceload.query.success", Component.translationArg(chunkpos), Component.translationArg(resourcekey.location())
++                        "commands.forceload.query.success", Component.translationArg(chunkpos), serverlevel.getDescription() // Neo: Use dimension translation, if one exists
+                 ),
+                 false
+             );
+             return 1;
+         } else {
+-            throw ERROR_NOT_TICKING.create(chunkpos, resourcekey.location());
++            throw ERROR_NOT_TICKING.create(chunkpos, serverlevel.getDescription()); // Neo: Use dimension translation, if one exists
+         }
+     }
+ 
+@@ -125,15 +_,15 @@
+             String s = Joiner.on(", ").join(longset.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
+             if (i == 1) {
+                 p_137681_.sendSuccess(
+-                    () -> Component.translatable("commands.forceload.list.single", Component.translationArg(resourcekey.location()), s), false
++                    () -> Component.translatable("commands.forceload.list.single", serverlevel.getDescription(), s), false // Neo: Use dimension translation, if one exists
+                 );
+             } else {
+                 p_137681_.sendSuccess(
+-                    () -> Component.translatable("commands.forceload.list.multiple", i, Component.translationArg(resourcekey.location()), s), false
++                    () -> Component.translatable("commands.forceload.list.multiple", i, serverlevel.getDescription(), s), false // Neo: Use dimension translation, if one exists
+                 );
+             }
+         } else {
+-            p_137681_.sendFailure(Component.translatable("commands.forceload.added.none", Component.translationArg(resourcekey.location())));
++            p_137681_.sendFailure(Component.translatable("commands.forceload.added.none", serverlevel.getDescription())); // Neo: Use dimension translation, if one exists
+         }
+ 
+         return i;
+@@ -144,7 +_,7 @@
+         ResourceKey<Level> resourcekey = serverlevel.dimension();
+         LongSet longset = serverlevel.getForceLoadedChunks();
+         longset.forEach(p_137675_ -> serverlevel.setChunkForced(ChunkPos.getX(p_137675_), ChunkPos.getZ(p_137675_), false));
+-        p_137696_.sendSuccess(() -> Component.translatable("commands.forceload.removed.all", Component.translationArg(resourcekey.location())), true);
++        p_137696_.sendSuccess(() -> Component.translatable("commands.forceload.removed.all", serverlevel.getDescription()), true); // Neo: Use dimension translation, if one exists
+         return 0;
+     }
+ 
+@@ -189,7 +_,7 @@
+                             () -> Component.translatable(
+                                 "commands.forceload." + (p_137689_ ? "added" : "removed") + ".single",
+                                 Component.translationArg(chunkpos2),
+-                                Component.translationArg(resourcekey.location())
++                                serverlevel.getDescription() // Neo: Use dimension translation, if one exists
+                             ),
+                             true
+                         );
+@@ -200,7 +_,7 @@
+                             () -> Component.translatable(
+                                 "commands.forceload." + (p_137689_ ? "added" : "removed") + ".multiple",
+                                 i3,
+-                                Component.translationArg(resourcekey.location()),
++                                serverlevel.getDescription(), // Neo: Use dimension translation, if one exists
+                                 Component.translationArg(chunkpos3),
+                                 Component.translationArg(chunkpos1)
+                             ),

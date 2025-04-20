@@ -11,7 +11,6 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +32,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "loot")
@@ -46,7 +46,7 @@ public class LootPoolTest {
     @EmptyTemplate
     @TestHolder(description = "Tests if loading loot pools with custom names works")
     public static void testPoolLoading(DynamicTest test, RegistrationHelper reg) {
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -78,7 +78,7 @@ public class LootPoolTest {
     static void pinkConcreteLootTableCanceled(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_2;
 
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -92,7 +92,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 event.setCanceled(true);
             }
         });
@@ -117,7 +117,7 @@ public class LootPoolTest {
     static void orangeConcreteLootTableReplaced(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_3;
 
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -131,7 +131,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.BLUE_CONCRETE);
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.setTable(new LootTable.Builder().withPool(pool).build());
@@ -158,7 +158,7 @@ public class LootPoolTest {
     static void yellowConcreteLootTableAppended(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<LootTable> lootTableToUse = TEST_LOOT_TABLE_4;
 
-        reg.addProvider(event -> new LootTableProvider(
+        reg.addClientProvider(event -> new LootTableProvider(
                 event.getGenerator().getPackOutput(),
                 Set.of(),
                 List.of(
@@ -172,7 +172,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.YELLOW_CONCRETE);
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.getTable().addPool(pool.build());

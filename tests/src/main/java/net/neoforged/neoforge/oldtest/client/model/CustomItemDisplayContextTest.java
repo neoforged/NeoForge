@@ -8,6 +8,12 @@ package net.neoforged.neoforge.oldtest.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TexturedModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -18,7 +24,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.models.model.ModelLocationUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -42,15 +47,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -86,7 +89,7 @@ public class CustomItemDisplayContextTest {
             public ItemHangerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
             @Override
-            public void render(ItemHangerBlockEntity blocken, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int overlayCoord) {
+            public void render(ItemHangerBlockEntity blocken, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int overlayCoord, Vec3 cameraPos) {
                 var state = blocken.getBlockState();
 
                 if (!(state.getBlock() instanceof ItemHangerBlock)) return;
@@ -99,9 +102,7 @@ public class CustomItemDisplayContextTest {
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
-                var model = itemRenderer.getModel(blocken.heldItem, blocken.getLevel(), null, 0);
-
-                itemRenderer.render(blocken.heldItem, HANGING, false, poseStack, bufferSource, packedLight, overlayCoord, model);
+                itemRenderer.renderStatic(blocken.heldItem, HANGING, packedLight, overlayCoord, poseStack, bufferSource, blocken.getLevel(), 0);
 
                 poseStack.popPose();
             }
@@ -113,8 +114,8 @@ public class CustomItemDisplayContextTest {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
     public static final DeferredBlock<Block> ITEM_HANGER_BLOCK = BLOCKS.registerBlock("item_hanger", ItemHangerBlock::new, BlockBehaviour.Properties.of().noCollission().noOcclusion().noLootTable());
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> BlockEntityType.Builder.of(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()).build(null));
-    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.register("item_hanger", () -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ItemHangerBlockEntity>> ITEM_HANGER_BE = BLOCK_ENTITY_TYPES.register("item_hanger", () -> new BlockEntityType<>(ItemHangerBlockEntity::new, ITEM_HANGER_BLOCK.get()));
+    public static final DeferredItem<Item> ITEM_HANGER_ITEM = ITEMS.registerItem("item_hanger", props -> new ItemHangerItem(ITEM_HANGER_BLOCK.get(), props));
 
     public CustomItemDisplayContextTest(IEventBus modBus) {
         modBus.addListener(this::gatherData);
@@ -129,44 +130,28 @@ public class CustomItemDisplayContextTest {
             event.accept(ITEM_HANGER_ITEM);
     }
 
-    public void gatherData(GatherDataEvent event) {
+    public void gatherData(GatherDataEvent.Client event) {
         DataGenerator gen = event.getGenerator();
         final PackOutput output = gen.getPackOutput();
-
-        gen.addProvider(event.includeClient(), new ItemModels(output, event.getExistingFileHelper()));
-        gen.addProvider(event.includeClient(), new BlockStateModels(output, event.getExistingFileHelper()));
+        gen.addProvider(true, new ModelGen(output));
     }
 
-    public static class BlockStateModels extends BlockStateProvider {
-        public BlockStateModels(PackOutput output, ExistingFileHelper exFileHelper) {
-            super(output, MODID, exFileHelper);
+    private static final class ModelGen extends ModelProvider {
+        public ModelGen(PackOutput output) {
+            super(output, MODID);
         }
 
         @Override
-        protected void registerStatesAndModels() {
-            {
-                Block block = ITEM_HANGER_BLOCK.get();
-                horizontalBlock(block, models().getExistingFile(ModelLocationUtils.getModelLocation(block)));
-            }
-        }
-    }
+        protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+            blockModels.createHorizontallyRotatedBlock(ITEM_HANGER_BLOCK.value(), TexturedModel.ORIENTABLE);
 
-    public static class ItemModels extends ItemModelProvider {
-        public ItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
-            super(output, MODID, existingFileHelper);
-        }
-
-        @Override
-        protected void registerModels() {
-            basicItem(ITEM_HANGER_ITEM.get());
-
-            basicItem(Items.STICK)
-                    .transforms()
-                    .transform(RendererEvents.HANGING)
-                    .rotation(62, 180 - 33, 40)
-                    .translation(-2.25f, 1.5f, -0.25f).scale(0.48f)
-                    .end()
-                    .end();
+            ModelTemplates.FLAT_HANDHELD_ROD_ITEM.extend()
+                    .transform(RendererEvents.HANGING, transform -> transform
+                            .rotation(62, 180 - 33, 40)
+                            .translation(-2.25f, 1.5f, -0.25f)
+                            .scale(0.48f))
+                    .build()
+                    .create(Items.STICK, TextureMapping.layer0(Items.STICK), itemModels.modelOutput);
         }
     }
 
@@ -203,7 +188,7 @@ public class CustomItemDisplayContextTest {
         @Deprecated
         @Override
         public RenderShape getRenderShape(BlockState state) {
-            return RenderShape.ENTITYBLOCK_ANIMATED;
+            return RenderShape.MODEL;
         }
     }
 
@@ -245,9 +230,9 @@ public class CustomItemDisplayContextTest {
         @Override
         public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
             super.loadAdditional(tag, holderLookup);
-            if (tag.contains("item")) {
-                var c = tag.getCompound("item");
-                heldItem = ItemStack.parse(holderLookup, c).orElseThrow();
+            var itemTag = tag.getCompound("item").orElse(null);
+            if (itemTag != null) {
+                heldItem = ItemStack.parse(holderLookup, itemTag).orElseThrow();
             }
         }
     }

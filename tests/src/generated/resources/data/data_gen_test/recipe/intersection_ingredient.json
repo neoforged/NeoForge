@@ -3,14 +3,10 @@
   "category": "building",
   "key": {
     "#": {
-      "type": "neoforge:intersection",
+      "neoforge:ingredient_type": "neoforge:intersection",
       "children": [
-        {
-          "tag": "minecraft:planks"
-        },
-        {
-          "tag": "minecraft:non_flammable_wood"
-        }
+        "#minecraft:planks",
+        "#minecraft:non_flammable_wood"
       ]
     }
   },

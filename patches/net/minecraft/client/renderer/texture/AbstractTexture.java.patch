@@ -1,12 +1,30 @@
 --- a/net/minecraft/client/renderer/texture/AbstractTexture.java
 +++ b/net/minecraft/client/renderer/texture/AbstractTexture.java
-@@ -36,6 +_,20 @@
-         GlStateManager._texParameter(3553, 10240, j);
-     }
- 
-+    // FORGE: This seems to have been stripped out, but we need it
+@@ -13,6 +_,10 @@
+     @Nullable
+     protected GpuTexture texture;
+     protected boolean defaultBlur;
++    protected boolean blur;
++    protected boolean mipmap;
 +    private boolean lastBlur;
 +    private boolean lastMipmap;
+ 
+     public void setClamp(boolean p_390364_) {
+         if (this.texture == null) {
+@@ -30,6 +_,8 @@
+         if (this.texture == null) {
+             throw new IllegalStateException("Texture does not exist, can't get change its filter before something initializes it");
+         } else {
++            this.blur = p_117961_;
++            this.mipmap = p_117962_;
+             this.texture.setTextureFilter(p_117961_ ? FilterMode.LINEAR : FilterMode.NEAREST, p_117962_);
+         }
+     }
+@@ -48,5 +_,15 @@
+         } else {
+             return this.texture;
+         }
++    }
 +
 +    public void setBlurMipmap(boolean blur, boolean mipmap) {
 +        this.lastBlur = this.blur;
@@ -16,8 +34,5 @@
 +
 +    public void restoreLastBlurMipmap() {
 +        setFilter(this.lastBlur, this.lastMipmap);
-+    }
-+
-     public int getId() {
-         RenderSystem.assertOnRenderThreadOrInit();
-         if (this.id == -1) {
+     }
+ }

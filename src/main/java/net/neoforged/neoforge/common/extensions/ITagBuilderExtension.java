@@ -10,40 +10,27 @@ import net.minecraft.tags.TagBuilder;
 import net.minecraft.tags.TagEntry;
 
 public interface ITagBuilderExtension {
-    default TagBuilder getRawBuilder() {
+    private TagBuilder self() {
         return (TagBuilder) this;
     }
 
     /**
-     * Adds a tag entry to the remove list.
-     * 
-     * @param tagEntry The tag entry to add to the remove list
-     * @param source   The source of the caller for logging purposes (generally a modid)
-     * @return The builder for chaining purposes
-     */
-    default TagBuilder remove(final TagEntry tagEntry, final String source) {
-        return this.getRawBuilder().remove(tagEntry);
-    }
-
-    /**
      * Adds a single-element entry to the remove list.
-     * 
+     *
      * @param elementID The ID of the element to add to the remove list
-     * @param source    The source of the caller for logging purposes (generally a modid)
      * @return The builder for chaining purposes
      */
-    default TagBuilder removeElement(final ResourceLocation elementID, final String source) {
-        return this.remove(TagEntry.element(elementID), source);
+    default TagBuilder removeElement(final ResourceLocation elementID) {
+        return this.self().remove(TagEntry.element(elementID));
     }
 
     /**
      * Adds a tag to the remove list.
-     * 
-     * @param tagID  The ID of the tag to add to the remove list
-     * @param source The source of the caller for logging purposes (generally a modid)
+     *
+     * @param tagID The ID of the tag to add to the remove list
      * @return The builder for chaining purposes
      */
-    default TagBuilder removeTag(final ResourceLocation tagID, final String source) {
-        return this.remove(TagEntry.tag(tagID), source);
+    default TagBuilder removeTag(final ResourceLocation tagID) {
+        return this.self().remove(TagEntry.tag(tagID));
     }
 }

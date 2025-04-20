@@ -17,4 +17,4 @@ import org.jetbrains.annotations.Nullable;
 public record GameTestData(
         @Nullable String batchName, String structureName, boolean required, int maxAttempts,
         int requiredSuccesses, Consumer<GameTestHelper> function, int maxTicks,
-        long setupTicks, Rotation rotation, boolean skyAccess) {}
+        int setupTicks, Rotation rotation, boolean skyAccess, boolean manualOnly) {}

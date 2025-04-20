@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.level;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -14,6 +13,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = LevelTests.GROUP)
 public class LevelTests {
@@ -51,8 +51,8 @@ public class LevelTests {
 
         test.eventListeners().forge().addListener((EntityTickEvent.Pre event) -> {
             if (event.getEntity() instanceof ServerPlayer player && player.getGameProfile().getName().equals("test-mock-player")) {
-                if (player.level().getGameRules().getBoolean(booleanGameRule)) {
-                    player.setHealth(player.getHealth() - player.level().getGameRules().getInt(integerGameRule));
+                if (player.getServer().getGameRules().getBoolean(booleanGameRule)) {
+                    player.setHealth(player.getHealth() - player.getServer().getGameRules().getInt(integerGameRule));
                 }
             }
         });
@@ -60,8 +60,8 @@ public class LevelTests {
         test.onGameTest(helper -> {
             final ServerPlayer player = helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL);
 
-            final var boolRule = player.level().getGameRules().getRule(booleanGameRule);
-            final var intRule = player.level().getGameRules().getRule(integerGameRule);
+            final var boolRule = player.getServer().getGameRules().getRule(booleanGameRule);
+            final var intRule = player.getServer().getGameRules().getRule(integerGameRule);
 
             final var oldBool = boolRule.get();
             final var oldInt = intRule.get();

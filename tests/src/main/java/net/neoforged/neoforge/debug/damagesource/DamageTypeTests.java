@@ -11,7 +11,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -41,6 +40,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = DamageTypeTests.GROUP)
@@ -81,7 +81,7 @@ public class DamageTypeTests {
         DamageScaling scaling = SCALING_ENUM_PARAMS.getValue();
         DeathMessageType msgType = MSGTYPE_ENUM_PARAMS.getValue();
 
-        Holder<Item> customSword = reg.registrar(Registries.ITEM).register("custom_damage_sword", () -> new Item(new Item.Properties()) {
+        Holder<Item> customSword = reg.items().registerItem("custom_damage_sword", props -> new Item(props) {
             @Override
             public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
                 if (entity instanceof LivingEntity living) {
@@ -96,7 +96,7 @@ public class DamageTypeTests {
             bootstrap.register(TEST_DMG_TYPE, new DamageType("test_mod", scaling, 0.0f, effects, msgType));
         });
 
-        reg.addProvider(event -> new DatapackBuiltinEntriesProvider(
+        reg.addClientProvider(event -> new DatapackBuiltinEntriesProvider(
                 event.getGenerator().getPackOutput(),
                 event.getLookupProvider(),
                 registrySetBuilder,
@@ -106,12 +106,12 @@ public class DamageTypeTests {
             Skeleton target = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 1, 1);
 
             Player attacker = helper.makeMockPlayer(GameType.SURVIVAL);
-            attacker.moveTo(helper.absoluteVec(new Vec3(2, 1, 1)));
+            attacker.snapTo(helper.absoluteVec(new Vec3(2, 1, 1)));
             attacker.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(customSword));
 
             // Test that the damage type is used by the sword and set correctly.
             attacker.attack(target);
-            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().registry(Registries.DAMAGE_TYPE).get();
+            Registry<DamageType> dTypeReg = helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE);
             helper.assertTrue(dTypeReg.getResourceKey(target.getLastDamageSource().type()).get() == TEST_DMG_TYPE, "Incorrect damage type used");
 
             // Test that the scaling function works correctly.

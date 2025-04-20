@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/entity/npc/VillagerType.java
++++ b/net/minecraft/world/entity/npc/VillagerType.java
+@@ -27,6 +_,8 @@
+     public static final ResourceKey<VillagerType> TAIGA = createKey("taiga");
+     public static final Codec<Holder<VillagerType>> CODEC = RegistryFixedCodec.create(Registries.VILLAGER_TYPE);
+     public static final StreamCodec<RegistryFriendlyByteBuf, Holder<VillagerType>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.VILLAGER_TYPE);
++    /** Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#VILLAGER_TYPES data map} instead as this field will be ignored in future versions */
++    @Deprecated
+     private static final Map<ResourceKey<Biome>, ResourceKey<VillagerType>> BY_BIOME = Util.make(Maps.newHashMap(), p_35834_ -> {
+         p_35834_.put(Biomes.BADLANDS, DESERT);
+         p_35834_.put(Biomes.DESERT, DESERT);
+@@ -78,6 +_,9 @@
+     }
+ 
+     public static ResourceKey<VillagerType> byBiome(Holder<Biome> p_204074_) {
++        var fromDataMap = p_204074_.getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.VILLAGER_TYPES);
++        if (fromDataMap != null) return fromDataMap.type();
++        // TODO - 1.22: remove fallback
+         return p_204074_.unwrapKey().map(BY_BIOME::get).orElse(PLAINS);
+     }
+ }

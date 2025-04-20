@@ -13,6 +13,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -61,7 +62,7 @@ public class StructureModifierTest {
         modBus.addListener(this::onGatherData);
     }
 
-    private void onGatherData(GatherDataEvent event) {
+    private void onGatherData(GatherDataEvent.Client event) {
 /*   TODO: During the update to 1.19.3 data providers got partially turned into async executions. Creating a registry ops requires this.
 
      // Example of how to datagen datapack registry objects.
@@ -90,7 +91,7 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
             if (phase == Phase.ADD && this.structures.contains(structure)) {
                 builder.getStructureSettings()
                         .getOrAddSpawnOverrides(category)
-                        .addSpawn(spawn);
+                        .addSpawn(new Weighted<>(spawn, 1));
             }
         }
 

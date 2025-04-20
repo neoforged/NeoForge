@@ -1,0 +1,91 @@
+{
+  "values": {
+    "minecraft:badlands": {
+      "villager_type": "minecraft:desert"
+    },
+    "minecraft:bamboo_jungle": {
+      "villager_type": "minecraft:jungle"
+    },
+    "minecraft:deep_frozen_ocean": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:desert": {
+      "villager_type": "minecraft:desert"
+    },
+    "minecraft:eroded_badlands": {
+      "villager_type": "minecraft:desert"
+    },
+    "minecraft:frozen_ocean": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:frozen_peaks": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:frozen_river": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:grove": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:ice_spikes": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:jagged_peaks": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:jungle": {
+      "villager_type": "minecraft:jungle"
+    },
+    "minecraft:mangrove_swamp": {
+      "villager_type": "minecraft:swamp"
+    },
+    "minecraft:old_growth_pine_taiga": {
+      "villager_type": "minecraft:taiga"
+    },
+    "minecraft:old_growth_spruce_taiga": {
+      "villager_type": "minecraft:taiga"
+    },
+    "minecraft:savanna": {
+      "villager_type": "minecraft:savanna"
+    },
+    "minecraft:savanna_plateau": {
+      "villager_type": "minecraft:savanna"
+    },
+    "minecraft:snowy_beach": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:snowy_plains": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:snowy_slopes": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:snowy_taiga": {
+      "villager_type": "minecraft:snow"
+    },
+    "minecraft:sparse_jungle": {
+      "villager_type": "minecraft:jungle"
+    },
+    "minecraft:swamp": {
+      "villager_type": "minecraft:swamp"
+    },
+    "minecraft:taiga": {
+      "villager_type": "minecraft:taiga"
+    },
+    "minecraft:windswept_forest": {
+      "villager_type": "minecraft:taiga"
+    },
+    "minecraft:windswept_gravelly_hills": {
+      "villager_type": "minecraft:taiga"
+    },
+    "minecraft:windswept_hills": {
+      "villager_type": "minecraft:taiga"
+    },
+    "minecraft:windswept_savanna": {
+      "villager_type": "minecraft:savanna"
+    },
+    "minecraft:wooded_badlands": {
+      "villager_type": "minecraft:desert"
+    }
+  }
+}

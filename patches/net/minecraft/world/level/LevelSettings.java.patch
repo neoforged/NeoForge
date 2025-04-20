@@ -26,14 +26,14 @@
 @@ -33,7 +_,8 @@
              p_46925_.get("Difficulty").asNumber().map(p_46928_ -> Difficulty.byId(p_46928_.byteValue())).result().orElse(Difficulty.NORMAL),
              p_46925_.get("allowCommands").asBoolean(gametype == GameType.CREATIVE),
-             new GameRules(p_46925_.get("GameRules")),
+             new GameRules(p_251697_.enabledFeatures(), p_46925_.get("GameRules")),
 -            p_251697_
 +            p_251697_,
 +            net.neoforged.neoforge.common.CommonHooks.parseLifecycle(p_46925_.get("forgeLifecycle").asString("stable"))
          );
      }
  
-@@ -66,20 +_,27 @@
+@@ -66,15 +_,15 @@
      }
  
      public LevelSettings withGameType(GameType p_46923_) {
@@ -43,7 +43,6 @@
  
      public LevelSettings withDifficulty(Difficulty p_46919_) {
 -        return new LevelSettings(this.levelName, this.gameType, this.hardcore, p_46919_, this.allowCommands, this.gameRules, this.dataConfiguration);
-+        net.neoforged.neoforge.common.CommonHooks.onDifficultyChange(p_46919_, this.difficulty);
 +        return new LevelSettings(this.levelName, this.gameType, this.hardcore, p_46919_, this.allowCommands, this.gameRules, this.dataConfiguration, this.lifecycle);
      }
  
@@ -53,14 +52,20 @@
      }
  
      public LevelSettings copy() {
-         return new LevelSettings(
--            this.levelName, this.gameType, this.hardcore, this.difficulty, this.allowCommands, this.gameRules.copy(), this.dataConfiguration
-+            this.levelName, this.gameType, this.hardcore, this.difficulty, this.allowCommands, this.gameRules.copy(), this.dataConfiguration, this.lifecycle
+@@ -85,7 +_,16 @@
+             this.difficulty,
+             this.allowCommands,
+             this.gameRules.copy(this.dataConfiguration.enabledFeatures()),
+-            this.dataConfiguration
++            this.dataConfiguration,
++            this.lifecycle
          );
 +    }
++
 +    public LevelSettings withLifecycle(com.mojang.serialization.Lifecycle lifecycle) {
 +        return new LevelSettings(this.levelName, this.gameType, this.hardcore, this.difficulty, this.allowCommands, this.gameRules, this.dataConfiguration, lifecycle);
 +    }
++
 +    public com.mojang.serialization.Lifecycle getLifecycle() {
 +        return this.lifecycle;
      }

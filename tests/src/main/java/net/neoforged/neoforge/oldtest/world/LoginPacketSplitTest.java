@@ -43,7 +43,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -98,7 +98,7 @@ public class LoginPacketSplitTest {
             if (FMLLoader.getDist().isClient()) {
                 NeoForge.EVENT_BUS.addListener((final RegisterClientCommandsEvent event) -> event.getDispatcher().register(Commands.literal("big_data")
                         .executes(context -> {
-                            context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().registryOrThrow(BIG_DATA).holders().count() + " entries."), true);
+                            context.getSource().sendSuccess(() -> Component.literal("Registry has " + context.getSource().registryAccess().lookupOrThrow(BIG_DATA).size() + " entries."), true);
                             return Command.SINGLE_SUCCESS;
                         })));
             }
@@ -123,7 +123,7 @@ public class LoginPacketSplitTest {
         LOG.warn("Setting up big data registry took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " miliseconds.");
 
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        dummyRegistry.holders().forEach(ref -> {
+        dummyRegistry.listElements().forEach(ref -> {
             buf.writeUtf(ref.getRegisteredName());
             buf.writeJsonWithCodec(BigData.CODEC, ref.value());
         });
@@ -210,12 +210,14 @@ public class LoginPacketSplitTest {
 
         @Nullable
         @Override
-        public <T> T getMetadataSection(MetadataSectionSerializer<T> section) throws IOException {
+        public <T> T getMetadataSection(MetadataSectionType<T> section) throws IOException {
             final JsonObject json = GsonHelper.parse(new String(root.get("pack.mcmeta").get()));
-            if (!json.has(section.getMetadataSectionName())) {
+            if (!json.has(section.name())) {
                 return null;
             } else {
-                return section.fromJson(GsonHelper.getAsJsonObject(json, section.getMetadataSectionName()));
+                return section.codec().parse(JsonOps.INSTANCE, json.get(section.name()))
+                        .result()
+                        .orElse(null);
             }
         }
 

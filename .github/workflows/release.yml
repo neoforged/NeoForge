@@ -6,7 +6,8 @@ name: Release
 on:
   push:
     branches:
-      - '1.*'
+      - '1.*'                 # Mainline release branches 
+      - '[0-9][0-9]w14[a-z]+' # w14 April Fools Snapshots
 
 permissions:
   contents: read

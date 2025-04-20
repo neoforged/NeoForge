@@ -47,7 +47,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.dispenser.BlockSource;
@@ -56,7 +55,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -66,14 +64,13 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.util.Mth;
@@ -106,23 +103,23 @@ import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AdventureModePredicate;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TippedArrowItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
@@ -141,7 +138,6 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
@@ -155,9 +151,8 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.extensions.IEntityExtension;
@@ -205,14 +200,17 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -268,7 +266,7 @@ public class CommonHooks {
 
     /**
      * Creates and posts an {@link EntityInvulnerabilityCheckEvent}. This is invoked in
-     * {@link Entity#isInvulnerableTo(DamageSource)} and returns a post-listener result
+     * {@link Entity#isInvulnerableToBase(DamageSource)} and returns a post-listener result
      * to the invulnerability status of the entity to the damage source.
      *
      * @param entity  the entity being checked for invulnerability
@@ -348,7 +346,8 @@ public class CommonHooks {
         for (EquipmentSlot slot : slots) {
             ItemStack armorPiece = armoredEntity.getItemBySlot(slot);
             if (armorPiece.isEmpty()) continue;
-            float damageAfterFireResist = (armorPiece.getItem() instanceof ArmorItem && armorPiece.canBeHurtBy(source)) ? damage : 0;
+            Equippable equippable = armorPiece.get(DataComponents.EQUIPPABLE);
+            float damageAfterFireResist = (equippable != null && equippable.damageOnHurt() && armorPiece.isDamageableItem() && armorPiece.canBeHurtBy(source)) ? damage : 0;
             armorMap.put(slot, new ArmorHurtEvent.ArmorEntry(armorPiece, damageAfterFireResist));
         }
 
@@ -365,10 +364,9 @@ public class CommonHooks {
         return NeoForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, recentlyHit)).isCanceled();
     }
 
-    @Nullable
-    public static float[] onLivingFall(LivingEntity entity, float distance, float damageMultiplier) {
+    public static LivingFallEvent onLivingFall(LivingEntity entity, double distance, float damageMultiplier) {
         LivingFallEvent event = new LivingFallEvent(entity, distance, damageMultiplier);
-        return (NeoForge.EVENT_BUS.post(event).isCanceled() ? null : new float[] { event.getDistance(), event.getDamageMultiplier() });
+        return NeoForge.EVENT_BUS.post(event);
     }
 
     public static double getEntityVisibilityMultiplier(LivingEntity entity, Entity lookingEntity, double originalMultiplier) {
@@ -381,7 +379,7 @@ public class CommonHooks {
         boolean isSpectator = (entity instanceof Player && entity.isSpectator());
         if (isSpectator)
             return Optional.empty();
-        if (!NeoForgeConfig.SERVER.fullBoundingBoxLadders.get()) {
+        if (!NeoForgeServerConfig.INSTANCE.fullBoundingBoxLadders.get()) {
             return state.isLadder(level, pos, entity) ? Optional.of(pos) : Optional.empty();
         } else {
             AABB bb = entity.getBoundingBox();
@@ -484,8 +482,9 @@ public class CommonHooks {
             MutableComponent link = Component.literal(url);
 
             try {
+                URI uri = new URI(url);
                 // Add schema so client doesn't crash.
-                if ((new URI(url)).getScheme() == null) {
+                if (uri.getScheme() == null) {
                     if (!allowMissingHeader) {
                         if (ichat == null)
                             ichat = Component.literal(url);
@@ -493,8 +492,11 @@ public class CommonHooks {
                             ichat.append(url);
                         continue;
                     }
-                    url = "http://" + url;
+                    uri = new URI("http://" + url);
                 }
+                // Set the click event
+                ClickEvent click = new ClickEvent.OpenUrl(uri);
+                link.setStyle(link.getStyle().withClickEvent(click).withUnderlined(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
             } catch (URISyntaxException e) {
                 // Bad syntax bail out!
                 if (ichat == null)
@@ -504,9 +506,7 @@ public class CommonHooks {
                 continue;
             }
 
-            // Set the click event and append the link.
-            ClickEvent click = new ClickEvent(ClickEvent.Action.OPEN_URL, url);
-            link.setStyle(link.getStyle().withClickEvent(click).withUnderlined(true).withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+            // Append the link.
             if (ichat == null)
                 ichat = Component.literal("");
             ichat.append(link);
@@ -564,7 +564,7 @@ public class CommonHooks {
         boolean preCancelEvent = false;
 
         ItemStack itemstack = player.getMainHandItem();
-        if (!itemstack.isEmpty() && !itemstack.getItem().canAttackBlock(state, level, pos, player)) {
+        if (!itemstack.isEmpty() && !itemstack.canDestroyBlock(state, level, pos, player)) {
             preCancelEvent = true;
         }
 
@@ -740,16 +740,13 @@ public class CommonHooks {
         return craftingPlayer.get();
     }
 
-    public static ItemStack getCraftingRemainingItem(ItemStack stack) {
-        if (stack.getItem().hasCraftingRemainingItem(stack)) {
-            stack = stack.getItem().getCraftingRemainingItem(stack);
-            if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
-                EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
-                return ItemStack.EMPTY;
-            }
-            return stack;
+    public static ItemStack getCraftingRemainder(ItemStack stack) {
+        stack = stack.getCraftingRemainder();
+        if (!stack.isEmpty() && stack.isDamageableItem() && stack.getDamageValue() > stack.getMaxDamage()) {
+            EventHooks.onPlayerDestroyItem(craftingPlayer.get(), stack, null);
+            return ItemStack.EMPTY;
         }
-        return ItemStack.EMPTY;
+        return stack;
     }
 
     public static boolean onPlayerAttackTarget(Player player, Entity target) {
@@ -871,7 +868,8 @@ public class CommonHooks {
         throw new RuntimeException("Mod fluids must override getFluidType.");
     }
 
-    public static TagKey<Block> getTagFromVanillaTier(Tiers tier) {
+    // FIXME: is this still needed
+    /*public static TagKey<Block> getTagFromVanillaTier(Tiers tier) {
         return switch (tier) {
             case WOOD -> Tags.Blocks.NEEDS_WOOD_TOOL;
             case GOLD -> Tags.Blocks.NEEDS_GOLD_TOOL;
@@ -880,7 +878,7 @@ public class CommonHooks {
             case DIAMOND -> BlockTags.NEEDS_DIAMOND_TOOL;
             case NETHERITE -> Tags.Blocks.NEEDS_NETHERITE_TOOL;
         };
-    }
+    }*/
 
     public static Collection<CreativeModeTab> onCheckCreativeTabs(CreativeModeTab... vanillaTabs) {
         final List<CreativeModeTab> tabs = new ArrayList<>(Arrays.asList(vanillaTabs));
@@ -924,6 +922,17 @@ public class CommonHooks {
     }
 
     /**
+     * Fires the {@link SweepAttackEvent} and returns the resulting event.
+     *
+     * @param player         The attacking player.
+     * @param target         The attack target.
+     * @param isVanillaSweep If the attack would have been a sweep attack by vanilla's rules in {@link Player#attack(Entity)}.
+     */
+    public static SweepAttackEvent fireSweepAttack(Player player, Entity target, boolean isVanillaSweep) {
+        return NeoForge.EVENT_BUS.post(new SweepAttackEvent(player, target, isVanillaSweep));
+    }
+
+    /**
      * Hook to fire {@link ItemAttributeModifierEvent}. Modders should use {@link ItemStack#forEachModifier(EquipmentSlot, BiConsumer)} instead.
      */
     public static ItemAttributeModifiers computeModifiedAttributes(ItemStack stack, ItemAttributeModifiers defaultModifiers) {
@@ -945,12 +954,12 @@ public class CommonHooks {
      * Used as the default implementation of {@link Item#getCreatorModId}. Call that method instead.
      */
     @Nullable
-    public static String getDefaultCreatorModId(ItemStack itemStack) {
+    public static String getDefaultCreatorModId(HolderLookup.Provider registries, ItemStack itemStack) {
         Item item = itemStack.getItem();
         ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
         String modId = registryName == null ? null : registryName.getNamespace();
         if ("minecraft".equals(modId)) {
-            if (item instanceof EnchantedBookItem) {
+            if (itemStack.has(DataComponents.STORED_ENCHANTMENTS)) {
                 Set<Holder<Enchantment>> enchantments = itemStack.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY).keySet();
                 if (enchantments.size() == 1) {
                     Holder<Enchantment> enchantmentHolder = enchantments.iterator().next();
@@ -967,7 +976,7 @@ public class CommonHooks {
                     return key.get().location().getNamespace();
                 }
             } else if (item instanceof SpawnEggItem spawnEggItem) {
-                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(itemStack));
+                Optional<ResourceKey<EntityType<?>>> key = BuiltInRegistries.ENTITY_TYPE.getResourceKey(spawnEggItem.getType(registries, itemStack));
                 if (key.isPresent()) {
                     return key.get().location().getNamespace();
                 }
@@ -976,8 +985,8 @@ public class CommonHooks {
         return modId;
     }
 
-    public static boolean onFarmlandTrample(Level level, BlockPos pos, BlockState state, float fallDistance, Entity entity) {
-        if (entity.canTrample(state, pos, fallDistance)) {
+    public static boolean onFarmlandTrample(ServerLevel level, BlockPos pos, BlockState state, double fallDistance, Entity entity) {
+        if (entity.canTrample(level, state, pos, fallDistance)) {
             BlockEvent.FarmlandTrampleEvent event = new BlockEvent.FarmlandTrampleEvent(level, pos, state, fallDistance, entity);
             NeoForge.EVENT_BUS.post(event);
             return !event.isCanceled();
@@ -1014,7 +1023,7 @@ public class CommonHooks {
         return id;
     }
 
-    public static boolean canEntityDestroy(Level level, BlockPos pos, LivingEntity entity) {
+    public static boolean canEntityDestroy(ServerLevel level, BlockPos pos, LivingEntity entity) {
         if (!level.isLoaded(pos))
             return false;
         BlockState state = level.getBlockState(pos);
@@ -1112,11 +1121,12 @@ public class CommonHooks {
      * @param blocker         the entity performing the block
      * @param container       the entity's internal damage container for accessing current values
      *                        in the damage pipeline at the time of this invocation.
+     * @param blockedDamage   the amount of damage that would be blocked
      * @param originalBlocked whether this entity is blocking according to preceding/vanilla logic
      * @return the event object after event listeners have been invoked.
      */
-    public static LivingShieldBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, boolean originalBlocked) {
-        LivingShieldBlockEvent e = new LivingShieldBlockEvent(blocker, container, originalBlocked);
+    public static LivingShieldBlockEvent onDamageBlock(LivingEntity blocker, DamageContainer container, float blockedDamage, boolean originalBlocked) {
+        LivingShieldBlockEvent e = new LivingShieldBlockEvent(blocker, container, blockedDamage, originalBlocked);
         NeoForge.EVENT_BUS.post(e);
         return e;
     }
@@ -1149,19 +1159,19 @@ public class CommonHooks {
      */
     @ApiStatus.Internal
     public static void readAdditionalLevelSaveData(CompoundTag rootTag, LevelStorageSource.LevelDirectory levelDirectory) {
-        CompoundTag tag = rootTag.getCompound("fml");
+        CompoundTag tag = rootTag.getCompoundOrEmpty("fml");
         if (tag.contains("LoadingModList")) {
-            ListTag modList = tag.getList("LoadingModList", Tag.TAG_COMPOUND);
+            ListTag modList = tag.getListOrEmpty("LoadingModList");
             Map<String, ArtifactVersion> mismatchedVersions = new HashMap<>(modList.size());
             Map<String, ArtifactVersion> missingVersions = new HashMap<>(modList.size());
             for (int i = 0; i < modList.size(); i++) {
-                CompoundTag mod = modList.getCompound(i);
-                String modId = mod.getString("ModId");
+                CompoundTag mod = modList.getCompoundOrEmpty(i);
+                String modId = mod.getStringOr("ModId", "");
                 if (Objects.equals("minecraft", modId)) {
                     continue;
                 }
 
-                String modVersion = mod.getString("ModVersion");
+                String modVersion = mod.getStringOr("ModVersion", "");
                 final var previousVersion = new DefaultArtifactVersion(modVersion);
                 ModList.get().getModContainerById(modId).ifPresentOrElse(container -> {
                     final var loadingVersion = container.getModInfo().getVersion();
@@ -1247,19 +1257,19 @@ public class CommonHooks {
 
     @Nullable
     public static MobEffect loadMobEffect(CompoundTag nbt, String key, @Nullable MobEffect fallback) {
-        var registryName = nbt.getString(key);
+        var registryName = nbt.getStringOr(key, "");
         if (Strings.isNullOrEmpty(registryName)) {
             return fallback;
         }
         try {
-            return BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.parse(registryName));
+            return BuiltInRegistries.MOB_EFFECT.getValue(ResourceLocation.parse(registryName));
         } catch (ResourceLocationException e) {
             return fallback;
         }
     }
 
-    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player, ItemStack mask) {
-        return mask.isEnderMask(player, enderMan) || NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
+    public static boolean shouldSuppressEnderManAnger(EnderMan enderMan, Player player) {
+        return NeoForge.EVENT_BUS.post(new EnderManAngerEvent(enderMan, player)).isCanceled();
     }
 
     private static final Lazy<Map<String, StructuresBecomeConfiguredFix.Conversion>> FORGE_CONVERSION_MAP = Lazy.of(() -> {
@@ -1410,9 +1420,6 @@ public class CommonHooks {
     }
 
     static {
-        // Mark common singletons as valid
-        markComponentClassAsValid(BlockState.class);
-        markComponentClassAsValid(FluidState.class);
         // Block, Fluid, Item, etc. are handled via the registry check further down
 
         // Mark common interned classes as valid
@@ -1482,11 +1489,7 @@ public class CommonHooks {
         poiManager.flush(chunkPos); // Make sure all POI in chunk are saved to disk first.
 
         // Remove the cached POIs for this chunk's location.
-        int SectionPosMinY = SectionPos.blockToSectionCoord(chunkAccess.getMinBuildHeight());
-        for (int currentSectionY = 0; currentSectionY < chunkAccess.getSectionsCount(); currentSectionY++) {
-            long sectionPosKey = SectionPos.asLong(chunkPos.x, SectionPosMinY + currentSectionY, chunkPos.z);
-            poiManager.remove(sectionPosKey);
-        }
+        poiManager.remove(chunkPos);
     }
 
     /**
@@ -1512,13 +1515,19 @@ public class CommonHooks {
      */
     @Nullable
     public static <T> RegistryLookup<T> resolveLookup(ResourceKey<? extends Registry<T>> key) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server != null) {
-            return server.registryAccess().lookup(key).orElse(null);
-        } else if (FMLEnvironment.dist.isClient()) {
-            return ClientHooks.resolveLookup(key);
+        return NeoForgeProxy.INSTANCE.resolveLookup(key);
+    }
+
+    /**
+     * Extracts a {@link HolderLookup.Provider} from the given {@code ops}, if possible.
+     *
+     * @throws IllegalArgumentException if the ops were not created using a {@linkplain HolderLookup.Provider}
+     */
+    public static HolderLookup.Provider extractLookupProvider(RegistryOps<?> ops) {
+        if (ops.lookupProvider instanceof RegistryOps.HolderLookupAdapter hla) {
+            return hla.lookupProvider;
         }
-        return null;
+        throw new IllegalArgumentException("Registry ops has lookup provider " + ops.lookupProvider + " which is not a HolderLookupAdapter");
     }
 
     /**
@@ -1574,10 +1583,14 @@ public class CommonHooks {
         return vanillaMap;
     }
 
-    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
-        if (FMLEnvironment.dist.isClient()) {
-            return ClientHooks.getFilteredRecipeBookTypeValues();
+    /**
+     * Determines whether the given players should be sent full recipe content or not and handles the sending.
+     */
+    public static void sendRecipes(ServerPlayer player, Set<RecipeType<?>> recipeTypesToSend, RecipeMap recipeMap) {
+        if (player.connection.getConnectionType().isNeoForge()) {
+            var payload = RecipeContentPayload.create(recipeTypesToSend, recipeMap);
+            LOGGER.debug("Sending {} recipes of the following types: {}", payload.recipes().size(), payload.recipeTypes());
+            PacketDistributor.sendToPlayer(player, payload);
         }
-        return RecipeBookType.values();
     }
 }

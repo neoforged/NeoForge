@@ -36,25 +36,25 @@ public class ForgeChunkManagerTest {
     private static final Logger LOGGER = LogManager.getLogger(MODID);
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.register("chunk_loader", () -> new ChunkLoaderBlock(Properties.of().mapColor(MapColor.STONE)));
+    private static final DeferredBlock<Block> CHUNK_LOADER_BLOCK = BLOCKS.registerBlock("chunk_loader", ChunkLoaderBlock::new, Properties.of().mapColor(MapColor.STONE));
     private static final DeferredItem<BlockItem> CHUNK_LOADER_ITEM = ITEMS.registerSimpleBlockItem(CHUNK_LOADER_BLOCK);
     private static final TicketController CONTROLLER = new TicketController(ResourceLocation.fromNamespaceAndPath(MODID, "default"), (world, ticketHelper) -> {
         for (Map.Entry<BlockPos, TicketSet> entry : ticketHelper.getBlockTickets().entrySet()) {
             BlockPos key = entry.getKey();
-            int ticketCount = entry.getValue().nonTicking().size();
-            int tickingTicketCount = entry.getValue().ticking().size();
+            int ticketCount = entry.getValue().normal().size();
+            int naturalSpawningTicketCount = entry.getValue().naturalSpawning().size();
             if (world.getBlockState(key).is(CHUNK_LOADER_BLOCK.get()))
-                LOGGER.info("Allowing {} chunk tickets and {} ticking chunk tickets to be reinstated for position: {}.", ticketCount, tickingTicketCount, key);
+                LOGGER.info("Allowing {} chunk tickets and {} forced natural spawning chunk tickets to be reinstated for position: {}.", ticketCount, naturalSpawningTicketCount, key);
             else {
                 ticketHelper.removeAllTickets(key);
-                LOGGER.info("Removing {} chunk tickets and {} ticking chunk tickets for no longer valid position: {}.", ticketCount, tickingTicketCount, key);
+                LOGGER.info("Removing {} chunk tickets and {} forced natural spawning chunk tickets for no longer valid position: {}.", ticketCount, naturalSpawningTicketCount, key);
             }
         }
         for (Map.Entry<UUID, TicketSet> entry : ticketHelper.getEntityTickets().entrySet()) {
             UUID key = entry.getKey();
-            int ticketCount = entry.getValue().nonTicking().size();
-            int tickingTicketCount = entry.getValue().ticking().size();
-            LOGGER.info("Allowing {} chunk tickets and {} ticking chunk tickets to be reinstated for entity: {}.", ticketCount, tickingTicketCount, key);
+            int ticketCount = entry.getValue().normal().size();
+            int naturalSpawningTicketCount = entry.getValue().naturalSpawning().size();
+            LOGGER.info("Allowing {} chunk tickets and {} forced natural spawning chunk tickets to be reinstated for entity: {}.", ticketCount, naturalSpawningTicketCount, key);
         }
     });
 
@@ -89,12 +89,12 @@ public class ForgeChunkManagerTest {
         }
 
         @Deprecated
-        public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-            super.onRemove(state, worldIn, pos, newState, isMoving);
-            if (worldIn instanceof ServerLevel && !state.is(newState.getBlock())) {
-                ChunkPos chunkPos = new ChunkPos(pos);
-                CONTROLLER.forceChunk((ServerLevel) worldIn, pos, chunkPos.x, chunkPos.z, false, true);
-            }
+        @Override
+        public void affectNeighborsAfterRemoval(BlockState state, ServerLevel worldIn, BlockPos pos, boolean isMoving) {
+            super.affectNeighborsAfterRemoval(state, worldIn, pos, isMoving);
+            ChunkPos chunkPos = new ChunkPos(pos);
+            //TODO: If the block is removed without neighbor updates this won't be fired, is there a more proper method for us to override?
+            CONTROLLER.forceChunk(worldIn, pos, chunkPos.x, chunkPos.z, false, true);
         }
     }
 }

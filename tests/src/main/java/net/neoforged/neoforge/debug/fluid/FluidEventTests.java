@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.debug.fluid;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -15,6 +15,7 @@ import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 
 @ForEachTest(groups = { FluidTests.GROUP + ".event", "event" })
@@ -53,23 +54,23 @@ public class FluidEventTests {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> {
-                    helper.setBlock(2, 2, 1, Blocks.WATER);
-                    helper.setBlock(2, 2, 3, Blocks.WATER);
+                    helper.setBlock(2, 1, 1, Blocks.WATER);
+                    helper.setBlock(2, 1, 3, Blocks.WATER);
                 })
-                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.WATER, 2, 2, 2)) // Wait until the water spread
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 3, 1))
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 3, 3))
-                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 2, 2), state -> state.getFluidState().is(Fluids.FLOWING_WATER) && !state.getFluidState().isSource(), () -> "Water block was a source!"))
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.WATER, 2, 1, 2)) // Wait until the water spread
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 2, 1))
+                .thenExecute(() -> helper.assertBlockPresent(Blocks.ANDESITE, 2, 2, 3))
+                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 1, 2), state -> state.getFluidState().is(Fluids.FLOWING_WATER) && !state.getFluidState().isSource(), $ -> Component.literal("Water block was a source!")))
 
                 .thenIdle(5)
 
                 .thenExecute(() -> {
-                    helper.setBlock(2, 5, 1, Blocks.LAVA);
-                    helper.setBlock(2, 5, 3, Blocks.LAVA);
+                    helper.setBlock(2, 4, 1, Blocks.LAVA);
+                    helper.setBlock(2, 4, 3, Blocks.LAVA);
                 })
-                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.LAVA, 2, 5, 2)) // Wait until the lava spread
-                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 5, 2),
-                        state -> state.getFluidState().isSource() && state.getFluidState().is(Fluids.LAVA), () -> "Lava source wasn't created"))
+                .thenWaitUntil(() -> helper.assertBlockPresent(Blocks.LAVA, 2, 4, 2)) // Wait until the lava spread
+                .thenExecute(() -> helper.assertBlockState(new BlockPos(2, 4, 2),
+                        state -> state.getFluidState().isSource() && state.getFluidState().is(Fluids.LAVA), $ -> Component.literal("Lava source wasn't created")))
                 .thenSucceed());
     }
 }

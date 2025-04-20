@@ -104,14 +104,24 @@ public class CapabilityHooks {
                 BlockEntityType.DISPENSER,
                 BlockEntityType.DROPPER,
                 BlockEntityType.JUKEBOX,
-                BlockEntityType.CRAFTER);
+                BlockEntityType.CRAFTER,
+                BlockEntityType.DECORATED_POT);
         for (var type : nonSidedVanillaContainers) {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new InvWrapper(container));
         }
 
         // Entities
         var containerEntities = List.of(
-                EntityType.CHEST_BOAT,
+                EntityType.ACACIA_CHEST_BOAT,
+                EntityType.BIRCH_CHEST_BOAT,
+                EntityType.CHERRY_CHEST_BOAT,
+                EntityType.DARK_OAK_CHEST_BOAT,
+                EntityType.JUNGLE_CHEST_BOAT,
+                EntityType.MANGROVE_CHEST_BOAT,
+                EntityType.OAK_CHEST_BOAT,
+                EntityType.SPRUCE_CHEST_BOAT,
+                EntityType.BAMBOO_CHEST_RAFT,
+                EntityType.PALE_OAK_CHEST_BOAT,
                 EntityType.CHEST_MINECART,
                 EntityType.HOPPER_MINECART);
         for (var entityType : containerEntities) {

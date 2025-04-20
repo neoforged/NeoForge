@@ -1,0 +1,140 @@
+--- a/net/minecraft/client/data/models/ModelProvider.java
++++ b/net/minecraft/client/data/models/ModelProvider.java
+@@ -36,20 +_,58 @@
+     private final PackOutput.PathProvider blockStatePathProvider;
+     private final PackOutput.PathProvider itemInfoPathProvider;
+     private final PackOutput.PathProvider modelPathProvider;
++    public final String modId;
+ 
++    // Neo: Use the constructor which accepts a mod ID.
++    @Deprecated
+     public ModelProvider(PackOutput p_388260_) {
++        this(p_388260_, ResourceLocation.DEFAULT_NAMESPACE);
++    }
++
++    public ModelProvider(PackOutput p_388260_, String modId) {
+         this.blockStatePathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
+         this.itemInfoPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "items");
+         this.modelPathProvider = p_388260_.createPathProvider(PackOutput.Target.RESOURCE_PACK, "models");
++        this.modId = modId;
++    }
++
++    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
++        blockModels.run();
++        itemModels.run();
++    }
++
++    /**
++     * Returns a {@link Stream stream} containing all {@link Block blocks} which must have their models/block states generated or {@link Stream#empty() empty} if none are desired.
++     * <p>
++     * When using providers for specific {@link Block block} usages, it is best to override this method returning the exact {@link Block blocks} which must be generated,
++     * or {@link Stream#empty() empty} if generating only {@link Item item} models.
++     * <p>
++     * Default implementation generates models for {@link Block blocks} matching the given {@code modId}.
++     * @see #getKnownItems()
++     */
++    protected Stream<? extends Holder<Block>> getKnownBlocks() {
++        return BuiltInRegistries.BLOCK.listElements().filter(holder -> holder.getKey().location().getNamespace().equals(modId));
++    }
++
++    /**
++     * Returns a {@link Stream stream} containing all {@link Item items} which must have their models/client items generated or {@link Stream#empty() empty} if none are desired.
++     * <p>
++     * When using providers for specific {@link Item item} usages, it is best to override this method returning the exact {@link Item items} which must be generated,
++     * or {@link Stream#empty() empty} if generating only {@link Block block} models (which have no respective {@link Item item}).
++     * <p>
++     * Default implementation generates models for {@link Item items} matching the given {@code modId}.
++     * @see #getKnownBlocks()
++     */
++    protected Stream<? extends Holder<Item>> getKnownItems() {
++        return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.getKey().location().getNamespace().equals(modId));
+     }
+ 
+     @Override
+     public CompletableFuture<?> run(CachedOutput p_387857_) {
+-        ModelProvider.ItemInfoCollector modelprovider$iteminfocollector = new ModelProvider.ItemInfoCollector();
+-        ModelProvider.BlockStateGeneratorCollector modelprovider$blockstategeneratorcollector = new ModelProvider.BlockStateGeneratorCollector();
++        ModelProvider.ItemInfoCollector modelprovider$iteminfocollector = new ModelProvider.ItemInfoCollector(this::getKnownItems);
++        ModelProvider.BlockStateGeneratorCollector modelprovider$blockstategeneratorcollector = new ModelProvider.BlockStateGeneratorCollector(this::getKnownBlocks);
+         ModelProvider.SimpleModelCollector modelprovider$simplemodelcollector = new ModelProvider.SimpleModelCollector();
+-        new BlockModelGenerators(modelprovider$blockstategeneratorcollector, modelprovider$iteminfocollector, modelprovider$simplemodelcollector).run();
+-        new ItemModelGenerators(modelprovider$iteminfocollector, modelprovider$simplemodelcollector).run();
++        registerModels(new BlockModelGenerators(modelprovider$blockstategeneratorcollector, modelprovider$iteminfocollector, modelprovider$simplemodelcollector), new ItemModelGenerators(modelprovider$iteminfocollector, modelprovider$simplemodelcollector));
+         modelprovider$blockstategeneratorcollector.validate();
+         modelprovider$iteminfocollector.finalizeAndValidate();
+         return CompletableFuture.allOf(
+@@ -61,12 +_,22 @@
+ 
+     @Override
+     public String getName() {
+-        return "Model Definitions";
++        return "Model Definitions - " + modId;
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+     static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
+         private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
++        private final Supplier<Stream<? extends Holder<Block>>> knownBlocks;
++
++        public BlockStateGeneratorCollector(Supplier<Stream<? extends Holder<Block>>> knownBlocks) {
++            this.knownBlocks = knownBlocks;
++        }
++
++        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility. Use constructor with Supplier parameter.
++        public BlockStateGeneratorCollector() {
++            this(BuiltInRegistries.BLOCK::listElements);
++        }
+ 
+         public void accept(BlockModelDefinitionGenerator p_405192_) {
+             Block block = p_405192_.block();
+@@ -77,9 +_,9 @@
+         }
+ 
+         public void validate() {
+-            Stream<Holder.Reference<Block>> stream = BuiltInRegistries.BLOCK.listElements().filter(p_388333_ -> true);
++            Stream<? extends Holder<Block>> stream = knownBlocks.get();
+             List<ResourceLocation> list = stream.filter(p_386843_ -> !this.generators.containsKey(p_386843_.value()))
+-                .map(p_386823_ -> p_386823_.key().location())
++                .map(p_386823_ -> p_386823_.unwrapKey().orElseThrow().location())
+                 .toList();
+             if (!list.isEmpty()) {
+                 throw new IllegalStateException("Missing blockstate definitions for: " + list);
+@@ -97,6 +_,16 @@
+     static class ItemInfoCollector implements ItemModelOutput {
+         private final Map<Item, ClientItem> itemInfos = new HashMap<>();
+         private final Map<Item, Item> copies = new HashMap<>();
++        private final Supplier<Stream<? extends Holder<Item>>> knownItems;
++
++        public ItemInfoCollector(Supplier<Stream<? extends Holder<Item>>> knownItems) {
++            this.knownItems = knownItems;
++        }
++
++        @Deprecated // Neo: Provided for vanilla/multi-loader compatibility. Use constructor with Supplier parameter.
++        public ItemInfoCollector() {
++            this(BuiltInRegistries.ITEM::listElements);
++        }
+ 
+         @Override
+         public void accept(Item p_387063_, ItemModel.Unbaked p_388578_) {
+@@ -116,7 +_,7 @@
+         }
+ 
+         public void finalizeAndValidate() {
+-            BuiltInRegistries.ITEM.forEach(p_388426_ -> {
++            knownItems.get().map(Holder::value).forEach(p_388426_ -> {
+                 if (!this.copies.containsKey(p_388426_)) {
+                     if (p_388426_ instanceof BlockItem blockitem && !this.itemInfos.containsKey(blockitem)) {
+                         ResourceLocation resourcelocation = ModelLocationUtils.getModelLocation(blockitem.getBlock());
+@@ -132,10 +_,9 @@
+                     this.register(p_386494_, clientitem);
+                 }
+             });
+-            List<ResourceLocation> list = BuiltInRegistries.ITEM
+-                .listElements()
++            List<ResourceLocation> list = knownItems.get()
+                 .filter(p_388636_ -> !this.itemInfos.containsKey(p_388636_.value()))
+-                .map(p_388278_ -> p_388278_.key().location())
++                .map(p_388278_ -> p_388278_.unwrapKey().orElseThrow().location())
+                 .toList();
+             if (!list.isEmpty()) {
+                 throw new IllegalStateException("Missing item model definitions for: " + list);

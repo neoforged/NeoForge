@@ -34,15 +34,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
@@ -84,8 +85,11 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     private @Nullable MinecraftServer server;
     private final DynamicStructureTemplates structures;
+    private boolean inClientWorld = false;
 
     private @UnknownNullability String commandName;
+
+    private final SavedDataType<PlayerTestStore> playerTestStoreType;
 
     public TestFrameworkImpl(FrameworkConfiguration configuration) {
         FRAMEWORKS.add(this);
@@ -168,9 +172,13 @@ public class TestFrameworkImpl implements MutableTestFramework {
                         message = message.append("\n");
                     }
                 }
-                event.getEntity().sendSystemMessage(message);
+                ((ServerPlayer) event.getEntity()).sendSystemMessage(message);
             });
         }
+
+        this.playerTestStoreType = new SavedDataType<>(
+                "tests/" + id().getNamespace() + "_" + id().getPath(),
+                PlayerTestStore::new, PlayerTestStore.FACTORY);
     }
 
     private void processSummary(TestSummary summary) {
@@ -188,8 +196,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     @Override
     public PlayerTestStore playerTestStore() {
-        return server.overworld().getDataStorage()
-                .computeIfAbsent(PlayerTestStore.FACTORY, "tests/" + id().getNamespace() + "_" + id().getPath());
+        return server.overworld().getDataStorage().computeIfAbsent(playerTestStoreType);
     }
 
     @Override
@@ -235,7 +242,12 @@ public class TestFrameworkImpl implements MutableTestFramework {
         });
 
         modBus.addListener(new TestFrameworkPayloadInitialization(this)::onNetworkSetup);
-        modBus.addListener((final RegisterGameTestsEvent event) -> event.register(GameTestRegistration.REGISTER_METHOD));
+        modBus.addListener(GameTestRegistration::register);
+
+        synchronized (tests().enabled) {
+            List.copyOf(tests().enabled).forEach(tests()::disable);
+        }
+        tests().initialiseDefaultEnabledTests();
 
         if (FMLLoader.getDist().isClient()) {
             setupClient(this, modBus, container);
@@ -248,12 +260,14 @@ public class TestFrameworkImpl implements MutableTestFramework {
 
     private static void setupClient(TestFrameworkImpl impl, IEventBus modBus, ModContainer container) {
         if (impl.client != null) impl.client.init(modBus, container);
-        NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingIn logOut) -> {
+        NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingIn logIn) -> {
             synchronized (impl.tests().enabled) {
                 List.copyOf(impl.tests().enabled).forEach(impl.tests()::disable);
             }
             impl.tests().initialiseDefaultEnabledTests();
+            impl.inClientWorld = true;
         });
+        NeoForge.EVENT_BUS.addListener((final ClientPlayerNetworkEvent.LoggingOut logOut) -> impl.inClientWorld = false);
     }
 
     @Override
@@ -303,6 +317,8 @@ public class TestFrameworkImpl implements MutableTestFramework {
         test.listeners().forEach(listener -> listener.onStatusChange(this, test, oldStatus, newStatus, changer));
 
         logger.info("Status of test '{}' has had status changed to {}{}.", test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
+
+        if (server == null && !inClientWorld) return;
 
         final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(

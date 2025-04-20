@@ -75,33 +75,33 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
         Map<String, EnumEntry> localEnumEntries = getEnumEntries();
         Map<String, EnumEntry> remoteEnumEntries = payload.enumEntries();
 
-        Set<String> keyDiff = Sets.symmetricDifference(localEnumEntries.keySet(), remoteEnumEntries.keySet());
-        if (!keyDiff.isEmpty()) {
-            context.disconnect(Component.translatable("neoforge.network.extensible_enums.enum_set_mismatch"));
-            return;
-        }
-
         Map<String, Mismatch> mismatched = new HashMap<>();
-        for (EnumEntry localEntry : localEnumEntries.values()) {
-            EnumEntry remoteEntry = remoteEnumEntries.get(localEntry.className);
-            if (!localEntry.isExtended() && !remoteEntry.isExtended()) {
+        for (String className : Sets.union(localEnumEntries.keySet(), remoteEnumEntries.keySet())) {
+            EnumEntry localEntry = localEnumEntries.get(className);
+            EnumEntry remoteEntry = remoteEnumEntries.get(className);
+            if ((localEntry == null && remoteEntry.isExtended()) || (remoteEntry == null && localEntry.isExtended())) {
+                mismatched.put(className, Mismatch.EXTENSIBILITY);
+                continue;
+            }
+
+            if ((localEntry == null || !localEntry.isExtended()) && (remoteEntry == null || !remoteEntry.isExtended())) {
                 continue;
             }
 
             if (localEntry.networkCheck != remoteEntry.networkCheck) {
-                mismatched.put(localEntry.className, Mismatch.NETWORK_CHECK);
+                mismatched.put(className, Mismatch.NETWORK_CHECK);
                 continue;
             }
 
             if (localEntry.isExtended() != remoteEntry.isExtended()) {
-                mismatched.put(localEntry.className, Mismatch.EXTENSION);
+                mismatched.put(className, Mismatch.EXTENSION);
                 continue;
             }
 
             ExtensionData localData = localEntry.data.orElseThrow();
             ExtensionData remoteData = remoteEntry.data.orElseThrow();
             if (localData.vanillaCount != remoteData.vanillaCount || localData.totalCount != remoteData.totalCount) {
-                mismatched.put(localEntry.className, Mismatch.ENTRY_COUNT);
+                mismatched.put(className, Mismatch.ENTRY_COUNT);
                 continue;
             }
 
@@ -109,7 +109,7 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
             List<String> remoteValues = remoteData.entries;
             for (int i = 0; i < localData.totalCount - localData.vanillaCount; i++) {
                 if (!localValues.get(i).equals(remoteValues.get(i))) {
-                    mismatched.put(localEntry.className, Mismatch.ENTRY_MISMATCH);
+                    mismatched.put(className, Mismatch.ENTRY_MISMATCH);
                     break;
                 }
             }
@@ -122,6 +122,13 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
                 String enumClass = entry.getKey();
                 message.append("\n").append(enumClass).append(": ");
                 switch (entry.getValue()) {
+                    case EXTENSIBILITY -> {
+                        if (remoteEnumEntries.containsKey(enumClass)) {
+                            message.append("Enum is extensible on the server but not on the client");
+                        } else {
+                            message.append("Enum is extensible on the client but not on the server");
+                        }
+                    }
                     case NETWORK_CHECK -> message.append("Mismatched NetworkCheck (server: ")
                             .append(remoteEnumEntries.get(enumClass).networkCheck)
                             .append(", client: ")
@@ -258,6 +265,7 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
     }
 
     private enum Mismatch {
+        EXTENSIBILITY,
         NETWORK_CHECK,
         EXTENSION,
         ENTRY_COUNT,

@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
@@ -27,6 +26,7 @@ import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
@@ -39,6 +39,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.annotation.WithListener;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.impl.EventListenerGroupImpl;
@@ -113,11 +114,11 @@ public abstract class AbstractTest implements Test {
 
         this.gameTestData = new GameTestData(
                 gameTest.batch().equals("defaultBatch") ? null : gameTest.batch(),
-                gameTest.templateNamespace().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : ResourceLocation.fromNamespaceAndPath(gameTest.templateNamespace(), gameTest.template()).toString(),
+                gameTest.template().isBlank() ? (templateFromPattern == null ? gameTestTemplate(gameTest) : templateFromPattern.toString()) : gameTest.template(),
                 gameTest.required(), gameTest.attempts(), gameTest.requiredSuccesses(),
                 this::onGameTest, gameTest.timeoutTicks(), gameTest.setupTicks(),
                 StructureUtils.getRotationForRotationSteps(gameTest.rotationSteps()),
-                gameTest.skyAccess());
+                gameTest.skyAccess(), gameTest.manualOnly());
     }
 
     protected String gameTestTemplate(GameTest gameTest) {
@@ -201,8 +202,8 @@ public abstract class AbstractTest implements Test {
     }
 
     public final void requestConfirmation(Player player, Component message) {
-        if (framework instanceof MutableTestFramework internal) {
-            player.sendSystemMessage(message.copy().append(" ").append(
+        if (framework instanceof MutableTestFramework internal && player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.sendSystemMessage(message.copy().append(" ").append(
                     Component.literal("Yes").withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true)
                             .withClickEvent(internal.setStatusCommand(
                                     id(), Result.PASSED, "")))

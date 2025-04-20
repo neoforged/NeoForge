@@ -14,7 +14,7 @@
              }
          } else {
              this.playSound(level, blockpos);
--            level.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)));
+-            level.setBlockAndUpdate(blockpos, blockstate.setValue(BlockStateProperties.LIT, true));
 +            level.setBlockAndUpdate(blockpos, blockstate2);
              level.gameEvent(p_41204_.getPlayer(), GameEvent.BLOCK_CHANGE, blockpos);
              flag = true;

@@ -51,7 +51,7 @@ public class CustomPresetEditorTest {
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
     public static class CommonModEvents {
         @SubscribeEvent
-        public static void onGatherData(GatherDataEvent event) {
+        public static void onGatherData(GatherDataEvent.Client event) {
             DataGenerator gen = event.getGenerator();
             PackOutput packOutput = gen.getPackOutput();
             CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
@@ -59,7 +59,7 @@ public class CustomPresetEditorTest {
             RegistrySetBuilder registrySetBuilder = new RegistrySetBuilder()
                     .add(Registries.WORLD_PRESET, context -> context.register(WORLD_PRESET_KEY, makeWorldPreset(context)));
 
-            gen.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID)) {
+            gen.addProvider(true, new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, registrySetBuilder, Set.of(MODID)) {
                 @Override
                 public String getName() {
                     return MODID + ":" + super.getName(); // dataproviders must have unique names
@@ -122,9 +122,9 @@ public class CustomPresetEditorTest {
             // The original dimension list from the world preset json is provided to the DimensionsUpdater lambda here.
             // We can alter which dimensions are present by returning a different list of dimensions.
             return (registries, oldDimensions) -> {
-                Holder<NoiseGeneratorSettings> overworldNoise = registries.registryOrThrow(Registries.NOISE_SETTINGS)
-                        .getHolderOrThrow(NoiseGeneratorSettings.OVERWORLD);
-                Holder<Biome> biome = registries.registryOrThrow(Registries.BIOME).getHolderOrThrow(biomeKey);
+                Holder<NoiseGeneratorSettings> overworldNoise = registries.lookupOrThrow(Registries.NOISE_SETTINGS)
+                        .getOrThrow(NoiseGeneratorSettings.OVERWORLD);
+                Holder<Biome> biome = registries.lookupOrThrow(Registries.BIOME).getOrThrow(biomeKey);
                 return oldDimensions.replaceOverworldGenerator(registries, new NoiseBasedChunkGenerator(new FixedBiomeSource(biome), overworldNoise));
             };
         }

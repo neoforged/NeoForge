@@ -9,7 +9,6 @@ import com.mojang.logging.LogUtils;
 import java.util.Locale;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -23,6 +22,7 @@ import net.neoforged.neoforge.eventtest.internal.TestsMod;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class BlockEntityTests {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(new BlockPos(1, 2, 1), block.get()))
-                .thenExecuteAfter(5, () -> helper.assertTrue(((TestBlockEntity) helper.getBlockEntity(new BlockPos(1, 2, 1))).loaded, "BE wasn't loaded!"))
+                .thenExecuteAfter(5, () -> helper.assertTrue(helper.getBlockEntity(1, 2, 1, TestBlockEntity.class).loaded, "BE wasn't loaded!"))
                 .thenSucceed());
     }
 }

@@ -6,15 +6,15 @@
 package net.neoforged.neoforge.oldtest.client.rendering;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.entity.CowRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
-import net.neoforged.neoforge.common.util.TriState;
 
 @Mod(NameplateRenderingEventTest.MODID)
 @EventBusSubscriber(value = Dist.CLIENT)
@@ -23,12 +23,12 @@ public class NameplateRenderingEventTest {
     static final boolean ENABLED = false;
 
     @SubscribeEvent
-    public static void onNameplateRender(RenderNameTagEvent event) {
+    public static void onNameplateRender(RenderNameTagEvent.CanRender event) {
         if (!ENABLED) {
             return;
         }
 
-        if (event.getEntity() instanceof Cow) {
+        if (event.getEntityRenderer() instanceof CowRenderer) {
             event.setContent(Component.literal("Evil Cow").withStyle(ChatFormatting.RED));
             event.setCanRender(TriState.TRUE);
         }

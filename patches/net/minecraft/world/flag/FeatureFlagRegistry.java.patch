@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/flag/FeatureFlagRegistry.java
++++ b/net/minecraft/world/flag/FeatureFlagRegistry.java
+@@ -75,6 +_,18 @@
+         }, p_249796_ -> List.copyOf(this.toNames(p_249796_)));
+     }
+ 
++    public FeatureFlag getFlag(ResourceLocation name) {
++        return com.google.common.base.Preconditions.checkNotNull(this.names.get(name), "Flag %s was not registered", name);
++    }
++
++    public Map<ResourceLocation, FeatureFlag> getAllFlags() {
++        return this.names;
++    }
++
++    public boolean hasAnyModdedFlags() {
++        return this.names.values().stream().anyMatch(FeatureFlag::isModded);
++    }
++
+     public static class Builder {
+         private final FeatureFlagUniverse universe;
+         private int id;
+@@ -88,11 +_,20 @@
+             return this.create(ResourceLocation.withDefaultNamespace(p_251782_));
+         }
+ 
++        /**
++         * @deprecated Neo: use {@link #create(ResourceLocation, boolean)} instead
++         */
++        @Deprecated
+         public FeatureFlag create(ResourceLocation p_250098_) {
+-            if (this.id >= 64) {
++            return create(p_250098_, false);
++        }
++
++        public FeatureFlag create(ResourceLocation p_250098_, boolean modded) {
++            if (this.id >= 64 && false) {
+                 throw new IllegalStateException("Too many feature flags");
+             } else {
+-                FeatureFlag featureflag = new FeatureFlag(this.universe, this.id++);
++                FeatureFlag featureflag = new FeatureFlag(this.universe, this.id % FeatureFlagSet.MAX_CONTAINER_SIZE, this.id / FeatureFlagSet.MAX_CONTAINER_SIZE, modded);
++                this.id++;
+                 FeatureFlag featureflag1 = this.flags.put(p_250098_, featureflag);
+                 if (featureflag1 != null) {
+                     throw new IllegalStateException("Duplicate feature flag " + p_250098_);

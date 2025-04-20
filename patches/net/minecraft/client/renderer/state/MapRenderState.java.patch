@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/renderer/state/MapRenderState.java
++++ b/net/minecraft/client/renderer/state/MapRenderState.java
+@@ -10,13 +_,14 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class MapRenderState {
++public class MapRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
+     @Nullable
+     public ResourceLocation texture;
+     public final List<MapRenderState.MapDecorationRenderState> decorations = new ArrayList<>();
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public static class MapDecorationRenderState {
++    public static class MapDecorationRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
++        public net.minecraft.core.Holder<net.minecraft.world.level.saveddata.maps.MapDecorationType> type;
+         @Nullable
+         public TextureAtlasSprite atlasSprite;
+         public byte x;

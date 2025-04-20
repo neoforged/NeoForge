@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/renderer/entity/state/EntityRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/EntityRenderState.java
+@@ -10,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class EntityRenderState {
++public class EntityRenderState extends net.neoforged.neoforge.client.renderstate.BaseRenderState {
+     public EntityType<?> entityType;
+     public double x;
+     public double y;
+@@ -35,6 +_,7 @@
+     public HitboxesRenderState hitboxesRenderState;
+     @Nullable
+     public ServerHitboxesRenderState serverHitboxesRenderState;
++    public float partialTick;
+ 
+     public void fillCrashReportCategory(CrashReportCategory p_412401_) {
+         p_412401_.setDetail("EntityRenderState", this.getClass().getCanonicalName());
