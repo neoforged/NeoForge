@@ -63,6 +63,12 @@ enum AoFace {
      * and we don't want that.
      */
     void computeCornerWeights(float[] out, float x, float y, float z) {
+        // Clamp the coordinates to [0, 1] to avoid negative weights for vertices outside the cube,
+        // which could lead to very bright vertices due to underflow. E.g. lectern above magma block.
+        x = Math.clamp(x, 0, 1);
+        y = Math.clamp(y, 0, 1);
+        z = Math.clamp(z, 0, 1);
+
         // The mapping can be obtained by looking at ModelBlockRenderer.AdjacencyInfo.
         // Take on of the vert weights, and turn EAST/WEST -> x and FLIP_EAST/FLIP_WEST -> 1-x.
         // And same for the other axis.
