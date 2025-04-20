@@ -448,7 +448,7 @@ public class EventHooks {
     /**
      * @deprecated Use {@link #onItemUseStart(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.21.5", forRemoval = true)
     public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration) {
         return onItemUseStart(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
     }
