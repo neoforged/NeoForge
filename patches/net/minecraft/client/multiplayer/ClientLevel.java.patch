@@ -109,7 +109,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1069,14 +_,75 @@
+@@ -1069,14 +_,76 @@
              if (p_171712_ instanceof AbstractClientPlayer) {
                  ClientLevel.this.players.add((AbstractClientPlayer)p_171712_);
              }
@@ -158,7 +158,8 @@
 +        boolean constantAmbientLight = this.effects().constantAmbientLight();
 +        if (!shade)
 +            return constantAmbientLight ? 0.9F : 1.0F;
-+        return net.neoforged.neoforge.client.model.lighting.QuadLighter.calculateShade(normalX, normalY, normalZ, constantAmbientLight);
++        float yFactor = constantAmbientLight ? 0.9F : normalY < 0 ? 0.5F : 1.0F;
++        return Math.min(normalX * normalX * 0.6F + normalY * normalY * yFactor + normalZ * normalZ * 0.8F, 1.0F);
 +    }
 +
 +    // Neo: Variable day time code

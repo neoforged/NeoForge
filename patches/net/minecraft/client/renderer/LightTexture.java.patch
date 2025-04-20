@@ -9,12 +9,31 @@
                          if (f5 > 0.0F) {
                              float f13 = Math.max(vector3f1.x(), Math.max(vector3f1.y(), vector3f1.z()));
                              if (f13 < 1.0F) {
-@@ -186,7 +_,7 @@
+@@ -186,10 +_,26 @@
      }
  
      public static int block(int p_109884_) {
 -        return p_109884_ >> 4 & 65535;
-+        return (p_109884_ & 0xFFFF) >> 4; // Forge: Fix fullbright quads showing dark artifacts. Reported as MC-169806
++        return p_109884_ >>> 4 & 15;
      }
  
      public static int sky(int p_109895_) {
+         return p_109895_ >> 20 & 65535;
++    }
++
++    // Neo: block and sky only return the integer part. So we add these methods that work with fractional parts too.
++    // A full block or sky value is encoded as `0xij` where i is the integer part and j is the fractional part.
++    // Shifting by 4 then masking with 15 (= 0xF) only returns the integer part.
++
++    public static int packWithFraction(int block, int sky) {
++        return block | sky << 16;
++    }
++
++    public static int blockWithFraction(int light) {
++        return light & 0xFF;
++    }
++
++    public static int skyWithFraction(int light) {
++        return light >>> 16 & 0xFF;
+     }
+ }

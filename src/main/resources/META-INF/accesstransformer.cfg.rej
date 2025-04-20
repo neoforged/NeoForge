@@ -1,0 +1,17 @@
+diff a/src/main/resources/META-INF/accesstransformer.cfg b/src/main/resources/META-INF/accesstransformer.cfg	(rejected hunks)
+@@ -47,7 +47,15 @@ public net.minecraft.client.renderer.RenderStateShard setupGlintTexturing(F)V
+ #endgroup
+ default net.minecraft.client.renderer.chunk.RenderChunk wrapped
+ protected net.minecraft.client.renderer.block.ModelBlockRenderer CACHE
++public net.minecraft.client.renderer.block.ModelBlockRenderer$AdjacencyInfo
++public net.minecraft.client.renderer.block.ModelBlockRenderer$AdjacencyInfo corners
++public net.minecraft.client.renderer.block.ModelBlockRenderer$AmbientOcclusionRenderStorage
++protected net.minecraft.client.renderer.block.ModelBlockRenderer$AmbientOcclusionRenderStorage faceShape
++protected net.minecraft.client.renderer.block.ModelBlockRenderer$AmbientOcclusionRenderStorage blend(IIIIFFFF)I
+ public net.minecraft.client.renderer.block.ModelBlockRenderer$Cache
++public net.minecraft.client.renderer.block.ModelBlockRenderer$CommonRenderStorage
++public net.minecraft.client.renderer.block.ModelBlockRenderer$SizeInfo
++public net.minecraft.client.renderer.block.ModelBlockRenderer$SizeInfo index
+ public net.minecraft.client.renderer.block.model.BlockElement$Deserializer
+ public net.minecraft.client.renderer.block.model.BlockElement$Deserializer <init>()V # constructor
+ public net.minecraft.client.renderer.block.model.BlockElementFace$Deserializer

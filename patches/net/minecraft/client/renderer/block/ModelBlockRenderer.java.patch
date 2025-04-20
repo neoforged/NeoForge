@@ -194,6 +194,24 @@
      }
  
      private static void renderQuadList(
+@@ -383,7 +_,7 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    protected static enum AdjacencyInfo {
++    public static enum AdjacencyInfo {
+         DOWN(
+             new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH},
+             0.5F,
+@@ -655,7 +_,7 @@
+             }
+         );
+ 
+-        final Direction[] corners;
++        public final Direction[] corners;
+         final boolean doNonCubicWeight;
+         final ModelBlockRenderer.SizeInfo[] vert0Weights;
+         final ModelBlockRenderer.SizeInfo[] vert1Weights;
 @@ -724,22 +_,22 @@
              int l = modelblockrenderer$cache.getLightColor(blockstate3, p_111168_, blockpos$mutableblockpos);
              float f3 = modelblockrenderer$cache.getShadeBrightness(blockstate3, p_111168_, blockpos$mutableblockpos);
@@ -221,3 +239,12 @@
              );
              boolean flag3 = !blockstate7.isViewBlocking(p_111168_, blockpos$mutableblockpos)
                  || blockstate7.getLightBlock(p_111168_, blockpos$mutableblockpos) == 0;
+@@ -1021,7 +_,7 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    protected static enum SizeInfo {
++    public static enum SizeInfo {
+         DOWN(Direction.DOWN, false),
+         UP(Direction.UP, false),
+         NORTH(Direction.NORTH, false),
