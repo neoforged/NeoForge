@@ -22,6 +22,7 @@ import net.neoforged.nfrtgradle.NeoFormRuntimeTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.BasePluginExtension;
@@ -604,17 +605,31 @@ public class NeoDevPlugin implements Plugin<Project> {
         var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
 
-        // Configuration for all artifacts that should be passed to NFRT to prevent repeated downloads
-        var neoFormRuntimeArtifactManifestNeoForm = configurations.create("neoFormRuntimeArtifactManifestNeoForm", spec -> {
+        // NeoForm data + tools to run it
+        var neoFormRuntimeDataOnly = configurations.create("neoFormRuntimeDataOnly", spec -> {
             spec.setCanBeConsumed(false);
             spec.setCanBeResolved(true);
             spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
                 return dependencyFactory.create("net.neoforged:neoform:" + version);
             }));
         });
+        // Minecraft's dependencies
+        var neoFormRuntimeMinecraftDependencies = configurations.create("neoFormRuntimeMinecraftDependencies", spec -> {
+            spec.setCanBeConsumed(false);
+            spec.setCanBeResolved(true);
+            spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
+                return dependencyFactory.create("net.neoforged:neoform:" + version).capabilities(caps -> {
+                    caps.requireCapability("net.neoforged:neoform-dependencies");
+                });
+            }));
+            spec.attributes(attrs -> {
+                attrs.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_API));
+            });
+        });
 
         tasks.withType(NeoFormRuntimeTask.class, task -> {
-            task.addArtifactsToManifest(neoFormRuntimeArtifactManifestNeoForm);
+            task.addArtifactsToManifest(neoFormRuntimeDataOnly);
+            task.addArtifactsToManifest(neoFormRuntimeMinecraftDependencies);
         });
 
         return tasks.register("createSourceArtifacts", CreateMinecraftArtifacts.class, task -> {
