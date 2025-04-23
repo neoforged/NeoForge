@@ -84,7 +84,6 @@ public final class ConfigSync {
                     }
 
                     // Write config bytes and queue for syncing to all connected players.
-                    // This is harmless client-side, as the configsToSync map is either empty or full of stale connections.
                     var bytes = configFormat.createWriter().writeToString(loadedConfig.config()).getBytes(StandardCharsets.UTF_8);
                     synchronized (lock) {
                         for (var toSync : configsToSync.values()) {
