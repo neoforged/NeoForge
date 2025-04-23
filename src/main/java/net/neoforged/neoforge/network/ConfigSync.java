@@ -94,6 +94,10 @@ public final class ConfigSync {
     public static void syncPendingConfigs(MinecraftServer server) {
         synchronized (lock) {
             for (var player : server.getPlayerList().getPlayers()) {
+                if (!player.connection.hasChannel(ConfigFilePayload.TYPE)) {
+                    continue; // Only sync configs to NeoForge clients supporting config sync
+                }
+
                 var toSync = configsToSync.get(player.connection.getConnection());
                 if (toSync == null) {
                     // null for GameTestPlayer. Should not happen for normal players though.
