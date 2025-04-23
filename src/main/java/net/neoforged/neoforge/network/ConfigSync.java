@@ -43,8 +43,13 @@ public final class ConfigSync {
     private ConfigSync() {}
 
     public static void syncAllConfigs(ServerConfigurationPacketListener listener) {
+        var connection = listener.getConnection();
+        if (connection.isMemoryConnection()) {
+            return; // Do not sync server configs with ourselves
+        }
+
         synchronized (lock) {
-            configsToSync.put(listener.getConnection(), new LinkedHashMap<>());
+            configsToSync.put(connection, new LinkedHashMap<>());
         }
 
         final Map<String, byte[]> configData = ModConfigs.getConfigSet(ModConfig.Type.SERVER).stream().collect(Collectors.toMap(ModConfig::getFileName, mc -> {
@@ -100,6 +105,10 @@ public final class ConfigSync {
             for (var player : server.getPlayerList().getPlayers()) {
                 if (!player.connection.hasChannel(ConfigFilePayload.TYPE)) {
                     continue; // Only sync configs to NeoForge clients supporting config sync
+                }
+
+                if (player.connection.getConnection().isMemoryConnection()) {
+                    continue; // Do not sync server configs with ourselves
                 }
 
                 var toSync = configsToSync.get(player.connection.getConnection());
