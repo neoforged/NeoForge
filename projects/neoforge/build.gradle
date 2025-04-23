@@ -140,6 +140,7 @@ neoDev {
     runs {
         configureEach {
             gameDirectory = layout.projectDir.dir("run/$name")
+            systemProperty("terminal.ansi", "true")
         }
         client {
             client()
@@ -157,6 +158,11 @@ neoDev {
                     '--output', rootProject.file("src/generated/resources").absolutePath
         }
     }
+}
+
+tasks.withType(JavaCompile.class).configureEach {
+    // Increase memory used during compilation, to avoid OutOfMemoryErrors
+    options.forkOptions.memoryMaximumSize = '2g'
 }
 
 tasks.withType(Javadoc.class).configureEach {

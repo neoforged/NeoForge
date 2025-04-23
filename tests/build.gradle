@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'com.diffplug.spotless'
     id 'net.neoforged.licenser'
     id 'neoforge.formatting-conventions'
 }
@@ -73,6 +72,7 @@ neoDev {
     runs {
         configureEach {
             gameDirectory = layout.projectDir.dir("run/$name")
+            systemProperty("terminal.ansi", "true")
         }
         client {
             client()
