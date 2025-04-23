@@ -72,6 +72,7 @@ neoDev {
     runs {
         configureEach {
             gameDirectory = layout.projectDir.dir("run/$name")
+            systemProperty("terminal.ansi", "true")
         }
         client {
             client()
