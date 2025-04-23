@@ -78,9 +78,14 @@ public final class ConfigSync {
                         return;
                     }
 
+                    var configFormat = loadedConfig.config().configFormat();
+                    if (configFormat.isInMemory()) {
+                        return; // An in-memory format indicates that we received this config from a server and shouldn't try to sync it
+                    }
+
                     // Write config bytes and queue for syncing to all connected players.
                     // This is harmless client-side, as the configsToSync map is either empty or full of stale connections.
-                    var bytes = loadedConfig.config().configFormat().createWriter().writeToString(loadedConfig.config()).getBytes(StandardCharsets.UTF_8);
+                    var bytes = configFormat.createWriter().writeToString(loadedConfig.config()).getBytes(StandardCharsets.UTF_8);
                     synchronized (lock) {
                         for (var toSync : configsToSync.values()) {
                             toSync.put(config.getFileName(), bytes);
