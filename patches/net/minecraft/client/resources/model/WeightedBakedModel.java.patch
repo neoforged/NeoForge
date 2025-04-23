@@ -53,7 +53,7 @@
 +    }
 +
 +    @Override // FORGE: Get render types based on the active weighted model
-+    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(@org.jetbrains.annotations.NotNull BlockState state, @org.jetbrains.annotations.NotNull RandomSource rand, @org.jetbrains.annotations.NotNull net.neoforged.neoforge.client.model.data.ModelData data) {
++    public net.neoforged.neoforge.client.ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, net.neoforged.neoforge.client.model.data.ModelData data) {
 +        return WeightedRandom.getWeightedItem(this.list, Math.abs((int)rand.nextLong()) % this.totalWeight)
 +                  .map((p_235065_) -> p_235065_.data().getRenderTypes(state, rand, data))
 +                  .orElse(net.neoforged.neoforge.client.ChunkRenderTypeSet.none());
