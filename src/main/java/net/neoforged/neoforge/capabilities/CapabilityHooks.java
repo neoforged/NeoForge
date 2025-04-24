@@ -34,7 +34,6 @@ import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
-import org.slf4j.Logger;
 
 @ApiStatus.Internal
 public class CapabilityHooks {
