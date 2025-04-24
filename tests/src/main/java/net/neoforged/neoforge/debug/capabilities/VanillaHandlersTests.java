@@ -99,7 +99,7 @@ public class VanillaHandlersTests {
         // Should invalidate once when setting the block
         helper.setBlock(cauldronPos, Blocks.CAULDRON);
         var wrapper = capCache.getCapability();
-        helper.assertTrue(wrapper != null, "Expected fluid handler");
+        helper.assertNotNull(wrapper, "Expected fluid handler");
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 
         helper.assertTrue(wrapper.getTanks() == 1, "Got %d tanks".formatted(wrapper.getTanks()));

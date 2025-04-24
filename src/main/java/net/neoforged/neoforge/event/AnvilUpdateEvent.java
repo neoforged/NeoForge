@@ -13,12 +13,12 @@ import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- *
- * AnvilUpdateEvent is fired whenever the input stacks (left or right) or the name in an anvil changed. <br>
- * It is called from {@link AnvilMenu#createResult()}. <br>
- * If the event is canceled, vanilla behavior will not run, and the output will be set to {@link ItemStack#EMPTY}. <br>
- * If the event is not canceled, but the output is not empty, it will set the output and not run vanilla behavior. <br>
- * if the output is empty, and the event is not canceled, vanilla behavior will execute. <br>
+ * Fired when the anvil recalculates its output due to changes in either input slot or the item name,
+ * and the left slot contains an item that can store enchantments via data components. <br>
+ * Called from {@link AnvilMenu#createResult()}. <br>
+ * If the event is canceled, vanilla logic is skipped and the output is set to {@link ItemStack#EMPTY}. <br>
+ * If not canceled and {@code output} is non-empty, the provided stack is used and vanilla logic is skipped. <br>
+ * If not canceled and {@code output} is empty, vanilla behavior proceeds as normal. <br>
  */
 public class AnvilUpdateEvent extends Event implements ICancellableEvent {
     private final ItemStack left;

@@ -40,7 +40,7 @@ public class CraftingEventTests {
         test.onGameTest(helper -> {
             helper.setBlock(BlockPos.ZERO, Blocks.FURNACE);
             var be = helper.getBlockEntity(BlockPos.ZERO, FurnaceBlockEntity.class);
-            helper.assertFalse(be == null, "FurnaceBlockEntity was not found for furnace position");
+            helper.assertNotNull(be, "FurnaceBlockEntity was not found for furnace position");
             // Slot 2 is the result slot
             be.setItem(2, new ItemStack(Items.IRON_INGOT, 64));
             var player = helper.makeTickingMockServerPlayerInLevel(GameType.CREATIVE);

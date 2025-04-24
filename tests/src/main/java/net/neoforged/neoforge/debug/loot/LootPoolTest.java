@@ -65,8 +65,8 @@ public class LootPoolTest {
         test.onGameTest(helper -> {
             var testTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(TEST_LOOT_TABLE_1);
 
-            helper.assertTrue(testTable.getPool("custom_name") != null, "Expected custom_name pool");
-            helper.assertTrue(testTable.getPool("pool1") != null, "Expected unnamed pool pool1");
+            helper.assertNotNull(testTable.getPool("custom_name"), "Expected custom_name pool");
+            helper.assertNotNull(testTable.getPool("pool1"), "Expected unnamed pool pool1");
 
             helper.succeed();
         });
