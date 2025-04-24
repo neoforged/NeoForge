@@ -154,9 +154,9 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
      * For this reason, mods that forward "all" capabilities should not forward non-proxyable capabilities.
      *
      * <p>Block capabilities are not proxyable by default.
-     * Any call to {@link RegisterCapabilitiesEvent#setProxyable(BlockCapability)} will mark the capability as non-proxyable.
-     * Any call to {@link RegisterCapabilitiesEvent#setProxyable(BlockCapability)} will mark the capability as proxyable,
-     * and prevent it from being marked as non-proxyable.
+     * Any call to {@link RegisterCapabilitiesEvent#setProxyable(BlockCapability)} will mark the capability as proxyable.
+     * Any call to {@link RegisterCapabilitiesEvent#setNonProxyable(BlockCapability)} will mark the capability as non-proxyable,
+     * and prevent it from being marked as proxyable.
      */
     public boolean isProxyable() {
         return proxyable.isTrue();

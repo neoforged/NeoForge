@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.capabilities;
 
-import com.mojang.logging.LogUtils;
 import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -39,7 +38,6 @@ import org.slf4j.Logger;
 
 @ApiStatus.Internal
 public class CapabilityHooks {
-    private static final Logger LOGGER = LogUtils.getLogger();
     private static boolean initialized = false;
     static boolean initFinished = false;
 
