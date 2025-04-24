@@ -79,10 +79,10 @@ abstract class CreateUserDevConfig extends DefaultTask {
 
         for (var runType : RunType.values()) {
             var launchTarget = switch (runType) {
-                case CLIENT -> "forgeclientuserdev";
-                case DATA -> "forgedatauserdev";
-                case GAME_TEST_SERVER, SERVER -> "forgeserveruserdev";
-                case JUNIT -> "forgejunituserdev";
+                case CLIENT -> "forgeclientdev";
+                case DATA -> "forgedatadev";
+                case GAME_TEST_SERVER, SERVER -> "forgeserverdev";
+                case JUNIT -> "forgejunitdev";
             };
 
             List<String> args = new ArrayList<>();
