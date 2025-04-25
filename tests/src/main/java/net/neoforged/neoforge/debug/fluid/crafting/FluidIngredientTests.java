@@ -220,6 +220,36 @@ public class FluidIngredientTests {
 
     @GameTest
     @EmptyTemplate
+    @TestHolder(description = "Tests serialization of custom fluid ingredients")
+    static void customFluidIngredientSerialization(GameTestHelper helper) {
+        var ingredient1 = FluidIngredient.of(Fluids.WATER, Fluids.LAVA);
+        var ingredient2 = FluidIngredient.of(Fluids.LAVA);
+        var intersection = IntersectionFluidIngredient.of(ingredient1, ingredient2);
+
+        var ops = JsonOps.INSTANCE;
+        var result = FluidIngredient.CODEC.encodeStart(ops, intersection)
+                .getOrThrow(error -> new RuntimeException("Failed to serialize ingredient: " + error));
+
+        var deserialized = FluidIngredient.CODEC.decode(ops, result)
+                .getOrThrow(error -> new RuntimeException("Failed to deserialize ingredient: " + error))
+                .getFirst();
+
+        if (!(deserialized instanceof IntersectionFluidIngredient)) {
+            helper.fail("Deserialized ingredient is not an IntersectionFluidIngredient! Got " + deserialized);
+        }
+
+        if (deserialized.test(new FluidStack(Fluids.WATER, 1))) {
+            helper.fail("Deserialized ingredient should not match water!");
+        }
+        if (!deserialized.test(new FluidStack(Fluids.LAVA, 1))) {
+            helper.fail("Deserialized ingredient should match lava!");
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
     @TestHolder(description = "Tests serialization format of sized fluid ingredients")
     static void sizedFluidIngredientSerialization(final GameTestHelper helper) {
         var sized = SizedFluidIngredient.of(Fluids.WATER, 1000);
