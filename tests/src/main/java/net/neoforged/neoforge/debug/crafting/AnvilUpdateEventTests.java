@@ -149,8 +149,12 @@ public class AnvilUpdateEventTests {
             cancel.set(true);
             ctx.menu.clicked(MENU_SLOT_INV_SECOND, InputConstants.MOUSE_BUTTON_LEFT, ClickType.QUICK_MOVE, ctx.player);
             ItemStack out = ctx.menu.getSlot(MENU_SLOT_RESULT).getItem();
+            int cost = ctx.menu.getCost();
+            int repairItemCountCost = ctx.menu.repairItemCountCost;
 
             ctx.helper.assertTrue(out.isEmpty(), "Expected no output when cancelled; output is " + out);
+            ctx.helper.assertFalse(cost > 0, "Expected no cost; cost is " + cost);
+            ctx.helper.assertFalse(cost > 0, "Expected no cost; cost is " + repairItemCountCost);
 
             clearInputs(ctx.menu, ctx.player);
             ctx.helper.succeed();
