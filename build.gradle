@@ -2,8 +2,8 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 plugins {
-    id 'net.neoforged.gradleutils' version '3.0.0'
-    id 'com.diffplug.spotless' version '6.22.0' apply false
+    id 'net.neoforged.gradleutils' version '4.0.1'
+    id 'dev.lukebemish.immaculate' version '0.1.6' apply false
     id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
     id 'neoforge.versioning'
@@ -21,8 +21,8 @@ if (isPreReleaseVersion) {
 System.out.println("NeoForge version ${project.version}")
 
 allprojects {
-    version rootProject.version
-    group 'net.neoforged'
+    version = rootProject.version
+    group = 'net.neoforged'
 
     apply plugin: 'java'
 
@@ -56,14 +56,14 @@ license {
 }
 
 // Put spotless here because it wants the files to live inside the project root
-spotless {
-    java {
-        target rootProject.fileTree("src", {
+immaculate {
+    workflows.named("java") {
+        files.from rootProject.fileTree("src", {
             include "**/*.java"
         })
     }
-    format 'patches', {
-        target rootProject.fileTree("patches")
+    workflows.register("patches") {
+        files.from(rootProject.fileTree("patches"))
 
         custom 'noImportChanges', { String fileContents ->
             if (fileContents.contains('+import') || fileContents.contains('-import')) {
@@ -148,11 +148,21 @@ spotless {
             return sb.toString()
         }
 
+        // Disallow explicit not null in patches, it's always implied.
+        custom 'noNotNull', { String fileContents ->
+            fileContents.eachLine {
+                if (!it.startsWith("+")) return
+                if (it.contains('@NotNull') || it.contains('@Nonnull')
+                        || it.contains('@org.jetbrains.annotations.NotNull')
+                        || it.contains('@javax.annotation.Nonnull')) {
+                    throw new GradleException('@NotNull and @Nonnull are disallowed.')
+                }
+            }
+        }
+
         //Replace any FQN versions of javax.annotation.Nullable with the jetbrains variant
         custom 'jetbrainsNullablePatches', { String fileContents ->
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
-
-        bumpThisNumberIfACustomStepChanges(5)
     }
 }

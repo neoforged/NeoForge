@@ -6,6 +6,7 @@ import org.gradle.api.logging.Logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -21,6 +22,8 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
@@ -41,7 +44,7 @@ class LibraryCollector {
                 throw new RuntimeException(e);
             }
         }).toList();
-        LOGGER.info("Collected %d libraries".formatted(result.size()));
+        LOGGER.info("Collected {} libraries", result.size());
         return result;
     }
 
@@ -63,7 +66,9 @@ class LibraryCollector {
 
     private final List<Future<Library>> libraries = new ArrayList<>();
 
-    private final HttpClient httpClient = HttpClient.newBuilder().build();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
 
     private LibraryCollector(List<URI> repoUrl) {
         this.repositoryUrls = new ArrayList<>(repoUrl);
@@ -86,7 +91,7 @@ class LibraryCollector {
 
         LOGGER.info("Collecting libraries from:");
         for (var repo : repositoryUrls) {
-            LOGGER.info(" - " + repo);
+            LOGGER.info(" - {}", repo);
         }
     }
 
@@ -109,7 +114,7 @@ class LibraryCollector {
                 return httpClient.sendAsync(request, HttpResponse.BodyHandlers.discarding())
                         .thenApply(response -> {
                             if (response.statusCode() != 200) {
-                                LOGGER.info("  Got %d for %s".formatted(response.statusCode(), artifactUri));
+                                LOGGER.info("  Got {} for {}", response.statusCode(), artifactUri);
                                 String message = "Could not find %s: %d".formatted(artifactUri, response.statusCode());
                                 // Prepend error message from previous repo if they all fail
                                 if (previousError != null) {
@@ -117,7 +122,7 @@ class LibraryCollector {
                                 }
                                 throw new RuntimeException(message);
                             }
-                            LOGGER.info("  Found %s -> %s".formatted(name, artifactUri));
+                            LOGGER.info("  Found {} -> {}", name, artifactUri);
                             return new Library(
                                     name,
                                     new LibraryDownload(new LibraryArtifact(
@@ -132,6 +137,9 @@ class LibraryCollector {
                 libraryFuture = makeRequest.apply(null);
             } else {
                 libraryFuture = libraryFuture.exceptionallyCompose(error -> {
+                    if (error instanceof CompletionException e) {
+                        return makeRequest.apply(e.getCause().getMessage());
+                    }
                     return makeRequest.apply(error.getMessage());
                 });
             }
