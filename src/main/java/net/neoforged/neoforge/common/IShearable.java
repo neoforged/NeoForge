@@ -66,9 +66,9 @@ public interface IShearable {
     default List<ItemStack> onSheared(@Nullable Player player, ItemStack item, Level level, BlockPos pos) {
         if (this instanceof LivingEntity entity && this instanceof Shearable shearable) {
             if (!level.isClientSide) {
-                entity.captureDrops(new ArrayList<>());
+                Collection<ItemEntity> previous = entity.captureDrops(new ArrayList<>());
                 shearable.shear(player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS);
-                return entity.captureDrops(null).stream().map(ItemEntity::getItem).toList();
+                return entity.captureDrops(previous).stream().map(ItemEntity::getItem).toList();
             }
         }
         return Collections.emptyList();
