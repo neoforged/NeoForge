@@ -53,8 +53,8 @@
 +
 +    @Override
 +    @Nullable
-+    public <T> T getExistingDataNullable(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getExistingDataNullable(type);
++    public <T> T getExistingDataOrNull(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return getAttachmentHolder().getExistingDataOrNull(type);
 +    }
 +
 +    @Override

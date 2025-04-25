@@ -53,14 +53,14 @@ public interface IAttachmentHolder {
      * <p>If there is no data attachment of the given type, an empty optional is returned.
      */
     default <T> Optional<T> getExistingData(AttachmentType<T> type) {
-        return Optional.ofNullable(getExistingDataNullable(type));
+        return Optional.ofNullable(getExistingDataOrNull(type));
     }
 
     /**
      * @return an existing data attachment value of the given type, or null if there is no data attachment of the given type
      */
     @Nullable
-    <T> T getExistingDataNullable(AttachmentType<T> type);
+    <T> T getExistingDataOrNull(AttachmentType<T> type);
 
     /**
      * {@return an optional possibly containing a data attachment value of the given type}
@@ -75,8 +75,8 @@ public interface IAttachmentHolder {
      * @return an existing data attachment value of the given type, or null if there is no data attachment of the given type
      */
     @Nullable
-    default <T> T getExistingDataNullable(Supplier<AttachmentType<T>> type) {
-        return getExistingDataNullable(type.get());
+    default <T> T getExistingDataOrNull(Supplier<AttachmentType<T>> type) {
+        return getExistingDataOrNull(type.get());
     }
 
     /**

@@ -83,7 +83,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     @Override
     @Nullable
-    public <T> T getExistingDataNullable(AttachmentType<T> type) {
+    public <T> T getExistingDataOrNull(AttachmentType<T> type) {
         validateAttachmentType(type);
         if (attachments == null) {
             return null;
