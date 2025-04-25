@@ -13,8 +13,8 @@ import net.neoforged.bus.api.ICancellableEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fired when the anvil recalculates its output due to changes in either input slot or the item name,
- * and the left slot contains an item that can store enchantments via data components. <br>
+ * Fired when either anvil input slot or item name is changed,
+ * provided that the left input slot holds an item (checked after the change). <br>
  * Called from {@link AnvilMenu#createResult()}. <br>
  * If the event is canceled, vanilla logic is skipped and the output is set to {@link ItemStack#EMPTY}. <br>
  * If not canceled and {@code output} is non-empty, the provided stack is used and vanilla logic is skipped. <br>
