@@ -18,12 +18,23 @@
                  BlockState blockstate1 = AnvilBlock.damage(blockstate);
                  if (blockstate1 == null) {
                      p_150479_.removeBlock(p_150480_, false);
-@@ -124,8 +_,10 @@
+@@ -117,6 +_,11 @@
+         int i = 0;
+         long j = 0L;
+         int k = 0;
++        if (!itemstack.isEmpty()) {  // don't fire the event if the left input slot is empty, because anvil shouldn't have recipes with an empty left slot
++            if (!net.neoforged.neoforge.common.CommonHooks.onAnvilChange(this, itemstack, this.inputSlots.getItem(1), resultSlots, itemName, j, this.player)) {
++                return;  // event is canceled or overrides the output item
++            }
++        }
+         if (!itemstack.isEmpty() && EnchantmentHelper.canStoreEnchantments(itemstack)) {
+             ItemStack itemstack1 = itemstack.copy();
+             ItemStack itemstack2 = this.inputSlots.getItem(1);
+@@ -124,8 +_,9 @@
              j += (long)itemstack.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0)).intValue()
                  + (long)itemstack2.getOrDefault(DataComponents.REPAIR_COST, Integer.valueOf(0)).intValue();
              this.repairItemCountCost = 0;
 +            boolean flag = false;
-+            if (!net.neoforged.neoforge.common.CommonHooks.onAnvilChange(this, itemstack, itemstack2, resultSlots, itemName, j, this.player)) return;
              if (!itemstack2.isEmpty()) {
 -                boolean flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
 +                flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);

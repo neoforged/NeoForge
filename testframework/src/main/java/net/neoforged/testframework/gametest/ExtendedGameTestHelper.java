@@ -349,6 +349,10 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         addEndListener(success -> NeoForge.EVENT_BUS.unregister(event));
     }
 
+    public void assertNotNull(@Nullable Object var, String message) {
+        this.assertTrue(var != null, message);
+    }
+
     public <E extends LivingEntity> void assertMobEffectPresent(E entity, Holder<MobEffect> effect, String testName) {
         assertEntityProperty(entity, e -> e.hasEffect(effect), testName);
     }
