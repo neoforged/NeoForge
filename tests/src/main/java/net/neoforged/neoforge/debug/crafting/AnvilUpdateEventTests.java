@@ -106,7 +106,7 @@ public class AnvilUpdateEventTests {
 
         test.whenEnabled(listeners -> listeners.forge().addListener((AnvilUpdateEvent e) -> {
             e.setOutput(MOCK_OUTPUT.copy());
-            e.setCost(CUSTOM_COST);
+            e.setXpCost(CUSTOM_COST);
             e.setMaterialCost(CUSTOM_MATERIAL_COST);
         }));
 

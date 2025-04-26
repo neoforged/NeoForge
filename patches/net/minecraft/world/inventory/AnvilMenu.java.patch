@@ -18,28 +18,25 @@
                  BlockState blockstate1 = AnvilBlock.damage(blockstate);
                  if (blockstate1 == null) {
                      p_150479_.removeBlock(p_150480_, false);
-@@ -118,14 +_,20 @@
-         int i = 0;
-         long j = 0L;
-         int k = 0;
-+        if (!itemstack.isEmpty()) {  // don't fire the event if the left input slot is empty, because anvil shouldn't have recipes with an empty left slot
-+            if (!net.neoforged.neoforge.common.CommonHooks.onAnvilChange(this, itemstack, this.inputSlots.getItem(1), resultSlots, itemName, j, this.player)) {
-+                return;  // event is canceled or overrides the output item
-+            }
-+        }
-         if (!itemstack.isEmpty() && EnchantmentHelper.canStoreEnchantments(itemstack)) {
-             ItemStack itemstack1 = itemstack.copy();
-             ItemStack itemstack2 = this.inputSlots.getItem(1);
-             ItemEnchantments.Mutable itemenchantments$mutable = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(itemstack1));
-             j += (long)itemstack.getOrDefault(DataComponents.REPAIR_COST, 0).intValue() + itemstack2.getOrDefault(DataComponents.REPAIR_COST, 0).intValue();
-             this.repairItemCountCost = 0;
-+            boolean flag = false;
-             if (!itemstack2.isEmpty()) {
--                boolean flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
-+                flag = itemstack2.has(DataComponents.STORED_ENCHANTMENTS);
-                 if (itemstack1.isDamageableItem() && itemstack.isValidRepairItem(itemstack2)) {
-                     int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
-                     if (l2 <= 0) {
+@@ -111,7 +_,17 @@
+     }
+ 
+     @Override
+-    public void createResult() {
++    public final void createResult() {
++        // Neo: Override the real createResult() method to invoke the vanilla logic, and then call the event hook.
++        // Since the vanilla createResult() has multiple returns, we need wrap it. The choices are this, or pack it in a lambda.
++        this.__createResultImpl();
++        ItemStack leftInput = this.inputSlots.getItem(0);
++        ItemStack rightInput = this.inputSlots.getItem(1);
++        net.neoforged.neoforge.common.CommonHooks.onAnvilUpdate(this, leftInput, rightInput, resultSlots, itemName, this.player);  
++    }
++
++    // Neo: We patch the real createResult() into __createResultImpl() so we can wrap it, and provide the vanilla result in the AnvilUpdateEvent.
++    public void __createResultImpl() {
+         ItemStack itemstack = this.inputSlots.getItem(0);
+         this.onlyRenaming = false;
+         this.cost.set(1);
 @@ -176,8 +_,10 @@
                          int j2 = entry.getIntValue();
                          j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
@@ -53,14 +50,6 @@
                              flag1 = true;
                          }
  
-@@ -228,6 +_,7 @@
-                 i += k;
-                 itemstack1.remove(DataComponents.CUSTOM_NAME);
-             }
-+            if (flag && !itemstack1.isBookEnchantable(itemstack2)) itemstack1 = ItemStack.EMPTY;
- 
-             int k2 = i <= 0 ? 0 : (int)Mth.clamp(j + i, 0L, 2147483647L);
-             this.cost.set(k2);
 @@ -301,5 +_,12 @@
  
      public int getCost() {
@@ -68,9 +57,9 @@
 +    }
 +
 +    /**
-+     * Neo: Sets the cost. Will be clamped to an integer.
++     * Neo: Sets the cost. Negative values are clamped to zero.
 +     */
-+    public void setMaximumCost(long value) {
-+        this.cost.set((int)Mth.clamp(value, 0L, Integer.MAX_VALUE));
++    public void setCost(int value) {
++        this.cost.set(Math.max(0, value));
      }
  }

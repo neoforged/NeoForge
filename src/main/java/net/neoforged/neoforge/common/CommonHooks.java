@@ -680,21 +680,34 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new PlayerEnchantItemEvent(player, stack, instances));
     }
 
-    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
-        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
-            outputSlot.setItem(0, ItemStack.EMPTY);
-            container.setMaximumCost(0);
-            container.repairItemCountCost = 0;
-            return false;
-        }
-        if (e.getOutput().isEmpty())
-            return true;
+    /**
+     * Called from {@link AnvilMenu#createResult()} after the vanilla result has been computed.
+     * <p>
+     * If the left input to the anvil is not empty, this method fires the {@link AnvilUpdateEvent} to allow mods to manipulate the result.
+     * 
+     * @param menu       The anvil menu
+     * @param leftInput  The left input item
+     * @param rightInput The right input item
+     * @param resultSlot A reference to the output slot
+     * @param name       The item name in the text input field.
+     * @param player     The player who is using the anvil
+     */
+    public static void onAnvilUpdate(AnvilMenu menu, ItemStack leftInput, ItemStack rightInput, Container resultSlot, @Nullable String name, Player player) {
+        if (!leftInput.isEmpty()) {
+            var event = new AnvilUpdateEvent(leftInput, rightInput, name, resultSlot.getItem(0), menu.getCost(), menu.repairItemCountCost, player);
+            // If the event is cancelled, the anvil operation is void. Set the result to empty and the cost to zero.
+            if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
+                resultSlot.setItem(0, ItemStack.EMPTY);
+                menu.setCost(0);
+                menu.repairItemCountCost = 0;
+                return;
+            }
 
-        outputSlot.setItem(0, e.getOutput());
-        container.setMaximumCost(e.getCost());
-        container.repairItemCountCost = e.getMaterialCost();
-        return false;
+            // Otherwise, update the results to the new values.
+            resultSlot.setItem(0, event.getOutput());
+            menu.setCost(event.getXpCost());
+            menu.repairItemCountCost = event.getMaterialCost();
+        }
     }
 
     public static float onAnvilRepair(Player player, ItemStack output, ItemStack left, ItemStack right) {
