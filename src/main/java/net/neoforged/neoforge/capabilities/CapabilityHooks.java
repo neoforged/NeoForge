@@ -75,20 +75,14 @@ public class CapabilityHooks {
             return new VanillaHopperItemHandler(hopper);
         });
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.SHULKER_BOX, (shulkerBox, side) -> {
-            // Always use sided wrapper for shulker boxes, even for null direction, to call its `canPlaceItemThroughFace` override.
-            return new SidedInvWrapper(shulkerBox, null);
-        });
-
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
                 BlockEntityType.BREWING_STAND,
                 BlockEntityType.FURNACE,
-                BlockEntityType.SMOKER);
+                BlockEntityType.SMOKER,
+                BlockEntityType.SHULKER_BOX);
         for (var type : sidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (sidedContainer, side) -> {
-                return side == null ? new InvWrapper(sidedContainer) : new SidedInvWrapper(sidedContainer, side);
-            });
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, SidedInvWrapper::new);
         }
 
         var nonSidedVanillaContainers = List.of(
