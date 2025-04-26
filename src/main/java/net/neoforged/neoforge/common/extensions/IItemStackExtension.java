@@ -256,16 +256,6 @@ public interface IItemStackExtension {
     }
 
     /**
-     * Allow or forbid the specific book/item combination as an anvil enchant
-     *
-     * @param book The book
-     * @return if the enchantment is allowed
-     */
-    default boolean isBookEnchantable(ItemStack book) {
-        return self().getItem().isBookEnchantable(self(), book);
-    }
-
-    /**
      * Called when a player drops the item into the world, returning false from this
      * will prevent the item from being removed from the players inventory and
      * spawning in the world
