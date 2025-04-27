@@ -81,12 +81,14 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
     }
 
     /**
-     * Makes a block capability proxyable.
+     * Makes a block capability proxyable,
+     * indicating that it is always safe to forward a request for this capability to another block.
+     * (e.g. for "remote access" blocks)
      *
      * <p>This method should only be called by the mod that defines the capability,
      * in the {@link EventPriority#HIGH} or {@link EventPriority#HIGHEST} phase.
      *
-     * @throws IllegalStateException if the capability was marked to be non-proxyable
+     * @throws IllegalStateException if the capability was already marked as non-proxyable
      * @see BlockCapability#isProxyable()
      */
     public void setProxyable(BlockCapability<?, ?> capability) {
@@ -101,7 +103,7 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
      * <p>This method should only be called by the mod that defines the capability,
      * in the {@link EventPriority#HIGH} or {@link EventPriority#HIGHEST} phase.
      *
-     * @throws IllegalStateException if the capability was marked to be proxyable
+     * @throws IllegalStateException if the capability was already marked as proxyable
      * @see BlockCapability#isProxyable()
      */
     public void setNonProxyable(BlockCapability<?, ?> capability) {
