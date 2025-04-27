@@ -126,6 +126,7 @@ import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
+import net.neoforged.neoforge.common.util.SelfTest;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
@@ -529,6 +530,8 @@ public class NeoForgeMod {
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
         LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.getName());
         ForgeSnapshotsMod.logStartupWarning();
+
+        SelfTest.initCommon();
 
         CrashReportCallables.registerCrashCallable("Crash Report UUID", () -> {
             final UUID uuid = UUID.randomUUID();

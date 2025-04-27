@@ -26,6 +26,7 @@ public abstract class TestProductionClient extends RunProductionClient {
     @Override
     public void exec() {
         var selfTestReport = new File(getTemporaryDir(), "client_self_test.txt");
+        selfTestReport.delete();
 
         environment("NEOFORGE_CLIENT_SELFTEST", selfTestReport.getAbsolutePath());
 

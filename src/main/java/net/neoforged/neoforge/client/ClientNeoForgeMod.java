@@ -28,6 +28,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.internal.SelfTestClient;
 import net.neoforged.neoforge.client.model.CompositeModel;
 import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
 import net.neoforged.neoforge.client.model.ElementsModel;
@@ -46,6 +47,8 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod(value = "neoforge", dist = Dist.CLIENT)
 public class ClientNeoForgeMod {
     public ClientNeoForgeMod(IEventBus modEventBus, ModContainer container) {
+        SelfTestClient.initClient();
+
         ClientCommandHandler.init();
         TagConventionLogWarningClient.init();
 
