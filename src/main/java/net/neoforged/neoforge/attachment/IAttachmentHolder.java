@@ -69,7 +69,10 @@ public interface IAttachmentHolder {
      * @return an existing data attachment value of the given type, or null if there is no data attachment of the given type
      */
     @Nullable
-    <T> T getExistingDataOrNull(AttachmentType<T> type);
+    default <T> T getExistingDataOrNull(AttachmentType<T> type) {
+        // Backwards-compatible override. Will be removed in 1.21.5+.
+        return getExistingData(type).orElse(null);
+    }
 
     /**
      * @return an existing data attachment value of the given type, or null if there is no data attachment of the given type
