@@ -15,7 +15,7 @@ import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 /**
- * Data structure used to store a list of resource stacks that can be serialized either by Component or DataAttachment
+ * A mutable data structure used to store a list of resources and their amounts that can be serialized as a DataAttachment. This is ideal when working with block entities or other data attachment holders
  */
 public final class ResourceStorageAttachment<T extends IResource> implements IResourceData<T> {
     private final NonNullList<MutableResourceStack<T>> stacks;

@@ -38,7 +38,8 @@ public interface IResourceStack<T extends IResource> {
      * @param <TResource>   the resource type
      * @return a codec for a resource stack
      */
-    static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <TResource extends IResource, TStack extends IResourceStack<TResource>>
+    Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(IResourceStack<TResource>::resource),
                 ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)).apply(instance, factory));
@@ -116,6 +117,9 @@ public interface IResourceStack<T extends IResource> {
      */
     ResourceStack<T> immutable();
 
+    /**
+     * Creates a hashcode derived from a resource stack list. This is similar to how vanilla handles ItemStack lists.
+     */
     static <T extends IResourceStack<?>> int hashCode(Iterable<T> stacks) {
         int i = 0;
         //Like vanilla, the count is omitted in the hash comparison

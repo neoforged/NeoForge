@@ -15,6 +15,9 @@ import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
+/**
+ * An immutable data structure used to store a list of resources and their amounts that can be serialized as a DataComponent. This is ideal when working with ItemStacks to hold the data.
+ */
 public final class ResourceStorageComponent<T extends IResource> implements IResourceData<T> {
     private final NonNullList<ResourceStack<T>> stacks;
     private final int size;

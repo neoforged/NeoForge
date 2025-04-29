@@ -106,7 +106,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof IResourceStack<?> that)) return false;
-        return Objects.equals(resource(), that.resource()) && amount() == that.amount();
+        return Objects.equals(resource, that.resource()) && amount == that.amount();
     }
 
     @Override

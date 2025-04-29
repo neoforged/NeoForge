@@ -139,10 +139,8 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
 
     @Override
     public void set(int index, TResource resource, int amount) {
-        Objects.checkIndex(index, size());
         var current = container.get(index);
-        if (resource.isEmpty()) amount = 0;
-        if (amount == 0)
+        if (resource.isEmpty() || amount == 0)
             container.set(index, container.emptyResource().mutable());
         else if (current.resource().equals(resource))
             container.set(index, current.withAmount(amount));

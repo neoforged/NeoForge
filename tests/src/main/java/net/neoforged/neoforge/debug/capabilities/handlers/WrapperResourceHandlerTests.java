@@ -29,6 +29,7 @@ public class WrapperResourceHandlerTests {
 
         IResourceHandler<ItemResource> cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         helper.assertFalse(cap == null, "Player capability should be present");
+        assert cap != null : "Player capability should be present"; // Mostly just makes the compiler understand the previous method
         helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.defaultResource(), 400, TransferAction.EXECUTE), 400, "apples");
         helper.assertValueEqual(cap.insert(38, Items.DIAMOND_CHESTPLATE.defaultResource().with(DataComponents.DAMAGE, 20), 2, TransferAction.EXECUTE), 1, "armor insert");
         helper.assertValueEqual(cap.insert(39, Items.DIAMOND_CHESTPLATE.defaultResource(), 2, TransferAction.EXECUTE), 0, "armor insert");
