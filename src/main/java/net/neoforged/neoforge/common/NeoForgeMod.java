@@ -580,6 +580,7 @@ public class NeoForgeMod {
         DualStackUtils.initialise();
         TagConventionLogWarning.init();
 
+        modEventBus.addListener(EventPriority.HIGH, CapabilityHooks::markProxyableCapabilities);
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
         modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerFallbackVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);

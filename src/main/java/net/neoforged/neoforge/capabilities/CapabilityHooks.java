@@ -51,6 +51,12 @@ public class CapabilityHooks {
         initFinished = true;
     }
 
+    public static void markProxyableCapabilities(RegisterCapabilitiesEvent event) {
+        event.setProxyable(Capabilities.EnergyStorage.BLOCK);
+        event.setProxyable(Capabilities.FluidHandler.BLOCK);
+        event.setProxyable(Capabilities.ItemHandler.BLOCK);
+    }
+
     public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
         // Blocks
         var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
