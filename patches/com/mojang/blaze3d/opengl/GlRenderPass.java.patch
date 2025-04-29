@@ -1,5 +1,14 @@
 --- a/com/mojang/blaze3d/opengl/GlRenderPass.java
 +++ b/com/mojang/blaze3d/opengl/GlRenderPass.java
+@@ -19,7 +_,7 @@
+ @OnlyIn(Dist.CLIENT)
+ public class GlRenderPass implements RenderPass {
+     protected static final int MAX_VERTEX_BUFFERS = 1;
+-    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE;
++    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE && !Boolean.parseBoolean(System.getProperty("neoforge.disableGlValidation", "false"));
+     private final GlCommandEncoder encoder;
+     private final boolean hasDepthTexture;
+     private boolean closed;
 @@ -34,6 +_,8 @@
      protected final HashMap<String, GpuTexture> samplers = new HashMap<>();
      protected final Set<String> dirtyUniforms = new HashSet<>();
