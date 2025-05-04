@@ -31,7 +31,10 @@ public class FriendlyByteBufUtil {
         final RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
         try {
             dataWriter.accept(buf);
-            return buf.array();
+            buf.readerIndex(0);
+            final byte[] data = new byte[buf.readableBytes()];
+            buf.readBytes(data);
+            return data;
         } finally {
             buf.release();
         }
