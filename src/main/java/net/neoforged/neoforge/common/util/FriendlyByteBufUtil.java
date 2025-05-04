@@ -27,7 +27,10 @@ public class FriendlyByteBufUtil {
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
             dataWriter.accept(buf);
-            return buf.array();
+            buf.readerIndex(0);
+            final byte[] data = new byte[buf.readableBytes()];
+            buf.readBytes(data);
+            return data;
         } finally {
             buf.release();
         }
