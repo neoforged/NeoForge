@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1177,8 +1176,8 @@ public class ClientHooks {
 
     @ApiStatus.Internal
     public static Set<MetadataSectionType<?>> getDefaultMetadataSectionTypes(Set<MetadataSectionType<?>> vanillaTypes) {
-        var set = new ConcurrentHashMap<MetadataSectionType<?>, Boolean>();
-        ModLoader.postEvent(new RegisterMetadataSectionTypesEvent(type -> set.put(type, Boolean.TRUE)));
-        return ImmutableSet.copyOf(set.keySet());
+        var set = new HashSet<>(vanillaTypes);
+        ModLoader.postEvent(new RegisterMetadataSectionTypesEvent(set::add));
+        return Set.copyOf(set);
     }
 }
