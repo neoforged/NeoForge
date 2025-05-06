@@ -20,6 +20,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1012,6 +1013,7 @@ public class ClientHooks {
         ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
+        ModLoader.postEvent(new RegisterMetadataSectionTypesEvent(DEFAULT_METADATA_SECTION_TYPES));
         ClientTooltipComponentManager.init();
         EntitySpectatorShaderManager.init();
         RecipeBookManager.init();
@@ -1174,10 +1176,11 @@ public class ClientHooks {
         }
     }
 
+    private static final HashSet<MetadataSectionType<?>> DEFAULT_METADATA_SECTION_TYPES = new HashSet<>();
+
     @ApiStatus.Internal
     public static Set<MetadataSectionType<?>> getDefaultMetadataSectionTypes(Set<MetadataSectionType<?>> vanillaTypes) {
-        var set = new HashSet<>(vanillaTypes);
-        ModLoader.postEvent(new RegisterMetadataSectionTypesEvent(set::add));
-        return Set.copyOf(set);
+        DEFAULT_METADATA_SECTION_TYPES.addAll(vanillaTypes);
+        return Collections.unmodifiableSet(DEFAULT_METADATA_SECTION_TYPES);
     }
 }

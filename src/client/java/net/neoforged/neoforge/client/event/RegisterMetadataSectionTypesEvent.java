@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.client.event;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.neoforged.bus.api.Event;
@@ -22,14 +23,14 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
 public class RegisterMetadataSectionTypesEvent extends Event implements IModBusEvent {
-    private final Consumer<MetadataSectionType<?>> typeConsumer;
+    private final Set<MetadataSectionType<?>> defaultTypes;
 
     @Internal
-    public RegisterMetadataSectionTypesEvent(Consumer<MetadataSectionType<?>> typeConsumer) {
-        this.typeConsumer = typeConsumer;
+    public RegisterMetadataSectionTypesEvent(Set<MetadataSectionType<?>> defaultTypes) {
+        this.defaultTypes = defaultTypes;
     }
 
     public void register(MetadataSectionType<?> sectionType) {
-        typeConsumer.accept(sectionType);
+        defaultTypes.add(sectionType);
     }
 }
