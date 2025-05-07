@@ -6,12 +6,10 @@
 package net.neoforged.neoforge.debug.client;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -19,13 +17,12 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.repository.Pack.Position;
 import net.minecraft.server.packs.repository.PackSource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
-import net.neoforged.neoforge.client.event.RegisterMetadataSectionTypesEvent;
-import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
+import net.neoforged.neoforge.client.event.RegisterSpriteDefaultMetadataSectionTypesEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.testframework.DynamicTest;
@@ -82,24 +79,8 @@ public class TextureAtlasTests {
     static void defaultSpriteMetadataSections(final DynamicTest test) {
         String modId = test.createModId();
 
-        var testResource = ResourceLocation.fromNamespaceAndPath(modId, "resource.png");
+        var testResource = ResourceLocation.fromNamespaceAndPath(modId, "resource");
         var sectionType = new MetadataSectionType<>("default_metadata_test", Codec.BOOL);
-
-        var provider = new SpriteSource() {
-            private final MapCodec<? extends SpriteSource> CODEC = MapCodec.unit(this);
-
-            @Override
-            public void run(final ResourceManager manager, final Output output) {
-                var resource = manager.getResource(testResource)
-                        .orElseThrow();
-                output.add(testResource, resource);
-            }
-
-            @Override
-            public MapCodec<? extends SpriteSource> codec() {
-                return CODEC;
-            }
-        };
 
         test.framework().modEventBus().addListener(AddPackFindersEvent.class, event -> {
             event.addPackFinders(
@@ -111,28 +92,32 @@ public class TextureAtlasTests {
                     Position.TOP);
         });
 
-        test.framework().modEventBus().addListener(RegisterSpriteSourcesEvent.class, event -> {
-            event.register(ResourceLocation.fromNamespaceAndPath(modId, "test_sprite"), provider.codec());
-        });
-
-        test.framework().modEventBus().addListener(RegisterMetadataSectionTypesEvent.class, event -> {
+        test.framework().modEventBus().addListener(RegisterSpriteDefaultMetadataSectionTypesEvent.class, event -> {
             event.register(sectionType);
         });
 
-        test.onGameTest(helper -> {
+        test.eventListeners().forge().addListener((ClientResourceLoadFinishedEvent event) -> {
             var atlas = Minecraft.getInstance()
                     .getModelManager()
                     .getAtlas(TextureAtlas.LOCATION_BLOCKS);
 
             var sprite = atlas.getSprite(testResource);
             var missingno = atlas.getSprite(MissingTextureAtlasSprite.getLocation());
-            helper.assertTrue(sprite != missingno, "Unable to find test resource");
+            if (sprite == missingno) {
+                test.fail("Unable to find test resource in texture atlas");
+                return;
+            }
 
-            var section = helper.catchException(() -> sprite.contents().metadata().getSection(sectionType));
-            helper.assertTrue(section.isPresent(), "Unable to find section");
-            helper.assertTrue(section.orElseThrow(), "Boolean value in section was false");
+            var section = sprite.contents().metadata().getSection(sectionType);
+            if (section.isEmpty()) {
+                test.fail("Required section was not found in sprite contents metadata");
+                return;
+            } else if (!section.orElseThrow()) {
+                test.fail("Boolean value in section was false");
+                return;
+            }
 
-            helper.succeed();
+            test.pass();
         });
     }
 }

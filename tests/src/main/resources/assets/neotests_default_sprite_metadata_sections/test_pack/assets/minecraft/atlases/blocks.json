@@ -1,7 +1,8 @@
 {
   "sources": [
     {
-      "type": "neotests_default_sprite_metadata_sections:test_sprite"
+      "type": "single",
+      "resource": "neotests_default_sprite_metadata_sections:resource"
     }
   ]
 }

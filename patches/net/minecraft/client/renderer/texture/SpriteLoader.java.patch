@@ -5,7 +5,7 @@
  @OnlyIn(Dist.CLIENT)
  public class SpriteLoader {
 -    public static final Set<MetadataSectionType<?>> DEFAULT_METADATA_SECTIONS = Set.of(AnimationMetadataSection.TYPE);
-+    public static final Set<MetadataSectionType<?>> DEFAULT_METADATA_SECTIONS = net.neoforged.neoforge.client.ClientHooks.getDefaultMetadataSectionTypes(Set.of(AnimationMetadataSection.TYPE));
++    public static final Set<MetadataSectionType<?>> DEFAULT_METADATA_SECTIONS = net.neoforged.neoforge.client.ClientHooks.getSpriteDefaultMetadataSectionTypes(Set.of(AnimationMetadataSection.TYPE));
      private static final Logger LOGGER = LogUtils.getLogger();
      private final ResourceLocation location;
      private final int maxSupportedTextureSize;
