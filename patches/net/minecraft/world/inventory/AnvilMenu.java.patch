@@ -1,24 +1,30 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -79,6 +_,8 @@
+@@ -75,6 +_,16 @@
+ 
+     @Override
+     protected void onTake(Player p_150474_, ItemStack p_150475_) {
++        // Neo: Fire the AnvilCraftEvent.Pre here, before any changes are made to the anvil or the contained items.
++        // If a user cancels the event, we presume they are handling any of the below logic themselves.
++        var event = net.neoforged.neoforge.common.CommonHooks.fireAnvilCraftPre(this, p_150474_, p_150475_, this.inputSlots.getItem(0), this.inputSlots.getItem(1));
++        if (event.isCanceled()) {
++            return;
++        }
++
++        ItemStack leftInputSnapshot = this.inputSlots.getItem(0).copy();
++        ItemStack rightInputSnapshot = this.inputSlots.getItem(1).copy();
++
+         if (!p_150474_.hasInfiniteMaterials()) {
              p_150474_.giveExperienceLevels(-this.cost.get());
          }
- 
-+        float breakChance = net.neoforged.neoforge.common.CommonHooks.onAnvilRepair(p_150474_, p_150475_, AnvilMenu.this.inputSlots.getItem(0), AnvilMenu.this.inputSlots.getItem(1));
+@@ -108,10 +_,24 @@
+                 p_150479_.levelEvent(1030, p_150480_, 0);
+             }
+         });
 +
-         if (this.repairItemCountCost > 0) {
-             ItemStack itemstack = this.inputSlots.getItem(1);
-             if (!itemstack.isEmpty() && itemstack.getCount() > this.repairItemCountCost) {
-@@ -95,7 +_,7 @@
-         this.inputSlots.setItem(0, ItemStack.EMPTY);
-         this.access.execute((p_150479_, p_150480_) -> {
-             BlockState blockstate = p_150479_.getBlockState(p_150480_);
--            if (!p_150474_.hasInfiniteMaterials() && blockstate.is(BlockTags.ANVIL) && p_150474_.getRandom().nextFloat() < 0.12F) {
-+            if (!p_150474_.getAbilities().instabuild && blockstate.is(BlockTags.ANVIL) && p_150474_.getRandom().nextFloat() < breakChance) {
-                 BlockState blockstate1 = AnvilBlock.damage(blockstate);
-                 if (blockstate1 == null) {
-                     p_150479_.removeBlock(p_150480_, false);
-@@ -111,7 +_,17 @@
++        // Neo: Fire post after all logic has taken place. For ease of use, we record the original input stacks and pass them to this method.
++        // The modified stacks are available through the menu.
++        net.neoforged.neoforge.common.CommonHooks.fireAnvilCraftPost(this, p_150474_, p_150475_, leftInputSnapshot, rightInputSnapshot);
      }
  
      @Override
@@ -29,7 +35,7 @@
 +        this.__createResultImpl();
 +        ItemStack leftInput = this.inputSlots.getItem(0);
 +        ItemStack rightInput = this.inputSlots.getItem(1);
-+        net.neoforged.neoforge.common.CommonHooks.onAnvilUpdate(this, leftInput, rightInput, resultSlots, itemName, this.player);  
++        net.neoforged.neoforge.common.CommonHooks.onAnvilUpdate(this, leftInput, rightInput, resultSlots, itemName, this.player);
 +    }
 +
 +    // Neo: We patch the real createResult() into __createResultImpl() so we can wrap it, and provide the vanilla result in the AnvilUpdateEvent.

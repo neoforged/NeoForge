@@ -194,7 +194,7 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
@@ -710,10 +710,39 @@ public class CommonHooks {
         }
     }
 
-    public static float onAnvilRepair(Player player, ItemStack output, ItemStack left, ItemStack right) {
-        AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
+    /**
+     * Fires the {@link AnvilCraftEvent.Pre} when the anvil is used to craft an item.
+     * <p>
+     * This is fired from the head of {@link AnvilMenu#onTake}, before any other logic is run.
+     * <p>
+     * If this event is cancelled, {@link AnvilMenu#onTake} should return immediately.
+     * 
+     * @param menu   The anvil menu
+     * @param player The player who is using the anvil
+     * @param output The output item
+     * @param left   The left input item
+     * @param right  The right input item
+     * @return The fired event
+     */
+    public static AnvilCraftEvent.Pre fireAnvilCraftPre(AnvilMenu menu, Player player, ItemStack output, ItemStack left, ItemStack right) {
+        var e = new AnvilCraftEvent.Pre(menu, player, left, right, output);
+        return NeoForge.EVENT_BUS.post(e);
+    }
+
+    /**
+     * Fires the {@link AnvilCraftEvent.Post} when the anvil is used to craft an item.
+     * <p>
+     * This is fired from the tail of {@link AnvilMenu#onTake}, after all other logic is run.
+     * 
+     * @param menu   The anvil menu
+     * @param player The player who is using the anvil
+     * @param output The output item
+     * @param left   A copy of the original left input item, before post-processing
+     * @param right  A copy of the original right input item, before post-processing
+     */
+    public static void fireAnvilCraftPost(AnvilMenu menu, Player player, ItemStack output, ItemStack left, ItemStack right) {
+        var e = new AnvilCraftEvent.Post(menu, player, left, right, output);
         NeoForge.EVENT_BUS.post(e);
-        return e.getBreakChance();
     }
 
     public static int onGrindstoneChange(ItemStack top, ItemStack bottom, Container outputSlot, int xp) {
