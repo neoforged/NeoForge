@@ -100,6 +100,8 @@ public final class BlockCapabilityCache<T, C extends @Nullable Object> {
             canQuery = false;
             // mark cached cap as invalid
             cacheValid = false;
+            // clear cached cap
+            cachedCap = null;
 
             if (isValid.getAsBoolean()) {
                 // notify
