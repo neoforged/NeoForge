@@ -22,6 +22,16 @@ dependencyResolutionManagement {
     rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
     repositories {
         mavenCentral()
+        maven {
+            name 'Maven for PR #278' // https://github.com/neoforged/FancyModLoader/pull/278
+            url 'https://prmaven.neoforged.net/FancyModLoader/pr278'
+            content {
+                includeModule('net.neoforged.fancymodloader', 'earlydisplay')
+                includeModule('net.neoforged.fancymodloader', 'junit-fml')
+                includeModule('net.neoforged.fancymodloader', 'loader')
+                includeModule('net.neoforged.fancymodloader', 'tests')
+            }
+        }
     }
 }
 
