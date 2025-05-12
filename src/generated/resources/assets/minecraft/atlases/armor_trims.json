@@ -1,13 +1,9 @@
 {
   "sources": [
     {
-      "type": "minecraft:single",
-      "resource": "neoforge:white"
-    },
-    {
       "type": "neoforge:directory_paletted_permutations",
       "palettes": "trims/color_palettes",
-      "textures": "trims/items"
+      "textures": "trims/entity"
     }
   ]
 }

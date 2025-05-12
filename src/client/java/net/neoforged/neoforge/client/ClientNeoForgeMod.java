@@ -29,6 +29,7 @@ import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.neoforge.client.color.item.FluidContentsTint;
 import net.neoforged.neoforge.client.command.ClientConfigCommand;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
+import net.neoforged.neoforge.client.data.internal.VanillaModelProvider;
 import net.neoforged.neoforge.client.data.internal.NeoForgeSpriteSourceProvider;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationLoader;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -50,8 +51,10 @@ import net.neoforged.neoforge.client.model.CompositeUnbakedModel;
 import net.neoforged.neoforge.client.model.EmptyModel;
 import net.neoforged.neoforge.client.model.block.CompositeBlockModel;
 import net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel;
+import net.neoforged.neoforge.client.model.item.TrimmedArmorModel;
 import net.neoforged.neoforge.client.model.obj.ObjLoader;
 import net.neoforged.neoforge.client.resources.VanillaClientListeners;
+import net.neoforged.neoforge.client.textures.DirectoryPalettedPermutations;
 import net.neoforged.neoforge.client.textures.NamespacedDirectoryLister;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
@@ -136,6 +139,7 @@ public class ClientNeoForgeMod {
         event.createProvider(NeoForgeDataMapsProvider::new);
 
         event.createProvider(NeoForgeSpriteSourceProvider::new);
+        event.createProvider(VanillaModelProvider::new);
         event.createProvider(VanillaSoundDefinitionsProvider::new);
         event.createProvider(NeoForgeLanguageProvider::new);
     }
@@ -168,6 +172,7 @@ public class ClientNeoForgeMod {
     @SubscribeEvent
     static void onRegisterSpriteSourceTypes(RegisterSpriteSourcesEvent event) {
         event.register(NamespacedDirectoryLister.ID, NamespacedDirectoryLister.CODEC);
+        event.register(DirectoryPalettedPermutations.ID, DirectoryPalettedPermutations.CODEC);
     }
 
     @SubscribeEvent
@@ -247,6 +252,7 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void registerItemModels(RegisterItemModelsEvent event) {
+        event.register(neoForgeId("trimmed_armor"), TrimmedArmorModel.Unbaked.MAP_CODEC);
         event.register(neoForgeId("fluid_container"), DynamicFluidContainerModel.Unbaked.MAP_CODEC);
     }
 

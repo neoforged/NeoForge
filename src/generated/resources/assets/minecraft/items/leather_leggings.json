@@ -1,0 +1,15 @@
+{
+  "model": {
+    "type": "neoforge:trimmed_armor",
+    "base_model": {
+      "model": "minecraft:item/leather_leggings",
+      "tints": [
+        {
+          "type": "minecraft:dye",
+          "default": -6265536
+        }
+      ]
+    },
+    "base_trim_texture": "minecraft:trims/items/leggings_trim"
+  }
+}

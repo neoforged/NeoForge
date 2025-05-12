@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "neoforge:trimmed_armor",
+    "base_model": {
+      "model": "minecraft:item/chainmail_helmet"
+    },
+    "base_trim_texture": "minecraft:trims/items/helmet_trim"
+  }
+}
