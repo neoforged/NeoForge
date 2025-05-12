@@ -13,9 +13,37 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.List;
 
 public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
+    private Slot[] slots;
+
+    private class Slot extends SnapshotParticipant<ItemStack> {
+        private final int index;
+
+        private Slot(int index) {
+            this.index = index;
+        }
+
+        @Override
+        protected ItemStack createSnapshot() {
+            return stacks.get(index).copy();
+        }
+
+        @Override
+        protected void readSnapshot(ItemStack snapshot) {
+            stacks.set(index, snapshot);
+        }
+
+        @Override
+        protected void onFinalCommit() {
+            onContentsChanged(index);
+        }
+    }
 
     public ItemStackHandler() {
         this(1);
@@ -23,14 +51,24 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
 
     public ItemStackHandler(int size) {
         stacks = NonNullList.withSize(size, ItemStack.EMPTY);
+        updateSlots();
     }
 
     public ItemStackHandler(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
+        updateSlots();
     }
 
     public void setSize(int size) {
         stacks = NonNullList.withSize(size, ItemStack.EMPTY);
+        updateSlots();
+    }
+
+    private void updateSlots() {
+        slots = new Slot[stacks.size()];
+        for (int i = 0; i < slots.length; ++i) {
+            slots[i] = new Slot(i);
+        }
     }
 
 //    @Override
@@ -58,7 +96,7 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
     }
 
     @Override
-    public int insert(int slot, ItemResource resource, int maxAmount, TransferAction action) {
+    public int insert(int slot, ItemResource resource, int maxAmount, TransactionContext transaction) {
         if (resource.isBlank())
             return 0;
 
@@ -83,13 +121,11 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
         int inserted = Math.min(maxAmount, limit);
 
         if (inserted > 0) {
-            if (action.isExecuting()) {
-                if (existing.isEmpty()) {
-                    this.stacks.set(slot, resource.toStack(inserted));
-                } else {
-                    existing.grow(inserted);
-                }
-                onContentsChanged(slot);
+            this.slots[slot].updateSnapshots(transaction);
+            if (existing.isEmpty()) {
+                this.stacks.set(slot, resource.toStack(inserted));
+            } else {
+                existing.grow(inserted);
             }
             return inserted;
         }
@@ -98,7 +134,7 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
     }
 
     @Override
-    public int extract(int slot, ItemResource resource, int maxAmount, TransferAction action) {
+    public int extract(int slot, ItemResource resource, int maxAmount, TransactionContext transaction) {
         if (maxAmount == 0)
             return 0;
 
@@ -112,15 +148,11 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
         int toExtract = Math.min(maxAmount, existing.getMaxStackSize());
 
         if (existing.getCount() <= toExtract) {
-            if (action.isExecuting()) {
-                this.stacks.set(slot, ItemStack.EMPTY);
-                onContentsChanged(slot);
-            }
+            this.slots[slot].updateSnapshots(transaction);
+            this.stacks.set(slot, ItemStack.EMPTY);
         } else {
-            if (action.isExecuting()) {
-                this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
-                onContentsChanged(slot);
-            }
+            this.slots[slot].updateSnapshots(transaction);
+            this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
         }
 
         return toExtract;

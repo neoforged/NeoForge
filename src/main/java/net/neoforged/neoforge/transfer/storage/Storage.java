@@ -1,6 +1,7 @@
 package net.neoforged.neoforge.transfer.storage;
 
 import net.neoforged.neoforge.transfer.Resource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A generic handler for handling a resource of type {@link T}.
@@ -18,27 +19,23 @@ public interface Storage<T extends Resource> {
      * @param index The index to insert the resource into.
      * @param resource The resource to insert.
      * @param maxAmount The amount of the resource to insert.
-     * @param action   The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    int insert(int index, T resource, int maxAmount, TransferAction action);
+    int insert(int index, T resource, int maxAmount, TransactionContext transaction);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      *
      * @param resource The resource to insert.
      * @param maxAmount The amount of the resource to insert.
-     * @param action  The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    default int insert(T resource, int maxAmount, TransferAction action) {
+    default int insert(T resource, int maxAmount, TransactionContext transaction) {
         int amount = 0;
         int slots = size();
 
         for (int i = 0; i < slots; ++i) {
-            amount += insert(i, resource, maxAmount - amount, action);
+            amount += insert(i, resource, maxAmount - amount, transaction);
             if (amount == maxAmount) break;
         }
 
@@ -51,27 +48,23 @@ public interface Storage<T extends Resource> {
      * @param index The index to extract the resource from.
      * @param resource The resource to extract.
      * @param maxAmount The amount of the resource to extract.
-     * @param action   The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    int extract(int index, T resource, int maxAmount, TransferAction action);
+    int extract(int index, T resource, int maxAmount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      *
      * @param resource The resource to extract.
      * @param maxAmount The amount of the resource to extract.
-     * @param action  The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    default int extract(T resource, int maxAmount, TransferAction action) {
+    default int extract(T resource, int maxAmount, TransactionContext transaction) {
         int amount = 0;
         int slots = size();
 
         for (int i = 0; i < slots; ++i) {
-            amount += extract(i, resource, maxAmount - amount, action);
+            amount += extract(i, resource, maxAmount - amount, transaction);
             if (amount == maxAmount) break;
         }
 
