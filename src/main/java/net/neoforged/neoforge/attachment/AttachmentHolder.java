@@ -9,7 +9,6 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -83,12 +82,13 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
-    public <T> Optional<T> getExistingData(AttachmentType<T> type) {
+    @Nullable
+    public <T> T getExistingDataOrNull(AttachmentType<T> type) {
         validateAttachmentType(type);
         if (attachments == null) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.ofNullable((T) this.attachments.get(type));
+        return (T) this.attachments.get(type);
     }
 
     @Override

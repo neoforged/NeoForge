@@ -15,6 +15,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -120,9 +122,44 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
 
     /**
      * {@return a new immutable copy of all the currently known block capabilities}
+     *
+     * <p>Mods that want to forward "all" capability requests should likely use {@link #getAllProxyable()} instead.
      */
     public static synchronized List<BlockCapability<?, ?>> getAll() {
         return registry.getAll();
+    }
+
+    /**
+     * {@return a new immutable copy of all the currently known proxyable block capabilities}
+     *
+     * <p>This method should typically only be used in the {@link EventPriority#LOW} or
+     * {@link EventPriority#LOWEST} phase of {@link RegisterCapabilitiesEvent}, or later,
+     * to ensure that all proxyable capabilities have been {@link RegisterCapabilitiesEvent#setProxyable marked as such}.
+     *
+     * @see #isProxyable()
+     */
+    public static synchronized List<BlockCapability<?, ?>> getAllProxyable() {
+        return registry.getAll().stream().filter(BlockCapability::isProxyable).toList();
+    }
+
+    /**
+     * Returns whether this capability is proxyable.
+     * This information is metadata: it does not change how the capability works internally,
+     * but it tells mods whether they should or should not register proxying capability providers.
+     *
+     * <p>If the capability is proxyable, requests for this capability are safe to forward unilaterally to other blocks.
+     *
+     * <p>If the capability is not proxyable, requests for this capability should not be forwarded to other blocks without further information.
+     * In that case, refer to documentation of the capability to understand under which circumstances it is safe to forward, if at all.
+     * For this reason, mods that forward "all" capabilities should not forward non-proxyable capabilities.
+     *
+     * <p>Block capabilities are not proxyable by default.
+     * Any call to {@link RegisterCapabilitiesEvent#setProxyable(BlockCapability)} will mark the capability as proxyable.
+     * Any call to {@link RegisterCapabilitiesEvent#setNonProxyable(BlockCapability)} will mark the capability as non-proxyable,
+     * and prevent it from being marked as proxyable.
+     */
+    public boolean isProxyable() {
+        return proxyable.isTrue();
     }
 
     // INTERNAL
@@ -135,6 +172,26 @@ public final class BlockCapability<T, C extends @Nullable Object> extends BaseCa
     }
 
     final Map<Block, List<IBlockCapabilityProvider<T, C>>> providers = new IdentityHashMap<>();
+    private TriState proxyable = TriState.DEFAULT; // default is false
+
+    void setProxyable(boolean proxyable) {
+        if (CapabilityHooks.initFinished) {
+            throw new IllegalStateException("Cannot call setProxyable after the RegisterCapabilitiesEvent has been fired.");
+        }
+        switch (this.proxyable) {
+            case DEFAULT -> this.proxyable = proxyable ? TriState.TRUE : TriState.FALSE;
+            case TRUE -> {
+                if (!proxyable) {
+                    throw new IllegalStateException("Cannot make capability %s non-proxyable because it was already set to be proxyable.".formatted(name()));
+                }
+            }
+            case FALSE -> {
+                if (proxyable) {
+                    throw new IllegalStateException("Cannot make capability %s proxyable because it was already set to be non-proxyable.".formatted(name()));
+                }
+            }
+        }
+    }
 
     @ApiStatus.Internal
     @Nullable

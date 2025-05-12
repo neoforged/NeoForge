@@ -52,15 +52,51 @@
              p_256495_.forEach(p_256603_ -> builder.put(p_256603_.location(), registrysetbuilder$universallookup));
              return new RegistrySetBuilder.BuildState(
                  registrysetbuilder$universalowner, registrysetbuilder$universallookup, builder.build(), new HashMap<>(), list
-@@ -260,6 +_,11 @@
-                 @Override
+@@ -261,6 +_,11 @@
                  public <S> HolderGetter<S> lookup(ResourceKey<? extends Registry<? extends S>> p_255961_) {
                      return (HolderGetter<S>)BuildState.this.registries.getOrDefault(p_255961_.location(), BuildState.this.lookup);
-+                }
+                 }
 +
 +                @Override
 +                public <S> Optional<HolderLookup.RegistryLookup<S>> registryLookup(ResourceKey<? extends Registry<? extends S>> registry) {
 +                    return Optional.ofNullable((HolderLookup.RegistryLookup<S>) BuildState.this.registries.get(registry.location()));
-                 }
++                }
              };
          }
+ 
+@@ -408,7 +_,7 @@
+         }
+     }
+ 
+-    static class UniversalLookup extends RegistrySetBuilder.EmptyTagLookup<Object> {
++    static class UniversalLookup extends RegistrySetBuilder.EmptyTagLookup<Object> implements HolderLookup<Object> {
+         final Map<ResourceKey<Object>, Holder.Reference<Object>> holders = new HashMap<>();
+ 
+         public UniversalLookup(HolderOwner<Object> p_256629_) {
+@@ -418,6 +_,26 @@
+         @Override
+         public Optional<Holder.Reference<Object>> get(ResourceKey<Object> p_256303_) {
+             return Optional.of(this.getOrCreate(p_256303_));
++        }
++
++        @Override
++        public Stream<Holder.Reference<Object>> listElements() {
++            return holders.values().stream();
++        }
++
++        @Override
++        public Stream<ResourceKey<Object>> listElementIds() {
++            return holders.keySet().stream();
++        }
++
++        @Override
++        public Stream<HolderSet.Named<Object>> listTags() {
++            return Stream.empty();
++        }
++
++        @Override
++        public Stream<TagKey<Object>> listTagIds() {
++            return Stream.empty();
+         }
+ 
+         <T> Holder.Reference<T> getOrCreate(ResourceKey<T> p_256298_) {

@@ -446,8 +446,16 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new EntityStruckByLightningEvent(entity, bolt)).isCanceled();
     }
 
+    /**
+     * @deprecated Use {@link #onItemUseStart(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
+     */
+    @Deprecated(since = "1.21.5", forRemoval = true)
     public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration) {
-        var event = new LivingEntityUseItemEvent.Start(entity, item, duration);
+        return onItemUseStart(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
+    }
+
+    public static int onItemUseStart(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
+        var event = new LivingEntityUseItemEvent.Start(entity, item, hand, duration);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
     }
 

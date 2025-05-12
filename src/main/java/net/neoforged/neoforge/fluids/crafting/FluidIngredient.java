@@ -48,7 +48,9 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
      * except not using value subclasses and instead directly providing
      * the corresponding {@link FluidIngredient}.
      */
-    private static final MapCodec<FluidIngredient> SINGLE_OR_TAG_CODEC = singleOrTagCodec();
+    // We need the recursive here in case FluidIngredient is being initialized from SingleFluidIngredient or TagFluidIngredient
+    private static final MapCodec<FluidIngredient> SINGLE_OR_TAG_CODEC = MapCodec.recursive(
+            "FluidIngredient.SINGLE_OR_TAG_CODEC", self -> singleOrTagCodec());
 
     /**
      * This is a codec that represents a single {@code FluidIngredient} in map form;

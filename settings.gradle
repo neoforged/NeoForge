@@ -1,24 +1,38 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenLocal()
         maven { url = 'https://maven.neoforged.net/releases' }
     }
 }
 
 plugins {
-    id 'net.neoforged.gradle.platform' version '7.0.163'
+    id 'net.neoforged.moddev.repositories' version "${moddevgradle_plugin_version}"
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
-rootProject.name = rootDir.name
+// This makes the version available to buildSrc
+gradle.ext.moddevgradle_plugin_version = moddevgradle_plugin_version
+gradle.ext.minecraft_version = minecraft_version
+gradle.ext.diffpatch_version = diffpatch_version
+gradle.ext.asm_version = asm_version
 
-dynamicProjects {
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
+    repositories {
+        mavenCentral()
+    }
+}
+
+if (rootProject.name.toLowerCase() == "neoforge") {
+    // Solve name clashes between projects/neoforge and the rootProject for Eclipse.
+    rootProject.name = "NeoForge-Root"
+}
+
     include ':base'
+project(':base').projectDir = file('projects/base')
     include ':neoforge'
-
-    project(":base").projectDir = file("projects/base")
-    project(":neoforge").projectDir = file("projects/neoforge")
-}
+project(':neoforge').projectDir = file('projects/neoforge')
 
 include ':tests'
 project(":tests").projectDir = file("tests")
@@ -28,3 +42,10 @@ include ':coremods'
 // Ensure a unique artifact id within JIJ that does not conflict with net.neoforged:coremods, which is
 // another external dependency.
 project(":coremods").name = "neoforge-coremods"
+
+// Expose the repository base URLs to projects to be able to access them
+// See this Gradle issue for tracking a more permanent solution:
+// https://github.com/gradle/gradle/issues/27260
+gradle.settingsEvaluated {
+    gradle.extensions.add("repositoryBaseUrls", dependencyResolutionManagement.repositories.findAll { it instanceof MavenArtifactRepository }.collect { it.url }.toArray(URI[]::new))
+}

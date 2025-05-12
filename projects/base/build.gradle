@@ -1,3 +1,34 @@
-dynamicProject {
-    neoform("${project.minecraft_version}-${project.neoform_version}")
+
+plugins {
+    id 'java-library'
+}
+
+apply plugin: net.neoforged.neodev.NeoDevBasePlugin
+
+dependencies {
+    implementation("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform-dependencies'
+        }
+        endorseStrictVersions()
+    }
+}
+
+neoDev {
+    runs {
+        configureEach {
+            gameDirectory = layout.projectDir.dir("run/$name")
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        // Generated files are in run/data/generated
+        data {
+            data()
+            programArgument "--all"
+        }
+    }
 }

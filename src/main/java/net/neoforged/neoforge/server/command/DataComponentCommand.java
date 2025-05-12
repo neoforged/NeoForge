@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 
 class DataComponentCommand {
     private static final SimpleCommandExceptionType ERROR_NO_ITEM = new SimpleCommandExceptionType(
-            Component.translatableEscape("commands.neoforge.data_components.list.error.held_stack_empty"));
+            CommandUtils.makeTranslatableWithFallback("commands.neoforge.data_components.list.error.held_stack_empty"));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("data_components")
@@ -47,24 +47,24 @@ class DataComponentCommand {
         ctx.getSource().sendSuccess(() -> {
             // Use Item#getName() instead if ItemStack#getDisplayName() to display the actual item name without influence
             // of a written book's title or the ITEM_NAME or CUSTOM_NAME data components
-            MutableComponent text = Component.translatable("commands.neoforge.data_components.list.title", stack.getItem().getName(stack));
+            MutableComponent text = CommandUtils.makeTranslatableWithFallback("commands.neoforge.data_components.list.title", stack.getItem().getName(stack));
             DataComponentMap prototype = stack.getPrototype();
             DataComponentPatch patch = stack.getComponentsPatch();
             prototype.forEach(component -> {
                 Optional<?> optData = patch.get(component.type());
                 if (optData == null) { // Component is default
-                    Component tooltip = Component.translatable(
+                    Component tooltip = CommandUtils.makeTranslatableWithFallback(
                             "commands.neoforge.data_components.list.tooltip.default",
                             getTypeId(component.type()));
                     text.append(print(component.type(), component.value(), ChatFormatting.WHITE, tooltip));
                 } else if (optData.isEmpty()) { // Component is deleted
-                    Component tooltip = Component.translatable(
+                    Component tooltip = CommandUtils.makeTranslatableWithFallback(
                             "commands.neoforge.data_components.list.tooltip.deleted",
                             getTypeId(component.type()),
                             component.value().toString());
                     text.append(print(component.type(), component.value(), ChatFormatting.RED, tooltip));
                 } else { // Component is modified
-                    Component tooltip = Component.translatable(
+                    Component tooltip = CommandUtils.makeTranslatableWithFallback(
                             "commands.neoforge.data_components.list.tooltip.modified",
                             getTypeId(component.type()),
                             component.value().toString(),
@@ -74,7 +74,7 @@ class DataComponentCommand {
             });
             patch.entrySet().forEach(entry -> {
                 if (!prototype.has(entry.getKey()) && entry.getValue().isPresent()) { // New component added
-                    Component tooltip = Component.translatable(
+                    Component tooltip = CommandUtils.makeTranslatableWithFallback(
                             "commands.neoforge.data_components.list.tooltip.added",
                             getTypeId(entry.getKey()),
                             entry.getValue().get().toString());
@@ -92,8 +92,8 @@ class DataComponentCommand {
     }
 
     private static Component print(DataComponentType<?> type, Object data, ChatFormatting color, Component tooltip) {
-        MutableComponent entry = Component.translatable("commands.neoforge.data_components.list.entry.key_value", getTypeId(type), data.toString());
-        return Component.translatable("commands.neoforge.data_components.list.entry", entry.withStyle(color))
+        MutableComponent entry = CommandUtils.makeTranslatableWithFallback("commands.neoforge.data_components.list.entry.key_value", getTypeId(type), data.toString());
+        return CommandUtils.makeTranslatableWithFallback("commands.neoforge.data_components.list.entry", entry.withStyle(color))
                 .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip)));
     }
 }
