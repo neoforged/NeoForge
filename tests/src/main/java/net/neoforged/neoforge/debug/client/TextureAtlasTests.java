@@ -82,16 +82,6 @@ public class TextureAtlasTests {
         var testResource = ResourceLocation.fromNamespaceAndPath(modId, "resource");
         var sectionType = new MetadataSectionType<>("default_metadata_test", Codec.BOOL);
 
-        test.framework().modEventBus().addListener(AddPackFindersEvent.class, event -> {
-            event.addPackFinders(
-                    ResourceLocation.fromNamespaceAndPath("neotests", "assets/" + modId + "/test_pack"),
-                    PackType.CLIENT_RESOURCES,
-                    Component.literal("Sprite metadata test pack"),
-                    PackSource.BUILT_IN,
-                    true,
-                    Position.TOP);
-        });
-
         test.framework().modEventBus().addListener(RegisterSpriteDefaultMetadataSectionTypesEvent.class, event -> {
             event.register(sectionType);
         });

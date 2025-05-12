@@ -12,11 +12,11 @@ import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -26,14 +26,20 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * This event is fired once on startup, before the initial resource reload.
  *
  * <p>
- * It is important to note that this event only affects texture atlases using {@link SpriteLoader#DEFAULT_METADATA_SECTIONS},
- * which includes most of the vanilla atlases, and those using {@link SpriteLoader#loadAndStitch(ResourceManager, ResourceLocation, int, Executor)} directly.
+ * It is important to note that this event only affects texture atlases using {@link SpriteLoader#DEFAULT_METADATA_SECTIONS}, which includes:
+ * <ul>
+ *     <li>all vanilla atlases in {@link ModelManager#VANILLA_ATLASES};</li>
+ *     <li>modded atlases using {@link RegisterMaterialAtlasesEvent};</li>
+ *     <li>vanilla and modded atlases using {@link TextureAtlasHolder#TextureAtlasHolder(TextureManager, ResourceLocation, ResourceLocation)}; and</li>
+ *     <li>those using {@link SpriteLoader#loadAndStitch(ResourceManager, ResourceLocation, int, Executor)} directly.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
  * Atlases using the {@link TextureAtlasHolder#TextureAtlasHolder(TextureManager, ResourceLocation, ResourceLocation, Set)} constructor, such as {@linkplain GuiSpriteManager},
  * or {@link SpriteLoader#loadAndStitch(ResourceManager, ResourceLocation, int, Executor, Collection)} instead override this list and should instead specify any additional
  * metadata section types in the last parameter, or, if they desire to use the default collection in addition to their own, lazily compute a merged collection.
  * </p>
- *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
