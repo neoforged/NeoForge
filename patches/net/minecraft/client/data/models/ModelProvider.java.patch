@@ -72,7 +72,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
-     static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
+     public static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
          private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
 +        private final Supplier<Stream<? extends Holder<Block>>> knownBlocks;
 +
@@ -100,7 +100,7 @@
              if (!list.isEmpty()) {
                  throw new IllegalStateException("Missing blockstate definitions for: " + list);
 @@ -97,6 +_,16 @@
-     static class ItemInfoCollector implements ItemModelOutput {
+     public static class ItemInfoCollector implements ItemModelOutput {
          private final Map<Item, ClientItem> itemInfos = new HashMap<>();
          private final Map<Item, Item> copies = new HashMap<>();
 +        private final Supplier<Stream<? extends Holder<Item>>> knownItems;
