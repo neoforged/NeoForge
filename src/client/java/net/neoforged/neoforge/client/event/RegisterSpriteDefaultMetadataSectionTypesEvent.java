@@ -28,10 +28,10 @@ import org.jetbrains.annotations.ApiStatus.Internal;
  * <p>
  * It is important to note that this event only affects texture atlases using {@link SpriteLoader#DEFAULT_METADATA_SECTIONS}, which includes:
  * <ul>
- *     <li>all vanilla atlases in {@link ModelManager#VANILLA_ATLASES};</li>
- *     <li>modded atlases using {@link RegisterMaterialAtlasesEvent};</li>
- *     <li>vanilla and modded atlases using {@link TextureAtlasHolder#TextureAtlasHolder(TextureManager, ResourceLocation, ResourceLocation)}; and</li>
- *     <li>those using {@link SpriteLoader#loadAndStitch(ResourceManager, ResourceLocation, int, Executor)} directly.</li>
+ * <li>all vanilla atlases in {@link ModelManager#VANILLA_ATLASES};</li>
+ * <li>modded atlases using {@link RegisterMaterialAtlasesEvent};</li>
+ * <li>vanilla and modded atlases using {@link TextureAtlasHolder#TextureAtlasHolder(TextureManager, ResourceLocation, ResourceLocation)}; and</li>
+ * <li>those using {@link SpriteLoader#loadAndStitch(ResourceManager, ResourceLocation, int, Executor)} directly.</li>
  * </ul>
  * </p>
  *
