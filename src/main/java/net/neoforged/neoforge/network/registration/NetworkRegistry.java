@@ -108,6 +108,12 @@ public class NetworkRegistry {
     protected static final Map<ConnectionProtocol, Map<ResourceLocation, PayloadRegistration<?>>> PAYLOAD_REGISTRATIONS = ImmutableMap.of(
             ConnectionProtocol.CONFIGURATION, new HashMap<>(),
             ConnectionProtocol.PLAY, new HashMap<>());
+    protected static final Map<ConnectionProtocol, Map<ResourceLocation, IPayloadHandler<?>>> SERVERBOUND_HANDLERS = ImmutableMap.of(
+            ConnectionProtocol.CONFIGURATION, new HashMap<>(),
+            ConnectionProtocol.PLAY, new HashMap<>());
+    protected static final Map<ConnectionProtocol, Map<ResourceLocation, IPayloadHandler<?>>> CLIENTBOUND_HANDLERS = ImmutableMap.of(
+            ConnectionProtocol.CONFIGURATION, new HashMap<>(),
+            ConnectionProtocol.PLAY, new HashMap<>());
 
     protected static boolean setup = false;
 
@@ -140,8 +146,15 @@ public class NetworkRegistry {
      * @param optional  If the payload is optional. Any connection with missing non-optional payloads is denied.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T extends CustomPacketPayload, B extends FriendlyByteBuf> void register(CustomPacketPayload.Type<T> type, StreamCodec<? super B, T> codec, IPayloadHandler<T> handler,
-            List<ConnectionProtocol> protocols, Optional<PacketFlow> flow, String version, boolean optional) {
+    public static <T extends CustomPacketPayload, B extends FriendlyByteBuf> void register(
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super B, T> codec,
+            @Nullable IPayloadHandler<T> serverHandler,
+            @Nullable IPayloadHandler<T> clientHandler,
+            List<ConnectionProtocol> protocols,
+            Optional<PacketFlow> flow,
+            String version,
+            boolean optional) {
         if (setup) {
             throw new UnsupportedOperationException("Cannot register payload " + type.id() + " after registration phase.");
         }
@@ -158,7 +171,11 @@ public class NetworkRegistry {
             throw new UnsupportedOperationException("Cannot register payload " + type.id() + " using the domain \"minecraft\".");
         }
 
-        PayloadRegistration<T> reg = new PayloadRegistration(type, codec, handler, protocols, flow, version.strip(), optional);
+        PayloadRegistration<T> reg = new PayloadRegistration(type, codec, protocols, flow, version.strip(), optional);
+
+        if (reg.matchesFlow(PacketFlow.SERVERBOUND) && serverHandler == null) {
+            throw new IllegalArgumentException("Cannot register serverbound payload " + type.id() + " without a server-side handler");
+        }
 
         for (ConnectionProtocol protocol : protocols) {
             Map<ResourceLocation, PayloadRegistration<?>> byProtocol = PAYLOAD_REGISTRATIONS.get(protocol);
@@ -172,7 +189,32 @@ public class NetworkRegistry {
             }
 
             byProtocol.put(type.id(), reg);
+
+            if (serverHandler != null && reg.matchesFlow(PacketFlow.SERVERBOUND)) {
+                registerHandler(SERVERBOUND_HANDLERS, protocol, PacketFlow.SERVERBOUND, type, serverHandler);
+            }
+            if (clientHandler != null && reg.matchesFlow(PacketFlow.CLIENTBOUND)) {
+                registerHandler(CLIENTBOUND_HANDLERS, protocol, PacketFlow.CLIENTBOUND, type, clientHandler);
+            }
         }
+    }
+
+    protected static <T extends CustomPacketPayload> void registerHandler(
+            Map<ConnectionProtocol, Map<ResourceLocation, IPayloadHandler<?>>> handlers,
+            ConnectionProtocol protocol,
+            PacketFlow flow,
+            CustomPacketPayload.Type<T> type,
+            IPayloadHandler<T> handler) {
+        Map<ResourceLocation, IPayloadHandler<?>> byProtocol = handlers.get(protocol);
+        if (byProtocol == null) {
+            throw new UnsupportedOperationException("Cannot register handler for payload " + type.id() + " for unsupported protocol: " + protocol.name());
+        }
+
+        if (byProtocol.containsKey(type.id())) {
+            throw new UnsupportedOperationException("Duplicate " + flow.id() + " handler registration for payload " + type.id());
+        }
+
+        byProtocol.put(type.id(), handler);
     }
 
     /**
@@ -255,7 +297,7 @@ public class NetworkRegistry {
 
         ServerPayloadContext context = new ServerPayloadContext(listener, packet.payload().type().id());
 
-        if (PAYLOAD_REGISTRATIONS.containsKey(listener.protocol())) {
+        if (SERVERBOUND_HANDLERS.containsKey(listener.protocol())) {
             // Get the configuration channel for the packet.
             NetworkChannel channel = payloadSetup.getChannel(listener.protocol(), context.payloadId());
 
@@ -266,15 +308,15 @@ public class NetworkRegistry {
                 return;
             }
 
-            PayloadRegistration registration = PAYLOAD_REGISTRATIONS.get(listener.protocol()).get(context.payloadId());
-            if (registration == null) {
+            IPayloadHandler handler = SERVERBOUND_HANDLERS.get(listener.protocol()).get(context.payloadId());
+            if (handler == null) {
                 LOGGER.error("Received a modded payload {} with no registration; disconnecting.", context.payloadId());
                 listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (No Handler for %s)".formatted(NeoForgeVersion.getVersion(), context.payloadId().toString())));
                 dumpStackToLog(); // This case is only likely when handling packets without serialization, i.e. from a compound listener, so this can help debug why.
                 return;
             }
 
-            registration.handler().handle(packet.payload(), context);
+            handler.handle(packet.payload(), context);
         } else {
             LOGGER.error("Received a modded payload {} while not in the configuration or play phase; disconnecting.", context.payloadId());
             listener.disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (Invalid Protocol %s)".formatted(NeoForgeVersion.getVersion(), listener.protocol().name())));

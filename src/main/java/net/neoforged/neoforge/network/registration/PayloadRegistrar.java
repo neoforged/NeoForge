@@ -14,9 +14,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.network.handling.DummyPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Builder-style helper for registering {@link CustomPacketPayload}s, used for modded networking.
@@ -43,15 +43,15 @@ public class PayloadRegistrar {
      * Registers a client-bound payload for the play phase.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar playToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        register(type, reader, null, handler, List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
     /**
-     * Registers a client-bound payload for the play phase with a dummy handler that is later replaced via {@code RegisterClientPayloadHandlersEvent}.
+     * Registers a client-bound payload for the play phase without a handler. The missing handler must be registered via {@code RegisterClientPayloadHandlersEvent}.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar playToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader) {
-        register(type, reader, DummyPayloadHandler.instance(), List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        register(type, reader, null, null, List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
@@ -59,7 +59,7 @@ public class PayloadRegistrar {
      * Registers a server-bound payload for the play phase.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar playToServer(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.SERVERBOUND), version, optional);
+        register(type, reader, handler, null, List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.SERVERBOUND), version, optional);
         return this;
     }
 
@@ -67,9 +67,19 @@ public class PayloadRegistrar {
      * Registers a bidirectional payload for the play phase.
      * <p>
      * Consider using {@link DirectionalPayloadHandler} to wrap client and server handlers.
+     *
+     * @deprecated Use {@link #playBidirectional(CustomPacketPayload.Type, StreamCodec, IPayloadHandler, IPayloadHandler)} instead
      */
+    @Deprecated
     public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.PLAY), Optional.empty(), version, optional);
+        return this.playBidirectional(type, reader, handler, handler);
+    }
+
+    /**
+     * Registers a bidirectional payload for the play phase.
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
+        register(type, reader, serverHandler, clientHandler, List.of(ConnectionProtocol.PLAY), Optional.empty(), version, optional);
         return this;
     }
 
@@ -77,15 +87,15 @@ public class PayloadRegistrar {
      * Registers a client-bound payload for the configuration phase.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar configurationToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        register(type, reader, null, handler, List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
     /**
-     * Registers a client-bound payload for the configuration phase with a dummy handler that is later replaced via {@code RegisterClientPayloadHandlersEvent}.
+     * Registers a client-bound payload for the configuration phase without a handler. The missing handler must be registered via {@code RegisterClientPayloadHandlersEvent}.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar configurationToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader) {
-        register(type, reader, DummyPayloadHandler.instance(), List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        register(type, reader, null, null, List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
@@ -93,7 +103,7 @@ public class PayloadRegistrar {
      * Registers a server-bound payload for the configuration phase.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar configurationToServer(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.SERVERBOUND), version, optional);
+        register(type, reader, handler, null, List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.SERVERBOUND), version, optional);
         return this;
     }
 
@@ -101,9 +111,19 @@ public class PayloadRegistrar {
      * Registers a bidirectional payload for the configuration phase.
      * <p>
      * Consider using {@link DirectionalPayloadHandler} to wrap client and server handlers.
+     *
+     * @deprecated Use {@link #configurationBidirectional(CustomPacketPayload.Type, StreamCodec, IPayloadHandler, IPayloadHandler)} instead
      */
+    @Deprecated
     public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
+        return this.configurationBidirectional(type, reader, handler, handler);
+    }
+
+    /**
+     * Registers a bidirectional payload for the configuration phase.
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
+        register(type, reader, serverHandler, clientHandler, List.of(ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
         return this;
     }
 
@@ -111,15 +131,15 @@ public class PayloadRegistrar {
      * Registers a client-bound payload for all phases.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar commonToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        register(type, reader, null, handler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
     /**
-     * Registers a client-bound payload for all phases with a dummy handler that is later replaced via {@code RegisterClientPayloadHandlersEvent}.
+     * Registers a client-bound payload for all phases without a handler. The missing handler must be registered via {@code RegisterClientPayloadHandlersEvent}.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar commonToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader) {
-        register(type, reader, DummyPayloadHandler.instance(), List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        register(type, reader, null, null, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
@@ -127,7 +147,7 @@ public class PayloadRegistrar {
      * Registers a server-bound payload for all phases.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar commonToServer(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.SERVERBOUND), version, optional);
+        register(type, reader, handler, null, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.SERVERBOUND), version, optional);
         return this;
     }
 
@@ -135,9 +155,19 @@ public class PayloadRegistrar {
      * Registers a bidirectional payload for all phases.
      * <p>
      * Consider using {@link DirectionalPayloadHandler} to wrap client and server handlers.
+     *
+     * @deprecated Use {@link #commonBidirectional(CustomPacketPayload.Type, StreamCodec, IPayloadHandler, IPayloadHandler)} instead
      */
+    @Deprecated
     public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
-        register(type, reader, handler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
+        return this.commonBidirectional(type, reader, handler, handler);
+    }
+
+    /**
+     * Registers a bidirectional payload for all phases.
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
+        register(type, reader, serverHandler, clientHandler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
         return this;
     }
 
@@ -186,11 +216,23 @@ public class PayloadRegistrar {
         return clone;
     }
 
-    private <T extends CustomPacketPayload, B extends FriendlyByteBuf> void register(CustomPacketPayload.Type<T> type, StreamCodec<? super B, T> codec, IPayloadHandler<T> handler,
-            List<ConnectionProtocol> protocols, Optional<PacketFlow> flow, String version, boolean optional) {
+    private <T extends CustomPacketPayload, B extends FriendlyByteBuf> void register(
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<? super B, T> codec,
+            @Nullable IPayloadHandler<T> serverHandler,
+            @Nullable IPayloadHandler<T> clientHandler,
+            List<ConnectionProtocol> protocols,
+            Optional<PacketFlow> flow,
+            String version,
+            boolean optional) {
         if (this.thread == HandlerThread.MAIN) {
-            handler = new MainThreadPayloadHandler<>(handler);
+            if (serverHandler != null) {
+                serverHandler = new MainThreadPayloadHandler<>(serverHandler);
+            }
+            if (clientHandler != null) {
+                clientHandler = new MainThreadPayloadHandler<>(clientHandler);
+            }
         }
-        NetworkRegistry.register(type, codec, handler, protocols, flow, version, optional);
+        NetworkRegistry.register(type, codec, serverHandler, clientHandler, protocols, flow, version, optional);
     }
 }

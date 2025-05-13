@@ -12,7 +12,6 @@ import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
@@ -54,7 +53,8 @@ public class NetworkInitialization {
                 .configurationBidirectional(
                         FrozenRegistrySyncCompletedPayload.TYPE,
                         FrozenRegistrySyncCompletedPayload.STREAM_CODEC,
-                        new DirectionalPayloadHandler<>(ServerPayloadHandler::handle))
+                        ServerPayloadHandler::handle,
+                        null)
                 .configurationToClient(
                         KnownRegistryDataMapsPayload.TYPE,
                         KnownRegistryDataMapsPayload.STREAM_CODEC)

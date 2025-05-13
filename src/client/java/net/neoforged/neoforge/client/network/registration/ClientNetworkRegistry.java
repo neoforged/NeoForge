@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.chat.Component;
@@ -29,8 +28,6 @@ import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.filters.NetworkFilters;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.network.handling.DummyPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
 import net.neoforged.neoforge.network.negotiation.NegotiableNetworkComponent;
@@ -70,7 +67,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
 
         ModLoader.postEvent(new RegisterClientPayloadHandlersEvent());
 
-        List<ResourceLocation> dummyHandlers = PAYLOAD_REGISTRATIONS.values()
+        List<ResourceLocation> missingHandlers = PAYLOAD_REGISTRATIONS.values()
                 .stream()
                 .map(Map::values)
                 .flatMap(Collection::stream)
@@ -79,20 +76,18 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
                         return false;
                     }
 
-                    IPayloadHandler<?> handler = reg.handler();
-                    if (handler instanceof MainThreadPayloadHandler<?>(IPayloadHandler<?> innerHandler)) {
-                        handler = innerHandler;
+                    for (ConnectionProtocol protocol : reg.protocols()) {
+                        if (!CLIENTBOUND_HANDLERS.get(protocol).containsKey(reg.id())) {
+                            return true;
+                        }
                     }
-                    if (handler instanceof DirectionalPayloadHandler<?>(IPayloadHandler<?> clientSide, IPayloadHandler<?> ignored)) {
-                        handler = clientSide;
-                    }
-                    return handler == DummyPayloadHandler.instance();
+                    return false;
                 })
                 .map(PayloadRegistration::id)
                 .distinct()
                 .toList();
-        if (!dummyHandlers.isEmpty()) {
-            throw new IllegalStateException("Some clientbound payloads are missing client-side handlers: " + dummyHandlers);
+        if (!missingHandlers.isEmpty()) {
+            throw new IllegalStateException("Some clientbound payloads are missing client-side handlers: " + missingHandlers);
         }
 
         setupClient = true;
@@ -104,8 +99,15 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
             throw new UnsupportedOperationException("Cannot register client-side handler for payload " + type.id() + " after registration phase.");
         }
 
+        if (thread == HandlerThread.MAIN) {
+            handler = new MainThreadPayloadHandler<>(handler);
+        }
+
         boolean found = false;
-        for (Map<ResourceLocation, PayloadRegistration<?>> registrations : PAYLOAD_REGISTRATIONS.values()) {
+        for (var entry : PAYLOAD_REGISTRATIONS.entrySet()) {
+            ConnectionProtocol protocol = entry.getKey();
+            Map<ResourceLocation, PayloadRegistration<?>> registrations = entry.getValue();
+
             PayloadRegistration<T> registration = (PayloadRegistration<T>) registrations.get(type.id());
             if (registration == null) {
                 continue;
@@ -115,53 +117,13 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
                 throw new IllegalArgumentException("Cannot register client handler for serverbound payload " + type);
             }
 
-            IPayloadHandler<T> prevHandler = registration.handler();
             found = true;
 
-            HandlerThread prevThread = HandlerThread.NETWORK;
-            if (prevHandler instanceof MainThreadPayloadHandler<T>(IPayloadHandler<T> innerHandler)) {
-                prevHandler = innerHandler;
-                prevThread = HandlerThread.MAIN;
-            }
-            if (prevThread != thread) {
-                throw new IllegalArgumentException(String.format(
-                        Locale.ROOT,
-                        "Provided handler thread %s does not match handler thread %s specified during registration of payload %s",
-                        thread,
-                        prevThread,
-                        type));
-            }
-
-            if (prevHandler == DummyPayloadHandler.instance()) {
-                if (thread == HandlerThread.MAIN) {
-                    handler = new MainThreadPayloadHandler<>(handler);
-                }
-                registrations.put(type.id(), registration.withHandler(handler));
-            } else if (prevHandler instanceof DirectionalPayloadHandler<T>(IPayloadHandler<T> clientSide, IPayloadHandler<T> serverSide)) {
-                if (clientSide != DummyPayloadHandler.instance()) {
-                    throw duplicateRegistration(type, clientSide);
-                }
-
-                IPayloadHandler<T> newHandler = new DirectionalPayloadHandler<>(handler, serverSide);
-                if (thread == HandlerThread.MAIN) {
-                    newHandler = new MainThreadPayloadHandler<>(newHandler);
-                }
-                registrations.put(type.id(), registration.withHandler(newHandler));
-            } else {
-                throw duplicateRegistration(type, prevHandler);
-            }
+            registerHandler(CLIENTBOUND_HANDLERS, protocol, PacketFlow.CLIENTBOUND, type, handler);
         }
         if (!found) {
             throw new IllegalArgumentException("No known payload registration for type: " + type);
         }
-    }
-
-    private static IllegalStateException duplicateRegistration(CustomPacketPayload.Type<?> type, IPayloadHandler<?> prevHandler) {
-        return new IllegalStateException(String.format(
-                Locale.ROOT,
-                "Duplicate client handler registration for payload %s (existing handler: %s)",
-                type,
-                prevHandler));
     }
 
     /**
@@ -185,7 +147,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
         var payloadId = packet.payload().type().id();
         ClientPayloadContext context = new ClientPayloadContext(listener, payloadId);
 
-        if (PAYLOAD_REGISTRATIONS.containsKey(listener.protocol())) {
+        if (CLIENTBOUND_HANDLERS.containsKey(listener.protocol())) {
             // Get the configuration channel for the packet.
             NetworkChannel channel = payloadSetup.getChannel(listener.protocol(), payloadId);
 
@@ -196,15 +158,15 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
                 return;
             }
 
-            PayloadRegistration registration = PAYLOAD_REGISTRATIONS.get(listener.protocol()).get(payloadId);
-            if (registration == null) {
+            IPayloadHandler handler = CLIENTBOUND_HANDLERS.get(listener.protocol()).get(payloadId);
+            if (handler == null) {
                 LOGGER.error("Received a modded payload with no registration; disconnecting.");
                 listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (No Handler for %s)".formatted(NeoForgeVersion.getVersion(), payloadId.toString())));
                 dumpStackToLog(); // This case is only likely when handling packets without serialization, i.e. from a compound listener, so this can help debug why.
                 return;
             }
 
-            registration.handler().handle(packet.payload(), context);
+            handler.handle(packet.payload(), context);
         } else {
             LOGGER.error("Received a modded payload while not in the configuration or play phase. Disconnecting.");
             listener.getConnection().disconnect(Component.translatable("multiplayer.disconnect.incompatible", "NeoForge %s (Invalid Protocol %s)".formatted(NeoForgeVersion.getVersion(), listener.protocol().name())));
