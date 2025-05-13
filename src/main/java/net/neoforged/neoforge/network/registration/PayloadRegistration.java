@@ -47,4 +47,15 @@ public record PayloadRegistration<T extends CustomPacketPayload>(
     public boolean matchesFlow(PacketFlow flow) {
         return this.flow.isEmpty() || this.flow.get() == flow;
     }
+
+    public PayloadRegistration<T> withHandler(IPayloadHandler<T> newHandler) {
+        return new PayloadRegistration<>(
+                this.type,
+                this.codec,
+                newHandler,
+                this.protocols,
+                this.flow,
+                this.version,
+                this.optional);
+    }
 }

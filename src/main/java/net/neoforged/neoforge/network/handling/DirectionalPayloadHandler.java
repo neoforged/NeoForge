@@ -11,6 +11,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Helper class that merges two unidirectional handlers into a single bidirectional handler.
  */
 public record DirectionalPayloadHandler<T extends CustomPacketPayload>(IPayloadHandler<T> clientSide, IPayloadHandler<T> serverSide) implements IPayloadHandler<T> {
+    /**
+     * Convenience constructor for directional payload handlers whose client handler is later registered in {@code RegisterClientPayloadHandlersEvent}
+     */
+    public DirectionalPayloadHandler(IPayloadHandler<T> serverSide) {
+        this(DummyPayloadHandler.instance(), serverSide);
+    }
+
     @Override
     public void handle(T payload, IPayloadContext context) {
         if (context.flow().isClientbound()) {

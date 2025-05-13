@@ -31,7 +31,10 @@ public final class PacketDistributor {
 
     /**
      * Send the given payload(s) to the server
+     * 
+     * @deprecated Use {@code ClientPacketDistributor#sendToServer()} instead
      */
+    @Deprecated
     public static void sendToServer(CustomPacketPayload payload, CustomPacketPayload... payloads) {
         NeoForgeProxy.INSTANCE.sendToServer(payload, payloads);
     }

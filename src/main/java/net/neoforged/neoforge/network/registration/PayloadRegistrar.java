@@ -14,6 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.handling.DummyPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
 
@@ -47,6 +48,14 @@ public class PayloadRegistrar {
     }
 
     /**
+     * Registers a client-bound payload for the play phase with a dummy handler that is later replaced via {@code RegisterClientPayloadHandlersEvent}.
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar playToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader) {
+        register(type, reader, DummyPayloadHandler.instance(), List.of(ConnectionProtocol.PLAY), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        return this;
+    }
+
+    /**
      * Registers a server-bound payload for the play phase.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar playToServer(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
@@ -73,6 +82,14 @@ public class PayloadRegistrar {
     }
 
     /**
+     * Registers a client-bound payload for the configuration phase with a dummy handler that is later replaced via {@code RegisterClientPayloadHandlersEvent}.
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar configurationToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader) {
+        register(type, reader, DummyPayloadHandler.instance(), List.of(ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        return this;
+    }
+
+    /**
      * Registers a server-bound payload for the configuration phase.
      */
     public <T extends CustomPacketPayload> PayloadRegistrar configurationToServer(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
@@ -95,6 +112,14 @@ public class PayloadRegistrar {
      */
     public <T extends CustomPacketPayload> PayloadRegistrar commonToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader, IPayloadHandler<T> handler) {
         register(type, reader, handler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
+        return this;
+    }
+
+    /**
+     * Registers a client-bound payload for all phases with a dummy handler that is later replaced via {@code RegisterClientPayloadHandlersEvent}.
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar commonToClient(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> reader) {
+        register(type, reader, DummyPayloadHandler.instance(), List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.of(PacketFlow.CLIENTBOUND), version, optional);
         return this;
     }
 
