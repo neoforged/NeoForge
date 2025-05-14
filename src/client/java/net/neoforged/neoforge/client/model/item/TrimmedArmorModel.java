@@ -13,14 +13,15 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.item.BlockModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelState;
@@ -32,7 +33,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.model.ComposedModelState;
 import net.neoforged.neoforge.client.model.UnbakedElementsHelper;
 import org.jetbrains.annotations.Nullable;
@@ -45,29 +45,28 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, Op
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
 
-    private static final Object2ObjectMap<ResourceKey<TrimMaterial>, Function<ResourceLocation, ItemModel>> TRIM_LAYERS = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectMap<TextureAtlasSprite, ItemModel> TRIM_LAYERS = new Object2ObjectOpenHashMap<>();
 
     @Override
     public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
         this.base().update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
 
         if (stack.get(DataComponents.TRIM) != null) {
-            ResourceKey<TrimMaterial> key = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material().getKey();
-            TRIM_LAYERS.computeIfAbsent(key, this::createTrimLayer).apply(this.trimTexture()).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+            ResourceKey<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material().getKey();
+            boolean darker = this.darkerTrim().isPresent() && material.location().equals(this.darkerTrim().get());
+            var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + material.location().getPath() + (darker ? "_darker" : ""))), DEBUG_NAME);
+
+            TRIM_LAYERS.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
         }
     }
 
-    private Function<ResourceLocation, ItemModel> createTrimLayer(ResourceKey<TrimMaterial> material) {
-        return trimTex -> {
-            boolean darker = this.darkerTrim().isPresent() && material.location().equals(this.darkerTrim().get());
-            var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(trimTex.withSuffix("_" + material.location().getPath() + (darker ? "_darker" : ""))), DEBUG_NAME);
-            var renderProperties = new ModelRenderProperties(false, sprite, this.transforms());
+    private ItemModel createTrimLayer(TextureAtlasSprite sprite) {
+        var renderProperties = new ModelRenderProperties(false, sprite, this.transforms());
 
-            var unbaked = UnbakedElementsHelper.createUnbakedItemElements(0, sprite);
-            var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> sprite, TRIM_STATE);
+        var unbaked = UnbakedElementsHelper.createUnbakedItemElements(0, sprite);
+        var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> sprite, TRIM_STATE);
 
-            return new BlockModelWrapper(List.of(), quads, renderProperties, NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
-        };
+        return new BlockModelWrapper(List.of(), quads, renderProperties, Sheets.translucentItemSheet());
     }
     public record Unbaked(BlockModelWrapper.Unbaked baseModel, ResourceLocation trimTexture, Optional<ResourceLocation> darkerTrim) implements ItemModel.Unbaked {
 
