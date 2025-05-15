@@ -80,6 +80,7 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     public static class Applicable extends MobEffectEvent {
         protected Result result = Result.DEFAULT;
+        @Nullable
         private final Entity source;
 
         @ApiStatus.Internal
