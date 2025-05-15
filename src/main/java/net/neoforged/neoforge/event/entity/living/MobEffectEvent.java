@@ -80,10 +80,12 @@ public abstract class MobEffectEvent extends LivingEvent {
      */
     public static class Applicable extends MobEffectEvent {
         protected Result result = Result.DEFAULT;
+        private final Entity source;
 
         @ApiStatus.Internal
-        public Applicable(LivingEntity living, MobEffectInstance effectInstance) {
+        public Applicable(LivingEntity living, MobEffectInstance effectInstance, @Nullable Entity source) {
             super(living, effectInstance);
+            this.source = source;
         }
 
         @Override
@@ -105,6 +107,14 @@ public abstract class MobEffectEvent extends LivingEvent {
          */
         public Result getResult() {
             return this.result;
+        }
+
+        /**
+         * @return the entity source of the effect, or {@code null} if none exists
+         */
+        @Nullable
+        public Entity getEffectSource() {
+            return source;
         }
 
         /**

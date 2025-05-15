@@ -1501,10 +1501,11 @@ public class CommonHooks {
      *
      * @param entity The target entity the mob effect is being applied to.
      * @param effect The mob effect being applied.
+     * @param source The source entity who is applying the mob effect, or {@code null} if none exists.
      * @return True if the mob effect can be applied, otherwise false.
      */
-    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
-        var event = new MobEffectEvent.Applicable(entity, effect);
+    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect, @Nullable Entity source) {
+        var event = new MobEffectEvent.Applicable(entity, effect, source);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
     }
 
