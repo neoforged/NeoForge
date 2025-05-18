@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import java.util.function.Predicate;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +17,8 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
+import java.util.function.Predicate;
+
 public final class ResourceHandlerUtil {
     /**
      * PR NOTES: This is likely going to be a point of contention; do we limit a dev to be locked in at a readable number or do we let them have ~147million more points of data?
@@ -27,6 +28,8 @@ public final class ResourceHandlerUtil {
      * A near max int value intended to be easier to view in normal gameplay. (2E9)
      * While {@link Integer#MAX_VALUE} does tend to make sense as a structural upper bound it is far to often used at the player's expense of reading.
      * Anything breaking past this boundary (whether it is by storing a long internally or otherwise), the main request is to maintain rapid human readability.
+     * <p>
+     * <strong>Key point:</strong> Human readable
      */
     public static final int PRETTY_MAX_INT = 2000000000;
 
@@ -211,6 +214,10 @@ public final class ResourceHandlerUtil {
         return extracted;
     }
 
+    public static <T extends IResource> int getTotalAmountOf(IResourceHandler<T> handler, T resource) {
+        return extract(handler, resource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE);
+    }
+
     /**
      * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
      *
@@ -370,5 +377,5 @@ public final class ResourceHandlerUtil {
         context.insert(ItemResource.of(stack), stack.getCount(), TransferAction.EXECUTE);
     }
 
-    private ResourceHandlerUtil() {}
+    private ResourceHandlerUtil() { }
 }
