@@ -20,7 +20,7 @@
                  return false;
              }
 +        } else {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
++            return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
          }
      }
  
@@ -41,7 +41,7 @@
  
              return false;
 +        } else if (containerOrHandler.itemHandler() != null) {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
++            return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
          } else {
              boolean flag = p_155554_.isGridAligned()
                  && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
@@ -77,7 +77,7 @@
 +        if (blockItemHandler != null) {
 +            return new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
 +        }
-+        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
++        return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
 +    }
 +
      private static boolean canMergeItems(ItemStack p_59345_, ItemStack p_59346_) {

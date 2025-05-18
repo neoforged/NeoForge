@@ -28,20 +28,14 @@ public class PlayerInventoryHandler extends ContainerWrapper {
     @Override
     public boolean isValid(int index, ItemResource resource) {
         EquipmentSlot slot = getEquipmentSlot(index);
+
         return slot != null ? resource.canEquip(slot, player) : super.isValid(index, resource);
     }
 
     @Nullable
     protected EquipmentSlot getEquipmentSlot(int slot) {
-        Inventory inv = player.getInventory();
-        if (slot < inv.items.size()) {
-            return null;
-        }
-        int equipmentSlot = slot - inv.items.size();
-        if (equipmentSlot < inv.armor.size()) {
-            return EquipmentSlot.values()[equipmentSlot + 2];
-        }
-        return null;
+        if (slot < player.getInventory().getNonEquipmentItems().size()) return null;
+        return Inventory.EQUIPMENT_SLOT_MAPPING.get(slot);
     }
 
     @Override

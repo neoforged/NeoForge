@@ -51,7 +51,7 @@ public class CapabilityHooks {
     }
 
     public static void markProxyableCapabilities(RegisterCapabilitiesEvent event) {
-        event.setProxyable(Capabilities.EnergyStorage.BLOCK);
+        event.setProxyable(Capabilities.EnergyHandler.BLOCK);
         event.setProxyable(Capabilities.FluidHandler.BLOCK);
         event.setProxyable(Capabilities.ItemHandler.BLOCK);
     }
@@ -63,13 +63,11 @@ public class CapabilityHooks {
             // Return a wrapper that gets re-evaluated every time it is accessed
             // Invalidation is taken care of by the patches to ComposterBlock
 
-            //todo Git Commit checkpoint
-            //      return new DelegatingHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
             // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
             if (side == null) {
-                return new ForwardingItemHandler(() -> new InvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
+                return new DelegatingHandlerWrapper.Modifiable<>(() -> new ContainerWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
             } else {
-                return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
+                return new DelegatingHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
             }
         }, Blocks.COMPOSTER);
 
@@ -94,7 +92,7 @@ public class CapabilityHooks {
         for (var type : sidedVanillaContainers) {
             //todo
             //  WorldlyContainerWrapper::of
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, SidedInvWrapper::new);
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, WorldlyContainerWrapper::of);
         }
 
         var nonSidedVanillaContainers = List.of(
@@ -123,11 +121,7 @@ public class CapabilityHooks {
                 EntityType.PALE_OAK_CHEST_BOAT,
                 EntityType.CHEST_MINECART,
                 EntityType.HOPPER_MINECART);
-        //todo Soaryn's Notes
-        //        for (var entityType : containerEntities) {
-        //            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new ContainerWrapper(entity));
-        //            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new ContainerWrapper(entity));
-        //        }
+
         for (var entityType : containerEntities) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new ContainerWrapper(entity));
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new ContainerWrapper(entity));

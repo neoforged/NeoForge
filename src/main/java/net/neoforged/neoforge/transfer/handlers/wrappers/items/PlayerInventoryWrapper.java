@@ -31,16 +31,16 @@ public class PlayerInventoryWrapper extends CombinedResourceWrapper<ItemResource
 
     public static IResourceHandlerModifiable<ItemResource> ofInv(Player player) {
         PlayerInventoryHandler handler = new PlayerInventoryHandler(player);
-        return new RangedHandlerWrapper.Modifiable<>(handler, 0, player.getInventory().items.size());
+        return new RangedHandlerWrapper.Modifiable<>(handler, 0, player.getInventory().getNonEquipmentItems().size());
     }
 
     public static IResourceHandlerModifiable<ItemResource> ofHand(Player player, InteractionHand hand) {
         PlayerInventoryHandler handler = new PlayerInventoryHandler(player);
         var inv = player.getInventory();
-        return new HandlerIndexWrapper.Modifiable<>(handler, hand == InteractionHand.MAIN_HAND ? inv.selected : handler.size() - 1);
+        return new HandlerIndexWrapper.Modifiable<>(handler, hand == InteractionHand.MAIN_HAND ? inv.getSelectedSlot() : handler.size() - 1);
     }
 
     public static IResourceHandlerModifiable<ItemResource> ofArmor(Player player) {
-        return new RangedHandlerWrapper.Modifiable<>(new PlayerInventoryHandler(player), player.getInventory().items.size(), player.getInventory().items.size() + player.getInventory().armor.size());
+        return new RangedHandlerWrapper.Modifiable<>(new PlayerInventoryHandler(player), player.getInventory().getNonEquipmentItems().size(), player.getInventory().getContainerSize());
     }
 }

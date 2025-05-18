@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +30,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -99,7 +98,7 @@ public class FluidUtilTest {
         var waterOf1BucketAmount = new ResourceStack<>(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
 
         if (!(helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null) instanceof IResourceHandlerModifiable<FluidResource> handler)) {
-            throw new GameTestAssertException("The returned capability was not a Modifiable resource handler");
+            throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
 
         //It can store 4 buckets, but we are setting to 1

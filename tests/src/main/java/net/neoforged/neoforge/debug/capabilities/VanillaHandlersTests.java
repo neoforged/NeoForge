@@ -7,7 +7,7 @@ package net.neoforged.neoforge.debug.capabilities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluids;
@@ -114,7 +114,7 @@ public class VanillaHandlersTests {
 
         // Excecute tests
         helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.EXECUTE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
-        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, () -> "Expected level 3 cauldron");
+        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, (state) -> Component.literal("Expected level 3 cauldron: %s".formatted(state)));
         helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
         helper.assertValueEqual(wrapper.getAmount(0), FluidType.BUCKET_VOLUME, "Should match a bucket");
 

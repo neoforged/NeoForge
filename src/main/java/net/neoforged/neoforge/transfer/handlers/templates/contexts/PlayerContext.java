@@ -26,7 +26,7 @@ public class PlayerContext implements IItemContext {
             ItemStack itemInHand = player.getItemInHand(hand);
             return new CreativePlayerContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
         }
-        return new PlayerContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : player.getInventory().getContainerSize() - 1);
+        return new PlayerContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : player.getInventory().getContainerSize() - 1);
     }
 
     public static IItemContext ofArmor(Player player, EquipmentSlot slot) {

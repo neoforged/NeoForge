@@ -5,19 +5,19 @@
                  if (!itemstack.isEmpty()) {
                      Direction direction = p_52944_.getBlockState(p_52945_).getValue(FACING);
 -                    Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
-+                    com.mojang.datafixers.util.Either<Container, net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler<net.neoforged.neoforge.transfer.resources.ItemResource>> containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
++                    net.neoforged.neoforge.items.ContainerOrHandler containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
                      ItemStack itemstack1;
 -                    if (container == null) {
-+                    if (containerOrHandler == null) {
++                    if (containerOrHandler.isEmpty()) {
                          itemstack1 = DISPENSE_BEHAVIOUR.dispense(blocksource, itemstack);
                      } else {
 -                        itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, container, itemstack.copyWithCount(1), direction.getOpposite());
-+                        if (containerOrHandler.left().isPresent()) {
-+                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, containerOrHandler.left().get(), itemstack.copyWithCount(1), direction.getOpposite());
++                        if (containerOrHandler.container() != null) {
++                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, containerOrHandler.container(), itemstack.copyWithCount(1), direction.getOpposite());
 +                        } else {
 +                            itemstack1 = itemstack;
-+                            //noinspection OptionalGetWithoutIsPresent Checked with null and left check
-+                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.right().get(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack),1, net.neoforged.neoforge.transfer.TransferAction.EXECUTE);
++                            //noinspection DataFlowIssue
++                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack),1, net.neoforged.neoforge.transfer.TransferAction.EXECUTE);
 +                            itemstack1.shrink(accepted);
 +                        }
                          if (itemstack1.isEmpty()) {

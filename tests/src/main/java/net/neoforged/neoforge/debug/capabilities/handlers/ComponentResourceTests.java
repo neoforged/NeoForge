@@ -7,8 +7,6 @@ package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -29,6 +27,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 
 // Tests component storages on ItemStacks as well as the handler logic for those components. Also validates the Codec and Stream codec
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.component.")
@@ -119,7 +118,7 @@ public class ComponentResourceTests {
         //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
         var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP) instanceof IResourceHandlerModifiable<ItemResource> blockHandler)) {
-            throw new GameTestAssertException("The returned capability was not a Modifiable resource handler");
+            throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
         var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
         blockHandler.insert(applesWithContents, 2, TransferAction.EXECUTE);

@@ -9,7 +9,17 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -125,12 +_,13 @@
+@@ -102,6 +_,9 @@
+     protected static final int APPROXIMATELY_INFINITE_USE_DURATION = 72000;
+     private final Holder.Reference<Item> builtInRegistryHolder = BuiltInRegistries.ITEM.createIntrusiveHolder(this);
+     private DataComponentMap components;
++
++    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.ItemResource> defaultResource;
++
+     @Nullable
+     private final Item craftingRemainingItem;
+     protected final String descriptionId;
+@@ -125,12 +_,18 @@
          this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -21,10 +31,15 @@
              }
          }
 +        this.canCombineRepair = p_41383_.canCombineRepair;
++        defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.ItemResource.invalidateDefault(this));
++    }
++
++    public final net.neoforged.neoforge.transfer.resources.ItemResource defaultResource() {
++        return this.defaultResource.get();
      }
  
      @Deprecated
-@@ -142,6 +_,15 @@
+@@ -142,6 +_,16 @@
          return this.components;
      }
  
@@ -35,6 +50,7 @@
 +        var builder = DataComponentMap.builder().addAll(components);
 +        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
 +        components = Properties.validateComponents(builder.build());
++        defaultResource.invalidate();
 +    }
 +
      public int getDefaultMaxStackSize() {

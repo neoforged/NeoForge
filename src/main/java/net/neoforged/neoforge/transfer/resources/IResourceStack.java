@@ -38,8 +38,7 @@ public interface IResourceStack<T extends IResource> {
      * @param <TResource>   the resource type
      * @return a codec for a resource stack
      */
-    static <TResource extends IResource, TStack extends IResourceStack<TResource>>
-    Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(IResourceStack<TResource>::resource),
                 ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)).apply(instance, factory));

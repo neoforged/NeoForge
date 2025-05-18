@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import com.mojang.datafixers.util.Either;
 import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
@@ -16,6 +15,7 @@ import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ContainerOrHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
@@ -94,7 +94,7 @@ public class VanillaInventoryCodeHooks {
 //        return true;
 //    }
 
-    public static @Nullable Either<Container, IResourceHandler<ItemResource>> getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
+    public static ContainerOrHandler getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
         List<Entity> list = level.getEntities(
                 (Entity) null,
                 new AABB(x - 0.5D, y - 0.5D, z - 0.5D, x + 0.5D, y + 0.5D, z + 0.5D),
@@ -108,13 +108,13 @@ public class VanillaInventoryCodeHooks {
         if (!list.isEmpty()) {
             var entity = list.get(level.random.nextInt(list.size()));
             if (entity instanceof Container container) {
-                return Either.left(container);//new ContainerOrHandler(container, null);
+                return ContainerOrHandler.container(container);//new ContainerOrHandler(container, null);
             }
             IResourceHandler<ItemResource> entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
             if (entityCap != null) { // Could be null even if it wasn't in the entity predicate above.
-                return Either.right(entityCap);//new ContainerOrHandler(null, entityCap);
+                return ContainerOrHandler.handler(entityCap);//new ContainerOrHandler(null, entityCap);
             }
         }
-        return null; //Optional.empty();
+        return ContainerOrHandler.EMPTY; //Optional.empty();
     }
 }

@@ -1,5 +1,27 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
+@@ -28,6 +_,8 @@
+     public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
+     protected final StateDefinition<Fluid, FluidState> stateDefinition;
+     private FluidState defaultFluidState;
++    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.FluidResource> defaultResource;
++
+     private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
+ 
+     protected Fluid() {
+@@ -35,6 +_,12 @@
+         this.createFluidStateDefinition(builder);
+         this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
+         this.registerDefaultState(this.stateDefinition.any());
++        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.FluidResource.invalidateDefault(this));
++
++    }
++
++    public final net.neoforged.neoforge.transfer.resources.FluidResource defaultResource() {
++        return this.defaultResource.get();
+     }
+ 
+     protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76121_) {
 @@ -64,6 +_,9 @@
      }
  
