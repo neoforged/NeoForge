@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/EquipmentSlot.java
 +++ b/net/minecraft/world/entity/EquipmentSlot.java
-@@ -53,6 +_,10 @@
+@@ -54,6 +_,10 @@
          return p_147069_ + this.index;
      }
  
