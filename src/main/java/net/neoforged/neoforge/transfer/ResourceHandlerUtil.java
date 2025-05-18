@@ -27,6 +27,8 @@ public final class ResourceHandlerUtil {
      * A near max int value intended to be easier to view in normal gameplay. (2E9)
      * While {@link Integer#MAX_VALUE} does tend to make sense as a structural upper bound it is far to often used at the player's expense of reading.
      * Anything breaking past this boundary (whether it is by storing a long internally or otherwise), the main request is to maintain rapid human readability.
+     * <p>
+     * <strong>Key point:</strong> Human readable
      */
     public static final int PRETTY_MAX_INT = 2000000000;
 
@@ -209,6 +211,10 @@ public final class ResourceHandlerUtil {
         }
 
         return extracted;
+    }
+
+    public static <T extends IResource> int getTotalAmountOf(IResourceHandler<T> handler, T resource) {
+        return extract(handler, resource, ResourceHandlerUtil.PRETTY_MAX_INT, TransferAction.SIMULATE);
     }
 
     /**
