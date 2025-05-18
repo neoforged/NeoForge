@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import java.util.function.Predicate;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +16,8 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHa
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+
+import java.util.function.Predicate;
 
 public final class ResourceHandlerUtil {
     /**
@@ -376,5 +377,5 @@ public final class ResourceHandlerUtil {
         context.insert(ItemResource.of(stack), stack.getCount(), TransferAction.EXECUTE);
     }
 
-    private ResourceHandlerUtil() {}
+    private ResourceHandlerUtil() { }
 }
