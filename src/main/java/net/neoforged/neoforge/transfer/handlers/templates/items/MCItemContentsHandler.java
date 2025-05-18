@@ -86,7 +86,6 @@ public class MCItemContentsHandler implements IResourceHandlerModifiable<ItemRes
     public void set(int index, ItemResource resource, int amount) {
         ItemContainerContents contents = getContents();
         contents.getStackInSlot(index).setCount(amount);
-        //The amount here was 0. Why? ADRIAN&SOARYN
         setAndValidate(contents, amount, TransferAction.EXECUTE);
     }
 

@@ -7,7 +7,6 @@ Essentially a todo list and some notes:
     > Aggregate and other wrappers may need to have some polish.  As an example, old insert in AggregateResourceHandler would never really work would it? You'd get to the first one that returned 0 and just stop.
           We may want to remake those wrappers from scratch.
     > MutableResourceStack - Provides a mutable quantity for slots
-    > Reworked ResourceStorageContents to use said mutable, but I am still thinking we should just remove the class/record and just make it be a NotNullList that lives on the ResourceStorage
     > Renamed VoidHandler to ResourceVoidHandler
     > The HandlerUtil's checks for is Full I think would lead to faulty results. Just wanted to note this just incase.
     > We need to be sure to emphasize that allowsExtraction/Insertion are PURELY hints for callers, as I noticed a few places that were in the middle of logic.

@@ -10,6 +10,7 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +36,20 @@ public class WorldlyContainerWrapper extends ContainerWrapper {
     @Override
     public WorldlyContainer getContainer() {
         return (WorldlyContainer) super.getContainer();
+    }
+
+    @Override
+    public int extract(int index, ItemResource resource, int amount, TransferAction action) {
+        if (side != null && !getContainer().canTakeItemThroughFace(index, resource.toStack(), side))
+            return 0;
+        return super.extract(index, resource, amount, action);
+    }
+
+    @Override
+    public int insert(int index, ItemResource resource, int amount, TransferAction action) {
+        if (side != null && !getContainer().canPlaceItemThroughFace(index, resource.toStack(), side))
+            return 0;
+        return super.insert(index, resource, amount, action);
     }
 
     @Override

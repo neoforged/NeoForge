@@ -119,4 +119,16 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
     public Container getContainer() {
         return container;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ContainerWrapper that)) return false;
+        return container.equals(that.container);
+    }
+
+    @Override
+    public int hashCode() {
+        return container.hashCode() * 31;
+    }
 }
