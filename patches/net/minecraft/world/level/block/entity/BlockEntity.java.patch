@@ -1,17 +1,18 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -26,8 +_,9 @@
+@@ -32,9 +_,10 @@
  import net.minecraft.world.level.block.state.BlockState;
  import org.slf4j.Logger;
  
 -public abstract class BlockEntity implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
 +public abstract class BlockEntity extends net.neoforged.neoforge.attachment.AttachmentHolder implements net.neoforged.neoforge.common.extensions.IBlockEntityExtension {
+     private static final Codec<BlockEntityType<?>> TYPE_CODEC = BuiltInRegistries.BLOCK_ENTITY_TYPE.byNameCodec();
      private static final Logger LOGGER = LogUtils.getLogger();
 +    @Deprecated // Neo: always use getType()
      private final BlockEntityType<?> type;
      @Nullable
      protected Level level;
-@@ -35,6 +_,8 @@
+@@ -42,6 +_,8 @@
      protected boolean remove;
      private BlockState blockState;
      private DataComponentMap components = DataComponentMap.EMPTY;
@@ -20,7 +21,7 @@
  
      public BlockEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
          this.type = p_155228_;
-@@ -50,7 +_,7 @@
+@@ -57,7 +_,7 @@
      }
  
      public boolean isValidBlockState(BlockState p_353131_) {
@@ -28,17 +29,17 @@
 +        return this.getType().isValid(p_353131_); // Neo: use getter so correct type is checked for modded subclasses
      }
  
-     public static BlockPos getPosFromTag(CompoundTag p_187473_) {
-@@ -71,6 +_,8 @@
+     public static BlockPos getPosFromTag(ChunkPos p_412201_, CompoundTag p_187473_) {
+@@ -89,6 +_,8 @@
      }
  
      protected void loadAdditional(CompoundTag p_338466_, HolderLookup.Provider p_338445_) {
-+        if (p_338466_.contains("NeoForgeData", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.customPersistentData = p_338466_.getCompound("NeoForgeData");
-+        if (p_338466_.contains(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND)) deserializeAttachments(p_338445_, p_338466_.getCompound(ATTACHMENTS_NBT_KEY));
++        p_338466_.getCompound("NeoForgeData").ifPresent(neoData -> this.customPersistentData = neoData);
++        p_338466_.getCompound(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(p_338445_, attachments));
      }
  
      public final void loadWithComponents(CompoundTag p_338356_, HolderLookup.Provider p_338558_) {
-@@ -86,6 +_,9 @@
+@@ -102,6 +_,9 @@
      }
  
      protected void saveAdditional(CompoundTag p_187471_, HolderLookup.Provider p_323635_) {
@@ -48,7 +49,7 @@
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {
-@@ -208,10 +_,14 @@
+@@ -211,10 +_,14 @@
  
      public void setRemoved() {
          this.remove = true;
@@ -62,11 +63,13 @@
 +        invalidateCapabilities();
      }
  
-     public boolean triggerEvent(int p_58889_, int p_58890_) {
-@@ -234,6 +_,27 @@
-         return this.type;
-     }
+     public void preRemoveSideEffects(BlockPos p_394577_, BlockState p_394161_) {
+@@ -244,6 +_,27 @@
  
+     public BlockEntityType<?> getType() {
+         return this.type;
++    }
++
 +    @Override
 +    public CompoundTag getPersistentData() {
 +        if (this.customPersistentData == null)
@@ -86,24 +89,6 @@
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        setChanged();
 +        return super.removeData(type);
-+    }
-+
-     @Deprecated
-     public void setBlockState(BlockState p_155251_) {
-         this.validateBlockState(p_155251_);
-@@ -314,5 +_,15 @@
-         <T> T get(DataComponentType<T> p_338658_);
- 
-         <T> T getOrDefault(DataComponentType<? extends T> p_338573_, T p_338734_);
-+
-+        // Neo: Utility for modded component types, to remove the need to invoke '.value()'
-+        @Nullable
-+        default <T> T get(java.util.function.Supplier<? extends DataComponentType<T>> componentType) {
-+            return get(componentType.get());
-+        }
-+
-+        default <T> T getOrDefault(java.util.function.Supplier<? extends DataComponentType<T>> componentType, T value) {
-+            return getOrDefault(componentType.get(), value);
-+        }
      }
- }
+ 
+     @Deprecated

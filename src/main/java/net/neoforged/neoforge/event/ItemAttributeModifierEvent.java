@@ -133,7 +133,7 @@ public class ItemAttributeModifierEvent extends Event {
      * {@linkplain #getDefaultModifiers() default modifiers} if no changes were made.
      */
     public ItemAttributeModifiers build() {
-        return this.builder == null ? this.defaultModifiers : this.builder.build(this.defaultModifiers.showInTooltip());
+        return this.builder == null ? this.defaultModifiers : this.builder.build();
     }
 
     /**
@@ -247,8 +247,8 @@ public class ItemAttributeModifierEvent extends Event {
             this.entriesByKey.clear();
         }
 
-        public ItemAttributeModifiers build(boolean showInTooltip) {
-            return new ItemAttributeModifiers(ImmutableList.copyOf(this.entries), showInTooltip);
+        public ItemAttributeModifiers build() {
+            return new ItemAttributeModifiers(ImmutableList.copyOf(this.entries));
         }
 
         /**

@@ -50,6 +50,12 @@ public class CapabilityHooks {
         initFinished = true;
     }
 
+    public static void markProxyableCapabilities(RegisterCapabilitiesEvent event) {
+        event.setProxyable(Capabilities.EnergyStorage.BLOCK);
+        event.setProxyable(Capabilities.FluidHandler.BLOCK);
+        event.setProxyable(Capabilities.ItemHandler.BLOCK);
+    }
+
     public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
         // Blocks
         var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
@@ -57,9 +63,14 @@ public class CapabilityHooks {
             // Return a wrapper that gets re-evaluated every time it is accessed
             // Invalidation is taken care of by the patches to ComposterBlock
 
-            //Should we return one with side == null?
+            //todo Git Commit checkpoint
+            //      return new DelegatingHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
             // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-            return new DelegatingHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
+            if (side == null) {
+                return new ForwardingItemHandler(() -> new InvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
+            } else {
+                return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
+            }
         }, Blocks.COMPOSTER);
 
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
@@ -74,15 +85,16 @@ public class CapabilityHooks {
             return new HopperWrapper(hopper);
         });
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.SHULKER_BOX, WorldlyContainerWrapper::of);
-
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
                 BlockEntityType.BREWING_STAND,
                 BlockEntityType.FURNACE,
-                BlockEntityType.SMOKER);
+                BlockEntityType.SMOKER,
+                BlockEntityType.SHULKER_BOX);
         for (var type : sidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, WorldlyContainerWrapper::of);
+            //todo
+            //  WorldlyContainerWrapper::of
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, SidedInvWrapper::new);
         }
 
         var nonSidedVanillaContainers = List.of(
@@ -108,37 +120,22 @@ public class CapabilityHooks {
                 EntityType.OAK_CHEST_BOAT,
                 EntityType.SPRUCE_CHEST_BOAT,
                 EntityType.BAMBOO_CHEST_RAFT,
+                EntityType.PALE_OAK_CHEST_BOAT,
                 EntityType.CHEST_MINECART,
                 EntityType.HOPPER_MINECART);
+        //todo Soaryn's Notes
+        //        for (var entityType : containerEntities) {
+        //            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new ContainerWrapper(entity));
+        //            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new ContainerWrapper(entity));
+        //        }
         for (var entityType : containerEntities) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new ContainerWrapper(entity));
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new ContainerWrapper(entity));
         }
         event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInventoryWrapper(player));
-        //ADRIAN&SOARYN: Isn't this handled in the fallback?
-//        // Register to all entity types to make sure we support all living entity subclasses.
-//        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-//            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
-//                if (entity instanceof AbstractHorse horse)
-//                    return new ContainerWrapper(horse.getInventory());
-//                else if (entity instanceof LivingEntity livingEntity)
-//                    return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
-//
-//                return null;
-//            });
-//        }
 
         // Items
-        //THESE are handled in the fallback. Registering them twice seems wasteful and providing them twice defeats the fallback
-        //        for (Item item : BuiltInRegistries.ITEM) {
-        //            if (item.getClass() == BucketItem.class)
-        //                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), item);
-        //        }
-        //        if (NeoForgeMod.MILK.isBound()) {
-        //            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketHandler(ctx), Items.MILK_BUCKET);
-        //        }
-        event.registerItem(
-                Capabilities.ItemHandler.ITEM, (stack, ctx) -> ctx == null ? null : new MCItemContentsHandler(ctx, DataComponents.CONTAINER, 27),
+        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> ctx == null ? null : new MCItemContentsHandler(ctx, DataComponents.CONTAINER, 27),
                 Items.SHULKER_BOX,
                 Items.BLACK_SHULKER_BOX,
                 Items.BLUE_SHULKER_BOX,

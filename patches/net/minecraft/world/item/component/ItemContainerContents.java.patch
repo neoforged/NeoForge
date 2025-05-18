@@ -1,25 +1,9 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -47,6 +_,13 @@
-             this.items.set(i, p_331046_.get(i));
+@@ -164,6 +_,35 @@
          }
      }
-+    //TODO LOOK INTO THIS SOMETIME
-+    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount){
-+        var stacks =new ArrayList<>(this.items);
-+        stacks.set(index, resource.toStack(amount));
-+        return fromItems(stacks);
-+    }
-+
  
-     private static ItemContainerContents fromSlots(List<ItemContainerContents.Slot> p_331424_) {
-         OptionalInt optionalint = p_331424_.stream().mapToInt(ItemContainerContents.Slot::index).max();
-@@ -144,6 +_,35 @@
-     @Override
-     public int hashCode() {
-         return this.hashCode;
-+    }
-+
 +    /**
 +     * Neo:
 +     * {@return the number of slots in this container}
@@ -47,6 +31,8 @@
 +        if (slot < 0 || slot >= getSlots()) {
 +            throw new UnsupportedOperationException("Slot " + slot + " not in valid range - [0," + getSlots() + ")");
 +        }
-     }
- 
-     static record Slot(int index, ItemStack item) {
++    }
++
+     record Slot(int index, ItemStack item) {
+         public static final Codec<ItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(
+             p_331695_ -> p_331695_.group(

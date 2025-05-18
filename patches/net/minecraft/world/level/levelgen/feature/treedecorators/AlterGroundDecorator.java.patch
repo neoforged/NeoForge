@@ -1,8 +1,8 @@
 --- a/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
 +++ b/net/minecraft/world/level/levelgen/feature/treedecorators/AlterGroundDecorator.java
-@@ -37,19 +_,20 @@
-         }
- 
+@@ -26,19 +_,20 @@
+     public void place(TreeDecorator.Context p_225969_) {
+         List<BlockPos> list = TreeFeature.getLowestTrunkOrRootOfTree(p_225969_);
          if (!list.isEmpty()) {
 +            var eventProvider = net.neoforged.neoforge.event.EventHooks.alterGround(p_225969_, list, this.provider::getState);
              int i = list.get(0).getY();
@@ -26,7 +26,7 @@
                      }
                  }
              });
-@@ -57,20 +_,28 @@
+@@ -46,20 +_,28 @@
      }
  
      private void placeCircle(TreeDecorator.Context p_225971_, BlockPos p_225972_) {

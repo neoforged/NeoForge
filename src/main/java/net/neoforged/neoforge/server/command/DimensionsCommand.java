@@ -24,7 +24,7 @@ class DimensionsCommand {
         return Commands.literal("dimensions")
                 .requires(cs -> cs.hasPermission(0)) //permission
                 .executes(ctx -> {
-                    ctx.getSource().sendSuccess(() -> Component.translatable("commands.neoforge.dimensions.list"), true);
+                    ctx.getSource().sendSuccess(() -> CommandUtils.makeTranslatableWithFallback("commands.neoforge.dimensions.list"), true);
                     final Registry<DimensionType> reg = ctx.getSource().registryAccess().lookupOrThrow(Registries.DIMENSION_TYPE);
 
                     Map<ResourceLocation, List<Component>> types = new HashMap<>();

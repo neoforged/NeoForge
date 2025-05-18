@@ -1,14 +1,5 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -219,7 +_,7 @@
-             JfrCommand.register(this.dispatcher);
-         }
- 
--        if (SharedConstants.IS_RUNNING_IN_IDE) {
-+        if (net.neoforged.neoforge.gametest.GameTestHooks.isGametestEnabled()) {
-             TestCommand.register(this.dispatcher);
-             RaidCommand.register(this.dispatcher, p_230944_);
-             DebugPathCommand.register(this.dispatcher);
 @@ -253,6 +_,7 @@
          if (p_230943_.includeIntegrated) {
              PublishCommand.register(this.dispatcher);
@@ -34,7 +25,7 @@
          Profiler.get().push(() -> "/" + p_242841_);
          ContextChain<CommandSourceStack> contextchain = finishParsing(p_242844_, p_242841_, commandsourcestack);
  
-@@ -367,7 +_,8 @@
+@@ -366,7 +_,8 @@
          Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
          RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
          map.put(this.dispatcher.getRoot(), rootcommandnode);

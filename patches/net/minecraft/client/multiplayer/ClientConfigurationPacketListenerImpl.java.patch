@@ -31,7 +31,7 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -136,12 +_,20 @@
+@@ -136,14 +_,22 @@
                          this.serverCookies,
                          this.chatState,
                          this.customReportDetails,
@@ -49,12 +49,14 @@
 +        }
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.onConfigurationFinished(this);
          this.connection.send(ServerboundFinishConfigurationPacket.INSTANCE);
--        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen)));
-+        this.connection.setupOutboundProtocol(GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType)));
-     }
- 
-     @Override
-@@ -153,5 +_,51 @@
+         this.connection
+             .setupOutboundProtocol(
+-                GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen), new GameProtocols.Context() {
++                GameProtocols.SERVERBOUND_TEMPLATE.bind(RegistryFriendlyByteBuf.decorator(registryaccess$frozen, this.connectionType), new GameProtocols.Context() {
+                     @Override
+                     public boolean hasInfiniteMaterials() {
+                         return true;
+@@ -161,5 +_,51 @@
      public void onDisconnect(DisconnectionDetails p_351005_) {
          super.onDisconnect(p_351005_);
          this.minecraft.clearDownloadedResourcePacks();

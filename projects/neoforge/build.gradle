@@ -1,6 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
+import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 
 plugins {
@@ -19,7 +20,7 @@ evaluationDependsOn(":neoforge-coremods")
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '21.3'
+    from '21.4'
     disableAutomaticPublicationRegistration()
 }
 
@@ -31,6 +32,18 @@ sourceSets {
         resources {
             srcDirs rootProject.file('src/main/resources'), rootProject.file('src/generated/resources')
         }
+    }
+    client {
+        java {
+            srcDirs rootProject.file('src/client/java')
+        }
+    }
+}
+
+java {
+    registerFeature('client') {
+        usingSourceSet(sourceSets.client)
+        disablePublication()
     }
 }
 
@@ -51,13 +64,20 @@ final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeo
 checkJarCompatibility {
     isAPI = true
     baseJar = createCompatJar.flatMap { it.output }
+    inputJar = tasks.named("joinedJar", Jar).flatMap { it.archiveFile }
 }
+
+// We don't want to include client in non-client runs,
+// however the name of the ModModel must be minecraft for FML to work.
+// Since we need both mods to be named minecraft we create them manually.
+ext.commonMod = objects.newInstance(ModModel, "minecraft")
+commonMod.sourceSet sourceSets.main
+ext.joinedMod = objects.newInstance(ModModel, "minecraft")
+joinedMod.sourceSet sourceSets.main
+joinedMod.sourceSet sourceSets.client
 
 neoDev {
     mods {
-        minecraft {
-            sourceSet sourceSets.main
-        }
         "neoforge-coremods" {
             sourceSet project(":neoforge-coremods").sourceSets.main
         }
@@ -114,7 +134,6 @@ dependencies {
     libraries "net.jodah:typetools:${project.typetools_version}"
     libraries "net.minecrell:terminalconsoleappender:${project.terminalconsoleappender_version}"
     libraries("net.fabricmc:sponge-mixin:${project.mixin_version}") { transitive = false }
-    libraries "org.openjdk.nashorn:nashorn-core:${project.nashorn_core_version}"
     libraries ("net.neoforged:JarJarSelector:${project.jarjar_version}") {
         exclude group: 'org.slf4j'
     }
@@ -133,26 +152,48 @@ dependencies {
     // Must be implementation instead of compileOnly so that running dependent projects such as tests will trigger (re)compilation of coremods.
     // (Only needed when compiling through IntelliJ non-delegated builds - otherwise `compileOnly` would work).
     implementation(jarJar(project(":neoforge-coremods")))
+
+    clientApi(project(":neoforge")) {
+        capabilities {
+            requireCapability 'net.neoforged:neoforge'
+        }
+    }
+}
+
+// Select runtimeElements rather than universalJar from the main source set
+// If you don't believe it... try to remove this block, and run the following command:
+// gradlew :neoforge:dependencyInsight --configuration clientRuntimeClasspath --dependency net.neoforged:neoforge --scan
+configurations.clientRuntimeClasspath {
+    attributes {
+        attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
+    }
 }
 
 neoDev {
     runs {
         configureEach {
             gameDirectory = layout.projectDir.dir("run/$name")
+            systemProperty("terminal.ansi", "true")
         }
         client {
             client()
+            sourceSet = sourceSets.client
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
         }
         server {
             server()
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
         }
         gameTestServer {
             type = "gameTestServer"
+            loadedMods = [commonMod, neoDev.mods."neoforge-coremods"]
         }
         data {
             // We perform client and server datagen in a single clientData run to avoid
             // having to juggle two generated resources folders and two runs for no additional benefit.
             clientData()
+            sourceSet = sourceSets.main
+            loadedMods = [joinedMod, neoDev.mods."neoforge-coremods"]
             programArguments.addAll '--mod', 'neoforge', '--flat', '--all', '--validate',
                     '--existing', rootProject.file("src/main/resources").absolutePath,
                     '--output', rootProject.file("src/generated/resources").absolutePath
@@ -171,6 +212,18 @@ generateAccessTransformers {
             'render state shards', PUBLIC,
             named('net/minecraft/client/renderer/RenderStateShard'),
             fieldsOfType(classesWithSuperclass('net/minecraft/client/renderer/RenderStateShard'))
+    )
+    // Make all composite state builder methods public
+    methodGroup(
+            'composite state builder methods', PUBLIC,
+            named('net/minecraft/client/renderer/RenderType$CompositeState$CompositeStateBuilder'),
+            not(named('<init>'))
+    )
+    // Make all render pipeline snippet fields public
+    fieldGroup(
+            'render pipeline snippets', PUBLIC,
+            named('net/minecraft/client/renderer/RenderPipelines'),
+            fieldsOfType(named('com/mojang/blaze3d/pipeline/RenderPipeline$Snippet'))
     )
 
     // Make all block constructors public so they can be used by mods
@@ -265,6 +318,12 @@ javaComponent.withVariantsFromConfiguration(configurations.runtimeElements) {
 
 // Resolvable configurations only
 configurations {
+    runtimeElements {
+        attributes {
+            // Add an attribute to disambiguate with the universalJar
+            attribute(Attribute.of("net.neoforged.neoforge.includes-minecraft", Boolean), true)
+        }
+    }
     modDevBundle {
         canBeDeclared = false
         canBeResolved = false
@@ -313,7 +372,7 @@ configurations {
             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, JavaVersion.current().majorVersion.toInteger())
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, java_version as Integer)
             attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
         }
         // Publish it
@@ -386,6 +445,13 @@ configurations {
         }
         javaComponent.addVariantsFromConfiguration(it) {}
     }
+}
+
+sourcesJar {
+    from sourceSets.client.allSource
+}
+javadoc {
+    source += sourceSets.client.allSource
 }
 
 processResources {

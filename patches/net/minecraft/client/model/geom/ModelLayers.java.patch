@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/model/geom/ModelLayers.java
 +++ b/net/minecraft/client/model/geom/ModelLayers.java
-@@ -308,15 +_,18 @@
+@@ -330,15 +_,18 @@
      }
  
      public static ModelLayerLocation createStandingSignModelName(WoodType p_171292_) {

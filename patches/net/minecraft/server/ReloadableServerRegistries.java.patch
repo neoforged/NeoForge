@@ -17,4 +17,4 @@
 +                });
                  map.forEach(
                      (p_335721_, p_335683_) -> writableregistry.register(
-                             ResourceKey.create(p_335741_.registryKey(), p_335721_), (T)p_335683_, DEFAULT_REGISTRATION_INFO
+                         ResourceKey.create(p_335741_.registryKey(), p_335721_), (T)p_335683_, DEFAULT_REGISTRATION_INFO

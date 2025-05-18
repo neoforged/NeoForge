@@ -12,9 +12,9 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
@@ -75,7 +75,7 @@ public class IngredientTests {
         Assertions.assertThat(ingredient.test(stack)).withFailMessage("Modified ingredient matches").isFalse();
 
         stack.set(DataComponents.DAMAGE, 1);
-        stack.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
+        stack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
         Assertions.assertThat(ingredient.test(stack)).withFailMessage("Strictness check failed for ingredient with strict: " + strict).isEqualTo(!strict);
     }
 

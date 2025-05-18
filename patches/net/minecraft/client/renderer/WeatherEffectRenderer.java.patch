@@ -17,4 +17,4 @@
 +            return;
          float f = p_361823_.getRainLevel(1.0F) / (Minecraft.useFancyGraphics() ? 1.0F : 2.0F);
          if (!(f <= 0.0F)) {
-             RandomSource randomsource = RandomSource.create((long)p_361788_ * 312987231L);
+             RandomSource randomsource = RandomSource.create(p_361788_ * 312987231L);

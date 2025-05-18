@@ -1,14 +1,6 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -26,7 +_,6 @@
-     public static final Codec<FluidState> CODEC = codec(BuiltInRegistries.FLUID.byNameCodec(), Fluid::defaultFluidState).stable();
-     public static final int AMOUNT_MAX = 9;
-     public static final int AMOUNT_FULL = 8;
--
-     public FluidState(Fluid p_76149_, Reference2ObjectArrayMap<Property<?>, Comparable<?>> p_325993_, MapCodec<FluidState> p_76151_) {
-         super(p_76149_, p_325993_, p_76151_);
-     }
-@@ -114,6 +_,7 @@
+@@ -117,6 +_,7 @@
          return this.getType() == p_192918_;
      }
  

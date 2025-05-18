@@ -1,0 +1,20 @@
+--- a/net/minecraft/core/component/predicates/EnchantmentsPredicate.java
++++ b/net/minecraft/core/component/predicates/EnchantmentsPredicate.java
+@@ -53,6 +_,17 @@
+         public DataComponentType<ItemEnchantments> componentType() {
+             return DataComponents.ENCHANTMENTS;
+         }
++
++        @Override
++        public boolean matches(net.minecraft.core.component.DataComponentGetter getter) {
++            if (getter instanceof net.minecraft.world.item.ItemStack stack) {
++                var lookup = net.neoforged.neoforge.common.CommonHooks.resolveLookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
++                if (lookup != null) {
++                    return this.matches(stack.getAllEnchantments(lookup));
++                }
++            }
++            return super.matches(getter);
++        }
+     }
+ 
+     public static class StoredEnchantments extends EnchantmentsPredicate {

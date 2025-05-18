@@ -11,7 +11,6 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +32,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "loot")
@@ -65,8 +65,8 @@ public class LootPoolTest {
         test.onGameTest(helper -> {
             var testTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(TEST_LOOT_TABLE_1);
 
-            helper.assertTrue(testTable.getPool("custom_name") != null, "Expected custom_name pool");
-            helper.assertTrue(testTable.getPool("pool1") != null, "Expected unnamed pool pool1");
+            helper.assertNotNull(testTable.getPool("custom_name"), "Expected custom_name pool");
+            helper.assertNotNull(testTable.getPool("pool1"), "Expected unnamed pool pool1");
 
             helper.succeed();
         });

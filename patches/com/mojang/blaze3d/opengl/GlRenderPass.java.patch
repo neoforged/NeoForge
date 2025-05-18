@@ -1,0 +1,36 @@
+--- a/com/mojang/blaze3d/opengl/GlRenderPass.java
++++ b/com/mojang/blaze3d/opengl/GlRenderPass.java
+@@ -34,6 +_,8 @@
+     protected final HashMap<String, GpuTexture> samplers = new HashMap<>();
+     protected final Set<String> dirtyUniforms = new HashSet<>();
+     protected final Set<String> dirtySamplers = new HashSet<>();
++    @Nullable
++    protected net.neoforged.neoforge.client.stencil.StencilTest stencilTest;
+ 
+     public GlRenderPass(GlCommandEncoder p_409888_, boolean p_410304_) {
+         this.encoder = p_409888_;
+@@ -46,6 +_,7 @@
+ 
+     @Override
+     public void setPipeline(RenderPipeline p_409823_) {
++        p_409823_ = com.mojang.blaze3d.systems.RenderSystem.applyPipelineModifiers(p_409823_);
+         if (this.pipeline == null || this.pipeline.info() != p_409823_) {
+             this.dirtyUniforms.addAll(this.uniforms.keySet());
+             this.dirtySamplers.addAll(this.samplers.keySet());
+@@ -91,6 +_,16 @@
+     @Override
+     public void disableScissor() {
+         this.scissorState.disable();
++    }
++
++    @Override
++    public void enableStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
++        this.stencilTest = stencilTest;
++    }
++
++    @Override
++    public void disableStencilTest() {
++        this.stencilTest = null;
+     }
+ 
+     @Override

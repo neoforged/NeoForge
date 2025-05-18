@@ -6,7 +6,7 @@
      private static final Codec<OverlayMetadataSection> CODEC = RecordCodecBuilder.create(
 -        p_294898_ -> p_294898_.group(OverlayMetadataSection.OverlayEntry.CODEC.listOf().fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
 +        p_294898_ -> p_294898_.group(net.neoforged.neoforge.common.conditions.ConditionalOps.decodeListWithElementConditions(OverlayMetadataSection.OverlayEntry.CODEC).fieldOf("entries").forGetter(OverlayMetadataSection::overlays))
-                 .apply(p_294898_, OverlayMetadataSection::new)
+             .apply(p_294898_, OverlayMetadataSection::new)
      );
      public static final MetadataSectionType<OverlayMetadataSection> TYPE = new MetadataSectionType<>("overlays", CODEC);
 +    // Neo: alternative metadata section that will only be loaded on neoforged. Useful for making datapacks with special

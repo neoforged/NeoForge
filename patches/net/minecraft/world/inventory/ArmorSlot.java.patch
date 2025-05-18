@@ -4,8 +4,8 @@
  
      @Override
      public boolean mayPlace(ItemStack p_345029_) {
--        return this.slot == this.owner.getEquipmentSlotForItem(p_345029_);
-+        return p_345029_.canEquip(slot, owner);
+-        return this.owner.isEquippableInSlot(p_345029_, this.slot);
++        return p_345029_.canEquip(this.slot, this.owner);
      }
  
      @Override

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/TurtleEggBlock.java
 +++ b/net/minecraft/world/level/block/TurtleEggBlock.java
-@@ -173,7 +_,7 @@
+@@ -171,7 +_,7 @@
          if (p_57769_ instanceof Turtle || p_57769_ instanceof Bat) {
              return false;
          } else {

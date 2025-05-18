@@ -38,6 +38,8 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class DamageContainer {
     public enum Reduction {
+        /** Damage reduced from post attack invulnerability. */
+        INVULNERABILITY,
         /** Damage reduced from the effects of armor. */
         ARMOR,
         /** Damage reduced from enchantments on armor. */

@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/resources/SplashManager.java
++++ b/net/minecraft/client/resources/SplashManager.java
+@@ -34,8 +_,12 @@
+ 
+     protected List<String> prepare(ResourceManager p_118869_, ProfilerFiller p_118870_) {
+         try {
++            var splashes = Minecraft.getInstance().getResourceManager().getResourceOrThrow(SPLASHES_LOCATION);
++            if (splashes.sourcePackId().equals("vanilla"))
++                return net.neoforged.neoforge.client.resources.NeoForgeSplashHooks.loadSplashes(p_118869_);
++
+             List list;
+-            try (BufferedReader bufferedreader = Minecraft.getInstance().getResourceManager().openAsReader(SPLASHES_LOCATION)) {
++            try (BufferedReader bufferedreader = splashes.openAsReader()) {
+                 list = bufferedreader.lines().map(String::trim).filter(p_118876_ -> p_118876_.hashCode() != 125780783).collect(Collectors.toList());
+             }
+ 

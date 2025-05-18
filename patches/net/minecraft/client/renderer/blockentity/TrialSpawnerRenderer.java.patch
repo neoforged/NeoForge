@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
-@@ -32,4 +_,10 @@
+@@ -35,4 +_,10 @@
              }
          }
      }

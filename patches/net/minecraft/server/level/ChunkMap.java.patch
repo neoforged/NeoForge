@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -400,6 +_,7 @@
+@@ -398,6 +_,7 @@
                  this.modified = true;
              }
  
@@ -8,7 +8,7 @@
              return p_140179_;
          }
      }
-@@ -529,12 +_,15 @@
+@@ -527,12 +_,15 @@
              } else {
                  ChunkAccess chunkaccess = p_140183_.getLatestChunk();
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && chunkaccess != null) {
@@ -24,7 +24,7 @@
                          this.level.unload(levelchunk1);
                      }
  
-@@ -579,6 +_,7 @@
+@@ -577,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkLoad");
                  if (p_372662_.isPresent()) {
                      ChunkAccess chunkaccess = p_372662_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
@@ -32,7 +32,7 @@
                      this.markPosition(p_140418_, chunkaccess.getPersistedStatus().getChunkType());
                      return chunkaccess;
                  } else {
-@@ -780,6 +_,7 @@
+@@ -778,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
                  SerializableChunkData serializablechunkdata = SerializableChunkData.copyOf(this.level, p_140259_);
@@ -40,7 +40,7 @@
                  CompletableFuture<CompoundTag> completablefuture = CompletableFuture.supplyAsync(serializablechunkdata::write, Util.backgroundExecutor());
                  this.write(chunkpos, completablefuture::join).handle((p_381690_, p_381691_) -> {
                      if (p_381691_ != null) {
-@@ -846,9 +_,11 @@
+@@ -844,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
@@ -52,16 +52,23 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -955,6 +_,20 @@
-         }
+@@ -947,7 +_,7 @@
+             ChunkHolder chunkholder = this.visibleChunkMap.get(longiterator.nextLong());
+             if (chunkholder != null) {
+                 LevelChunk levelchunk = chunkholder.getTickingChunk();
+-                if (levelchunk != null && this.anyPlayerCloseEnoughForSpawningInternal(chunkholder.getPos())) {
++                if (levelchunk != null && (this.anyPlayerCloseEnoughForSpawningInternal(chunkholder.getPos()) || ticketStorage.shouldForceNaturalSpawning(chunkholder.getPos()))) {// Neo: Force natural spawning in other chunks
+                     p_401784_.add(levelchunk);
+                 }
+             }
+@@ -971,6 +_,18 @@
+         return tristate == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(p_183880_) : tristate.toBoolean(true);
      }
  
 +    void collectForceTickingChunks(List<LevelChunk> list) {
-+        var itr = distanceManager.forcedTickets.long2ObjectEntrySet().fastIterator();
-+        while (itr.hasNext()) {
-+            var entry = itr.next();
-+            ChunkHolder holder = this.visibleChunkMap.get(entry.getLongKey());
-+            if (holder != null && !entry.getValue().isEmpty()) {
++        for (long l : distanceManager.ticketStorage.getForceLoadedChunks()) {
++            ChunkHolder holder = this.visibleChunkMap.get(l);
++            if (holder != null) {
 +                var chunk = holder.getTickingChunk();
 +                if (chunk != null) {
 +                    list.add(chunk);
@@ -70,10 +77,10 @@
 +        }
 +    }
 +
-     boolean anyPlayerCloseEnoughForSpawning(ChunkPos p_183880_) {
-         return !this.distanceManager.hasPlayersNearby(p_183880_.toLong()) ? false : this.anyPlayerCloseEnoughForSpawningInternal(p_183880_);
-     }
-@@ -1059,6 +_,7 @@
+     private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos p_363995_) {
+         for (ServerPlayer serverplayer : this.playerMap.getAllPlayers()) {
+             if (this.playerIsCloseEnoughForSpawning(serverplayer, p_363995_)) {
+@@ -1079,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -81,7 +88,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1110,7 +_,7 @@
+@@ -1130,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {
@@ -90,7 +97,7 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
-@@ -1354,5 +_,20 @@
+@@ -1382,5 +_,20 @@
                  this.updatePlayer(serverplayer);
              }
          }

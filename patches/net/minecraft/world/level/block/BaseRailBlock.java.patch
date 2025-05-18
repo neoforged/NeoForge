@@ -1,14 +1,14 @@
 --- a/net/minecraft/world/level/block/BaseRailBlock.java
 +++ b/net/minecraft/world/level/block/BaseRailBlock.java
-@@ -51,7 +_,7 @@
+@@ -52,7 +_,7 @@
  
      @Override
      protected VoxelShape getShape(BlockState p_49403_, BlockGetter p_49404_, BlockPos p_49405_, CollisionContext p_49406_) {
--        RailShape railshape = p_49403_.is(this) ? p_49403_.getValue(this.getShapeProperty()) : null;
-+        RailShape railshape = p_49403_.is(this) ? getRailDirection(p_49403_, p_49404_, p_49405_, null) : null;
-         return railshape != null && railshape.isSlope() ? HALF_BLOCK_AABB : FLAT_AABB;
+-        return p_49403_.getValue(this.getShapeProperty()).isSlope() ? SHAPE_SLOPE : SHAPE_FLAT;
++        return getRailDirection(p_49403_, p_49404_, p_49405_, null).isSlope() ? SHAPE_SLOPE : SHAPE_FLAT;
      }
  
+     @Override
 @@ -79,7 +_,7 @@
      @Override
      protected void neighborChanged(BlockState p_49377_, Level p_49378_, BlockPos p_49379_, Block p_49380_, @Nullable Orientation p_361387_, boolean p_49382_) {
@@ -27,17 +27,17 @@
              return new RailState(p_49368_, p_49369_, p_49370_).place(p_49368_.hasNeighborSignal(p_49369_), p_49371_, railshape).getState();
          }
      }
-@@ -124,7 +_,7 @@
-     protected void onRemove(BlockState p_49384_, Level p_49385_, BlockPos p_49386_, BlockState p_49387_, boolean p_49388_) {
-         if (!p_49388_) {
-             super.onRemove(p_49384_, p_49385_, p_49386_, p_49387_, p_49388_);
--            if (p_49384_.getValue(this.getShapeProperty()).isSlope()) {
-+            if (getRailDirection(p_49384_, p_49385_, p_49386_, null).isSlope()) {
-                 p_49385_.updateNeighborsAt(p_49386_.above(), this);
+@@ -123,7 +_,7 @@
+     @Override
+     protected void affectNeighborsAfterRemoval(BlockState p_393821_, ServerLevel p_394170_, BlockPos p_394092_, boolean p_393869_) {
+         if (!p_393869_) {
+-            if (p_393821_.getValue(this.getShapeProperty()).isSlope()) {
++            if (getRailDirection(p_393821_, p_394170_, p_394092_, null).isSlope()) {
+                 p_394170_.updateNeighborsAt(p_394092_.above(), this);
              }
  
-@@ -145,6 +_,11 @@
-         return blockstate.setValue(this.getShapeProperty(), flag1 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, Boolean.valueOf(flag));
+@@ -144,6 +_,11 @@
+         return blockstate.setValue(this.getShapeProperty(), flag1 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).setValue(WATERLOGGED, flag);
      }
  
 +    /**
@@ -48,7 +48,7 @@
      public abstract Property<RailShape> getShapeProperty();
  
      @Override
-@@ -168,5 +_,15 @@
+@@ -167,5 +_,15 @@
      @Override
      protected FluidState getFluidState(BlockState p_152158_) {
          return p_152158_.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(p_152158_);

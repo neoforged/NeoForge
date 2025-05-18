@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FireBlock.java
 +++ b/net/minecraft/world/level/block/FireBlock.java
-@@ -141,13 +_,13 @@
+@@ -119,13 +_,13 @@
      protected BlockState getStateForPlacement(BlockGetter p_53471_, BlockPos p_53472_) {
          BlockPos blockpos = p_53472_.below();
          BlockState blockstate = p_53471_.getBlockState(blockpos);
@@ -11,49 +11,49 @@
              for (Direction direction : Direction.values()) {
                  BooleanProperty booleanproperty = PROPERTY_BY_DIRECTION.get(direction);
                  if (booleanproperty != null) {
--                    blockstate1 = blockstate1.setValue(booleanproperty, Boolean.valueOf(this.canBurn(p_53471_.getBlockState(p_53472_.relative(direction)))));
+-                    blockstate1 = blockstate1.setValue(booleanproperty, this.canBurn(p_53471_.getBlockState(p_53472_.relative(direction))));
 +                    blockstate1 = blockstate1.setValue(booleanproperty, Boolean.valueOf(this.canCatchFire(p_53471_, p_53472_.relative(direction), direction.getOpposite())));
                  }
              }
  
+@@ -151,7 +_,7 @@
+                 }
+ 
+                 BlockState blockstate = p_221161_.getBlockState(p_221162_.below());
+-                boolean flag = blockstate.is(p_221161_.dimensionType().infiniburn());
++                boolean flag = blockstate.isFireSource(p_221161_, p_221162_.below(), Direction.UP);
+                 int i = p_221160_.getValue(AGE);
+                 if (!flag && p_221161_.isRaining() && this.isNearRain(p_221161_, p_221162_) && p_221163_.nextFloat() < 0.2F + i * 0.03F) {
+                     p_221161_.removeBlock(p_221162_, false);
 @@ -172,7 +_,7 @@
-             }
+                             return;
+                         }
  
-             BlockState blockstate = p_221161_.getBlockState(p_221162_.below());
--            boolean flag = blockstate.is(p_221161_.dimensionType().infiniburn());
-+            boolean flag = blockstate.isFireSource(p_221161_, p_221162_.below(), Direction.UP);
-             int i = p_221160_.getValue(AGE);
-             if (!flag && p_221161_.isRaining() && this.isNearRain(p_221161_, p_221162_) && p_221163_.nextFloat() < 0.2F + (float)i * 0.03F) {
-                 p_221161_.removeBlock(p_221162_, false);
-@@ -193,7 +_,7 @@
-                         return;
-                     }
+-                        if (i == 15 && p_221163_.nextInt(4) == 0 && !this.canBurn(p_221161_.getBlockState(p_221162_.below()))) {
++                        if (i == 15 && p_221163_.nextInt(4) == 0 && !this.canCatchFire(p_221161_, p_221162_.below(), Direction.UP)) {
+                             p_221161_.removeBlock(p_221162_, false);
+                             return;
+                         }
+@@ -180,12 +_,12 @@
  
--                    if (i == 15 && p_221163_.nextInt(4) == 0 && !this.canBurn(p_221161_.getBlockState(p_221162_.below()))) {
-+                    if (i == 15 && p_221163_.nextInt(4) == 0 && !this.canCatchFire(p_221161_, p_221162_.below(), Direction.UP)) {
-                         p_221161_.removeBlock(p_221162_, false);
-                         return;
-                     }
-@@ -201,12 +_,12 @@
+                     boolean flag1 = p_221161_.getBiome(p_221162_).is(BiomeTags.INCREASED_FIRE_BURNOUT);
+                     int k = flag1 ? -50 : 0;
+-                    this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i);
+-                    this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i);
+-                    this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i);
+-                    this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i);
+-                    this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i);
+-                    this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i);
++                    this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i, Direction.WEST);
++                    this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i, Direction.EAST);
++                    this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i, Direction.UP);
++                    this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i, Direction.DOWN);
++                    this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i, Direction.SOUTH);
++                    this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i, Direction.NORTH);
+                     BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
-                 boolean flag1 = p_221161_.getBiome(p_221162_).is(BiomeTags.INCREASED_FIRE_BURNOUT);
-                 int k = flag1 ? -50 : 0;
--                this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i);
--                this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i);
--                this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i);
--                this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i);
--                this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i);
--                this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i);
-+                this.checkBurnOut(p_221161_, p_221162_.east(), 300 + k, p_221163_, i, Direction.WEST);
-+                this.checkBurnOut(p_221161_, p_221162_.west(), 300 + k, p_221163_, i, Direction.EAST);
-+                this.checkBurnOut(p_221161_, p_221162_.below(), 250 + k, p_221163_, i, Direction.UP);
-+                this.checkBurnOut(p_221161_, p_221162_.above(), 250 + k, p_221163_, i, Direction.DOWN);
-+                this.checkBurnOut(p_221161_, p_221162_.north(), 300 + k, p_221163_, i, Direction.SOUTH);
-+                this.checkBurnOut(p_221161_, p_221162_.south(), 300 + k, p_221163_, i, Direction.NORTH);
-                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
- 
-                 for (int l = -1; l <= 1; l++) {
-@@ -249,33 +_,32 @@
+                     for (int l = -1; l <= 1; l++) {
+@@ -229,33 +_,32 @@
              || p_53429_.isRainingAt(p_53430_.south());
      }
  
@@ -88,12 +88,12 @@
 -
 -            Block block = blockstate.getBlock();
 -            if (block instanceof TntBlock) {
--                TntBlock.explode(p_221151_, p_221152_);
+-                TntBlock.prime(p_221151_, p_221152_);
 -            }
          }
      }
  
-@@ -286,7 +_,7 @@
+@@ -266,7 +_,7 @@
  
      private boolean isValidFireLocation(BlockGetter p_53486_, BlockPos p_53487_) {
          for (Direction direction : Direction.values()) {
@@ -102,7 +102,7 @@
                  return true;
              }
          }
-@@ -302,7 +_,7 @@
+@@ -282,7 +_,7 @@
  
              for (Direction direction : Direction.values()) {
                  BlockState blockstate = p_221157_.getBlockState(p_221158_.relative(direction));
@@ -111,7 +111,7 @@
              }
  
              return i;
-@@ -310,6 +_,7 @@
+@@ -290,6 +_,7 @@
      }
  
      @Override
@@ -119,7 +119,7 @@
      protected boolean canBurn(BlockState p_53489_) {
          return this.getIgniteOdds(p_53489_) > 0;
      }
-@@ -330,8 +_,21 @@
+@@ -310,8 +_,21 @@
      }
  
      public void setFlammable(Block p_53445_, int p_53446_, int p_53447_) {

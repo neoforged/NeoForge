@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +28,6 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomArmorModelTest.MOD_ID)
 public class CustomArmorModelTest {
@@ -38,13 +36,13 @@ public class CustomArmorModelTest {
     // demonstrates custom non-humanoid model
     private static final DeferredItem<Item> RED_LEGGINGS = ITEMS.registerItem(
             "red_leggings",
-            props -> new ArmorItem(
-                    ArmorMaterials.DIAMOND,
-                    ArmorType.LEGGINGS,
-                    props.stacksTo(1).component(DataComponents.DYED_COLOR, new DyedItemColor(0xFF0000, false))));
+            props -> new Item(props
+                    .humanoidArmor(ArmorMaterials.DIAMOND, ArmorType.LEGGINGS)
+                    .stacksTo(1)
+                    .component(DataComponents.DYED_COLOR, new DyedItemColor(0xFF0000))));
     // demonstrates the properties are copied from the vanilla model
-    private static final DeferredItem<Item> ENDERMAN_CHESTPLATE = ITEMS.registerItem("enderman_chestplate", props -> new ArmorItem(ArmorMaterials.GOLD, ArmorType.CHESTPLATE, props.stacksTo(1)));
-    private static final DeferredItem<Item> ENDERMAN_BOOTS = ITEMS.registerItem("enderman_boots", props -> new ArmorItem(ArmorMaterials.GOLD, ArmorType.BOOTS, props.stacksTo(1)));
+    private static final DeferredItem<Item> ENDERMAN_CHESTPLATE = ITEMS.registerItem("enderman_chestplate", props -> new Item(props.humanoidArmor(ArmorMaterials.GOLD, ArmorType.CHESTPLATE).stacksTo(1)));
+    private static final DeferredItem<Item> ENDERMAN_BOOTS = ITEMS.registerItem("enderman_boots", props -> new Item(props.humanoidArmor(ArmorMaterials.GOLD, ArmorType.BOOTS).stacksTo(1)));
 
     public CustomArmorModelTest(IEventBus modBus) {
         ITEMS.register(modBus);
@@ -74,7 +72,6 @@ public class CustomArmorModelTest {
                     return ENDERMAN.get();
                 }
 
-                @Nullable
                 @Override
                 public ResourceLocation getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
                     return ARMOR_TEXTURE;

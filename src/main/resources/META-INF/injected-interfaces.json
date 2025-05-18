@@ -29,11 +29,11 @@
   "net/minecraft/client/renderer/DimensionSpecialEffects": [
     "net/neoforged/neoforge/client/extensions/IDimensionSpecialEffectsExtension"
   ],
-  "net/minecraft/client/renderer/block/model/BlockModel": [
-    "net/neoforged/neoforge/client/model/ExtendedUnbakedModel"
+  "net/minecraft/client/renderer/block/model/BlockModelPart": [
+    "net/neoforged/neoforge/client/extensions/BlockModelPartExtension"
   ],
-  "net/minecraft/client/renderer/block/model/ItemModelGenerator": [
-    "net/neoforged/neoforge/client/model/ExtendedUnbakedModel"
+  "net/minecraft/client/renderer/block/model/multipart/MultiPartModel": [
+    "net/neoforged/neoforge/client/model/DynamicBlockStateModel"
   ],
   "net/minecraft/client/renderer/blockentity/BlockEntityRenderer": [
     "net/neoforged/neoforge/client/extensions/IBlockEntityRendererExtension<T>"
@@ -42,16 +42,22 @@
     "net/neoforged/neoforge/client/extensions/IBakedModelExtension"
   ],
   "net/minecraft/client/resources/model/ModelBaker": [
-    "net/neoforged/neoforge/client/extensions/IModelBakerExtension"
+    "net/neoforged/neoforge/client/extensions/ModelBakerExtension"
   ],
-  "net/minecraft/client/resources/model/MultiPartBakedModel": [
-    "net/neoforged/neoforge/client/model/IDynamicBakedModel"
+  "net/minecraft/client/resources/model/QuadCollection$Builder": [
+    "net/neoforged/neoforge/client/extensions/QuadCollectionBuilderExtension"
+  ],
+  "net/minecraft/client/resources/model/ResolvedModel": [
+    "net/neoforged/neoforge/client/extensions/ResolvedModelExtension"
+  ],
+  "net/minecraft/client/resources/model/UnbakedGeometry": [
+    "net/neoforged/neoforge/client/extensions/UnbakedGeometryExtension"
   ],
   "net/minecraft/client/resources/model/UnbakedModel": [
-    "net/neoforged/neoforge/client/extensions/IUnbakedModelExtension"
+    "net/neoforged/neoforge/client/extensions/UnbakedModelExtension"
   ],
-  "net/minecraft/client/resources/model/WeightedBakedModel": [
-    "net/neoforged/neoforge/client/model/IDynamicBakedModel"
+  "net/minecraft/client/resources/model/WeightedVariants": [
+    "net/neoforged/neoforge/client/model/DynamicBlockStateModel"
   ],
   "net/minecraft/commands/CommandSourceStack": [
     "net/neoforged/neoforge/common/extensions/ICommandSourceStackExtension"
@@ -67,6 +73,9 @@
   ],
   "net/minecraft/core/Registry": [
     "net/neoforged/neoforge/registries/IRegistryExtension<T>"
+  ],
+  "net/minecraft/core/RegistrySetBuilder$UniversalLookup": [
+    "net/minecraft/core/HolderLookup<java.lang.Object>"
   ],
   "net/minecraft/core/component/DataComponentHolder": [
     "net/neoforged/neoforge/common/extensions/IDataComponentHolderExtension"
@@ -120,7 +129,7 @@
     "net/neoforged/neoforge/common/extensions/ITagBuilderExtension"
   ],
   "net/minecraft/world/MenuProvider": [
-    "net/neoforged/neoforge/client/extensions/IMenuProviderExtension"
+    "net/neoforged/neoforge/common/extensions/IMenuProviderExtension"
   ],
   "net/minecraft/world/effect/MobEffect": [
     "net/neoforged/neoforge/common/extensions/IMobEffectExtension"
@@ -229,16 +238,19 @@
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension"
   ],
   "net/minecraft/client/data/models/ModelProvider": [
-    "net/neoforged/neoforge/common/extensions/IModelProviderExtension"
+    "net/neoforged/neoforge/client/extensions/IModelProviderExtension"
   ],
   "net/minecraft/client/data/models/model/TexturedModel$Provider": [
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension$Provider"
   ],
+  "net/minecraft/client/renderer/block/model/BlockStateModel": [
+    "net/neoforged/neoforge/client/extensions/BlockStateModelExtension"
+  ],
+  "net/minecraft/client/renderer/block/model/SimpleUnbakedGeometry": [
+    "net/neoforged/neoforge/client/model/ExtendedUnbakedGeometry"
+  ],
   "net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection": [
     "net/neoforged/neoforge/client/IRenderableSection"
-  ],
-  "com/mojang/blaze3d/vertex/VertexFormatElement$Usage": [
-    "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "net/minecraft/client/gui/Gui$HeartType": [
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"

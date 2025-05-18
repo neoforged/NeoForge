@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biome.Precipitation;
@@ -99,7 +100,7 @@ public class BiomeModifierTest {
 
                 context.register(ADD_MAGMA_CUBES_MODIFIER, AddSpawnsBiomeModifier.singleSpawn(
                         badlandsTag,
-                        new SpawnerData(EntityType.MAGMA_CUBE, 100, 1, 4)));
+                        new Weighted<>(new SpawnerData(EntityType.MAGMA_CUBE, 1, 4), 100)));
 
                 context.register(MODIFY_BADLANDS_MODIFIER, new TestModifier(
                         badlandsTag,
@@ -108,7 +109,7 @@ public class BiomeModifierTest {
 
                 context.register(REMOVE_FOREST_TREES_MODIFIER, RemoveFeaturesBiomeModifier.allSteps(
                         forestTag,
-                        HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(VegetationPlacements.TREES_BIRCH_AND_OAK))));
+                        HolderSet.direct(context.lookup(Registries.PLACED_FEATURE).getOrThrow(VegetationPlacements.TREES_BIRCH_AND_OAK_LEAF_LITTER))));
 
                 context.register(REMOVE_FOREST_SKELETONS_MODIFIER, new RemoveSpawnsBiomeModifier(
                         forestTag,

@@ -1,14 +1,18 @@
 --- a/net/minecraft/client/KeyMapping.java
 +++ b/net/minecraft/client/KeyMapping.java
-@@ -17,7 +_,7 @@
+@@ -16,9 +_,9 @@
+ 
  @OnlyIn(Dist.CLIENT)
  public class KeyMapping implements Comparable<KeyMapping>, net.neoforged.neoforge.client.extensions.IKeyMappingExtension {
-     private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
+-    private static final Map<String, KeyMapping> ALL = Maps.newHashMap();
 -    private static final Map<InputConstants.Key, KeyMapping> MAP = Maps.newHashMap();
+-    private static final Set<String> CATEGORIES = Sets.newHashSet();
++    private static final Map<String, KeyMapping> ALL = Maps.newConcurrentMap();
 +    private static final net.neoforged.neoforge.client.settings.KeyMappingLookup MAP = new net.neoforged.neoforge.client.settings.KeyMappingLookup();
-     private static final Set<String> CATEGORIES = Sets.newHashSet();
++    private static final Set<String> CATEGORIES = Sets.newConcurrentHashSet();
      public static final String CATEGORY_MOVEMENT = "key.categories.movement";
      public static final String CATEGORY_MISC = "key.categories.misc";
+     public static final String CATEGORY_MULTIPLAYER = "key.categories.multiplayer";
 @@ -43,17 +_,17 @@
      private int clickCount;
  
@@ -25,7 +29,7 @@
 -        if (keymapping != null) {
 -            keymapping.setDown(p_90839_);
 -        }
-+        for (KeyMapping keymapping : MAP.getAll(p_90838_))
++        for (KeyMapping keymapping : MAP.getAll(p_90838_, !p_90839_))
 +            if (keymapping != null) {
 +                keymapping.setDown(p_90839_);
 +            }

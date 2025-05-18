@@ -19,6 +19,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 @ForEachTest(groups = "capabilities.vanillahandlers")
@@ -97,7 +98,7 @@ public class VanillaHandlersTests {
         helper.setBlock(cauldronPos, Blocks.CAULDRON);
 
         var wrapper = capCache.getCapability();
-        helper.assertTrue(wrapper != null, "Expected fluid handler");
+        helper.assertNotNull(wrapper, "Expected fluid handler");
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 
         helper.assertTrue(wrapper.size() == 1, "Got %d tanks".formatted(wrapper.size()));

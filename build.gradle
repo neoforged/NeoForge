@@ -1,8 +1,9 @@
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import net.neoforged.neodev.CheckSplitSources
 
 plugins {
-    id 'net.neoforged.gradleutils' version '3.0.0'
+    id 'net.neoforged.gradleutils' version '4.0.1'
     id 'dev.lukebemish.immaculate' version '0.1.6' apply false
     id 'net.neoforged.licenser' version '0.7.5'
     id 'neoforge.formatting-conventions'
@@ -21,8 +22,8 @@ if (isPreReleaseVersion) {
 System.out.println("NeoForge version ${project.version}")
 
 allprojects {
-    version rootProject.version
-    group 'net.neoforged'
+    version = rootProject.version
+    group = 'net.neoforged'
 
     apply plugin: 'java'
 
@@ -94,35 +95,29 @@ immaculate {
         //Note: This doesn't detect changing access level to or from package private
         //TODO: Eventually try and make this support checking package private access level changes?
         def accessLevelChange = Pattern.compile('^[-+]\\s*(public|private|protected)\\s.*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
-        custom 'noAccessWidening', { String fileContents ->
+        custom 'noAccessChanges', { String fileContents ->
+            // Special case: we need to make the field private for our coremod
+            if (fileContents.startsWith("--- a/net/minecraft/world/level/levelgen/structure/Structure.java")) {
+                return fileContents
+            }
+
             def accessChanges = fileContents.findAll(accessLevelChange)
             if (accessChanges.isEmpty()) return fileContents
-            Set<String> privateRemovals = new HashSet<>()
-            Set<String> protectedRemovals = new HashSet<>()
+            Map<String, Set<String>> removals = Map.of("private", new HashSet<>(), "protected", new HashSet<>(), "public", new HashSet<>())
             accessChanges.each { String change ->
                 //Get the type of match
                 String[] data = change.substring(1).trim().split(" ", 2)
                 String lineStart = data[1].substring(0, Math.min(10, data[1].length()))
                 if (change.startsWith('-')) {//Removal
-                    if (data[0] == 'private') {
-                        privateRemovals.add(lineStart)
-                    } else if (data[0] == 'protected') {
-                        protectedRemovals.add(lineStart)
-                    }
-                } else if (!privateRemovals.isEmpty() || !protectedRemovals.isEmpty()) {//Addition and we know of at least one removal
-                    if (data[0] == 'public') {
-                        if (privateRemovals.remove(lineStart) || protectedRemovals.remove(lineStart)) {
-                            throw new GradleException("Widening access level via patches is not allowed, use an AT! Changed line: " + change)
+                    removals.get(data[0]).add(lineStart)
+                } else {//Addition
+                    for (var entry : removals.entrySet()) {
+                        if (entry.key == data[0]) {
+                            continue
                         }
-                    } else if (data[0] == 'protected') {
-                        if (privateRemovals.remove(lineStart)) {
-                            throw new GradleException("Widening access level via patches is not allowed, use an AT! Changed line: " + change)
+                        if (entry.value.remove(lineStart)) {
+                            throw new GradleException("Changing access level via patches is not allowed, use an AT! Changed line: " + change)
                         }
-                        //Remove any protected ones that we have a match for
-                        protectedRemovals.remove(lineStart)
-                    } else if (data[0] == 'private') {
-                        //Remove any private ones that we have a match for
-                        privateRemovals.remove(lineStart)
                     }
                 }
             }
@@ -159,4 +154,14 @@ immaculate {
             fileContents.replace('@javax.annotation.Nullable', '@org.jetbrains.annotations.Nullable')
         }
     }
+}
+
+final task = tasks.register('checkSourcesAreSplit', CheckSplitSources) {
+    serverClientFolder = project.provider { project.layout.projectDirectory.dir('src/main/java/net/neoforged/neoforge/client') }
+            .map { it.asFile.exists() ? it : null }
+    clientClientFolder = project.layout.projectDirectory.dir('src/client/java/net/neoforged/neoforge/client')
+}
+
+tasks.named('checkFormatting') {
+    dependsOn(task)
 }

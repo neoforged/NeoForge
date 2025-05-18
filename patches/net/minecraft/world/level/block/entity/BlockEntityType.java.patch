@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/block/entity/BlockEntityType.java
 +++ b/net/minecraft/world/level/block/entity/BlockEntityType.java
-@@ -230,8 +_,11 @@
-     public static final BlockEntityType<VaultBlockEntity> VAULT = register("vault", VaultBlockEntity::new, Blocks.VAULT);
+@@ -234,8 +_,11 @@
+     );
      private static final Set<BlockEntityType<?>> OP_ONLY_CUSTOM_DATA = Set.of(COMMAND_BLOCK, LECTERN, SIGN, HANGING_SIGN, MOB_SPAWNER, TRIAL_SPAWNER);
      private final BlockEntityType.BlockEntitySupplier<? extends T> factory;
 +    // Neo: This field will be modified by BlockEntityTypeAddBlocksEvent event. Please use the event to add to this field for vanilla or other mod's BlockEntityTypes.
@@ -12,7 +12,7 @@
  
      @Nullable
      public static ResourceLocation getKey(BlockEntityType<?> p_58955_) {
-@@ -250,8 +_,26 @@
+@@ -254,14 +_,39 @@
      }
  
      public BlockEntityType(BlockEntityType.BlockEntitySupplier<? extends T> p_155259_, Set<Block> p_155260_) {
@@ -38,8 +38,7 @@
 +        }
      }
  
-     @Nullable
-@@ -259,6 +_,13 @@
+     public T create(BlockPos p_155265_, BlockState p_155266_) {
          return (T)this.factory.create(p_155265_, p_155266_);
      }
  
@@ -53,7 +52,7 @@
      public boolean isValid(BlockState p_155263_) {
          return this.validBlocks.contains(p_155263_.getBlock());
      }
-@@ -275,6 +_,7 @@
+@@ -278,6 +_,7 @@
      }
  
      public boolean onlyOpCanSetNbt() {

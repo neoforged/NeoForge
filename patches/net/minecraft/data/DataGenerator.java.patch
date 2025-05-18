@@ -16,7 +16,7 @@
                  stopwatch1.start();
                  hashcache.applyUpdate(hashcache.generateUpdate(p_254418_, p_253750_::run).join());
                  stopwatch1.stop();
-@@ -56,6 +_,51 @@
+@@ -56,6 +_,55 @@
      public DataGenerator.PackGenerator getBuiltinDatapack(boolean p_253826_, String p_254134_) {
          Path path = this.vanillaPackOutput.getOutputFolder(PackOutput.Target.DATA_PACK).resolve("minecraft").resolve("datapacks").resolve(p_254134_);
          return new DataGenerator.PackGenerator(p_253826_, p_254134_, new PackOutput(path));
@@ -37,6 +37,10 @@
 +
 +    public PackOutput getPackOutput(String path) {
 +        return new PackOutput(rootOutputFolder.resolve(path));
++    }
++
++    public PackGenerator getPackGenerator(boolean run, String providerPrefix, String path) {
++        return new PackGenerator(run, providerPrefix, getPackOutput(path));
 +    }
 +
 +    public <T extends DataProvider> T addProvider(boolean run, DataProvider.Factory<T> factory) {

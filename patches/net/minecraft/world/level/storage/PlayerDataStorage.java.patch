@@ -9,11 +9,11 @@
              LOGGER.warn("Failed to save player data for {}", p_78434_.getName().getString());
          }
 @@ -80,7 +_,12 @@
-             int i = NbtUtils.getDataVersion(p_316252_, -1);
-             p_316252_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_316252_, i);
-             p_78436_.load(p_316252_);
+             int i = NbtUtils.getDataVersion(p_409581_, -1);
+             p_409581_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_409581_, i);
+             p_78436_.load(p_409581_);
 +            net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
-             return p_316252_;
+             return p_409581_;
          });
 +    }
 +

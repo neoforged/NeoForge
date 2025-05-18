@@ -1,0 +1,131 @@
+--- a/com/mojang/blaze3d/opengl/GlStateManager.java
++++ b/com/mojang/blaze3d/opengl/GlStateManager.java
+@@ -40,6 +_,7 @@
+     private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
+     private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
+     private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
++    private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
+     private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
+     private static int activeTexture;
+     private static final GlStateManager.TextureState[] TEXTURES = IntStream.range(0, 12)
+@@ -649,5 +_,120 @@
+     @OnlyIn(Dist.CLIENT)
+     static class TextureState {
+         public int binding;
++    }
++
++    public static void _disableStencilTest() {
++        RenderSystem.assertOnRenderThread();
++        STENCIL.mode.disable();
++    }
++
++    public static void _enableStencilTest() {
++        RenderSystem.assertOnRenderThread();
++        STENCIL.mode.enable();
++    }
++
++    public static void _stencilFunc(int func, int ref, int readMask) {
++        RenderSystem.assertOnRenderThread();
++        if (func != STENCIL.frontFunc || ref != STENCIL.frontRef || readMask != STENCIL.frontReadMask
++                || func != STENCIL.backFunc || ref != STENCIL.backRef || readMask != STENCIL.backReadMask) {
++            STENCIL.frontFunc = func;
++            STENCIL.frontRef = ref;
++            STENCIL.frontReadMask = readMask;
++            STENCIL.backFunc = func;
++            STENCIL.backRef = ref;
++            STENCIL.backReadMask = readMask;
++            GL32.glStencilFuncSeparate(GL32.GL_FRONT_AND_BACK, func, ref, readMask);
++        }
++    }
++
++    public static void _stencilFuncFront(int func, int ref, int readMask) {
++        RenderSystem.assertOnRenderThread();
++        if (func != STENCIL.frontFunc || ref != STENCIL.frontRef || readMask != STENCIL.frontReadMask) {
++            STENCIL.frontFunc = func;
++            STENCIL.frontRef = ref;
++            STENCIL.frontReadMask = readMask;
++            GL32.glStencilFuncSeparate(GL32.GL_FRONT, func, ref, readMask);
++        }
++    }
++
++    public static void _stencilFuncBack(int func, int ref, int readMask) {
++        RenderSystem.assertOnRenderThread();
++        if (func != STENCIL.backFunc || ref != STENCIL.backRef || readMask != STENCIL.backReadMask) {
++            STENCIL.backFunc = func;
++            STENCIL.backRef = ref;
++            STENCIL.backReadMask = readMask;
++            GL32.glStencilFuncSeparate(GL32.GL_BACK, func, ref, readMask);
++        }
++    }
++
++    public static void _stencilMask(int mask) {
++        RenderSystem.assertOnRenderThread();
++        if (mask != STENCIL.writeMask) {
++            STENCIL.writeMask = mask;
++            GL11.glStencilMask(mask);
++        }
++    }
++
++    /**
++     * @param stencilFail  The action to take if the stencil test fails.
++     * @param depthFail The action to take if the depth buffer test fails.
++     * @param pass The action to take if both tests pass.
++     */
++    public static void _stencilOp(int stencilFail, int depthFail, int pass) {
++        RenderSystem.assertOnRenderThread();
++        if (stencilFail != STENCIL.frontStencilFail || depthFail != STENCIL.frontDepthFail || pass != STENCIL.frontPass
++                || stencilFail != STENCIL.backStencilFail || depthFail != STENCIL.backDepthFail || pass != STENCIL.backPass) {
++            STENCIL.frontStencilFail = stencilFail;
++            STENCIL.frontDepthFail = depthFail;
++            STENCIL.frontPass= pass;
++            STENCIL.backStencilFail = stencilFail;
++            STENCIL.backDepthFail = depthFail;
++            STENCIL.backPass = pass;
++            GL32.glStencilOpSeparate(GL32.GL_FRONT_AND_BACK, stencilFail, depthFail, pass);
++        }
++    }
++
++    /**
++     * Same as {@link #_stencilOp}, but affects only front-faces.
++     */
++    public static void _stencilOpFront(int stencilFail, int depthFail, int pass) {
++        RenderSystem.assertOnRenderThread();
++        if (stencilFail != STENCIL.frontStencilFail || depthFail != STENCIL.frontDepthFail || pass != STENCIL.frontPass) {
++            STENCIL.frontStencilFail = stencilFail;
++            STENCIL.frontDepthFail = depthFail;
++            STENCIL.frontPass= pass;
++            GL32.glStencilOpSeparate(GL32.GL_FRONT, stencilFail, depthFail, pass);
++        }
++    }
++
++    /**
++     * Same as {@link #_stencilOp}, but affects only back-faces.
++     */
++    public static void _stencilOpBack(int stencilFail, int depthFail, int pass) {
++        RenderSystem.assertOnRenderThread();
++        if (stencilFail != STENCIL.backStencilFail || depthFail != STENCIL.backDepthFail || pass != STENCIL.backPass) {
++            STENCIL.backStencilFail = stencilFail;
++            STENCIL.backDepthFail = depthFail;
++            STENCIL.backPass = pass;
++            GL32.glStencilOpSeparate(GL32.GL_BACK, stencilFail, depthFail, pass);
++        }
++    }
++
++    @OnlyIn(Dist.CLIENT)
++    static class StencilState {
++        public final GlStateManager.BooleanState mode = new GlStateManager.BooleanState(GL11.GL_STENCIL_TEST);
++        public int frontFunc = GL11.GL_ALWAYS;
++        public int frontRef;
++        public int frontReadMask = -1;
++        public int backFunc = GL11.GL_ALWAYS;
++        public int backRef;
++        public int backReadMask = -1;
++        public int writeMask = -1;
++        public int frontStencilFail = GL11.GL_KEEP;
++        public int frontDepthFail = GL11.GL_KEEP;
++        public int frontPass = GL11.GL_KEEP;
++        public int backStencilFail = GL11.GL_KEEP;
++        public int backDepthFail = GL11.GL_KEEP;
++        public int backPass = GL11.GL_KEEP;
+     }
+ }

@@ -1,13 +1,40 @@
 --- a/net/minecraft/server/packs/resources/ReloadableResourceManager.java
 +++ b/net/minecraft/server/packs/resources/ReloadableResourceManager.java
-@@ -73,4 +_,10 @@
+@@ -33,6 +_,12 @@
+         this.resources.close();
+     }
+ 
++    /**
++     * @deprecated Neo: Use {@link net.neoforged.neoforge.client.event.AddClientReloadListenerEvent}.
++     *
++     * @throws UnsupportedOperationException if called after the event has been fired.
++     */
++    @Deprecated
+     public void registerReloadListener(PreparableReloadListener p_10714_) {
+         this.listeners.add(p_10714_);
+     }
+@@ -72,5 +_,24 @@
+     @Override
      public Stream<PackResources> listPacks() {
          return this.resources.listPacks();
-     }
-+
-+    public void registerReloadListenerIfNotPresent(PreparableReloadListener listener) {
-+        if (!this.listeners.contains(listener)) {
-+            this.registerReloadListener(listener);
-+        }
 +    }
++
++    /**
++     * Neo: Expose the reload listeners so they can be passed to the event.
++     *
++     * @return The (immutable) list of reload listeners.
++     */
++    public List<PreparableReloadListener> getListeners() {
++        return this.listeners;
++    }
++
++    /**
++     * Neo: Updates the {@link #listeners} with the sorted list from the event.
++     *
++     * @implNote The returned list is immutable, so after this method is called, {@link #registerReloadListener(PreparableReloadListener)} will throw.
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public void updateListenersFrom(net.neoforged.neoforge.event.SortedReloadListenerEvent event) {
++        this.listeners = net.neoforged.neoforge.resource.ReloadListenerSort.sort(event);
+     }
  }

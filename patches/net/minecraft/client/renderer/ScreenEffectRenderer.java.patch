@@ -10,7 +10,7 @@
 +            org.apache.commons.lang3.tuple.Pair<BlockState, BlockPos> overlay = getOverlayBlock(player);
 +            if (overlay != null) {
 +                if (!net.neoforged.neoforge.client.ClientHooks.renderBlockOverlay(player, p_110720_, net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK, overlay.getLeft(), overlay.getRight()))
-+                    renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getTexture(overlay.getLeft(), p_110719_.level, overlay.getRight()), p_110720_, p_382889_);
++                    renderTex(p_110719_.getBlockRenderer().getBlockModelShaper().getParticleIcon(overlay.getLeft(), p_110719_.level, overlay.getRight()), p_110720_, p_382889_);
              }
          }
  

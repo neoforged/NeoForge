@@ -24,6 +24,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -37,7 +38,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -49,7 +49,6 @@ import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.mixins.MappedRegistryAccessor;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
-import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,7 +92,6 @@ public class ServerLifecycleHooks {
     public static void handleServerAboutToStart(final MinecraftServer server) {
         currentServer = server;
         // on the dedi server we need to force the stuff to setup properly
-        LogicalSidedProvider.setServer(() -> server);
         ConfigTracker.INSTANCE.loadConfigs(ModConfig.Type.SERVER, FMLPaths.CONFIGDIR.get(), getServerConfigPath(server));
         runModifiers(server);
         NeoForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
@@ -104,7 +102,7 @@ public class ServerLifecycleHooks {
             LanguageHook.loadModLanguages(server);
             // GameTestServer requires the gametests to be registered earlier, so it is done in main and should not be done twice.
             if (!(server instanceof GameTestServer))
-                GameTestHooks.registerGametests();
+                GameTestHooks.registerGametests(server.registryAccess());
         }
         PermissionAPI.initializePermissionAPI();
         NeoForge.EVENT_BUS.post(new ServerStartingEvent(server));
@@ -123,10 +121,8 @@ public class ServerLifecycleHooks {
     }
 
     public static void handleServerStopped(final MinecraftServer server) {
-        if (!server.isDedicatedServer()) RegistryManager.revertToFrozen();
         NeoForge.EVENT_BUS.post(new ServerStoppedEvent(server));
         currentServer = null;
-        LogicalSidedProvider.setServer(null);
         CountDownLatch latch = exitLatch;
 
         if (latch != null) {
@@ -185,21 +181,22 @@ public class ServerLifecycleHooks {
             final MobSpawnSettings mobSettings = biome.getMobSettings();
             mobSettings.getSpawnerTypes().forEach(category -> {
                 mobSettings.getMobs(category).unwrap().forEach(data -> {
-                    if (SpawnPlacements.hasPlacement(data.type)) return;
-                    entitiesWithoutPlacements.add(data.type);
+                    if (SpawnPlacements.hasPlacement(data.value().type()))
+                        return;
+                    entitiesWithoutPlacements.add(data.value().type());
                 });
             });
 
             for (MobCategory mobCategory : mobSettings.getSpawnerTypes()) {
-                for (MobSpawnSettings.SpawnerData spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
-                    if (spawnerData.type.getCategory() != mobCategory) {
+                for (Weighted<MobSpawnSettings.SpawnerData> spawnerData : mobSettings.getMobs(mobCategory).unwrap()) {
+                    if (spawnerData.value().type().getCategory() != mobCategory) {
                         // Ignore vanilla bugged entries to reduce unneeded logging. See https://bugs.mojang.com/browse/MC-1788 for the Ocelot/Jungle vanilla bug.
-                        boolean isVanillaBug = spawnerData.type == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
+                        boolean isVanillaBug = spawnerData.value().type() == EntityType.OCELOT && (biomeHolder.is(Biomes.JUNGLE) || biomeHolder.is(Biomes.BAMBOO_JUNGLE));
                         if (!isVanillaBug) {
                             LOGGER.warn("Detected {} that was registered with {} mob category but was added under {} mob category for {} biome! " +
                                     "Mobs should be added to biomes under the same mob category that the mob was registered as to prevent mob cap spawning issues.",
-                                    BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.type),
-                                    spawnerData.type.getCategory(),
+                                    BuiltInRegistries.ENTITY_TYPE.getKey(spawnerData.value().type()),
+                                    spawnerData.value().type().getCategory(),
                                     mobCategory,
                                     biomeHolder.getKey().location());
                         }

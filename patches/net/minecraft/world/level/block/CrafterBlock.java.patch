@@ -1,62 +1,29 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
-@@ -194,28 +_,42 @@
+@@ -187,7 +_,8 @@
          ServerLevel p_335887_, BlockPos p_307620_, CrafterBlockEntity p_307387_, ItemStack p_307296_, BlockState p_307501_, RecipeHolder<?> p_335494_
      ) {
          Direction direction = p_307501_.getValue(ORIENTATION).front();
 -        Container container = HopperBlockEntity.getContainerAt(p_335887_, p_307620_.relative(direction));
 +        var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_335887_, p_307620_.relative(direction), direction.getOpposite());
++        Container container = containerOrHandler.container();
          ItemStack itemstack = p_307296_.copy();
--        if (container != null && (container instanceof CrafterBlockEntity || p_307296_.getCount() > container.getMaxStackSize(p_307296_))) {
--            while (!itemstack.isEmpty()) {
--                ItemStack itemstack2 = itemstack.copyWithCount(1);
--                ItemStack itemstack1 = HopperBlockEntity.addItem(p_307387_, container, itemstack2, direction.getOpposite());
--                if (!itemstack1.isEmpty()) {
--                    break;
--                }
-+        boolean hasDestination = containerOrHandler != null;
-+        if(hasDestination) {
-+            if (containerOrHandler.left().isPresent() && (containerOrHandler.left().get() instanceof CrafterBlockEntity crafterBlockEntity || p_307296_.getCount() > containerOrHandler.left().get().getMaxStackSize(p_307296_))) {
-+                var container = containerOrHandler.left().get();
-+                while (!itemstack.isEmpty()) {
-+                    ItemStack itemstack2 = itemstack.copyWithCount(1);
-+                    ItemStack itemstack1 = HopperBlockEntity.addItem(p_307387_, container, itemstack2, direction.getOpposite());
-+                    if (!itemstack1.isEmpty()) {
-+                        break;
-+                    }
+         if (container != null && (container instanceof CrafterBlockEntity || p_307296_.getCount() > container.getMaxStackSize(p_307296_))) {
+             while (!itemstack.isEmpty()) {
+@@ -199,10 +_,14 @@
  
--                itemstack.shrink(1);
--            }
--        } else if (container != null) {
--            while (!itemstack.isEmpty()) {
--                int i = itemstack.getCount();
--                itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
--                if (i == itemstack.getCount()) {
--                    break;
-+                    itemstack.shrink(1);
-+                }
-+            } else {
-+                if(containerOrHandler.left().isPresent()) {
-+                    Container container = containerOrHandler.left().get();
-+                    while (!itemstack.isEmpty()) {
-+                        int i = itemstack.getCount();
-+                        itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
-+                        if (i == itemstack.getCount())
-+                            break;
-+                    }
-+                }else{
-+                    net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler<net.neoforged.neoforge.transfer.resources.ItemResource> handler = containerOrHandler.right().get();
-+                    while (!itemstack.isEmpty()) {
-+                        int i = itemstack.getCount();
-+                        var accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(handler, net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack), itemstack.getCount(), net.neoforged.neoforge.transfer.TransferAction.EXECUTE);
-+                        itemstack.shrink(accepted);
-+                        if (i == itemstack.getCount())
-+                            break;
-+                    }
-                 }
+                 itemstack.shrink(1);
              }
-         }
--
-         if (!itemstack.isEmpty()) {
-             Vec3 vec3 = Vec3.atCenterOf(p_307620_);
-             Vec3 vec31 = vec3.relative(direction, 0.7);
+-        } else if (container != null) {
++        } else if (!containerOrHandler.isEmpty()) {
+             while (!itemstack.isEmpty()) {
+                 int i = itemstack.getCount();
+-                itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
++                if (container != null) {
++                    itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
++                } else {
++                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack, false);
++                }
+                 if (i == itemstack.getCount()) {
+                     break;
+                 }

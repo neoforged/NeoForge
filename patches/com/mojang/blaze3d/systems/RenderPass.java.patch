@@ -1,0 +1,13 @@
+--- a/com/mojang/blaze3d/systems/RenderPass.java
++++ b/com/mojang/blaze3d/systems/RenderPass.java
+@@ -31,6 +_,10 @@
+ 
+     void disableScissor();
+ 
++    void enableStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest);
++
++    void disableStencilTest();
++
+     void setVertexBuffer(int p_409605_, GpuBuffer p_410644_);
+ 
+     void setIndexBuffer(GpuBuffer p_409862_, VertexFormat.IndexType p_410093_);

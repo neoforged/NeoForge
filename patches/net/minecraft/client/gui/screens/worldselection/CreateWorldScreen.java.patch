@@ -5,10 +5,10 @@
          queueLoadScreen(p_372818_, PREPARING_WORLD_DATA);
          PackRepository packrepository = new PackRepository(new ServerPacksSource(p_372818_.directoryValidator()));
 +        net.neoforged.neoforge.resource.ResourcePackLoader.populatePackRepository(packrepository, net.minecraft.server.packs.PackType.SERVER_DATA, false);
-         WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(packrepository, WorldDataConfiguration.DEFAULT);
-         CompletableFuture<WorldCreationContext> completablefuture = WorldLoader.load(
-             worldloader$initconfig,
-@@ -306,6 +_,10 @@
+         WorldDataConfiguration worlddataconfiguration = SharedConstants.IS_RUNNING_IN_IDE
+             ? new WorldDataConfiguration(new DataPackConfig(List.of("vanilla", "tests"), List.of()), FeatureFlags.DEFAULT_FLAGS)
+             : WorldDataConfiguration.DEFAULT;
+@@ -309,6 +_,10 @@
              SystemToast.onPackCopyFailure(this.minecraft, s);
              return false;
          } else {
@@ -19,7 +19,7 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, p_374211_);
-@@ -480,7 +_,7 @@
+@@ -483,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
@@ -28,7 +28,7 @@
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),
-@@ -594,6 +_,7 @@
+@@ -597,6 +_,7 @@
          if (path != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(path, this.packValidator);

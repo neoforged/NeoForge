@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
-@@ -503,7 +_,8 @@
+@@ -484,7 +_,8 @@
              for (Player player : list) {
                  if (this.canAttack(player) && !this.isAlliedTo(player)) {
                      flag1 = true;
@@ -8,5 +8,5 @@
 +                    // Neo: provide entity being looked at to disguise check
 +                    if ((!flag || LivingEntity.PLAYER_NOT_WEARING_DISGUISE_ITEM_FOR_TARGET.test(player, this))
                          && this.isLookingAtMe(
-                             player,
-                             0.5,
+                             player, 0.5, false, true, new double[]{this.getEyeY(), this.getY() + 0.5 * this.getScale(), (this.getEyeY() + this.getY()) / 2.0}
+                         )) {

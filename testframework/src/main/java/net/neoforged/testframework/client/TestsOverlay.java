@@ -5,7 +5,6 @@
 
 package net.neoforged.testframework.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 
 public final class TestsOverlay implements LayeredDraw.Layer {
     public static final int MAX_DISPLAYED = 5;
-    public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/background.png");
+    public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "background");
 
     private final MutableTestFramework impl;
     private final BooleanSupplier enabled;
@@ -48,7 +47,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
     }
 
     @Override
-    public void render(GuiGraphics poseStack, DeltaTracker deltaTracker) {
+    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         if (!enabled.getAsBoolean()) return;
 
         List<Test> enabled = impl.tests().enabled().collect(Collectors.toCollection(ArrayList::new));
@@ -56,13 +55,13 @@ public final class TestsOverlay implements LayeredDraw.Layer {
 
         final Font font = Minecraft.getInstance().font;
         final int startX = 10, startY = 10;
-        final int maxWidth = poseStack.guiWidth() / 3;
+        final int maxWidth = graphics.guiWidth() / 3;
         int x = startX, y = startY;
         int maxX = x;
 
         final CommitBasedList<Runnable> renderingQueue = new CommitBasedList<>(new ArrayList<>());
         final Component title = Component.literal("Tests overlay for ").append(Component.literal(impl.id().toString()).withStyle(ChatFormatting.AQUA));
-        renderingQueue.addDirectly(withXY(x, y, (x$, y$) -> poseStack.drawString(font, title, x$, y$, 0xffffff)));
+        renderingQueue.addDirectly(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, 0xffffff)));
         y += font.lineHeight + 5;
         maxX += font.width(title);
 
@@ -101,27 +100,21 @@ public final class TestsOverlay implements LayeredDraw.Layer {
                         continue; // We don't need to render this one anymore, hurray!
                     }
 
-                    renderingQueue.add(() -> {
-                        RenderSystem.enableBlend();
-                        RenderSystem.defaultBlendFunc();
-                    });
-
-                    final XY xy = renderTest(font, test, poseStack, maxWidth, x, y, ((int) (fade * 255f) << 24) | 0xffffff, renderingQueue.currentProgress());
+                    final XY xy = renderTest(font, test, graphics, maxWidth, x, y, ((int) (fade * 255f) << 24) | 0xffffff, renderingQueue.currentProgress());
                     y = xy.y() + 5;
                     maxX = Math.max(maxX, xy.x());
 
-                    renderingQueue.add(RenderSystem::disableBlend);
                     fading.put(test, fade);
                 } else {
-                    final XY xy = renderTest(font, test, poseStack, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
+                    final XY xy = renderTest(font, test, graphics, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
                     y = xy.y() + 5;
                     maxX = Math.max(maxX, xy.x());
                 }
 
-                if (y >= poseStack.guiHeight()) {
+                if (y >= graphics.guiHeight()) {
                     int endIndex = actuallyToRender.indexOf(test) + 1;
                     // If the y is greater than the height, don't render this test at all
-                    if (y > poseStack.guiHeight()) {
+                    if (y > graphics.guiHeight()) {
                         endIndex--;
                         renderingQueue.revert();
                         y = lastY;
@@ -145,14 +138,14 @@ public final class TestsOverlay implements LayeredDraw.Layer {
                 int lastY = y;
                 int lastMaxX = maxX;
                 renderingQueue.push();
-                final XY xy = renderTest(font, test, poseStack, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
+                final XY xy = renderTest(font, test, graphics, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
                 y = xy.y() + 5;
                 maxX = Math.max(maxX, xy.x());
 
-                if (y >= poseStack.guiHeight()) {
+                if (y >= graphics.guiHeight()) {
                     int endIndex = enabled.indexOf(test) + 1;
                     // If the y is greater than the height, don't render this test at all
-                    if (y > poseStack.guiHeight()) {
+                    if (y > graphics.guiHeight()) {
                         renderingQueue.revert();
                         y = lastY;
                         maxX = lastMaxX;
@@ -174,32 +167,27 @@ public final class TestsOverlay implements LayeredDraw.Layer {
 
         maxX += 3;
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
-        renderTilledTexture(poseStack, BG_TEXTURE, startX - 4, startY - 4, (maxX - startX) + 4 + 4, (y - startY) + 4, 4, 4, 256, 256, .5f);
+        graphics.blitSprite(RenderType::guiTextured, BG_TEXTURE, startX - 4, startY - 4, (maxX - startX) + 4 + 4, (y - startY) + 4, 0x7FFFFFFF);
         renderingQueue.forEach(Runnable::run);
-
-        RenderSystem.disableBlend();
     }
 
     static final Map<Test.Result, ResourceLocation> ICON_BY_RESULT = new EnumMap<>(Map.of(
-            Test.Result.FAILED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_failed.png"),
-            Test.Result.PASSED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_passed.png"),
-            Test.Result.NOT_PROCESSED, ResourceLocation.fromNamespaceAndPath("testframework", "textures/gui/test_not_processed.png")));
+            Test.Result.FAILED, ResourceLocation.fromNamespaceAndPath("testframework", "test_failed"),
+            Test.Result.PASSED, ResourceLocation.fromNamespaceAndPath("testframework", "test_passed"),
+            Test.Result.NOT_PROCESSED, ResourceLocation.fromNamespaceAndPath("testframework", "test_not_processed")));
 
     // TODO - maybe "group" together tests in the same group?
-    private XY renderTest(Font font, Test test, GuiGraphics stack, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
+    private XY renderTest(Font font, Test test, GuiGraphics graphics, int maxWidth, int x, int y, int colour, List<Runnable> rendering) {
         final Test.Status status = impl.tests().getStatus(test.id());
         final FormattedCharSequence bullet = Component.literal("- ").withStyle(ChatFormatting.BLACK).getVisualOrderText();
-        rendering.add(withXY(x, y, (x$, y$) -> stack.drawString(font, bullet, x$, y$ - 1, colour)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, bullet, x$, y$ - 1, colour)));
         x += font.width(bullet) + 1;
 
-        rendering.add(withXY(x, y, (x$, y$) -> stack.blit(RenderType::guiTextured, ICON_BY_RESULT.get(status.result()), x$, y$, 0, 0, 9, 9, 9, 9)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.blitSprite(RenderType::guiTextured, ICON_BY_RESULT.get(status.result()), x$, y$, 9, 9)));
         x += 11;
 
         final Component title = statusColoured(test.visuals().title(), status);
-        rendering.add(withXY(x, y, (x$, y$) -> stack.drawString(font, title, x$, y$, colour)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, colour)));
 
         final List<Component> extras = new ArrayList<>();
         if (Screen.hasShiftDown()) extras.addAll(test.visuals().description());
@@ -216,7 +204,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
                     .iterator();
             while (charSequences.hasNext()) {
                 final FormattedCharSequence extra = charSequences.next();
-                rendering.add(withXY(x, y, (x$, y$) -> stack.drawString(font, extra, x$, y$, 0xffffff)));
+                rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, extra, x$, y$, 0xffffff)));
                 y += font.lineHeight;
                 maxX = Math.max(maxX, x + font.width(extra));
             }
@@ -236,79 +224,6 @@ public final class TestsOverlay implements LayeredDraw.Layer {
             case FAILED -> input.copy().withStyle(ChatFormatting.RED);
             case NOT_PROCESSED -> input.copy();
         };
-    }
-
-    private static void renderTilledTexture(GuiGraphics pose, ResourceLocation texture, int x, int y, int width, int height, int borderWidth, int borderHeight, int textureWidth, int textureHeight, float alpha) {
-        final var sideWidth = Math.min(borderWidth, width / 2);
-        final var sideHeight = Math.min(borderHeight, height / 2);
-
-        final var leftWidth = sideWidth < borderWidth ? sideWidth + (width % 2) : sideWidth;
-        final var topHeight = sideHeight < borderHeight ? sideHeight + (height % 2) : sideHeight;
-
-        // Calculate texture centre
-        final int textureCentreWidth = textureWidth - borderWidth * 2,
-                textureCenterHeight = textureHeight - borderHeight * 2;
-        final int centreWidth = width - leftWidth - sideWidth,
-                centerHeight = height - topHeight - sideHeight;
-
-        // Calculate the corner positions
-        final var leftEdgeEnd = x + leftWidth;
-        final var rightEdgeStart = leftEdgeEnd + centreWidth;
-        final var topEdgeEnd = y + topHeight;
-        final var bottomEdgeStart = topEdgeEnd + centerHeight;
-        pose.flush();
-        RenderSystem.setShaderTexture(0, texture);
-        ClientUtils.setupAlpha(alpha);
-
-        // Top Left Corner
-        ClientUtils.blitAlphaSimple(pose, x, y, 0, 0, leftWidth, topHeight, textureWidth, textureHeight);
-        // Bottom Left Corner
-        ClientUtils.blitAlphaSimple(pose, x, bottomEdgeStart, 0, textureHeight - sideHeight, leftWidth, sideHeight, textureWidth, textureHeight);
-
-        // Render the Middle
-        if (centreWidth > 0) {
-            // Top Middle
-            blitTiled(pose, leftEdgeEnd, y, centreWidth, topHeight, borderWidth, 0, textureCentreWidth, borderHeight, textureWidth, textureHeight, texture);
-            if (centerHeight > 0) {
-                // Centre
-                blitTiled(pose, leftEdgeEnd, topEdgeEnd, centreWidth, centerHeight, borderWidth, borderHeight, textureCentreWidth, textureCenterHeight, textureWidth, textureHeight, texture);
-            }
-            // Bottom Middle
-            blitTiled(pose, leftEdgeEnd, bottomEdgeStart, centreWidth, sideHeight, borderWidth, textureHeight - sideHeight, textureCentreWidth, borderHeight, textureWidth, textureHeight, texture);
-        }
-
-        if (centerHeight > 0) {
-            // Left Middle
-            blitTiled(pose, x, topEdgeEnd, leftWidth, centerHeight, 0, borderHeight, borderWidth, textureCenterHeight, textureWidth, textureHeight, texture);
-            // Right Middle
-            blitTiled(pose, rightEdgeStart, topEdgeEnd, sideWidth, centerHeight, textureWidth - sideWidth, borderHeight, borderWidth, textureCenterHeight, textureWidth, textureHeight, texture);
-        }
-
-        // Top Right Corner
-        ClientUtils.blitAlphaSimple(pose, rightEdgeStart, y, textureWidth - sideWidth, 0, sideWidth, topHeight, textureWidth, textureHeight);
-        // Bottom Right Corner
-        ClientUtils.blitAlphaSimple(pose, rightEdgeStart, bottomEdgeStart, textureWidth - sideWidth, textureHeight - sideHeight, sideWidth, sideHeight, textureWidth, textureHeight);
-        ClientUtils.disableAlpha();
-    }
-
-    private static void blitTiled(GuiGraphics pose, int x, int y, int width, int height, int u, int v, int textureDrawWidth, int textureDrawHeight, int textureWidth, int textureHeight, ResourceLocation texture) {
-        // Calculate the amount of tiles
-        final int xTiles = (int) Math.ceil((float) width / textureDrawWidth),
-                yTiles = (int) Math.ceil((float) height / textureDrawHeight);
-
-        var drawWidth = width;
-        var drawHeight = height;
-        for (var tileX = 0; tileX < xTiles; tileX++) {
-            for (var tileY = 0; tileY < yTiles; tileY++) {
-                final var renderWidth = Math.min(drawWidth, textureDrawWidth);
-                final var renderHeight = Math.min(drawHeight, textureDrawHeight);
-                pose.blit(RenderType::guiTextured, texture, x + textureDrawWidth * tileX, y + textureDrawHeight * tileY, u, v, renderWidth, renderHeight, textureWidth, textureHeight);
-                // We rendered a tile
-                drawHeight -= textureDrawHeight;
-            }
-            drawWidth -= textureDrawWidth;
-            drawHeight = height;
-        }
     }
 
     @FunctionalInterface

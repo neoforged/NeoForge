@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.common;
 
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -212,6 +211,20 @@ public class Tags {
          * (The block's registry name is used as the tag name)
          */
         public static final TagKey<Block> ORES_IN_GROUND_STONE = tag("ores_in_ground/stone");
+        public static final TagKey<Block> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Block> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Block> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Block> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_CRAFTING_TABLES = tag("player_workstations/crafting_tables");
         public static final TagKey<Block> PLAYER_WORKSTATIONS_FURNACES = tag("player_workstations/furnaces");
         /**
@@ -318,6 +331,21 @@ public class Tags {
          * This tag defaults to {@link net.minecraft.world.item.Items#LAPIS_LAZULI} when not present in any datapacks, including forge client on vanilla server
          */
         public static final TagKey<Item> ENCHANTING_FUELS = neoforgeTag("enchanting_fuels");
+        /**
+         * Controls what items Piglins can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PIGLIN_USABLE_CROSSBOWS = neoforgeTag("piglin_usable_crossbows");
+        /**
+         * Controls what items Pillagers can use as default as a valid crossbow
+         * This tag defaults to {@link net.minecraft.world.item.Items#CROSSBOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> PILLAGER_USABLE_CROSSBOWS = neoforgeTag("pillager_usable_crossbows");
+        /**
+         * Controls what items Skeletons can use as default as a valid bow
+         * This tag defaults to {@link net.minecraft.world.item.Items#BOW} when not present in any datapacks, including forge client on vanilla server
+         */
+        public static final TagKey<Item> SKELETON_USABLE_BOWS = neoforgeTag("skeleton_usable_bows");
 
         // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
@@ -386,6 +414,54 @@ public class Tags {
         public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
         public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
+
+        /**
+         * Drinks are defined as (1) consumable items that (2) use the
+         * {@linkplain net.minecraft.world.item.ItemUseAnimation#DRINK drink item use animation}, (3) can be consumed regardless of the
+         * player's current hunger.
+         *
+         * <p>Drinks may provide nutrition and saturation, but are not required to do so.
+         *
+         * <p>More specific types of drinks, such as Water, Milk, or Juice should be placed in a sub-tag, such as
+         * {@code #c:drinks/water}, {@code #c:drinks/milk}, and {@code #c:drinks/juice}.
+         */
+        public static final TagKey<Item> DRINKS = tag("drinks");
+        /**
+         * For consumable drinks that contain only water.
+         */
+        public static final TagKey<Item> DRINKS_WATER = tag("drinks/water");
+        /**
+         * For consumable drinks that are generally watery (such as potions).
+         */
+        public static final TagKey<Item> DRINKS_WATERY = tag("drinks/watery");
+        public static final TagKey<Item> DRINKS_MILK = tag("drinks/milk");
+        public static final TagKey<Item> DRINKS_HONEY = tag("drinks/honey");
+        /**
+         * For consumable drinks that are magic in nature and usually grant at least one
+         * {@link net.minecraft.world.effect.MobEffect} when consumed.
+         */
+        public static final TagKey<Item> DRINKS_MAGIC = tag("drinks/magic");
+        /**
+         * For drinks that always grant the {@linkplain net.minecraft.world.effect.MobEffects#BAD_OMEN Bad Omen} effect.
+         */
+        public static final TagKey<Item> DRINKS_OMINOUS = tag("drinks/ominous");
+        /**
+         * Plant based fruit and vegetable juices belong in this tag, for example apple juice and carrot juice.
+         *
+         * <p>If tags for specific types of juices are desired, they may go in a sub-tag, using their regular name such as
+         * {@code #c:drinks/apple_juice}.
+         */
+        public static final TagKey<Item> DRINKS_JUICE = tag("drinks/juice");
+
+        /**
+         * For non-empty bottles that are {@linkplain #DRINKS drinkable}.
+         */
+        public static final TagKey<Item> DRINK_CONTAINING_BOTTLE = tag("drink_containing/bottle");
+        /**
+         * For non-empty buckets that are {@linkplain #DRINKS drinkable}.
+         */
+        public static final TagKey<Item> DRINK_CONTAINING_BUCKET = tag("drink_containing/bucket");
+
         public static final TagKey<Item> DUSTS = tag("dusts");
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
@@ -436,6 +512,9 @@ public class Tags {
         public static final TagKey<Item> DYES_ORANGE = DyeColor.ORANGE.getTag();
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
 
+        /**
+         * For eggs to use for culinary purposes in recipes such as baking a cake.
+         */
         public static final TagKey<Item> EGGS = tag("eggs");
         public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");
@@ -639,6 +718,20 @@ public class Tags {
          * If a mod adds a new variant like a seeking potion that applies effect to the closest entity at impact, that would in this tag.
          */
         public static final TagKey<Item> POTIONS_BOTTLE = tag("potions/bottle");
+        public static final TagKey<Item> PUMPKINS = tag("pumpkins");
+        /**
+         * For pumpkins that are not carved.
+         */
+        public static final TagKey<Item> PUMPKINS_NORMAL = tag("pumpkins/normal");
+        /**
+         * For pumpkins that are already carved but not a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_CARVED = tag("pumpkins/carved");
+
+        /**
+         * For pumpkins that are already carved and a light source.
+         */
+        public static final TagKey<Item> PUMPKINS_JACK_O_LANTERNS = tag("pumpkins/jack_o_lanterns");
         public static final TagKey<Item> RAW_MATERIALS = tag("raw_materials");
         public static final TagKey<Item> RAW_MATERIALS_COPPER = tag("raw_materials/copper");
         public static final TagKey<Item> RAW_MATERIALS_GOLD = tag("raw_materials/gold");
@@ -1263,13 +1356,6 @@ public class Tags {
          */
         public static final TagKey<Biome> IS_OUTER_END_ISLAND = tag("is_outer_end_island");
 
-        /**
-         * Old legacy tag that lost it's intended use case and is too unclear with regard to the current worldgen biome system today.
-         * TODO: remove in 1.22
-         */
-        @Deprecated(forRemoval = true, since = "21.1")
-        public static final TagKey<Biome> IS_MODIFIED = tag("is_modified");
-
         private static TagKey<Biome> tag(String name) {
             return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("c", name));
         }
@@ -1342,7 +1428,7 @@ public class Tags {
 
     /**
      * Use this to get a TagKey's translation key safely on any side.
-     * 
+     *
      * @return the translation key for a TagKey.
      */
     public static String getTagTranslationKey(TagKey<?> tagKey) {

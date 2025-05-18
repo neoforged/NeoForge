@@ -1,38 +1,17 @@
 --- a/net/minecraft/client/renderer/entity/player/PlayerRenderer.java
 +++ b/net/minecraft/client/renderer/entity/player/PlayerRenderer.java
-@@ -86,8 +_,10 @@
-     private static HumanoidModel.ArmPose getArmPose(AbstractClientPlayer p_386861_, HumanoidArm p_373044_) {
-         ItemStack itemstack = p_386861_.getItemInHand(InteractionHand.MAIN_HAND);
-         ItemStack itemstack1 = p_386861_.getItemInHand(InteractionHand.OFF_HAND);
--        HumanoidModel.ArmPose humanoidmodel$armpose = getArmPose(p_386861_, itemstack, InteractionHand.MAIN_HAND);
--        HumanoidModel.ArmPose humanoidmodel$armpose1 = getArmPose(p_386861_, itemstack1, InteractionHand.OFF_HAND);
-+        var extensionsMainHand = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack);
-+        var extensionsOffHand = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemstack1);
-+        HumanoidModel.ArmPose humanoidmodel$armpose = getArmPose(p_386861_, itemstack, InteractionHand.MAIN_HAND, extensionsMainHand.getArmPose(p_386861_, InteractionHand.MAIN_HAND, itemstack));
-+        HumanoidModel.ArmPose humanoidmodel$armpose1 = getArmPose(p_386861_, itemstack1, InteractionHand.OFF_HAND, extensionsOffHand.getArmPose(p_386861_, InteractionHand.OFF_HAND, itemstack1));
-         if (humanoidmodel$armpose.isTwoHanded()) {
-             humanoidmodel$armpose1 = itemstack1.isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
-         }
-@@ -95,7 +_,19 @@
-         return p_386861_.getMainArm() == p_373044_ ? humanoidmodel$armpose : humanoidmodel$armpose1;
+@@ -96,6 +_,11 @@
      }
  
-+    /**
-+     * @deprecated Neo: use {@link #getArmPose(Player, ItemStack, InteractionHand, HumanoidModel.ArmPose)} instead
-+     */
-+    @Deprecated
      private static HumanoidModel.ArmPose getArmPose(Player p_386775_, ItemStack p_388403_, InteractionHand p_117796_) {
-+        return getArmPose(p_386775_, p_388403_, p_117796_, null);
-+    }
-+
-+    private static HumanoidModel.ArmPose getArmPose(Player p_386775_, ItemStack p_388403_, InteractionHand p_117796_, @Nullable HumanoidModel.ArmPose pose) {
-+        if (pose != null) {
-+            return pose;
++        var extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_388403_);
++        var armPose = extensions.getArmPose(p_386775_, p_117796_, p_388403_);
++        if (armPose != null) {
++            return armPose;
 +        }
-+
          if (p_388403_.isEmpty()) {
              return HumanoidModel.ArmPose.EMPTY;
-         } else {
+         } else if (!p_386775_.swinging && p_388403_.is(Items.CROSSBOW) && CrossbowItem.isCharged(p_388403_)) {
 @@ -145,6 +_,13 @@
          p_117799_.scale(0.9375F, 0.9375F, 0.9375F);
      }
@@ -47,8 +26,8 @@
      protected void renderNameTag(PlayerRenderState p_363185_, Component p_117809_, PoseStack p_117810_, MultiBufferSource p_117811_, int p_117812_) {
          p_117810_.pushPose();
          if (p_363185_.scoreText != null) {
-@@ -251,11 +_,29 @@
-             : null;
+@@ -252,11 +_,29 @@
+         }
      }
  
 +    /**
