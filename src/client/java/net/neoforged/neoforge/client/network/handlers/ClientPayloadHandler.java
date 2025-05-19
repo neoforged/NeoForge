@@ -111,7 +111,7 @@ public final class ClientPayloadHandler {
     }
 
     private static void handle(ConfigFilePayload payload, IPayloadContext context) {
-        if (!Minecraft.getInstance().isLocalServer()) {
+        if (!context.connection().isMemoryConnection()) {
             ConfigSync.receiveSyncedConfig(payload.contents(), payload.fileName());
         }
     }

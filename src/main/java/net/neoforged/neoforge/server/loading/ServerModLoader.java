@@ -11,7 +11,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingException;
 import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.ModWorkManager;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.server.LanguageHook;
@@ -44,7 +43,6 @@ public class ServerModLoader extends CommonModLoader {
                 LOGGER.warn(Logging.LOADING, "{} [{}]", issue.translationKey(), issue.translationArgs());
             }
         }
-        NeoForge.EVENT_BUS.start();
     }
 
     public static boolean hasErrors() {

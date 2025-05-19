@@ -28,7 +28,7 @@
                              }
                          }
                      }
-@@ -490,6 +_,74 @@
+@@ -490,6 +_,75 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
@@ -52,8 +52,9 @@
 +    }
 +
 +    @Override
-+    public <T> java.util.Optional<T> getExistingData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getExistingData(type);
++    @Nullable
++    public <T> T getExistingDataOrNull(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return getAttachmentHolder().getExistingDataOrNull(type);
 +    }
 +
 +    @Override

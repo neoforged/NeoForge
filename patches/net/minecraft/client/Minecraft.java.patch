@@ -90,6 +90,14 @@
                          this.selfTest();
                      }
  
+@@ -668,6 +_,7 @@
+     }
+ 
+     private void onResourceLoadFinished(@Nullable Minecraft.GameLoadCookie p_299896_) {
++        net.neoforged.neoforge.client.ClientHooks.fireResourceLoadFinishedEvent(!this.gameLoadFinished);
+         if (!this.gameLoadFinished) {
+             this.gameLoadFinished = true;
+             this.onGameLoadFinished(p_299896_);
 @@ -704,6 +_,8 @@
              runnable = () -> this.setScreen(screen);
          }
@@ -311,11 +319,13 @@
                      if (!itemstack.isEmpty()
                          && this.gameMode.useItem(this.player, interactionhand) instanceof InteractionResult.Success interactionresult$success1) {
                          if (interactionresult$success1.swingSource() == InteractionResult.SwingSource.CLIENT) {
-@@ -1675,6 +_,8 @@
+@@ -1675,6 +_,10 @@
  
      public void tick() {
          this.clientTickCount++;
-+        net.neoforged.neoforge.client.ClientHooks.fireClientTickPre();
++        if (this.gameLoadFinished) {
++            net.neoforged.neoforge.client.ClientHooks.fireClientTickPre();
++        }
 +
          if (this.level != null && !this.pause) {
              this.level.tickRateManager().tick();
@@ -336,12 +346,14 @@
              }
  
              profilerfiller.popPush("animateTick");
-@@ -1810,6 +_,8 @@
+@@ -1810,6 +_,10 @@
          profilerfiller.popPush("keyboard");
          this.keyboardHandler.tick();
          profilerfiller.pop();
 +
-+        net.neoforged.neoforge.client.ClientHooks.fireClientTickPost();
++        if (this.gameLoadFinished) {
++            net.neoforged.neoforge.client.ClientHooks.fireClientTickPost();
++        }
      }
  
      private boolean isLevelRunningNormally() {

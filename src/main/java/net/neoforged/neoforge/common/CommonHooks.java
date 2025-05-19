@@ -682,8 +682,12 @@ public class CommonHooks {
 
     public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (NeoForge.EVENT_BUS.post(e).isCanceled())
+        if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
+            outputSlot.setItem(0, ItemStack.EMPTY);
+            container.setMaximumCost(0);
+            container.repairItemCountCost = 0;
             return false;
+        }
         if (e.getOutput().isEmpty())
             return true;
 

@@ -186,6 +186,8 @@
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "네오 포지의 블록 렌더링 파이프라인을 사용해 모델의 조명 문제를 해결합니다.",
   "neoforge.configgui.fullBoundingBoxLadders": "사다리 히트박스 전체 검사",
   "neoforge.configgui.fullBoundingBoxLadders.tooltip": "엔티티의 위치만 확인하는 것이 아니라, 엔티티의 히트박스 전체를 사다리와 비교합니다. 게임 플레이에 지장을 주는 설정이라 기본적으로 비활성화되어 있습니다.",
+  "neoforge.configgui.handleAmbientOcclusionPerPart": "Per-part block AO handling",
+  "neoforge.configgui.handleAmbientOcclusionPerPart.tooltip": "When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting.",
   "neoforge.configgui.logLegacyTagWarnings": "Log Legacy Tags",
   "neoforge.configgui.logLegacyTagWarnings.tooltip": "A config option mainly for developers. Logs out modded tags that are using the 'forge' namespace when running on integrated server. Defaults to DEV_SHORT.",
   "neoforge.configgui.logUntranslatedConfigurationWarnings": "Log Untranslated Configuration Keys",
