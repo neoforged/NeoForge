@@ -17,7 +17,7 @@
          if (!p_150474_.hasInfiniteMaterials()) {
              p_150474_.giveExperienceLevels(-this.cost.get());
          }
-@@ -108,10 +_,24 @@
+@@ -108,10 +_,30 @@
                  p_150479_.levelEvent(1030, p_150480_, 0);
              }
          });
@@ -31,15 +31,21 @@
 -    public void createResult() {
 +    public final void createResult() {
 +        // Neo: Override the real createResult() method to invoke the vanilla logic, and then call the event hook.
-+        // Since the vanilla createResult() has multiple returns, we need wrap it. The choices are this, or pack it in a lambda.
-+        this.__createResultImpl();
++        // Since the vanilla createResult() has multiple returns, we need to wrap it. The choices are this, or pack it in a lambda.
++        this.createResultInternal();
 +        ItemStack leftInput = this.inputSlots.getItem(0);
 +        ItemStack rightInput = this.inputSlots.getItem(1);
 +        net.neoforged.neoforge.common.CommonHooks.onAnvilUpdate(this, leftInput, rightInput, resultSlots, itemName, this.player);
 +    }
 +
-+    // Neo: We patch the real createResult() into __createResultImpl() so we can wrap it, and provide the vanilla result in the AnvilUpdateEvent.
-+    public void __createResultImpl() {
++    /**
++     * Neo: This is the original createResult() method, which is called by the above method ({@link #createResult()}.
++     * <p>
++     * If you would normally override {@link #createResult()}, you should override this method instead.
++     * 
++     * @implNote This replacement exists so we can fire the AnvilUpdateEvent with the vanilla result, despite the multiple returns in the original method.
++     */
++    protected void createResultInternal() {
          ItemStack itemstack = this.inputSlots.getItem(0);
          this.onlyRenaming = false;
          this.cost.set(1);
