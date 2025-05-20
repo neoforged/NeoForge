@@ -74,7 +74,6 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
 
     @Override
     protected void buildRecipes() {
-        replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.GOLD_INGOT, Tags.Items.INGOTS_GOLD);
         replace(Items.GOLD_NUGGET, Tags.Items.NUGGETS_GOLD);
         replace(Items.IRON_INGOT, Tags.Items.INGOTS_IRON);
@@ -84,6 +83,8 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.AMETHYST_SHARD, Tags.Items.GEMS_AMETHYST);
         replace(Items.DIAMOND, Tags.Items.GEMS_DIAMOND);
         replace(Items.EMERALD, Tags.Items.GEMS_EMERALD);
+        replace(Items.LAPIS_LAZULI, Tags.Items.GEMS_LAPIS);
+        replace(Items.PRISMARINE_CRYSTALS, Tags.Items.GEMS_PRISMARINE);
         replace(Items.QUARTZ, Tags.Items.GEMS_QUARTZ);
         replace(Items.REDSTONE, Tags.Items.DUSTS_REDSTONE);
         replace(Items.GLOWSTONE_DUST, Tags.Items.DUSTS_GLOWSTONE);
@@ -119,16 +120,24 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.MELON, Tags.Items.CROPS_MELON);
         replace(Items.COCOA_BEANS, Tags.Items.CROPS_COCOA_BEAN);
 
-        replace(Items.STRING, Tags.Items.STRINGS);
+        replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.BLAZE_ROD, Tags.Items.RODS_BLAZE);
-        replace(Items.GLASS, Tags.Items.GLASS_BLOCKS_CHEAP);
-        replace(Items.OBSIDIAN, Tags.Items.OBSIDIANS_NORMAL);
-        replace(Items.CRYING_OBSIDIAN, Tags.Items.OBSIDIANS_CRYING);
+        replace(Items.STRING, Tags.Items.STRINGS);
         replace(Items.LEATHER, Tags.Items.LEATHERS);
         replace(Items.BONE, Tags.Items.BONES);
+        replace(Items.CHAIN, Tags.Items.CHAINS);
+        replace(Items.FEATHER, Tags.Items.FEATHERS);
+        replace(Items.GUNPOWDER, Tags.Items.GUNPOWDERS);
+        replace(Items.NETHER_STAR, Tags.Items.NETHER_STARS);
         replace(Items.BRICK, Tags.Items.BRICKS_NORMAL);
         replace(Items.NETHER_BRICK, Tags.Items.BRICKS_NETHER);
         replace(Items.RESIN_BRICK, Tags.Items.BRICKS_RESIN);
+
+        replace(Items.GLASS, Tags.Items.GLASS_BLOCKS_CHEAP);
+        replace(Items.OBSIDIAN, Tags.Items.OBSIDIANS_NORMAL);
+        replace(Items.CRYING_OBSIDIAN, Tags.Items.OBSIDIANS_CRYING);
+        replace(Items.NETHERRACK, Tags.Items.NETHERRACKS);
+        replace(Items.END_STONE, Tags.Items.END_STONES);
 
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
 
@@ -138,7 +147,9 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.NETHER_BRICKS);
         exclude(Blocks.RED_NETHER_BRICKS);
         exclude(Blocks.RESIN_BRICKS);
+        exclude(Blocks.END_STONE_BRICKS);
         exclude(Items.BROWN_DYE);
+        exclude(Items.BLUE_DYE);
 
         exclude(Blocks.GOLD_BLOCK);
         exclude(Items.GOLD_NUGGET);
@@ -149,6 +160,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.NETHERITE_BLOCK);
         exclude(Blocks.COPPER_BLOCK);
         exclude(Blocks.AMETHYST_BLOCK);
+        exclude(Blocks.LAPIS_BLOCK);
         exclude(Blocks.QUARTZ_BLOCK);
         exclude(Blocks.GLOWSTONE);
 

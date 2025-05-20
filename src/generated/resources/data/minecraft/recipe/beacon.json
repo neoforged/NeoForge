@@ -4,7 +4,7 @@
   "key": {
     "G": "#c:glass_blocks/cheap",
     "O": "#c:obsidians/normal",
-    "S": "minecraft:nether_star"
+    "S": "#c:nether_stars"
   },
   "pattern": [
     "GGG",

@@ -4,7 +4,7 @@
   "key": {
     "#": "#c:ingots/copper",
     "I": "#c:rods/wooden",
-    "X": "minecraft:feather"
+    "X": "#c:feathers"
   },
   "pattern": [
     "X",

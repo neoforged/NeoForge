@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": "#c:gems/diamond",
-    "C": "minecraft:netherrack",
+    "C": "#c:netherracks",
     "S": "minecraft:netherite_upgrade_smithing_template"
   },
   "pattern": [

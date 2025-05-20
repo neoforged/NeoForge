@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "minecraft:ink_sac",
+    "#c:feathers"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:writable_book"
+  }
+}

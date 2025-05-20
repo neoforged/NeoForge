@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": "#c:gems/diamond",
-    "C": "minecraft:end_stone",
+    "C": "#c:end_stones",
     "S": "minecraft:eye_armor_trim_smithing_template"
   },
   "pattern": [
