@@ -2,17 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:cobblestones/normal",
-    "R": "#c:dusts/redstone",
-    "X": "#c:tools/bow"
+    "#": "#c:slime_balls"
   },
   "pattern": [
     "###",
-    "#X#",
-    "#R#"
+    "###",
+    "###"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:dispenser"
+    "id": "minecraft:slime_block"
   }
 }

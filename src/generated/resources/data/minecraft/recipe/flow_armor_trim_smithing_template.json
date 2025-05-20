@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": "#c:gems/diamond",
-    "C": "minecraft:breeze_rod",
+    "C": "#c:rods/breeze",
     "S": "minecraft:flow_armor_trim_smithing_template"
   },
   "pattern": [

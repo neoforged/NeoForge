@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": "#c:tools/fishing_rod",
-    "X": "#c:crops/carrot"
+    "X": "minecraft:warped_fungus"
   },
   "pattern": [
     "# ",
@@ -11,6 +11,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:carrot_on_a_stick"
+    "id": "minecraft:warped_fungus_on_a_stick"
   }
 }

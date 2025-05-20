@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:blaze_powder",
+    "#c:slime_balls"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:magma_cream"
+  }
+}

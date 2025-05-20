@@ -122,12 +122,14 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
 
         replace(Items.STICK, Tags.Items.RODS_WOODEN);
         replace(Items.BLAZE_ROD, Tags.Items.RODS_BLAZE);
+        replace(Items.BREEZE_ROD, Tags.Items.RODS_BREEZE);
         replace(Items.STRING, Tags.Items.STRINGS);
         replace(Items.LEATHER, Tags.Items.LEATHERS);
         replace(Items.BONE, Tags.Items.BONES);
         replace(Items.CHAIN, Tags.Items.CHAINS);
         replace(Items.FEATHER, Tags.Items.FEATHERS);
         replace(Items.GUNPOWDER, Tags.Items.GUNPOWDERS);
+        replace(Items.SLIME_BALL, Tags.Items.SLIME_BALLS);
         replace(Items.NETHER_STAR, Tags.Items.NETHER_STARS);
         replace(Items.BRICK, Tags.Items.BRICKS_NORMAL);
         replace(Items.NETHER_BRICK, Tags.Items.BRICKS_NETHER);
@@ -138,6 +140,10 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.CRYING_OBSIDIAN, Tags.Items.OBSIDIANS_CRYING);
         replace(Items.NETHERRACK, Tags.Items.NETHERRACKS);
         replace(Items.END_STONE, Tags.Items.END_STONES);
+
+        replace(Items.BOW, Tags.Items.TOOLS_BOW);
+        replace(Items.CROSSBOW, Tags.Items.TOOLS_CROSSBOW);
+        replace(Items.FISHING_ROD, Tags.Items.TOOLS_FISHING_ROD);
 
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
 
