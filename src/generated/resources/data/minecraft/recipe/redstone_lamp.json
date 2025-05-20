@@ -2,17 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:cobblestones/normal",
-    "Q": "#c:gems/quartz",
+    "G": "minecraft:glowstone",
     "R": "#c:dusts/redstone"
   },
   "pattern": [
-    "###",
-    "RRQ",
-    "###"
+    " R ",
+    "RGR",
+    " R "
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:observer"
+    "id": "minecraft:redstone_lamp"
   }
 }

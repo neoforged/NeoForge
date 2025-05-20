@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": "#c:rods/blaze",
+    "C": "minecraft:waxed_weathered_copper",
+    "R": "#c:dusts/redstone"
+  },
+  "pattern": [
+    " C ",
+    "CBC",
+    " R "
+  ],
+  "result": {
+    "count": 4,
+    "id": "minecraft:waxed_weathered_copper_bulb"
+  }
+}

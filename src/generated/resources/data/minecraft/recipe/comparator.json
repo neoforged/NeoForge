@@ -2,17 +2,17 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:cobblestones/normal",
-    "R": "#c:dusts/redstone",
-    "X": "minecraft:bow"
+    "#": "minecraft:redstone_torch",
+    "I": "minecraft:stone",
+    "X": "#c:gems/quartz"
   },
   "pattern": [
-    "###",
+    " # ",
     "#X#",
-    "#R#"
+    "III"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:dispenser"
+    "id": "minecraft:comparator"
   }
 }

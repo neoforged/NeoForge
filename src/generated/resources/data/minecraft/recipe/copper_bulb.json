@@ -2,17 +2,17 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:cobblestones/normal",
-    "Q": "#c:gems/quartz",
+    "B": "#c:rods/blaze",
+    "C": "minecraft:copper_block",
     "R": "#c:dusts/redstone"
   },
   "pattern": [
-    "###",
-    "RRQ",
-    "###"
+    " C ",
+    "CBC",
+    " R "
   ],
   "result": {
-    "count": 1,
-    "id": "minecraft:observer"
+    "count": 4,
+    "id": "minecraft:copper_bulb"
   }
 }

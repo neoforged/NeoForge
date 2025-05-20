@@ -2,16 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:nuggets/gold",
-    "X": "minecraft:carrot"
+    "#": "#minecraft:stone_crafting_materials",
+    "B": "#c:rods/blaze"
   },
   "pattern": [
-    "###",
-    "#X#",
+    " B ",
     "###"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:golden_carrot"
+    "id": "minecraft:brewing_stand"
   }
 }

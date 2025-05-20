@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": "#c:cobblestones/normal",
-    "R": "minecraft:redstone",
+    "R": "#c:dusts/redstone",
     "T": "#minecraft:planks",
     "X": "#c:ingots/iron"
   },

@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "#": "#c:rods/wooden",
-    "X": "minecraft:redstone"
+    "X": "#c:dusts/redstone"
   },
   "pattern": [
     "X",

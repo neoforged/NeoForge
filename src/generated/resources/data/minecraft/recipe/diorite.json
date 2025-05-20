@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "C": "#c:cobblestones/normal",
-    "Q": "minecraft:quartz"
+    "Q": "#c:gems/quartz"
   },
   "pattern": [
     "CQ",

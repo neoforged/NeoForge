@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:fishing_rod",
+    "X": "#c:crops/carrot"
+  },
+  "pattern": [
+    "# ",
+    " X"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:carrot_on_a_stick"
+  }
+}

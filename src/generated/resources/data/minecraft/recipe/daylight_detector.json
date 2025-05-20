@@ -2,17 +2,17 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "#c:cobblestones/normal",
+    "G": "minecraft:glass",
     "Q": "#c:gems/quartz",
-    "R": "#c:dusts/redstone"
+    "W": "#minecraft:wooden_slabs"
   },
   "pattern": [
-    "###",
-    "RRQ",
-    "###"
+    "GGG",
+    "QQQ",
+    "WWW"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:observer"
+    "id": "minecraft:daylight_detector"
   }
 }

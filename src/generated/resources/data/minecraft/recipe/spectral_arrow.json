@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": "#c:ingots/iron",
-    "X": "#c:dusts/redstone"
+    "#": "#c:dusts/glowstone",
+    "X": "minecraft:arrow"
   },
   "pattern": [
     " # ",
@@ -11,7 +11,7 @@
     " # "
   ],
   "result": {
-    "count": 1,
-    "id": "minecraft:compass"
+    "count": 2,
+    "id": "minecraft:spectral_arrow"
   }
 }

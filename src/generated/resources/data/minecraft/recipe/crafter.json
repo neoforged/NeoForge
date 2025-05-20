@@ -5,7 +5,7 @@
     "#": "#c:ingots/iron",
     "C": "minecraft:crafting_table",
     "D": "minecraft:dropper",
-    "R": "minecraft:redstone"
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "###",

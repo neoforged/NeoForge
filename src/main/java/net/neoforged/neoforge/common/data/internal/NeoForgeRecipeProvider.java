@@ -24,6 +24,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -56,8 +57,12 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         output.excludes.add(ResourceKey.create(Registries.RECIPE, ResourceLocation.parse(name)));
     }
 
-    private void replace(ItemLike item, TagKey<Item> tag) {
-        output.replacements.put(item.asItem(), tag);
+    private void replace(ItemLike item, TagKey<Item> replacementTag) {
+        output.replacements.put(item.asItem(), replacementTag);
+    }
+
+    private void replace(TagKey<Item> tag, TagKey<Item> replacementTag) {
+        output.tagReplacements.put(tag, replacementTag);
     }
 
     @Override
@@ -72,6 +77,9 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Items.AMETHYST_SHARD, Tags.Items.GEMS_AMETHYST);
         replace(Items.DIAMOND, Tags.Items.GEMS_DIAMOND);
         replace(Items.EMERALD, Tags.Items.GEMS_EMERALD);
+        replace(Items.QUARTZ, Tags.Items.GEMS_QUARTZ);
+        replace(Items.REDSTONE, Tags.Items.DUSTS_REDSTONE);
+        replace(Items.GLOWSTONE_DUST, Tags.Items.DUSTS_GLOWSTONE);
 
         replace(Items.WHITE_DYE, Tags.Items.DYES_WHITE);
         replace(Items.ORANGE_DYE, Tags.Items.DYES_ORANGE);
@@ -93,9 +101,25 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         replace(Blocks.COBBLESTONE, Tags.Items.COBBLESTONES_NORMAL);
         replace(Blocks.COBBLED_DEEPSLATE, Tags.Items.COBBLESTONES_DEEPSLATE);
 
+        replace(Items.MILK_BUCKET, Tags.Items.BUCKETS_MILK);
         replace(Items.EGG, Tags.Items.EGGS);
+        replace(ItemTags.EGGS, Tags.Items.EGGS);
+        replace(Items.WHEAT, Tags.Items.CROPS_WHEAT);
+        replace(Items.CARROT, Tags.Items.CROPS_CARROT);
+        replace(Items.BEETROOT, Tags.Items.CROPS_BEETROOT);
+        replace(Items.POTATO, Tags.Items.CROPS_POTATO);
+        replace(Items.PUMPKIN, Tags.Items.CROPS_PUMPKIN);
+        replace(Items.MELON, Tags.Items.CROPS_MELON);
+        replace(Items.COCOA_BEANS, Tags.Items.CROPS_COCOA_BEAN);
+
         replace(Items.STRING, Tags.Items.STRINGS);
+        replace(Items.BLAZE_ROD, Tags.Items.RODS_BLAZE);
+        replace(Items.GLASS, Tags.Items.GLASS_BLOCKS_COLORLESS);
+
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
+
+        exclude(Blocks.HAY_BLOCK);
+        exclude(Items.BROWN_DYE);
 
         exclude(Blocks.GOLD_BLOCK);
         exclude(Items.GOLD_NUGGET);
@@ -106,6 +130,12 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.NETHERITE_BLOCK);
         exclude(Blocks.COPPER_BLOCK);
         exclude(Blocks.AMETHYST_BLOCK);
+        exclude(Blocks.QUARTZ_BLOCK);
+        exclude(Blocks.QUARTZ_BRICKS);
+        exclude(Blocks.QUARTZ_PILLAR);
+        exclude(Blocks.QUARTZ_SLAB);
+        exclude(Blocks.QUARTZ_STAIRS);
+        exclude(Blocks.GLOWSTONE);
 
         exclude(Blocks.COBBLESTONE_STAIRS);
         exclude(Blocks.COBBLESTONE_SLAB);
@@ -123,6 +153,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         private final HolderGetter<Item> items;
         private final RecipeOutput output;
         private final Map<Item, TagKey<Item>> replacements = new HashMap<>();
+        private final Map<TagKey<Item>, TagKey<Item>> tagReplacements = new HashMap<>();
         private final Map<Item, Ingredient> specialReplacements = new HashMap<>();
         private final Set<ResourceKey<Recipe<?>>> excludes = new HashSet<>();
 
@@ -194,7 +225,13 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
                 return null;
 
             return vanilla.getValues().unwrap().map(
-                    tagKey -> null,
+                    tagKey -> {
+                        var replacement = tagReplacements.get(tagKey);
+                        if (replacement != null) {
+                            return Ingredient.of(this.items.getOrThrow(replacement));
+                        }
+                        return null;
+                    },
                     items -> {
                         if (items.size() == 1) {
                             var specialReplacement = specialReplacements.get(items.getFirst().value());

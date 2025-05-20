@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "category": "redstone",
   "key": {
-    "#": "#c:ingots/iron",
+    "#": "#minecraft:planks",
     "X": "#c:dusts/redstone"
   },
   "pattern": [
-    " # ",
+    "###",
     "#X#",
-    " # "
+    "###"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:compass"
+    "id": "minecraft:note_block"
   }
 }

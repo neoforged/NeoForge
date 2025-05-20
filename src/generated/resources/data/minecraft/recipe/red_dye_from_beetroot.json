@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "red_dye",
+  "ingredients": [
+    "#c:crops/beetroot"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:red_dye"
+  }
+}

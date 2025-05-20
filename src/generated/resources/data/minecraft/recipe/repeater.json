@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "category": "redstone",
   "key": {
-    "#": "#c:ingots/iron",
+    "#": "minecraft:redstone_torch",
+    "I": "minecraft:stone",
     "X": "#c:dusts/redstone"
   },
   "pattern": [
-    " # ",
     "#X#",
-    " # "
+    "III"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:compass"
+    "id": "minecraft:repeater"
   }
 }
