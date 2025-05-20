@@ -64,6 +64,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         }
         output.targetedExcludes.put(replacementTag, recipesToExcludeFrom);
     }
+
     private void replace(ItemLike item, TagKey<Item> replacementTag) {
         output.replacements.put(item.asItem(), replacementTag);
     }
