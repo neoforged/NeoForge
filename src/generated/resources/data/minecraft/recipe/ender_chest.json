@@ -2,16 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:rods/wooden",
-    "X": "#c:leathers"
+    "#": "#c:obsidians/normal",
+    "E": "minecraft:ender_eye"
   },
   "pattern": [
     "###",
-    "#X#",
+    "#E#",
     "###"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:item_frame"
+    "id": "minecraft:ender_chest"
   }
 }

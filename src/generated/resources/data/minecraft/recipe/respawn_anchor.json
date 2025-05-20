@@ -2,16 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:rods/wooden",
-    "X": "#c:leathers"
+    "G": "minecraft:glowstone",
+    "O": "#c:obsidians/crying"
   },
   "pattern": [
-    "###",
-    "#X#",
-    "###"
+    "OOO",
+    "GGG",
+    "OOO"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:item_frame"
+    "id": "minecraft:respawn_anchor"
   }
 }

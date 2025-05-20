@@ -1,17 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
-    "#": "#c:rods/wooden",
     "X": "#c:leathers"
   },
   "pattern": [
-    "###",
-    "#X#",
-    "###"
+    "X X",
+    "XXX",
+    "XXX"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:item_frame"
+    "id": "minecraft:leather_chestplate"
   }
 }

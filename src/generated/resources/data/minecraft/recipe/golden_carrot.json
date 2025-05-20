@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:rods/wooden",
-    "X": "#c:leathers"
+    "#": "#c:nuggets/gold",
+    "X": "minecraft:carrot"
   },
   "pattern": [
     "###",
@@ -12,6 +12,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:item_frame"
+    "id": "minecraft:golden_carrot"
   }
 }

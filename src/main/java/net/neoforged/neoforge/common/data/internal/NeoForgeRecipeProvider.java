@@ -57,6 +57,13 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         output.excludes.add(ResourceKey.create(Registries.RECIPE, ResourceLocation.parse(name)));
     }
 
+    private void targetedExclude(TagKey<Item> replacementTag, ItemLike... items) {
+        Set<ResourceKey<Recipe<?>>> recipesToExcludeFrom = new HashSet<>();
+        for (ItemLike item : items) {
+            recipesToExcludeFrom.add(ResourceKey.create(Registries.RECIPE, BuiltInRegistries.ITEM.getKey(item.asItem())));
+        }
+        output.targetedExcludes.put(replacementTag, recipesToExcludeFrom);
+    }
     private void replace(ItemLike item, TagKey<Item> replacementTag) {
         output.replacements.put(item.asItem(), replacementTag);
     }
@@ -114,11 +121,23 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
 
         replace(Items.STRING, Tags.Items.STRINGS);
         replace(Items.BLAZE_ROD, Tags.Items.RODS_BLAZE);
-        replace(Items.GLASS, Tags.Items.GLASS_BLOCKS_COLORLESS);
+        replace(Items.GLASS, Tags.Items.GLASS_BLOCKS_CHEAP);
+        replace(Items.OBSIDIAN, Tags.Items.OBSIDIANS_NORMAL);
+        replace(Items.CRYING_OBSIDIAN, Tags.Items.OBSIDIANS_CRYING);
+        replace(Items.LEATHER, Tags.Items.LEATHERS);
+        replace(Items.BONE, Tags.Items.BONES);
+        replace(Items.BRICK, Tags.Items.BRICKS_NORMAL);
+        replace(Items.NETHER_BRICK, Tags.Items.BRICKS_NETHER);
+        replace(Items.RESIN_BRICK, Tags.Items.BRICKS_RESIN);
 
         exclude(getConversionRecipeName(Blocks.WHITE_WOOL, Items.STRING));
 
+        targetedExclude(Tags.Items.CROPS_CARROT, Items.GOLDEN_CARROT);
         exclude(Blocks.HAY_BLOCK);
+        exclude(Blocks.BRICKS);
+        exclude(Blocks.NETHER_BRICKS);
+        exclude(Blocks.RED_NETHER_BRICKS);
+        exclude(Blocks.RESIN_BRICKS);
         exclude(Items.BROWN_DYE);
 
         exclude(Blocks.GOLD_BLOCK);
@@ -131,10 +150,6 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.COPPER_BLOCK);
         exclude(Blocks.AMETHYST_BLOCK);
         exclude(Blocks.QUARTZ_BLOCK);
-        exclude(Blocks.QUARTZ_BRICKS);
-        exclude(Blocks.QUARTZ_PILLAR);
-        exclude(Blocks.QUARTZ_SLAB);
-        exclude(Blocks.QUARTZ_STAIRS);
         exclude(Blocks.GLOWSTONE);
 
         exclude(Blocks.COBBLESTONE_STAIRS);
@@ -143,6 +158,42 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         exclude(Blocks.COBBLED_DEEPSLATE_STAIRS);
         exclude(Blocks.COBBLED_DEEPSLATE_SLAB);
         exclude(Blocks.COBBLED_DEEPSLATE_WALL);
+        exclude(Blocks.NETHER_BRICK_FENCE);
+
+        targetedExclude(Tags.Items.GLASS_BLOCKS_CHEAP,
+                Items.BLACK_STAINED_GLASS,
+                Items.BLUE_STAINED_GLASS,
+                Items.BROWN_STAINED_GLASS,
+                Items.CYAN_STAINED_GLASS,
+                Items.GRAY_STAINED_GLASS,
+                Items.GREEN_STAINED_GLASS,
+                Items.LIGHT_BLUE_STAINED_GLASS,
+                Items.LIGHT_GRAY_STAINED_GLASS,
+                Items.LIME_STAINED_GLASS,
+                Items.MAGENTA_STAINED_GLASS,
+                Items.ORANGE_STAINED_GLASS,
+                Items.PINK_STAINED_GLASS,
+                Items.PURPLE_STAINED_GLASS,
+                Items.RED_STAINED_GLASS,
+                Items.WHITE_STAINED_GLASS,
+                Items.YELLOW_STAINED_GLASS,
+                Items.GLASS_PANE,
+                Items.BLACK_STAINED_GLASS_PANE,
+                Items.BLUE_STAINED_GLASS_PANE,
+                Items.BROWN_STAINED_GLASS_PANE,
+                Items.CYAN_STAINED_GLASS_PANE,
+                Items.GRAY_STAINED_GLASS_PANE,
+                Items.GREEN_STAINED_GLASS_PANE,
+                Items.LIGHT_BLUE_STAINED_GLASS_PANE,
+                Items.LIGHT_GRAY_STAINED_GLASS_PANE,
+                Items.LIME_STAINED_GLASS_PANE,
+                Items.MAGENTA_STAINED_GLASS_PANE,
+                Items.ORANGE_STAINED_GLASS_PANE,
+                Items.PINK_STAINED_GLASS_PANE,
+                Items.PURPLE_STAINED_GLASS_PANE,
+                Items.RED_STAINED_GLASS_PANE,
+                Items.WHITE_STAINED_GLASS_PANE,
+                Items.YELLOW_STAINED_GLASS_PANE);
 
         output.specialReplacements.put(Items.CHEST, DifferenceIngredient.of(tag(Tags.Items.CHESTS_WOODEN), tag(Tags.Items.CHESTS_TRAPPED)));
 
@@ -156,6 +207,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
         private final Map<TagKey<Item>, TagKey<Item>> tagReplacements = new HashMap<>();
         private final Map<Item, Ingredient> specialReplacements = new HashMap<>();
         private final Set<ResourceKey<Recipe<?>>> excludes = new HashSet<>();
+        private final Map<TagKey<Item>, Set<ResourceKey<Recipe<?>>>> targetedExcludes = new HashMap<>();
 
         private InterceptingRecipeOutput(HolderGetter<Item> items, RecipeOutput output) {
             this.items = items;
@@ -227,7 +279,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
             return vanilla.getValues().unwrap().map(
                     tagKey -> {
                         var replacement = tagReplacements.get(tagKey);
-                        if (replacement != null) {
+                        if (replacement != null && isReplacementAllowedForThisRecipe(replacement, name)) {
                             return Ingredient.of(this.items.getOrThrow(replacement));
                         }
                         return null;
@@ -240,18 +292,24 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
                             }
 
                             var replacement = replacements.get(items.getFirst().value());
-                            if (replacement != null) {
+                            if (replacement != null && isReplacementAllowedForThisRecipe(replacement, name)) {
                                 return Ingredient.of(this.items.getOrThrow(replacement));
                             }
                         }
 
                         for (var holder : items) {
-                            if (replacements.containsKey(holder.value())) {
+                            var replacement = replacements.get(holder.value());
+                            if (replacement != null && isReplacementAllowedForThisRecipe(replacement, name)) {
                                 throw new IllegalArgumentException("Cannot replace '%s' which is part of a multi-item ingredient.".formatted(holder.value()));
                             }
                         }
                         return null;
                     });
+        }
+
+        private boolean isReplacementAllowedForThisRecipe(TagKey<Item> replacement, ResourceKey<Recipe<?>> name) {
+            Set<ResourceKey<Recipe<?>>> excludedRecipes = targetedExcludes.get(replacement);
+            return excludedRecipes == null || !excludedRecipes.contains(name);
         }
     }
 

@@ -1,17 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
-    "#": "#c:rods/wooden",
     "X": "#c:leathers"
   },
   "pattern": [
-    "###",
-    "#X#",
-    "###"
+    "XXX",
+    "X X",
+    "X X"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:item_frame"
+    "id": "minecraft:leather_leggings"
   }
 }

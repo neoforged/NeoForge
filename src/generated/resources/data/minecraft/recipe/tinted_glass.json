@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "G": "minecraft:glass",
+    "G": "#c:glass_blocks/cheap",
     "S": "#c:gems/amethyst"
   },
   "pattern": [

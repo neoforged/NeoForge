@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "redstone",
+  "category": "misc",
   "key": {
     "G": "#c:glass_blocks/cheap",
-    "Q": "#c:gems/quartz",
-    "W": "#minecraft:wooden_slabs"
+    "O": "#c:obsidians/normal",
+    "S": "minecraft:nether_star"
   },
   "pattern": [
     "GGG",
-    "QQQ",
-    "WWW"
+    "GSG",
+    "OOO"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:daylight_detector"
+    "id": "minecraft:beacon"
   }
 }

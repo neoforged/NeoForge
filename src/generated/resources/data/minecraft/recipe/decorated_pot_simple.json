@@ -2,16 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "#c:rods/wooden",
-    "X": "#c:leathers"
+    "#": "#c:bricks/normal"
   },
   "pattern": [
-    "###",
-    "#X#",
-    "###"
+    " # ",
+    "# #",
+    " # "
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:item_frame"
+    "id": "minecraft:decorated_pot"
   }
 }

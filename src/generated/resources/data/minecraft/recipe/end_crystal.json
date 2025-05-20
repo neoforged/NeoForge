@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "redstone",
+  "category": "misc",
   "key": {
+    "E": "minecraft:ender_eye",
     "G": "#c:glass_blocks/cheap",
-    "Q": "#c:gems/quartz",
-    "W": "#minecraft:wooden_slabs"
+    "T": "minecraft:ghast_tear"
   },
   "pattern": [
     "GGG",
-    "QQQ",
-    "WWW"
+    "GEG",
+    "GTG"
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:daylight_detector"
+    "id": "minecraft:end_crystal"
   }
 }

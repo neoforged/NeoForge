@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": "minecraft:obsidian",
+    "#": "#c:obsidians/normal",
     "B": "minecraft:book",
     "D": "#c:gems/diamond"
   },
