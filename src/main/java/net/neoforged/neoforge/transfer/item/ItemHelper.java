@@ -9,10 +9,10 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 public class ItemHelper {
     // Just add up to 10 apples to the inventory. Return how many were inserted.
 
-    public static int addApples(Storage<ItemVariant> storage) {
+    public static long addApples(Storage<ItemVariant> storage) {
         var apple = ItemVariant.of(Items.APPLE);
         try (var tx = Transaction.openOuter()) {
-            int inserted = storage.insert(apple, 10, tx);
+            long inserted = storage.insert(apple, 10, tx);
             tx.commit();
             return inserted;
         }
@@ -25,7 +25,7 @@ public class ItemHelper {
             return ItemStack.EMPTY;
         }
         try (var tx = Transaction.openOuter()) {
-            int inserted = storage.insert(slot, ItemVariant.of(stack), stack.getCount(), tx);
+            int inserted = (int) storage.insert(slot, ItemVariant.of(stack), stack.getCount(), tx);
             if (!simulate) {
                 tx.commit();
             }

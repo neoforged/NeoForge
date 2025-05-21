@@ -21,7 +21,7 @@ public interface Storage<T extends Resource> {
      * @param maxAmount The amount of the resource to insert.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    int insert(int index, T resource, int maxAmount, TransactionContext transaction);
+    long insert(int index, T resource, long maxAmount, TransactionContext transaction);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
@@ -30,8 +30,8 @@ public interface Storage<T extends Resource> {
      * @param maxAmount The amount of the resource to insert.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    default int insert(T resource, int maxAmount, TransactionContext transaction) {
-        int amount = 0;
+    default long insert(T resource, long maxAmount, TransactionContext transaction) {
+        long amount = 0;
         int slots = size();
 
         for (int i = 0; i < slots; ++i) {
@@ -60,7 +60,7 @@ public interface Storage<T extends Resource> {
      * @param maxAmount The amount of the resource to extract.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    int extract(int index, T resource, int maxAmount, TransactionContext transaction);
+    long extract(int index, T resource, long maxAmount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
@@ -69,8 +69,8 @@ public interface Storage<T extends Resource> {
      * @param maxAmount The amount of the resource to extract.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    default int extract(T resource, int maxAmount, TransactionContext transaction) {
-        int amount = 0;
+    default long extract(T resource, long maxAmount, TransactionContext transaction) {
+        long amount = 0;
         int slots = size();
 
         for (int i = 0; i < slots; ++i) {
@@ -102,7 +102,7 @@ public interface Storage<T extends Resource> {
      * @param index The index to get the amount from.
      * @return The amount of the resource at the given index.
      */
-    int getAmount(int index);
+    long getAmount(int index);
 
     /**
      * Gets the maximum amount that the given index can have of the given resource.
@@ -111,7 +111,7 @@ public interface Storage<T extends Resource> {
      * @param resource The resource to get the limit for. Might be blank to request a "generic" limit.
      * @return The limit of the resource at the given index.
      */
-    int getCapacity(int index, T resource);
+    long getCapacity(int index, T resource);
 
     /**
      * Checks if the given resource is generally allowed to be inserted into the handler at the given index,

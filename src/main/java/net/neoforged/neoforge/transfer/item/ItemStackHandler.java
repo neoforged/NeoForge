@@ -89,13 +89,13 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmount(int index) {
         validateSlotIndex(index);
         return this.stacks.get(index).getCount();
     }
 
     @Override
-    public int insert(int slot, ItemVariant resource, int maxAmount, TransactionContext transaction) {
+    public long insert(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
         if (resource.isBlank())
             return 0;
 
@@ -117,7 +117,7 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
             limit -= existing.getCount();
         }
 
-        int inserted = Math.min(maxAmount, limit);
+        int inserted = (int) Math.min(maxAmount, limit);
 
         if (inserted > 0) {
             this.slots[slot].updateSnapshots(transaction);
@@ -133,7 +133,7 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
     }
 
     @Override
-    public int extract(int slot, ItemVariant resource, int maxAmount, TransactionContext transaction) {
+    public long extract(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
         if (maxAmount == 0)
             return 0;
 
@@ -144,7 +144,7 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
         if (existing.isEmpty() || !resource.matches(existing))
             return 0;
 
-        int toExtract = Math.min(maxAmount, existing.getMaxStackSize());
+        int toExtract = (int) Math.min(maxAmount, existing.getMaxStackSize());
 
         if (existing.getCount() <= toExtract) {
             this.slots[slot].updateSnapshots(transaction);
@@ -158,7 +158,7 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
     }
 
     @Override
-    public int getCapacity(int index, ItemVariant resource) {
+    public long getCapacity(int index, ItemVariant resource) {
         // TODO
         return getStackLimit(index, resource.toStack());
     }
