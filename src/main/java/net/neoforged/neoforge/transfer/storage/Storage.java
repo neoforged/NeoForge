@@ -1,5 +1,7 @@
 package net.neoforged.neoforge.transfer.storage;
 
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.neoforged.neoforge.transfer.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -89,6 +91,11 @@ public interface Storage<T extends Resource> {
      */
     default boolean supportsExtraction() {
         return true;
+    }
+
+    // TODO: is this a good idea? we might need an iterator and an iterable method
+    default IntIterable nonEmptySlots() {
+        return null;
     }
 
     /**
