@@ -74,7 +74,7 @@ public class TextureAtlasTests {
     static void defaultSpriteMetadataSections(final DynamicTest test) {
         String modId = test.createModId();
 
-        var testResource = ResourceLocation.fromNamespaceAndPath(modId, "resource");
+        var testResource = ResourceLocation.fromNamespaceAndPath(modId, "block/resource");
         var sectionType = new MetadataSectionType<>("default_metadata_test", Codec.BOOL);
 
         test.framework().modEventBus().addListener(RegisterSpriteDefaultMetadataSectionTypesEvent.class, event -> {

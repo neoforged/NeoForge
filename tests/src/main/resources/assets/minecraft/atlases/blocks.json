@@ -9,10 +9,6 @@
       "namespace": "neotests_dir_list_present",
       "source": "test",
       "prefix": "test/"
-    },
-    {
-      "type": "single",
-      "resource": "neotests_default_sprite_metadata_sections:resource"
     }
   ]
 }
