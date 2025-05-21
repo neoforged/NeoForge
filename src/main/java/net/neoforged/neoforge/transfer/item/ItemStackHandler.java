@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.storage;
+package net.neoforged.neoforge.transfer.item;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -12,12 +12,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.List;
-
+// TODO
 public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
     private Slot[] slots;
