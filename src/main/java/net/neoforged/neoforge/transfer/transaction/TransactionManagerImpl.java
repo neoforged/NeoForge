@@ -4,14 +4,15 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @ApiStatus.Internal
 public class TransactionManagerImpl {
     public static final ThreadLocal<TransactionManagerImpl> MANAGERS = ThreadLocal.withInitial(TransactionManagerImpl::new);
 
     private final Thread thread = Thread.currentThread();
-    private final ArrayList<TransactionImpl> stack = new ArrayList<>();
-    private final ArrayList<Transaction.OuterCloseCallback> outerCloseCallbacks = new ArrayList<>();
+    private final List<TransactionImpl> stack = new ArrayList<>();
+    private final List<Transaction.OuterCloseCallback> outerCloseCallbacks = new ArrayList<>();
     private int currentDepth = -1;
 
     public boolean isOpen() {
@@ -30,8 +31,11 @@ public class TransactionManagerImpl {
     public TransactionContext getCurrentUnsafe() {
         if (currentDepth == -1) {
             return null;
-        } else if (stack.get(currentDepth).lifecycle == Transaction.Lifecycle.OPEN) {
-            return stack.get(currentDepth);
+        }
+
+        var current = stack.get(currentDepth);
+        if (current.lifecycle == Transaction.Lifecycle.OPEN) {
+            return current;
         } else {
             throw new IllegalStateException("May not call getCurrentUnsafe() from a close callback.");
         }
@@ -72,7 +76,7 @@ public class TransactionManagerImpl {
 
     private class TransactionImpl implements Transaction {
         final int nestingDepth;
-        final ArrayList<CloseCallback> closeCallbacks = new ArrayList<>();
+        final List<CloseCallback> closeCallbacks = new ArrayList<>();
         Lifecycle lifecycle = Lifecycle.NONE;
 
         TransactionImpl(int nestingDepth) {
