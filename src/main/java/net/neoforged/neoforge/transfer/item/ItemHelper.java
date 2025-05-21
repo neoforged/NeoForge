@@ -9,8 +9,8 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 public class ItemHelper {
     // Just add up to 10 apples to the inventory. Return how many were inserted.
 
-    public static int addApples(Storage<ItemResource> storage) {
-        var apple = ItemResource.of(Items.APPLE);
+    public static int addApples(Storage<ItemVariant> storage) {
+        var apple = ItemVariant.of(Items.APPLE);
         try (var tx = Transaction.openOuter()) {
             int inserted = storage.insert(apple, 10, tx);
             tx.commit();
@@ -20,12 +20,12 @@ public class ItemHelper {
 
     // Same signature as IItemHandler#insertItem:
 
-    public static ItemStack insertItem(Storage<ItemResource> storage, int slot, ItemStack stack, boolean simulate) {
+    public static ItemStack insertItem(Storage<ItemVariant> storage, int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;
         }
         try (var tx = Transaction.openOuter()) {
-            int inserted = storage.insert(slot, ItemResource.of(stack), stack.getCount(), tx);
+            int inserted = storage.insert(slot, ItemVariant.of(stack), stack.getCount(), tx);
             if (!simulate) {
                 tx.commit();
             }
@@ -37,9 +37,9 @@ public class ItemHelper {
     // Extracts 16 coal from slot 0 and inserts 1 diamond into slot 1. Only if both succeed.
     // Returns true if both operations succeeded, false otherwise.
 
-    public static boolean coalToDiamonds(Storage<ItemResource> storage, boolean simulate) {
-        var coal = ItemResource.of(Items.COAL);
-        var diamond = ItemResource.of(Items.DIAMOND);
+    public static boolean coalToDiamonds(Storage<ItemVariant> storage, boolean simulate) {
+        var coal = ItemVariant.of(Items.COAL);
+        var diamond = ItemVariant.of(Items.DIAMOND);
 
         try (var tx = Transaction.openOuter()) {
             if (storage.extract(0, coal, 16, tx) != 16) {

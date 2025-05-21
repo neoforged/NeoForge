@@ -21,20 +21,19 @@ import net.neoforged.neoforge.transfer.Resource;
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without amount information.
  */
-// TODO: probably a "hot take" but I actually prefer ItemVariant :P
-public final class ItemResource implements Resource, DataComponentHolder {
+public final class ItemVariant implements Resource, DataComponentHolder {
     /**
-     * Codec for an item resource.
+     * Codec for an item variant.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
-     * Does <b>not</b> accept blank resources.
+     * Does <b>not</b> accept blank variants.
      */
-    public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC
-            .xmap(ItemResource::of, ItemResource::toStack);
+    public static final Codec<ItemVariant> CODEC = ItemStack.SINGLE_ITEM_CODEC
+            .xmap(ItemVariant::of, ItemVariant::toStack);
     /**
-     * Codec for an item resource. Same format as {@link #CODEC}, and also accepts blank resources.
+     * Codec for an item variant. Same format as {@link #CODEC}, and also accepts blank variants.
      */
-    public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
-            .xmap(o -> o.orElse(ItemResource.EMPTY), r -> r.isBlank() ? Optional.of(ItemResource.EMPTY) : Optional.of(r));
+    public static final Codec<ItemVariant> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
+            .xmap(o -> o.orElse(ItemVariant.EMPTY), r -> r.isBlank() ? Optional.of(ItemVariant.EMPTY) : Optional.of(r));
     // TODO
 //    /**
 //     * Codec for an item resource and an amount. Does <b>not</b> accept empty stacks.
@@ -47,27 +46,27 @@ public final class ItemResource implements Resource, DataComponentHolder {
 //    public static final Codec<ResourceAmount<ItemResource>> OPTIONAL_WITH_AMOUNT_CODEC = ItemStack.OPTIONAL_CODEC
 //            .xmap(ItemStack::immutable, ItemStack::of);
     /**
-     * Stream codec for an item resource. Accepts blank resources.
+     * Stream codec for an item variant. Accepts blank variants.
      */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> OPTIONAL_STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, ItemVariant> OPTIONAL_STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.holderRegistry(Registries.ITEM),
-            ItemResource::getItemHolder,
+            ItemVariant::getItemHolder,
             DataComponentPatch.STREAM_CODEC,
-            ItemResource::getComponentsPatch,
-            ItemResource::of);
+            ItemVariant::getComponentsPatch,
+            ItemVariant::of);
 
-    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    public static final ItemVariant EMPTY = new ItemVariant(ItemStack.EMPTY);
 
-    public static ItemResource of(ItemStack itemStack) {
-        return itemStack.isEmpty() ? EMPTY : new ItemResource(itemStack.copyWithCount(1));
+    public static ItemVariant of(ItemStack itemStack) {
+        return itemStack.isEmpty() ? EMPTY : new ItemVariant(itemStack.copyWithCount(1));
     }
 
-    public static ItemResource of(ItemLike item) {
-        return item == Items.AIR ? EMPTY : new ItemResource(new ItemStack(item));
+    public static ItemVariant of(ItemLike item) {
+        return item == Items.AIR ? EMPTY : new ItemVariant(new ItemStack(item));
     }
 
-    public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
-        return item.value() == Items.AIR ? EMPTY : new ItemResource(new ItemStack(item, 1, patch));
+    public static ItemVariant of(Holder<Item> item, DataComponentPatch patch) {
+        return item.value() == Items.AIR ? EMPTY : new ItemVariant(new ItemStack(item, 1, patch));
     }
 
     /**
@@ -75,7 +74,7 @@ public final class ItemResource implements Resource, DataComponentHolder {
      */
     private final ItemStack innerStack;
 
-    private ItemResource(ItemStack innerStack) {
+    private ItemVariant(ItemStack innerStack) {
         this.innerStack = innerStack;
     }
 
@@ -116,7 +115,7 @@ public final class ItemResource implements Resource, DataComponentHolder {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof ItemResource v && ItemStack.isSameItemSameComponents(v.innerStack, innerStack);
+        return obj instanceof ItemVariant v && ItemStack.isSameItemSameComponents(v.innerStack, innerStack);
     }
 
     @Override

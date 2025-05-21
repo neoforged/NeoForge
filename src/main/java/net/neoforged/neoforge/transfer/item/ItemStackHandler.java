@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 // TODO
-public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable<CompoundTag> {
+public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<CompoundTag> {
     protected NonNullList<ItemStack> stacks;
     private Slot[] slots;
 
@@ -83,9 +83,9 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
     }
 
     @Override
-    public ItemResource getResource(int index) {
+    public ItemVariant getResource(int index) {
         validateSlotIndex(index);
-        return ItemResource.of(this.stacks.get(index));
+        return ItemVariant.of(this.stacks.get(index));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
     }
 
     @Override
-    public int insert(int slot, ItemResource resource, int maxAmount, TransactionContext transaction) {
+    public int insert(int slot, ItemVariant resource, int maxAmount, TransactionContext transaction) {
         if (resource.isBlank())
             return 0;
 
@@ -133,7 +133,7 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
     }
 
     @Override
-    public int extract(int slot, ItemResource resource, int maxAmount, TransactionContext transaction) {
+    public int extract(int slot, ItemVariant resource, int maxAmount, TransactionContext transaction) {
         if (maxAmount == 0)
             return 0;
 
@@ -164,13 +164,13 @@ public class ItemStackHandler implements Storage<ItemResource>, INBTSerializable
     }
 
     @Override
-    public int getCapacity(int index, ItemResource resource) {
+    public int getCapacity(int index, ItemVariant resource) {
         // TODO
         return getStackLimit(index, resource.toStack());
     }
 
     @Override
-    public boolean isValid(int index, ItemResource resource) {
+    public boolean isValid(int index, ItemVariant resource) {
         // TODO
         return isItemValid(index, resource.toStack());
     }
