@@ -158,12 +158,6 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
     }
 
     @Override
-    public int getCapacity(int index) {
-        // TODO
-        return getSlotLimit(index);
-    }
-
-    @Override
     public int getCapacity(int index, ItemVariant resource) {
         // TODO
         return getStackLimit(index, resource.toStack());

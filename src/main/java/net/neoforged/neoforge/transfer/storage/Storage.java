@@ -43,6 +43,16 @@ public interface Storage<T extends Resource> {
     }
 
     /**
+     * Return false if calling {@link #insert} will absolutely always return 0, or true otherwise or in doubt.
+     *
+     * <p>Note: This function is meant to be used by pipes or other devices that can transfer resources to know if
+     * they should interact with this storage at all.
+     */
+    default boolean supportsInsertion() {
+        return true;
+    }
+
+    /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
      * @param index The index to extract the resource from.
@@ -72,6 +82,16 @@ public interface Storage<T extends Resource> {
     }
 
     /**
+     * Return false if calling {@link #extract} will absolutely always return 0, or true otherwise or in doubt.
+     *
+     * <p>Note: This function is meant to be used by pipes or other devices that can transfer resources to know if
+     * they should interact with this storage at all.
+     */
+    default boolean supportsExtraction() {
+        return true;
+    }
+
+    /**
      * @param index The index to get the resource from.
      * @return The resource at the given index.
      */
@@ -85,87 +105,23 @@ public interface Storage<T extends Resource> {
     int getAmount(int index);
 
     /**
-     * Gets the maximum amount that the given index can have of the given resource. If your capacity is constant, no matter
-     * the resource, you can just return the result of {@link #getCapacity(int)}. This is historically the case for fluids,
-     * but not for items.
+     * Gets the maximum amount that the given index can have of the given resource.
      *
      * @param index The index to get the limit from.
-     * @param resource The resource to get the limit for.
+     * @param resource The resource to get the limit for. Might be blank to request a "generic" limit.
      * @return The limit of the resource at the given index.
      */
     int getCapacity(int index, T resource);
 
     /**
-     * Gets the theoretical maximum amount that the given index can hold of a resource.
-     *
-     * @param index The index to get the limit from.
-     * @return The limit of the resource at the given index.
-     */
-    // TODO: just pass blank resource, this is redundant
-    int getCapacity(int index);
-
-    /**
-     * Checks if the given resource is allowed to be inserted into the handler at the given index, regardless of the
-     * current state of the handler.
+     * Checks if the given resource is generally allowed to be inserted into the handler at the given index,
+     * regardless of the current state of the handler.
      *
      * @param index The index to check.
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
     boolean isValid(int index, T resource);
-
-    /**
-     * Checks if the given index allows insertion of a resource, regardless of the state of the handler.
-     *
-     * <p>
-     * As long as the handler could, under the right conditions, allow a resource to be inserted into the given index,
-     * this should return true.
-     *
-     * @param index The index to check.
-     * @return True if the resource can be inserted, false otherwise.
-     */
-    // TODO: too fine-grained IMO
-    default boolean allowsInsertion(int index) { return true; }
-
-    /**
-     * Checks if the given index allows extraction of a resource, regardless of the state of the handler.
-     * <p>
-     * As long as the handler could, under the right conditions, allow a resource to be extracted from the given index,
-     * this should return true.
-     *
-     * @param index The index to check.
-     * @return True if the resource can be extracted, false otherwise.
-     */
-    // TODO: too fine-grained IMO
-    default boolean allowsExtraction(int index) { return true; }
-
-    /**
-     * Checks if the handler allows insertion into at least one index, regardless of the state of the handler.
-     *
-     * @return True if a resource can be inserted, false otherwise.
-     */
-    default boolean allowsInsertion() {
-        for (int i = 0; i < size(); i++) {
-            if (allowsInsertion(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the handler allows extraction from at least one index, regardless of the state of the handler.
-     *
-     * @return True if a resource can be extracted, false otherwise.
-     */
-    default boolean allowsExtraction() {
-        for (int i = 0; i < size(); i++) {
-            if (allowsExtraction(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Return a class instance of this interface with the desired generic type,
