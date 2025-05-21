@@ -313,7 +313,6 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
                         if (items.size() == 1) {
                             var specialReplacement = specialReplacements.get(items.getFirst().value());
                             if (specialReplacement != null && isReplacementAllowedForThisRecipe(specialReplacement, name)) {
-                                LOGGER.error("Huh? " + name + " - " + specialReplacement + " - " + targetedExcludes.get(specialReplacement) + " - " + targetedExcludes);
                                 return specialReplacement;
                             }
 
@@ -334,7 +333,6 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
                     });
         }
 
-        Logger LOGGER = LogUtils.getLogger();
         private boolean isReplacementAllowedForThisRecipe(Object replacement, ResourceKey<Recipe<?>> name) {
             Set<ResourceKey<Recipe<?>>> excludedRecipes = targetedExcludes.get(replacement);
             return excludedRecipes == null || !excludedRecipes.contains(name);
