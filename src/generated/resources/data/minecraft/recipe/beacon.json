@@ -2,7 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": "#c:glass_blocks/cheap",
+    "G": {
+      "neoforge:ingredient_type": "neoforge:intersection",
+      "children": [
+        "#c:glass_blocks/cheap",
+        "#c:glass_blocks/colorless"
+      ]
+    },
     "O": "#c:obsidians/normal",
     "S": "#c:nether_stars"
   },

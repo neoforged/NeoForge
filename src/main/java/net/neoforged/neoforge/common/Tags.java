@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.data.RecipePrioritiesProvider;
 
 public class Tags {
     public static class Blocks {
@@ -350,9 +351,15 @@ public class Tags {
         // `c` tags for common conventions
         public static final TagKey<Item> BARRELS = tag("barrels");
         public static final TagKey<Item> BARRELS_WOODEN = tag("barrels/wooden");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> BONES = tag("bones");
         public static final TagKey<Item> BOOKSHELVES = tag("bookshelves");
         public static final TagKey<Item> BRICKS = tag("bricks");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> BRICKS_NORMAL = tag("bricks/normal");
         public static final TagKey<Item> BRICKS_NETHER = tag("bricks/nether");
         public static final TagKey<Item> BRICKS_RESIN = tag("bricks/resin");
@@ -367,6 +374,9 @@ public class Tags {
          * If checking for the fluid this bucket holds in code, please use {@link net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper#getFluid} instead.
          */
         public static final TagKey<Item> BUCKETS_LAVA = tag("buckets/lava");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> BUCKETS_MILK = tag("buckets/milk");
         public static final TagKey<Item> BUCKETS_POWDER_SNOW = tag("buckets/powder_snow");
         public static final TagKey<Item> BUCKETS_ENTITY_WATER = tag("buckets/entity_water");
@@ -378,15 +388,27 @@ public class Tags {
          * For blocks that are similar to amethyst where they have buddings forming from budding blocks
          */
         public static final TagKey<Item> BUDS = tag("buds");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CHAINS = tag("chains");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CHESTS = tag("chests");
         public static final TagKey<Item> CHESTS_ENDER = tag("chests/ender");
         public static final TagKey<Item> CHESTS_TRAPPED = tag("chests/trapped");
         public static final TagKey<Item> CHESTS_WOODEN = tag("chests/wooden");
         public static final TagKey<Item> COBBLESTONES = tag("cobblestones");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> COBBLESTONES_NORMAL = tag("cobblestones/normal");
         public static final TagKey<Item> COBBLESTONES_INFESTED = tag("cobblestones/infested");
         public static final TagKey<Item> COBBLESTONES_MOSSY = tag("cobblestones/mossy");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> COBBLESTONES_DEEPSLATE = tag("cobblestones/deepslate");
         public static final TagKey<Item> CONCRETES = tag("concretes");
         /**
@@ -404,15 +426,33 @@ public class Tags {
          * non-edible like wheat and cocoa beans.
          */
         public static final TagKey<Item> CROPS = tag("crops");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CROPS_BEETROOT = tag("crops/beetroot");
         public static final TagKey<Item> CROPS_CACTUS = tag("crops/cactus");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CROPS_CARROT = tag("crops/carrot");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CROPS_COCOA_BEAN = tag("crops/cocoa_bean");
         public static final TagKey<Item> CROPS_MELON = tag("crops/melon");
         public static final TagKey<Item> CROPS_NETHER_WART = tag("crops/nether_wart");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CROPS_POTATO = tag("crops/potato");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CROPS_PUMPKIN = tag("crops/pumpkin");
         public static final TagKey<Item> CROPS_SUGAR_CANE = tag("crops/sugar_cane");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> CROPS_WHEAT = tag("crops/wheat");
 
         /**
@@ -463,7 +503,13 @@ public class Tags {
         public static final TagKey<Item> DRINK_CONTAINING_BUCKET = tag("drink_containing/bucket");
 
         public static final TagKey<Item> DUSTS = tag("dusts");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DUSTS_REDSTONE = tag("dusts/redstone");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DUSTS_GLOWSTONE = tag("dusts/glowstone");
 
         /**
@@ -495,29 +541,87 @@ public class Tags {
         public static final TagKey<Item> DYED_YELLOW = tag("dyed/yellow");
 
         public static final TagKey<Item> DYES = tag("dyes");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_BLACK = DyeColor.BLACK.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_RED = DyeColor.RED.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_GREEN = DyeColor.GREEN.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_BROWN = DyeColor.BROWN.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_BLUE = DyeColor.BLUE.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_PURPLE = DyeColor.PURPLE.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_CYAN = DyeColor.CYAN.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_LIGHT_GRAY = DyeColor.LIGHT_GRAY.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_GRAY = DyeColor.GRAY.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_PINK = DyeColor.PINK.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_LIME = DyeColor.LIME.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_YELLOW = DyeColor.YELLOW.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_LIGHT_BLUE = DyeColor.LIGHT_BLUE.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_MAGENTA = DyeColor.MAGENTA.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_ORANGE = DyeColor.ORANGE.getTag();
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> DYES_WHITE = DyeColor.WHITE.getTag();
 
         /**
          * For eggs to use for culinary purposes in recipes such as baking a cake.
+         *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
          */
         public static final TagKey<Item> EGGS = tag("eggs");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> END_STONES = tag("end_stones");
         public static final TagKey<Item> ENDER_PEARLS = tag("ender_pearls");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> FEATHERS = tag("feathers");
         public static final TagKey<Item> FENCE_GATES = tag("fence_gates");
         public static final TagKey<Item> FENCE_GATES_WOODEN = tag("fence_gates/wooden");
@@ -596,17 +700,42 @@ public class Tags {
          */
         public static final TagKey<Item> ANIMAL_FOODS = tag("animal_foods");
         public static final TagKey<Item> GEMS = tag("gems");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GEMS_DIAMOND = tag("gems/diamond");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GEMS_EMERALD = tag("gems/emerald");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GEMS_AMETHYST = tag("gems/amethyst");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GEMS_LAPIS = tag("gems/lapis");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GEMS_PRISMARINE = tag("gems/prismarine");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GEMS_QUARTZ = tag("gems/quartz");
 
         public static final TagKey<Item> GLASS_BLOCKS = tag("glass_blocks");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GLASS_BLOCKS_COLORLESS = tag("glass_blocks/colorless");
         /**
          * Glass which is made from cheap resources like sand and only minor additional ingredients like dyes
+         *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
          */
         public static final TagKey<Item> GLASS_BLOCKS_CHEAP = tag("glass_blocks/cheap");
         public static final TagKey<Item> GLASS_BLOCKS_TINTED = tag("glass_blocks/tinted");
@@ -615,17 +744,35 @@ public class Tags {
         public static final TagKey<Item> GLASS_PANES_COLORLESS = tag("glass_panes/colorless");
         public static final TagKey<Item> GLAZED_TERRACOTTAS = tag("glazed_terracottas");
 
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GRAVELS = tag("gravels");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> GUNPOWDERS = tag("gunpowders");
         /**
          * Tag that holds all items that recipe viewers should not show to users.
          */
         public static final TagKey<Item> HIDDEN_FROM_RECIPE_VIEWERS = tag("hidden_from_recipe_viewers");
         public static final TagKey<Item> INGOTS = tag("ingots");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> INGOTS_COPPER = tag("ingots/copper");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> INGOTS_GOLD = tag("ingots/gold");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> INGOTS_IRON = tag("ingots/iron");
         public static final TagKey<Item> INGOTS_NETHERITE = tag("ingots/netherite");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> LEATHERS = tag("leathers");
         /**
          * Small mushroom items. Not the full block forms.
@@ -636,17 +783,36 @@ public class Tags {
          * A pancake with a JUKEBOX_PLAYABLE component attached to play in Jukeboxes as an Easter Egg is not a music disc and would not go in this tag.
          */
         public static final TagKey<Item> MUSIC_DISCS = tag("music_discs");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> NETHER_STARS = tag("nether_stars");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> NETHERRACKS = tag("netherracks");
         public static final TagKey<Item> NUGGETS = tag("nuggets");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> NUGGETS_GOLD = tag("nuggets/gold");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> NUGGETS_IRON = tag("nuggets/iron");
         public static final TagKey<Item> OBSIDIANS = tag("obsidians");
         /**
          * For common obsidian that has no special quirks or behaviors. Ideal for recipe use.
          * Crying Obsidian, for example, is a light block and harder to obtain. So it gets its own tag instead of being under normal tag.
+         *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
          */
         public static final TagKey<Item> OBSIDIANS_NORMAL = tag("obsidians/normal");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> OBSIDIANS_CRYING = tag("obsidians/crying");
         /**
          * Blocks which are often replaced by deepslate ores, i.e. the ores in the tag {@link #ORES_IN_GROUND_DEEPSLATE}, during world generation.
@@ -740,16 +906,29 @@ public class Tags {
          * For rod-like materials to be used in recipes.
          */
         public static final TagKey<Item> RODS = tag("rods");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> RODS_BLAZE = tag("rods/blaze");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> RODS_BREEZE = tag("rods/breeze");
         /**
          * For stick-like materials to be used in recipes.
          * One example is a mod adds stick variants such as Spruce Sticks but would like stick recipes to be able to use it.
+         *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
          */
         public static final TagKey<Item> RODS_WOODEN = tag("rods/wooden");
         public static final TagKey<Item> ROPES = tag("ropes");
 
         public static final TagKey<Item> SANDS = tag("sands");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> SANDS_COLORLESS = tag("sands/colorless");
         public static final TagKey<Item> SANDS_RED = tag("sands/red");
 
@@ -777,6 +956,9 @@ public class Tags {
          * Block tag equivalent is {@link BlockTags#SHULKER_BOXES}
          */
         public static final TagKey<Item> SHULKER_BOXES = tag("shulker_boxes");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> SLIME_BALLS = tag("slime_balls");
         /**
          * Natural stone-like blocks that can be used as a base ingredient in recipes that takes stone.
@@ -785,7 +967,9 @@ public class Tags {
         /**
          * A storage block is generally a block that has a recipe to craft a bulk of 1 kind of resource to a block
          * and has a mirror recipe to reverse the crafting with no loss in resources.
-         * <p>
+         *
+         * <p></p>
+         *
          * Honey Block is special in that the reversing recipe is not a perfect mirror of the crafting recipe
          * and so, it is considered a special case and not given a storage block tag.
          */
@@ -807,6 +991,9 @@ public class Tags {
         public static final TagKey<Item> STORAGE_BLOCKS_RESIN = tag("storage_blocks/resin");
         public static final TagKey<Item> STORAGE_BLOCKS_SLIME = tag("storage_blocks/slime");
         public static final TagKey<Item> STORAGE_BLOCKS_WHEAT = tag("storage_blocks/wheat");
+        /**
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         */
         public static final TagKey<Item> STRINGS = tag("strings");
         public static final TagKey<Item> STRIPPED_LOGS = tag("stripped_logs");
         public static final TagKey<Item> STRIPPED_WOODS = tag("stripped_woods");
@@ -833,6 +1020,10 @@ public class Tags {
          * A tag containing all existing bows. Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         *
          * @see ItemAbility
          * @see ItemAbilities
          */
@@ -841,6 +1032,10 @@ public class Tags {
          * A tag containing all existing crossbows. Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
          *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
+         *
          * @see ItemAbility
          * @see ItemAbilities
          */
@@ -848,6 +1043,10 @@ public class Tags {
         /**
          * A tag containing all existing fishing rods. Do not use this tag for determining a tool's behavior.
          * Please use {@link ItemAbilities} instead for what action a tool can do.
+         *
+         * <p></p>
+         *
+         * Patched into vanilla recipes. See {@link RecipePrioritiesProvider} for making the game use your recipe instead of vanilla's for same input pattern.
          *
          * @see ItemAbility
          * @see ItemAbilities

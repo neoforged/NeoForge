@@ -4,14 +4,14 @@
   "group": "concrete_powder",
   "ingredients": [
     "#c:dyes/purple",
-    "minecraft:sand",
-    "minecraft:sand",
-    "minecraft:sand",
-    "minecraft:sand",
-    "minecraft:gravel",
-    "minecraft:gravel",
-    "minecraft:gravel",
-    "minecraft:gravel"
+    "#c:sands/colorless",
+    "#c:sands/colorless",
+    "#c:sands/colorless",
+    "#c:sands/colorless",
+    "#c:gravels",
+    "#c:gravels",
+    "#c:gravels",
+    "#c:gravels"
   ],
   "result": {
     "count": 8,
