@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
-import com.mojang.logging.LogUtils;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderGetter;
@@ -43,7 +41,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
     private final InterceptingRecipeOutput output;
@@ -320,8 +317,7 @@ public final class NeoForgeRecipeProvider extends VanillaRecipeProvider {
                             if (replacement != null && isReplacementAllowedForThisRecipe(replacement, name)) {
                                 return Ingredient.of(this.items.getOrThrow(replacement));
                             }
-                        }
-                        else {
+                        } else {
                             for (var holder : items) {
                                 var replacement = replacements.get(holder.value());
                                 if (replacement != null && isReplacementAllowedForThisRecipe(replacement, name)) {
