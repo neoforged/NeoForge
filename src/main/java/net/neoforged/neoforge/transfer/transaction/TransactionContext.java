@@ -9,17 +9,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface TransactionContext {
     /**
-     * Open a new nested transaction.
-     *
-     * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
-     * @throws IllegalStateException If this transaction is not the current transaction.
-     * @throws IllegalStateException If this transaction was closed.
-     */
-    Transaction openNested();
-
-    /**
-     * @return The nesting depth of this transaction: 0 if it was opened with {@link Transaction#openOuter},
-     * 1 if its parent was opened with {@link Transaction#openOuter}, and so on...
+     * @return The nesting depth of this transaction: 0 if it has no parent,
+     *         1 if its parent has no parent, and so on...
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
      */
     int nestingDepth();

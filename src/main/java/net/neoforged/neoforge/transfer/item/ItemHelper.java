@@ -11,7 +11,7 @@ public class ItemHelper {
 
     public static long addApples(Storage<ItemVariant> storage) {
         var apple = ItemVariant.of(Items.APPLE);
-        try (var tx = Transaction.openOuter()) {
+        try (var tx = Transaction.open(null)) {
             long inserted = storage.insert(apple, 10, tx);
             tx.commit();
             return inserted;
@@ -24,7 +24,7 @@ public class ItemHelper {
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        try (var tx = Transaction.openOuter()) {
+        try (var tx = Transaction.open(null)) {
             int inserted = (int) storage.insert(slot, ItemVariant.of(stack), stack.getCount(), tx);
             if (!simulate) {
                 tx.commit();
@@ -41,7 +41,7 @@ public class ItemHelper {
         var coal = ItemVariant.of(Items.COAL);
         var diamond = ItemVariant.of(Items.DIAMOND);
 
-        try (var tx = Transaction.openOuter()) {
+        try (var tx = Transaction.open(null)) {
             if (storage.extract(0, coal, 16, tx) != 16) {
                 return false;
             }

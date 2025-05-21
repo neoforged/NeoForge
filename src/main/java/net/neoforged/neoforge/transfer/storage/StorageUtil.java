@@ -66,7 +66,7 @@ public final class StorageUtil {
 
         long totalMoved = 0;
 
-        try (Transaction iterationTransaction = Transaction.openNested(transaction)) {
+        try (Transaction iterationTransaction = Transaction.open(transaction)) {
             for (int slot : from.nonEmptySlots()) {
                 T resource = from.getResource(slot);
                 if (!filter.test(resource)) continue;
@@ -74,7 +74,7 @@ public final class StorageUtil {
                 // check how much can be extracted
                 long maxExtracted = simulateExtract(from, slot, resource, maxAmount - totalMoved, iterationTransaction);
 
-                try (Transaction transferTransaction = iterationTransaction.openNested()) {
+                try (Transaction transferTransaction = Transaction.open(iterationTransaction)) {
                     // check how much can be inserted
                     long accepted = to.insert(resource, maxExtracted, transferTransaction);
 
@@ -113,7 +113,7 @@ public final class StorageUtil {
      * @see Storage#insert
      */
     public static <T extends Resource> long simulateInsert(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
-        try (Transaction simulateTransaction = Transaction.openNested(transaction)) {
+        try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.insert(resource, maxAmount, simulateTransaction);
         }
     }
@@ -124,7 +124,7 @@ public final class StorageUtil {
      * @see Storage#insert
      */
     public static <T extends Resource> long simulateInsert(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
-        try (Transaction simulateTransaction = Transaction.openNested(transaction)) {
+        try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.insert(slot, resource, maxAmount, simulateTransaction);
         }
     }
@@ -135,7 +135,7 @@ public final class StorageUtil {
      * @see Storage#insert
      */
     public static <T extends Resource> long simulateExtract(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
-        try (Transaction simulateTransaction = Transaction.openNested(transaction)) {
+        try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.extract(resource, maxAmount, simulateTransaction);
         }
     }
@@ -146,7 +146,7 @@ public final class StorageUtil {
      * @see Storage#insert
      */
     public static <T extends Resource> long simulateExtract(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
-        try (Transaction simulateTransaction = Transaction.openNested(transaction)) {
+        try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.extract(slot, resource, maxAmount, simulateTransaction);
         }
     }
@@ -286,7 +286,7 @@ public final class StorageUtil {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (storage == null) return null;
 
-        try (Transaction nested = Transaction.openNested(transaction)) {
+        try (Transaction nested = Transaction.open(transaction)) {
             for (int slot : storage.nonEmptySlots()) {
                 // Extract below could change the resource, so we have to query it before extracting.
                 T resource = storage.getResource(slot);

@@ -19,9 +19,15 @@ public class TransactionManagerImpl {
         return currentDepth > -1;
     }
 
-    public Transaction openOuter() {
-        if (isOpen()) {
-            throw new IllegalStateException("An outer transaction is already active on this thread.");
+    public Transaction open(@Nullable TransactionContext parent) {
+        if (parent == null) {
+            if (isOpen()) {
+                throw new IllegalStateException("An outer transaction is already active on this thread.");
+            }
+        } else {
+            TransactionImpl parentImpl = (TransactionImpl) parent;
+            parentImpl.validateCurrentTransaction();
+            parentImpl.validateOpen();
         }
 
         return open();
@@ -44,7 +50,7 @@ public class TransactionManagerImpl {
     /**
      * Open a new transaction, outer or nested, without performing any state check.
      */
-    Transaction open() {
+    private Transaction open() {
         currentDepth++;
 
         if (stack.size() == currentDepth) {
@@ -56,7 +62,7 @@ public class TransactionManagerImpl {
         return current;
     }
 
-    void validateCurrentThread() {
+    private void validateCurrentThread() {
         if (Thread.currentThread() != thread) {
             String errorMessage = String.format(
                     "Attempted to access transaction state from thread %s, but this transaction is only valid on thread %s.",
@@ -100,13 +106,6 @@ public class TransactionManagerImpl {
             if (lifecycle != Lifecycle.OPEN) {
                 throw new IllegalStateException("Transaction operation cannot be applied to a closed transaction.");
             }
-        }
-
-        @Override
-        public Transaction openNested() {
-            validateCurrentTransaction();
-            validateOpen();
-            return open();
         }
 
         private void close(Result result) {

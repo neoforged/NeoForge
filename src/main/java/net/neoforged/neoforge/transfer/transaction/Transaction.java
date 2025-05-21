@@ -9,18 +9,18 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>One can imagine that transactions are like video game checkpoints.
  * <ul>
- *     <li>{@linkplain #openOuter Opening a transaction} with a try-with-resources block creates a checkpoint.</li>
+ *     <li>{@linkplain #open Opening a transaction} with a try-with-resources block creates a checkpoint.</li>
  *     <li>Modifications to game state can then happen.</li>
  *     <li>Calling {@link #commit} validates the modifications that happened during the transaction,
  *     essentially discarding the checkpoint.</li>
  *     <li>Calling {@link #abort} or doing nothing and letting the transaction be {@linkplain #close closed} at the end
  *     of the try-with-resources block cancels any modification that happened during the transaction,
  *     reverting to the checkpoint.</li>
- *     <li>Calling {@link #openNested} on a transaction creates a new nested transaction, i.e. a new checkpoint with the current state.
+ *     <li>Calling {@link #open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
  *     Committing a nested transaction will validate the changes that happened, but they may
  *     still be cancelled later if a parent transaction is cancelled.
  *     Aborting a nested transaction immediately reverts the changes - cancelling any modification made after the call
- *     to {@link #openNested}.</li>
+ *     to {@link #open}.</li>
  * </ul>
  *
  * <p>This is illustrated in the following example.
@@ -60,10 +60,13 @@ public interface Transaction extends AutoCloseable, TransactionContext {
     /**
      * Open a new outer transaction.
      *
-     * @throws IllegalStateException If a transaction is already active on the current thread.
+     * @param parent the parent transaction, or null if this is the outermost transaction
+     * @throws IllegalStateException If no parent is passed, but a transaction is already active on the current thread.
+     * @throws IllegalStateException If a parent is passed, but it's not the current transaction.
+     * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
-    static Transaction openOuter() {
-        return TransactionManagerImpl.MANAGERS.get().openOuter();
+    static Transaction open(@Nullable TransactionContext parent) {
+        return TransactionManagerImpl.MANAGERS.get().open(parent);
     }
 
     /**
@@ -78,13 +81,6 @@ public interface Transaction extends AutoCloseable, TransactionContext {
      */
     static Lifecycle getLifecycle() {
         return TransactionManagerImpl.MANAGERS.get().getLifecycle();
-    }
-
-    /**
-     * Open a nested transaction if {@code maybeParent} is non-null, or an outer transaction if {@code maybeParent} is null.
-     */
-    static Transaction openNested(@Nullable TransactionContext maybeParent) {
-        return maybeParent == null ? openOuter() : maybeParent.openNested();
     }
 
     /**
@@ -105,8 +101,7 @@ public interface Transaction extends AutoCloseable, TransactionContext {
     }
 
     /**
-     * Close the current transaction, rolling back all the changes that happened during this transaction and
-     * the transactions opened with {@link #openNested} from this transaction.
+     * Close the current transaction, rolling back all the changes that happened during this transaction and its children transactions.
      *
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
      * @throws IllegalStateException If this transaction is not the current transaction.
@@ -115,10 +110,9 @@ public interface Transaction extends AutoCloseable, TransactionContext {
     void abort();
 
     /**
-     * Close the current transaction, committing all the changes that happened during this transaction and
-     * the <b>committed</b> transactions opened with {@link #openNested} from this transaction.
-     * If this transaction was opened with {@link #openOuter}, all changes are applied.
-     * If this transaction was opened with {@link #openNested}, all changes will be applied when and if the changes of
+     * Close the current transaction, committing all the changes that happened during this transaction and its <b>committed</b> children transactions.
+     * If this transaction was opened with a {@code null} parent, all changes are applied.
+     * If this transaction was opened with a non-{@code null} parent, all changes will be applied when and if the changes of
      * the parent transactions are applied.
      *
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
