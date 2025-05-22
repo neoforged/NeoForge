@@ -2,7 +2,10 @@ package net.neoforged.neoforge.transfer.item;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
+import java.util.function.Predicate;
+
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -10,6 +13,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -72,7 +76,7 @@ public final class ItemVariant implements DataComponentHolder {
     /**
      * We wrap an item stack which must never be exposed and/or modified.
      */
-    private final ItemStack innerStack;
+    final ItemStack innerStack;
 
     private ItemVariant(ItemStack innerStack) {
         this.innerStack = innerStack;
@@ -105,6 +109,26 @@ public final class ItemVariant implements DataComponentHolder {
 
     public boolean matches(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
+    }
+
+    public boolean is(TagKey<Item> tagKey) {
+        return this.getItem().builtInRegistryHolder().is(tagKey);
+    }
+
+    public boolean is(Item item) {
+        return this.getItem() == item;
+    }
+
+    public boolean is(Predicate<Holder<Item>> predicate) {
+        return predicate.test(this.getItem().builtInRegistryHolder());
+    }
+
+    public boolean is(Holder<Item> holder) {
+        return is(holder.value());
+    }
+
+    public boolean is(HolderSet<Item> holderSet) {
+        return holderSet.contains(this.getItemHolder());
     }
 
     public int getMaxStackSize() {
