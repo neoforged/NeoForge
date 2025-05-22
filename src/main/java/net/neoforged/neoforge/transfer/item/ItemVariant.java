@@ -61,7 +61,8 @@ public final class ItemVariant implements Resource, DataComponentHolder {
         return itemStack.isEmpty() ? EMPTY : new ItemVariant(itemStack.copyWithCount(1));
     }
 
-    public static ItemVariant of(ItemLike item) {
+    public static ItemVariant of(ItemLike itemLike) {
+        var item = itemLike.asItem();
         return item == Items.AIR ? EMPTY : new ItemVariant(new ItemStack(item));
     }
 
@@ -100,8 +101,16 @@ public final class ItemVariant implements Resource, DataComponentHolder {
         return innerStack.getComponentsPatch();
     }
 
+    public boolean isComponentsPatchEmpty() {
+        return innerStack.isComponentsPatchEmpty();
+    }
+
     public boolean matches(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
+    }
+
+    public int getMaxStackSize() {
+        return innerStack.getMaxStackSize();
     }
 
     public ItemStack toStack() {
