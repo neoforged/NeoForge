@@ -5,7 +5,6 @@ import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.transfer.Resource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Contract;
@@ -60,7 +59,7 @@ public final class StorageUtil {
      * @return The total amount of resources that was successfully transferred.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    public static <T extends Resource> long move(@Nullable Storage<T> from, @Nullable Storage<T> to, Predicate<T> filter, long maxAmount, @Nullable TransactionContext transaction) {
+    public static <T> long move(@Nullable Storage<T> from, @Nullable Storage<T> to, Predicate<T> filter, long maxAmount, @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (from == null || to == null) return 0;
 
@@ -113,7 +112,7 @@ public final class StorageUtil {
      * The passed transaction may be null if a new transaction should be opened for the simulation.
      * @see Storage#insert
      */
-    public static <T extends Resource> long simulateInsert(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
+    public static <T> long simulateInsert(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
         try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.insert(resource, maxAmount, simulateTransaction);
         }
@@ -124,7 +123,7 @@ public final class StorageUtil {
      * The passed transaction may be null if a new transaction should be opened for the simulation.
      * @see Storage#insert
      */
-    public static <T extends Resource> long simulateInsert(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
+    public static <T> long simulateInsert(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
         try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.insert(slot, resource, maxAmount, simulateTransaction);
         }
@@ -135,7 +134,7 @@ public final class StorageUtil {
      * The passed transaction may be null if a new transaction should be opened for the simulation.
      * @see Storage#insert
      */
-    public static <T extends Resource> long simulateExtract(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
+    public static <T> long simulateExtract(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
         try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.extract(resource, maxAmount, simulateTransaction);
         }
@@ -146,7 +145,7 @@ public final class StorageUtil {
      * The passed transaction may be null if a new transaction should be opened for the simulation.
      * @see Storage#insert
      */
-    public static <T extends Resource> long simulateExtract(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
+    public static <T> long simulateExtract(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
         try (Transaction simulateTransaction = Transaction.open(transaction)) {
             return storage.extract(slot, resource, maxAmount, simulateTransaction);
         }
@@ -164,7 +163,7 @@ public final class StorageUtil {
      * or {@code null} if none could be found.
      */
     @Nullable
-    public static <T extends Resource> ResourceAmount<T> extractAny(@Nullable Storage<T> storage, long maxAmount, TransactionContext transaction) {
+    public static <T> ResourceAmount<T> extractAny(@Nullable Storage<T> storage, long maxAmount, TransactionContext transaction) {
         StoragePreconditions.notNegative(maxAmount);
 
         if (storage == null) return null;
@@ -195,7 +194,7 @@ public final class StorageUtil {
      * @return How much was inserted.
      * @see Storage#insert
      */
-    public static <T extends Resource> long insertStacking(@Nullable Storage<T> storage, T resource, long maxAmount, TransactionContext transaction) {
+    public static <T> long insertStacking(@Nullable Storage<T> storage, T resource, long maxAmount, TransactionContext transaction) {
         StoragePreconditions.notNegative(maxAmount);
         if (storage == null) return 0;
 
@@ -205,7 +204,7 @@ public final class StorageUtil {
             int size = storage.size();
 
             for (int i = 0; i < size; ++i) {
-                if (!storage.getResource(i).isBlank()) {
+                if (!storage.isResourceBlank(i) && storage.getAmount(i) > 0) {
                     amount += storage.insert(i, resource, maxAmount - amount, transaction);
                     if (amount == maxAmount) return amount;
                 }
@@ -235,7 +234,7 @@ public final class StorageUtil {
      * @return A non-blank resource stored in the storage, or {@code null} if none could be found.
      */
     @Nullable
-    public static <T extends Resource> T findStoredResource(@Nullable Storage<T> storage) {
+    public static <T> T findStoredResource(@Nullable Storage<T> storage) {
         return findStoredResource(storage, r -> true);
     }
 
@@ -248,7 +247,7 @@ public final class StorageUtil {
      * @return A non-blank resource stored in the storage that matches the filter, or {@code null} if none could be found.
      */
     @Nullable
-    public static <T extends Resource> T findStoredResource(@Nullable Storage<T> storage, Predicate<T> filter) {
+    public static <T> T findStoredResource(@Nullable Storage<T> storage, Predicate<T> filter) {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (storage == null) return null;
 
@@ -270,7 +269,7 @@ public final class StorageUtil {
      * @return A non-blank resource stored in the storage that can be extracted, or {@code null} if none could be found.
      */
     @Nullable
-    public static <T extends Resource> T findExtractableResource(@Nullable Storage<T> storage, @Nullable TransactionContext transaction) {
+    public static <T> T findExtractableResource(@Nullable Storage<T> storage, @Nullable TransactionContext transaction) {
         return findExtractableResource(storage, r -> true, transaction);
     }
 
@@ -285,7 +284,7 @@ public final class StorageUtil {
      */
     @Nullable
     @Contract("null,_,_-> null")
-    public static <T extends Resource> T findExtractableResource(@Nullable Storage<T> storage, Predicate<T> filter, @Nullable TransactionContext transaction) {
+    public static <T> T findExtractableResource(@Nullable Storage<T> storage, Predicate<T> filter, @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (storage == null) return null;
 
@@ -313,7 +312,7 @@ public final class StorageUtil {
      * or {@code null} if none could be found.
      */
     @Nullable
-    public static <T extends Resource> ResourceAmount<T> findExtractableContent(@Nullable Storage<T> storage, @Nullable TransactionContext transaction) {
+    public static <T> ResourceAmount<T> findExtractableContent(@Nullable Storage<T> storage, @Nullable TransactionContext transaction) {
         return findExtractableContent(storage, r -> true, transaction);
     }
 
@@ -328,7 +327,7 @@ public final class StorageUtil {
      * or {@code null} if none could be found.
      */
     @Nullable
-    public static <T extends Resource> ResourceAmount<T> findExtractableContent(@Nullable Storage<T> storage, Predicate<T> filter, @Nullable TransactionContext transaction) {
+    public static <T> ResourceAmount<T> findExtractableContent(@Nullable Storage<T> storage, Predicate<T> filter, @Nullable TransactionContext transaction) {
         T extractableResource = findExtractableResource(storage, filter, transaction);
 
         if (extractableResource != null) {
@@ -350,7 +349,7 @@ public final class StorageUtil {
      * @param <T> The type of the stored resources.
      * @return An integer between 0 and 15 (inclusive): the comparator output for the passed storage.
      */
-    public static <T extends Resource> int getRedstoneSignalFromStorage(@Nullable Storage<T> storage) {
+    public static <T> int getRedstoneSignalFromStorage(@Nullable Storage<T> storage) {
         if (storage == null) return 0;
 
         double fillPercentage = 0;

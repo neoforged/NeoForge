@@ -1,15 +1,12 @@
 package net.neoforged.neoforge.transfer.storage;
 
-import it.unimi.dsi.fastutil.ints.IntIterable;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import net.neoforged.neoforge.transfer.Resource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A generic handler for handling a resource of type {@link T}.
  * @param <T> The type of resource this handler manages.
  */
-public interface Storage<T extends Resource> {
+public interface Storage<T> {
     /**
      * @return The number of indices this handler manages.
      */
@@ -94,6 +91,14 @@ public interface Storage<T extends Resource> {
     }
 
     /**
+     * Return {@code true} if the contained {@link #getResource} is blank, or {@code false} otherwise.
+     *
+     * <p>This function is mostly useful when dealing with storages of arbitrary types.
+     * For transfer variant storages, this should always be equivalent to {@code getResource(index).isBlank()}.
+     */
+    boolean isResourceBlank(int index);
+
+    /**
      * @param index The index to get the resource from.
      * @return The resource at the given index.
      */
@@ -129,7 +134,7 @@ public interface Storage<T extends Resource> {
      * Return a class instance of this interface with the desired generic type,
      * to be used for easier registration with capabilities.
      */
-    static <T extends Resource> Class<Storage<T>> asClass() {
+    static <T> Class<Storage<T>> asClass() {
         return (Class<Storage<T>>) (Object) Storage.class;
     }
 }

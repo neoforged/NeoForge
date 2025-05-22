@@ -15,13 +15,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.transfer.Resource;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without amount information.
  */
-public final class ItemVariant implements Resource, DataComponentHolder {
+public final class ItemVariant implements DataComponentHolder {
     /**
      * Codec for an item variant.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
@@ -79,7 +78,6 @@ public final class ItemVariant implements Resource, DataComponentHolder {
         this.innerStack = innerStack;
     }
 
-    @Override
     public boolean isBlank() {
         return innerStack.isEmpty();
     }
