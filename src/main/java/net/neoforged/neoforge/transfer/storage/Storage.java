@@ -93,11 +93,6 @@ public interface Storage<T extends Resource> {
         return true;
     }
 
-    // TODO: is this a good idea? we might need an iterator and an iterable method
-    default IntIterable nonEmptySlots() {
-        return null;
-    }
-
     /**
      * @param index The index to get the resource from.
      * @return The resource at the given index.

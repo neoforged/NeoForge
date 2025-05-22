@@ -67,7 +67,8 @@ public final class StorageUtil {
         long totalMoved = 0;
 
         try (Transaction iterationTransaction = Transaction.open(transaction)) {
-            for (int slot : from.nonEmptySlots()) {
+            int slots = from.size();
+            for (int slot = 0; slot < slots; ++slot) {
                 T resource = from.getResource(slot);
                 if (!filter.test(resource)) continue;
 
@@ -169,7 +170,8 @@ public final class StorageUtil {
         if (storage == null) return null;
 
         try {
-            for (int slot : storage.nonEmptySlots()) {
+            int slots = storage.size();
+            for (int slot = 0; slot < slots; ++slot) {
                 T resource = storage.getResource(slot);
                 long amount = storage.extract(slot, resource, maxAmount, transaction);
                 if (amount > 0) return new ResourceAmount<>(resource, amount);
@@ -250,7 +252,8 @@ public final class StorageUtil {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (storage == null) return null;
 
-        for (int slot : storage.nonEmptySlots()) {
+        int slots = storage.size();
+        for (int slot = 0; slot < slots; ++slot) {
             T resource = storage.getResource(slot);
             if (filter.test(resource)) {
                 return resource;
@@ -287,7 +290,8 @@ public final class StorageUtil {
         if (storage == null) return null;
 
         try (Transaction nested = Transaction.open(transaction)) {
-            for (int slot : storage.nonEmptySlots()) {
+            int slots = storage.size();
+            for (int slot = 0; slot < slots; ++slot) {
                 // Extract below could change the resource, so we have to query it before extracting.
                 T resource = storage.getResource(slot);
 
