@@ -385,10 +385,11 @@
              int j = Mth.floor(this.getY() - 0.2F);
              int k = Mth.floor(this.getZ());
 -            BlockState blockstate = this.level().getBlockState(new BlockPos(i, j, k));
+-            if (!blockstate.isAir()) {
+-                SoundType soundtype = blockstate.getSoundType();
 +            BlockPos pos = new BlockPos(i, j, k);
 +            BlockState blockstate = this.level().getBlockState(pos);
-             if (!blockstate.isAir()) {
--                SoundType soundtype = blockstate.getSoundType();
++            if (!blockstate.isAir() && !blockstate.playFallSound(this.level(), pos, this)) {
 +                SoundType soundtype = blockstate.getSoundType(level(), pos, this);
                  this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
              }
