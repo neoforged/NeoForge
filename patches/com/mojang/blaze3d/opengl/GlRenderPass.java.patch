@@ -5,7 +5,7 @@
  public class GlRenderPass implements RenderPass {
      protected static final int MAX_VERTEX_BUFFERS = 1;
 -    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE;
-+    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE && !Boolean.parseBoolean(System.getProperty("neoforge.disableGlValidation", "false"));
++    public static final boolean VALIDATION = SharedConstants.IS_RUNNING_IN_IDE && !Boolean.getBoolean("neoforge.disableGlValidation");
      private final GlCommandEncoder encoder;
      private final boolean hasDepthTexture;
      private boolean closed;
