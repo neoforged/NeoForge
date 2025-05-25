@@ -7,9 +7,9 @@
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void registerCustomPipelines() {
-+        var event = new net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent(pipeline -> {
++        var event = new net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent((pipeline, errorOnRegistered) -> {
 +            if (PIPELINES_BY_LOCATION.putIfAbsent(pipeline.getLocation(), pipeline) != null) {
-+                throw new IllegalStateException("Duplicate RenderPipeline registration for location: " + pipeline.getLocation());
++                if(errorOnRegistered) throw new IllegalStateException("Duplicate RenderPipeline registration for location: " + pipeline.getLocation());
 +            }
 +        });
 +        net.neoforged.fml.ModLoader.postEvent(event);
