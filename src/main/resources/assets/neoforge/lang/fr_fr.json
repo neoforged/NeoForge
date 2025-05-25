@@ -108,7 +108,7 @@
   "commands.neoforge.chunkgen.already_running": "Génération déjà en cours d'exécution. Veuillez d'abord exécuter '/neoforge generate stop' avant de commencer une nouvelle génération.",
   "commands.neoforge.chunkgen.started": "Génération de %1$s chunks dans une zone de %2$sx%3$s chunks (%4$sx%5$s blocs).",
   "commands.neoforge.chunkgen.success": "Génération terminée !",
-  "commands.neoforge.chunkgen.error": "Generation experienced %1$s errors! Check the log for more information.",
+  "commands.neoforge.chunkgen.error": "La génération a rencontré %1$s erreurs ! Consultez le journal pour plus d'informations.",
   "commands.neoforge.chunkgen.stopped": "Génération stoppée ! %1$s sur %2$s chunks générés. (%3$s%%)",
   "commands.neoforge.chunkgen.status": "Statut de la génération ! %1$s sur %2$s chunks générés. (%3$s%%)",
   "commands.neoforge.chunkgen.not_running": "Aucune prégénération en cours d'exécution. Exécutez `/neoforge generate help` afin de voir les commandes pour démarrer la génération.",
