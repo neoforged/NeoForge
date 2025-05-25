@@ -6,20 +6,26 @@
 package net.neoforged.neoforge.fluids.capability.wrappers;
 
 import com.google.common.math.IntMath;
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.storage.Storage;
+import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class CauldronWrapper implements IFluidHandler {
+public class CauldronWrapper extends SnapshotParticipant<BlockState> implements Storage<FluidVariant> {
     private final Level level;
     private final BlockPos pos;
+    @Nullable
+    private BlockState stateBeforeTransaction;
 
     public CauldronWrapper(Level level, BlockPos pos) {
         this.level = level;
@@ -27,8 +33,12 @@ public class CauldronWrapper implements IFluidHandler {
     }
 
     @Override
-    public int getTanks() {
+    public int size() {
         return 1;
+    }
+
+    private CauldronFluidContent getContent() {
+        return getContent(level.getBlockState(pos));
     }
 
     private CauldronFluidContent getContent(BlockState state) {
@@ -39,41 +49,84 @@ public class CauldronWrapper implements IFluidHandler {
         return content;
     }
 
-    @Override
-    public FluidStack getFluidInTank(int tank) {
-        BlockState state = level.getBlockState(pos);
-        CauldronFluidContent contents = getContent(state);
-        return new FluidStack(contents.fluid, contents.totalAmount * contents.currentLevel(state) / contents.maxLevel);
+    private static void assertValidTank(int index) {
+        if (index != 0) {
+            throw new IllegalArgumentException("A cauldron only has one tank. Tried to access slot " + index);
+        }
     }
 
     @Override
-    public int getTankCapacity(int tank) {
-        BlockState state = level.getBlockState(pos);
-        CauldronFluidContent contents = getContent(state);
+    public FluidVariant getResource(int index) {
+        assertValidTank(index);
+
+        return FluidVariant.of(getContent().fluid);
+    }
+
+    @Override
+    public boolean isResourceBlank(int index) {
+        return getResource(index).isBlank();
+    }
+
+    @Override
+    public long getAmount(int index) {
+        assertValidTank(index);
+
+        var state = level.getBlockState(pos);
+        var contents = getContent(state);
+        return (long) contents.totalAmount * contents.currentLevel(state) / contents.maxLevel;
+    }
+
+    @Override
+    public long getCapacity(int index, FluidVariant resource) {
+        assertValidTank(index);
+
+        CauldronFluidContent contents;
+        if (resource.isBlank()) {
+            contents = getContent();
+        } else {
+            contents = CauldronFluidContent.getForFluid(resource.getFluid());
+        }
+        if (contents == null) {
+            return 0L;
+        }
         return contents.totalAmount;
     }
 
     @Override
-    public boolean isFluidValid(int tank, FluidStack stack) {
-        return CauldronFluidContent.getForFluid(stack.getFluid()) != null;
+    public boolean isValid(int index, FluidVariant resource) {
+        return CauldronFluidContent.getForFluid(resource.getFluid()) != null;
     }
 
     // Called by fill and drain to update the block state.
-    private void updateLevel(CauldronFluidContent newContent, int level, FluidAction action) {
-        if (action.execute()) {
+    // Note that this temporarily updates the block state in the level
+    // See onFinalCommit for where it is modified definitively.
+    private void updateLevel(CauldronFluidContent newContent, int level, TransactionContext transaction) {
+        updateSnapshots(transaction);
+
+        if (level == 0) {
+            // Fully extract -> back to empty cauldron
+            this.level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 0);
+        } else {
             BlockState newState = newContent.block.defaultBlockState();
 
             if (newContent.levelProperty != null) {
                 newState = newState.setValue(newContent.levelProperty, level);
             }
 
-            this.level.setBlockAndUpdate(pos, newState);
+            this.level.setBlock(pos, newState, 0);
         }
     }
 
     @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        if (resource.isEmpty()) {
+    public long insert(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        assertValidTank(index);
+
+        return insert(resource, maxAmount, transaction);
+    }
+
+    @Override
+    public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        if (resource.isBlank()) {
             return 0;
         }
 
@@ -95,60 +148,84 @@ public class CauldronWrapper implements IFluidHandler {
         int levelIncrements = insertContent.maxLevel / d;
 
         int currentLevel = currentContent.currentLevel(state);
-        int insertedIncrements = Math.min(resource.getAmount() / amountIncrements, (insertContent.maxLevel - currentLevel) / levelIncrements);
+        int insertedIncrements = (int) Math.min(maxAmount / amountIncrements, (insertContent.maxLevel - currentLevel) / levelIncrements);
         if (insertedIncrements > 0) {
-            updateLevel(insertContent, currentLevel + insertedIncrements * levelIncrements, action);
+            updateLevel(insertContent, currentLevel + insertedIncrements * levelIncrements, transaction);
         }
 
-        return insertedIncrements * amountIncrements;
+        return (long) insertedIncrements * amountIncrements;
     }
 
     @Override
-    public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (resource.isEmpty()) {
-            return FluidStack.EMPTY;
+    public long extract(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        assertValidTank(index);
+
+        return extract(resource, maxAmount, transaction);
+    }
+
+    @Override
+    public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        if (resource.isBlank()) {
+            return 0;
         }
 
         BlockState state = level.getBlockState(pos);
-        if (resource.is(getContent(state).fluid) && resource.getComponents().isEmpty()) {
-            return drain(state, resource.getAmount(), action);
+        var content = getContent(state);
+        if (resource.is(content.fluid) && resource.getComponents().isEmpty()) {
+            return drain(content, state, maxAmount, transaction);
         } else {
-            return FluidStack.EMPTY;
+            return 0;
         }
     }
 
-    @Override
-    public FluidStack drain(int maxDrain, FluidAction action) {
-        if (maxDrain <= 0) {
-            return FluidStack.EMPTY;
-        }
-
-        return drain(level.getBlockState(pos), maxDrain, action);
-    }
-
-    private FluidStack drain(BlockState state, int maxDrain, FluidAction action) {
-        CauldronFluidContent content = getContent(state);
-
+    private long drain(CauldronFluidContent content, BlockState state, long maxDrain, TransactionContext transaction) {
         // We can only extract increments based on the GCD between the number of levels and the total amount.
         int d = IntMath.gcd(content.maxLevel, content.totalAmount);
         int amountIncrements = content.totalAmount / d;
         int levelIncrements = content.maxLevel / d;
 
         int currentLevel = content.currentLevel(state);
-        int extractedIncrements = Math.min(maxDrain / amountIncrements, currentLevel / levelIncrements);
+        int extractedIncrements = (int) Math.min(maxDrain / amountIncrements, currentLevel / levelIncrements);
         if (extractedIncrements > 0) {
             int newLevel = currentLevel - extractedIncrements * levelIncrements;
-            if (newLevel == 0) {
-                // Fully extract -> back to empty cauldron
-                if (action.execute()) {
-                    level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
-                }
-            } else {
-                // Otherwise just decrease levels
-                updateLevel(content, newLevel, action);
-            }
+            // Otherwise just decrease levels
+            updateLevel(content, newLevel, transaction);
         }
 
-        return new FluidStack(content.fluid, extractedIncrements * amountIncrements);
+        return (long) extractedIncrements * amountIncrements;
+    }
+
+    @Override
+    protected BlockState createSnapshot() {
+        return level.getBlockState(pos);
+    }
+
+    @Override
+    protected void readSnapshot(BlockState snapshot) {
+        level.setBlock(pos, snapshot, 0);
+    }
+
+    @Override
+    protected void releaseSnapshot(BlockState snapshot) {
+        // TODO: Find a proper way to describe why this is actually the right thing to do
+        stateBeforeTransaction = snapshot;
+    }
+
+    @Override
+    protected void onFinalCommit() {
+        // When we're listening to the final commit, we should have had at least a single snapshot
+        Objects.requireNonNull(stateBeforeTransaction, "stateBeforeTransaction");
+
+        // State as it was modified during this outermost transaction being committed.
+        BlockState state = level.getBlockState(pos);
+        BlockState originalState = stateBeforeTransaction;
+
+        if (originalState != state) {
+            // Revert back to the blockstate before any changes happened so that the next
+            // call will not short-circuit due to the blockstate not really changing.
+            level.setBlock(pos, originalState, 0);
+            // Now do the change that will trigger change notifications to other blocks/neighbors/clients
+            level.setBlockAndUpdate(pos, state);
+        }
     }
 }

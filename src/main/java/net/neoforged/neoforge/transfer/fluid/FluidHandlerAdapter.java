@@ -81,8 +81,10 @@ public class FluidHandlerAdapter implements IFluidHandler {
                 throw new IllegalStateException("Extracted more (" + extracted
                         + ") from storage (" + storage + ") than requested (" + maxDrain + ").");
             }
+            if (action.execute()) {
+                tx.commit();
+            }
+            return extracted.resource().toStack((int) extracted.amount());
         }
-
-        return FluidStack.EMPTY;
     }
 }

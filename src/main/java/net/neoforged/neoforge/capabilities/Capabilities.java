@@ -11,6 +11,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.storage.Storage;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,6 +33,13 @@ public final class Capabilities {
         public static final ItemCapability<IFluidHandlerItem, @Nullable Void> ITEM = ItemCapability.createVoid(create("fluid_handler"), IFluidHandlerItem.class);
 
         private FluidHandler() {}
+    }
+
+    public static final class FluidStorage {
+        public static final BlockCapability<Storage<FluidVariant>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_storage"), Storage.asClass());
+        public static final EntityCapability<Storage<FluidVariant>, @Nullable Direction> ENTITY = EntityCapability.createSided(create("fluid_storage"), Storage.asClass());
+
+        private FluidStorage() {}
     }
 
     public static final class ItemHandler {

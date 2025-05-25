@@ -25,13 +25,15 @@ import net.neoforged.neoforge.transfer.storage.RegistryObjectVariant;
  * and an optional {@link DataComponentPatch data component patch}.
  */
 public final class FluidVariant implements RegistryObjectVariant<Fluid> {
+    private static final int DUMMY_AMOUNT = 1;
+
     /**
      * Codec for a fluid variant, which <b>cannot</b> encode or decode variants of {@link Fluids#EMPTY}.
      * <p>
      * Same encoding as {@link FluidStack#fixedAmountCodec}.
      */
-    public static final Codec<FluidVariant> CODEC = FluidStack.fixedAmountCodec(1)
-            .xmap(FluidVariant::of, v -> v.toStack(1));
+    public static final Codec<FluidVariant> CODEC = FluidStack.fixedAmountCodec(DUMMY_AMOUNT)
+            .xmap(FluidVariant::of, v -> v.toStack(DUMMY_AMOUNT));
 
     /**
      * Codec for a fluid variant, which can also encode variants of {@link Fluids#EMPTY}.
@@ -53,12 +55,17 @@ public final class FluidVariant implements RegistryObjectVariant<Fluid> {
 
     public static final FluidVariant EMPTY = new FluidVariant(FluidStack.EMPTY);
 
+    public static FluidVariant of(Fluid fluid) {
+        // TODO: Should used interned variants in the Fluid itself.
+        return fluid == Fluids.EMPTY ? EMPTY : new FluidVariant(new FluidStack(fluid, DUMMY_AMOUNT));
+    }
+
     public static FluidVariant of(FluidStack fluidStack) {
-        return fluidStack.isEmpty() ? EMPTY : new FluidVariant(fluidStack.copyWithAmount(1));
+        return fluidStack.isEmpty() ? EMPTY : new FluidVariant(fluidStack.copyWithAmount(DUMMY_AMOUNT));
     }
 
     public static FluidVariant of(Holder<Fluid> fluid, DataComponentPatch patch) {
-        return fluid.value() == Fluids.EMPTY ? EMPTY : new FluidVariant(new FluidStack(fluid, 1, patch));
+        return fluid.value() == Fluids.EMPTY ? EMPTY : new FluidVariant(new FluidStack(fluid, DUMMY_AMOUNT, patch));
     }
 
     /**
