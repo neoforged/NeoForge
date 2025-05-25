@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
@@ -10,13 +15,13 @@ import java.util.Objects;
  *
  * <h3>How to use from subclasses</h3>
  * <ul>
- *     <li>Call {@link #updateSnapshots} right before the state of your subclass is modified in a transaction.</li>
- *     <li>Override {@link #createSnapshot}: it is called when necessary to create an object representing the state of your subclass.</li>
- *     <li>Override {@link #readSnapshot}: it is called when necessary to revert to a previous state of your subclass.</li>
- *     <li>You may optionally override {@link #onFinalCommit}: it is called at the of a transaction that modified the state.
- *     For example, it could contain a call to {@code markDirty()}.</li>
- *     <li>(Advanced!) You may optionally override {@link #releaseSnapshot}: it is called once a snapshot object will not be used,
- *     for example you may wish to pool expensive state objects.</li>
+ * <li>Call {@link #updateSnapshots} right before the state of your subclass is modified in a transaction.</li>
+ * <li>Override {@link #createSnapshot}: it is called when necessary to create an object representing the state of your subclass.</li>
+ * <li>Override {@link #readSnapshot}: it is called when necessary to revert to a previous state of your subclass.</li>
+ * <li>You may optionally override {@link #onFinalCommit}: it is called at the of a transaction that modified the state.
+ * For example, it could contain a call to {@code markDirty()}.</li>
+ * <li>(Advanced!) You may optionally override {@link #releaseSnapshot}: it is called once a snapshot object will not be used,
+ * for example you may wish to pool expensive state objects.</li>
  * </ul>
  *
  * <h3>More technical explanation</h3>
@@ -51,15 +56,13 @@ public abstract class SnapshotParticipant<T> implements Transaction.CloseCallbac
      * Signals that the snapshot will not be used anymore, and is safe to cache for next calls to {@link #createSnapshot},
      * or discard entirely.
      */
-    protected void releaseSnapshot(T snapshot) {
-    }
+    protected void releaseSnapshot(T snapshot) {}
 
     /**
      * Called after an outer transaction succeeded,
      * to perform irreversible actions such as {@code markDirty()} or neighbor updates.
      */
-    protected void onFinalCommit() {
-    }
+    protected void onFinalCommit() {}
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly

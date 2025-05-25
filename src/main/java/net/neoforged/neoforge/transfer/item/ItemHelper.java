@@ -1,8 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.item;
 
-import com.sun.source.doctree.TextTree;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -10,7 +13,6 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 // TODO
 public class ItemHelper {
     // Same signature as IItemHandler#insertItem:
-
     public static ItemStack insertItem(Storage<ItemVariant> storage, int slot, ItemStack stack, boolean simulate) {
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;

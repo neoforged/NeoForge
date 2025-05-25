@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.transaction;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -20,7 +25,7 @@ public interface TransactionContext {
      *
      * @param nestingDepth Queried nesting depth.
      * @throws IndexOutOfBoundsException If there is no open transaction with the request nesting depth.
-     * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
+     * @throws IllegalStateException     If this function is not called on the thread this transaction was opened in.
      */
     Transaction getOpenTransaction(int nestingDepth);
 
@@ -47,7 +52,7 @@ public interface TransactionContext {
          *                    may be called on that transaction.
          *                    {@link #addCloseCallback} may additionally be called on parent transactions
          *                    (accessed through {@link #getOpenTransaction} for lower nesting depths).
-         * @param result The result of this transaction: whether it was committed or aborted.
+         * @param result      The result of this transaction: whether it was committed or aborted.
          */
         void onClose(TransactionContext transaction, Result result);
     }

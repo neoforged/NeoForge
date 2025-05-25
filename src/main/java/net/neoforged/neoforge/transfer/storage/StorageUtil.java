@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.storage;
 
+import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -10,9 +17,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.function.Predicate;
-
 /**
  * Helper functions to work with {@link Storage}s.
  *
@@ -20,14 +24,14 @@ import java.util.function.Predicate;
  * If the resource is known, there will generally be a more performance efficient way.
  */
 public final class StorageUtil {
-    private StorageUtil() {
-    }
+    private StorageUtil() {}
 
     // TODO: example needs to be adjusted probably
     /**
      * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
      *
      * <p>Here is a usage example with fluid variant storages:
+     * 
      * <pre>{@code
      * // Source
      * Storage<FluidVariant> source;
@@ -47,15 +51,15 @@ public final class StorageUtil {
      * }
      * }</pre>
      *
-     * @param from The source storage. May be null.
-     * @param to The target storage. May be null.
-     * @param filter The filter for transferred resources.
-     *               Only resources for which this filter returns {@code true} will be transferred.
-     *               This filter will never be tested with a blank resource, and filters are encouraged to throw an
-     *               exception if this guarantee is violated.
-     * @param maxAmount The maximum amount that will be transferred.
+     * @param from        The source storage. May be null.
+     * @param to          The target storage. May be null.
+     * @param filter      The filter for transferred resources.
+     *                    Only resources for which this filter returns {@code true} will be transferred.
+     *                    This filter will never be tested with a blank resource, and filters are encouraged to throw an
+     *                    exception if this guarantee is violated.
+     * @param maxAmount   The maximum amount that will be transferred.
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
-     * @param <T> The type of resources to move.
+     * @param <T>         The type of resources to move.
      * @return The total amount of resources that was successfully transferred.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
@@ -110,6 +114,7 @@ public final class StorageUtil {
     /**
      * Convenient helper to simulate an insertion, i.e. get the result of insert without modifying any state.
      * The passed transaction may be null if a new transaction should be opened for the simulation.
+     * 
      * @see Storage#insert
      */
     public static <T> long simulateInsert(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
@@ -121,6 +126,7 @@ public final class StorageUtil {
     /**
      * Convenient helper to simulate an insertion, i.e. get the result of insert without modifying any state.
      * The passed transaction may be null if a new transaction should be opened for the simulation.
+     * 
      * @see Storage#insert
      */
     public static <T> long simulateInsert(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
@@ -132,6 +138,7 @@ public final class StorageUtil {
     /**
      * Convenient helper to simulate an extraction, i.e. get the result of extract without modifying any state.
      * The passed transaction may be null if a new transaction should be opened for the simulation.
+     * 
      * @see Storage#insert
      */
     public static <T> long simulateExtract(Storage<T> storage, T resource, long maxAmount, @Nullable TransactionContext transaction) {
@@ -143,6 +150,7 @@ public final class StorageUtil {
     /**
      * Convenient helper to simulate an extraction, i.e. get the result of extract without modifying any state.
      * The passed transaction may be null if a new transaction should be opened for the simulation.
+     * 
      * @see Storage#insert
      */
     public static <T> long simulateExtract(Storage<T> storage, int slot, T resource, long maxAmount, @Nullable TransactionContext transaction) {
@@ -156,11 +164,11 @@ public final class StorageUtil {
      *
      * <p>This function will only ever pull from one storage view of the storage, even if multiple storage views contain the same resource.
      *
-     * @param storage The storage, may be null.
-     * @param maxAmount The maximum to extract.
+     * @param storage     The storage, may be null.
+     * @param maxAmount   The maximum to extract.
      * @param transaction The transaction this operation is part of.
      * @return A non-blank resource and the strictly positive amount of it that was extracted from the storage,
-     * or {@code null} if none could be found.
+     *         or {@code null} if none could be found.
      */
     @Nullable
     public static <T> ResourceAmount<T> extractAny(@Nullable Storage<T> storage, long maxAmount, TransactionContext transaction) {
@@ -242,8 +250,8 @@ public final class StorageUtil {
      * Attempt to find a resource stored in the passed storage that matches the passed filter.
      *
      * @param storage The storage to inspect, may be null.
-     * @param filter The filter. Only a resource for which this filter returns {@code true} will be returned.
-     * @param <T> The type of the stored resources.
+     * @param filter  The filter. Only a resource for which this filter returns {@code true} will be returned.
+     * @param <T>     The type of the stored resources.
      * @return A non-blank resource stored in the storage that matches the filter, or {@code null} if none could be found.
      */
     @Nullable
@@ -276,10 +284,10 @@ public final class StorageUtil {
     /**
      * Attempt to find a resource stored in the passed storage that matches the passed filter and can be extracted.
      *
-     * @param storage The storage to inspect, may be null.
-     * @param filter The filter. Only a resource for which this filter returns {@code true} will be returned.
+     * @param storage     The storage to inspect, may be null.
+     * @param filter      The filter. Only a resource for which this filter returns {@code true} will be returned.
      * @param transaction The current transaction, or {@code null} if a transaction should be opened for this query.
-     * @param <T> The type of the stored resources.
+     * @param <T>         The type of the stored resources.
      * @return A non-blank resource stored in the storage that matches the filter and can be extracted, or {@code null} if none could be found.
      */
     @Nullable
@@ -309,7 +317,7 @@ public final class StorageUtil {
      *
      * @see #findExtractableContent(Storage, Predicate, TransactionContext)
      * @return A non-blank resource stored in the storage that can be extracted, and the strictly positive amount of it that can be extracted,
-     * or {@code null} if none could be found.
+     *         or {@code null} if none could be found.
      */
     @Nullable
     public static <T> ResourceAmount<T> findExtractableContent(@Nullable Storage<T> storage, @Nullable TransactionContext transaction) {
@@ -319,12 +327,12 @@ public final class StorageUtil {
     /**
      * Attempt to find a resource stored in the passed storage that can be extracted and matches the filter, and how much of it can be extracted.
      *
-     * @param storage The storage to inspect, may be null.
-     * @param filter The filter. Only a resource for which this filter returns {@code true} will be returned.
+     * @param storage     The storage to inspect, may be null.
+     * @param filter      The filter. Only a resource for which this filter returns {@code true} will be returned.
      * @param transaction The current transaction, or {@code null} if a transaction should be opened for this query.
-     * @param <T> The type of the stored resources.
+     * @param <T>         The type of the stored resources.
      * @return A non-blank resource stored in the storage that can be extracted and matches the filter, and the strictly positive amount of it that can be extracted,
-     * or {@code null} if none could be found.
+     *         or {@code null} if none could be found.
      */
     @Nullable
     public static <T> ResourceAmount<T> findExtractableContent(@Nullable Storage<T> storage, Predicate<T> filter, @Nullable TransactionContext transaction) {
@@ -346,7 +354,7 @@ public final class StorageUtil {
      * similar to {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}.
      *
      * @param storage The storage for which the comparator level should be computed.
-     * @param <T> The type of the stored resources.
+     * @param <T>     The type of the stored resources.
      * @return An integer between 0 and 15 (inclusive): the comparator output for the passed storage.
      */
     public static <T> int getRedstoneSignalFromStorage(@Nullable Storage<T> storage) {

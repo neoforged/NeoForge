@@ -1,8 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.item;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;

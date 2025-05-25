@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.fluid;
 
 import com.mojang.serialization.Codec;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -13,8 +19,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.storage.RegistryObjectVariant;
-
-import java.util.Optional;
 
 /**
  * Represents a transferable variant of a fluid, which will be defined by the {@link Fluid base fluid}
@@ -48,7 +52,6 @@ public final class FluidVariant implements RegistryObjectVariant<Fluid> {
             FluidVariant::of);
 
     public static final FluidVariant EMPTY = new FluidVariant(FluidStack.EMPTY);
-
 
     public static FluidVariant of(FluidStack fluidStack) {
         return fluidStack.isEmpty() ? EMPTY : new FluidVariant(fluidStack.copyWithAmount(1));

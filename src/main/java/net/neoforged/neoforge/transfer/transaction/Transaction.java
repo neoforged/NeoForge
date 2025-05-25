@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.transaction;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -9,29 +14,30 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>One can imagine that transactions are like video game checkpoints.
  * <ul>
- *     <li>{@linkplain #open Opening a transaction} with a try-with-resources block creates a checkpoint.</li>
- *     <li>Modifications to game state can then happen.</li>
- *     <li>Calling {@link #commit} validates the modifications that happened during the transaction,
- *     essentially discarding the checkpoint.</li>
- *     <li>Calling {@link #abort} or doing nothing and letting the transaction be {@linkplain #close closed} at the end
- *     of the try-with-resources block cancels any modification that happened during the transaction,
- *     reverting to the checkpoint.</li>
- *     <li>Calling {@link #open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
- *     Committing a nested transaction will validate the changes that happened, but they may
- *     still be cancelled later if a parent transaction is cancelled.
- *     Aborting a nested transaction immediately reverts the changes - cancelling any modification made after the call
- *     to {@link #open}.</li>
+ * <li>{@linkplain #open Opening a transaction} with a try-with-resources block creates a checkpoint.</li>
+ * <li>Modifications to game state can then happen.</li>
+ * <li>Calling {@link #commit} validates the modifications that happened during the transaction,
+ * essentially discarding the checkpoint.</li>
+ * <li>Calling {@link #abort} or doing nothing and letting the transaction be {@linkplain #close closed} at the end
+ * of the try-with-resources block cancels any modification that happened during the transaction,
+ * reverting to the checkpoint.</li>
+ * <li>Calling {@link #open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
+ * Committing a nested transaction will validate the changes that happened, but they may
+ * still be cancelled later if a parent transaction is cancelled.
+ * Aborting a nested transaction immediately reverts the changes - cancelling any modification made after the call
+ * to {@link #open}.</li>
  * </ul>
  *
  * <p>This is illustrated in the following example.
+ * 
  * <pre>{@code
  * try (Transaction outerTransaction = Transaction.openOuter()) {
  *     // (A) some transaction operations
  *     try (Transaction nestedTransaction = outerTransaction.openNested()) {
  *         // (B) more operations
  *         nestedTransaction.commit(); // Validate the changes that happened in this transaction.
- *                                     // This is a nested transaction, so changes will only be applied if the outer
- *                                     // transaction is committed too.
+ *                                    // This is a nested transaction, so changes will only be applied if the outer
+ *                                    // transaction is committed too.
  *     }
  *     // (C) even more operations
  *     outerTransaction.commit(); // This is an outer transaction: changes (A), (B) and (C) are applied.

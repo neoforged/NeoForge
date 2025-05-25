@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.item;
 
 import com.google.common.collect.MapMaker;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
@@ -18,10 +26,6 @@ import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * An implementation of {@code Storage<ItemVariant>} for vanilla's {@link Container}, {@link WorldlyContainer} and {@link Inventory}.
@@ -105,8 +109,8 @@ public class ContainerStorage implements Storage<ItemVariant> {
     /**
      * Special cases because vanilla checks the current stack in the following functions (which it shouldn't):
      * <ul>
-     *     <li>{@link AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)}.</li>
-     *     <li>{@link BrewingStandBlockEntity#canPlaceItem(int, ItemStack)}.</li>
+     * <li>{@link AbstractFurnaceBlockEntity#canPlaceItem(int, ItemStack)}.</li>
+     * <li>{@link BrewingStandBlockEntity#canPlaceItem(int, ItemStack)}.</li>
      * </ul>
      */
     @Override
@@ -145,8 +149,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
         }
 
         @Override
-        protected void readSnapshot(Boolean snapshot) {
-        }
+        protected void readSnapshot(Boolean snapshot) {}
 
         @Override
         protected void onFinalCommit() {

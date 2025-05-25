@@ -1,6 +1,9 @@
-package net.neoforged.neoforge.transfer.storage;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import org.jetbrains.annotations.NotNull;
+package net.neoforged.neoforge.transfer.storage;
 
 /**
  * An immutable object storing both a resource and an amount, provided for convenience.
@@ -9,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record ResourceAmount<T>(T resource, long amount) {
     @Override
-    public @NotNull String toString() {
+    public String toString() {
         return amount + "x" + resource;
     }
 }

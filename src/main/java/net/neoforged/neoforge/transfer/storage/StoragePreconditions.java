@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.storage;
 
 /**
@@ -17,7 +22,6 @@ public final class StoragePreconditions {
 //            throw new IllegalArgumentException("Transfer variant may not be blank.");
 //        }
 //    }
-
     /**
      * Ensure that the passed amount is not negative. That is, it must be {@code >= 0}.
      *
@@ -37,6 +41,5 @@ public final class StoragePreconditions {
 //        notNegative(amount);
 //    }
 
-    private StoragePreconditions() {
-    }
+    private StoragePreconditions() {}
 }

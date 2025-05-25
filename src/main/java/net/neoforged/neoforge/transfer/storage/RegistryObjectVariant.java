@@ -1,17 +1,16 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.storage;
 
+import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
-import net.neoforged.neoforge.transfer.item.ItemVariant;
-
-import java.util.function.Predicate;
 
 /**
  * Combines a registry object with optional data component patches to unique identify
@@ -27,9 +26,9 @@ public interface RegistryObjectVariant<T> extends DataComponentHolder {
 
     /**
      * @return True if the {@link #getBaseObject() base object} is the registries default object,
-     * such as {@code AIR} for items or {@code EMPTY} for fluids.
-     * TODO: Questionable. We're limiting this to DefaultedRegistries by that wording, which may be fine, but may also
-     * be unnecessary.
+     *         such as {@code AIR} for items or {@code EMPTY} for fluids.
+     *         TODO: Questionable. We're limiting this to DefaultedRegistries by that wording, which may be fine, but may also
+     *         be unnecessary.
      */
     boolean isBlank();
 

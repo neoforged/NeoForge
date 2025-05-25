@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.storage;
 
 import net.minecraft.world.item.Items;
@@ -6,7 +11,6 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class StorageExamples {
     // Just add up to 10 apples to the inventory. Return how many were inserted.
-
     public static long addApples(Storage<ItemVariant> storage) {
         var apple = ItemVariant.of(Items.APPLE);
         try (var tx = Transaction.open(null)) {

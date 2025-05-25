@@ -1,10 +1,14 @@
-package net.neoforged.neoforge.transfer.transaction;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public class TransactionManagerImpl {
@@ -119,7 +123,7 @@ public class TransactionManagerImpl {
             RuntimeException closeException = null;
 
             // Invoke callbacks in reverse order
-            for (int i = closeCallbacks.size()-1; i >= 0; i--) {
+            for (int i = closeCallbacks.size() - 1; i >= 0; i--) {
                 try {
                     closeCallbacks.get(i).onClose(this, result);
                 } catch (Exception exception) {
