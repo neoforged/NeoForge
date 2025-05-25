@@ -2,29 +2,26 @@ package net.neoforged.neoforge.transfer.item;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.transfer.storage.RegistryObjectVariant;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without amount information.
  */
-public final class ItemVariant implements DataComponentHolder {
+public final class ItemVariant implements RegistryObjectVariant<Item> {
     /**
      * Codec for an item variant.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
@@ -82,10 +79,6 @@ public final class ItemVariant implements DataComponentHolder {
         this.innerStack = innerStack;
     }
 
-    public boolean isBlank() {
-        return innerStack.isEmpty();
-    }
-
     public Item getItem() {
         return innerStack.getItem();
     }
@@ -95,40 +88,37 @@ public final class ItemVariant implements DataComponentHolder {
     }
 
     @Override
+    public boolean isBlank() {
+        return innerStack.isEmpty();
+    }
+
+    @Override
+    public Item getBaseObject() {
+        return getItem();
+    }
+
+    @Override
+    public Holder<Item> getBaseObjectHolder() {
+        return getItemHolder();
+    }
+
+    @Override
     public DataComponentMap getComponents() {
         return innerStack.getComponents();
     }
 
+    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
 
+    @Override
     public boolean isComponentsPatchEmpty() {
         return innerStack.isComponentsPatchEmpty();
     }
 
     public boolean matches(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
-    }
-
-    public boolean is(TagKey<Item> tagKey) {
-        return this.getItem().builtInRegistryHolder().is(tagKey);
-    }
-
-    public boolean is(Item item) {
-        return this.getItem() == item;
-    }
-
-    public boolean is(Predicate<Holder<Item>> predicate) {
-        return predicate.test(this.getItem().builtInRegistryHolder());
-    }
-
-    public boolean is(Holder<Item> holder) {
-        return is(holder.value());
-    }
-
-    public boolean is(HolderSet<Item> holderSet) {
-        return holderSet.contains(this.getItemHolder());
     }
 
     public int getMaxStackSize() {
@@ -152,5 +142,14 @@ public final class ItemVariant implements DataComponentHolder {
     @Override
     public int hashCode() {
         return ItemStack.hashItemAndComponents(innerStack);
+    }
+
+    @Override
+    public String toString() {
+        if (isComponentsPatchEmpty()) {
+            return getBaseObject().toString();
+        } else {
+            return getBaseObject() + "[" + getComponentsPatch().size() + " patches]";
+        }
     }
 }

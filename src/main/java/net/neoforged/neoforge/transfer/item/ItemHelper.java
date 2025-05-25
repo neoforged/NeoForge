@@ -1,23 +1,14 @@
 package net.neoforged.neoforge.transfer.item;
 
+import com.sun.source.doctree.TextTree;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.transfer.storage.Storage;
+import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 // TODO
 public class ItemHelper {
-    // Just add up to 10 apples to the inventory. Return how many were inserted.
-
-    public static long addApples(Storage<ItemVariant> storage) {
-        var apple = ItemVariant.of(Items.APPLE);
-        try (var tx = Transaction.open(null)) {
-            long inserted = storage.insert(apple, 10, tx);
-            tx.commit();
-            return inserted;
-        }
-    }
-
     // Same signature as IItemHandler#insertItem:
 
     public static ItemStack insertItem(Storage<ItemVariant> storage, int slot, ItemStack stack, boolean simulate) {
@@ -34,24 +25,27 @@ public class ItemHelper {
         }
     }
 
-    // Extracts 16 coal from slot 0 and inserts 1 diamond into slot 1. Only if both succeed.
-    // Returns true if both operations succeeded, false otherwise.
+    // Same signature as IItemHandler#extractItem:
 
-    public static boolean coalToDiamonds(Storage<ItemVariant> storage, boolean simulate) {
-        var coal = ItemVariant.of(Items.COAL);
-        var diamond = ItemVariant.of(Items.DIAMOND);
-
+    public static ItemStack extractItem(Storage<ItemVariant> storage, int slot, int amount, boolean simulate) {
+        var resource = storage.getResource(slot);
+        if (resource.isBlank()) {
+            return ItemStack.EMPTY;
+        }
         try (var tx = Transaction.open(null)) {
-            if (storage.extract(0, coal, 16, tx) != 16) {
-                return false;
+            long extracted = storage.extract(slot, resource, amount, tx);
+            StoragePreconditions.notNegative(extracted);
+            if (extracted > amount) {
+                throw new IllegalStateException("The storage (" + storage + ") returned more (" + extracted
+                        + ") from slot " + slot + " than requested (" + amount + ")");
             }
-            if (storage.insert(1, diamond, 1, tx) != 1) {
-                return false;
+            if (extracted == 0) {
+                return ItemStack.EMPTY;
             }
             if (!simulate) {
                 tx.commit();
             }
-            return true;
+            return resource.toStack((int) extracted);
         }
     }
 }
