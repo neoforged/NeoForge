@@ -42,7 +42,7 @@
 +     * Neo: This is the original createResult() method, which is called by the above method ({@link #createResult()}.
 +     * <p>
 +     * If you would normally override {@link #createResult()}, you should override this method instead.
-+     * 
++     *
 +     * @implNote This replacement exists so we can fire the AnvilUpdateEvent with the vanilla result, despite the multiple returns in the original method.
 +     */
 +    protected void createResultInternal() {

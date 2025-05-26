@@ -92,35 +92,90 @@ immaculate {
             return fileContents
         }
 
-        //Note: This doesn't detect changing access level to or from package private
-        //TODO: Eventually try and make this support checking package private access level changes?
-        def accessLevelChange = Pattern.compile('^[-+]\\s*(public|private|protected)\\s.*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+        /*
+         * This regex pattern identifies lines in patch files that modify access modifiers.
+         * Breaking it down:
+         * 1. ^([-+]) - Captures whether the line is being removed (-) or added (+)
+         * 2. \s* - Matches whitespace after the +/- symbol
+         * 3. ((?:public|private|protected)(?:\s+final)?|final(?:\s+(?:public|private|protected))?) - Captures access modifiers:
+         *    - Either an access modifier (public|private|protected) optionally followed by 'final'
+         *    - OR 'final' optionally followed by an access modifier
+         * 4. \s+ - Whitespace separator
+         * 5. ([^(]+\([^)]*\).*)?$ - Optional capture of a method signature:
+         *    - Return type and method name before parenthesis
+         *    - Parameter list
+         *    - Anything after the closing parenthesis
+         *
+         * Uses UNIX_LINES and MULTILINE flags to properly handle patch file line boundaries.
+         * This helps enforce the rule against changing access levels in patches while allowing
+         * 'final' keyword modifications.
+         */
+        def accessLevelChange = Pattern.compile('^([-+])\\s*((?:public|private|protected)(?:\\s+final)?|final(?:\\s+(?:public|private|protected))?)\\s+([^(]+\\([^)]*\\).*)?$', Pattern.UNIX_LINES | Pattern.MULTILINE)
+
+        // Disallow access level changes in patches, with the exception of making things final (since JST does not permit that operation).
         custom 'noAccessChanges', { String fileContents ->
             // Special case: we need to make the field private for our coremod
             if (fileContents.startsWith("--- a/net/minecraft/world/level/levelgen/structure/Structure.java")) {
                 return fileContents
             }
 
-            def accessChanges = fileContents.findAll(accessLevelChange)
-            if (accessChanges.isEmpty()) return fileContents
-            Map<String, Set<String>> removals = Map.of("private", new HashSet<>(), "protected", new HashSet<>(), "public", new HashSet<>())
-            accessChanges.each { String change ->
-                //Get the type of match
-                String[] data = change.substring(1).trim().split(" ", 2)
-                String lineStart = data[1].substring(0, Math.min(10, data[1].length()))
-                if (change.startsWith('-')) {//Removal
-                    removals.get(data[0]).add(lineStart)
-                } else {//Addition
-                    for (var entry : removals.entrySet()) {
-                        if (entry.key == data[0]) {
-                            continue
-                        }
-                        if (entry.value.remove(lineStart)) {
-                            throw new GradleException("Changing access level via patches is not allowed, use an AT! Changed line: " + change)
-                        }
-                    }
+            // Process patch lines that look like method declarations with access modifiers
+            Map<String, String> removedItems = new HashMap<>()
+            Map<String, String> addedItems = new HashMap<>()
+
+            fileContents.eachLine { line ->
+                def matcher = accessLevelChange.matcher(line)
+                if (!matcher.matches()) return
+
+                String changeType = matcher.group(1)
+                String modifier = matcher.group(2)?.trim() ?: ""
+                String signature = matcher.group(3)?.trim()
+
+                if (signature.contains('=')) {
+                    // This is a field declaration, not a method signature
+                    signature = signature.substring(0, signature.indexOf('=')).trim()
+                }
+
+                // Skip comment lines, annotations, or lines without a signature
+                if (signature == null || signature.startsWith("*") || signature.startsWith("@")) return
+
+                // Skip if this only involves final keyword
+                if (modifier == "final") return
+
+                // Extract method/field name (without param list or type)
+                String baseSignature = signature
+                int parenIndex = signature.indexOf('(')
+                if (parenIndex > 0) {
+                    // For methods: take just the name
+                    baseSignature = signature.substring(0, parenIndex).trim().split("\\s+").last()
+                } else {
+                    // For fields: take just the name without type
+                    String[] parts = signature.split("\\s+")
+                    baseSignature = parts.length > 0 ? parts[parts.length - 1] : signature
+                }
+
+                // Clean up any remaining artifacts
+                baseSignature = baseSignature.replaceAll("[;,{]", "").trim()
+
+                // Store access level without final keyword
+                String access = modifier.replace("final", "").trim()
+                if (access.isEmpty()) access = "package-private"
+
+                if (changeType == '-') {
+                    removedItems.put(baseSignature, access)
+                } else if (changeType == '+') {
+                    addedItems.put(baseSignature, access)
                 }
             }
+  
+            // Only flag access level changes for methods/fields that exist in both sets
+            for (String key : addedItems.keySet()) {
+                if (removedItems.containsKey(key) && 
+                    removedItems.get(key) != addedItems.get(key)) {
+                    throw new GradleException("Changing access level from ${removedItems.get(key)} to ${addedItems.get(key)} for ${key} via patches is not allowed, use an AT!")
+                }
+            }
+
             //Note: We allow mismatched counts in case we are removing a method entirely for some reason
             return fileContents
         }
