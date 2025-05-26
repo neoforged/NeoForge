@@ -56,51 +56,61 @@ public class ContainerStorage implements Storage<ItemVariant> {
                 return new ContainerStorage(inv);
             }
         });
-        // TODO resize?
+        storage.resize();
         return storage;
     }
 
     private final Container container;
-    private final List<SlotWrapper> slotWrappers;
+    private int size;
+    private final List<SlotWrapper> slotWrappers = new ArrayList<>();
     private final SetChangedParticipant setChangedParticipant = new SetChangedParticipant();
 
     ContainerStorage(Container container) {
         this.container = container;
-        int size = container.getContainerSize();
-        this.slotWrappers = new ArrayList<>(size);
-        for (int i = 0; i < size; ++i) {
-            slotWrappers.add(new SlotWrapper(i));
+    }
+
+    private void resize() {
+        size = container.getContainerSize();
+        while (slotWrappers.size() < size) {
+            slotWrappers.add(new SlotWrapper(slotWrappers.size()));
         }
+    }
+
+    private SlotWrapper getSlot(int slot) {
+        if (slot < 0 || slot >= size) {
+            throw new IndexOutOfBoundsException("Slot index out of bounds: " + slot + " (size: " + size + ")");
+        }
+        return slotWrappers.get(slot);
     }
 
     @Override
     public int size() {
-        return container.getContainerSize();
+        return size;
     }
 
     @Override
     public long insert(int index, ItemVariant resource, long maxAmount, TransactionContext transaction) {
-        return slotWrappers.get(index).insert(resource, maxAmount, transaction);
+        return getSlot(index).insert(0, resource, maxAmount, transaction);
     }
 
     @Override
     public long extract(int index, ItemVariant resource, long maxAmount, TransactionContext transaction) {
-        return slotWrappers.get(index).extract(resource, maxAmount, transaction);
+        return getSlot(index).extract(0, resource, maxAmount, transaction);
     }
 
     @Override
     public boolean isResourceBlank(int index) {
-        return container.getItem(index).isEmpty();
+        return getSlot(index).isResourceBlank(0);
     }
 
     @Override
     public ItemVariant getResource(int index) {
-        return ItemVariant.of(container.getItem(index));
+        return getSlot(index).getResource(0);
     }
 
     @Override
     public long getAmount(int index) {
-        return container.getItem(index).getCount();
+        return getSlot(index).getAmount(0);
     }
 
     /**
@@ -112,22 +122,12 @@ public class ContainerStorage implements Storage<ItemVariant> {
      */
     @Override
     public long getCapacity(int slot, ItemVariant resource) {
-        // Special case to limit buckets to 1 in furnace fuel inputs.
-        if (container instanceof AbstractFurnaceBlockEntity && slot == 1 && resource.is(Items.BUCKET)) {
-            return 1;
-        }
-
-        // Special case to limit brewing stand "bottle inputs" to 1.
-        if (container instanceof BrewingStandBlockEntity && slot < 3) {
-            return 1;
-        }
-
-        return container.getMaxStackSize(resource.innerStack);
+        return getSlot(slot).getCapacity(0, resource);
     }
 
     @Override
     public boolean isValid(int index, ItemVariant resource) {
-        return container.canPlaceItem(index, resource.innerStack);
+        return getSlot(index).isValid(0, resource);
     }
 
     @Override
@@ -153,70 +153,56 @@ public class ContainerStorage implements Storage<ItemVariant> {
         }
     }
 
-    private class SlotWrapper extends SnapshotParticipant<ItemStack> {
+    private class SlotWrapper extends SingleStackStorage {
         private final int slot;
 
         private SlotWrapper(int slot) {
             this.slot = slot;
         }
 
-        private void setStack(ItemStack item) {
+        @Override
+        protected ItemStack getStack() {
+            return container.getItem(slot);
+        }
+
+        @Override
+        protected void setStack(ItemStack item) {
             // TODO: special logic inventory
             container.setItem(slot, item);
         }
 
-        private ItemStack getStack() {
-            return container.getItem(slot);
+        @Override
+        protected boolean canInsert(ItemVariant itemVariant) {
+            return container.canPlaceItem(slot, itemVariant.innerStack);
         }
 
-        public long insert(ItemVariant insertedVariant, long maxAmount, TransactionContext transaction) {
-//            StoragePreconditions.notBlankNotNegative(insertedVariant, maxAmount);
-
-            ItemStack currentStack = getStack();
-
-            if ((insertedVariant.matches(currentStack) || currentStack.isEmpty()) && isValid(slot, insertedVariant)) {
-                int insertedAmount = (int) Math.min(maxAmount, getCapacity(slot, insertedVariant) - currentStack.getCount());
-
-                if (insertedAmount > 0) {
-                    updateSnapshots(transaction);
-                    currentStack = getStack();
-
-                    if (currentStack.isEmpty()) {
-                        currentStack = insertedVariant.toStack(insertedAmount);
-                    } else {
-                        currentStack.grow(insertedAmount);
-                    }
-
-                    setStack(currentStack);
-
-                    // TODO: special logic inventory onTransfer
-                    return insertedAmount;
-                }
+        @Override
+        protected int getCapacity(ItemVariant itemVariant) {
+            // Special case to limit buckets to 1 in furnace fuel inputs.
+            if (slot == 1 && itemVariant.is(Items.BUCKET) && container instanceof AbstractFurnaceBlockEntity) {
+                return 1;
             }
 
-            return 0;
+            // Special case to limit brewing stand "bottle inputs" to 1.
+            if (slot < 3 && container instanceof BrewingStandBlockEntity) {
+                return 1;
+            }
+
+            return container.getMaxStackSize(itemVariant.innerStack);
         }
 
-        public long extract(ItemVariant variant, long maxAmount, TransactionContext transaction) {
-//            StoragePreconditions.notBlankNotNegative(variant, maxAmount);
+        @Override
+        public long insert(int slot, ItemVariant insertedVariant, long maxAmount, TransactionContext transaction) {
+            long ret = super.insert(slot, insertedVariant, maxAmount, transaction);
+            // TODO: special logic inventory onTransfer
+            return ret;
+        }
 
-            ItemStack currentStack = getStack();
-
-            if (variant.matches(currentStack)) {
-                int extracted = (int) Math.min(currentStack.getCount(), maxAmount);
-
-                if (extracted > 0) {
-                    updateSnapshots(transaction);
-                    currentStack = getStack();
-                    currentStack.shrink(extracted);
-                    setStack(currentStack);
-
-                    // TODO: special logic inventory onTransfer
-                    return extracted;
-                }
-            }
-
-            return 0;
+        @Override
+        public long extract(int slot, ItemVariant variant, long maxAmount, TransactionContext transaction) {
+            long ret = super.extract(slot, variant, maxAmount, transaction);
+            // TODO: special logic inventory onTransfer
+            return ret;
         }
 
         // We override updateSnapshots to also schedule a setChanged call for the backing container.
@@ -233,18 +219,6 @@ public class ContainerStorage implements Storage<ItemVariant> {
                     ContainerStorage.of(otherChest).setChangedParticipant.updateSnapshots(transaction);
                 }
             }
-        }
-
-        @Override
-        protected ItemStack createSnapshot() {
-            ItemStack original = getStack();
-            setStack(original.copy());
-            return original;
-        }
-
-        @Override
-        protected void revertToSnapshot(ItemStack snapshot) {
-            setStack(snapshot);
         }
 
         @Override
