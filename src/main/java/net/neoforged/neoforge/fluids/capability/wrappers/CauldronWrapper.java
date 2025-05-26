@@ -24,8 +24,6 @@ import org.jetbrains.annotations.Nullable;
 public class CauldronWrapper extends SnapshotParticipant<BlockState> implements Storage<FluidVariant> {
     private final Level level;
     private final BlockPos pos;
-    @Nullable
-    private BlockState stateBeforeTransaction;
 
     public CauldronWrapper(Level level, BlockPos pos) {
         this.level = level;
@@ -201,24 +199,14 @@ public class CauldronWrapper extends SnapshotParticipant<BlockState> implements 
     }
 
     @Override
-    protected void readSnapshot(BlockState snapshot) {
+    protected void revertToSnapshot(BlockState snapshot) {
         level.setBlock(pos, snapshot, 0);
     }
 
     @Override
-    protected void releaseSnapshot(BlockState snapshot) {
-        // TODO: Find a proper way to describe why this is actually the right thing to do
-        stateBeforeTransaction = snapshot;
-    }
-
-    @Override
-    protected void onFinalCommit() {
-        // When we're listening to the final commit, we should have had at least a single snapshot
-        Objects.requireNonNull(stateBeforeTransaction, "stateBeforeTransaction");
-
+    protected void onFinalCommit(BlockState originalState) {
         // State as it was modified during this outermost transaction being committed.
         BlockState state = level.getBlockState(pos);
-        BlockState originalState = stateBeforeTransaction;
 
         if (originalState != state) {
             // Revert back to the blockstate before any changes happened so that the next

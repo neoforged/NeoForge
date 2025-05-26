@@ -145,18 +145,16 @@ public class ContainerStorage implements Storage<ItemVariant> {
         }
 
         @Override
-        protected void readSnapshot(Boolean snapshot) {}
+        protected void revertToSnapshot(Boolean snapshot) {}
 
         @Override
-        protected void onFinalCommit() {
+        protected void onFinalCommit(Boolean originalState) {
             container.setChanged();
         }
     }
 
     private class SlotWrapper extends SnapshotParticipant<ItemStack> {
         private final int slot;
-        @Nullable
-        private ItemStack lastReleasedSnapshot = null;
 
         private SlotWrapper(int slot) {
             this.slot = slot;
@@ -245,19 +243,13 @@ public class ContainerStorage implements Storage<ItemVariant> {
         }
 
         @Override
-        protected void readSnapshot(ItemStack snapshot) {
+        protected void revertToSnapshot(ItemStack snapshot) {
             setStack(snapshot);
         }
 
         @Override
-        protected void releaseSnapshot(ItemStack snapshot) {
-            lastReleasedSnapshot = snapshot;
-        }
-
-        @Override
-        protected void onFinalCommit() {
+        protected void onFinalCommit(ItemStack original) {
             // Try to apply the change to the original stack
-            ItemStack original = lastReleasedSnapshot;
             ItemStack currentStack = getStack();
 
             // TODO: special logic inventory

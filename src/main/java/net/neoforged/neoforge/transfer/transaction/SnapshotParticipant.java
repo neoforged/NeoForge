@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,9 +19,9 @@ import java.util.Objects;
  * <ul>
  * <li>Call {@link #updateSnapshots} right before the state of your subclass is modified in a transaction.</li>
  * <li>Override {@link #createSnapshot}: it is called when necessary to create an object representing the state of your subclass.</li>
- * <li>Override {@link #readSnapshot}: it is called when necessary to revert to a previous state of your subclass.</li>
+ * <li>Override {@link #revertToSnapshot}: it is called when necessary to revert to a previous state of your subclass.</li>
  * <li>You may optionally override {@link #onFinalCommit}: it is called at the of a transaction that modified the state.
- * For example, it could contain a call to {@code markDirty()}.</li>
+ * For example, it could contain a call to {@code setChanged()}.</li>
  * <li>(Advanced!) You may optionally override {@link #releaseSnapshot}: it is called once a snapshot object will not be used,
  * for example you may wish to pool expensive state objects.</li>
  * </ul>
@@ -28,18 +30,20 @@ import java.util.Objects;
  *
  * <p>{@link #updateSnapshots} should be called before any modification.
  * This will save the state of this participant using {@link #createSnapshot} if no state was already saved for that transaction.
- * When the transaction is aborted and changes need to be rolled back, {@link #readSnapshot} will be called
+ * When the transaction is aborted and changes need to be rolled back, {@link #revertToSnapshot} will be called
  * to signal that the current state should revert to that of the snapshot.
  * The snapshot object is then {@linkplain #releaseSnapshot released}, and can be cached for subsequent use, or discarded.
  *
- * <p>When an outer transaction is committed, {@link #readSnapshot} will not be called so that the current state of this participant
- * is retained. {@link #releaseSnapshot} will be called because the snapshot is not necessary anymore,
- * and {@link #onFinalCommit} will be called after the transaction is closed.
+ * <p>When an outer transaction is committed, {@link #revertToSnapshot} will not be called so that the current state of this participant
+ * is retained. {@link #onFinalCommit} will be called after the transaction is closed
+ * and then {@link #releaseSnapshot} will be called because the snapshot is not necessary anymore.
  *
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
 public abstract class SnapshotParticipant<T> implements Transaction.CloseCallback, Transaction.OuterCloseCallback {
     private final List<T> snapshots = new ArrayList<>();
+    @Nullable
+    private T originalState = null;
 
     /**
      * Return a new <b>nonnull</b> object containing the current state of this participant.
@@ -50,7 +54,7 @@ public abstract class SnapshotParticipant<T> implements Transaction.CloseCallbac
     /**
      * Roll back to a state previously created by {@link #createSnapshot}.
      */
-    protected abstract void readSnapshot(T snapshot);
+    protected abstract void revertToSnapshot(T snapshot);
 
     /**
      * Signals that the snapshot will not be used anymore, and is safe to cache for next calls to {@link #createSnapshot},
@@ -60,9 +64,12 @@ public abstract class SnapshotParticipant<T> implements Transaction.CloseCallbac
 
     /**
      * Called after an outer transaction succeeded,
-     * to perform irreversible actions such as {@code markDirty()} or neighbor updates.
+     * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     *
+     * @param originalState state of this participant before the transactional operation.
+     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
      */
-    protected void onFinalCommit() {}
+    protected void onFinalCommit(T originalState) {}
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
@@ -92,7 +99,7 @@ public abstract class SnapshotParticipant<T> implements Transaction.CloseCallbac
 
         if (result.wasAborted()) {
             // If the transaction was aborted, we just revert to the state of the snapshot.
-            readSnapshot(snapshot);
+            revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
         } else if (transaction.nestingDepth() > 0) {
             if (snapshots.get(transaction.nestingDepth() - 1) == null) {
@@ -105,7 +112,7 @@ public abstract class SnapshotParticipant<T> implements Transaction.CloseCallbac
                 releaseSnapshot(snapshot);
             }
         } else {
-            releaseSnapshot(snapshot);
+            originalState = snapshot;
             transaction.addOuterCloseCallback(this);
         }
     }
@@ -114,6 +121,11 @@ public abstract class SnapshotParticipant<T> implements Transaction.CloseCallbac
     public void afterOuterClose(Transaction.Result result) {
         // The result is guaranteed to be COMMITTED,
         // as this is only scheduled during onClose() when the outer transaction is successful.
-        onFinalCommit();
+        // For the same reason, the originalState is known to be non-null.
+        Objects.requireNonNull(originalState);
+
+        onFinalCommit(originalState);
+        releaseSnapshot(originalState);
+        originalState = null;
     }
 }

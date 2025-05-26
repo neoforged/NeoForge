@@ -1,7 +1,5 @@
 package net.neoforged.neoforge.transfer.item;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
@@ -65,7 +63,7 @@ public final class InventoryStorage extends ContainerStorage {
         }
 
         @Override
-        protected void readSnapshot(Integer snapshot) {
+        protected void revertToSnapshot(Integer snapshot) {
             // effectively cancel dropping the stacks
             int previousSize = snapshot;
 
@@ -75,7 +73,7 @@ public final class InventoryStorage extends ContainerStorage {
         }
 
         @Override
-        protected void onFinalCommit() {
+        protected void onFinalCommit(Integer originalState) {
             // actually drop the stacks
             for (Entry entry : entries) {
                 long remainder = entry.amount;

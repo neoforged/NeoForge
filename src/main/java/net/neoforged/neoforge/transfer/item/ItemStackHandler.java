@@ -35,12 +35,12 @@ public class ItemStackHandler implements Storage<ItemVariant>, INBTSerializable<
         }
 
         @Override
-        protected void readSnapshot(ItemStack snapshot) {
+        protected void revertToSnapshot(ItemStack snapshot) {
             stacks.set(index, snapshot);
         }
 
         @Override
-        protected void onFinalCommit() {
+        protected void onFinalCommit(ItemStack originalState) {
             onContentsChanged(index);
         }
     }
