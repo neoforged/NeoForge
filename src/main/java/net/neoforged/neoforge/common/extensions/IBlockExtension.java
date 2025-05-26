@@ -368,8 +368,9 @@ public interface IBlockExtension {
      * @param pos    The position of the block in the level
      * @param entity The entity falling onto the block
      */
-    default boolean playFallSound(BlockState state, Level level, BlockPos pos, LivingEntity entity) {
-        return false;
+    default void playFallSound(BlockState state, Level level, BlockPos pos, LivingEntity entity) {
+        SoundType soundType = state.getSoundType(level, pos, entity);
+        entity.playSound(soundType.getFallSound(), soundType.getVolume() * .5F, soundType.getPitch() * .75F);
     }
 
     /**
@@ -389,8 +390,9 @@ public interface IBlockExtension {
      * @param volumeMultiplier The volume multiplier to apply to the step sound being played
      * @param pitchMultiplier  The pitch multiplier to apply to the step sound being played
      */
-    default boolean playStepSound(BlockState state, Level level, BlockPos pos, Entity entity, float volumeMultiplier, float pitchMultiplier) {
-        return false;
+    default void playStepSound(BlockState state, Level level, BlockPos pos, Entity entity, float volumeMultiplier, float pitchMultiplier) {
+        SoundType soundType = state.getSoundType(level, pos, entity);
+        entity.playSound(soundType.getStepSound(), soundType.getVolume() * volumeMultiplier, soundType.getPitch() * pitchMultiplier);
     }
 
     /**
