@@ -167,8 +167,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
 
         @Override
         protected void setStack(ItemStack item) {
-            // TODO: special logic inventory
-            container.setItem(slot, item);
+            container.setItem(slot, item, false);
         }
 
         @Override
@@ -194,14 +193,18 @@ public class ContainerStorage implements Storage<ItemVariant> {
         @Override
         public long insert(int slot, ItemVariant insertedVariant, long maxAmount, TransactionContext transaction) {
             long ret = super.insert(slot, insertedVariant, maxAmount, transaction);
-            // TODO: special logic inventory onTransfer
+            if (ret > 0) {
+                container.onTransfer(this.slot, transaction);
+            }
             return ret;
         }
 
         @Override
         public long extract(int slot, ItemVariant variant, long maxAmount, TransactionContext transaction) {
             long ret = super.extract(slot, variant, maxAmount, transaction);
-            // TODO: special logic inventory onTransfer
+            if (ret > 0) {
+                container.onTransfer(this.slot, transaction);
+            }
             return ret;
         }
 
@@ -226,10 +229,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
             // Try to apply the change to the original stack
             ItemStack currentStack = getStack();
 
-            // TODO: special logic inventory
-//            if (storage.inventory instanceof SpecialLogicInventory specialLogicInv) {
-//                specialLogicInv.fabric_onFinalCommit(slot, original, currentStack);
-//            }
+            container.performSideEffects(slot, original);
 
             if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
                 // Components have changed, we need to copy the stack.

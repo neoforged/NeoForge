@@ -199,6 +199,43 @@
      }
  
      @Override
+@@ -412,17 +_,35 @@
+ 
+     @Override
+     public void setItem(int p_58333_, ItemStack p_58334_) {
++        setItem(p_58333_, p_58334_, true);
++    }
++    // Neo: Support deferring side effects until end of a transaction
++    @Override
++    public void setItem(int p_58333_, ItemStack p_58334_, boolean performSideEffects) {
+         ItemStack itemstack = this.items.get(p_58333_);
+         boolean flag = !p_58334_.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, p_58334_);
+         this.items.set(p_58333_, p_58334_);
+         p_58334_.limitSize(this.getMaxStackSize(p_58334_));
+-        if (p_58333_ == 0 && !flag) {
++        if (p_58333_ == 0 && !flag && performSideEffects) {
+             this.cookingTotalTime = getTotalCookTime(this.level, this);
+             this.cookingProgress = 0;
+             this.setChanged();
+         }
+     }
+ 
++    // Neo: Support deferring side effects until end of a transaction
++    @Override
++    public void performSideEffects(int slot, ItemStack originalStack) {
++        if (slot == 0) {
++            ItemStack newStack = this.items.get(0);
++            boolean flag = !newStack.isEmpty() && ItemStack.isSameItemSameComponents(originalStack, newStack);
++            if (!flag) {
++                this.cookingTotalTime = getTotalCookTime(this.level, this);
++                this.cookingProgress = 0;
++            }
++        }
++    }
++
+     @Override
+     public boolean canPlaceItem(int p_58389_, ItemStack p_58390_) {
+         if (p_58389_ == 2) {
 @@ -431,7 +_,7 @@
              return true;
          } else {

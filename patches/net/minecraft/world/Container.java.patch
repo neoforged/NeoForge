@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/Container.java
++++ b/net/minecraft/world/Container.java
+@@ -9,7 +_,7 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.entity.BlockEntity;
+ 
+-public interface Container extends Clearable {
++public interface Container extends Clearable, net.neoforged.neoforge.common.extensions.ContainerExtension {
+     float DEFAULT_DISTANCE_BUFFER = 4.0F;
+ 
+     int getContainerSize();
