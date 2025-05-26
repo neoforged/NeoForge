@@ -11,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p><b>Important note:</b> This wrapper assumes that the container owns its slots.
  * If the container does not own its slots, for example because it delegates to another container, this wrapper should not be used!
+ *
+ * @see ContainerStorage
+ * @see InventoryStorage
  */
 public final class WorldlyContainerStorage implements Storage<ItemVariant> {
     private final WorldlyContainer container;

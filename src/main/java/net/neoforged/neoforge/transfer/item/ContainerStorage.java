@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
-import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * <p><b>Important note:</b> This wrapper assumes that the container owns its slots.
  * If the container does not own its slots, for example because it delegates to another container, this wrapper should not be used!
  *
+ * @see InventoryStorage
  * @see WorldlyContainerStorage
  */
 public class ContainerStorage implements Storage<ItemVariant> {
@@ -51,9 +51,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
     public static ContainerStorage of(Container container) {
         ContainerStorage storage = WRAPPERS.computeIfAbsent(container, inv -> {
             if (inv instanceof Inventory inventory) {
-//                return new PlayerInventoryStorageImpl(inventory);
-                // TODO
-                return null;
+                return new InventoryStorage(inventory);
             } else {
                 return new ContainerStorage(inv);
             }
