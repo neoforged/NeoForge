@@ -78,7 +78,7 @@
 -    protected void playMuffledStepSound(BlockState p_283110_) {
 -        SoundType soundtype = p_283110_.getSoundType();
 +    protected void playMuffledStepSound(BlockState p_283110_, BlockPos pos) {
-+        if (p_283110_.playStepSound(this.level, pos, this, .05F, .5F)) return;
++        if (p_283110_.playStepSound(this.level, pos, this, .05F, .8F)) return;
 +        SoundType soundtype = p_283110_.getSoundType(this.level, pos, this);
          this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
      }
