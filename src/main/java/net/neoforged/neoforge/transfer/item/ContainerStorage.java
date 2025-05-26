@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
@@ -28,10 +26,12 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An implementation of {@code Storage<ItemVariant>} for vanilla's {@link Container}, {@link WorldlyContainer} and {@link Inventory}.
+ * An implementation of {@code Storage<ItemVariant>} for vanilla's {@link Container}.
  *
  * <p><b>Important note:</b> This wrapper assumes that the container owns its slots.
  * If the container does not own its slots, for example because it delegates to another container, this wrapper should not be used!
+ *
+ * @see WorldlyContainerStorage
  */
 public class ContainerStorage implements Storage<ItemVariant> {
     /**
@@ -48,7 +48,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
     // TODO: should have identity semantics?
     private static final Map<Container, ContainerStorage> WRAPPERS = new MapMaker().weakValues().makeMap();
 
-    public static ContainerStorage of(Container container, @Nullable Direction direction) {
+    public static ContainerStorage of(Container container) {
         ContainerStorage storage = WRAPPERS.computeIfAbsent(container, inv -> {
             if (inv instanceof Inventory inventory) {
 //                return new PlayerInventoryStorageImpl(inventory);
@@ -58,8 +58,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
                 return new ContainerStorage(inv);
             }
         });
-        // TODO
-//        return storage.getSidedWrapper(direction);
+        // TODO resize?
         return storage;
     }
 
@@ -130,16 +129,15 @@ public class ContainerStorage implements Storage<ItemVariant> {
 
     @Override
     public boolean isValid(int index, ItemVariant resource) {
-        if (container instanceof ShulkerBoxBlockEntity shulker) {
-            // TODO: copied from Fabric, but very suspicious!
-            // Shulkers override canInsert but not isValid.
-            return shulker.canPlaceItemThroughFace(index, resource.innerStack, null);
-        } else {
-            return container.canPlaceItem(index, resource.innerStack);
-        }
+        return container.canPlaceItem(index, resource.innerStack);
     }
 
-    // TODO: toString
+    @Override
+    public String toString() {
+        return "ContainerStorage{" +
+                "container=" + container
+                + "}";
+    }
 
     // Boolean is used to prevent allocation. Null values are not allowed by SnapshotParticipant.
     private class SetChangedParticipant extends SnapshotParticipant<Boolean> {
@@ -236,8 +234,7 @@ public class ContainerStorage implements Storage<ItemVariant> {
                 BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
 
                 if (chest.getLevel().getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
-                    // TODO
-//                    ((InventoryStorageImpl) InventoryStorageImpl.of(otherChest, null)).markDirtyParticipant.updateSnapshots(transaction);
+                    ContainerStorage.of(otherChest).setChangedParticipant.updateSnapshots(transaction);
                 }
             }
         }
