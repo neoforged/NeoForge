@@ -1130,6 +1130,30 @@ public class Tags {
         public static final TagKey<Biome> IS_DRY_END = tag("is_dry/end");
 
         /**
+         * Biomes that are primarily composed of a specific wood type.
+         * For example, normal Forest biomes are mostly Oak Trees with a few Birch Trees. This biome would be in `c:primary_wood_type/oak` tag due to Oak dominance.
+         * For biomes that are composed of multiple wood types but in equal proportions, put the biome into multiple wood type tags. Biomes with very few trees like Plains are skipped.
+         *
+         * <p>
+         * If a mod introduces a new wood type, create a new tag under the `c:primary_wood_type/` folder.
+         * Multiple mods introducing the same new wood type will both be sticking their biomes in same tag.
+         * For example, two mods providing Willow wood types would add their biomes to `c:primary_wood_type/willow` as it is the same kind of wood, despite different blocks.
+         */
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE = tag("primary_wood_type");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_OAK = tag("primary_wood_type/oak");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_BIRCH = tag("primary_wood_type/birch");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_SPRUCE = tag("primary_wood_type/spruce");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_JUNGLE = tag("primary_wood_type/jungle");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_ACACIA = tag("primary_wood_type/acacia");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_DARK_OAK = tag("primary_wood_type/dark_oak");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_MANGROVE = tag("primary_wood_type/mangrove");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_CHERRY = tag("primary_wood_type/cherry");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_PALE_OAK = tag("primary_wood_type/pale_oak");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_BAMBOO = tag("primary_wood_type/bamboo");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_CRIMSON = tag("primary_wood_type/crimson");
+        public static final TagKey<Biome> PRIMARY_WOOD_TYPE_WARPED = tag("primary_wood_type/warped");
+
+        /**
          * Biomes that spawn in the Overworld.
          * (This is for people who want to tag their biomes without getting
          * side effects from {@link net.minecraft.tags.BiomeTags#IS_OVERWORLD}
@@ -1139,9 +1163,25 @@ public class Tags {
          */
         public static final TagKey<Biome> IS_OVERWORLD = tag("is_overworld");
 
+        /**
+         * Biomes whose trees are a kind of Conifer-like tree.
+         * May not necessarily be a Spruce wood type.
+         */
         public static final TagKey<Biome> IS_CONIFEROUS_TREE = tag("is_tree/coniferous");
+        /**
+         * Biomes whose trees are a kind of Savanna-like tree.
+         * May not necessarily be a Savanna wood type.
+         */
         public static final TagKey<Biome> IS_SAVANNA_TREE = tag("is_tree/savanna");
+        /**
+         * Biomes whose trees are a kind of Jungle-like tree.
+         * May not necessarily be a Jungle wood type.
+         */
         public static final TagKey<Biome> IS_JUNGLE_TREE = tag("is_tree/jungle");
+        /**
+         * Biomes whose trees are a kind of Deciduous-like tree.
+         * May not necessarily be an Oak or Birch wood type.
+         */
         public static final TagKey<Biome> IS_DECIDUOUS_TREE = tag("is_tree/deciduous");
 
         /**
