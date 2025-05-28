@@ -21,12 +21,12 @@ public interface Storage<T> {
     /**
      * Inserts a given amount of the resource into the handler at the given index.
      *
-     * @param index     The index to insert the resource into.
+     * @param slot      The index to insert the resource into.
      * @param resource  The resource to insert.
      * @param maxAmount The amount of the resource to insert.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    long insert(int index, T resource, long maxAmount, TransactionContext transaction);
+    long insert(int slot, T resource, long maxAmount, TransactionContext transaction);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
@@ -60,12 +60,12 @@ public interface Storage<T> {
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
-     * @param index     The index to extract the resource from.
+     * @param slot      The index to extract the resource from.
      * @param resource  The resource to extract.
      * @param maxAmount The amount of the resource to extract.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    long extract(int index, T resource, long maxAmount, TransactionContext transaction);
+    long extract(int slot, T resource, long maxAmount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
@@ -102,39 +102,37 @@ public interface Storage<T> {
      * <p>This function is mostly useful when dealing with storages of arbitrary types.
      * For transfer variant storages, this should always be equivalent to {@code getResource(index).isBlank()}.
      */
-    boolean isResourceBlank(int index);
+    boolean isResourceBlank(int slot);
 
     /**
-     * @param index The index to get the resource from.
+     * @param slot The index to get the resource from.
      * @return The resource at the given index.
      */
-    // TODO: rename index to slot?
-    T getResource(int index);
+    T getResource(int slot);
 
     /**
-     * @param index The index to get the amount from.
+     * @param slot The index to get the amount from.
      * @return The amount of the resource at the given index.
      */
-    long getAmount(int index);
+    long getAmount(int slot);
 
     /**
      * Gets the maximum amount that the given index can have of the given resource.
      *
-     * @param index    The index to get the limit from.
+     * @param slot     The index to get the limit from.
      * @param resource The resource to get the limit for. Might be blank to request a "generic" limit.
      * @return The limit of the resource at the given index.
      */
-    long getCapacity(int index, T resource);
+    long getCapacity(int slot, T resource);
 
     /**
-     * Checks if the given resource is generally allowed to be inserted into the handler at the given index,
-     * regardless of the current state of the handler.
+     * Checks if the given resource is generally allowed to be inserted into the handler at the given index, regardless of the current state of the handler.
      *
-     * @param index    The index to check.
+     * @param slot     The index to check.
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean isValid(int index, T resource);
+    boolean isValid(int slot, T resource);
 
     /**
      * Return a class instance of this interface with the desired generic type,

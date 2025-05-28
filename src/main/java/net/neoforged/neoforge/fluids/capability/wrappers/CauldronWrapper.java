@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.fluids.capability.wrappers;
 
 import com.google.common.math.IntMath;
-import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -18,7 +17,6 @@ import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public class CauldronWrapper extends SnapshotParticipant<BlockState> implements Storage<FluidVariant> {
@@ -54,20 +52,20 @@ public class CauldronWrapper extends SnapshotParticipant<BlockState> implements 
     }
 
     @Override
-    public FluidVariant getResource(int index) {
-        assertValidTank(index);
+    public FluidVariant getResource(int slot) {
+        assertValidTank(slot);
 
         return FluidVariant.of(getContent().fluid);
     }
 
     @Override
-    public boolean isResourceBlank(int index) {
-        return getResource(index).isBlank();
+    public boolean isResourceBlank(int slot) {
+        return getResource(slot).isBlank();
     }
 
     @Override
-    public long getAmount(int index) {
-        assertValidTank(index);
+    public long getAmount(int slot) {
+        assertValidTank(slot);
 
         var state = level.getBlockState(pos);
         var contents = getContent(state);
@@ -75,8 +73,8 @@ public class CauldronWrapper extends SnapshotParticipant<BlockState> implements 
     }
 
     @Override
-    public long getCapacity(int index, FluidVariant resource) {
-        assertValidTank(index);
+    public long getCapacity(int slot, FluidVariant resource) {
+        assertValidTank(slot);
 
         CauldronFluidContent contents;
         if (resource.isBlank()) {
@@ -91,7 +89,7 @@ public class CauldronWrapper extends SnapshotParticipant<BlockState> implements 
     }
 
     @Override
-    public boolean isValid(int index, FluidVariant resource) {
+    public boolean isValid(int slot, FluidVariant resource) {
         return CauldronFluidContent.getForFluid(resource.getFluid()) != null;
     }
 
@@ -116,8 +114,8 @@ public class CauldronWrapper extends SnapshotParticipant<BlockState> implements 
     }
 
     @Override
-    public long insert(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        assertValidTank(index);
+    public long insert(int slot, FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        assertValidTank(slot);
 
         return insert(resource, maxAmount, transaction);
     }
@@ -155,8 +153,8 @@ public class CauldronWrapper extends SnapshotParticipant<BlockState> implements 
     }
 
     @Override
-    public long extract(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        assertValidTank(index);
+    public long extract(int slot, FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        assertValidTank(slot);
 
         return extract(resource, maxAmount, transaction);
     }

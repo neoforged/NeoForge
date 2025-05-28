@@ -12,37 +12,37 @@ public abstract class EmptyStorage<T> implements Storage<T> {
     }
 
     @Override
-    public final long insert(int index, T resource, long maxAmount, TransactionContext transaction) {
+    public final long insert(int slot, T resource, long maxAmount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public final long extract(int index, T resource, long maxAmount, TransactionContext transaction) {
+    public final long extract(int slot, T resource, long maxAmount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public final boolean isResourceBlank(int index) {
+    public final boolean isResourceBlank(int slot) {
         return true;
     }
 
     @Override
-    public final T getResource(int index) {
+    public final T getResource(int slot) {
         return getBlankResource();
     }
 
     @Override
-    public final long getAmount(int index) {
+    public final long getAmount(int slot) {
         return 0;
     }
 
     @Override
-    public final long getCapacity(int index, T resource) {
+    public final long getCapacity(int slot, T resource) {
         return 0;
     }
 
     @Override
-    public final boolean isValid(int index, T resource) {
+    public final boolean isValid(int slot, T resource) {
         return false;
     }
 

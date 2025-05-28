@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An implementation of {@code Storage<ItemVariant>} for vanilla's {@link Container}.
@@ -89,28 +88,28 @@ public class ContainerStorage implements Storage<ItemVariant> {
     }
 
     @Override
-    public long insert(int index, ItemVariant resource, long maxAmount, TransactionContext transaction) {
-        return getSlot(index).insert(0, resource, maxAmount, transaction);
+    public long insert(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
+        return getSlot(slot).insert(0, resource, maxAmount, transaction);
     }
 
     @Override
-    public long extract(int index, ItemVariant resource, long maxAmount, TransactionContext transaction) {
-        return getSlot(index).extract(0, resource, maxAmount, transaction);
+    public long extract(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
+        return getSlot(slot).extract(0, resource, maxAmount, transaction);
     }
 
     @Override
-    public boolean isResourceBlank(int index) {
-        return getSlot(index).isResourceBlank(0);
+    public boolean isResourceBlank(int slot) {
+        return getSlot(slot).isResourceBlank(0);
     }
 
     @Override
-    public ItemVariant getResource(int index) {
-        return getSlot(index).getResource(0);
+    public ItemVariant getResource(int slot) {
+        return getSlot(slot).getResource(0);
     }
 
     @Override
-    public long getAmount(int index) {
-        return getSlot(index).getAmount(0);
+    public long getAmount(int slot) {
+        return getSlot(slot).getAmount(0);
     }
 
     /**
@@ -126,8 +125,8 @@ public class ContainerStorage implements Storage<ItemVariant> {
     }
 
     @Override
-    public boolean isValid(int index, ItemVariant resource) {
-        return getSlot(index).isValid(0, resource);
+    public boolean isValid(int slot, ItemVariant resource) {
+        return getSlot(slot).isValid(0, resource);
     }
 
     @Override

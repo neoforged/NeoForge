@@ -50,8 +50,8 @@ public final class WorldlyContainerStorage implements Storage<ItemVariant> {
     }
 
     @Override
-    public long insert(int index, ItemVariant resource, long maxAmount, TransactionContext transaction) {
-        int convertedSlot = convertSlot(index);
+    public long insert(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
+        int convertedSlot = convertSlot(slot);
         if (!container.canPlaceItemThroughFace(convertedSlot, resource.innerStack, side)) {
             return 0;
         }
@@ -59,8 +59,8 @@ public final class WorldlyContainerStorage implements Storage<ItemVariant> {
     }
 
     @Override
-    public long extract(int index, ItemVariant resource, long maxAmount, TransactionContext transaction) {
-        int convertedSlot = convertSlot(index);
+    public long extract(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
+        int convertedSlot = convertSlot(slot);
         if (side != null && !container.canTakeItemThroughFace(convertedSlot, resource.innerStack, side)) {
             return 0;
         }
@@ -68,28 +68,28 @@ public final class WorldlyContainerStorage implements Storage<ItemVariant> {
     }
 
     @Override
-    public boolean isResourceBlank(int index) {
-        return containerStorage.isResourceBlank(convertSlot(index));
+    public boolean isResourceBlank(int slot) {
+        return containerStorage.isResourceBlank(convertSlot(slot));
     }
 
     @Override
-    public ItemVariant getResource(int index) {
-        return containerStorage.getResource(convertSlot(index));
+    public ItemVariant getResource(int slot) {
+        return containerStorage.getResource(convertSlot(slot));
     }
 
     @Override
-    public long getAmount(int index) {
-        return containerStorage.getAmount(convertSlot(index));
+    public long getAmount(int slot) {
+        return containerStorage.getAmount(convertSlot(slot));
     }
 
     @Override
-    public long getCapacity(int index, ItemVariant resource) {
-        return containerStorage.getCapacity(convertSlot(index), resource);
+    public long getCapacity(int slot, ItemVariant resource) {
+        return containerStorage.getCapacity(convertSlot(slot), resource);
     }
 
     @Override
-    public boolean isValid(int index, ItemVariant resource) {
-        return containerStorage.isValid(convertSlot(index), resource);
+    public boolean isValid(int slot, ItemVariant resource) {
+        return containerStorage.isValid(convertSlot(slot), resource);
     }
 
     @Override

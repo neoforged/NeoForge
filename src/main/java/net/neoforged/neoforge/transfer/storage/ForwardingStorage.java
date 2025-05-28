@@ -27,8 +27,8 @@ public class ForwardingStorage<T> implements Storage<T> {
     }
 
     @Override
-    public long insert(int index, T resource, long maxAmount, TransactionContext transaction) {
-        return delegate.get().insert(index, resource, maxAmount, transaction);
+    public long insert(int slot, T resource, long maxAmount, TransactionContext transaction) {
+        return delegate.get().insert(slot, resource, maxAmount, transaction);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class ForwardingStorage<T> implements Storage<T> {
     }
 
     @Override
-    public long extract(int index, T resource, long maxAmount, TransactionContext transaction) {
-        return delegate.get().extract(index, resource, maxAmount, transaction);
+    public long extract(int slot, T resource, long maxAmount, TransactionContext transaction) {
+        return delegate.get().extract(slot, resource, maxAmount, transaction);
     }
 
     @Override
@@ -57,27 +57,27 @@ public class ForwardingStorage<T> implements Storage<T> {
     }
 
     @Override
-    public boolean isResourceBlank(int index) {
-        return delegate.get().isResourceBlank(index);
+    public boolean isResourceBlank(int slot) {
+        return delegate.get().isResourceBlank(slot);
     }
 
     @Override
-    public T getResource(int index) {
-        return delegate.get().getResource(index);
+    public T getResource(int slot) {
+        return delegate.get().getResource(slot);
     }
 
     @Override
-    public long getAmount(int index) {
-        return delegate.get().getAmount(index);
+    public long getAmount(int slot) {
+        return delegate.get().getAmount(slot);
     }
 
     @Override
-    public long getCapacity(int index, T resource) {
-        return delegate.get().getCapacity(index, resource);
+    public long getCapacity(int slot, T resource) {
+        return delegate.get().getCapacity(slot, resource);
     }
 
     @Override
-    public boolean isValid(int index, T resource) {
-        return delegate.get().isValid(index, resource);
+    public boolean isValid(int slot, T resource) {
+        return delegate.get().isValid(slot, resource);
     }
 }
