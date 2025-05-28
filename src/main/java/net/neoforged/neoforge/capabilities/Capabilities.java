@@ -12,6 +12,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +58,22 @@ public final class Capabilities {
         public static final ItemCapability<IItemHandler, @Nullable Void> ITEM = ItemCapability.createVoid(create("item_handler"), IItemHandler.class);
 
         private ItemHandler() {}
+    }
+
+    public static final class ItemStorage {
+        public static final BlockCapability<Storage<ItemVariant>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("item_storage"), Storage.asClass());
+        /**
+         * Capability for the inventory of an entity.
+         * If an entity has multiple inventory "subparts", this capability should give a combined view of all the subparts.
+         */
+        public static final EntityCapability<Storage<ItemVariant>, @Nullable Void> ENTITY = EntityCapability.createVoid(create("item_storage"), Storage.asClass());
+        /**
+         * Capability for an inventory of entity that should be accessible to automation,
+         * in the sense that droppers, hoppers, and similar modded devices will try to use it.
+         */
+        public static final EntityCapability<Storage<ItemVariant>, @Nullable Direction> ENTITY_AUTOMATION = EntityCapability.createSided(create("item_storage_automation"), Storage.asClass());
+
+        private ItemStorage() {}
     }
 
     private static ResourceLocation create(String path) {
