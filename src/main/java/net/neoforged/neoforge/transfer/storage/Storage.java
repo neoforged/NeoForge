@@ -14,16 +14,21 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  */
 public interface Storage<T> {
     /**
-     * @return The number of indices this handler manages.
+     * Returns the current number of slots of this storage.
+     *
+     * <p>Out-of-bounds accesses using the methods that accept an {@code int slot} will typically throw,
+     * so only indices between 0 (included) and the size (excluded) should be used.
+     * If a storage has a dynamic size, it should be lenient to accommodate for callers
+     * holding onto a previously returned size.
      */
     int size();
 
     /**
      * Inserts a given amount of the resource into the handler at the given index.
      *
-     * @param slot      The index to insert the resource into.
-     * @param resource  The resource to insert.
-     * @param maxAmount The amount of the resource to insert.
+     * @param slot      The slot index to insert the resource into.
+     * @param resource  The resource to insert. Must not be blank.
+     * @param maxAmount The amount of the resource to insert. Must not be negative.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
     long insert(int slot, T resource, long maxAmount, TransactionContext transaction);
@@ -31,8 +36,8 @@ public interface Storage<T> {
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      *
-     * @param resource  The resource to insert.
-     * @param maxAmount The amount of the resource to insert.
+     * @param resource  The resource to insert. Must not be blank.
+     * @param maxAmount The amount of the resource to insert. Must not be negative.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
     default long insert(T resource, long maxAmount, TransactionContext transaction) {
@@ -60,9 +65,9 @@ public interface Storage<T> {
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
-     * @param slot      The index to extract the resource from.
-     * @param resource  The resource to extract.
-     * @param maxAmount The amount of the resource to extract.
+     * @param slot      The slot index to extract the resource from.
+     * @param resource  The resource to extract. Must not be blank.
+     * @param maxAmount The amount of the resource to extract. Must not be negative.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
     long extract(int slot, T resource, long maxAmount, TransactionContext transaction);
@@ -70,8 +75,8 @@ public interface Storage<T> {
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      *
-     * @param resource  The resource to extract.
-     * @param maxAmount The amount of the resource to extract.
+     * @param resource  The resource to extract. Must not be blank.
+     * @param maxAmount The amount of the resource to extract. Must not be negative.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
     default long extract(T resource, long maxAmount, TransactionContext transaction) {
@@ -105,13 +110,13 @@ public interface Storage<T> {
     boolean isResourceBlank(int slot);
 
     /**
-     * @param slot The index to get the resource from.
+     * @param slot The slot index to get the resource from.
      * @return The resource at the given index.
      */
     T getResource(int slot);
 
     /**
-     * @param slot The index to get the amount from.
+     * @param slot The slot index to get the amount from.
      * @return The amount of the resource at the given index.
      */
     long getAmount(int slot);
@@ -119,8 +124,8 @@ public interface Storage<T> {
     /**
      * Gets the maximum amount that the given index can have of the given resource.
      *
-     * @param slot     The index to get the limit from.
-     * @param resource The resource to get the limit for. Might be blank to request a "generic" limit.
+     * @param slot     The slot index to get the limit from.
+     * @param resource The resource to get the limit for. May be blank to request a "generic" limit.
      * @return The limit of the resource at the given index.
      */
     long getCapacity(int slot, T resource);
@@ -128,7 +133,7 @@ public interface Storage<T> {
     /**
      * Checks if the given resource is generally allowed to be inserted into the handler at the given index, regardless of the current state of the handler.
      *
-     * @param slot     The index to check.
+     * @param slot     The slot index to check.
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
