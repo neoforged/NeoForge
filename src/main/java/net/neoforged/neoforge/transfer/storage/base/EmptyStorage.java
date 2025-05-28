@@ -6,49 +6,65 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * An immutable, empty storage.
  */
-public abstract class EmptyStorage<T> implements Storage<T> {
+public final class EmptyStorage<T> implements Storage<T> {
+    private final static EmptyStorage<?> INSTANCE = new EmptyStorage<>();
+
+    public static <T> EmptyStorage<T> instance() {
+        //noinspection unchecked
+        return (EmptyStorage<T>) INSTANCE;
+    }
+
     @Override
     public final int size() {
         return 0;
     }
 
+    private RuntimeException invalidSlot(int slot) {
+        throw new IllegalArgumentException("Invalid slot index: " + slot + ". This storage is empty and has no slots.");
+    }
+
     @Override
     public final long insert(int slot, T resource, long maxAmount, TransactionContext transaction) {
-        return 0;
+        throw invalidSlot(slot);
+    }
+
+    @Override
+    public boolean supportsInsertion() {
+        return false;
     }
 
     @Override
     public final long extract(int slot, T resource, long maxAmount, TransactionContext transaction) {
-        return 0;
+        throw invalidSlot(slot);
+    }
+
+    @Override
+    public boolean supportsExtraction() {
+        return false;
     }
 
     @Override
     public final boolean isResourceBlank(int slot) {
-        return true;
+        throw invalidSlot(slot);
     }
 
     @Override
     public final T getResource(int slot) {
-        return getBlankResource();
+        throw invalidSlot(slot);
     }
 
     @Override
     public final long getAmount(int slot) {
-        return 0;
+        throw invalidSlot(slot);
     }
 
     @Override
     public final long getCapacity(int slot, T resource) {
-        return 0;
+        throw invalidSlot(slot);
     }
 
     @Override
     public final boolean isValid(int slot, T resource) {
-        return false;
+        throw invalidSlot(slot);
     }
-
-    /**
-     * @return The blank resource to return when an empty slot is queried.
-     */
-    protected abstract T getBlankResource();
 }
