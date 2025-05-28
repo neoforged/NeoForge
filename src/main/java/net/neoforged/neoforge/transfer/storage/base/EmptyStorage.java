@@ -1,5 +1,6 @@
-package net.neoforged.neoforge.transfer.storage;
+package net.neoforged.neoforge.transfer.storage.base;
 
+import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**

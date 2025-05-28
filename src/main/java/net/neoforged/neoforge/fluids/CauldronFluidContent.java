@@ -19,7 +19,7 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.CauldronWrapper;
-import net.neoforged.neoforge.transfer.fluid.FluidHandlerAdapter;
+import net.neoforged.neoforge.transfer.fluid.base.FluidHandlerAdapter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

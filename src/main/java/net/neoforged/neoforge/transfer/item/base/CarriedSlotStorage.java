@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.transfer.item;
+package net.neoforged.neoforge.transfer.item.base;
 
 import com.google.common.collect.MapMaker;
 import net.minecraft.core.registries.BuiltInRegistries;
