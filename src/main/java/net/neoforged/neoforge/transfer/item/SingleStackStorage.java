@@ -65,9 +65,7 @@ public abstract class SingleStackStorage extends SnapshotParticipant<ItemStack> 
     }
 
     protected void checkSlot(int slot) {
-        if (slot != 0) {
-            throw new IllegalArgumentException("SingleStackStorage " + this + " can only accept slot 0, yet it received " + slot);
-        }
+        StoragePreconditions.checkSlot(slot, 1);
     }
 
     @Override

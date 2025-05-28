@@ -42,5 +42,17 @@ public final class StoragePreconditions {
         notNegative(amount);
     }
 
+    /**
+     * Checks that the given slot is within the valid range of a storage [0, size).
+     *
+     * @param slot slot index to check
+     * @param size size of the storage
+     */
+    public static void checkSlot(int slot, int size) {
+        if (slot < 0 || slot >= size) {
+            throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + size + ")");
+        }
+    }
+
     private StoragePreconditions() {}
 }
