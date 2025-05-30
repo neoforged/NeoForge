@@ -35,6 +35,8 @@ import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.item.ItemVariant;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidUtil {
@@ -556,5 +558,21 @@ public class FluidUtil {
             }
         }
         return fluidStack.getFluidType().getBucket(fluidStack);
+    }
+
+    /**
+     * @param fluidVariant contents used to fill the bucket
+     * @return a filled vanilla bucket or filled universal bucket.
+     *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
+     */
+    public static ItemVariant getFilledBucket(FluidVariant fluidVariant) {
+        if (fluidVariant.isComponentsPatchEmpty()) {
+            if (fluidVariant.is(Fluids.WATER)) {
+                return ItemVariant.of(Items.WATER_BUCKET);
+            } else if (fluidVariant.is(Fluids.LAVA)) {
+                return ItemVariant.of(Items.LAVA_BUCKET);
+            }
+        }
+        return ItemVariant.of(fluidVariant.getFluid().getFluidType().getBucket(fluidVariant.toStack(FluidType.BUCKET_VOLUME)));
     }
 }
