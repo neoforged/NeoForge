@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AnvilMenu.java
 +++ b/net/minecraft/world/inventory/AnvilMenu.java
-@@ -79,6 +_,8 @@
+@@ -80,6 +_,8 @@
              p_150474_.giveExperienceLevels(-this.cost.get());
          }
  
@@ -9,7 +9,7 @@
          if (this.repairItemCountCost > 0) {
              ItemStack itemstack = this.inputSlots.getItem(1);
              if (!itemstack.isEmpty() && itemstack.getCount() > this.repairItemCountCost) {
-@@ -95,7 +_,7 @@
+@@ -102,7 +_,7 @@
          this.inputSlots.setItem(0, ItemStack.EMPTY);
          this.access.execute((p_150479_, p_150480_) -> {
              BlockState blockstate = p_150479_.getBlockState(p_150480_);
@@ -18,7 +18,7 @@
                  BlockState blockstate1 = AnvilBlock.damage(blockstate);
                  if (blockstate1 == null) {
                      p_150479_.removeBlock(p_150480_, false);
-@@ -118,14 +_,20 @@
+@@ -125,14 +_,20 @@
          int i = 0;
          long j = 0L;
          int k = 0;
@@ -40,7 +40,7 @@
                  if (itemstack1.isDamageableItem() && itemstack.isValidRepairItem(itemstack2)) {
                      int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
                      if (l2 <= 0) {
-@@ -176,8 +_,10 @@
+@@ -183,8 +_,10 @@
                          int j2 = entry.getIntValue();
                          j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
                          Enchantment enchantment = holder.value();
@@ -53,7 +53,7 @@
                              flag1 = true;
                          }
  
-@@ -228,6 +_,7 @@
+@@ -235,6 +_,7 @@
                  i += k;
                  itemstack1.remove(DataComponents.CUSTOM_NAME);
              }
@@ -61,7 +61,7 @@
  
              int k2 = i <= 0 ? 0 : (int)Mth.clamp(j + i, 0L, 2147483647L);
              this.cost.set(k2);
-@@ -301,5 +_,12 @@
+@@ -308,5 +_,12 @@
  
      public int getCost() {
          return this.cost.get();

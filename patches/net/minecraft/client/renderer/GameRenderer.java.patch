@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -168,6 +_,8 @@
+@@ -194,6 +_,8 @@
              this.setPostEffect(ResourceLocation.withDefaultNamespace("spider"));
          } else if (p_109107_ instanceof EnderMan) {
              this.setPostEffect(ResourceLocation.withDefaultNamespace("invert"));
@@ -9,7 +9,7 @@
          }
      }
  
-@@ -345,7 +_,7 @@
+@@ -362,7 +_,7 @@
                  f *= Mth.lerp(f2, 1.0F, 0.85714287F);
              }
  
@@ -18,7 +18,7 @@
          }
      }
  
-@@ -361,6 +_,10 @@
+@@ -378,6 +_,10 @@
                  return;
              }
  
@@ -29,21 +29,7 @@
              f2 /= livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
-@@ -491,11 +_,11 @@
-             RenderTarget rendertarget = this.minecraft.getMainRenderTarget();
-             RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(rendertarget.getDepthTexture(), 1.0);
-             Matrix4f matrix4f = new Matrix4f()
--                .setOrtho(0.0F, (float)(window.getWidth() / window.getGuiScale()), (float)(window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, 21000.0F);
-+                .setOrtho(0.0F, (float)(window.getWidth() / window.getGuiScale()), (float)(window.getHeight() / window.getGuiScale()), 0.0F, 1000.0F, net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
-             RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
-             Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
-             matrix4fstack.pushMatrix();
--            matrix4fstack.translation(0.0F, 0.0F, -11000.0F);
-+            matrix4fstack.translation(0.0F, 0.0F, 10000F - net.neoforged.neoforge.client.ClientHooks.getGuiFarPlane());
-             Lighting.setupFor3DItems();
-             GuiGraphics guigraphics = new GuiGraphics(this.minecraft, this.renderBuffers.bufferSource());
-             if (flag && p_109096_ && this.minecraft.level != null) {
-@@ -521,7 +_,8 @@
+@@ -513,7 +_,8 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
@@ -53,12 +39,12 @@
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -681,6 +_,8 @@
-         Matrix4f matrix4f1 = new Matrix4f().rotation(quaternionf);
-         this.minecraft.levelRenderer.prepareCullFrustum(camera.getPosition(), matrix4f1, matrix4f2);
-         this.minecraft.levelRenderer.renderLevel(this.resourcePool, p_348589_, flag, camera, this, matrix4f1, matrix4f);
+@@ -680,6 +_,8 @@
+         GpuBufferSlice gpubufferslice = this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD);
+         profilerfiller.popPush("level");
+         this.minecraft.levelRenderer.renderLevel(this.resourcePool, p_348589_, flag, camera, matrix4f1, matrix4f, gpubufferslice, vector4f, !flag1);
 +        profilerfiller.popPush("neoforge_render_last");
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.level, this.minecraft.levelRenderer, null, matrix4f1, matrix4f, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
++        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.level, this.minecraft.levelRenderer, null, matrix4f1, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
          profilerfiller.popPush("hand");
-         if (this.renderHand) {
-             RenderSystem.getDevice().createCommandEncoder().clearDepthTexture(this.minecraft.getMainRenderTarget().getDepthTexture(), 1.0);
+         boolean flag2 = this.minecraft.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.minecraft.getCameraEntity()).isSleeping();
+         RenderSystem.setProjectionMatrix(

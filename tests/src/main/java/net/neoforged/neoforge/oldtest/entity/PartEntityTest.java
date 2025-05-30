@@ -8,7 +8,6 @@ package net.neoforged.neoforge.oldtest.entity;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -24,6 +23,8 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -149,10 +150,10 @@ public class PartEntityTest {
         protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder p_326003_) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag nbt) {}
+        protected void readAdditionalSaveData(ValueInput valueInput) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag nbt) {}
+        protected void addAdditionalSaveData(ValueOutput valueOutput) {}
 
         @Override
         public boolean isPickable() {

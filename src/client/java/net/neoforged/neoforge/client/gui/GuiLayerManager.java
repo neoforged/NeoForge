@@ -8,10 +8,10 @@ package net.neoforged.neoforge.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -21,32 +21,41 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Adaptation of {@link LayeredDraw} that is used for {@link Gui} rendering specifically,
- * to give layers a name and fire appropriate events.
+ * Manages individual components rendered as part of {@linkplain Gui the hud}, allowing
+ * modders to intercept rendering of these components and add their own in-between.
  *
  * <p>Overlays can be registered using the {@link RegisterGuiLayersEvent} event.
  */
 @ApiStatus.Internal
 public class GuiLayerManager {
-    public static final float Z_SEPARATION = LayeredDraw.Z_SEPARATION;
     private final List<NamedLayer> layers = new ArrayList<>();
     private boolean initialized = false;
 
-    public record NamedLayer(ResourceLocation name, LayeredDraw.Layer layer) {}
+    public record NamedLayer(ResourceLocation name, Layer layer) {}
 
-    public GuiLayerManager add(ResourceLocation name, LayeredDraw.Layer layer) {
+    public GuiLayerManager add(ResourceLocation name, Layer layer) {
         this.layers.add(new NamedLayer(name, layer));
+        return this;
+    }
+
+    public GuiLayerManager add(ResourceLocation name, Consumer<GuiGraphics> layer, BooleanSupplier shouldRender) {
+        add(name, (guiGraphics, deltaTracker) -> layer.accept(guiGraphics), shouldRender);
+        return this;
+    }
+
+    public GuiLayerManager add(ResourceLocation name, Layer layer, BooleanSupplier shouldRender) {
+        this.layers.add(new NamedLayer(name, (guiGraphics, deltaTracker) -> {
+            if (shouldRender.getAsBoolean()) {
+                layer.render(guiGraphics, deltaTracker);
+            }
+        }));
         return this;
     }
 
     public GuiLayerManager add(GuiLayerManager child, BooleanSupplier shouldRender) {
         // Flatten the layers to allow mods to insert layers between vanilla layers.
         for (var entry : child.layers) {
-            add(entry.name(), (guiGraphics, partialTick) -> {
-                if (shouldRender.getAsBoolean()) {
-                    entry.layer().render(guiGraphics, partialTick);
-                }
-            });
+            add(entry.name(), entry.layer, shouldRender);
         }
         return this;
     }
@@ -62,18 +71,12 @@ public class GuiLayerManager {
     }
 
     private void renderInner(GuiGraphics guiGraphics, DeltaTracker partialTick) {
-        guiGraphics.pose().pushPose();
-
         for (var layer : this.layers) {
             if (!NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Pre(guiGraphics, partialTick, layer.name(), layer.layer())).isCanceled()) {
                 layer.layer().render(guiGraphics, partialTick);
                 NeoForge.EVENT_BUS.post(new RenderGuiLayerEvent.Post(guiGraphics, partialTick, layer.name(), layer.layer()));
             }
-
-            guiGraphics.pose().translate(0.0F, 0.0F, Z_SEPARATION);
         }
-
-        guiGraphics.pose().popPose();
     }
 
     public void initModdedLayers() {
@@ -86,5 +89,10 @@ public class GuiLayerManager {
 
     public int getLayerCount() {
         return this.layers.size();
+    }
+
+    @FunctionalInterface
+    public interface Layer {
+        void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker);
     }
 }

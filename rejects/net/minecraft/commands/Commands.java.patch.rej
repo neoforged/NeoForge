@@ -1,0 +1,12 @@
+++++ REJECTED HUNK: 3
+@@ -366,7 +377,8 @@
+         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
+         RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
+         map.put(this.dispatcher.getRoot(), rootcommandnode);
+-        this.fillUsableCommands(this.dispatcher.getRoot(), rootcommandnode, p_82096_.createCommandSourceStack(), map);
++        // FORGE: Use our own command node merging method to handle redirect nodes properly, see issue #7551
++        net.neoforged.neoforge.server.command.CommandHelper.mergeCommandNode(this.dispatcher.getRoot(), rootcommandnode, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.safelySwap((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
+         p_82096_.connection.send(new ClientboundCommandsPacket(rootcommandnode));
+     }
+ 
+++++ END HUNK

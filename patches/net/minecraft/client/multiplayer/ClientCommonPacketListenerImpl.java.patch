@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -84,6 +_,10 @@
+@@ -92,6 +_,10 @@
      protected final Map<ResourceLocation, byte[]> serverCookies;
      protected Map<String, String> customReportDetails;
-     protected ServerLinks serverLinks;
+     private ServerLinks serverLinks;
 +    /**
 +     * Holds the current connection type, based on the types of payloads that have been received so far.
 +     */
@@ -11,7 +11,7 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
-@@ -95,6 +_,8 @@
+@@ -103,6 +_,8 @@
          this.serverCookies = p_294647_.serverCookies();
          this.customReportDetails = p_294647_.customReportDetails();
          this.serverLinks = p_294647_.serverLinks();
@@ -19,8 +19,8 @@
 +        this.connectionType = p_294647_.connectionType();
      }
  
-     @Override
-@@ -142,6 +_,33 @@
+     public ServerLinks serverLinks() {
+@@ -155,6 +_,33 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
@@ -54,7 +54,7 @@
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-@@ -278,6 +_,8 @@
+@@ -345,6 +_,8 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -63,7 +63,7 @@
          this.connection.send(p_295097_);
      }
  
-@@ -409,5 +_,15 @@
+@@ -476,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          record PendingRequest(UUID id, URL url, String hash) {
          }

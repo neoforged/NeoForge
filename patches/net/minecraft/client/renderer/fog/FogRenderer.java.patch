@@ -1,0 +1,32 @@
+--- a/net/minecraft/client/renderer/fog/FogRenderer.java
++++ b/net/minecraft/client/renderer/fog/FogRenderer.java
+@@ -155,7 +_,7 @@
+                 f2 = Mth.lerp(f6, f2, f2 * f7);
+             }
+ 
+-            return new Vector4f(f5, f1, f2, 1.0F);
++            return net.neoforged.neoforge.client.ClientHooks.getFogColor(p_423439_, p_423466_, p_423475_, p_423484_, p_423652_, f5, f1, f2);
+         }
+     }
+ 
+@@ -171,9 +_,11 @@
+         Entity entity = p_423468_.getEntity();
+         FogData fogdata = new FogData();
+ 
++        FogEnvironment chosenEnvironment = null;
+         for (FogEnvironment fogenvironment : FOG_ENVIRONMENTS) {
+             if (fogenvironment.isApplicable(fogtype, entity)) {
+                 fogenvironment.setupFog(fogdata, entity, p_423468_.getBlockPosition(), p_423641_, f1, p_423597_);
++                chosenEnvironment = fogenvironment;
+                 break;
+             }
+         }
+@@ -181,6 +_,8 @@
+         float f2 = Mth.clamp(f1 / 10.0F, 4.0F, 64.0F);
+         fogdata.renderDistanceStart = f1 - f2;
+         fogdata.renderDistanceEnd = f1;
++
++        net.neoforged.neoforge.client.ClientHooks.onSetupFog(chosenEnvironment, fogtype, p_423468_, f, p_423600_, fogdata);
+ 
+         try (GpuBuffer.MappedView gpubuffer$mappedview = RenderSystem.getDevice()
+                 .createCommandEncoder()

@@ -419,7 +419,7 @@ public class CommonHooks {
             return null;
 
         if (!player.level().isClientSide)
-            player.getCommandSenderWorld().addFreshEntity(event.getEntity());
+            player.level().addFreshEntity(event.getEntity());
         return event.getEntity();
     }
 

@@ -1,173 +1,150 @@
 --- a/net/minecraft/client/gui/GuiGraphics.java
 +++ b/net/minecraft/client/gui/GuiGraphics.java
-@@ -229,6 +_,11 @@
-     }
+@@ -81,6 +_,7 @@
+     private final GuiRenderState guiRenderState;
+     @Nullable
+     private Runnable deferredTooltip;
++    private ItemStack tooltipStack = ItemStack.EMPTY;
  
-     public int drawString(Font p_283343_, @Nullable String p_281896_, int p_283569_, int p_283418_, int p_281560_, boolean p_282130_) {
-+        return this.drawString(p_283343_, p_281896_, (float)p_283569_, (float)p_283418_, p_281560_, p_282130_);
-+    }
-+
-+    // Forge: Add float variant for x,y coordinates, with a string as input
-+    public int drawString(Font p_283343_, @Nullable String p_281896_, float p_283569_, float p_283418_, int p_281560_, boolean p_282130_) {
-         return p_281896_ == null
-             ? 0
-             : p_283343_.drawInBatch(
-@@ -250,6 +_,11 @@
-     }
- 
-     public int drawString(Font p_282636_, FormattedCharSequence p_281596_, int p_281586_, int p_282816_, int p_281743_, boolean p_282394_) {
-+        return this.drawString(p_282636_, p_281596_, (float)p_281586_, (float)p_282816_, p_281743_, p_282394_);
-+    }
-+
-+    // Forge: Add float variant for x,y coordinates, with a formatted char sequence as input
-+    public int drawString(Font p_282636_, FormattedCharSequence p_281596_, float p_281586_, float p_282816_, int p_281743_, boolean p_282394_) {
-         return p_282636_.drawInBatch(
-             p_281596_,
-             (float)p_281586_,
-@@ -859,10 +_,15 @@
-             this.renderItemCount(p_282005_, p_283349_, p_282641_, p_282146_, p_282803_);
+     private GuiGraphics(Minecraft p_282144_, Matrix3x2fStack p_415937_, GuiRenderState p_415955_) {
+         this.minecraft = p_282144_;
+@@ -867,6 +_,8 @@
              this.renderItemCooldown(p_283349_, p_282641_, p_282146_);
-             this.pose.popPose();
+             this.renderItemCount(p_282005_, p_283349_, p_282641_, p_282146_, p_282803_);
+             this.pose.popMatrix();
 +            // TODO 1.21.2: This probably belongs in one of the sub-methods.
 +            net.neoforged.neoforge.client.ItemDecoratorHandler.of(p_283349_).render(this, p_282005_, p_283349_, p_282641_, p_282146_);
          }
      }
-+
-+    private ItemStack tooltipStack = ItemStack.EMPTY;
  
-     public void renderTooltip(Font p_282308_, ItemStack p_282781_, int p_282687_, int p_282292_) {
-+        this.tooltipStack = p_282781_;
-         this.renderTooltip(
-             p_282308_,
-             Screen.getTooltipFromItem(this.minecraft, p_282781_),
-@@ -871,6 +_,17 @@
-             p_282292_,
-             p_282781_.get(DataComponents.TOOLTIP_STYLE)
+@@ -879,6 +_,7 @@
+     }
+ 
+     public void setTooltipForNextFrame(Font p_419878_, ItemStack p_419655_, int p_419935_, int p_419559_) {
++        this.tooltipStack = p_419655_;
+         this.setTooltipForNextFrame(
+             p_419878_,
+             Screen.getTooltipFromItem(this.minecraft, p_419655_),
+@@ -887,6 +_,17 @@
+             p_419559_,
+             p_419655_.get(DataComponents.TOOLTIP_STYLE)
          );
 +        this.tooltipStack = ItemStack.EMPTY;
 +    }
 +
-+    public void renderTooltip(Font font, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, ItemStack stack, int mouseX, int mouseY) {
-+        renderTooltip(font, textComponents, tooltipComponent, stack, mouseX, mouseY, null);
++    public void setTooltipForNextFrame(Font font, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, ItemStack stack, int mouseX, int mouseY) {
++        setTooltipForNextFrame(font, textComponents, tooltipComponent, stack, mouseX, mouseY, null);
 +    }
 +
-+    public void renderTooltip(Font font, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, ItemStack stack, int mouseX, int mouseY, @Nullable ResourceLocation backgroundTexture) {
++    public void setTooltipForNextFrame(Font font, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, ItemStack stack, int mouseX, int mouseY, @Nullable ResourceLocation backgroundTexture) {
 +        this.tooltipStack = stack;
-+        this.renderTooltip(font, textComponents, tooltipComponent, mouseX, mouseY, backgroundTexture);
++        this.setTooltipForNextFrame(font, textComponents, tooltipComponent, mouseX, mouseY, backgroundTexture);
 +        this.tooltipStack = ItemStack.EMPTY;
      }
  
-     public void renderTooltip(Font p_283128_, List<Component> p_282716_, Optional<TooltipComponent> p_281682_, int p_283678_, int p_281696_) {
-@@ -880,11 +_,7 @@
-     public void renderTooltip(
-         Font p_371715_, List<Component> p_371741_, Optional<TooltipComponent> p_371604_, int p_371500_, int p_371755_, @Nullable ResourceLocation p_371766_
+     public void setTooltipForNextFrame(Font p_419603_, List<Component> p_419948_, Optional<TooltipComponent> p_419787_, int p_419566_, int p_420005_) {
+@@ -896,11 +_,7 @@
+     public void setTooltipForNextFrame(
+         Font p_420034_, List<Component> p_419494_, Optional<TooltipComponent> p_419637_, int p_419571_, int p_419535_, @Nullable ResourceLocation p_419579_
      ) {
--        List<ClientTooltipComponent> list = p_371741_.stream()
+-        List<ClientTooltipComponent> list = p_419494_.stream()
 -            .map(Component::getVisualOrderText)
 -            .map(ClientTooltipComponent::create)
 -            .collect(Util.toMutableList());
--        p_371604_.ifPresent(p_337410_ -> list.add(list.isEmpty() ? 0 : 1, ClientTooltipComponent.create(p_337410_)));
-+        List<ClientTooltipComponent> list = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, p_371741_, p_371604_, p_371500_, guiWidth(), guiHeight(), p_371715_);
-         this.renderTooltipInternal(p_371715_, list, p_371500_, p_371755_, DefaultTooltipPositioner.INSTANCE, p_371766_);
+-        p_419637_.ifPresent(p_337410_ -> list.add(list.isEmpty() ? 0 : 1, ClientTooltipComponent.create(p_337410_)));
++        List<ClientTooltipComponent> list = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, p_419494_, p_419637_, p_419571_, guiWidth(), guiHeight(), p_420034_);
+         this.setTooltipForNextFrameInternal(p_420034_, list, p_419571_, p_419535_, DefaultTooltipPositioner.INSTANCE, p_419579_, false);
      }
  
-@@ -897,13 +_,14 @@
+@@ -913,13 +_,14 @@
      }
  
-     public void renderComponentTooltip(Font p_282739_, List<Component> p_281832_, int p_282191_, int p_282446_) {
--        this.renderComponentTooltip(p_282739_, p_281832_, p_282191_, p_282446_, null);
-+        this.renderComponentTooltip(p_282739_, p_281832_, p_282191_, p_282446_, (ResourceLocation) null);
+     public void setComponentTooltipForNextFrame(Font p_419927_, List<Component> p_419807_, int p_419887_, int p_420035_) {
+-        this.setComponentTooltipForNextFrame(p_419927_, p_419807_, p_419887_, p_420035_, null);
++        this.setComponentTooltipForNextFrame(p_419927_, p_419807_, p_419887_, p_420035_, (ResourceLocation) null);
      }
  
-     public void renderComponentTooltip(Font p_371677_, List<Component> p_371519_, int p_371314_, int p_371389_, @Nullable ResourceLocation p_371458_) {
-+        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, p_371519_, p_371314_, guiWidth(), guiHeight(), p_371677_);
-         this.renderTooltipInternal(
-             p_371677_,
--            p_371519_.stream().map(Component::getVisualOrderText).map(ClientTooltipComponent::create).toList(),
+     public void setComponentTooltipForNextFrame(Font p_419540_, List<Component> p_419714_, int p_419554_, int p_419672_, @Nullable ResourceLocation p_419660_) {
++        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(this.tooltipStack, p_419714_, p_419554_, guiWidth(), guiHeight(), p_419540_);
+         this.setTooltipForNextFrameInternal(
+             p_419540_,
+-            p_419714_.stream().map(Component::getVisualOrderText).map(ClientTooltipComponent::create).toList(),
 +            components,
-             p_371314_,
-             p_371389_,
+             p_419554_,
+             p_419672_,
              DefaultTooltipPositioner.INSTANCE,
-@@ -911,6 +_,28 @@
+@@ -928,6 +_,28 @@
          );
      }
  
-+    public void renderComponentTooltip(Font font, List<? extends net.minecraft.network.chat.FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack) {
-+        renderComponentTooltip(font, tooltips, mouseX, mouseY, stack, null);
++    public void setComponentTooltipForNextFrame(Font font, List<? extends net.minecraft.network.chat.FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack) {
++        setComponentTooltipForNextFrame(font, tooltips, mouseX, mouseY, stack, null);
 +    }
 +
-+    public void renderComponentTooltip(Font font, List<? extends net.minecraft.network.chat.FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack, @Nullable ResourceLocation backgroundTexture) {
++    public void setComponentTooltipForNextFrame(Font font, List<? extends net.minecraft.network.chat.FormattedText> tooltips, int mouseX, int mouseY, ItemStack stack, @Nullable ResourceLocation backgroundTexture) {
 +        this.tooltipStack = stack;
 +        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponents(stack, tooltips, mouseX, guiWidth(), guiHeight(), font);
-+        this.renderTooltipInternal(font, components, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, backgroundTexture);
++        this.setTooltipForNextFrameInternal(font, components, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, backgroundTexture, false);
 +        this.tooltipStack = ItemStack.EMPTY;
 +    }
 +
-+    public void renderComponentTooltipFromElements(Font font, List<com.mojang.datafixers.util.Either<FormattedText, TooltipComponent>> elements, int mouseX, int mouseY, ItemStack stack) {
-+        renderComponentTooltipFromElements(font, elements, mouseX, mouseY, stack, null);
++    public void setComponentTooltipFromElementsForNextFrame(Font font, List<com.mojang.datafixers.util.Either<FormattedText, TooltipComponent>> elements, int mouseX, int mouseY, ItemStack stack) {
++        setComponentTooltipFromElementsForNextFrame(font, elements, mouseX, mouseY, stack, null);
 +    }
 +
-+    public void renderComponentTooltipFromElements(Font font, List<com.mojang.datafixers.util.Either<FormattedText, TooltipComponent>> elements, int mouseX, int mouseY, ItemStack stack, @Nullable ResourceLocation backgroundTexture) {
++    public void setComponentTooltipFromElementsForNextFrame(Font font, List<com.mojang.datafixers.util.Either<FormattedText, TooltipComponent>> elements, int mouseX, int mouseY, ItemStack stack, @Nullable ResourceLocation backgroundTexture) {
 +        this.tooltipStack = stack;
 +        List<ClientTooltipComponent> components = net.neoforged.neoforge.client.ClientHooks.gatherTooltipComponentsFromElements(stack, elements, mouseX, guiWidth(), guiHeight(), font);
-+        this.renderTooltipInternal(font, components, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, backgroundTexture);
++        this.setTooltipForNextFrameInternal(font, components, mouseX, mouseY, DefaultTooltipPositioner.INSTANCE, backgroundTexture, false);
 +        this.tooltipStack = ItemStack.EMPTY;
 +    }
 +
-     public void renderTooltip(Font p_282192_, List<? extends FormattedCharSequence> p_282297_, int p_281680_, int p_283325_) {
-         this.renderTooltip(p_282192_, p_282297_, p_281680_, p_283325_, null);
+     public void setTooltipForNextFrame(Font p_419718_, List<? extends FormattedCharSequence> p_419502_, int p_419583_, int p_419996_) {
+         this.setTooltipForNextFrame(p_419718_, p_419502_, p_419583_, p_419996_, null);
      }
-@@ -943,41 +_,45 @@
-         @Nullable ResourceLocation p_371327_
+@@ -965,7 +_,8 @@
      ) {
-         if (!p_282615_.isEmpty()) {
-+            net.neoforged.neoforge.client.event.RenderTooltipEvent.Pre preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(this.tooltipStack, this, p_283230_, p_283417_, guiWidth(), guiHeight(), p_282615_, p_282675_, p_282442_);
-+            if (preEvent.isCanceled()) return;
+         if (!p_419687_.isEmpty()) {
+             if (this.deferredTooltip == null || p_419788_) {
+-                this.deferredTooltip = () -> this.renderTooltip(p_419941_, p_419687_, p_419453_, p_419611_, p_419886_, p_419692_);
++                ItemStack capturedTooltipStack = this.tooltipStack;
++                this.deferredTooltip = () -> this.renderTooltip(p_419941_, p_419687_, p_419453_, p_419611_, p_419886_, p_419692_, capturedTooltipStack);
+             }
+         }
+     }
+@@ -978,6 +_,25 @@
+         ClientTooltipPositioner p_419610_,
+         @Nullable ResourceLocation p_371766_
+     ) {
++        this.renderTooltip(p_371715_, p_371741_, p_371500_, p_371755_, p_419610_, p_371766_, ItemStack.EMPTY);
++    }
 +
-             int i = 0;
-             int j = p_282615_.size() == 1 ? -2 : 0;
++    public void renderTooltip(
++            Font p_371715_,
++            List<ClientTooltipComponent> p_371741_,
++            int p_371500_,
++            int p_371755_,
++            ClientTooltipPositioner p_419610_,
++            @Nullable ResourceLocation p_371766_,
++            ItemStack tooltipStack
++    ) {
++        var preEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipPre(tooltipStack, this, p_371500_, p_371755_, guiWidth(), guiHeight(), p_371741_, p_371715_, p_419610_);
++        if (preEvent.isCanceled()) return;
++
++        p_371715_ = preEvent.getFont();
++        p_371500_ = preEvent.getX();
++        p_371755_ = preEvent.getY();
++
+         int i = 0;
+         int j = p_371741_.size() == 1 ? -2 : 0;
  
-             for (ClientTooltipComponent clienttooltipcomponent : p_282615_) {
--                int k = clienttooltipcomponent.getWidth(p_282675_);
-+                int k = clienttooltipcomponent.getWidth(preEvent.getFont());
-                 if (k > i) {
-                     i = k;
-                 }
+@@ -996,7 +_,8 @@
+         int l = vector2ic.x();
+         int i1 = vector2ic.y();
+         this.pose.pushMatrix();
+-        TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, p_371766_);
++        var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(this.tooltipStack, this, l, i1, preEvent.getFont(), p_371741_, p_371766_);
++        TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, textureEvent.getTexture());
+         int j1 = i1;
  
--                j += clienttooltipcomponent.getHeight(p_282675_);
-+                j += clienttooltipcomponent.getHeight(preEvent.getFont());
-             }
- 
-             int i2 = i;
-             int j2 = j;
--            Vector2ic vector2ic = p_282442_.positionTooltip(this.guiWidth(), this.guiHeight(), p_283230_, p_283417_, i, j);
-+            Vector2ic vector2ic = p_282442_.positionTooltip(this.guiWidth(), this.guiHeight(), preEvent.getX(), preEvent.getY(), i2, j2);
-             int l = vector2ic.x();
-             int i1 = vector2ic.y();
-             this.pose.pushPose();
-             int j1 = 400;
--            TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, 400, p_371327_);
-+            var textureEvent = net.neoforged.neoforge.client.ClientHooks.onRenderTooltipTexture(this.tooltipStack, this, l, i1, preEvent.getFont(), p_282615_, p_371327_);
-+            TooltipRenderUtil.renderTooltipBackground(this, l, i1, i, j, 400, textureEvent.getTexture());
-             this.pose.translate(0.0F, 0.0F, 400.0F);
-             int k1 = i1;
- 
-             for (int l1 = 0; l1 < p_282615_.size(); l1++) {
-                 ClientTooltipComponent clienttooltipcomponent1 = p_282615_.get(l1);
--                clienttooltipcomponent1.renderText(p_282675_, l, k1, this.pose.last().pose(), this.bufferSource);
--                k1 += clienttooltipcomponent1.getHeight(p_282675_) + (l1 == 0 ? 2 : 0);
-+                clienttooltipcomponent1.renderText(preEvent.getFont(), l, k1, this.pose.last().pose(), this.bufferSource);
-+                k1 += clienttooltipcomponent1.getHeight(preEvent.getFont()) + (l1 == 0 ? 2 : 0);
-             }
- 
-             k1 = i1;
- 
-             for (int k2 = 0; k2 < p_282615_.size(); k2++) {
-                 ClientTooltipComponent clienttooltipcomponent2 = p_282615_.get(k2);
--                clienttooltipcomponent2.renderImage(p_282675_, l, k1, i2, j2, this);
--                k1 += clienttooltipcomponent2.getHeight(p_282675_) + (k2 == 0 ? 2 : 0);
-+                clienttooltipcomponent2.renderImage(preEvent.getFont(), l, k1, i2, j2, this);
-+                k1 += clienttooltipcomponent2.getHeight(preEvent.getFont()) + (k2 == 0 ? 2 : 0);
-             }
- 
-             this.pose.popPose();
+         for (int k1 = 0; k1 < p_371741_.size(); k1++) {

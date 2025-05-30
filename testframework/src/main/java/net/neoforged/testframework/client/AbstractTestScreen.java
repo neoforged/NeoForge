@@ -28,7 +28,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -183,7 +183,7 @@ public abstract class AbstractTestScreen extends Screen {
                 final boolean renderTransparent = !isEnabled();
 
                 ResourceLocation icon = TestsOverlay.ICON_BY_RESULT.get(status.result());
-                graphics.blitSprite(RenderType::guiTextured, icon, pLeft, pTop, 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, pLeft, pTop, 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
 
                 final Component title = TestsOverlay.statusColoured(test.visuals().title(), status);
                 graphics.drawString(font, title, pLeft + 11, pTop, renderTransparent ? (alpha | 0xffffff0) : 0xffffff);
@@ -206,7 +206,7 @@ public abstract class AbstractTestScreen extends Screen {
                 }
 
                 if (!tooltip.isEmpty()) {
-                    graphics.renderTooltip(font, tooltip, mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, tooltip, mouseX, mouseY);
                 }
             }
 
@@ -250,15 +250,13 @@ public abstract class AbstractTestScreen extends Screen {
             @Override
             public void render(GuiGraphics graphics, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
                 if (isTitle) {
-                    graphics.drawCenteredString(font, getTitle(), pLeft + pWidth / 2, pTop + 2, 0xffffff);
+                    graphics.drawCenteredString(font, getTitle(), pLeft + pWidth / 2, pTop + 2, 0xffffffff);
                 } else {
-                    graphics.drawString(font, getTitle(), pLeft + 11, pTop + 2, 0xffffff);
+                    graphics.drawString(font, getTitle(), pLeft + 11, pTop + 2, 0xffffffff);
                     this.browseButton.setX(pLeft + pWidth - 53);
                     this.browseButton.setY(pTop - 1);
-                    graphics.pose().pushPose();
-                    graphics.pose().translate(0, 0, 100);
+                    // TODO 1.21.6: nextStratum instead? Was increasing z by 100 before.
                     browseButton.render(graphics, pMouseX, pMouseY, pPartialTick);
-                    graphics.pose().popPose();
                 }
             }
 
@@ -268,11 +266,11 @@ public abstract class AbstractTestScreen extends Screen {
                 final List<Test> all = group.resolveAll();
                 final int enabledCount = (int) all.stream().filter(it -> framework.tests().isEnabled(it.id())).count();
                 if (enabledCount == all.size()) {
-                    graphics.renderTooltip(font, Component.literal("All tests in group are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
                 } else if (enabledCount == 0) {
-                    graphics.renderTooltip(font, Component.literal("All tests in group are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
                 } else {
-                    graphics.renderTooltip(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
                 }
             }
 

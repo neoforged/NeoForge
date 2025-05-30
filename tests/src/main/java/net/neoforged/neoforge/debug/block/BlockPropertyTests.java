@@ -32,6 +32,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.eventtest.internal.TestsMod;
@@ -170,11 +172,8 @@ public class BlockPropertyTests {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
-            CompoundTag tag = pkt.getTag();
-            if (!tag.isEmpty()) {
-                setLit(tag.getBooleanOr("lit", false));
-            }
+        public void onDataPacket(Connection net, ValueInput valueInput) {
+            setLit(valueInput.getBooleanOr("lit", false));
         }
 
         @Override
@@ -185,15 +184,15 @@ public class BlockPropertyTests {
         }
 
         @Override
-        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
-            super.loadAdditional(tag, holderLookup);
-            lit = tag.getBooleanOr("lit", false);
+        public void loadAdditional(ValueInput valueInput) {
+            super.loadAdditional(valueInput);
+            lit = valueInput.getBooleanOr("lit", false);
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
-            super.saveAdditional(tag, holderLookup);
-            tag.putBoolean("lit", lit);
+        protected void saveAdditional(ValueOutput valueOutput) {
+            super.saveAdditional(valueOutput);
+            valueOutput.putBoolean("lit", lit);
         }
     }
 }

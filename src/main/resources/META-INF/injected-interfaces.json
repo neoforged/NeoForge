@@ -89,8 +89,8 @@
   "net/minecraft/data/tags/IntrinsicHolderTagsProvider$IntrinsicTagAppender": [
     "net/neoforged/neoforge/common/extensions/IIntrinsicHolderTagAppenderExtension<T>"
   ],
-  "net/minecraft/data/tags/TagsProvider$TagAppender": [
-    "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<T>"
+  "net/minecraft/data/tags/TagAppender": [
+    "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<E, T>"
   ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"

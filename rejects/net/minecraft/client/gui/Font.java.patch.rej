@@ -1,0 +1,35 @@
+++++ REJECTED HUNK: 3
+@@ -402,7 +406,7 @@
+                     p_381032_ - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, this.getUnderTextEffectDepth(), this.backgroundColor
+                 );
+                 bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+-                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
++                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
+                 bakedglyph.renderEffect(bakedglyph$effect, this.pose, vertexconsumer, this.packedLightCoords);
+             }
+ 
+++++ END HUNK
+
+++++ REJECTED HUNK: 4
+@@ -412,7 +416,7 @@
+                     bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+                 }
+ 
+-                VertexConsumer vertexconsumer1 = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
++                VertexConsumer vertexconsumer1 = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
+ 
+                 for (BakedGlyph.Effect bakedglyph$effect1 : this.effects) {
+                     bakedglyph.renderEffect(bakedglyph$effect1, this.pose, vertexconsumer1, this.packedLightCoords);
+++++ END HUNK
+
+++++ REJECTED HUNK: 5
+@@ -446,7 +450,7 @@
+         void renderCharacters() {
+             for (BakedGlyph.GlyphInstance bakedglyph$glyphinstance : this.glyphInstances) {
+                 BakedGlyph bakedglyph = bakedglyph$glyphinstance.glyph();
+-                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
++                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
+                 bakedglyph.renderChar(bakedglyph$glyphinstance, this.pose, vertexconsumer, this.packedLightCoords);
+             }
+         }
+++++ END HUNK

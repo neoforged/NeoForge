@@ -1,26 +1,32 @@
 --- a/net/minecraft/network/protocol/status/ClientboundStatusResponsePacket.java
 +++ b/net/minecraft/network/protocol/status/ClientboundStatusResponsePacket.java
-@@ -5,16 +_,22 @@
- import net.minecraft.network.protocol.Packet;
+@@ -10,13 +_,27 @@
  import net.minecraft.network.protocol.PacketType;
+ import net.minecraft.resources.RegistryOps;
  
 -public record ClientboundStatusResponsePacket(ServerStatus status) implements Packet<ClientStatusPacketListener> {
 +public record ClientboundStatusResponsePacket(ServerStatus status, @org.jetbrains.annotations.Nullable String cachedStatus) implements Packet<ClientStatusPacketListener> {
-     public static final StreamCodec<FriendlyByteBuf, ClientboundStatusResponsePacket> STREAM_CODEC = Packet.codec(
-         ClientboundStatusResponsePacket::write, ClientboundStatusResponsePacket::new
+     private static final RegistryOps<JsonElement> OPS = RegistryAccess.EMPTY.createSerializationContext(JsonOps.INSTANCE);
+-    public static final StreamCodec<ByteBuf, ClientboundStatusResponsePacket> STREAM_CODEC = StreamCodec.composite(
++    public static final StreamCodec<ByteBuf, ClientboundStatusResponsePacket> VANILLA_STREAM_CODEC = StreamCodec.composite(
+         ByteBufCodecs.lenientJson(32767).apply(ByteBufCodecs.fromCodec(OPS, ServerStatus.CODEC)),
+         ClientboundStatusResponsePacket::status,
+         ClientboundStatusResponsePacket::new
      );
- 
++    public static final StreamCodec<net.minecraft.network.FriendlyByteBuf, ClientboundStatusResponsePacket> STREAM_CODEC = StreamCodec.of(
++            (buffer, packet) -> {
++                if (packet.cachedStatus != null) {
++                    buffer.writeUtf(packet.cachedStatus);
++                } else {
++                    VANILLA_STREAM_CODEC.encode(buffer, packet);
++                }
++            },
++            VANILLA_STREAM_CODEC::decode
++    );
++
 +    public ClientboundStatusResponsePacket(ServerStatus status) {
 +        this(status, null);
 +    }
-+
-     private ClientboundStatusResponsePacket(FriendlyByteBuf p_179834_) {
-         this(p_179834_.readJsonWithCodec(ServerStatus.CODEC));
-     }
  
-     private void write(FriendlyByteBuf p_134899_) {
-+        if (cachedStatus != null) p_134899_.writeUtf(cachedStatus);
-+        else
-         p_134899_.writeJsonWithCodec(ServerStatus.CODEC, this.status);
-     }
- 
+     @Override
+     public PacketType<ClientboundStatusResponsePacket> type() {

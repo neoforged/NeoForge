@@ -1,6 +1,7 @@
+++++ Target missing
 --- a/net/minecraft/data/tags/ItemTagsProvider.java
 +++ b/net/minecraft/data/tags/ItemTagsProvider.java
-@@ -17,19 +_,35 @@
+@@ -17,19 +17,35 @@
      private final Map<TagKey<Block>, TagKey<Item>> tagsToCopy = new HashMap<>();
  
      public ItemTagsProvider(
