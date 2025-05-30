@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/resources/model/MultiPartBakedModel.java
 +++ b/net/minecraft/client/resources/model/MultiPartBakedModel.java
-@@ -20,7 +_,7 @@
- import org.apache.commons.lang3.tuple.Pair;
- 
- @OnlyIn(Dist.CLIENT)
--public class MultiPartBakedModel implements BakedModel {
-+public class MultiPartBakedModel implements BakedModel, net.neoforged.neoforge.client.model.IDynamicBakedModel {
-     private final List<Pair<Predicate<BlockState>, BakedModel>> selectors;
-     protected final boolean hasAmbientOcclusion;
-     protected final boolean isGui3d;
 @@ -29,10 +_,12 @@
      protected final ItemTransforms transforms;
      protected final ItemOverrides overrides;

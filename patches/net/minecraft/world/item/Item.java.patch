@@ -1,11 +1,8 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -56,9 +_,9 @@
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
+@@ -58,7 +_,7 @@
  
--public class Item implements FeatureElement, ItemLike {
-+public class Item implements FeatureElement, ItemLike, net.neoforged.neoforge.common.extensions.IItemExtension {
+ public class Item implements FeatureElement, ItemLike, net.neoforged.neoforge.common.extensions.IItemExtension {
      private static final Logger LOGGER = LogUtils.getLogger();
 -    public static final Map<Block, Item> BY_BLOCK = Maps.newHashMap();
 +    public static final Map<Block, Item> BY_BLOCK = net.neoforged.neoforge.registries.GameData.getBlockItemMap();
@@ -142,11 +139,10 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -341,13 +_,22 @@
+@@ -341,6 +_,14 @@
          return this.requiredFeatures;
      }
  
--    public static class Properties {
 +    /**
 +     * Neo: Allowing mods to define client behavior for their Items
 +     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
@@ -155,10 +151,10 @@
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientItemExtensions> consumer) {
 +    }
 +
-+    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
+     public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
          private static final Interner<DataComponentMap> COMPONENT_INTERNER = Interners.newStrongInterner();
          @Nullable
-         private DataComponentMap.Builder components;
+@@ -348,6 +_,7 @@
          @Nullable
          Item craftingRemainingItem;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;

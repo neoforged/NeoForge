@@ -72,27 +72,21 @@ immaculate {
             return fileContents
         }
 
-        def interfaceChange = Pattern.compile('^[-+].*(implements|(interface.*extends)).*\$', Pattern.UNIX_LINES | Pattern.MULTILINE)
-        custom 'noInterfaceRemoval', { String fileContents ->
-            def interfaceChanges = fileContents.findAll(interfaceChange)
+        def interfaceChange = Pattern.compile('[-+].*(implements|(interface.*extends))(.*)\\{')
+        custom 'noInterfaceModifications', { String fileContents ->
+            def interfaceChanges = fileContents.lines().filter { it.matches(interfaceChange) }.toList()
             if (interfaceChanges.isEmpty()) return fileContents
-            String removalChange = ""
+            String oldInterfaces = ""
+            // we expect interface additions/removals in pairs of - and then +
             interfaceChanges.each { String change ->
+                final match = change =~ interfaceChange
+                match.find()
+                final values = match.group(3).trim()
                 if (change.startsWith('-')) {
-                    //Skip the - and the ending brace
-                    int implementsIndex = change.indexOf("implements")
-                    if (implementsIndex == -1) implementsIndex = change.indexOf("extends")
-                    //It should never still be -1 based on our initial matching regex, but if it does fail so we can figure out why
-                    if (implementsIndex == -1) implementsIndex = 1
-                    removalChange = change.substring(implementsIndex, change.length() - 1).trim()
-                } else if (!removalChange.isEmpty() && !change.contains(removalChange)) {
-                    throw new GradleException("Removal of interfaces via patches is not allowed!")
-                } else {
-                    removalChange = ""
+                    oldInterfaces = values
+                } else if (oldInterfaces != values) {
+                    throw new GradleException("Modification of interfaces via patches is not allowed!")
                 }
-            }
-            if (!removalChange.isEmpty()) {
-                throw new GradleException("Removal of interfaces via patches is not allowed!")
             }
             return fileContents
         }

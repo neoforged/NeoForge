@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/entity/vehicle/Boat.java
 +++ b/net/minecraft/world/entity/vehicle/Boat.java
-@@ -52,7 +_,7 @@
- import net.minecraft.world.phys.shapes.Shapes;
- import net.minecraft.world.phys.shapes.VoxelShape;
- 
--public class Boat extends VehicleEntity implements Leashable, VariantHolder<Boat.Type> {
-+public class Boat extends VehicleEntity implements Leashable, VariantHolder<Boat.Type>, net.neoforged.neoforge.common.extensions.IBoatExtension {
-     private static final EntityDataAccessor<Integer> DATA_ID_TYPE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.INT);
-     private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_LEFT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.BOOLEAN);
-     private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_RIGHT = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.BOOLEAN);
 @@ -157,7 +_,7 @@
              }
          }
@@ -91,17 +82,15 @@
      }
  
      protected int getMaxPassengers() {
-@@ -914,7 +_,9 @@
+@@ -914,6 +_,8 @@
          IN_AIR;
      }
  
--    public static enum Type implements StringRepresentable {
 +    @net.neoforged.fml.common.asm.enumextension.NamedEnum(1)
 +    @net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
-+    public static enum Type implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+     public static enum Type implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
          OAK(Blocks.OAK_PLANKS, "oak"),
          SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),
-         BIRCH(Blocks.BIRCH_PLANKS, "birch"),
 @@ -923,16 +_,59 @@
          CHERRY(Blocks.CHERRY_PLANKS, "cherry"),
          DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),

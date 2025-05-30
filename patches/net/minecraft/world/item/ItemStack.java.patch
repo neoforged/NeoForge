@@ -1,14 +1,5 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -92,7 +_,7 @@
- import org.apache.commons.lang3.mutable.MutableBoolean;
- import org.slf4j.Logger;
- 
--public final class ItemStack implements DataComponentHolder {
-+public final class ItemStack implements DataComponentHolder, net.neoforged.neoforge.common.extensions.IItemStackExtension, net.neoforged.neoforge.common.MutableDataComponentHolder {
-     public static final Codec<Holder<Item>> ITEM_NON_AIR_CODEC = BuiltInRegistries.ITEM
-         .holderByNameCodec()
-         .validate(
 @@ -234,6 +_,10 @@
          return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
      }
