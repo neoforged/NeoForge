@@ -375,6 +375,12 @@ public class NeoForgeMod {
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<TagEmptyCondition<?>>> TAG_EMPTY_CONDITION = CONDITION_CODECS.register("tag_empty", () -> TagEmptyCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AlwaysCondition>> ALWAYS_CONDITION = CONDITION_CODECS.register("always", () -> AlwaysCondition.CODEC);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<FeatureFlagsEnabledCondition>> FEATURE_FLAGS_ENABLED_CONDITION = CONDITION_CODECS.register("feature_flags_enabled", () -> FeatureFlagsEnabledCondition.CODEC);
+    static {
+        // Allows older json still using `neoforge:true` and `neoforge:false` in mods and datapacks to continue to work as expected.
+        // No plans to remove this alias in the future. Though try and use `neoforge:always` and `neoforge:never` going forward.
+        CONDITION_CODECS.addAlias(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "false"), ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "never"));
+        CONDITION_CODECS.addAlias(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "true"), ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "always"));
+    }
 
     private static final DeferredRegister<MapCodec<? extends EntitySubPredicate>> ENTITY_PREDICATE_CODECS = DeferredRegister.create(Registries.ENTITY_SUB_PREDICATE_TYPE, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends EntitySubPredicate>, MapCodec<PiglinNeutralArmorEntityPredicate>> PIGLIN_NEUTRAL_ARMOR_PREDICATE = ENTITY_PREDICATE_CODECS.register("piglin_neutral_armor", () -> PiglinNeutralArmorEntityPredicate.CODEC);
