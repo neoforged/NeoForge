@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/state/EntityRenderState.java
 +++ b/net/minecraft/client/renderer/entity/state/EntityRenderState.java
-@@ -10,7 +_,7 @@
+@@ -11,7 +_,7 @@
  import net.neoforged.api.distmarker.OnlyIn;
  
  @OnlyIn(Dist.CLIENT)
@@ -9,7 +9,7 @@
      public EntityType<?> entityType;
      public double x;
      public double y;
-@@ -35,6 +_,7 @@
+@@ -36,6 +_,7 @@
      public HitboxesRenderState hitboxesRenderState;
      @Nullable
      public ServerHitboxesRenderState serverHitboxesRenderState;

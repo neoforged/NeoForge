@@ -1,29 +1,12 @@
 --- a/net/minecraft/client/renderer/chunk/RenderRegionCache.java
 +++ b/net/minecraft/client/renderer/chunk/RenderRegionCache.java
-@@ -16,8 +_,13 @@
- 
-     @Nullable
-     public RenderChunkRegion createRegion(Level p_200466_, SectionPos p_350879_) {
-+        return createRegion(p_200466_, p_350879_, true);
-+    }
-+
-+    @Nullable
-+    public RenderChunkRegion createRegion(Level p_200466_, SectionPos p_350879_, boolean nullForEmpty) {
-         RenderRegionCache.ChunkInfo renderregioncache$chunkinfo = this.getChunkInfo(p_200466_, p_350879_.x(), p_350879_.z());
--        if (renderregioncache$chunkinfo.chunk().isSectionEmpty(p_350879_.y())) {
-+        if (nullForEmpty && renderregioncache$chunkinfo.chunk().isSectionEmpty(p_350879_.y())) {
-             return null;
-         } else {
-             int i = p_350879_.x() - 1;
-@@ -36,7 +_,10 @@
-                 }
+@@ -33,7 +_,8 @@
              }
- 
--            return new RenderChunkRegion(p_200466_, i, j, arenderchunk);
-+            int sectionMinY = p_350879_.getY() - RenderChunkRegion.RADIUS;
-+            int sectionMaxY = p_350879_.getY() + RenderChunkRegion.RADIUS;
-+            var modelDataManager = p_200466_.getModelDataManager().snapshotSectionRegion(i, sectionMinY, j, k, sectionMaxY, l);
-+            return new RenderChunkRegion(p_200466_, i, j, arenderchunk, modelDataManager);
          }
+ 
+-        return new RenderSectionRegion(p_200466_, l, i1, j1, asectioncopy);
++        var modelDataManager = p_200466_.getModelDataManager().snapshotSectionRegion(l, i1, j1, k1, l1, i2);
++        return new RenderSectionRegion(p_200466_, l, i1, j1, asectioncopy, modelDataManager);
      }
  
+     private SectionCopy getSectionDataCopy(Level p_427240_, int p_427457_, int p_427278_, int p_427229_) {

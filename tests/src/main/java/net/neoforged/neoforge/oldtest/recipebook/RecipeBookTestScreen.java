@@ -10,7 +10,7 @@ import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -41,6 +41,6 @@ public class RecipeBookTestScreen extends AbstractRecipeBookScreen<RecipeBookTes
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         int x = this.leftPos;
         int y = this.topPos;
-        graphics.blit(RenderType::guiTextured, TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 }

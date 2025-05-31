@@ -16,7 +16,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.LoadingOverlay;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadInstance;
@@ -56,7 +56,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         var logoGpuTexture = (GlTexture) mc.getTextureManager().getTexture(MOJANG_STUDIOS_LOGO_LOCATION).getTexture();
         displayWindow.addMojangTexture(logoGpuTexture.glId());
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
-        this.framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", displayWindow.getFramebufferTextureId());
+        this.framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
         Minecraft.getInstance().getTextureManager().register(LOADING_OVERLAY_TEXTURE_ID, new ExternalTexture(framebuffer));
     }
 
@@ -71,7 +71,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);
         progressMeter.setAbsolute(Mth.ceil(this.currentProgress * 1000));
 
-        graphics.flush(); // Ensure no draws are queued before we go and render externally
+        // TODO porting: check whether this is still needed
+        //graphics.flush(); // Ensure no draws are queued before we go and render externally
 
         // This updates the EarlyDisplay screen in the off-screen framebuffer
         displayWindow.renderToFramebuffer();
@@ -89,14 +90,15 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         var width = this.minecraft.getWindow().getGuiScaledWidth();
         var height = this.minecraft.getWindow().getGuiScaledHeight();
         int color = ARGB.colorFromFloat(fade, 1, 1, 1);
-        graphics.blit(RenderType::guiTexturedOverlay, LOADING_OVERLAY_TEXTURE_ID, 0, 0, 0, 0, fbWidth, fbHeight, fbWidth, fbHeight, width, height, color);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LOADING_OVERLAY_TEXTURE_ID, 0, 0, 0, 0, fbWidth, fbHeight, fbWidth, fbHeight, width, height, color);
 
         if (fadeouttimer >= 2.0F) {
             progressMeter.complete();
-            graphics.flush(); // Ensure drawing is done before releasing the texture
-            Minecraft.getInstance().getTextureManager().release(LOADING_OVERLAY_TEXTURE_ID);
+            Minecraft.getInstance().schedule(() -> {
+                Minecraft.getInstance().getTextureManager().release(LOADING_OVERLAY_TEXTURE_ID);
+                this.displayWindow.close();
+            });
             this.minecraft.setOverlay(null);
-            this.displayWindow.close();
         }
 
         if (this.fadeOutStart == -1L && this.reload.isDone()) {
@@ -119,6 +121,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;
             this.setFilter(false, false);
+            this.textureView = RenderSystem.getDevice().createTextureView(texture);
         }
     }
 }

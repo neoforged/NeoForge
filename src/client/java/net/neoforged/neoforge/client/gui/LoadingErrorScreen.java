@@ -93,7 +93,7 @@ public class LoadingErrorScreen extends ErrorScreen {
 
     private void drawMultiLineCenteredString(GuiGraphics guiGraphics, Font fr, Component str, int x, int y) {
         for (FormattedCharSequence s : fr.split(str, this.width)) {
-            guiGraphics.drawString(fr, s, (float) (x - fr.width(s) / 2.0), (float) y, 0xFFFFFF, true);
+            guiGraphics.drawString(fr, s, x - fr.width(s) / 2, y, 0xFFFFFFFF, true);
             y += fr.lineHeight;
         }
     }
@@ -149,9 +149,9 @@ public class LoadingErrorScreen extends ErrorScreen {
                 int y = top + 2;
                 for (FormattedCharSequence string : strings) {
                     if (center)
-                        guiGraphics.drawString(font, string, left + (width - font.width(string)) / 2F, (float) y, 0xFFFFFF, false);
+                        guiGraphics.drawString(font, string, left + (width - font.width(string)) / 2, y, 0xFFFFFFFF, false);
                     else
-                        guiGraphics.drawString(font, string, left + 5, y, 0xFFFFFF, false);
+                        guiGraphics.drawString(font, string, left + 5, y, 0xFFFFFFFF, false);
                     y += font.lineHeight;
                 }
             }

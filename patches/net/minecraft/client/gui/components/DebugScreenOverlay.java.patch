@@ -1,11 +1,12 @@
 --- a/net/minecraft/client/gui/components/DebugScreenOverlay.java
 +++ b/net/minecraft/client/gui/components/DebugScreenOverlay.java
-@@ -185,8 +_,14 @@
+@@ -189,9 +_,15 @@
          Entity entity = this.minecraft.getCameraEntity();
          this.block = entity.pick(20.0, 0.0F, false);
          this.liquid = entity.pick(20.0, 0.0F, true);
 -        this.drawGameInformation(p_281427_);
 -        this.drawSystemInformation(p_281427_);
+         p_281427_.nextStratum();
 +
 +        final List<String> gameInformation = this.collectGameInformationText();
 +        final List<String> systemInformation = this.collectSystemInformationText();
@@ -17,7 +18,7 @@
          this.profilerPieChart.setBottomOffset(10);
          if (this.renderFpsCharts) {
              int i = p_281427_.guiWidth();
-@@ -219,7 +_,11 @@
+@@ -224,7 +_,11 @@
          profilerfiller.pop();
      }
  
@@ -30,7 +31,7 @@
          List<String> list = this.getGameInformation();
          list.add("");
          boolean flag = this.minecraft.getSingleplayerServer() != null;
-@@ -234,11 +_,25 @@
+@@ -239,11 +_,25 @@
                  + (this.renderNetworkCharts ? " visible" : " hidden")
          );
          list.add("For help: press F3 + Q");
@@ -57,7 +58,7 @@
          this.renderLines(p_281261_, list, false);
      }
  
-@@ -568,6 +_,13 @@
+@@ -573,6 +_,13 @@
              gpudevice.getRenderer(),
              String.format(Locale.ROOT, "%s %s", gpudevice.getBackendName(), gpudevice.getVersion())
          );
@@ -71,7 +72,7 @@
          if (this.minecraft.showOnlyReducedInfo()) {
              return list;
          } else {
-@@ -604,6 +_,7 @@
+@@ -609,6 +_,7 @@
                  list.add("");
                  list.add(ChatFormatting.UNDERLINE + "Targeted Entity");
                  list.add(String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType())));

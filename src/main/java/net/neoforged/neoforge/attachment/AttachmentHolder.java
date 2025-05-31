@@ -113,6 +113,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
      * Writes the serializable attachments to a tag.
      * Returns {@code null} if there are no serializable attachments.
      */
+    // TODO 1.21.6: Rewrite using ValueOutput
     @Nullable
     public final CompoundTag serializeAttachments(HolderLookup.Provider provider) {
         if (attachments == null) {
@@ -141,6 +142,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     /**
      * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider)}.
      */
+    // TODO 1.21.6: Make this use ValueInput
     protected final void deserializeAttachments(HolderLookup.Provider provider, CompoundTag tag) {
         for (var key : tag.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.

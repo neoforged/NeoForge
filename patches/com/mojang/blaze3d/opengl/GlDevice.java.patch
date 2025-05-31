@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlDevice.java
 +++ b/com/mojang/blaze3d/opengl/GlDevice.java
-@@ -129,6 +_,65 @@
+@@ -186,6 +_,67 @@
          }
      }
  
@@ -10,7 +10,7 @@
 +     * for cleaning up the OpenGL texture. Calling this is a relatively expensive operation since we
 +     * introspect the texture using OpenGL getters.
 +     */
-+    public GpuTexture createExternalTexture(@Nullable String label, int nativeId) {
++    public GpuTexture createExternalTexture(@Nullable String label, int usage, int nativeId) {
 +        var previousBinding = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D);
 +        org.lwjgl.opengl.GL11.glBindTexture(org.lwjgl.opengl.GL11.GL_TEXTURE_2D, nativeId);
 +
@@ -46,23 +46,25 @@
 +            mipWidth = nextWidth;
 +        }
 +
++        int depthOrLayers = 1;
++
 +        org.lwjgl.opengl.GL11.glBindTexture(org.lwjgl.opengl.GL11.GL_TEXTURE_2D, previousBinding);
 +
-+        return createExternalTexture(label, format, width, height, mipLevels, nativeId);
++        return createExternalTexture(usage, label, format, width, height, depthOrLayers, mipLevels, nativeId);
 +    }
 +
 +    /**
 +     * Create a new GPU texture from an existing texture whose lifecycle is externally managed.
 +     */
-+    public GpuTexture createExternalTexture(@Nullable String label, TextureFormat format, int width, int height, int mipLevels, int nativeId) {
++    public GpuTexture createExternalTexture(int usage, @Nullable String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int nativeId) {
 +        if (label == null) {
 +            label = String.valueOf(nativeId);
 +        }
-+        GlTexture gltexture = new GlTexture(label, format, width, height, mipLevels, nativeId, true);
++        GlTexture gltexture = new GlTexture(usage, label, format, width, height, depthOrLayers, mipLevels, nativeId, true);
 +        this.debugLabels.applyLabel(gltexture);
 +        return gltexture;
 +    }
 +
      @Override
-     public GpuBuffer createBuffer(@Nullable Supplier<String> p_409705_, BufferType p_409714_, BufferUsage p_409894_, int p_410348_) {
-         if (p_410348_ <= 0) {
+     public GpuTextureView createTextureView(GpuTexture p_423640_) {
+         return this.createTextureView(p_423640_, 0, p_423640_.getMipLevels());

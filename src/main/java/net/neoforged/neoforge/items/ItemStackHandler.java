@@ -9,11 +9,17 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.DataComponentUtil;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemStackHandler.class);
+
     protected NonNullList<ItemStack> stacks;
 
     public ItemStackHandler() {
@@ -136,12 +142,14 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        var ops = provider.createSerializationContext(NbtOps.INSTANCE);
         ListTag nbtTagList = new ListTag();
         for (int i = 0; i < stacks.size(); i++) {
-            if (!stacks.get(i).isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
+            var stack = stacks.get(i);
+            if (!stack.isEmpty()) {
+                CompoundTag itemTag = (CompoundTag) DataComponentUtil.wrapEncodingExceptions(stack, ItemStack.CODEC, provider);
                 itemTag.putInt("Slot", i);
-                nbtTagList.add(stacks.get(i).save(provider, itemTag));
+                nbtTagList.add(itemTag);
             }
         }
         CompoundTag nbt = new CompoundTag();
@@ -153,11 +161,14 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         setSize(nbt.getIntOr("Size", stacks.size()));
+        var ops = provider.createSerializationContext(NbtOps.INSTANCE);
         nbt.getListOrEmpty("Items").compoundStream().forEach(itemTags -> {
             int slot = itemTags.getIntOr("Slot", -1);
 
             if (slot >= 0 && slot < stacks.size()) {
-                ItemStack.parse(provider, itemTags).ifPresent(stack -> stacks.set(slot, stack));
+                ItemStack.CODEC.parse(ops, itemTags)
+                        .resultOrPartial(error -> LOGGER.error("Tried to load invalid fluid: '{}'", error))
+                        .ifPresent(stack -> stacks.set(slot, stack));
             }
         });
         onLoad();

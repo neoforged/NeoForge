@@ -3,7 +3,7 @@
 @@ -9,8 +_,13 @@
  import net.minecraft.world.entity.decoration.PaintingVariants;
  
- public class PaintingVariantTagsProvider extends TagsProvider<PaintingVariant> {
+ public class PaintingVariantTagsProvider extends KeyTagProvider<PaintingVariant> {
 +    /** @deprecated Forge: Use the {@linkplain #PaintingVariantTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public PaintingVariantTagsProvider(PackOutput p_255750_, CompletableFuture<HolderLookup.Provider> p_256184_) {

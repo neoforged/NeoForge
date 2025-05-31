@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/TitleScreen.java
 +++ b/net/minecraft/client/gui/screens/TitleScreen.java
-@@ -110,11 +_,17 @@
+@@ -105,11 +_,17 @@
          int i = this.font.width(COPYRIGHT_TEXT);
          int j = this.width - i - 2;
          int k = 24;
@@ -19,7 +19,7 @@
          }
  
          l = this.createTestWorldButton(l, 24);
-@@ -156,7 +_,7 @@
+@@ -151,7 +_,7 @@
          if (SharedConstants.IS_RUNNING_IN_IDE) {
              this.addRenderableWidget(
                  Button.builder(Component.literal("Create Test World"), p_372504_ -> CreateWorldScreen.testWorld(this.minecraft, this))
@@ -28,26 +28,26 @@
                      .build()
              );
          }
-@@ -300,6 +_,7 @@
-         if ((i & -67108864) != 0) {
-             super.render(p_282860_, p_281753_, p_283539_, p_282628_);
-             this.logoRenderer.renderLogo(p_282860_, this.width, f);
-+            net.neoforged.neoforge.client.ClientHooks.renderMainMenu(this, p_282860_, this.font, this.width, this.height, i);
-             if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
-                 this.splash.render(p_282860_, this.width, this.font, i);
-             }
-@@ -315,7 +_,13 @@
-                 s = s + I18n.get("menu.modded");
-             }
+@@ -291,6 +_,7 @@
+         this.renderPanorama(p_282860_, p_282628_);
+         super.render(p_282860_, p_281753_, p_283539_, p_282628_);
+         this.logoRenderer.renderLogo(p_282860_, this.width, this.logoRenderer.keepLogoThroughFade() ? 1.0F : f);
++        net.neoforged.neoforge.client.ClientHooks.renderMainMenu(this, p_282860_, this.font, this.width, this.height, ARGB.as8BitChannel(f));
+         if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
+             this.splash.render(p_282860_, this.width, this.font, f);
+         }
+@@ -306,7 +_,13 @@
+             s = s + I18n.get("menu.modded");
+         }
  
--            p_282860_.drawString(this.font, s, 2, this.height - 10, 16777215 | i);
-+            net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
-+                    p_282860_.drawString(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), 16777215 | i)
-+            );
-+
-+            net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
-+                    p_282860_.drawString(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), 16777215 | i)
-+            );
-             if (this.realmsNotificationsEnabled() && f >= 1.0F) {
-                 this.realmsNotificationsScreen.render(p_282860_, p_281753_, p_283539_, p_282628_);
-             }
+-        p_282860_.drawString(this.font, s, 2, this.height - 10, ARGB.color(f, -1));
++        int brandingColor = ARGB.color(f, -1);
++        net.neoforged.neoforge.internal.BrandingControl.forEachLine(true, true, (brdline, brd) ->
++                p_282860_.drawString(this.font, brd, 2, this.height - (10 + brdline * (this.font.lineHeight + 1)), brandingColor)
++        );
++        net.neoforged.neoforge.internal.BrandingControl.forEachAboveCopyrightLine((brdline, brd) ->
++                p_282860_.drawString(this.font, brd, this.width - font.width(brd), this.height - (10 + (brdline + 1) * (this.font.lineHeight + 1)), brandingColor)
++        );
+         if (this.realmsNotificationsEnabled() && f >= 1.0F) {
+             this.realmsNotificationsScreen.render(p_282860_, p_281753_, p_283539_, p_282628_);
+         }

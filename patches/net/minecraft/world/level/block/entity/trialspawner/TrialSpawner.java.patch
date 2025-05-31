@@ -1,18 +1,18 @@
 --- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
 +++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawner.java
-@@ -234,9 +_,9 @@
-                             }
+@@ -210,9 +_,9 @@
+                 }
  
-                             boolean flag = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().getString("id").isPresent();
--                            if (flag) {
--                                mob.finalizeSpawn(p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.TRIAL_SPAWNER, null);
--                            }
-+                            // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
-+                            // The local flag is the conditions under which the spawner will normally call Mob#finalizeSpawn.
-+                            net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.TRIAL_SPAWNER, null, this, flag);
+                 boolean flag = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().getString("id").isPresent();
+-                if (flag) {
+-                    mob.finalizeSpawn(p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.TRIAL_SPAWNER, null);
+-                }
++                // Neo: Patch in FinalizeSpawn for spawners so it may be fired unconditionally, instead of only when vanilla would normally call it.
++                // The local flag is the conditions under which the spawner will normally call Mob#finalizeSpawn.
++                net.neoforged.neoforge.event.EventHooks.finalizeMobSpawnSpawner(mob, p_312582_, p_312582_.getCurrentDifficultyAt(mob.blockPosition()), EntitySpawnReason.TRIAL_SPAWNER, null, this, flag);
  
-                             mob.setPersistenceRequired();
-                             spawndata.getEquipment().ifPresent(mob::equip);
+                 mob.setPersistenceRequired();
+                 spawndata.getEquipment().ifPresent(mob::equip);
 @@ -416,5 +_,14 @@
          TrialSpawnerState getState();
  

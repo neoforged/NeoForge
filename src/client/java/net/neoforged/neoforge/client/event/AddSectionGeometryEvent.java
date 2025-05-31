@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
@@ -103,7 +103,7 @@ public class AddSectionGeometryEvent extends Event {
     }
 
     public static final class SectionRenderingContext {
-        private final Function<RenderType, VertexConsumer> getOrCreateLayer;
+        private final Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer;
         private final BlockAndTintGetter region;
         private final PoseStack poseStack;
 
@@ -115,27 +115,21 @@ public class AddSectionGeometryEvent extends Event {
          *                         rotation.
          */
         public SectionRenderingContext(
-                Function<RenderType, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
+                Function<ChunkSectionLayer, VertexConsumer> getOrCreateLayer, BlockAndTintGetter region, PoseStack poseStack) {
             this.getOrCreateLayer = getOrCreateLayer;
             this.region = region;
             this.poseStack = poseStack;
         }
 
         /**
-         * Returns the builder for the given render type/layer in the chunk section. If the render type is not already
+         * Returns the builder for the given {@link ChunkSectionLayer} in the chunk section. If the layer is not already
          * present in the section, marks the type as present in the section.
          * 
-         * @param type the render type to retrieve a builder for. This has to be one of the render types listed in
-         *             {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
+         * @param layer the {@link ChunkSectionLayer} to retrieve a builder for.
          * @return a vertex consumer adding geometry of the specified layer
-         * @throws IllegalArgumentException if the passed render type is not in
-         *                                  {@link net.minecraft.client.renderer.RenderType#chunkBufferLayers}.
          */
-        public VertexConsumer getOrCreateChunkBuffer(RenderType type) {
-            Preconditions.checkArgument(
-                    type.getChunkLayerId() != -1,
-                    "Cannot create a chunk render buffer for a non-chunk render type");
-            return getOrCreateLayer.apply(type);
+        public VertexConsumer getOrCreateChunkBuffer(ChunkSectionLayer layer) {
+            return getOrCreateLayer.apply(layer);
         }
 
         public PoseStack getPoseStack() {

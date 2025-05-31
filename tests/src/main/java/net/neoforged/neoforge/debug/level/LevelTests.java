@@ -67,14 +67,14 @@ public class LevelTests {
             final var oldInt = intRule.get();
 
             helper.startSequence()
-                    .thenExecute(() -> boolRule.set(true, player.server))
-                    .thenExecute(() -> intRule.set(12, player.server))
+                    .thenExecute(() -> boolRule.set(true, player.getServer()))
+                    .thenExecute(() -> intRule.set(12, player.getServer()))
 
                     .thenIdle(1)
                     .thenExecute(() -> helper.assertEntityProperty(player, ServerPlayer::getHealth, "player health", 8f))
 
-                    .thenExecute(() -> boolRule.set(oldBool, player.server))
-                    .thenExecute(() -> intRule.set(oldInt, player.server))
+                    .thenExecute(() -> boolRule.set(oldBool, player.getServer()))
+                    .thenExecute(() -> intRule.set(oldInt, player.getServer()))
                     .thenSucceed();
         });
     }

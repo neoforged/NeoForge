@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
-@@ -162,6 +_,46 @@
+@@ -176,6 +_,46 @@
              || this.writeDepth;
      }
  

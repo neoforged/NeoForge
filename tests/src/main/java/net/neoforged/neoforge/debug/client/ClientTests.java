@@ -13,7 +13,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
@@ -124,7 +124,7 @@ public class ClientTests {
                 @Override
                 public void renderFirstPersonOverlay(ItemStack stack, EquipmentSlot equipmentSlot, Player player, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
                     guiGraphics.blit(
-                            RenderType::guiTexturedOverlay,
+                            RenderPipelines.GUI_TEXTURED,
                             ResourceLocation.withDefaultNamespace("textures/block/stone.png"),
                             0,
                             0,

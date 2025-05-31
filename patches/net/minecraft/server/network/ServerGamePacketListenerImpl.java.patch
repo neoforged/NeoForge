@@ -1,26 +1,28 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -454,9 +_,11 @@
+@@ -463,18 +_,21 @@
+ 
+                 if (flag1 && serverlevel.noCollision(entity, aabb) || this.isEntityCollidingWithAnythingNew(serverlevel, entity, aabb, d3, d4, d5)) {
+                     entity.absSnapTo(d0, d1, d2, f, f1);
++                    resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
+                     this.send(ClientboundMoveVehiclePacket.fromEntity(entity));
+                     entity.removeLatestMovementRecording();
+                     return;
                  }
  
                  entity.absSnapTo(d3, d4, d5, f, f1);
 +                resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
-                 boolean flag3 = serverlevel.noCollision(entity, entity.getBoundingBox().deflate(0.0625));
-                 if (flag && (flag2 || !flag3)) {
-                     entity.absSnapTo(d0, d1, d2, f, f1);
-+                    resyncPlayerWithVehicle(entity); // Neo - Resync player position on vehicle moving
-                     this.send(ClientboundMoveVehiclePacket.fromEntity(entity));
-                     entity.removeLatestMovementRecordingBatch();
-                     return;
-@@ -468,6 +_,7 @@
+                 this.player.level().getChunkSource().move(this.player);
+                 Vec3 vec3 = new Vec3(entity.getX() - d0, entity.getY() - d1, entity.getZ() - d2);
+                 this.handlePlayerKnownMovement(vec3);
                  entity.setOnGroundWithMovement(p_9876_.onGround(), vec3);
                  entity.doCheckFallDamage(vec3.x, vec3.y, vec3.z, p_9876_.onGround());
                  this.player.checkMovementStatistics(vec3.x, vec3.y, vec3.z);
 +                this.player.checkRidingStatistics(vec3.x, vec3.y, vec3.z); // Neo: check riding stats too as vanilla checks them in rideTick based on the assumption that Entity#rideTick will move the entity, which we break
                  this.clientVehicleIsFloating = d11 >= -0.03125
-                     && !flag1
+                     && !flag
                      && !this.server.isFlightAllowed()
-@@ -480,6 +_,23 @@
+@@ -488,6 +_,23 @@
          }
      }
  
@@ -44,7 +46,7 @@
      private boolean noBlocksAround(Entity p_9794_) {
          return p_9794_.level()
              .getBlockStates(p_9794_.getBoundingBox().inflate(0.0625).expandTowards(0.0, -0.55, 0.0))
-@@ -659,7 +_,7 @@
+@@ -667,7 +_,7 @@
              if (serverlevel.isLoaded(blockpos)) {
                  BlockState blockstate = serverlevel.getBlockState(blockpos);
                  boolean flag = this.player.hasInfiniteMaterials() && p_382999_.includeData();
@@ -53,7 +55,7 @@
                  if (!itemstack.isEmpty()) {
                      if (flag) {
                          addBlockDataToItem(blockstate, serverlevel, blockpos, itemstack);
-@@ -1070,7 +_,7 @@
+@@ -1086,7 +_,7 @@
                                          && !flag1
                                          && !this.player.isSpectator()
                                          && !this.server.isFlightAllowed()
@@ -62,7 +64,7 @@
                                          && !this.player.hasEffect(MobEffects.LEVITATION)
                                          && !flag
                                          && !flag3
-@@ -1183,9 +_,10 @@
+@@ -1201,9 +_,10 @@
              switch (serverboundplayeractionpacket$action) {
                  case SWAP_ITEM_WITH_OFFHAND:
                      if (!this.player.isSpectator()) {
@@ -76,25 +78,25 @@
                          this.player.stopUsingItem();
                      }
  
-@@ -1213,7 +_,7 @@
+@@ -1231,7 +_,7 @@
                          .handleBlockBreakAction(
                              blockpos, serverboundplayeractionpacket$action, p_9889_.getDirection(), this.player.level().getMaxY(), p_9889_.getSequence()
                          );
--                    this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
+-                    this.ackBlockChangesUpTo(p_9889_.getSequence());
 +                    this.player.connection.ackBlockChangesUpTo = p_9889_.getSequence();
                      return;
                  default:
                      throw new IllegalArgumentException("Invalid player action");
-@@ -1234,7 +_,7 @@
+@@ -1252,7 +_,7 @@
      public void handleUseItemOn(ServerboundUseItemOnPacket p_9930_) {
-         PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.serverLevel());
+         PacketUtils.ensureRunningOnSameThread(p_9930_, this, this.player.level());
          if (this.player.hasClientLoaded()) {
--            this.player.connection.ackBlockChangesUpTo(p_9930_.getSequence());
+-            this.ackBlockChangesUpTo(p_9930_.getSequence());
 +            this.player.connection.ackBlockChangesUpTo = p_9930_.getSequence();
-             ServerLevel serverlevel = this.player.serverLevel();
+             ServerLevel serverlevel = this.player.level();
              InteractionHand interactionhand = p_9930_.getHand();
              ItemStack itemstack = this.player.getItemInHand(interactionhand);
-@@ -1390,8 +_,9 @@
+@@ -1408,8 +_,9 @@
                  }
  
                  CompletableFuture<FilteredText> completablefuture = this.filterTextPacket(playerchatmessage.signedContent());
@@ -105,7 +107,7 @@
                      PlayerChatMessage playerchatmessage1 = playerchatmessage.withUnsignedContent(component).filter(p_300785_.mask());
                      this.broadcastChatMessage(playerchatmessage1);
                  });
-@@ -1731,7 +_,11 @@
+@@ -1743,7 +_,11 @@
  
                              @Override
                              public void onInteraction(InteractionHand p_143682_, Vec3 p_143683_) {
@@ -118,17 +120,17 @@
                              }
  
                              @Override
-@@ -1931,14 +_,16 @@
+@@ -1941,14 +_,16 @@
      @Override
      public void handlePlayerAbilities(ServerboundPlayerAbilitiesPacket p_9887_) {
-         PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.serverLevel());
+         PacketUtils.ensureRunningOnSameThread(p_9887_, this, this.player.level());
 -        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.getAbilities().mayfly;
 +        this.player.getAbilities().flying = p_9887_.isFlying() && this.player.mayFly();
      }
  
      @Override
      public void handleClientInformation(ServerboundClientInformationPacket p_301979_) {
-         PacketUtils.ensureRunningOnSameThread(p_301979_, this, this.player.serverLevel());
+         PacketUtils.ensureRunningOnSameThread(p_301979_, this, this.player.level());
          boolean flag = this.player.isModelPartShown(PlayerModelPart.HAT);
 +        net.minecraft.server.level.ClientInformation oldInfo = this.player.clientInformation();
          this.player.updateOptions(p_301979_.information());
@@ -136,7 +138,7 @@
          if (this.player.isModelPartShown(PlayerModelPart.HAT) != flag) {
              this.server.getPlayerList().broadcastAll(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_HAT, this.player));
          }
-@@ -1994,7 +_,7 @@
+@@ -2024,7 +_,7 @@
              this.connection
                  .setupInboundProtocol(
                      ConfigurationProtocols.SERVERBOUND,
@@ -145,7 +147,7 @@
                  );
          }
      }
-@@ -2029,6 +_,7 @@
+@@ -2059,6 +_,7 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket p_333887_) {
