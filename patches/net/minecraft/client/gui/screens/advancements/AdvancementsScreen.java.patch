@@ -43,11 +43,11 @@
 +            int width = this.font.width(page);
 +            p_282589_.drawString(this.font, page.getVisualOrderText(), i + (252 / 2) - (width / 2), j - 44, -1);
 +        }
-         this.renderInside(p_282589_, p_282255_, p_283354_, i, j);
-         this.renderWindow(p_282589_, i, j);
-         this.renderTooltips(p_282589_, p_282255_, p_283354_, i, j);
-@@ -181,10 +_,12 @@
-         p_283395_.blit(RenderType::guiTextured, WINDOW_LOCATION, p_281890_, p_282532_, 0.0F, 0.0F, 252, 140, 256, 256);
+         p_282589_.nextStratum();
+         this.renderInside(p_282589_, i, j);
+         p_282589_.nextStratum();
+@@ -183,10 +_,12 @@
+         p_283395_.blit(RenderPipelines.GUI_TEXTURED, WINDOW_LOCATION, p_281890_, p_282532_, 0.0F, 0.0F, 252, 140, 256, 256);
          if (this.tabs.size() > 1) {
              for (AdvancementTab advancementtab : this.tabs.values()) {
 +                if (advancementtab.getPage() == tabPage)
@@ -59,12 +59,12 @@
                  advancementtab1.drawIcon(p_283395_, p_281890_, p_282532_);
              }
          }
-@@ -202,7 +_,7 @@
+@@ -205,7 +_,7 @@
  
          if (this.tabs.size() > 1) {
              for (AdvancementTab advancementtab : this.tabs.values()) {
 -                if (advancementtab.isMouseOver(p_281519_, p_283371_, p_283556_, p_282458_)) {
 +                if (advancementtab.getPage() == tabPage && advancementtab.isMouseOver(p_281519_, p_283371_, (double)p_283556_, (double)p_282458_)) {
-                     p_282784_.renderTooltip(this.font, advancementtab.getTitle(), p_283556_, p_282458_);
+                     p_282784_.setTooltipForNextFrame(this.font, advancementtab.getTitle(), p_283556_, p_282458_);
                  }
              }

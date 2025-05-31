@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -21,11 +20,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Allows users to register custom {@link LayeredDraw.Layer layers} for GUI rendering.
+ * Allows users to register custom {@link GuiLayerManager.Layer layers} for GUI rendering.
  *
  * <p>See also {@link RenderGuiLayerEvent} to intercept rendering of registered layers.
  *
- * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.
+ * <p>This event is not {@linkplain ICancellableEvent cancellable}.
  *
  * <p>This event is fired on the mod-specific event bus, only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  */
@@ -43,7 +42,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerBelowAll(ResourceLocation id, LayeredDraw.Layer layer) {
+    public void registerBelowAll(ResourceLocation id, GuiLayerManager.Layer layer) {
         register(Ordering.BEFORE, null, id, layer);
     }
 
@@ -55,7 +54,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerBelow(ResourceLocation other, ResourceLocation id, LayeredDraw.Layer layer) {
+    public void registerBelow(ResourceLocation other, ResourceLocation id, GuiLayerManager.Layer layer) {
         register(Ordering.BEFORE, other, id, layer);
     }
 
@@ -67,7 +66,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerAbove(ResourceLocation other, ResourceLocation id, LayeredDraw.Layer layer) {
+    public void registerAbove(ResourceLocation other, ResourceLocation id, GuiLayerManager.Layer layer) {
         register(Ordering.AFTER, other, id, layer);
     }
 
@@ -77,11 +76,11 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerAboveAll(ResourceLocation id, LayeredDraw.Layer layer) {
+    public void registerAboveAll(ResourceLocation id, GuiLayerManager.Layer layer) {
         register(Ordering.AFTER, null, id, layer);
     }
 
-    private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, LayeredDraw.Layer layer) {
+    private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, GuiLayerManager.Layer layer) {
         Objects.requireNonNull(key);
         for (var namedLayer : layers) {
             Preconditions.checkArgument(!namedLayer.name().equals(key), "Layer already registered: " + key);

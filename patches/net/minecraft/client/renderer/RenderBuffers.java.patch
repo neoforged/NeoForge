@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/RenderBuffers.java
 +++ b/net/minecraft/client/renderer/RenderBuffers.java
-@@ -35,6 +_,7 @@
+@@ -36,6 +_,7 @@
              put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_366352_, RenderType.entityGlint());
              put((Object2ObjectLinkedOpenHashMap<RenderType, ByteBufferBuilder>)p_366352_, RenderType.waterMask());
          });

@@ -8,14 +8,16 @@ package net.neoforged.neoforge.client;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderStateShard.OutputStateShard;
 import net.minecraft.client.renderer.RenderStateShard.TextureStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.TriState;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.util.Lazy;
 
@@ -159,7 +161,7 @@ public enum NeoForgeRenderTypes {
         private static RenderType unsortedTranslucent(ResourceLocation textureLocation) {
             final boolean sortingEnabled = false;
             var renderState = RenderType.CompositeState.builder()
-                    .setTextureState(new TextureStateShard(textureLocation, TriState.DEFAULT, false))
+                    .setTextureState(new TextureStateShard(textureLocation, false))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
@@ -171,7 +173,7 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType unlitTranslucent(ResourceLocation textureLocation, boolean sortingEnabled) {
             var renderState = RenderType.CompositeState.builder()
-                    .setTextureState(new TextureStateShard(textureLocation, TriState.DEFAULT, false))
+                    .setTextureState(new TextureStateShard(textureLocation, false))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
@@ -182,7 +184,7 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType layeredItemSolid(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
@@ -193,7 +195,7 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType layeredItemCutout(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
@@ -204,7 +206,7 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType layeredItemCutoutMipped(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, true))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, true))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
@@ -215,7 +217,7 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType layeredItemTranslucent(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOverlayState(RenderType.OVERLAY)
                     .createCompositeState(true);
@@ -226,7 +228,8 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTextFiltered(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.TRUE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
+                    .setTexturingState(new LinearFilteredTexturing(locationIn))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
             return RenderType.create("neoforge_text", 256, false, false, RenderPipelines.TEXT, rendertype$state);
@@ -236,7 +239,8 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTextIntensityFiltered(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.TRUE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
+                    .setTexturingState(new LinearFilteredTexturing(locationIn))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
             return RenderType.create("neoforge_text_intensity", 256, false, false, RenderPipelines.TEXT_INTENSITY, rendertype$state);
@@ -246,7 +250,8 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTextPolygonOffsetFiltered(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.TRUE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
+                    .setTexturingState(new LinearFilteredTexturing(locationIn))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
             return RenderType.create("neoforge_text_polygon_offset", 256, false, false, RenderPipelines.TEXT_POLYGON_OFFSET, rendertype$state);
@@ -256,7 +261,8 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTextIntensityPolygonOffsetFiltered(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.TRUE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
+                    .setTexturingState(new LinearFilteredTexturing(locationIn))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
             return RenderType.create("neoforge_text_intensity_polygon_offset", 256, false, false, RenderPipelines.TEXT_INTENSITY, rendertype$state);
@@ -266,7 +272,8 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTextSeeThroughFiltered(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.TRUE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
+                    .setTexturingState(new LinearFilteredTexturing(locationIn))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
             return RenderType.create("neoforge_text_see_through", 256, false, false, RenderPipelines.TEXT_SEE_THROUGH, rendertype$state);
@@ -276,7 +283,8 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTextIntensitySeeThroughFiltered(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.TRUE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, false))
+                    .setTexturingState(new LinearFilteredTexturing(locationIn))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .createCompositeState(false);
             return RenderType.create("neoforge_text_intensity_see_through", 256, false, false, RenderPipelines.TEXT_INTENSITY_SEE_THROUGH, rendertype$state);
@@ -286,11 +294,25 @@ public enum NeoForgeRenderTypes {
 
         private static RenderType getTranslucentParticlesTarget(ResourceLocation locationIn) {
             var rendertype$state = RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, TriState.DEFAULT, true))
+                    .setTextureState(new RenderStateShard.TextureStateShard(locationIn, true))
                     .setLightmapState(RenderType.LIGHTMAP)
                     .setOutputState(RenderType.PARTICLES_TARGET)
                     .createCompositeState(true);
             return RenderType.create("neoforge_translucent_particles_target", 2097152, true, true, RenderPipelines.TRANSLUCENT, rendertype$state);
+        }
+
+        private static final class LinearFilteredTexturing extends RenderStateShard.TexturingStateShard {
+            public LinearFilteredTexturing(ResourceLocation textureLoc) {
+                super("neoforge:linear_filtered", () -> {
+                    TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+                    AbstractTexture texture = texturemanager.getTexture(textureLoc);
+                    texture.setFilter(true, false);
+                }, () -> {
+                    TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+                    AbstractTexture texture = texturemanager.getTexture(textureLoc);
+                    texture.setFilter(false, false);
+                });
+            }
         }
     }
 }

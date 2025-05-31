@@ -32,6 +32,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.i18n.FMLTranslations;
@@ -96,7 +97,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 4, 0xAAAAAA);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 4, 0xFFAAAAAA);
         this.message.renderCentered(guiGraphics, this.width / 2, (this.height - this.listHeight) / 2 - this.textHeight - 9 * 2);
     }
 
@@ -234,7 +235,7 @@ public class ModMismatchDisconnectedScreen extends Screen {
                 FormattedCharSequence name = line.getLeft();
                 FormattedCharSequence reasons = line.getRight();
                 //Since font#draw does not respect the color of the given component, we have to read it out here and then use it as the last parameter
-                int color = Optional.ofNullable(font.getSplitter().componentStyleAtWidth(name, 0)).map(Style::getColor).map(TextColor::getValue).orElse(0xFFFFFF);
+                int color = ARGB.opaque(Optional.ofNullable(font.getSplitter().componentStyleAtWidth(name, 0)).map(Style::getColor).map(TextColor::getValue).orElse(0xFFFFFF));
                 //Only indent the given name if a version string is present. This makes it easier to distinguish table section headers and mod entries
                 int nameLeft = left + border + (reasons == null ? 0 : nameIndent);
                 guiGraphics.drawString(font, name, nameLeft, relativeY + i * 12, color, false);

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -250,6 +_,10 @@
+@@ -247,6 +_,10 @@
          return !this.isEmpty() && this.components.hasNonDefault(p_389426_);
      }
  
@@ -11,7 +11,7 @@
      public ItemStack(ItemLike p_41599_) {
          this(p_41599_, 1);
      }
-@@ -351,7 +_,7 @@
+@@ -343,7 +_,7 @@
      }
  
      public boolean is(Holder<Item> p_220166_) {
@@ -20,7 +20,7 @@
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
-@@ -363,13 +_,27 @@
+@@ -355,13 +_,27 @@
      }
  
      public InteractionResult useOn(UseOnContext p_41662_) {
@@ -49,24 +49,7 @@
              if (player != null
                  && interactionresult instanceof InteractionResult.Success interactionresult$success
                  && interactionresult$success.wasItemInteraction()) {
-@@ -423,7 +_,8 @@
-         if (this.isEmpty()) {
-             throw new IllegalStateException("Cannot encode empty ItemStack");
-         } else {
--            return CODEC.encode(this, p_331900_.createSerializationContext(NbtOps.INSTANCE), p_330830_).getOrThrow();
-+            // Neo: Logs extra information about this ItemStack on error
-+            return net.neoforged.neoforge.common.util.DataComponentUtil.wrapEncodingExceptions(this, CODEC, p_331900_, p_330830_);
-         }
-     }
- 
-@@ -431,12 +_,13 @@
-         if (this.isEmpty()) {
-             throw new IllegalStateException("Cannot encode empty ItemStack");
-         } else {
--            return CODEC.encodeStart(p_332160_.createSerializationContext(NbtOps.INSTANCE), this).getOrThrow();
-+            // Neo: Logs extra information about this ItemStack on error
-+            return net.neoforged.neoforge.common.util.DataComponentUtil.wrapEncodingExceptions(this, CODEC, p_332160_);
-         }
+@@ -412,7 +_,7 @@
      }
  
      public int getMaxStackSize() {
@@ -75,7 +58,7 @@
      }
  
      public boolean isStackable() {
-@@ -448,19 +_,19 @@
+@@ -424,19 +_,19 @@
      }
  
      public boolean isDamaged() {
@@ -99,7 +82,7 @@
      }
  
      public boolean isBroken() {
-@@ -472,6 +_,11 @@
+@@ -448,6 +_,11 @@
      }
  
      public void hurtAndBreak(int p_220158_, ServerLevel p_346256_, @Nullable ServerPlayer p_220160_, Consumer<Item> p_348596_) {
@@ -111,7 +94,7 @@
          int i = this.processDurabilityChange(p_220158_, p_346256_, p_220160_);
          if (i != 0) {
              this.applyDamage(this.getDamageValue() + i, p_220160_, p_348596_);
-@@ -479,6 +_,10 @@
+@@ -455,6 +_,10 @@
      }
  
      private int processDurabilityChange(int p_361290_, ServerLevel p_361409_, @Nullable ServerPlayer p_364940_) {
@@ -122,7 +105,7 @@
          if (!this.isDamageableItem()) {
              return 0;
          } else if (p_364940_ != null && p_364940_.hasInfiniteMaterials()) {
-@@ -489,8 +_,12 @@
+@@ -465,8 +_,12 @@
      }
  
      private void applyDamage(int p_361754_, @Nullable ServerPlayer p_364853_, Consumer<Item> p_360895_) {
@@ -137,7 +120,7 @@
          }
  
          this.setDamageValue(p_361754_);
-@@ -518,7 +_,7 @@
+@@ -498,7 +_,7 @@
              this.hurtAndBreak(
                  p_41623_,
                  serverlevel,
@@ -146,7 +129,7 @@
                  p_348383_ -> p_41624_.onEquippedItemBroken(p_348383_, p_319898_)
              );
          }
-@@ -743,7 +_,7 @@
+@@ -723,7 +_,7 @@
  
      @Nullable
      public <T> T set(DataComponentType<T> p_331064_, @Nullable T p_330775_) {
@@ -155,7 +138,7 @@
      }
  
      public <T> void copyFrom(DataComponentType<T> p_397950_, DataComponentGetter p_397631_) {
-@@ -816,7 +_,7 @@
+@@ -796,7 +_,7 @@
      }
  
      public Component getStyledHoverName() {
@@ -164,7 +147,7 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              mutablecomponent.withStyle(ChatFormatting.ITALIC);
          }
-@@ -842,6 +_,7 @@
+@@ -822,6 +_,7 @@
              List<Component> list = Lists.newArrayList();
              list.add(this.getStyledHoverName());
              this.addDetailsToTooltip(p_339637_, tooltipdisplay, p_41652_, p_41653_, list::add);
@@ -172,7 +155,7 @@
              return list;
          }
      }
-@@ -869,7 +_,8 @@
+@@ -849,7 +_,8 @@
          this.addToTooltip(DataComponents.ENCHANTMENTS, p_400057_, p_400252_, p_399603_, p_400174_);
          this.addToTooltip(DataComponents.DYED_COLOR, p_400057_, p_400252_, p_399603_, p_400174_);
          this.addToTooltip(DataComponents.LORE, p_400057_, p_400252_, p_399603_, p_400174_);
@@ -182,7 +165,7 @@
          if (this.has(DataComponents.UNBREAKABLE) && p_400252_.shows(DataComponents.UNBREAKABLE)) {
              p_399603_.accept(UNBREAKABLE_TOOLTIP);
          }
-@@ -917,7 +_,10 @@
+@@ -897,7 +_,10 @@
              OP_NBT_WARNING.forEach(p_399603_);
          }
      }
@@ -194,7 +177,7 @@
      private void addAttributeTooltips(Consumer<Component> p_330796_, TooltipDisplay p_400175_, @Nullable Player p_330530_) {
          if (p_400175_.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
-@@ -1026,6 +_,17 @@
+@@ -952,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
@@ -212,19 +195,21 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -1051,14 +_,26 @@
+@@ -977,16 +_,28 @@
      }
  
-     public void forEachModifier(EquipmentSlotGroup p_348610_, BiConsumer<Holder<Attribute>, AttributeModifier> p_348516_) {
+     public void forEachModifier(EquipmentSlotGroup p_348610_, TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> p_415655_) {
 +        // Neo: Reflect real attribute modifiers when doing iteration
-+        this.getAttributeModifiers().forEach(p_348610_, p_348516_);
++        this.getAttributeModifiers().forEach(p_348610_, p_415655_);
 +        if (false) {
 +        // Start disabled vanilla code
          ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-         itemattributemodifiers.forEach(p_348610_, p_348516_);
+         itemattributemodifiers.forEach(p_348610_, p_415655_);
 +        // end disabled vanilla code
 +        }
-         EnchantmentHelper.forEachModifier(this, p_348610_, p_348516_);
+         EnchantmentHelper.forEachModifier(
+             this, p_348610_, (p_415406_, p_415407_) -> p_415655_.accept(p_415406_, p_415407_, ItemAttributeModifiers.Display.attributeModifiers())
+         );
      }
  
      public void forEachModifier(EquipmentSlot p_332001_, BiConsumer<Holder<Attribute>, AttributeModifier> p_330882_) {
@@ -239,7 +224,7 @@
          EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
      }
  
-@@ -1070,7 +_,7 @@
+@@ -998,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
          if (!this.isEmpty()) {
@@ -248,7 +233,7 @@
          }
  
          return mutablecomponent1;
-@@ -1137,11 +_,14 @@
+@@ -1065,11 +_,14 @@
          this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
      }
  

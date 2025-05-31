@@ -21,7 +21,7 @@
 +        BlockState p_234382_,
 +        BlockPos p_234383_,
 +        PoseStack p_234384_,
-+        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup,
 +        boolean p_234386_,
 +        int p_234389_
 +    ) {
@@ -85,7 +85,7 @@
 +        BlockState p_234393_,
 +        BlockPos p_234394_,
 +        PoseStack p_234395_,
-+        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup,
 +        boolean p_234397_,
 +        int p_234400_
 +    ) {
@@ -165,7 +165,7 @@
 +        BlockState p_234404_,
 +        BlockPos p_234405_,
 +        PoseStack p_234406_,
-+        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup,
 +        boolean p_234408_,
 +        int p_234411_
 +    ) {

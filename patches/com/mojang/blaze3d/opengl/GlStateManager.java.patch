@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlStateManager.java
 +++ b/com/mojang/blaze3d/opengl/GlStateManager.java
-@@ -40,6 +_,7 @@
+@@ -39,6 +_,7 @@
      private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
      private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
      private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
@@ -8,7 +8,7 @@
      private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
      private static int activeTexture;
      private static final GlStateManager.TextureState[] TEXTURES = IntStream.range(0, 12)
-@@ -649,5 +_,120 @@
+@@ -642,5 +_,120 @@
      @OnlyIn(Dist.CLIENT)
      static class TextureState {
          public int binding;

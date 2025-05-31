@@ -19,7 +19,6 @@ import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -71,14 +70,11 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.FogParameters;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
@@ -86,9 +82,13 @@ import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.chunk.RenderChunkRegion;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayerGroup;
+import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.fog.FogData;
+import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
@@ -122,7 +122,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -137,7 +136,6 @@ import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
@@ -188,7 +186,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
-import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
@@ -246,7 +243,7 @@ public class ClientHooks {
             guiLayers.push(minecraft.screen);
         minecraft.screen = Objects.requireNonNull(screen);
         screen.init(minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
-        minecraft.getNarrator().sayNow(screen.getNarrationMessage());
+        minecraft.getNarrator().saySystemNow(screen.getNarrationMessage());
     }
 
     public static void popGuiLayer(Minecraft minecraft) {
@@ -257,17 +254,7 @@ public class ClientHooks {
 
         popGuiLayerInternal(minecraft);
         if (minecraft.screen != null)
-            minecraft.getNarrator().sayNow(minecraft.screen.getNarrationMessage());
-    }
-
-    public static float getGuiFarPlane() {
-        // 11000 units for the overlay background and 10000 units for each layered Screen or 200 units for each HUD layer, whichever ends up higher
-
-        float depth = 10_000F * (1 + guiLayers.size());
-        if (Minecraft.getInstance().level != null) {
-            depth = Math.max(depth, GuiLayerManager.Z_SEPARATION * Minecraft.getInstance().gui.getLayerCount());
-        }
-        return 11_000F + depth;
+            minecraft.getNarrator().saySystemNow(minecraft.screen.getNarrationMessage());
     }
 
     /**
@@ -300,18 +287,17 @@ public class ClientHooks {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
     }
 
-    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
+    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, Camera camera, Frustum frustum) {
         var mc = Minecraft.getInstance();
         var profiler = Profiler.get();
         profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, level, levelRenderer, poseStack, modelViewMatrix, projectionMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
+        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, level, levelRenderer, poseStack, modelViewMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
         profiler.pop();
     }
 
-    public static void dispatchRenderStage(RenderType renderType, Level level, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, int renderTick, Camera camera, Frustum frustum) {
-        RenderLevelStageEvent.Stage stage = RenderLevelStageEvent.Stage.fromRenderType(renderType);
-        if (stage != null)
-            dispatchRenderStage(stage, level, levelRenderer, null, modelViewMatrix, projectionMatrix, renderTick, camera, frustum);
+    public static void dispatchRenderStage(ChunkSectionLayerGroup chunkLayerGroup, Level level, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, int renderTick, Camera camera, Frustum frustum) {
+        RenderLevelStageEvent.Stage stage = RenderLevelStageEvent.Stage.fromChunkLayerGroup(chunkLayerGroup);
+        dispatchRenderStage(stage, level, levelRenderer, null, modelViewMatrix, renderTick, camera, frustum);
     }
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
@@ -378,8 +364,8 @@ public class ClientHooks {
         return event;
     }
 
-    public static float getDetachedCameraDistance(Camera camera, boolean flipped, float entityScale, float distance) {
-        var event = new CalculateDetachedCameraDistanceEvent(camera, flipped, entityScale, distance);
+    public static float getDetachedCameraDistance(Camera camera, boolean flipped, float entityScale, float entityDistance, float vehicleEntityScale, float vehicleDistance) {
+        var event = new CalculateDetachedCameraDistanceEvent(camera, flipped, entityScale, entityDistance, vehicleEntityScale, vehicleDistance);
         NeoForge.EVENT_BUS.post(event);
         return event.getDistance();
     }
@@ -419,14 +405,12 @@ public class ClientHooks {
     }
 
     public static void drawScreen(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushPose();
         guiLayers.forEach(layer -> {
             // Prevent the background layers from thinking the mouse is over their controls and showing them as highlighted.
             drawScreenInternal(layer, guiGraphics, Integer.MAX_VALUE, Integer.MAX_VALUE, partialTick);
-            guiGraphics.pose().translate(0, 0, 10000);
+            guiGraphics.nextStratum();
         });
         drawScreenInternal(screen, guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popPose();
     }
 
     private static void drawScreenInternal(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -449,24 +433,13 @@ public class ClientHooks {
         return fluidFogColor;
     }
 
-    public static FogParameters onFogRender(FogRenderer.FogMode mode, FogType type, Camera camera, float partialTick, float renderDistance, FogParameters fogParameters) {
+    public static void onSetupFog(@Nullable FogEnvironment environment, FogType type, Camera camera, float partialTick, float renderDistance, FogData fogData) {
         // Modify fog rendering depending on the fluid
         FluidState state = camera.getEntity().level().getFluidState(camera.getBlockPosition());
         if (camera.getPosition().y < (double) ((float) camera.getBlockPosition().getY() + state.getHeight(camera.getEntity().level(), camera.getBlockPosition())))
-            fogParameters = IClientFluidTypeExtensions.of(state).modifyFogRender(camera, mode, renderDistance, partialTick, fogParameters);
+            IClientFluidTypeExtensions.of(state).modifyFogRender(camera, environment, renderDistance, partialTick, fogData);
 
-        ViewportEvent.RenderFog event = new ViewportEvent.RenderFog(mode, type, camera, partialTick, fogParameters);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
-            return new FogParameters(
-                    event.getNearPlaneDistance(),
-                    event.getFarPlaneDistance(),
-                    event.getFogShape(),
-                    fogParameters.red(),
-                    fogParameters.green(),
-                    fogParameters.blue(),
-                    fogParameters.alpha());
-        }
-        return fogParameters;
+        new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData);
     }
 
     public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
@@ -975,8 +948,8 @@ public class ClientHooks {
 
     public static void addAdditionalGeometry(
             List<AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers,
-            Function<RenderType, VertexConsumer> getOrCreateBuilder,
-            RenderChunkRegion region,
+            Function<ChunkSectionLayer, VertexConsumer> getOrCreateBuilder,
+            RenderSectionRegion region,
             PoseStack transformation) {
         if (additionalRenderers.isEmpty()) {
             return;
@@ -1102,25 +1075,6 @@ public class ClientHooks {
         return event.getTooltip();
     }
 
-    private static final ExtensionInfo RECIPE_BOOK_TYPE_EXTENSION_INFO = RecipeBookType.getExtensionInfo();
-    private static final RecipeBookType[] RECIPE_BOOK_TYPES = RecipeBookType.values();
-    private static RecipeBookType @Nullable [] cachedFilteredTypes = null;
-
-    public static RecipeBookType[] getFilteredRecipeBookTypeValues() {
-        ClientPacketListener listener = Minecraft.getInstance().getConnection();
-        if (listener != null && !listener.getConnection().isMemoryConnection() && listener.getConnectionType().isOther()) {
-            if (cachedFilteredTypes == null) {
-                if (RECIPE_BOOK_TYPE_EXTENSION_INFO.extended()) {
-                    cachedFilteredTypes = Arrays.copyOfRange(RECIPE_BOOK_TYPES, 0, RECIPE_BOOK_TYPE_EXTENSION_INFO.vanillaCount());
-                } else {
-                    cachedFilteredTypes = RECIPE_BOOK_TYPES;
-                }
-            }
-            return cachedFilteredTypes;
-        }
-        return RECIPE_BOOK_TYPES;
-    }
-
     private static final RandomSource OUTLINE_PASS_RANDOM = RandomSource.create();
     private static final List<BlockModelPart> OUTLINE_PART_SCRATCH_LIST = new ObjectArrayList<>();
 
@@ -1131,8 +1085,8 @@ public class ClientHooks {
         BlockStateModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         model.collectParts(level, pos, state, OUTLINE_PASS_RANDOM, OUTLINE_PART_SCRATCH_LIST);
         for (BlockModelPart part : OUTLINE_PART_SCRATCH_LIST) {
-            RenderType renderType = part.getRenderType(state);
-            if (renderType == RenderType.translucent() || renderType == RenderType.tripwire()) {
+            ChunkSectionLayer renderType = part.getRenderType(state);
+            if (renderType == ChunkSectionLayer.TRANSLUCENT || renderType == ChunkSectionLayer.TRIPWIRE) {
                 return true;
             }
         }

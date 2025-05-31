@@ -1,18 +1,18 @@
 --- a/com/mojang/blaze3d/opengl/GlTexture.java
 +++ b/com/mojang/blaze3d/opengl/GlTexture.java
-@@ -16,15 +_,21 @@
-     private final Int2IntMap fboCache = new Int2IntOpenHashMap();
+@@ -17,15 +_,21 @@
      protected boolean closed;
      protected boolean modesDirty = true;
+     private int views;
 +    protected final boolean external; // If true, the raw OpenGL texture is not managed by this GpuTexture
  
-     protected GlTexture(String p_410238_, TextureFormat p_410416_, int p_409690_, int p_409866_, int p_410468_, int p_409791_) {
-+        this(p_410238_, p_410416_, p_409690_, p_409866_, p_410468_, p_409791_, false);
+     protected GlTexture(int p_409690_, String p_410238_, TextureFormat p_410416_, int p_409866_, int p_410468_, int p_409791_, int p_419794_, int p_423590_) {
++        this(p_409690_, p_410238_, p_410416_, p_409866_, p_410468_, p_409791_, p_419794_, p_423590_, false);
 +    }
 +
-+    protected GlTexture(String p_410238_, TextureFormat p_410416_, int p_409690_, int p_409866_, int p_410468_, int p_409791_, boolean external) {
-         super(p_410238_, p_410416_, p_409690_, p_409866_, p_410468_);
-         this.id = p_409791_;
++    protected GlTexture(int p_409690_, String p_410238_, TextureFormat p_410416_, int p_409866_, int p_410468_, int p_409791_, int p_419794_, int p_423590_, boolean external) {
+         super(p_409690_, p_410238_, p_410416_, p_409866_, p_410468_, p_409791_, p_419794_);
+         this.id = p_423590_;
 +        this.external = external;
      }
  
@@ -21,9 +21,9 @@
 -        if (!this.closed) {
 +        if (!this.closed && !this.external) {
              this.closed = true;
-             GlStateManager._deleteTexture(this.id);
- 
-@@ -41,9 +_,10 @@
+             if (this.views == 0) {
+                 this.destroyImmediately();
+@@ -48,9 +_,10 @@
  
      public int getFbo(DirectStateAccess p_412345_, @Nullable GpuTexture p_410364_) {
          int i = p_410364_ == null ? 0 : ((GlTexture)p_410364_).id;

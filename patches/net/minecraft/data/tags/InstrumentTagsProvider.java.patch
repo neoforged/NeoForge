@@ -3,7 +3,7 @@
 @@ -9,8 +_,13 @@
  import net.minecraft.world.item.Instruments;
  
- public class InstrumentTagsProvider extends TagsProvider<Instrument> {
+ public class InstrumentTagsProvider extends KeyTagProvider<Instrument> {
 +    /** @deprecated Forge: Use the {@linkplain #InstrumentTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public InstrumentTagsProvider(PackOutput p_256418_, CompletableFuture<HolderLookup.Provider> p_256038_) {

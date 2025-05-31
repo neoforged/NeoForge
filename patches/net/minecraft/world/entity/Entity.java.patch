@@ -1,34 +1,34 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -141,7 +_,7 @@
- import net.minecraft.world.scores.Team;
+@@ -148,7 +_,7 @@
  import org.jetbrains.annotations.Contract;
+ import org.slf4j.Logger;
  
 -public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess, ScoreHolder, DataComponentGetter, net.neoforged.neoforge.common.extensions.IEntityExtension {
 +public abstract class Entity extends net.neoforged.neoforge.attachment.AttachmentHolder implements SyncedDataHolder, Nameable, EntityAccess, ScoreHolder, DataComponentGetter, net.neoforged.neoforge.common.extensions.IEntityExtension {
-     public static final String ID_TAG = "id";
-     public static final String PASSENGERS_TAG = "Passengers";
-     private static final String DATA_TAG = "data";
-@@ -165,6 +_,7 @@
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final String TAG_ID = "id";
+     public static final String TAG_UUID = "UUID";
+@@ -185,6 +_,7 @@
+     private static final double LAVA_FAST_FLOW_SCALE = 0.007;
      private static final double LAVA_SLOW_FLOW_SCALE = 0.0023333333333333335;
-     public static final String UUID_TAG = "UUID";
      private static double viewScale = 1.0;
-+    @Deprecated // Forge: Use the getter to allow overriding in mods
++    @Deprecated // Neo: Use the getter to allow overriding in mods
      private final EntityType<?> type;
+     private boolean requiresPrecisePosition;
      private int id = ENTITY_COUNTER.incrementAndGet();
-     public boolean blocksBuilding;
-@@ -208,8 +_,10 @@
+@@ -229,8 +_,10 @@
      public int tickCount;
-     private int remainingFireTicks = -this.getFireImmuneTicks();
+     private int remainingFireTicks;
      protected boolean wasTouchingWater;
-+    @Deprecated // Forge: Use forgeFluidTypeHeight instead
++    @Deprecated // Neo: Use forgeFluidTypeHeight instead
      protected Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
      protected boolean wasEyeInWater;
-+    @Deprecated // Forge: Use forgeFluidTypeOnEyes instead
++    @Deprecated // Neo: Use forgeFluidTypeOnEyes instead
      private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
      public int invulnerableTime;
      protected boolean firstTick = true;
-@@ -280,7 +_,10 @@
+@@ -302,7 +_,10 @@
          this.defineSynchedData(synchedentitydata$builder);
          this.entityData = synchedentitydata$builder.build();
          this.setPos(0.0, 0.0, 0.0);
@@ -39,7 +39,7 @@
      }
  
      public boolean isColliding(BlockPos p_20040_, BlockState p_20041_) {
-@@ -484,7 +_,7 @@
+@@ -511,7 +_,7 @@
          }
  
          if (this.isInLava()) {
@@ -48,7 +48,7 @@
          }
  
          this.checkBelowWorld();
-@@ -905,9 +_,7 @@
+@@ -939,9 +_,7 @@
                  return blockpos;
              } else {
                  BlockState blockstate = this.level().getBlockState(blockpos);
@@ -59,34 +59,33 @@
                      ? blockpos.atY(Mth.floor(this.position.y - p_216987_))
                      : blockpos;
              }
-@@ -1184,20 +_,17 @@
+@@ -1245,19 +_,19 @@
          return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
      }
  
 -    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_) {
 -        SoundType soundtype = p_277472_.getSoundType();
--        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
--        this.playMuffledStepSound(p_277630_);
 +    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_, BlockPos primaryPos, BlockPos secondaryPos) {
-+        p_277472_.playStepSound(this.level, primaryPos, this, .15F, 1F);
++        SoundType soundtype = p_277472_.getSoundType(this.level, primaryPos, this);
+         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+-        this.playMuffledStepSound(p_277630_);
 +        this.playMuffledStepSound(p_277630_, secondaryPos);
      }
  
 -    protected void playMuffledStepSound(BlockState p_283110_) {
 -        SoundType soundtype = p_283110_.getSoundType();
--        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
 +    protected void playMuffledStepSound(BlockState p_283110_, BlockPos pos) {
-+        p_283110_.playStepSound(this.level, pos, this, .05F, .8F);
++        SoundType soundtype = p_283110_.getSoundType(this.level, pos, this);
+         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
      }
  
      protected void playStepSound(BlockPos p_20135_, BlockState p_20136_) {
 -        SoundType soundtype = p_20136_.getSoundType();
--        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
-+        p_20136_.playStepSound(this.level(), p_20135_, this, .15F, 1F);
++        SoundType soundtype = p_20136_.getSoundType(this.level, p_20135_, this);
+         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
      }
  
-     private boolean shouldPlayAmethystStepSound(BlockState p_278069_) {
-@@ -1351,20 +_,23 @@
+@@ -1427,20 +_,23 @@
  
      public void updateSwimming() {
          if (this.isSwimming()) {
@@ -115,7 +114,7 @@
      }
  
      void updateInWaterStateAndDoWaterCurrentPushing() {
-@@ -1385,6 +_,7 @@
+@@ -1461,6 +_,7 @@
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
          this.fluidOnEyes.clear();
@@ -123,7 +122,7 @@
          double d0 = this.getEyeY();
          if (!(
              this.getVehicle() instanceof AbstractBoat abstractboat
-@@ -1396,7 +_,7 @@
+@@ -1472,7 +_,7 @@
              FluidState fluidstate = this.level().getFluidState(blockpos);
              double d1 = blockpos.getY() + fluidstate.getHeight(this.level(), blockpos);
              if (d1 > d0) {
@@ -132,7 +131,7 @@
              }
          }
      }
-@@ -1440,12 +_,13 @@
+@@ -1516,12 +_,13 @@
      }
  
      public boolean canSpawnSprintParticle() {
@@ -147,7 +146,7 @@
          if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 vec3 = this.getDeltaMovement();
              BlockPos blockpos1 = this.blockPosition();
-@@ -1459,16 +_,19 @@
+@@ -1535,16 +_,19 @@
                  d1 = Mth.clamp(d1, (double)blockpos.getZ(), blockpos.getZ() + 1.0);
              }
  
@@ -169,36 +168,45 @@
      }
  
      public void moveRelative(float p_19921_, Vec3 p_19922_) {
-@@ -1845,6 +_,10 @@
-                 p_20241_.store("data", CustomData.CODEC, this.customData);
+@@ -1916,6 +_,10 @@
+                 p_422475_.store("data", CustomData.CODEC, this.customData);
              }
  
-+            CompoundTag attachments = serializeAttachments(registryAccess());
-+            if (attachments != null) p_20241_.put(ATTACHMENTS_NBT_KEY, attachments);
-+            if (persistentData != null) p_20241_.put("NeoForgeData", persistentData.copy());
++            var attachments = serializeAttachments(registryAccess());
++            p_422475_.storeNullable(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.CompoundTag.CODEC, attachments);
++            p_422475_.storeNullable("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC, persistentData);
 +
-             this.addAdditionalSaveData(p_20241_);
+             this.addAdditionalSaveData(p_422475_);
              if (this.isVehicle()) {
-                 ListTag listtag = new ListTag();
-@@ -1908,6 +_,8 @@
-                 this.setTicksFrozen(p_20259_.getIntOr("TicksFrozen", 0));
-                 this.hasVisualFire = p_20259_.getBooleanOr("HasVisualFire", false);
-                 this.customData = p_20259_.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
-+                p_20259_.getCompound("NeoForgeData").ifPresent(neoData -> this.persistentData = neoData);
-+                p_20259_.getCompound(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(this.registryAccess(), attachments));
+                 ValueOutput.ValueOutputList valueoutput$valueoutputlist = p_422475_.childrenList("Passengers");
+@@ -1976,6 +_,8 @@
+                 this.setTicksFrozen(p_422206_.getIntOr("TicksFrozen", 0));
+                 this.hasVisualFire = p_422206_.getBooleanOr("HasVisualFire", false);
+                 this.customData = p_422206_.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
++                p_422206_.read("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(neoData -> this.persistentData = neoData);
++                p_422206_.read(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.CompoundTag.CODEC).ifPresent(attachments -> this.deserializeAttachments(this.registryAccess(), attachments));
                  this.tags.clear();
-                 p_20259_.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
-                 this.readAdditionalSaveData(p_20259_);
-@@ -1962,6 +_,8 @@
+                 p_422206_.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
+                 this.readAdditionalSaveData(p_422206_);
+@@ -2030,6 +_,8 @@
          } else {
-             ItemEntity itementity = new ItemEntity(p_376141_, this.getX(), this.getY() + p_376881_, this.getZ(), p_376472_);
+             ItemEntity itementity = new ItemEntity(p_426271_, this.getX() + p_426167_.x, this.getY() + p_426167_.y, this.getZ() + p_426167_.z, p_426002_);
              itementity.setDefaultPickUpDelay();
 +            if (captureDrops() != null) captureDrops().add(itementity);
 +            else
-             p_376141_.addFreshEntity(itementity);
+             p_426271_.addFreshEntity(itementity);
              return itementity;
          }
-@@ -2029,7 +_,11 @@
+@@ -2093,7 +_,7 @@
+             itemstack.hurtAndBreak(1, p_19978_, p_19979_);
+             return InteractionResult.SUCCESS;
+         } else if (this instanceof Mob mob
+-            && itemstack.is(Items.SHEARS)
++            && itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_REMOVE_ARMOR)
+             && mob.canShearEquipment(p_19978_)
+             && !p_19978_.isSecondaryUseActive()
+             && this.attemptToShearEquipment(p_19978_, p_19979_, itemstack, mob)) {
+@@ -2197,7 +_,11 @@
  
      public void rideTick() {
          this.setDeltaMovement(Vec3.ZERO);
@@ -211,7 +219,7 @@
          if (this.isPassenger()) {
              this.getVehicle().positionRider(this);
          }
-@@ -2089,6 +_,7 @@
+@@ -2257,6 +_,7 @@
                  }
              }
  
@@ -219,7 +227,7 @@
              if (p_19967_ || this.canRide(p_19966_) && p_19966_.canAddPassenger(this)) {
                  if (this.isPassenger()) {
                      this.stopRiding();
-@@ -2120,6 +_,7 @@
+@@ -2288,6 +_,7 @@
      public void removeVehicle() {
          if (this.vehicle != null) {
              Entity entity = this.vehicle;
@@ -227,7 +235,7 @@
              this.vehicle = null;
              entity.removePassenger(this);
          }
-@@ -2169,6 +_,8 @@
+@@ -2337,6 +_,8 @@
          return this.passengers.isEmpty();
      }
  
@@ -236,7 +244,7 @@
      protected boolean couldAcceptPassenger() {
          return true;
      }
-@@ -2348,7 +_,7 @@
+@@ -2516,7 +_,7 @@
      }
  
      public boolean isVisuallyCrawling() {
@@ -245,7 +253,7 @@
      }
  
      public void setSwimming(boolean p_20283_) {
-@@ -2465,7 +_,7 @@
+@@ -2633,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }
  
@@ -254,7 +262,7 @@
      }
  
      public void onAboveBubbleColumn(boolean p_399860_, BlockPos p_399894_) {
-@@ -2598,7 +_,7 @@
+@@ -2766,7 +_,7 @@
      }
  
      protected Component getTypeName() {
@@ -263,7 +271,7 @@
      }
  
      public boolean is(Entity p_20356_) {
-@@ -2653,10 +_,11 @@
+@@ -2821,10 +_,11 @@
      }
  
      protected final boolean isInvulnerableToBase(DamageSource p_20122_) {
@@ -276,7 +284,7 @@
      }
  
      public boolean isInvulnerable() {
-@@ -2681,6 +_,7 @@
+@@ -2852,6 +_,7 @@
  
      @Nullable
      public Entity teleport(TeleportTransition p_379899_) {
@@ -284,7 +292,7 @@
          if (this.level() instanceof ServerLevel serverlevel && !this.isRemoved()) {
              ServerLevel serverlevel1 = p_379899_.newLevel();
              boolean flag = serverlevel1.dimension() != serverlevel.dimension();
-@@ -2883,6 +_,7 @@
+@@ -3068,6 +_,7 @@
          return this.stringUUID;
      }
  
@@ -292,7 +300,7 @@
      public boolean isPushedByFluid() {
          return true;
      }
-@@ -2992,6 +_,8 @@
+@@ -3177,6 +_,8 @@
          EntityDimensions entitydimensions = this.dimensions;
          Pose pose = this.getPose();
          EntityDimensions entitydimensions1 = this.getDimensions(pose);
@@ -301,7 +309,7 @@
          this.dimensions = entitydimensions1;
          this.eyeHeight = entitydimensions1.eyeHeight();
          this.reapplyPosition();
-@@ -3298,9 +_,17 @@
+@@ -3471,9 +_,17 @@
          return Mth.lerp(p_352259_, this.yRotO, this.yRot);
      }
  
@@ -320,7 +328,7 @@
          } else {
              AABB aabb = this.getBoundingBox().deflate(0.001);
              int i = Mth.floor(aabb.minX);
-@@ -3315,25 +_,36 @@
+@@ -3488,25 +_,36 @@
              Vec3 vec3 = Vec3.ZERO;
              int k1 = 0;
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
@@ -364,7 +372,7 @@
                                  }
                              }
                          }
-@@ -3341,27 +_,30 @@
+@@ -3514,27 +_,30 @@
                  }
              }
  
@@ -405,7 +413,7 @@
          }
      }
  
-@@ -3374,7 +_,10 @@
+@@ -3547,7 +_,10 @@
          return !this.level().hasChunksAt(i, k, j, l);
      }
  
@@ -416,15 +424,18 @@
          return this.fluidHeight.getDouble(p_204037_);
      }
  
-@@ -3511,6 +_,7 @@
- 
-             this.levelCallback.onMove();
+@@ -3693,6 +_,10 @@
+                 }
+             }
          }
-+        if (this.isAddedToLevel() && !this.level.isClientSide && !this.isRemoved()) this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4); // Forge - ensure target chunk is loaded.
++        // Neo: ensure target chunk is loaded.
++        if (this.isAddedToLevel() && !this.level.isClientSide && !this.isRemoved()) {
++            this.level.getChunk((int) Math.floor(p_20344_) >> 4, (int) Math.floor(p_20346_) >> 4);
++        }
      }
  
      public void checkDespawn() {
-@@ -3639,6 +_,129 @@
+@@ -3835,6 +_,129 @@
  
      public boolean mayInteract(ServerLevel p_376870_, BlockPos p_146844_) {
          return true;
@@ -454,12 +465,12 @@
 +
 +    // Neo: Injected ability to store arbitrary nbt onto entities in ways that allow inter-mod compat without compile-time dependencies
 +    @Nullable
-+    private CompoundTag persistentData;
++    private net.minecraft.nbt.CompoundTag persistentData;
 +
 +    @Override
-+    public CompoundTag getPersistentData() {
++    public net.minecraft.nbt.CompoundTag getPersistentData() {
 +        if (persistentData == null)
-+            persistentData = new CompoundTag();
++            persistentData = new net.minecraft.nbt.CompoundTag();
 +        return persistentData;
 +    }
 +
@@ -553,4 +564,4 @@
 +        return capability.getCapability(this, null);
      }
  
-     public Level level() {
+     public boolean isFlyingVehicle() {

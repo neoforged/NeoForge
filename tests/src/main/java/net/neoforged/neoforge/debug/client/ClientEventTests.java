@@ -33,6 +33,7 @@ import net.minecraft.world.level.EmptyBlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
@@ -202,9 +203,8 @@ public class ClientEventTests {
         test.whenEnabled(listeners -> {
             listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
-                    var player = Minecraft.getInstance().player;
                     NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent event) -> {
-                        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+                        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_OPAQUE_BLOCKS) {
                             var randomSource = new SingleThreadedRandomSource(0);
                             var state = Blocks.GOLD_BLOCK.defaultBlockState();
                             var stack = event.getPoseStack();
@@ -226,7 +226,7 @@ public class ClientEventTests {
                                         section.getRenderOrigin(),
                                         Minecraft.getInstance().level,
                                         stack,
-                                        Minecraft.getInstance().renderBuffers().bufferSource()::getBuffer,
+                                        csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
                                         false,
                                         parts);
                                 stack.popPose();

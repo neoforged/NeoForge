@@ -10,10 +10,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.FogParameters;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.fog.FogData;
+import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -179,15 +179,12 @@ public interface IClientFluidTypeExtensions {
      * within a fluid.
      *
      * @param camera         the camera instance
-     * @param mode           the type of fog being rendered
+     * @param environment    the type of fog being rendered
      * @param renderDistance the render distance of the client
      * @param partialTick    the delta time of where the current frame is within a tick
-     * @param fogParameters  the parameters to use for rendering the fog
-     * @return the modified fog parameters
+     * @param fogData        the parameters to use for rendering the fog, this object can be modified.
      */
-    default FogParameters modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, FogParameters fogParameters) {
-        return fogParameters;
-    }
+    default void modifyFogRender(Camera camera, @Nullable FogEnvironment environment, float renderDistance, float partialTick, FogData fogData) {}
 
     /* Level-Based Accessors */
 
