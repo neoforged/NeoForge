@@ -380,7 +380,7 @@
          boolean flag = super.causeFallDamage(p_397597_, p_147187_, p_147189_);
          int i = this.calculateFallDamage(p_397597_, p_147187_);
          if (i > 0) {
-@@ -1730,9 +_,10 @@
+@@ -1730,10 +_,10 @@
              int i = Mth.floor(this.getX());
              int j = Mth.floor(this.getY() - 0.2F);
              int k = Mth.floor(this.getZ());
@@ -389,10 +389,11 @@
 +            BlockState blockstate = this.level().getBlockState(pos);
              if (!blockstate.isAir()) {
 -                SoundType soundtype = blockstate.getSoundType();
-+                SoundType soundtype = blockstate.getSoundType(level(), pos, this);
-                 this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
+-                this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
++                blockstate.playFallSound(this.level(), pos, this);
              }
          }
+     }
 @@ -1758,6 +_,8 @@
          if (!(p_330394_ <= 0.0F)) {
              int i = (int)Math.max(1.0F, p_330394_ / 4.0F);

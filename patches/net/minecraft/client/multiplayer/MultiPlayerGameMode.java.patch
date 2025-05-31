@@ -60,11 +60,13 @@
                  this.destroyBlock(p_105284_);
                  return new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, p_105284_, p_105285_, p_233753_);
              });
-@@ -220,7 +_,7 @@
+@@ -219,8 +_,8 @@
+                 return false;
              } else {
                  this.destroyProgress = this.destroyProgress + blockstate.getDestroyProgress(this.minecraft.player, this.minecraft.player.level(), p_105284_);
-                 if (this.destroyTicks % 4.0F == 0.0F) {
+-                if (this.destroyTicks % 4.0F == 0.0F) {
 -                    SoundType soundtype = blockstate.getSoundType();
++                if (this.destroyTicks % 4.0F == 0.0F && !net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions.of(blockstate).playHitSound(blockstate, this.minecraft.level, p_105284_, p_105285_, this.minecraft.getSoundManager())) {
 +                    SoundType soundtype = blockstate.getSoundType(this.minecraft.level, p_105284_, this.minecraft.player);
                      this.minecraft
                          .getSoundManager()
