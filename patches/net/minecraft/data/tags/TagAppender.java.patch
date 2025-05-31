@@ -37,6 +37,15 @@
          };
      }
  
+@@ -68,7 +_,7 @@
+ 
+             @Override
+             public TagAppender<U, T> addOptional(U p_422325_) {
+-                tagappender.add(p_421966_.apply(p_422325_));
++                tagappender.addOptional(p_421966_.apply(p_422325_));
+                 return this;
+             }
+ 
 @@ -81,6 +_,27 @@
              @Override
              public TagAppender<U, T> addOptionalTag(TagKey<T> p_421878_) {
