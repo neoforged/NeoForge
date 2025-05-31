@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "building",
-  "group": "bed",
+  "category": "misc",
+  "group": "bed_dye",
   "ingredients": [
     "#c:dyes/brown",
     [
