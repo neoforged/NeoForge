@@ -15,7 +15,7 @@ public final class EmptyStorage<T> implements Storage<T> {
     }
 
     @Override
-    public final int size() {
+    public int size() {
         return 0;
     }
 
@@ -24,7 +24,7 @@ public final class EmptyStorage<T> implements Storage<T> {
     }
 
     @Override
-    public final long insert(int slot, T resource, long maxAmount, TransactionContext transaction) {
+    public long insert(int slot, T resource, long maxAmount, TransactionContext transaction) {
         throw invalidSlot(slot);
     }
 
@@ -34,7 +34,7 @@ public final class EmptyStorage<T> implements Storage<T> {
     }
 
     @Override
-    public final long extract(int slot, T resource, long maxAmount, TransactionContext transaction) {
+    public long extract(int slot, T resource, long maxAmount, TransactionContext transaction) {
         throw invalidSlot(slot);
     }
 
@@ -44,27 +44,27 @@ public final class EmptyStorage<T> implements Storage<T> {
     }
 
     @Override
-    public final boolean isResourceBlank(int slot) {
+    public boolean isResourceBlank(int slot) {
         throw invalidSlot(slot);
     }
 
     @Override
-    public final T getResource(int slot) {
+    public T getResource(int slot) {
         throw invalidSlot(slot);
     }
 
     @Override
-    public final long getAmount(int slot) {
+    public long getAmount(int slot) {
         throw invalidSlot(slot);
     }
 
     @Override
-    public final long getCapacity(int slot, T resource) {
+    public long getCapacity(int slot, T resource) {
         throw invalidSlot(slot);
     }
 
     @Override
-    public final boolean isValid(int slot, T resource) {
+    public boolean isValid(int slot, T resource) {
         throw invalidSlot(slot);
     }
 }

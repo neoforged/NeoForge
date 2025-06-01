@@ -8,18 +8,22 @@ package net.neoforged.neoforge.transfer.storage;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A generic handler for handling a resource of type {@link T}.
+ * A generic handler for transferring and storing resources of type {@link T}.
+ * <h2>Slots</h2>
+ * <p>A storage is organized into slots, which are addressed using an index between {@code 0} and {@code size() - 1}.
+ * <p>Out-of-bounds access using methods that accept an {@code int slot} will throw an exception.
+ * so only indices between 0 (included) and the size (excluded) should be used.
+ * If a storage has a dynamic size, it should be lenient to accommodate for callers
+ * holding onto a previously returned size.
  * 
  * @param <T> The type of resource this handler manages.
+ * @see net.neoforged.neoforge.transfer.transaction.Transaction
  */
 public interface Storage<T> {
     /**
-     * Returns the current number of slots of this storage.
-     *
-     * <p>Out-of-bounds accesses using the methods that accept an {@code int slot} will typically throw,
-     * so only indices between 0 (included) and the size (excluded) should be used.
-     * If a storage has a dynamic size, it should be lenient to accommodate for callers
-     * holding onto a previously returned size.
+     * Returns the <i>current</i> number of slots of this storage.
+     * <p>
+     * Note that the size of a storage can change.
      */
     int size();
 
@@ -63,7 +67,7 @@ public interface Storage<T> {
     }
 
     /**
-     * Extracts a given amount of the resource from the handler at the given index.
+     * Extracts a given amount of a resource from a specific slot.
      *
      * @param slot      The slot index to extract the resource from.
      * @param resource  The resource to extract. Must not be blank.
@@ -73,7 +77,8 @@ public interface Storage<T> {
     long extract(int slot, T resource, long maxAmount, TransactionContext transaction);
 
     /**
-     * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
+     * Extracts a given amount of a resource from the handler. The storage decides, which slots the resource
+     * is extracted from.
      *
      * @param resource  The resource to extract. Must not be blank.
      * @param maxAmount The amount of the resource to extract. Must not be negative.
