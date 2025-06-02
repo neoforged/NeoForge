@@ -101,11 +101,6 @@ public class CapabilityHooks {
             return ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_STORAGE_COMBINER).orElse(null);
         }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
-//        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
-//            // Use custom hopper wrapper that respects cooldown
-//            return new VanillaHopperItemHandler(hopper);
-//        });
-
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
                 BlockEntityType.BREWING_STAND,
@@ -121,6 +116,7 @@ public class CapabilityHooks {
                 BlockEntityType.CHISELED_BOOKSHELF,
                 BlockEntityType.DISPENSER,
                 BlockEntityType.DROPPER,
+                BlockEntityType.HOPPER,
                 BlockEntityType.JUKEBOX,
                 BlockEntityType.CRAFTER,
                 BlockEntityType.DECORATED_POT);
