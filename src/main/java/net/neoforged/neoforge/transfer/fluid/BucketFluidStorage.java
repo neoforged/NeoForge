@@ -7,6 +7,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
@@ -26,12 +27,12 @@ public class BucketFluidStorage implements Storage<FluidVariant> {
 
     @Override
     public boolean supportsInsertion() {
-        return !context.isReadOnly();
+        return context.supportsModification();
     }
 
     @Override
     public boolean supportsExtraction() {
-        return !context.isReadOnly();
+        return context.supportsModification();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.transfer.fluid;
+package net.neoforged.neoforge.transfer.initem;
 
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -16,8 +16,8 @@ final class ReadOnlyItemStorageContext implements InItemStorageContext {
     }
 
     @Override
-    public boolean isReadOnly() {
-        return true;
+    public boolean supportsModification() {
+        return false;
     }
 
     @Override

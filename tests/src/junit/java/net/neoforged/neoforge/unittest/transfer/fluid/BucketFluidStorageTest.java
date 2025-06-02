@@ -8,7 +8,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.fluid.BucketFluidStorage;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
-import net.neoforged.neoforge.transfer.fluid.InItemStorageContext;
+import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.item.base.ItemStackStorage;
 import net.neoforged.neoforge.transfer.storage.Storage;

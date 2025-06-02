@@ -1,15 +1,21 @@
-package net.neoforged.neoforge.transfer.fluid;
+package net.neoforged.neoforge.transfer.initem;
 
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A context object that is used when a {@link Storage} is
  * located inside an item (or potentially multiple, when it is stacked).
+ *
+ * <p>This is typically used as the context type for an {@link ItemCapability}.
+ * The capability can be queried using the {@link #getCapability} method as a shorthand.
  */
 public interface InItemStorageContext {
     /**
@@ -29,8 +35,8 @@ public interface InItemStorageContext {
      * use this to return appropriate information from {@link Storage#supportsInsertion()}
      * or {@link Storage#supportsExtraction()}.
      */
-    default boolean isReadOnly() {
-        return false;
+    default boolean supportsModification() {
+        return true;
     }
 
     /**
@@ -79,6 +85,15 @@ public interface InItemStorageContext {
     }
 
     /**
+     * Retrieve a capability for the contents of this context.
+     */
+    @ApiStatus.NonExtendable
+    @Nullable
+    default <T> T getCapability(ItemCapability<T, InItemStorageContext> capability) {
+        return getCurrent().toStack().getCapability(capability, this);
+    }
+
+    /**
      * Creates a context object based on the given itemstack, which will only allow inspection of the contained
      * storage, but no modification.
      */
@@ -89,6 +104,8 @@ public interface InItemStorageContext {
     /**
      * Creates a context object for working with storage contained in an item that is itself stored in the slot
      * of a storage.
+     *
+     * <p>Overflow will be sent to the rest of the storage via the slotless {@link Storage#insert(Object, long, TransactionContext)} method.
      *
      * @param storage The storage containing the item.
      * @param slot    The slot in {@code storage}, where the item can be found.
