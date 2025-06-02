@@ -66,6 +66,15 @@ public interface Transaction extends AutoCloseable, TransactionContext {
     /**
      * Open a new outer transaction.
      *
+     * @throws IllegalStateException If a transaction is already active on the current thread.
+     */
+    static Transaction openOuter() {
+        return open(null);
+    }
+
+    /**
+     * Open a new transaction.
+     *
      * @param parent the parent transaction, or null if this is the outermost transaction
      * @throws IllegalStateException If no parent is passed, but a transaction is already active on the current thread.
      * @throws IllegalStateException If a parent is passed, but it's not the current transaction.
