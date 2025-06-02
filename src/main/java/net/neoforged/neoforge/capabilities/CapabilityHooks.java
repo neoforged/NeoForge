@@ -38,6 +38,7 @@ import net.neoforged.neoforge.items.wrapper.ForwardingItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.transfer.item.ComposterWrapper;
 import net.neoforged.neoforge.transfer.item.ContainerStorage;
 import net.neoforged.neoforge.transfer.item.InventoryStorage;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
@@ -91,18 +92,10 @@ public class CapabilityHooks {
     public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
         // TODO: port missing stuff to Storage API
         // Blocks
-//        var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
-//        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-//            // Return a wrapper that gets re-evaluated every time it is accessed
-//            // Invalidation is taken care of by the patches to ComposterBlock
-//
-//            // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-//            if (side == null) {
-//                return new ForwardingItemHandler(() -> new InvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
-//            } else {
-//                return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
-//            }
-//        }, Blocks.COMPOSTER);
+        event.registerBlock(Capabilities.ItemStorage.BLOCK, (level, pos, state, blockEntity, side) -> {
+            // Invalidation is taken care of by the patches to ComposterBlock
+            return ComposterWrapper.get(level, pos, side);
+        }, Blocks.COMPOSTER);
 
         event.registerBlock(Capabilities.ItemStorage.BLOCK, (level, pos, state, blockEntity, side) -> {
             return ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_STORAGE_COMBINER).orElse(null);

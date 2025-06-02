@@ -24,7 +24,7 @@ import java.util.Map;
 @ApiStatus.Internal
 public class CauldronWrapper extends SnapshotParticipant<BlockState> implements Storage<FluidVariant> {
     /**
-     * To make sure multiple access to the same cauldron return the same wrapper,
+     * To make sure multiple accesses to the same cauldron return the same wrapper,
      * we maintain a {@code (Level, BlockPos) -> Wrapper} cache.</li>
      */
     private record Location(Level level, BlockPos pos) {}
