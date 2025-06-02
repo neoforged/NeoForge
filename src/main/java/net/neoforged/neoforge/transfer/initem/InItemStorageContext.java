@@ -137,4 +137,12 @@ public interface InItemStorageContext {
             }
         };
     }
+
+    /**
+     * Creates a wrapper around this context that allows access to a single item at the time.
+     */
+    @ApiStatus.NonExtendable
+    default InItemStorageContext oneByOne() {
+        return new OneByOneStorageContext(this);
+    }
 }
