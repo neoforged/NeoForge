@@ -9,16 +9,18 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.InventoryResourceWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A context that represents a player's inventory slot.
  */
-public class PlayerContext implements IItemContext {
-    protected final PlayerInventoryHandler handler;
+public class PlayerContext extends SnapshotJournal<ItemStack> implements IItemContext {
+    protected final InventoryResourceWrapper handler;
     protected final int index;
 
     public static IItemContext ofHand(Player player, InteractionHand hand) {
@@ -30,7 +32,7 @@ public class PlayerContext implements IItemContext {
     }
 
     public static IItemContext ofArmor(Player player, EquipmentSlot slot) {
-        if (player.getAbilities().instabuild) {
+        if (player.isCreative()) {
             ItemStack itemInSlot = player.getItemBySlot(slot);
             return new CreativePlayerContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
         }
@@ -39,7 +41,7 @@ public class PlayerContext implements IItemContext {
 
     public PlayerContext(Player player, int index) {
         //This could be captured by player.getCapability, but it was pointed out that has a non-zero chance to return null
-        this.handler = new PlayerInventoryHandler(player);
+        this.handler = InventoryResourceWrapper.of(player);
         this.index = index;
     }
 
@@ -54,39 +56,35 @@ public class PlayerContext implements IItemContext {
     }
 
     @Override
-    public int insert(ItemResource resource, int amount, TransferAction action) {
-        if (action.isSimulating()) return amount;
-        int inserted = handler.insert(index, resource, amount, action);
-        if (inserted < amount && action.isExecuting()) {
-            handler.insertOrDrop(resource, amount);
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        updateSnapshots(transaction);
+        int inserted = handler.insert(index, resource, amount, transaction);
+        if (inserted < amount) {
+            var size = handler.size();
+            for (var handlerIndex = 0; handlerIndex < size; handlerIndex++) {
+                if(index == handlerIndex) continue;
+                inserted += handler.insert(handlerIndex, resource, amount-inserted, transaction);
+            }
+        }
+        if(inserted<amount) {
+            handler.drop(resource, amount-inserted, true, true, transaction);
         }
         return amount;
     }
 
     @Override
-    public int extract(ItemResource resource, int amount, TransferAction action) {
-        return handler.extract(index, resource, amount, action);
+    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        updateSnapshots(transaction);
+        return handler.extract(index, resource, amount, transaction);
     }
 
     @Override
-    public int exchange(ItemResource resource, int amount, TransferAction action) {
-        int currentAmount = getAmount();
-        if (amount >= currentAmount) {
-            if (action.isExecuting()) {
-                var capacity = resource.getMaxStackSize();
-                if (capacity >= currentAmount)
-                    handler.set(index, resource, currentAmount);
-                else {
-                    handler.set(index, resource, capacity);
-                    handler.insertOrDrop(resource, currentAmount - capacity);
-                }
-            }
-            return currentAmount;
-        }
-        int extracted = extract(getResource(), amount, action);
-        if (extracted > 0 && action.isExecuting()) {
-            handler.insertOrDrop(resource, extracted);
-        }
-        return extracted;
+    protected ItemStack createSnapshot() {
+        return UnsafeResourceUtils.innerStackOf(getResource());
+    }
+
+    @Override
+    protected void revertToSnapshot(ItemStack snapshot) {
+        handler.set(index, ItemResource.of(snapshot), snapshot.getCount());
     }
 }

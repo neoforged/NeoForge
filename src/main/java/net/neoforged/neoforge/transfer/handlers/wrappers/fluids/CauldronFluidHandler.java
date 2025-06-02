@@ -12,17 +12,18 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.Objects;
 
 /**
  * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
  */
-public class CauldronFluidHandler implements ISingleResourceHandler<FluidResource> {
+public class CauldronFluidHandler extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
     private final Level level;
     private final BlockPos pos;
 
@@ -60,14 +61,6 @@ public class CauldronFluidHandler implements ISingleResourceHandler<FluidResourc
     }
 
     @Override
-    public int getCapacity(int index) {
-        //We could probably have something that queries all the totalAmounts for every fluid at startup, and have that;
-        // but 1 bucket seems more reasonable as a theoretical than MaxInt
-        return FluidType.BUCKET_VOLUME;
-        //        return Integer.MAX_VALUE; // CauldronFluidContent.totalAmount does not have a maximum value
-    }
-
-    @Override
     public boolean isValid(int index, FluidResource resource) {
         return CauldronFluidContent.getForFluid(resource.getInstanceValue()) != null;
     }
@@ -82,73 +75,110 @@ public class CauldronFluidHandler implements ISingleResourceHandler<FluidResourc
         return true;
     }
 
-    private void updateLevel(CauldronFluidContent newContent, int level) {
-        BlockState newState = newContent.block.defaultBlockState();
+    /**
+     * Called by fill and drain to update the block state.
+     * Note that this temporarily updates the block state in the level
+     *
+     * @see #onCommit
+     */
+    private void updateSnapshotAndSetBlock(CauldronFluidContent newContent, int fluidLevel, TransactionContext transaction) {
+        updateSnapshots(transaction);
 
-        if (newContent.levelProperty != null) {
-            newState = newState.setValue(newContent.levelProperty, level);
+        if (fluidLevel == 0) {
+            // Fully extract -> back to empty cauldron
+            this.level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 0);
+        } else {
+            BlockState newState = newContent.block.defaultBlockState();
+
+            if (newContent.levelProperty != null) {
+                newState = newState.setValue(newContent.levelProperty, fluidLevel);
+            }
+
+            this.level.setBlock(pos, newState, 0);
         }
-
-        this.level.setBlockAndUpdate(pos, newState);
     }
 
     @Override
-    public int insert(FluidResource resource, int amount, TransferAction action) {
+    public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+
+        CauldronFluidContent handledContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
+        if (handledContent == null) {
+            return 0;
+        }
+
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent currentContent = getContent(state);
 
-        if (resource.isEmpty() || amount <= 0) {
-            return 0;
-        } else if (currentContent.fluid != Fluids.EMPTY && !resource.equals(currentContent.fluid.defaultResource())) {
-            return 0;
-        }
-
-        CauldronFluidContent insertContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
-        if (insertContent == null) {
+        if (currentContent.fluid != Fluids.EMPTY && !resource.is(currentContent.fluid)) {
+            //Fluid in the cauldron does not match our input
             return 0;
         }
-
-        // We can only insert increments based on the GCD between the number of levels and the total amount.
-        int d = IntMath.gcd(insertContent.maxLevel, insertContent.totalAmount);
-        int amountIncrements = insertContent.totalAmount / d;
-        int levelIncrements = insertContent.maxLevel / d;
 
         int currentLevel = currentContent.currentLevel(state);
-        int insertedIncrements = Math.min(amount / amountIncrements, (insertContent.maxLevel - currentLevel) / levelIncrements);
-        if (insertedIncrements > 0 && action.isExecuting()) {
-            updateLevel(insertContent, currentLevel + insertedIncrements * levelIncrements);
+
+        // We can only insert increments based on the GCD between the number of levels and the total amount.
+        int d = IntMath.gcd(handledContent.maxLevel, handledContent.totalAmount);
+        int amountIncrements = handledContent.totalAmount / d;
+        int levelIncrements = handledContent.maxLevel / d;
+        int handledIncrements = Math.min(amount / amountIncrements, (handledContent.maxLevel - currentLevel) / levelIncrements);
+
+        if (handledIncrements > 0) {
+            updateSnapshotAndSetBlock(handledContent, currentLevel + handledIncrements * levelIncrements, transaction);
         }
 
-        return insertedIncrements * amountIncrements;
+        return handledIncrements * amountIncrements;
     }
 
     @Override
-    public int extract(FluidResource resource, int amount, TransferAction action) {
+    public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+
         BlockState state = level.getBlockState(pos);
-        CauldronFluidContent content = getContent(state);
-        if (amount < content.getMillibuckets(state) || resource.isEmpty() || !resource.equals(content.fluid.defaultResource())) {
+        CauldronFluidContent handledContent = getContent(state);
+
+        //This handles the `is(fluid)` as well as components are `empty` with the default resource being the baseline of the fluid
+        if (amount < handledContent.getMillibuckets(state) || !resource.equals(handledContent.fluid.defaultResource())) {
             return 0;
         }
 
-        int d = IntMath.gcd(content.maxLevel, content.totalAmount);
-        int amountIncrements = content.totalAmount / d;
-        int levelIncrements = content.maxLevel / d;
+        int currentLevel = handledContent.currentLevel(state);
 
-        int currentLevel = content.currentLevel(state);
-        int extractedIncrements = Math.min(amount / amountIncrements, currentLevel / levelIncrements);
-        if (extractedIncrements > 0) {
-            int newLevel = currentLevel - extractedIncrements * levelIncrements;
-            if (action.isExecuting()) {
-                if (newLevel == 0) {
-                    // Fully extract -> back to empty cauldron
-                    level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
-                } else {
-                    // Otherwise just decrease levels
-                    updateLevel(content, newLevel);
-                }
-            }
+        // We can only extract increments based on the GCD between the number of levels and the total amount.
+        int d = IntMath.gcd(handledContent.maxLevel, handledContent.totalAmount);
+        int levelIncrements = handledContent.maxLevel / d;
+        int amountIncrements = handledContent.totalAmount / d;
+        int handledIncrements = Math.min(amount / amountIncrements, currentLevel / levelIncrements);
+
+        if (handledIncrements > 0) {
+            updateSnapshotAndSetBlock(handledContent, currentLevel - handledIncrements * levelIncrements, transaction);
         }
 
-        return extractedIncrements * amountIncrements;
+        return handledIncrements * amountIncrements;
+    }
+
+    @Override
+    protected BlockState createSnapshot() {
+        return level.getBlockState(pos);
+    }
+
+    @Override
+    protected void revertToSnapshot(BlockState snapshot) {
+        level.setBlock(pos, snapshot, 0);
+    }
+
+
+    @Override
+    protected void onCommit(BlockState originalState) {
+        // State as it was modified during this outermost transaction being committed.
+        BlockState state = level.getBlockState(pos);
+
+        if (originalState == state) return;
+
+        // Revert back to the blockstate before any changes happened so that the next
+        // call will not short-circuit due to the blockstate not really changing.
+        level.setBlock(pos, originalState, 0);
+        // Now do the change that will trigger change notifications to other blocks/neighbors/clients
+        level.setBlockAndUpdate(pos, state);
     }
 }

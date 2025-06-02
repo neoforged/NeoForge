@@ -1,8 +1,8 @@
 package net.neoforged.neoforge.debug.capabilities.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Range;
 
 /**
@@ -43,18 +43,18 @@ public class EnergyBuffer implements ISingleResourceHandler<EnergyUnit> {
     }
 
     @Override
-    public int insert(EnergyUnit resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
+    public int insert(EnergyUnit resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext context) {
         var inserted = Math.min(capacity - this.amount, amount);
-        if (action.isExecuting())
-            this.amount += inserted;
+        //todo take snapshot
+        this.amount += inserted;
         return inserted;
     }
 
     @Override
-    public int extract(EnergyUnit resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
+    public int extract(EnergyUnit resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext context) {
         int extracted = Math.min(amount, this.amount);
-        if (action.isExecuting())
-            this.amount -= extracted;
+        //todo take snapshot
+        this.amount -= extracted;
         return extracted;
     }
 
@@ -64,12 +64,7 @@ public class EnergyBuffer implements ISingleResourceHandler<EnergyUnit> {
     }
 
     //We need to return capacity in two different method overrides since the ResourceHandler is designed around an unknown number of resources per type.
-    //Since energy is only ever 1 singular instance, we can
-    @Override
-    public int getCapacity(int ignoredIndex) {
-        return capacity;
-    }
-
+    //Since energy is only ever 1 singular instance, we can ignore the resource
     @Override
     public int getCapacity(int index, EnergyUnit resource) {
         return capacity;

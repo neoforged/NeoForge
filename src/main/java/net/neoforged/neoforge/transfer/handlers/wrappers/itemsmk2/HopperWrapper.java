@@ -3,25 +3,23 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.wrappers.items;
+package net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2;
 
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class HopperWrapper extends VanillaContainerWrapper {
+public class HopperWrapper extends AlternateVanillaContainerResourceWrapper {
     public HopperWrapper(HopperBlockEntity container) {
         super(container);
     }
 
-    @Override
     public HopperBlockEntity getContainer() {
         return (HopperBlockEntity) super.getContainer();
     }
 
     @Override
-    public int insert(int index, ItemResource resource, int amount, TransferAction action) {
-        if (action.isSimulating()) return super.insert(index, resource, amount, action);
+    public int insert(int index, ItemResource resource, int amount, TransactionContext action) {
         boolean wasEmpty = getContainer().isEmpty();
         int inserted = super.insert(index, resource, amount, action);
         if (wasEmpty && inserted > 0) {

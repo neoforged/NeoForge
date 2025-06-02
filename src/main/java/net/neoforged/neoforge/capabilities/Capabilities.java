@@ -8,7 +8,6 @@ package net.neoforged.neoforge.capabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerTransaction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -30,8 +29,6 @@ public final class Capabilities {
 
     public static final class FluidHandler {
         public static final BlockCapability<IResourceHandler<FluidResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
-        public static final BlockCapability<IResourceHandlerTransaction<FluidResource>, @Nullable Direction> BLOCKTEMP = BlockCapability.createSided(create("fluid_handler_temp"), IResourceHandlerTransaction.asClass());
-
         public static final EntityCapability<IResourceHandler<FluidResource>, @Nullable Direction> ENTITY = EntityCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
         public static final ItemCapability<IResourceHandler<FluidResource>, @NotNull IItemContext> ITEM = ItemCapability.createContextual(create("fluid_handler"), IResourceHandler.asClass());
 

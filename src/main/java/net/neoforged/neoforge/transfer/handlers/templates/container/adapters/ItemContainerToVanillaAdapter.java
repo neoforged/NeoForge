@@ -63,6 +63,6 @@ public record ItemContainerToVanillaAdapter(IResourceContainer<ItemResource> ite
 
     @Override
     public void clearContent() {
-        itemContainer.clear();
+        itemContainer.clearContent();
     }
 }

@@ -7,17 +7,18 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A context that represents a dispenser's inventory.
@@ -47,53 +48,56 @@ public class DispenserContext implements IItemContext {
     }
 
     @Override
-    public int insert(ItemResource resource, int amount, TransferAction action) {
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         if (amount <= 0 || resource.isEmpty()) return 0;
-        if (action.isSimulating()) return amount;
+        //        if (action.isSimulating()) return amount;
+        //todo add snapshot
         int inserted = 0;
         if (getResource().isEmpty()) {
             inserted = Math.min(amount, resource.getMaxStackSize());
-            if (action.isExecuting()) {
-                this.resource = resource;
-                this.amount = inserted;
-            }
+            //            if (action.isExecuting()) {
+            this.resource = resource;
+            this.amount = inserted;
+            //            }
         } else if (getResource().equals(resource)) {
             inserted = Math.min(amount, resource.getMaxStackSize() - getAmount());
-            if (action.isExecuting()) {
-                this.amount += inserted;
-            }
+            //            if (action.isExecuting()) {
+            this.amount += inserted;
+            //            }
         }
-        if (action.isExecuting()) resources.put(resource, resources.getInt(resource) + amount - inserted);
+        //        if (action.isExecuting())
+        resources.put(resource, resources.getInt(resource) + amount - inserted);
         return amount;
     }
 
     @Override
-    public int extract(ItemResource resource, int amount, TransferAction action) {
+    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         if (amount <= 0 || resource.isEmpty()) return 0;
         int extracted = Math.min(amount, getAmount());
-        if (action.isExecuting()) {
-            this.amount -= extracted;
-            if (getAmount() == 0) {
-                this.resource = ItemResource.EMPTY;
-            }
+        //todo handle snapshot
+        //        if (action.isExecuting()) {
+        this.amount -= extracted;
+        if (getAmount() == 0) {
+            this.resource = ItemResource.EMPTY;
         }
+        //        }
         return extracted;
     }
 
-    @Override
-    public int exchange(ItemResource resource, int amount, TransferAction action) {
-        if (amount >= getAmount()) {
-            if (action.isExecuting()) {
-                this.resource = resource;
-            }
-            return getAmount();
-        }
-        int extracted = extract(getResource(), amount, action);
-        if (extracted > 0) {
-            insert(resource, extracted, action);
-        }
-        return extracted;
-    }
+    //    @Override
+    //    public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
+    //        if (amount >= getAmount()) {
+    //            if (action.isExecuting()) {
+    //                this.resource = resource;
+    //            }
+    //            return getAmount();
+    //        }
+    //        int extracted = extract(getResource(), amount, action);
+    //        if (extracted > 0) {
+    //            insert(resource, extracted, action);
+    //        }
+    //        return extracted;
+    //    }
 
     public ItemStack finalizeResult(BlockSource source) {
         ItemStack res = resource.toStack(amount);

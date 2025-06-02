@@ -13,7 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class SimpleItemResourceContainer extends ResourceContainer<ItemResource> {
     /**
-     * @param capacity Typically is expected to be {@link Item#ABSOLUTE_MAX_STACK_SIZE}, but you can set your own as high as you like. Just note you will need to override the {@link #getCapacity(int, ItemResource)} to allow more control per item
+     * @param capacity Typically is expected to be {@link Item#ABSOLUTE_MAX_STACK_SIZE} as the baseline capacity allowing for the item to be the limit,
+     *                 but you can set your own as high as you like.
+     *                 Just note you will need to override the {@link #getCapacity(int, ItemResource)} to allow more control per item
      */
     public SimpleItemResourceContainer(NonNullList<MutableResourceStack<ItemResource>> mutableResourceStacks, int capacity, @Nullable Runnable updateCallback) {
         super(mutableResourceStacks, ItemResource.EMPTY_STACK, capacity, updateCallback);
@@ -22,7 +24,7 @@ public class SimpleItemResourceContainer extends ResourceContainer<ItemResource>
     //Because Items also have their own stack sizes, there are scenarios for default chest implementations to handle this.
     @Override
     public int getCapacity(int index, ItemResource resource) {
-        return Math.min(resource.getMaxStackSize(), getCapacity(index));
+        return Math.min(resource.getMaxStackSize(), super.getCapacity(index, resource));
     }
 
     public static SimpleItemResourceContainer.Builder builder(int size) {
@@ -40,7 +42,8 @@ public class SimpleItemResourceContainer extends ResourceContainer<ItemResource>
 
         @Override
         public SimpleItemResourceContainer build() {
-            if (stacks == null) throw new IllegalArgumentException("SimpleItemResourceContainer's stacks must not be null");
+            if (stacks == null)
+                throw new IllegalArgumentException("SimpleItemResourceContainer's stacks must not be null");
             return new SimpleItemResourceContainer(stacks, capacity, updateCallback);
         }
     }

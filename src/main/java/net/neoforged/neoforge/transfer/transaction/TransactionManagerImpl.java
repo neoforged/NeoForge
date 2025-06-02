@@ -23,7 +23,7 @@ public class TransactionManagerImpl {
     public Transaction open(@Nullable TransactionContext parent) {
         if (parent == null) {
             if (isOpen()) {
-                throw new IllegalStateException("An outer transaction is already active on this thread.");
+                throw new IllegalStateException("An outer transaction is already active on this thread " + thread);
             }
         } else {
             TransactionImpl parentImpl = (TransactionImpl) parent;

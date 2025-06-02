@@ -6,13 +6,14 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
+
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Represents an immutable {@link IResource} and a <b>mutable</b> amount.
@@ -83,7 +84,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return nonNullListOfSize(count, this);
     }
 
-    public MutableResourceStack(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount) {
+    public MutableResourceStack(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
         Objects.requireNonNull(resource, "Resource must not be null");
         this.resource = resource;
         this.amount = amount;
@@ -93,7 +94,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount) {
+    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
         return new MutableResourceStack<>(resource, amount);
     }
 
@@ -111,7 +112,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> withAmount(@Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int newAmount) {
+    public MutableResourceStack<T> withAmount(@Range(from = 0, to = ResourceHandlerUtil.MAX) int newAmount) {
         amount = isEmpty() ? 0 : newAmount;
         return this;
     }
@@ -153,6 +154,10 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return new ResourceStack<>(resource, amount); // Creates a new immutable resource stack with the backing data
     }
 
+    @Override
+    public IResourceStack<T> copy() {
+        return of(resource, amount);
+    }
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

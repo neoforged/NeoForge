@@ -17,8 +17,6 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerModifiableTransaction;
-import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerTransaction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.handlers.templates.container.ResourceContainer;
@@ -32,11 +30,12 @@ import org.jetbrains.annotations.Nullable;
 // This is the XyCraft example of how a container is used along with the helper (`holderWith`) of how to set the holder during deserializing.
 public class TestResourceContainerAttachment {
     public static final Codec<TestResourceContainerAttachment> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            ResourceContainer.Codecs.itemResourcesOf("item_resources", data -> data.itemContainer),
-            ResourceContainer.Codecs.fluidResourcesOf("fluid_resources", data -> data.fluidContainer),
-            Codec.INT.fieldOf("tank_capacity").forGetter(data -> data.fluidContainer.getCapacity(0))).apply(builder, TestResourceContainerAttachment::new));
+            ResourceContainer.Codecs.itemsOf("item_resources", data -> data.itemContainer),
+            ResourceContainer.Codecs.fluidsOf("fluid_resources", data -> data.fluidContainer),
+            Codec.INT.fieldOf("tank_capacity").forGetter(data -> data.fluidContainer.getCapacity(0, FluidResource.EMPTY))).apply(builder, TestResourceContainerAttachment::new));
 
-    public static final AttachmentType.Builder<TestResourceContainerAttachment> BUILDER = AttachmentType.builder(TestResourceContainerAttachment::new).serialize(holderWith(TestResourceContainerAttachment.CODEC, TestResourceContainerAttachment::setHolder));
+    public static final AttachmentType.Builder<TestResourceContainerAttachment> BUILDER = AttachmentType.builder(TestResourceContainerAttachment::new)
+            .serialize(holderWith(TestResourceContainerAttachment.CODEC, TestResourceContainerAttachment::setHolder));
 
     public final ResourceContainer<ItemResource> itemContainer;
     public final SimpleFluidResourceContainer fluidContainer;
@@ -46,7 +45,6 @@ public class TestResourceContainerAttachment {
     public final IResourceHandlerModifiable<ItemResource> both;
 
     public final IResourceHandlerModifiable<FluidResource> fluidHandler;
-    public final IResourceHandlerModifiableTransaction<FluidResource> fluidHandler2;
 
     @Nullable
     public BlockEntity blockEntity; // We want to set data, or more accurately: mark the block entity owning this data as `changed`
@@ -104,7 +102,6 @@ public class TestResourceContainerAttachment {
         });
 
         fluidHandler = fluidContainer.asHandler();
-        fluidHandler2 = fluidContainer.asHandler2();
     }
 
     public void markBlockEntityAsDirty() {

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
@@ -17,11 +16,13 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ContainerOrHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class VanillaInventoryCodeHooks {
     /**
@@ -33,7 +34,7 @@ public class VanillaInventoryCodeHooks {
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
         for (int i = 0; i < handler.size(); i++) {
 //            ItemStack extractItem = handler.extractItem(i, 1, true);
-            var extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.SIMULATE, ItemResource.EMPTY);
+            var extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.EMPTY);
             if (extracted.isEmpty()) continue;
 
             var extractItem = ItemResource.itemStackOf(extracted);
@@ -43,7 +44,7 @@ public class VanillaInventoryCodeHooks {
 
                 if (!dest.canPlaceItem(j, extractItem) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
                     continue;
-                extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.EXECUTE, ItemResource.EMPTY);
+                extracted = ResourceHandlerUtil.extractAny(handler, 1,  ItemResource.EMPTY_STACK, TransactionContext.EMPTY);
                 if (extracted.isEmpty()) continue;//Should be unneeded
                 if (destStack.isEmpty())
                     dest.setItem(j, ItemResource.itemStackOf(extracted));
@@ -74,7 +75,7 @@ public class VanillaInventoryCodeHooks {
 
             ItemStack originalSlotContents = hopper.getItem(i).copy();
             ResourceStack<ItemResource> insertStack = hopper.removeItem(i, 1).immutable();
-            int accepted = ResourceHandlerUtil.insertIndexForced(handler, insertStack.resource(), insertStack.amount(), TransferAction.EXECUTE);
+            int accepted = ResourceHandlerUtil.insertIndexForced(handler, insertStack.resource(), insertStack.amount(), TransactionContext.EMPTY);
             if (accepted > 0)
                 return true;
 

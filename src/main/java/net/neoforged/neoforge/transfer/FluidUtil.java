@@ -13,8 +13,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundAction;
@@ -27,7 +29,10 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BlockFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidUtil {
@@ -92,15 +97,18 @@ public class FluidUtil {
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, TransferAction action) {
-        ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveAny(from, to, amount, action, FluidResource.EMPTY);
-        if (moved.isEmpty() || action != TransferAction.EXECUTE) return moved;
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            var moved = ResourceHandlerUtil.moveOrDefault(from, to, r-> true, amount, transaction, FluidResource.EMPTY_STACK);
+            if (moved.isEmpty() || action.isSimulating()) return moved;
 
-        SoundEvent soundevent = moved.resource().getSound(soundAction);
-        if (soundevent != null) {
-            level.playSound(null, pos.x(), pos.y() + 0.5, pos.z(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+            SoundEvent soundevent = moved.resource().getSound(soundAction);
+            if (soundevent != null) {
+                level.playSound(null, pos.x(), pos.y() + 0.5, pos.z(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+
+            transaction.commit();
+            return moved;
         }
-
-        return moved;
     }
 
     /**
@@ -167,7 +175,7 @@ public class FluidUtil {
 
     /**
      * Destroys the block at the given position if it is not solid and not a liquid.
-     * 
+     *
      * @param level The level where the block is located.
      * @param pos   The position of the block to destroy.
      */
@@ -183,7 +191,7 @@ public class FluidUtil {
 
     /**
      * Gets the fluid resource and amount contained in the given item context.
-     * 
+     *
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
@@ -202,7 +210,7 @@ public class FluidUtil {
 
     /**
      * Gets the fluid contained in the given item context.
-     * 
+     *
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
@@ -213,7 +221,7 @@ public class FluidUtil {
 
     /**
      * Gets the fluid contained in the given item stack.
-     * 
+     *
      * @param stack The item stack to get the fluid from.
      * @return The fluid contained in the item stack, or empty if no fluid is contained.
      */
@@ -221,5 +229,22 @@ public class FluidUtil {
         return getFluidContained(new StaticContext(stack));
     }
 
-    private FluidUtil() {}
+
+    /**
+     * @param fluidVariant contents used to fill the bucket
+     * @return a filled vanilla bucket or filled universal bucket.
+     *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
+     */
+    public static ItemResource getFilledBucket(FluidResource fluidVariant) {
+        if (fluidVariant.isComponentsPatchEmpty()) {
+            if (fluidVariant.is(Fluids.WATER)) {
+                return Items.WATER_BUCKET.defaultResource();
+            } else if (fluidVariant.is(Fluids.LAVA)) {
+                return Items.LAVA_BUCKET.defaultResource();
+            }
+        }
+        return ItemResource.of(fluidVariant.getInstanceValue().getFluidType().getBucket(fluidVariant.toStack(FluidType.BUCKET_VOLUME)));
+    }
+
+    private FluidUtil() { }
 }

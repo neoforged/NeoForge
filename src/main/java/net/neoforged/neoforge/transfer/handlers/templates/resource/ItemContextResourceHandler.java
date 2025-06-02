@@ -5,17 +5,18 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
-import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.function.Predicate;
 
 public class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    protected final IItemContext context;
+    protected final IItemContext itemContext;
     protected final DataComponentType<ResourceStack<T>> componentType;
 
     protected final int singleItemLimit;
@@ -25,12 +26,12 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
 
     protected final Predicate<T> validator;
 
-    public ItemContextResourceHandler(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit) {
-        this(context, componentType, emptyResource, singleItemLimit, r -> true);
+    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit) {
+        this(itemContext, componentType, emptyResource, singleItemLimit, r -> true);
     }
 
-    public ItemContextResourceHandler(IItemContext context, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit, Predicate<T> validator) {
-        this.context = context;
+    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, T emptyResource, int singleItemLimit, Predicate<T> validator) {
+        this.itemContext = itemContext;
         this.componentType = componentType;
         this.singleItemLimit = singleItemLimit;
         this.emptyResource = emptyResource;
@@ -40,29 +41,22 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
 
     @Override
     public T getResource(int index) {
-        return context.getResource().getOrDefault(componentType, emptyStack).resource();
+        return itemContext.getResource().getOrDefault(componentType, emptyStack).resource();
     }
 
     @Override
     public int getAmount(int index) {
-        return getSingleItemAmount() * context.getAmount();
+        return getSingleItemAmount() * itemContext.getAmount();
     }
 
     protected int getSingleItemAmount() {
-        return context.getResource().getOrDefault(componentType, emptyStack).amount();
+        return itemContext.getResource().getOrDefault(componentType, emptyStack).amount();
     }
 
     @Override
     public int getCapacity(int index, T resource) {
         //This ignores say the resource size limits at the moment. As well as possibly able to overflow if done incorrectly
-        return singleItemLimit * context.getAmount();
-    }
-
-    //Theoretical version
-    @Override
-    public int getCapacity(int index) {
-        //Possibly able to overflow if done incorrectly
-        return singleItemLimit * context.getAmount();
+        return singleItemLimit * itemContext.getAmount();
     }
 
     @Override
@@ -71,7 +65,7 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
     }
 
     public boolean isEmpty() {
-        return !context.getResource().has(componentType);
+        return !itemContext.getResource().has(componentType);
     }
 
     @Override
@@ -85,7 +79,7 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
+    public int insert(T resource, int amount, TransactionContext action) {
         if (resource.isEmpty() || amount <= 0 || !isValid(0, resource)) return 0;
         T presentResource = getResource(0);
         if (presentResource.isEmpty()) {
@@ -102,7 +96,7 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
+    public int extract(T resource, int amount, TransactionContext action) {
         if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource(0).equals(resource)) return 0;
         int containerFill = getSingleItemAmount();
         if (amount < containerFill) {
@@ -115,18 +109,18 @@ public class ItemContextResourceHandler<T extends IResource> implements ISingleR
         }
     }
 
-    protected int empty(int count, TransferAction action) {
-        ItemResource emptiedContainer = context.getResource().without(componentType);
-        return context.exchange(emptiedContainer, count, action);
+    protected int empty(int count, TransactionContext context) {
+        ItemResource emptiedContainer = itemContext.getResource().without(componentType);
+        return itemContext.exchange(emptiedContainer, count, context);
     }
 
-    protected int setFull(T resource, int count, TransferAction action) {
-        ItemResource filledContainer = context.getResource().with(componentType, new ResourceStack<>(resource, singleItemLimit));
-        return context.exchange(filledContainer, count, action);
+    protected int setFull(T resource, int count, TransactionContext context) {
+        ItemResource filledContainer = itemContext.getResource().with(componentType, new ResourceStack<>(resource, singleItemLimit));
+        return itemContext.exchange(filledContainer, count, context);
     }
 
-    protected int setPartial(T resource, int amount, TransferAction action) {
-        ItemResource filledContainer = context.getResource().with(componentType, new ResourceStack<>(resource, amount));
-        return context.exchange(filledContainer, 1, action);
+    protected int setPartial(T resource, int amount, TransactionContext context) {
+        ItemResource filledContainer = itemContext.getResource().with(componentType, new ResourceStack<>(resource, amount));
+        return itemContext.exchange(filledContainer, 1, context);
     }
 }

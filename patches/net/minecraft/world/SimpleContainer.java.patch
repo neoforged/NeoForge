@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/SimpleContainer.java
++++ b/net/minecraft/world/SimpleContainer.java
+@@ -128,9 +_,16 @@
+ 
+     @Override
+     public void setItem(int p_19162_, ItemStack p_19163_) {
++        setItem(p_19162_, p_19163_, true);
++    }
++
++    @Override
++    public void setItem(int p_19162_, ItemStack p_19163_, boolean performSideEffects) {
+         this.items.set(p_19162_, p_19163_);
+         p_19163_.limitSize(this.getMaxStackSize(p_19163_));
+-        this.setChanged();
++        if (performSideEffects) {
++            this.setChanged();
++        }
+     }
+ 
+     @Override

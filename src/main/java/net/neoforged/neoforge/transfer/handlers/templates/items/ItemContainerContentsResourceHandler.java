@@ -10,11 +10,12 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
@@ -23,20 +24,20 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 public class ItemContainerContentsResourceHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final int size;
     protected final DataComponentType<ItemContainerContents> componentType;
-    protected final IItemContext context;
+    protected final IItemContext itemContext;
 
-    public ItemContainerContentsResourceHandler(IItemContext context, DataComponentType<ItemContainerContents> componentType, int size) {
+    public ItemContainerContentsResourceHandler(IItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
         this.componentType = componentType;
-        this.context = context;
+        this.itemContext = itemContext;
         this.size = size;
     }
 
     public ItemContainerContents getContents() {
-        return context.getResource().getOrDefault(componentType, ItemContainerContents.fromItems(NonNullList.withSize(size(), ItemStack.EMPTY)));
+        return itemContext.getResource().getOrDefault(componentType, ItemContainerContents.fromItems(NonNullList.withSize(size(), ItemStack.EMPTY)));
     }
 
-    public int setAndValidate(ItemContainerContents contents, int changedAmount, TransferAction action) {
-        return context.exchange(context.getResource().with(componentType, contents), 1, action) == 1 ? changedAmount : 0;
+    public int setAndValidate(ItemContainerContents contents, int changedAmount, TransactionContext context) {
+        return itemContext.exchange(itemContext.getResource().with(componentType, contents), 1, context) == 1 ? changedAmount : 0;
     }
 
     @Override
@@ -57,13 +58,8 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
     }
 
     @Override
-    public int getCapacity(int index) {
-        return Item.ABSOLUTE_MAX_STACK_SIZE;
-    }
-
-    @Override
     public int getCapacity(int index, ItemResource resource) {
-        return Math.min(resource.getMaxStackSize(), getCapacity(index));
+        return Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
     }
 
     @Override
@@ -86,30 +82,33 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
     public void set(int index, ItemResource resource, int amount) {
         ItemContainerContents contents = getContents();
         contents.getStackInSlot(index).setCount(amount);
-        setAndValidate(contents, amount, TransferAction.EXECUTE);
+        try(var tx = Transaction.open(null)) {
+            setAndValidate(contents, amount, tx);
+            tx.commit();
+        }
     }
 
     @Override
-    public int insert(int index, ItemResource resource, int amount, TransferAction action) {
+    public int insert(int index, ItemResource resource, int amount, TransactionContext context) {
         if (amount <= 0 || resource.isEmpty() || !isValid(index, resource)) return 0;
         ItemContainerContents contents = getContents();
         ItemStack stack = contents.getStackInSlot(index);
         if (stack.isEmpty()) {
             amount = Math.min(amount, resource.getMaxStackSize());
 
-            return setAndValidate(contents.with(index, resource, amount), amount, action);
+            return setAndValidate(contents.with(index, resource, amount), amount, context);
         } else if (resource.matches(stack) && stack.getCount() < resource.getMaxStackSize()) {
             int newAmount = Math.min(stack.getCount() + amount, resource.getMaxStackSize());
             amount = newAmount - stack.getCount();
-            if (action.isExecuting())
+//            if (action.isExecuting())
                 stack.grow(amount);
-            return setAndValidate(contents, amount, action);
+            return setAndValidate(contents, amount, context);
         }
         return 0;
     }
 
     @Override
-    public int insert(ItemResource resource, int amount, TransferAction action) {
+    public int insert(ItemResource resource, int amount, TransactionContext context) {
         if (amount <= 0 || resource.isEmpty()) return 0;
         ItemContainerContents contents = getContents();
         int remaining = amount;
@@ -130,11 +129,11 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
                 break;
             }
         }
-        return setAndValidate(contents, amount - remaining, action);
+        return setAndValidate(contents, amount - remaining, context);
     }
 
     @Override
-    public int extract(int index, ItemResource resource, int amount, TransferAction action) {
+    public int extract(int index, ItemResource resource, int amount, TransactionContext context) {
         if (amount <= 0 || resource.isEmpty()) return 0;
         ItemContainerContents contents = getContents();
         ResourceStack<ItemResource> stack = contents.getStackInSlot(index).immutable();
@@ -142,11 +141,11 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
         int extracted = Math.min(stack.amount(), amount);
         int newAmount = stack.amount() - extracted;
         contents = contents.with(index, newAmount == 0 ? ItemResource.EMPTY : stack.resource(), newAmount);
-        return setAndValidate(contents, extracted, action);
+        return setAndValidate(contents, extracted, context);
     }
 
     @Override
-    public int extract(ItemResource resource, int amount, TransferAction action) {
+    public int extract(ItemResource resource, int amount, TransactionContext context) {
         int remaining = amount;
         ItemContainerContents contents = getContents();
         for (int slot = 0; slot < size; slot++) {
@@ -160,6 +159,6 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
                 break;
             }
         }
-        return setAndValidate(contents, amount - remaining, action);
+        return setAndValidate(contents, amount - remaining, context);
     }
 }

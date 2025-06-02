@@ -14,7 +14,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -106,25 +107,35 @@ public class VanillaHandlersTests {
         var waterResource = Fluids.WATER.defaultResource();
         var lavaResource = Fluids.LAVA.defaultResource();
 
-        // Simulate filling with water, and it should only accept 1 bucket
-        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.SIMULATE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
-        // Can't fill with less than 1000 though...
-        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME - 1, TransferAction.SIMULATE), 0, "Needs at least 1 bucket and will return 1 bucket. Fill result should match");
+        try(var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            // Simulate filling with water, and it should only accept 1 bucket
+            helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, transaction), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
+        }
+        try(var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            // Can't fill with less than 1000 though...
+            helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME - 1, transaction), 0, "Needs at least 1 bucket and will return 1 bucket. Fill result should match");
+        }
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
-        // Excecute tests
-        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, TransferAction.EXECUTE), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
-        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, (state) -> Component.literal("Expected level 3 cauldron: %s".formatted(state)));
-        helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
-        helper.assertValueEqual(wrapper.getAmount(0), FluidType.BUCKET_VOLUME, "Should match a bucket");
+        try(var transaction = Transaction.open(TransactionContext.EMPTY)) {
 
-        // Try to empty as well
-        helper.assertValueEqual(wrapper.extract(lavaResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), 0, "Cannot drain lava");
-        helper.assertFalse(wrapper.getResource(0).isEmpty(), "Water should still be present");
-        helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME - 1, TransferAction.EXECUTE), 0, "Cannot drain less than a bucket");
-        helper.assertFalse(wrapper.getResource(0).isEmpty(), "Water should still be present");
-        helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), FluidType.BUCKET_VOLUME, "One bucket should be drained");
-        helper.assertTrue(wrapper.getResource(0).isEmpty(), "Expected empty handler");
+            // Excecute tests
+            helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, transaction), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
+            helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, (state) -> Component.literal("Expected level 3 cauldron: %s".formatted(state)));
+            helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
+            helper.assertValueEqual(wrapper.getAmount(0), FluidType.BUCKET_VOLUME, "Should match a bucket");
+
+
+            // Try to empty as well
+            helper.assertValueEqual(wrapper.extract(lavaResource, FluidType.BUCKET_VOLUME, transaction), 0, "Cannot drain lava");
+            helper.assertFalse(wrapper.getResource(0).isEmpty(), "Water should still be present");
+            helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME - 1, transaction), 0, "Cannot drain less than a bucket");
+            helper.assertFalse(wrapper.getResource(0).isEmpty(), "Water should still be present");
+            helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, transaction), FluidType.BUCKET_VOLUME, "One bucket should be drained");
+            helper.assertTrue(wrapper.getResource(0).isEmpty(), "Expected empty handler");
+
+            transaction.commit();
+        }
 
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
@@ -136,8 +147,12 @@ public class VanillaHandlersTests {
         helper.setBlock(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
         helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
         helper.assertValueEqual(wrapper.getAmount(0), 666, "Should match");
-        helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), 0, "Expected no water drain from partial cauldron");
-        helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE), 0, "Expected no water fill to partial cauldron");
+        try(var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, transaction), 0, "Expected no water drain from partial cauldron");
+            helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME, transaction), 0, "Expected no water fill to partial cauldron");
+
+            transaction.commit();
+        }
 
         // None of this should have invalidated the capability
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only after the whole test");

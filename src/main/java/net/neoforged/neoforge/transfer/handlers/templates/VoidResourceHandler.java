@@ -6,11 +6,11 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * An {@link ISingleResourceHandler} that automatically destroys any resources that are inserted into it.
@@ -30,12 +30,12 @@ public class VoidResourceHandler<T extends IResource> implements ISingleResource
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
+    public int insert(T resource, int amount, TransactionContext context) {
         return amount; // ignore the inputs, and inform the return is always accepted
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
+    public int extract(T resource, int amount, TransactionContext context) {
         return 0; // Nothing is ever allowed to be extracted
     }
 
@@ -51,12 +51,7 @@ public class VoidResourceHandler<T extends IResource> implements ISingleResource
 
     @Override
     public int getCapacity(int index, T resource) {
-        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; // Maximum capacity
-    }
-
-    @Override
-    public int getCapacity(int index) {
-        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; // Maximum capacity
+        return ResourceHandlerUtil.MAX; // Maximum capacity
     }
 
     @Override

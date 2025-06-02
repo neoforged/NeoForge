@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
-import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A static context that holds a fixed amount of a single item. Operations on this context will still perform as if the
@@ -39,22 +39,18 @@ public class StaticContext implements IItemContext {
     }
 
     @Override
-    public int insert(ItemResource resource, int amount, TransferAction action) {
-        if (resource.isEmpty() || amount <= 0) return 0;
-        return insertOverflow(resource, amount, action);
-    }
-
-    protected int insertOverflow(ItemResource resource, int amount, TransferAction action) {
-        return amount;
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        return ResourceHandlerUtil.isInvalidInquiry(resource, amount) ? 0 : amount;
     }
 
     @Override
-    public int extract(ItemResource resource, int amount, TransferAction action) {
-        return Objects.equals(this.resource, resource) ? Math.min(this.amount, amount) : 0;
+    public int extract(ItemResource resource, int amount, TransactionContext context) {
+        if (!resource.equals(this.resource)) return 0;
+        return Math.min(this.amount, amount);
     }
 
     @Override
-    public int exchange(ItemResource resource, int amount, TransferAction action) {
+    public int exchange(ItemResource resource, int amount, TransactionContext context) {
         return amount;
     }
 }

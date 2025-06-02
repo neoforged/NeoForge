@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * An {@link IResourceHandler} that represents a handler that rejects all operations.
@@ -28,22 +28,22 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
+    public int insert(T resource, int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int insert(int index, T resource, int amount, TransferAction action) {
+    public int insert(int index, T resource, int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
+    public int extract(T resource, int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int extract(int index, T resource, int amount, TransferAction action) {
+    public int extract(int index, T resource, int amount, TransactionContext transaction) {
         return 0;
     }
 
@@ -54,11 +54,6 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
 
     @Override
     public int getAmount(int index) {
-        return 0;
-    }
-
-    @Override
-    public int getCapacity(int index) {
         return 0;
     }
 

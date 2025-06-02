@@ -15,15 +15,53 @@
 //import net.neoforged.neoforge.transfer.resources.ResourceStack;
 //import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 //
+//import java.util.Objects;
+//
 ///**
 // * Adapts any arbitrary resource handlers and wraps it into a IResourceContainer. Note, this may have odd behaviour when dealing with other mod's handlers here.
 // */
-//public record ResourceHandlerToContainerAdapter<T extends IResource>(
-//        IResourceHandler<T> wrappedHandler, ResourceStack<T> emptyResource) implements IResourceContainer<T> {
+//public final class ResourceHandlerToContainerAdapter<T extends IResource> implements IResourceContainer<T> {
+//    private final IResourceHandler<T> wrappedHandler;
+//    private final ResourceStack<T> emptyResource;
+//
+//    private class IndexSnapshot extends SnapshotParticipant<MutableResourceStack<T>> {
+//        private final int slot;
+//
+//        private IndexSnapshot(int slot) {
+//            this.slot = slot;
+//        }
+//
+//        @Override
+//        protected MutableResourceStack<T> createSnapshot() {
+//            return MutableResourceStack.of(get(slot));
+//        }
+//
+//        @Override
+//        protected void revertToSnapshot(MutableResourceStack<T> snapshot) {
+//            set(slot, snapshot);
+//        }
+//
+//        @Override
+//        protected void onCommit(MutableResourceStack<T> originalState) {
+//            if(updateCallback != null)
+//                updateCallback.run();
+//        }
+//    }
+//
+//    /**
+//     *
+//     */
+//    public ResourceHandlerToContainerAdapter(
+//            IResourceHandler<T> wrappedHandler, ResourceStack<T> emptyResource) {
+//        this.wrappedHandler = wrappedHandler;
+//        this.emptyResource = emptyResource;
+//    }
 //    @Override
 //    public int size() {
 //        return wrappedHandler.size();
 //    }
+//
+//
 //    @Override
 //    public SnapshotParticipant<MutableResourceStack<T>> getParticipant(int index) {
 //        return null;
@@ -68,4 +106,30 @@
 //    public IResourceHandlerModifiable<T> asHandler() {
 //        return wrappedHandler instanceof IResourceHandlerModifiable<T> modifiable ? modifiable : IResourceContainer.super.asHandler();
 //    }
+//    public IResourceHandler<T> wrappedHandler() {
+//        return wrappedHandler;
+//    }
+//    @Override
+//    public ResourceStack<T> emptyResource() {
+//        return emptyResource;
+//    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (obj == this) return true;
+//        if (obj == null || obj.getClass() != this.getClass()) return false;
+//        var that = (ResourceHandlerToContainerAdapter) obj;
+//        return Objects.equals(this.wrappedHandler, that.wrappedHandler) &&
+//                Objects.equals(this.emptyResource, that.emptyResource);
+//    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(wrappedHandler, emptyResource);
+//    }
+//    @Override
+//    public String toString() {
+//        return "ResourceHandlerToContainerAdapter[" +
+//                "wrappedHandler=" + wrappedHandler + ", " +
+//                "emptyResource=" + emptyResource + ']';
+//    }
+//
 //}

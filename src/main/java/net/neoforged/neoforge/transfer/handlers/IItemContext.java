@@ -7,8 +7,10 @@ package net.neoforged.neoforge.transfer.handlers;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
-import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,37 +26,37 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Imagine we have 16 bottles of honey in your inventory. We want to extract 1 bucket's worth of liquid from this stack.
  * First, we create a context of the stack of honey bottles. Let's assume this stack is in your main hand:
- * 
+ *
  * <pre>{@code
  * IItemContext context = PlayerContext.ofHand(InteractionHand.MAIN_HAND);
  * }</pre>
- * 
+ * <p>
  * Next, we get the capability for fluid handling. We can use the shortcut method {@link #getCapability(ItemCapability)}
  * to get the capability without needing to get the stack:
- * 
+ *
  * <pre>{@code
  * IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
  * }</pre>
- * 
+ * <p>
  * Now we can extract the fluid from the stack:
- * 
+ *
  * <pre>{@code
  * FluidResource resource = handler.getResource(0);
- * handler.extract(resource, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
+ * handler.extract(resource, FluidType.BUCKET_VOLUME, transaction);
  * }</pre>
- * 
+ * <p>
  * And boom! We've successfully extracted a bucket's worth of honey from our stack of honey bottles.
  * <h3>Example Usage in Handler</h3>
  * Let's take a look at how the handler itself would use the provided context for extraction:
  * <p>
  * On the handler end, we know that each bottle of honey is 250mB, so to extract 1000 mB we need to empty 4 bottles of honey.
  * We can do this by exchanging the main item in the context with 4 empty bottles:
- * 
+ *
  * <pre>{@code
  * // other extraction code
- * context.exchange(Items.BOTTLE.defaultResource, 4, TransferAction.EXECUTE);
+ * context.exchange(Items.BOTTLE.defaultResource, 4, transaction);
  * }</pre>
- * 
+ * <p>
  * This will remove 4 bottles of honey from the stack and replace them with 4 empty bottles. Since the stack still has
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
@@ -80,11 +82,9 @@ public interface IItemContext {
      *
      * @param resource The resource to insert.
      * @param amount   The amount to insert.
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    int insert(ItemResource resource, int amount, TransferAction action);
+    int insert(ItemResource resource, int amount, TransactionContext context);
 
     /**
      * Extracts the given amount of the given resource from the main item. Extraction will not be performed on the outer
@@ -92,28 +92,118 @@ public interface IItemContext {
      *
      * @param resource The resource to extract.
      * @param amount   The amount to extract.
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    int extract(ItemResource resource, int amount, TransferAction action);
+    int extract(ItemResource resource, int amount, TransactionContext context);
+
+    default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
+        //do we actually want these checks? Since we likely should be calling them prior to exchanging.
+        if (resource.isEmpty() || amount <= 0) return 0;
+
+        try (var subTransaction = Transaction.open(transaction)) {
+            int extracted = extract(getResource(), amount, subTransaction);
+
+            if (insert(resource, extracted, subTransaction) == extracted) {
+                subTransaction.commit();
+                return extracted;
+            }
+        }
+
+        return 0;
+    }
 
     /**
-     * Exchanges the given amount of the given resource with the main item. If the amount to be exchanged is less than
-     * the given amount, the main stack shrinks and the remainder is inserted into the outer context.
+     * @return True if any attempts to modify the items in this context will not work. Storage implementations can
+     * use this to return appropriate information from {@link IResourceHandler#allowsInsertion}
+     * or {@link IResourceHandler#allowsExtraction}.
+     */
+    default boolean isReadOnly() {
+        return false;
+    }
+
+
+    /**
+     * Creates a context object for working with resource handler contained in an item.
      *
-     * @param resource The resource to exchange.
-     * @param amount   The amount to exchange.
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return The amount of the resource that was (or would have been, if simulated) exchanged.
+     * @param handler The handler containing the item.
+     * @param index   The index in {@code handler}, where the item can be found.
      */
-    int exchange(ItemResource resource, int amount, TransferAction action);
+    static IItemContext ofIndex(IResourceHandler<ItemResource> handler, int index) {
+        return new IItemContext() {
+            @Override
+            public ItemResource getResource() {
+                return index < handler.size() ? handler.getResource(index) : ItemResource.EMPTY;
+            }
+
+            @Override
+            public int getAmount() {
+                return index < handler.size() ? handler.getAmount(index) : 0;
+            }
+
+            @Override
+            public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+                int inserted = handler.insert(index, resource, amount, transaction);
+                if (inserted < amount) {
+                    inserted += handler.insert(resource, amount - inserted, transaction);
+                }
+                return inserted;
+            }
+
+            @Override
+            public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
+                return handler.extract(index, itemVariant, amount, transaction);
+            }
+        };
+    }
 
     /**
-     * @return The ItemStack representation of the main item.
+     * Creates a context object based on the given itemstack, which will only allow inspection of the contained
+     * handler, but no modification.
      */
-    default ItemStack toStack() {
-        return getResource().toStack(getAmount());
+    static IItemContext readOnlyOf(ItemStack stack) {
+        return new ReadOnly(ItemResource.of(stack), stack.getCount());
+    }
+
+
+    final class ReadOnly implements IItemContext {
+        private final ItemResource item;
+        private final int amount;
+
+        public ReadOnly(ItemResource item, int amount) {
+            if (amount < 0) {
+                throw new IllegalArgumentException("amount must be non-negative: " + amount);
+            }
+            this.item = item;
+            this.amount = amount;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public ItemResource getResource() {
+            return item;
+        }
+
+        @Override
+        public int getAmount() {
+            return amount;
+        }
+
+        @Override
+        public int insert(ItemResource itemVariant, int amount, TransactionContext transaction) {
+            return 0;
+        }
+
+        @Override
+        public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
+            return 0;
+        }
+        @Override
+        public int exchange(ItemResource resource, int amount, TransactionContext context) {
+            return 0;
+        }
     }
 }

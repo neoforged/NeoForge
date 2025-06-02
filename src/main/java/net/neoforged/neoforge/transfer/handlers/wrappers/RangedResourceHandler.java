@@ -6,27 +6,28 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import com.google.common.base.Preconditions;
-import java.util.function.Supplier;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.function.Supplier;
 
 /**
  * A wrapper that delegates all calls to a range of indices of a handler.
  *
  * @param <T> The type of resource this handler manages.
  */
-public class RangedResourceHandlerWrapper<T extends IResource> extends DelegatingResourceHandlerWrapper<T> {
+public class RangedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
     protected int start;
     protected int end;
 
-    public RangedResourceHandlerWrapper(IResourceHandler<T> delegate, int start, int end) {
+    public RangedResourceHandler(IResourceHandler<T> delegate, int start, int end) {
         this(() -> delegate, start, end);
 
     }
 
-    public RangedResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int start, int end) {
+    public RangedResourceHandler(Supplier<IResourceHandler<T>> delegate, int start, int end) {
         super(delegate);
         Preconditions.checkArgument(end > start, "Max slot must be greater than min slot");
         this.start = start;
@@ -47,11 +48,11 @@ public class RangedResourceHandlerWrapper<T extends IResource> extends Delegatin
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
+    public int extract(T resource, int amount, TransactionContext transaction) {
         int extracted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index = start; index < end; index++) {
-            extracted += handler.extract(index, resource, amount - extracted, action);
+            extracted += handler.extract(index, resource, amount - extracted, transaction);
             if (extracted >= amount) {
                 return extracted;
             }
@@ -61,11 +62,11 @@ public class RangedResourceHandlerWrapper<T extends IResource> extends Delegatin
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
+    public int insert(T resource, int amount, TransactionContext transaction) {
         int inserted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index = start; index < end; index++) {
-            inserted += handler.insert(index, resource, amount - inserted, action);
+            inserted += handler.insert(index, resource, amount - inserted, transaction);
             if (inserted >= amount) {
                 return inserted;
             }
@@ -74,7 +75,7 @@ public class RangedResourceHandlerWrapper<T extends IResource> extends Delegatin
         return inserted;
     }
 
-    public static class Modifiable<T extends IResource> extends RangedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends RangedResourceHandler<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate, int start, int end) {
             super(delegate, start, end);
         }

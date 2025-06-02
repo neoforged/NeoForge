@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
  * should be deferred until {@linkplain #addOuterCloseCallback after the outer transaction is closed}
  * to give every participant a chance to react to transaction close events.
  *
- * <p>This is very low-level for most applications, and most participants should subclass {@link SnapshotParticipant}
+ * <p>This is very low-level for most applications, and most participants should subclass {@link SnapshotJournal}
  * that will take care of properly maintaining their state.
  *
  * <p>Participants should generally be passed a {@link TransactionContext} parameter instead of the full {@code Transaction},
@@ -109,6 +109,8 @@ public interface Transaction extends AutoCloseable, TransactionContext {
      * If this transaction was opened with a {@code null} parent, all changes are applied.
      * If this transaction was opened with a non-{@code null} parent, all changes will be applied when and if the changes of
      * the parent transactions are applied.
+     * <p>
+     * This would be familiar to using `execute` in the old simulated handlers
      *
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
      * @throws IllegalStateException If this transaction is not the current transaction.

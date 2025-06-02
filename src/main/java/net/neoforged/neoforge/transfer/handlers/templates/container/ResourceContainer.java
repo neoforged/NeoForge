@@ -14,7 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ItemContainerToVanillaAdapter;
 import net.neoforged.neoforge.transfer.resources.*;
-import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,16 +53,16 @@ import java.util.function.Function;
 public class ResourceContainer<T extends IResource> implements IResourceContainer<T> {
     private final NonNullList<MutableResourceStack<T>> resourceStacks;
     private final List<IndexSnapshot> indexSnapshots = new ArrayList<>();
-    private final @Nullable Runnable updateCallback;
+    private final SetChangedJournal changedJournal;
     private final ResourceStack<T> defaultResource;
     private final int size;
     private final int capacity;
 
     /**
-     * @param resourceStacks The backing list of stacks that are stored. This is what is snapshotted
+     * @param resourceStacks  The backing list of stacks that are stored. This is what is snapshotted
      * @param defaultResource The resource that should fill the backing list given a reset or clear
-     * @param capacity The amount all resource stacks can stack up to.
-     * @param updateCallback Called in {@link IndexSnapshot#onCommit}
+     * @param capacity        The amount all resource stacks can stack up to.
+     * @param updateCallback  Called in {@link #changedJournal changedJournal's} {@link SetChangedJournal#onCommit onCommit}
      */
     public ResourceContainer(NonNullList<MutableResourceStack<T>> resourceStacks, ResourceStack<T> defaultResource, int capacity, @Nullable Runnable updateCallback) {
         Objects.requireNonNull(resourceStacks);
@@ -70,28 +71,31 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         Objects.checkIndex(0, resourceStacks.size());
         this.size = resourceStacks.size();
         this.resourceStacks = resourceStacks;
-        this.updateCallback = updateCallback;
+        changedJournal = SetChangedJournal.of(updateCallback);
         this.defaultResource = defaultResource;
         this.capacity = capacity;
         updateSlots();
     }
 
     @Override
-    public SnapshotParticipant<MutableResourceStack<T>> getParticipant(int index) {
+    public SnapshotJournal<MutableResourceStack<T>> getParticipant(int index) {
         return indexSnapshots.get(index);
     }
 
+    public SetChangedJournal getChangeSetJournal(){
+        return changedJournal;
+    }
 
     public static final class Codecs {
         public static <TAttachment, TResource extends IResource> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<TResource>>> resourcesOf(String key, Codec<TResource> codec, Function<TAttachment, IResourceContainer<TResource>> containerToStackList) {
             return NonNullList.codecOf(MutableResourceStack.flatCodec(codec)).fieldOf(key).forGetter(attachment -> containerToStackList.apply(attachment).copyToList());
         }
 
-        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<ItemResource>>> itemResourcesOf(String key, Function<TAttachment, IResourceContainer<ItemResource>> containerToStackList) {
+        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<ItemResource>>> itemsOf(String key, Function<TAttachment, IResourceContainer<ItemResource>> containerToStackList) {
             return resourcesOf(key, ItemResource.OPTIONAL_CODEC, containerToStackList);
         }
 
-        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<FluidResource>>> fluidResourcesOf(String key, Function<TAttachment, IResourceContainer<FluidResource>> containerToStackList) {
+        public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<FluidResource>>> fluidsOf(String key, Function<TAttachment, IResourceContainer<FluidResource>> containerToStackList) {
             return resourcesOf(key, FluidResource.OPTIONAL_CODEC, containerToStackList);
         }
     }
@@ -103,11 +107,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     @Override
     public int size() {
         return size;
-    }
-
-    @Override
-    public int getCapacity(int index) {
-        return capacity;
     }
 
     @Override
@@ -135,10 +134,9 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         Collections.fill(resourceStacks, emptyResource().mutable());
-        if (updateCallback != null)
-            updateCallback.run();
+        changedJournal.runCallback();
     }
 
     @Override
@@ -226,10 +224,11 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public SnapshotParticipant<MutableResourceStack<T>> getParticipant(int index) {
+        public SnapshotJournal<MutableResourceStack<T>> getParticipant(int index) {
             Objects.checkIndex(index, size());
-            return ResourceContainer.this.getParticipant(index+start);
+            return ResourceContainer.this.getParticipant(index + start);
         }
+
         @Override
         public MutableResourceStack<T> get(int index) {
             Objects.checkIndex(index, size());
@@ -249,23 +248,17 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public int getCapacity(int index) {
-            Objects.checkIndex(index, size()); //audit called in the this.get
-            return ResourceContainer.this.getCapacity(index + start);
-        }
-
-        @Override
         public boolean isValid(int index, T stack) {
             Objects.checkIndex(index, size()); //audit called in the this.get
             return ResourceContainer.this.isValid(index + start, stack);
         }
 
         @Override
-        public void clear() {
+        public void clearContent() {
             for (int i = 0; i < length; i++)
                 ResourceContainer.this.resourceStacks.set(i + start, emptyResource().mutable());
-            if (ResourceContainer.this.updateCallback != null)
-                ResourceContainer.this.updateCallback.run();
+            getChangeSetJournal().runCallback();
+
         }
 
         @Override
@@ -328,7 +321,8 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
     }
 
-    private class IndexSnapshot extends SnapshotParticipant<MutableResourceStack<T>> {
+
+    private class IndexSnapshot extends SnapshotJournal<MutableResourceStack<T>> {
         private final int slot;
 
         private IndexSnapshot(int slot) {
@@ -346,9 +340,9 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        protected void onCommit(MutableResourceStack<T> originalState) {
-            if(updateCallback != null)
-                updateCallback.run();
+        public void updateSnapshots(TransactionContext transaction) {
+            changedJournal.updateSnapshots(transaction);
+            super.updateSnapshots(transaction);
         }
     }
 }

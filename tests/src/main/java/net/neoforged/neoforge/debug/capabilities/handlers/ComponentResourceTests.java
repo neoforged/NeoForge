@@ -15,7 +15,6 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
@@ -23,6 +22,8 @@ import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFlui
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -46,14 +47,17 @@ public class ComponentResourceTests {
         if (fluidContext.size() != 1)
             helper.fail("Expected a single tank");
 
-        if (fluidContext.getCapacity(0) != capacity)
+        if (fluidContext.getCapacity(0, FluidResource.EMPTY) != capacity)
             helper.fail("Expected tank capacity of " + capacity);
 
         if (fluidContext.getAmount(0) != 0)
             helper.fail("Expected empty tank");
-
-        if (fluidContext.insert(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, TransferAction.EXECUTE) != FluidType.BUCKET_VOLUME)
-            helper.fail("Expected to be able to fill a bucket of water");
+        try (var tx = Transaction.open(TransactionContext.EMPTY)) {
+            var inserted = fluidContext.insert(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, tx);
+            if (inserted != FluidType.BUCKET_VOLUME)
+                helper.fail("Expected to be able to fill a bucket of water");
+            tx.commit();
+        }
 
         if (!player.getMainHandItem().has(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT))
             helper.fail("Expected fluid stack component");
@@ -61,9 +65,12 @@ public class ComponentResourceTests {
         if (!ResourceHandlerUtil.resourceAndCountMatches(fluidContext, 0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME))
             helper.fail("Expected a bucket of water");
 
-        var drained = fluidContext.extract(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
-        if (drained != FluidType.BUCKET_VOLUME)
-            helper.fail("Expected to drain a bucket of water");
+        try (var tx = Transaction.open(TransactionContext.EMPTY)) {
+            var extracted = fluidContext.extract(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, tx);
+            if (extracted != FluidType.BUCKET_VOLUME)
+                helper.fail("Expected to drain a bucket of water");
+            tx.commit();
+        }
 
         if (!ResourceHandlerUtil.isIndexEmpty(fluidContext, 0))
             helper.fail("Expected empty tank");
@@ -82,15 +89,23 @@ public class ComponentResourceTests {
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
         IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
+
         var playerCap = player.getCapability(Capabilities.ItemHandler.ENTITY);
-
+        helper.assertNotNull(playerCap, "IResourceHandler<ItemResource> must be present on player");
+        assert playerCap != null;
         var fluidHandler = playerCap.getResource(0).toStack().getCapability(Capabilities.FluidHandler.ITEM, context);
-        var amount = fluidHandler.insert(Fluids.LAVA.defaultResource(), 80000, TransferAction.EXECUTE);
-        var apples = player.getMainHandItem().copy();
-        helper.assertValueEqual(amount, ResourceHandlerTestSetup.TANK_CAPACITY * ResourceHandlerTestSetup.TANK_COUNT * 4, "lava");
-        helper.assertValueEqual(fluidHandler.extract(Fluids.LAVA.defaultResource(), 3000, TransferAction.EXECUTE), 3000, "lava");
+        helper.assertNotNull(fluidHandler, "IResourceHandler<FluidResource> must be present on item");
+        assert fluidHandler != null;
 
-        helper.assertValueEqual(fluidHandler.insert(Fluids.LAVA.defaultResource(), 100, TransferAction.EXECUTE), 0, "lava");
+        try (var tx = Transaction.open(TransactionContext.EMPTY)) {
+            var amount = fluidHandler.insert(Fluids.LAVA.defaultResource(), 80000, tx);
+            var apples = player.getMainHandItem().copy();
+            helper.assertValueEqual(amount, ResourceHandlerTestSetup.TANK_CAPACITY * ResourceHandlerTestSetup.TANK_COUNT * 4, "lava");
+            helper.assertValueEqual(fluidHandler.extract(Fluids.LAVA.defaultResource(), 3000, tx), 3000, "lava");
+
+            helper.assertValueEqual(fluidHandler.insert(Fluids.LAVA.defaultResource(), 100, tx), 0, "lava");
+            tx.commit();
+        }
 
         //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
         helper.succeed();
@@ -109,20 +124,24 @@ public class ComponentResourceTests {
             return;
         }
 
-        //Because of the way the context filling works, it is attempting to fill or group similar actions together.
-        //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
-        var appleClone = player.getInventory().getItem(0).copy();
-        //holds 100 stacks each.
-        var amount = storageCap.insert(Items.DIAMOND.defaultResource(), 13000, TransferAction.EXECUTE);
-        helper.assertValueEqual(amount, 12800, "diamond");
+        try (var tx = Transaction.open(TransactionContext.EMPTY)) {
 
-        //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-        var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
-        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP) instanceof IResourceHandlerModifiable<ItemResource> blockHandler)) {
-            throw helper.assertionException("The returned capability was not a Modifiable resource handler");
+            //Because of the way the context filling works, it is attempting to fill or group similar actions together.
+            //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
+            var appleClone = player.getInventory().getItem(0).copy();
+            //holds 100 stacks each.
+            var amount = storageCap.insert(Items.DIAMOND.defaultResource(), 13000, tx);
+            helper.assertValueEqual(amount, 12800, "diamond");
+
+            //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
+            var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
+            if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP) instanceof IResourceHandlerModifiable<ItemResource> blockHandler)) {
+                throw helper.assertionException("The returned capability was not a Modifiable resource handler");
+            }
+            var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
+            blockHandler.insert(applesWithContents, 2, tx);
+            tx.commit();
         }
-        var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
-        blockHandler.insert(applesWithContents, 2, TransferAction.EXECUTE);
 
         helper.succeed();
     }

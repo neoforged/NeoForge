@@ -17,7 +17,7 @@
 +                        } else {
 +                            itemstack1 = itemstack;
 +                            //noinspection DataFlowIssue
-+                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack),1, net.neoforged.neoforge.transfer.TransferAction.EXECUTE);
++                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack),1, net.neoforged.neoforge.transfer.TransferAction.EXECUTE,null);
 +                            itemstack1.shrink(accepted);
 +                        }
                          if (itemstack1.isEmpty()) {

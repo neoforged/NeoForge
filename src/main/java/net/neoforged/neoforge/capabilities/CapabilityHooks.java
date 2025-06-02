@@ -25,9 +25,9 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemContainerContentsResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingResourceHandlerWrapper;
-import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketFluidHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.*;
+import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.*;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -60,18 +60,14 @@ public class CapabilityHooks {
             // Invalidation is taken care of by the patches to ComposterBlock
 
             // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-            if (side == null) {
-                return new DelegatingResourceHandlerWrapper.Modifiable<>(() -> new VanillaContainerWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
-            } else {
-                return new DelegatingResourceHandlerWrapper.Modifiable<>(() -> WorldlyContainerWrapper.of(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
-            }
+            return new DelegatingResourceHandler.Modifiable<>(() -> new VanillaWorldlyContainerWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
         }, Blocks.COMPOSTER);
 
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
             var container = ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true);
             if (container == null) return null;
             // This was allowing a possible null container, though it is unlikely it would have ever been null. Something to look into
-            return new VanillaContainerWrapper(container);
+            return AlternateVanillaContainerResourceWrapper.of(container);
         }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
@@ -86,9 +82,7 @@ public class CapabilityHooks {
                 BlockEntityType.SMOKER,
                 BlockEntityType.SHULKER_BOX);
         for (var type : sidedVanillaContainers) {
-            //todo
-            //  WorldlyContainerWrapper::of
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, WorldlyContainerWrapper::of);
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, VanillaWorldlyContainerWrapper::new);
         }
 
         var nonSidedVanillaContainers = List.of(
@@ -100,7 +94,7 @@ public class CapabilityHooks {
                 BlockEntityType.CRAFTER,
                 BlockEntityType.DECORATED_POT);
         for (var type : nonSidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new VanillaContainerWrapper(container));
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> AlternateVanillaContainerResourceWrapper.of(container));
         }
 
         // Entities
@@ -119,10 +113,10 @@ public class CapabilityHooks {
                 EntityType.HOPPER_MINECART);
 
         for (var entityType : containerEntities) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new VanillaContainerWrapper(entity));
-            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new VanillaContainerWrapper(entity));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> AlternateVanillaContainerResourceWrapper.of(entity));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> AlternateVanillaContainerResourceWrapper.of(entity));
         }
-        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInventoryHandler(player));
+        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> InventoryResourceWrapper.of(player));
 
         // Items
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ItemContainerContentsResourceHandler(ctx, DataComponents.CONTAINER, 27),
@@ -151,7 +145,7 @@ public class CapabilityHooks {
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
-                    return new VanillaContainerWrapper(horse.getInventory());
+                    return InventoryResourceWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
                     return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
                 return null;
@@ -161,12 +155,12 @@ public class CapabilityHooks {
         // Items
         for (Item item : BuiltInRegistries.ITEM) {
             if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketFluidHandler(ctx), item);
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketResourceHandler(ctx), item);
         }
 
         // We want mods to be able to override our milk cap by default
         if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new BucketFluidHandler(ctx), Items.MILK_BUCKET);
+            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new BucketResourceHandler(ctx), Items.MILK_BUCKET);
         }
     }
 

@@ -5,14 +5,15 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
-import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.SteppedItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.function.Predicate;
 
 /**
  * A simple fluid storage handler that uses a single item context to store a fluid resource.
@@ -38,8 +39,8 @@ public class SteppedItemContextFluidHandler extends SteppedItemContextResourceHa
         }
 
         @Override
-        protected int empty(int count, TransferAction action) {
-            return context.extract(context.getResource(), count, action);
+        protected int empty(int count, TransactionContext context) {
+            return itemContext.extract(itemContext.getResource(), count, context);
         }
     }
 
@@ -57,8 +58,8 @@ public class SteppedItemContextFluidHandler extends SteppedItemContextResourceHa
         }
 
         @Override
-        protected int empty(int count, TransferAction action) {
-            return context.exchange(emptyContainer, count, action);
+        protected int empty(int count, TransactionContext context) {
+            return itemContext.exchange(emptyContainer, count, context);
         }
     }
 }

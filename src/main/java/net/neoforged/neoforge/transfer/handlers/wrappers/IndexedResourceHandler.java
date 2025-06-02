@@ -5,21 +5,22 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import java.util.function.Supplier;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.function.Supplier;
 
 /**
  * A wrapper that delegates all calls to a single index of a handler.
  *
  * @param <T> The type of resource this handler manages.
  */
-public class IndexedResourceHandlerWrapper<T extends IResource> extends DelegatingResourceHandlerWrapper<T> {
+public class IndexedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
     int index;
 
-    public IndexedResourceHandlerWrapper(IResourceHandler<T> delegate, int index) {
+    public IndexedResourceHandler(IResourceHandler<T> delegate, int index) {
         super(delegate);
         this.index = index;
     }
@@ -29,7 +30,7 @@ public class IndexedResourceHandlerWrapper<T extends IResource> extends Delegati
         return 1;
     }
 
-    public IndexedResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int index) {
+    public IndexedResourceHandler(Supplier<IResourceHandler<T>> delegate, int index) {
         super(delegate);
         this.index = index;
     }
@@ -43,16 +44,16 @@ public class IndexedResourceHandlerWrapper<T extends IResource> extends Delegati
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
-        return getDelegate().insert(index, resource, amount, action);
+    public int insert(T resource, int amount, TransactionContext transaction) {
+        return getDelegate().insert(index, resource, amount, transaction);
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
-        return getDelegate().extract(index, resource, amount, action);
+    public int extract(T resource, int amount, TransactionContext transaction) {
+        return getDelegate().extract(index, resource, amount, transaction);
     }
 
-    public static class Modifiable<T extends IResource> extends IndexedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends IndexedResourceHandler<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate, int index) {
             super(delegate, index);
         }

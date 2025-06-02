@@ -9,11 +9,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.adapters.LegacyItemHandlerAdapter;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -68,7 +67,7 @@ public interface IItemHandler {
      * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return an empty ItemStack).
      *         May be the same as the input ItemStack if unchanged, otherwise a new ItemStack.
      *         The returned ItemStack can be safely modified after.
-     * @deprecated This is now {@link IResourceHandler#insert(int, IResource, int, TransferAction)}
+     * @deprecated This is now {@link IResourceHandler#insert(int, IResource, int, Transaction)}
      **/
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
@@ -84,7 +83,7 @@ public interface IItemHandler {
      * @param simulate If true, the extraction is only simulated
      * @return ItemStack extracted from the slot, must be empty if nothing can be extracted.
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
-     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransferAction)} & {@link IResourceHandler#getResource(int)}
+     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, Transaction)} & {@link IResourceHandler#getResource(int)}
      * 
      *             <pre>
      *     {@code
@@ -127,12 +126,12 @@ public interface IItemHandler {
      */
     boolean isItemValid(int slot, ItemStack stack);
 
-    /**
-     * A helper method to temporarily turn your existing IItemHandler into a {@link IResourceHandler<ItemResource>}
-     * @return LegacyItemHandlerAdapter instance of this
-     */
-    @Deprecated(forRemoval = true, since = "1.21.6")
-    default LegacyItemHandlerAdapter asResourceHandler(){
-        return LegacyItemHandlerAdapter.of(this);
-    }
+//    /**
+//     * A helper method to temporarily turn your existing IItemHandler into a {@link IResourceHandler<ItemResource>}
+//     * @return LegacyItemHandlerAdapter instance of this
+//     */
+//    @Deprecated(forRemoval = true, since = "1.21.6")
+//    default LegacyItemHandlerAdapter asResourceHandler(){
+//        return LegacyItemHandlerAdapter.of(this);
+//    }
 }

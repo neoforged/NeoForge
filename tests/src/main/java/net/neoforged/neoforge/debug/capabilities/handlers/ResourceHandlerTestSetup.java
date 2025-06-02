@@ -111,9 +111,6 @@ public record ResourceHandlerTestSetup() {
                 Capabilities.FluidHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.RESOURCE_ATTACHMENT).fluidHandler));
 
 
-        bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
-                Capabilities.FluidHandler.BLOCKTEMP, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.RESOURCE_ATTACHMENT).fluidHandler2));
-
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
                 Capabilities.FluidHandler.ITEM, (object, context) -> new FluidStorageHandler.Component(context, ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT.get(), TANK_COUNT, TANK_CAPACITY),
                 Items.APPLE));

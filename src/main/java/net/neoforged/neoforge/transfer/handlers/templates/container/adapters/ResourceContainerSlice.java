@@ -9,7 +9,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceCon
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 
 import java.util.Objects;
 
@@ -18,15 +18,14 @@ import java.util.Objects;
  */
 public record ResourceContainerSlice<TResource extends IResource>(
         IResourceContainer<TResource> parent,
-        int start,
-        int length) implements IResourceContainer<TResource> {
+        int start, int length) implements IResourceContainer<TResource> {
     @Override
     public int size() {
         return length;
     }
 
     @Override
-    public SnapshotParticipant<MutableResourceStack<TResource>> getParticipant(int index) {
+    public SnapshotJournal<MutableResourceStack<TResource>> getParticipant(int index) {
         Objects.checkIndex(index, length);
         return parent.getParticipant(index + start);
     }
@@ -52,11 +51,6 @@ public record ResourceContainerSlice<TResource extends IResource>(
     @Override
     public int getCapacity(int index, TResource resource) {
         return parent.getCapacity(index, resource);
-    }
-
-    @Override
-    public int getCapacity(int index) {
-        return parent.getCapacity(index);
     }
 
     @Override

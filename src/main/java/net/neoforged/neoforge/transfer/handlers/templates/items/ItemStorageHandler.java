@@ -9,13 +9,13 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemResource> {
     public ItemStorageHandler(int size) {
@@ -24,30 +24,35 @@ public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemReso
 
     @Override
     public int getCapacity(int index, ItemResource resource) {
-        return Math.min(resource.getMaxStackSize(), getCapacity(index));
+        return Math.min(resource.getMaxStackSize(), capacity);
     }
 
     public static class Component extends ItemStorageHandler {
-        protected final IItemContext context;
+        protected final IItemContext itemContext;
         protected final DataComponentType<ResourceStorageComponent<ItemResource>> componentType;
 
-        public Component(IItemContext context, DataComponentType<ResourceStorageComponent<ItemResource>> componentType, int size) {
+        public Component(IItemContext itemContext, DataComponentType<ResourceStorageComponent<ItemResource>> componentType, int size) {
             super(size);
-            this.context = context;
+            this.itemContext = itemContext;
             this.componentType = componentType;
         }
 
         @Override
         public IResourceStorageData<ItemResource> getContents() {
-            return context.getResource().getOrDefault(componentType, ResourceStorageAttachment.of(size, emptyResource));
+            return itemContext.getResource().getOrDefault(componentType, ResourceStorageAttachment.of(size, defaultResource));
         }
 
         @Override
-        public int setAndValidate(IResourceStorageData<ItemResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
+        public void setContents(IResourceStorageData<ItemResource> contents) {
+            itemContext.getResource().with(componentType, (ResourceStorageComponent<ItemResource>) contents);
+        }
+        @Override
+        public int modifyContents(IResourceStorageData<ItemResource> contents, int requestedAmount, int changedAmount, TransactionContext action) {
             if (changedAmount == 0) return 0;
             var exchangeCount = requestedAmount / changedAmount;
-//            var partial = requestedAmount % changedAmount; // This in theory isn't actually handle here very well.
-            var result = context.exchange(context.getResource().with(componentType, contents.component()), exchangeCount, action);
+            //                            var partial = requestedAmount % changedAmount; // This in theory isn't actually handle here very well.
+            var resourceToExchange = itemContext.getResource().with(componentType, contents.component());
+            var result = itemContext.exchange(resourceToExchange, exchangeCount, action);
             return result * changedAmount;
         }
     }
@@ -68,9 +73,9 @@ public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemReso
         }
 
         @Override
-        public int setAndValidate(IResourceStorageData<ItemResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
-            if (action.isExecuting()) holder.setData(attachmentType, contents);
-            return changedAmount;
+        protected void onContentsChanged() {
+            //essentially setChanged, but we can't necessarily assume the holder is a block entity
+            holder.setData(attachmentType, getContents());
         }
     }
 }

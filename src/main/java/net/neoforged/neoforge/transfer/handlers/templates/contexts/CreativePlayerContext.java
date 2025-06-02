@@ -6,25 +6,32 @@
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.InventoryResourceWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class CreativePlayerContext extends StaticContext {
-    protected final PlayerInventoryHandler handler;
+    protected final InventoryResourceWrapper handler;
 
     public CreativePlayerContext(ItemResource resource, int amount, Player player) {
         super(resource, amount);
-        this.handler = new PlayerInventoryHandler(player);
+        this.handler = InventoryResourceWrapper.of(player);
     }
 
     @Override
-    protected int insertOverflow(ItemResource resource, int amount, TransferAction action) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
-        int testIfPresent = handler.extract(resource, 1, TransferAction.SIMULATE);
-        if (testIfPresent == 0) {
-            return handler.insert(resource, 1, action);
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+
+        boolean isMissing;
+        try (var testTransaction = Transaction.open(transaction)) {
+            //simulates the action, makes use of the snapshot to revert
+            isMissing = handler.extract(resource, 1, testTransaction) == 0;
         }
+
+        if (isMissing) return handler.insert(resource, 1, transaction);
+
         return amount;
     }
 }

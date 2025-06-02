@@ -18,6 +18,12 @@ public interface IRegisteredResource<T> extends IResource, DataComponentHolder {
 
     /**
      * @return The backing value of the resource.
+     * <p>
+     * - In the case of an {@link ItemResource} it should be an {@link net.minecraft.world.item.Item Item}
+     * <p>
+     * - In the case of an {@link FluidResource} it should be an {@link net.minecraft.world.level.material.Fluid Fluid}
+     * <p>
+     * - For a non-builtin {@link IResource resource}, you will need to consult the documentation or sources of the provider
      */
     T getInstanceValue();
 
@@ -49,7 +55,7 @@ public interface IRegisteredResource<T> extends IResource, DataComponentHolder {
     /**
      * @return the full value and data components in string form
      */
-    default String toExpandedString(){
+    default String toExpandedString() {
         if (isComponentsPatchEmpty()) {
             return toString();
         } else {

@@ -6,11 +6,11 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Range;
 
 /**
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Range;
  * <p>
  * <strong>Important: This will only work with constant sized handlers.</strong>
  * Dynamically sized handlers are supported by api, but not by this implementation
- * 
+ *
  * @param <T>
  */
 public class CombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
@@ -52,8 +52,13 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     protected IResourceHandler<T> getHandlerFromIndex(int index) {
-        return index >= 0 && index < handlers.length ? handlers[index] : EmptyResourceHandler.instance();
+        if (index >= 0 && index < handlers.length)
+            return handlers[index];
+
+        // Probably log something here for the user to know, but we likely shouldn't crash given this is cross mod support.
+        return EmptyResourceHandler.instance();
     }
+
 
     protected int getSlotFromIndex(int index, int handlerIndex) {
         return handlerIndex > 0 && handlerIndex < baseIndex.length ? index - baseIndex[handlerIndex - 1] : index;
@@ -74,12 +79,6 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     public int getAmount(int index) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getAmount(getSlotFromIndex(index, handlerIndex));
-    }
-
-    @Override
-    public int getCapacity(int index) {
-        var handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).getCapacity(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
@@ -107,32 +106,32 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public int insert(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
+    public int insert(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         var handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, action);
+        return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
+    public int insert(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         var handled = 0;
         for (var resourceHandler : handlers) {
-            handled += resourceHandler.insert(resource, amount - handled, action);
+            handled += resourceHandler.insert(resource, amount - handled, transaction);
             if (handled >= amount) break;
         }
         return handled;
     }
 
     @Override
-    public int extract(int index, T resource, int amount, TransferAction action) {
+    public int extract(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         var handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, action);
+        return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
+    public int extract(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         var handled = 0;
         for (var resourceHandler : handlers) {
-            handled += resourceHandler.extract(resource, amount - handled, action);
+            handled += resourceHandler.extract(resource, amount - handled, transaction);
             if (handled >= amount) break;
         }
         return handled;

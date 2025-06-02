@@ -8,12 +8,12 @@ package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidResource> {
     public FluidStorageHandler(int size, int indexCapacity) {
@@ -21,25 +21,31 @@ public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidRe
     }
 
     public static class Component extends FluidStorageHandler {
-        protected final IItemContext context;
+        protected final IItemContext itemContext;
         protected final DataComponentType<ResourceStorageComponent<FluidResource>> componentType;
 
         public Component(IItemContext context, DataComponentType<ResourceStorageComponent<FluidResource>> componentType, int size, int indexCapacity) {
             super(size, indexCapacity);
-            this.context = context;
+            this.itemContext = context;
             this.componentType = componentType;
         }
 
         @Override
         public IResourceStorageData<FluidResource> getContents() {
-            return context.getResource().getOrDefault(componentType, new ResourceStorageComponent<>(size, FluidResource.EMPTY));
+            return itemContext.getResource().getOrDefault(componentType, new ResourceStorageComponent<>(size, FluidResource.EMPTY));
         }
 
         @Override
-        public int setAndValidate(IResourceStorageData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
+        public void setContents(IResourceStorageData<FluidResource> contents) {
+            itemContext.getResource().with(componentType, (ResourceStorageComponent<FluidResource>) contents);
+        }
+
+        @Override
+        public int modifyContents(IResourceStorageData<FluidResource> contents, int requestedAmount, int changedAmount, TransactionContext context) {
             if (changedAmount == 0) return 0;
             var exchangeCount = requestedAmount / changedAmount;
-            var result = context.exchange(context.getResource().with(componentType, contents.component()), exchangeCount, action);
+            var resourceToExchange = itemContext.getResource().with(componentType, contents.component());
+            var result = itemContext.exchange(resourceToExchange, exchangeCount, context);
             return result * changedAmount;
         }
     }
@@ -60,9 +66,13 @@ public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidRe
         }
 
         @Override
-        public int setAndValidate(IResourceStorageData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
-            if (action.isExecuting()) holder.setData(attachmentType, contents);
-            return changedAmount;
+        public void setContents(IResourceStorageData<FluidResource> contents) {
+            holder.setData(attachmentType, contents);
+        }
+
+        @Override
+        protected void onContentsChanged() {
+            holder.setData(attachmentType, getContents());
         }
     }
 }

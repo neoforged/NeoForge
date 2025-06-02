@@ -2,9 +2,11 @@ package net.neoforged.neoforge.transfer;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class ItemUtil {
 
@@ -29,9 +31,13 @@ public class ItemUtil {
      */
     public static void giveItemToPlayer(Player player, ItemResource resource, int amount) {
         if (resource.isEmpty()) return;
+        var cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
+        if (cap == null) return;
 
-        PlayerInventoryHandler inventory = new PlayerInventoryHandler(player);
-        inventory.insertOrDrop(resource, amount);
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            var inserted = cap.insert(resource, amount, transaction);
+            if (inserted == amount) transaction.commit();
+        }
     }
     /**
      * Inserts the given {@link ItemStack} into the players inventory.
@@ -58,7 +64,9 @@ public class ItemUtil {
         if (resource.isEmpty()) return;
 
         PlayerContext context = new PlayerContext(player, preferredSlot);
-        context.insert(resource, amount, TransferAction.EXECUTE);
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            context.insert(resource, amount, transaction);
+        }
     }
 
     /**

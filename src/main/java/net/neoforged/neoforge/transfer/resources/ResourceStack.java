@@ -6,14 +6,15 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
+
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Represents an immutable {@link IResource} and an amount.
@@ -76,7 +77,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> ResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount) {
+    public static <T extends IResource> ResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
         return new ResourceStack<>(resource, amount);
     }
 
@@ -141,6 +142,10 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
         return this;
     }
 
+    @Override
+    public IResourceStack<T> copy() {
+        return of(resource, amount);
+    }
     @Override
     public String toString() {
         return "%s(%d)".formatted(resource, amount);

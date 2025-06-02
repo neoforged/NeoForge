@@ -8,15 +8,14 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
-import java.util.function.BiFunction;
-import java.util.function.UnaryOperator;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+
+import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
 
 /**
  * Represents the underlying instruction set for mutable and immutable resource stacks.
@@ -123,7 +122,8 @@ public interface IResourceStack<T extends IResource> {
      */
     ResourceStack<T> immutable();
 
-
+    //Useful when dealing with snapshots
+    IResourceStack<T> copy();
 
     /**
      * Creates a hashcode derived from a resource stack list. This is similar to how vanilla handles ItemStack lists.

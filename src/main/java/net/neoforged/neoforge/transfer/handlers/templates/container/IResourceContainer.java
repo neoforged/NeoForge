@@ -6,8 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerModifiableTransaction;
-import net.neoforged.neoforge.transfer.handlermk2.MK2ResourceContainerToHandlerAdapter;
+import net.minecraft.world.Clearable;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerSlice;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerToHandlerAdapter;
@@ -15,14 +14,14 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Iterator;
 import java.util.Objects;
 
 // Originally written by Soaryn for XyCraft adopted from Amadornes's ItemContainer.
-public interface IResourceContainer<TResource extends IResource> extends Iterable<IResourceStack<TResource>>  {
+public interface IResourceContainer<TResource extends IResource> extends Iterable<IResourceStack<TResource>>, Clearable {
     /**
      * Gets the size of this container.
      *
@@ -31,22 +30,13 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     @Contract(pure = true)
     int size();
 
-    SnapshotParticipant<MutableResourceStack<TResource>> getParticipant(int index);
-
-    /**
-     * Gets the capacity or allowed size for the specified index.
-     *
-     * @param index The index.
-     * @return The maximum allowed capacity.
-     */
-    @Contract(pure = true)
-    int getCapacity(int index);
+    SnapshotJournal<MutableResourceStack<TResource>> getParticipant(int index);
 
     /**
      * Clears all slots of resources. Sets them all to the empty variant.<br>
      * <b>Note:</b> There was a point of realization that this may not be performant on inheriting classes, but keep in mind that something like the slice needs to do this operation on its sub list.
      */
-    default void clear() {
+    default void clearContent() {
         for (int i = 0; i < size(); i++) {
             set(i, emptyResource().mutable());
         }
@@ -175,17 +165,6 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     default IResourceHandlerModifiable<TResource> asHandler() {
         return asHandler(IHandleIOBehaviour.DEFAULT);
     }
-    /// ////////////////
-    @Contract(pure = true)
-    default IResourceHandlerModifiableTransaction<TResource> asHandler2() {
-        return asHandler2(IHandleIOBehaviour.DEFAULT);
-    }
-    @Contract(pure = true)
-    default IResourceHandlerModifiableTransaction<TResource> asHandler2(IHandleIOBehaviour behavior) {
-        return new MK2ResourceContainerToHandlerAdapter<>(this, behavior);
-    }
-    /// ////////////////
-
 
     /**
      * Creates an {@link IResourceHandlerModifiable} instance that reflects this container with a specification of how to handle what slots can be inserted or extracted.

@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
-import java.util.Objects;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
-import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.Objects;
 
 /**
  * A basic {@link IResourceHandlerModifiable} implementation derived from an {@link IResourceContainer}.
@@ -52,36 +52,31 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
     }
 
     @Override
-    public int getCapacity(int index) {
-        return container.getCapacity(index);
-    }
-
-    @Override
     public boolean isValid(int index, TResource resource) {
         return behavior.canInsert(index) && container.isValid(index, resource);
     }
 
     @Override
-    public int insert(TResource resource, int amount, TransferAction action) {
+    public int insert(TResource resource, int amount, TransactionContext context) {
         if (resource.isEmpty()) return 0;
         var handled = 0;
         for (var index = 0; index < size(); index++) {
             if (handled == amount)
                 break;
-            handled += insertBehaviour(index, resource, amount - handled, action);
+            handled += insertBehaviour(index, resource, amount - handled, context);
         }
         return handled;
     }
 
     @Override
-    public int insert(int index, TResource resource, int amount, TransferAction action) {
+    public int insert(int index, TResource resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty())
             return 0;
-        return insertBehaviour(index, resource, amount, action);
+        return insertBehaviour(index, resource, amount, context);
     }
 
-    private int insertBehaviour(int index, TResource resource, int amount, TransferAction action) {
+    private int insertBehaviour(int index, TResource resource, int amount, TransactionContext transaction) {
         if (!behavior.canInsert(index) || !container.isValid(index, resource)) return 0;
 
         var resourceStackInSlot = container.get(index);
@@ -100,33 +95,34 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
             newStackSize = resourceStackInSlot.amount() + inserted;
         }
 
-        if (newStackSize > 0 && action.isExecuting())
+        container.getParticipant(index).updateSnapshots(transaction);
+        if (newStackSize > 0)
             set(index, resource, newStackSize);
 
         return inserted;
     }
 
     @Override
-    public int extract(int index, TResource resource, int amount, TransferAction action) {
+    public int extract(int index, TResource resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty() || amount <= 0)
             return 0;
-        return extractBehaviour(index, resource, amount, action);
+        return extractBehaviour(index, resource, amount, context);
     }
 
     @Override
-    public int extract(TResource resource, int amount, TransferAction action) {
+    public int extract(TResource resource, int amount, TransactionContext context) {
         if (resource.isEmpty() || amount <= 0)
             return 0;
         var handled = 0;
         for (var index = 0; index < container.size(); index++) {
             if (handled == amount) break;
-            handled += extractBehaviour(index, resource, amount - handled, action);
+            handled += extractBehaviour(index, resource, amount - handled, context);
         }
         return handled;
     }
 
-    private int extractBehaviour(int index, TResource resource, int amount, TransferAction action) {
+    private int extractBehaviour(int index, TResource resource, int amount, TransactionContext transaction) {
         if (!behavior.canExtract(index)) return 0;
 
         var currentStack = container.get(index);
@@ -134,8 +130,9 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
 
         var currentAmount = currentStack.amount();
         int handledAmount = Math.min(amount, currentAmount);
-        if (action.isExecuting())
-            set(index, resource, currentAmount - handledAmount);
+
+        container.getParticipant(index).updateSnapshots(transaction);
+        set(index, resource, currentAmount - handledAmount);
         return handledAmount;
     }
 

@@ -14,6 +14,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
  * <br>
  * {@link #EXECUTE} will actually perform the action.
  */
+@Deprecated
 public enum TransferAction {
     EXECUTE,
     SIMULATE;

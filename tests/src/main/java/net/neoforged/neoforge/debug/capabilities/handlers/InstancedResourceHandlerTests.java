@@ -10,13 +10,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -81,18 +82,18 @@ public class InstancedResourceHandlerTests {
 
         helper.assertTrue(ResourceHandlerUtil.isValid(handler, emptyResource), "Every resource should match");
 
-        helper.assertValueEqual(handler.getCapacity(0, emptyResource), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Capacity should match");
-        helper.assertValueEqual(handler.getCapacity(0), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Capacity should match");
-        helper.assertValueEqual(handler.getCapacity(1), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Capacity should match");
+        helper.assertValueEqual(handler.getCapacity(0, emptyResource), ResourceHandlerUtil.MAX, "Capacity should match");
+        helper.assertValueEqual(handler.getCapacity(1, emptyResource), ResourceHandlerUtil.MAX, "Capacity should match");
 
         helper.assertValueEqual(handler.getResource(0), emptyResource, "Resource should match");
         helper.assertValueEqual(handler.getResource(1), emptyResource, "Resource should match");
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            helper.assertValueEqual(handler.insert(0, emptyResource, ResourceHandlerUtil.MAX, transaction), ResourceHandlerUtil.MAX, "Insertion should match");
+            helper.assertValueEqual(handler.insert(emptyResource, ResourceHandlerUtil.MAX, transaction), ResourceHandlerUtil.MAX, "Insertion should match");
 
-        helper.assertValueEqual(handler.insert(0, emptyResource, ResourceHandlerUtil.MAX_RESOURCE_SIZE, TransferAction.EXECUTE), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Insertion should match");
-        helper.assertValueEqual(handler.insert(emptyResource, ResourceHandlerUtil.MAX_RESOURCE_SIZE, TransferAction.EXECUTE), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Insertion should match");
-
-        helper.assertValueEqual(handler.extract(0, emptyResource, 1, TransferAction.EXECUTE), 0, "Extraction should match");
-        helper.assertValueEqual(handler.extract(emptyResource, 1, TransferAction.EXECUTE), 0, "Extraction should match");
+            helper.assertValueEqual(handler.extract(0, emptyResource, 1, transaction), 0, "Extraction should match");
+            helper.assertValueEqual(handler.extract(emptyResource, 1, transaction), 0, "Extraction should match");
+        }
     }
 
     private static <T extends IResource> void testEndlessResource(ExtendedGameTestHelper helper, T resource) {
@@ -108,18 +109,15 @@ public class InstancedResourceHandlerTests {
 
         helper.assertTrue(handler.isValid(0, resource), "Resource should match");
 
-        helper.assertValueEqual(handler.getCapacity(0, resource), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Capacity should match");
-        helper.assertValueEqual(handler.getCapacity(0), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Capacity should match");
-        helper.assertValueEqual(handler.getCapacity(1), ResourceHandlerUtil.MAX_RESOURCE_SIZE, "Capacity should match");
-
+        helper.assertValueEqual(handler.getCapacity(0, resource), ResourceHandlerUtil.MAX, "Capacity should match");
         helper.assertValueEqual(handler.getResource(0), resource, "Resource should match");
-        helper.assertValueEqual(handler.getResource(1), resource, "Resource should match");
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            helper.assertValueEqual(handler.insert(0, resource, 1, transaction), 0, "Insertion should match");
+            helper.assertValueEqual(handler.insert(resource, 1, transaction), 0, "Insertion should match");
 
-        helper.assertValueEqual(handler.insert(0, resource, 1, TransferAction.EXECUTE), 0, "Insertion should match");
-        helper.assertValueEqual(handler.insert(resource, 1, TransferAction.EXECUTE), 0, "Insertion should match");
-
-        helper.assertValueEqual(handler.extract(0, resource, 1, TransferAction.EXECUTE), 1, "Extraction should match");
-        helper.assertValueEqual(handler.extract(resource, 1, TransferAction.EXECUTE), 1, "Extraction should match");
+            helper.assertValueEqual(handler.extract(0, resource, 1, transaction), 1, "Extraction should match");
+            helper.assertValueEqual(handler.extract(resource, 1, transaction), 1, "Extraction should match");
+        }
     }
 
     private static <T extends IResource> void testEmptyHandler(ExtendedGameTestHelper helper, EmptyResourceHandler<T> handler, T emptyResource) {
@@ -130,15 +128,13 @@ public class InstancedResourceHandlerTests {
         helper.assertFalse(handler.allowsInsertion(0), "Empty should no-op");
         helper.assertFalse(handler.isValid(0, emptyResource), "Empty should no-op, but should return empty");
         helper.assertValueEqual(handler.getCapacity(0, emptyResource), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.getCapacity(0), 0, "Empty should no-op");
         helper.assertValueEqual(handler.getAmount(0), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.insert(0, emptyResource, 1, TransferAction.SIMULATE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.insert(0, emptyResource, 1, TransferAction.EXECUTE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.insert(emptyResource, 1, TransferAction.SIMULATE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.insert(emptyResource, 1, TransferAction.EXECUTE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.extract(0, emptyResource, 1, TransferAction.SIMULATE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.extract(0, emptyResource, 1, TransferAction.EXECUTE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.extract(emptyResource, 1, TransferAction.SIMULATE), 0, "Empty should no-op");
-        helper.assertValueEqual(handler.extract(emptyResource, 1, TransferAction.EXECUTE), 0, "Empty should no-op");
+
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            helper.assertValueEqual(handler.insert(0, emptyResource, 1, transaction), 0, "Empty should no-op");
+            helper.assertValueEqual(handler.insert(emptyResource, 1, transaction), 0, "Empty should no-op");
+            helper.assertValueEqual(handler.extract(0, emptyResource, 1, transaction), 0, "Empty should no-op");
+            helper.assertValueEqual(handler.extract(emptyResource, 1, transaction), 0, "Empty should no-op");
+        }
     }
 }

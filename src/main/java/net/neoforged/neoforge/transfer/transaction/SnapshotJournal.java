@@ -36,7 +36,7 @@ import java.util.Objects;
  *
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
-public abstract class SnapshotParticipant<T> implements Transaction.CloseCallback, Transaction.OuterCloseCallback {
+public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, Transaction.OuterCloseCallback {
     private final List<T> snapshots = new ArrayList<>();
     @Nullable
     private T originalState = null;

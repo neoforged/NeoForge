@@ -3,7 +3,9 @@ package net.neoforged.neoforge.debug.capabilities.handlers;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerModifiableTransaction;
+import net.neoforged.neoforge.transfer.TransferAction;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.container.SimpleItemResourceContainer;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -23,12 +25,13 @@ public class TransactionTests {
     private static void itemTransfer(ExtendedGameTestHelper helper) {
         var infiniteSource = new InfiniteResourceHandler<>(Items.DIAMOND.defaultResource());
 
-        var internalContainer = SimpleItemResourceContainer.builder(9).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler2();
+        var internalContainer = SimpleItemResourceContainer.builder(9).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
 
-        IResourceHandlerModifiableTransaction<ItemResource>[] externalContainers = new IResourceHandlerModifiableTransaction[3];
-        externalContainers[0] = SimpleItemResourceContainer.builder(4).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler2();
-        externalContainers[1] = SimpleItemResourceContainer.builder(2).build().asHandler2();
-        externalContainers[2] = SimpleItemResourceContainer.builder(100).capacity(32).build().asHandler2();
+        //noinspection unchecked
+        IResourceHandlerModifiable<ItemResource>[] externalContainers = new IResourceHandlerModifiable[3];
+        externalContainers[0] = SimpleItemResourceContainer.builder(4).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
+        externalContainers[1] = SimpleItemResourceContainer.builder(2).build().asHandler();
+        externalContainers[2] = SimpleItemResourceContainer.builder(100).capacity(32).build().asHandler();
 
         var ingredient1 = Ingredient.of(Items.STICK);
         var need1 = 2;
@@ -78,6 +81,37 @@ public class TransactionTests {
 
         }
 
+        helper.succeed();
+    }
 
+    /**
+     * Attempts to insert 10 apples to the handler.
+     *
+     * @return how many apples were inserted.
+     */
+    public static int addApples(IResourceHandler<ItemResource> handler) {
+        var apple = Items.APPLE.defaultResource();
+        try (var tx = Transaction.open(null)) {
+            int inserted = handler.insert(apple, 10, tx);
+            tx.commit();
+            return inserted;
+        }
+    }
+
+
+    /**
+     * Extracts 16 coal from slot 0 and inserts 1 diamond into slot 1. Only if both succeed.
+     *
+     * @return {@code true} if both operations succeeded, {@code false} otherwise.
+     */
+    public static boolean coalToDiamonds(IResourceHandler<ItemResource> handler, TransferAction action) {
+        var coal = Items.COAL.defaultResource();
+        var diamond = Items.DIAMOND.defaultResource();
+
+        try (var tx = Transaction.open(null)) {
+            if (handler.extract(0, coal, 16, tx) != 16) return false;
+            if (handler.insert(1, diamond, 1, tx) != 1) return false;
+            return action.commit(tx);
+        }
     }
 }

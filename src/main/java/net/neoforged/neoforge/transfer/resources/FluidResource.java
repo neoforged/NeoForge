@@ -6,10 +6,6 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
-
-import java.util.Optional;
-import java.util.function.Predicate;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -32,6 +28,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
@@ -99,7 +98,8 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
     /**
      * We wrap a fluid stack which must never be exposed and/or modified.
      */
-    private final FluidStack innerStack;
+    final FluidStack innerStack;
+
     @Nullable
     private ItemResource filledBucket;
 
@@ -146,8 +146,8 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
     /**
      * Returns a copy of this resource with the data component removed.
      *
-     * @param type the type of data component
-     * @return the new resource
+     * @param type The type of data component
+     * @return The new resource
      */
     public FluidResource without(DataComponentType<?> type) {
         FluidStack stack = innerStack.copy();
@@ -156,7 +156,7 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
     }
 
     /**
-     * @return the fluid of this resource
+     * @return The fluid of this resource
      */
     @Override
     public Fluid getInstanceValue() {

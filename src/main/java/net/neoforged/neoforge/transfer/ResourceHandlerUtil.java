@@ -5,14 +5,21 @@
 
 package net.neoforged.neoforge.transfer;
 
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public final class ResourceHandlerUtil {
@@ -27,8 +34,12 @@ public final class ResourceHandlerUtil {
      * <p>
      * <strong>Key point:</strong> Human readable
      */
-    public static final int MAX_RESOURCE_SIZE = 2000000000;
+    public static final int MAX = 2000000000;
     public static final String MAX_RESOURCE_SIZE_STRING = "2,000,000,000";
+
+    public static <T extends IResource> boolean isInvalidInquiry(T resource, int amount) {
+        return resource.isEmpty() || amount <= 0;
+    }
 
     /**
      * Checks if an {@link IResourceHandler} is empty.
@@ -135,217 +146,373 @@ public final class ResourceHandlerUtil {
      * Inserts a resource into an {@link IResourceHandler} using stacking logic.
      * Resources will be inserted into filled slot(s) first, then empty slot(s).
      *
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to insert the resource into
-     * @param resource the resource to insert
-     * @param amount   the desired amount of the resource to insert
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to insert the resource into
+     * @param resource    the resource to insert
+     * @param amount      the desired amount of the resource to insert
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
-    public static <T extends IResource> int insertStacking(IResourceHandler<T> handler, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
-        int inserted = 0;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            if (ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
-            inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount)
-                return inserted;
-        }
+    public static <T extends IResource> int insertStacking(IResourceHandler<T> handler, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, @Nullable TransactionContext transaction) {
+        try (var tx = Transaction.open(transaction)) {
+            int inserted = 0;
+            int size = handler.size();
+            for (int index = 0; index < size; index++) {
+                if (ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
+                inserted += handler.insert(index, resource, amount - inserted, tx);
+                if (inserted >= amount)
+                    return inserted;
+            }
 
-        for (int index = 0; index < size; index++) {
-            if (!ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
-            inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount)
-                return inserted;
+            for (int index = 0; index < size; index++) {
+                if (!ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
+                inserted += handler.insert(index, resource, amount - inserted, tx);
+                if (inserted >= amount)
+                    return inserted;
+            }
+            tx.commit();
+            return inserted;
         }
-
-        return inserted;
     }
 
     /**
      * Inserts a resource into an {@link IResourceHandler} using non-stacking logic.
      * Resources will be inserted into the first slot(s) that can accept the resource.
      *
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to insert the resource into
-     * @param resource the resource to insert
-     * @param amount   the desired amount of the resource to insert
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to insert the resource into
+     * @param resource    the resource to insert
+     * @param amount      the desired amount of the resource to insert
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
-    public static <T extends IResource> int insertIndexForced(IResourceHandler<T> handler, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
-        int inserted = 0;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            inserted += handler.insert(index, resource, amount - inserted, action);
-            if (inserted >= amount)
-                return inserted;
+    public static <T extends IResource> int insertIndexForced(IResourceHandler<T> handler, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, @Nullable TransactionContext transaction) {
+        try (var subTransaction = Transaction.open(transaction)) {
+            int inserted = 0;
+            int size = handler.size();
+            for (int index = 0; index < size; index++) {
+                inserted += handler.insert(index, resource, amount - inserted, subTransaction);
+                if (inserted >= amount)
+                    return inserted;
+            }
+            subTransaction.commit();
+            return inserted;
         }
-
-        return inserted;
     }
 
     /**
      * Extracts a resource from an {@link IResourceHandler}
      * Resources will be extracted from the first slot(s) that contain the resource.
      *
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to extract the resource from
-     * @param resource the resource to extract
-     * @param amount   the desired amount of the resource to extract
-     * @param action   the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                 while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to extract the resource from
+     * @param resource    the resource to extract
+     * @param amount      the desired amount of the resource to extract
+     * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
-        int extracted = 0;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            extracted += handler.extract(index, resource, amount - extracted, action);
-            if (extracted >= amount)
-                return extracted;
+    public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, @Nullable TransactionContext transaction) {
+        try (var subTransaction = Transaction.open(transaction)) {
+            int extracted = 0;
+            int size = handler.size();
+            for (int index = 0; index < size; index++) {
+                extracted += handler.extract(index, resource, amount - extracted, subTransaction);
+                if (extracted >= amount)
+                    return extracted;
+            }
+            subTransaction.commit();
+            return extracted;
         }
-
-        return extracted;
     }
 
     public static <T extends IResource> int getTotalAmountOf(IResourceHandler<T> handler, T resource) {
-        return extract(handler, resource, ResourceHandlerUtil.MAX_RESOURCE_SIZE, TransferAction.SIMULATE);
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+            //We don't commit allow us to just inquiry the amount
+            return extract(handler, resource, ResourceHandlerUtil.MAX, null);
+        }
     }
 
     /**
      * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
      *
-     * @param <T>     the type of resource handled by the handler
-     * @param handler the {@link IResourceHandler} to extract the resource from
-     * @param filter  the filter to apply to the resources
-     * @param amount  the desired amount of the resource to extract
-     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to extract the resource from
+     * @param filter      the filter to apply to the resources
+     * @param amount      the desired amount of the resource to extract
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> ResourceStack<T> extractFiltered(IResourceHandler<T> handler, Predicate<T> filter, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action, T emptyResource) {
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
+    public static <T extends IResource> IResourceStack<T> extractFiltered(IResourceHandler<T> handler, Predicate<T> filter, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+        try (var subTransaction = Transaction.open(transaction)) {
+
+            int size = handler.size();
+            var handled = 0;
+            var resourceTarget = emptyResource.resource();
+            for (int index = 0; index < size; index++) {
+                T resource = handler.getResource(index);
+                if (resource.isEmpty()) continue;
+                if (!filter.test(resource)) continue;
+                if (resourceTarget.isEmpty())
+                    resourceTarget = resource;
+                else if (!resourceTarget.equals(resource)) continue;
+
+                handled += handler.extract(resource, amount - handled, subTransaction);
+                if (handled == amount) {
+                    subTransaction.commit();
+                    return new ResourceStack<>(resource, handled);
+                }
+            }
+
+            subTransaction.commit();
+            if (handled > 0)
+                return new ResourceStack<>(resourceTarget, handled);
+            return emptyResource;
+        }
+    }
+
+    /**
+     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
+     *
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to extract the resource from
+     * @param index       the index to use for the handler
+     * @param filter      the filter to apply to the resources
+     * @param amount      the desired amount of the resource to extract
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return the amount of the resource that was (or would have been, if simulated) extracted
+     */
+    public static <T extends IResource> IResourceStack<T> extractIndexFiltered(IResourceHandler<T> handler, int index, Predicate<T> filter, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+        try (var subTransaction = Transaction.open(transaction)) {
             T resource = handler.getResource(index);
-            if (!filter.test(resource)) continue;
-            int extract = handler.extract(resource, amount, action);
-            if (extract > 0)
-                return new ResourceStack<>(resource, extract);
-        }
-        return new ResourceStack<>(emptyResource, 0);
-    }
+            if (!filter.test(resource)) return new ResourceStack<>(resource, amount);
+            int extract = handler.extract(resource, amount, subTransaction);
 
-    /**
-     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
-     *
-     * @param <T>     the type of resource handled by the handler
-     * @param handler the {@link IResourceHandler} to extract the resource from
-     * @param index   the index to use for the handler
-     * @param filter  the filter to apply to the resources
-     * @param amount  the desired amount of the resource to extract
-     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return the amount of the resource that was (or would have been, if simulated) extracted
-     */
-    public static <T extends IResource> ResourceStack<T> extractIndexFiltered(IResourceHandler<T> handler, int index, Predicate<T> filter, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action, T emptyResource) {
-        T resource = handler.getResource(index);
-        if (!filter.test(resource)) return new ResourceStack<>(resource, amount);
-        int extract = handler.extract(resource, amount, action);
-        if (extract > 0)
-            return new ResourceStack<>(resource, extract);
-        return new ResourceStack<>(emptyResource, 0);
+            subTransaction.commit();
+
+            if (extract > 0) return new ResourceStack<>(resource, extract);
+            return emptyResource;
+        }
     }
 
     /**
      * Extracts the first resource from an {@link IResourceHandler} that is not empty.
      *
-     * @param <T>     the type of resource handled by the handler
-     * @param handler the {@link IResourceHandler} to extract the resource from
-     * @param amount  the desired amount of the resource to extract
-     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to extract the resource from
+     * @param amount      the desired amount of the resource to extract
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> ResourceStack<T> extractIndexedAny(IResourceHandler<T> handler, int index, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action, T emptyResource) {
-        return extractIndexFiltered(handler, index, Predicate.not(IResource::isEmpty), amount, action, emptyResource);
+    public static <T extends IResource> IResourceStack<T> extractIndexedAny(IResourceHandler<T> handler, int index, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+        return extractIndexFiltered(handler, index, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
     }
+
 
     /**
      * Extracts the first resource from an {@link IResourceHandler} that is not empty.
      *
-     * @param <T>     the type of resource handled by the handler
-     * @param handler the {@link IResourceHandler} to extract the resource from
-     * @param amount  the desired amount of the resource to extract
-     * @param action  the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *                while {@link TransferAction#EXECUTE} will actually perform the action.
+     * @param <T>         the type of resource handled by the handler
+     * @param handler     the {@link IResourceHandler} to extract the resource from
+     * @param amount      the desired amount of the resource to extract
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> ResourceStack<T> extractAny(IResourceHandler<T> handler, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action, T emptyResource) {
-        return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, action, emptyResource);
+    public static <T extends IResource> IResourceStack<T> extractAny(IResourceHandler<T> handler, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+        return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
+    }
+
+
+    /////////////////////////////////////
+    /**
+     * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
+     *
+     * <p>Here is a usage example with fluid variant storages:
+     *
+     * <pre>{@code
+     * // Source
+     * IResourceHandler<FluidResource> source;
+     * // Target
+     * IResourceHandler<FluidResource> target;
+     * Predicate<FluidResource> filter = resource -> resource.is(Fluids.WATER);
+     *
+     * // Move up to one bucket in total from source to target, outside of a transaction:
+     * int amountMoved = ResourceHandlerUtil.move(source, target, FluidType.BUCKET, null);
+     * // Move exactly one bucket in total, only of water:
+     * try (Transaction transaction = Transaction.openOuter()) {
+     *     int waterMoved = ResourceHandlerUtil.move(source, target, filter, FluidType.BUCKET, transaction);
+     *     if (waterMoved == FluidType.BUCKET) {
+     *         // Only commit if exactly one bucket was moved (no less!).
+     *         transaction.commit();
+     *     }
+     * }
+     * }</pre>
+     *
+     * @param from        The source handler. May be null.
+     * @param to          The target handler. May be null.
+     * @param filter      The filter for transferred resources.
+     *                    Only resources for which this filter returns {@code true} will be transferred.
+     *                    This filter will never be tested with an empty resource, and filters are encouraged to throw an
+     *                    exception if this guarantee is violated.
+     * @param amount      The maximum amount that will be transferred.
+     * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
+     * @param <T>         The type of resources to move.
+     * @return The total amount of resources that was successfully transferred.
+     * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
+     */
+    public static <T extends IResource> int move(@Nullable IResourceHandler<T> from, @Nullable IResourceHandler<T> to, Predicate<T> filter, int amount, @Nullable TransactionContext transaction) {
+        Objects.requireNonNull(filter, "Filter may not be null");
+        if (from == null || to == null) return 0;
+
+
+        try (Transaction subTransaction = Transaction.open(transaction)) {
+            int totalMoved = 0;
+            int size = from.size();
+
+            for (int index = 0; index < size; ++index) {
+                var fromResource = from.getResource(index);
+                if (fromResource.isEmpty()) {
+                    continue;
+                }
+                if (!filter.test(fromResource)) continue;
+
+                // check how much can be extracted
+                int maxExtracted;
+                try (var simulatedExtract = Transaction.open(subTransaction)) {
+                    maxExtracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtract);
+                }
+
+                try (Transaction transferTransaction = Transaction.open(subTransaction)) {
+                    // check how much can be inserted
+                    var inserted = to.insert(fromResource, maxExtracted, transferTransaction);
+
+                    // extract it, or rollback if the amounts don't match
+                    if (from.extract(index, fromResource, inserted, transferTransaction) == inserted) {
+                        totalMoved += inserted;
+                        transferTransaction.commit();
+                    }
+                }
+
+                if (amount == totalMoved) {
+                    // early return if nothing can be moved anymore
+                    subTransaction.commit();
+                    return totalMoved;
+                }
+            }
+
+            subTransaction.commit();
+            return totalMoved;
+        } catch (Exception e) {
+            CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
+            //noinspection DataFlowIssue
+            report.addCategory("Move details")
+                    .setDetail("Input storage", from::toString)
+                    .setDetail("Output storage", to::toString)
+                    .setDetail("Filter", filter::toString)
+                    .setDetail("Max amount", amount)
+                    .setDetail("Transaction", transaction);
+            throw new ReportedException(report);
+        }
     }
 
     /**
-     * Moves a resource from one {@link IResourceHandler} to another.
-     *
-     * @param <T>    the type of resource handled by the handlers
-     * @param from   the {@link IResourceHandler} to move the resource from
-     * @param to     the {@link IResourceHandler} to move the resource to
-     * @param amount the desired amount of the resource to move
-     * @param action the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *               while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return the amount of the resource and the resource itself that was (or would have been, if simulated) moved
+     * Same as {@link #move}, but some scenarios require to know what resource was moved. While this won't be a full list, this will simplify things like {@link FluidUtil#moveFluidWithSound}
      */
-    public static <T extends IResource> ResourceStack<T> moveFiltered(IResourceHandler<T> from, IResourceHandler<T> to, Predicate<T> filter, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action, T emptyResource) {
-        for (int index = 0; index < from.size(); index++) {
-            T resource = from.getResource(index);
-            if (!filter.test(resource)) continue;
+    public static <T extends IResource> ResourceStack<T> moveOrDefault(@Nullable IResourceHandler<T> from, @Nullable IResourceHandler<T> to, Predicate<T> filter, int amount, @Nullable TransactionContext transaction, ResourceStack<T> emptyStack) {
+        Objects.requireNonNull(filter, "Filter may not be null");
+        if (from == null || to == null) return emptyStack;
 
-            int extracted = from.extract(resource, amount, TransferAction.SIMULATE);
-            if (extracted == 0) continue;
+        try (Transaction subTransaction = Transaction.open(transaction)) {
+            int totalMoved = 0;
+            T lastMovedResource = emptyStack.resource();
+            int size = from.size();
 
-            int inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
-            if (inserted == 0) continue;
+            for (int index = 0; index < size; ++index) {
+                var fromResource = from.getResource(index);
+                if (fromResource.isEmpty()) {
+                    continue;
+                }
+                if (!filter.test(fromResource)) continue;
+                // check how much can be extracted
+                int extracted;
+                try (var simulatedExtract = Transaction.open(subTransaction)) {
+                    extracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtract);
+                }
 
-            while (extracted != inserted) {
-                extracted = from.extract(resource, inserted, TransferAction.SIMULATE);
-                if (extracted == 0) break;
-                inserted = to.insert(resource, extracted, TransferAction.SIMULATE);
-                if (inserted == 0) break;
+                try (Transaction transferTransaction = Transaction.open(subTransaction)) {
+                    // check how much can be inserted
+                    var inserted = to.insert(fromResource, extracted, transferTransaction);
+
+                    // extract it, or rollback if the amounts don't match
+                    if (from.extract(index, fromResource, inserted, transferTransaction) == inserted) {
+                        totalMoved += inserted;
+                        transferTransaction.commit();
+                        lastMovedResource = fromResource;
+                    }
+                }
+
+                if (amount == totalMoved) {
+                    // early return if nothing can be moved anymore
+                    subTransaction.commit();
+                    return new ResourceStack<>(fromResource, totalMoved);
+                }
             }
+            if (totalMoved == 0) return emptyStack;
 
-            if (inserted == 0)
-                continue;
+            subTransaction.commit();
+            return new ResourceStack<>(lastMovedResource, totalMoved);
 
-            if (action.isExecuting()) {
-                from.extract(resource, inserted, TransferAction.EXECUTE);
-                to.insert(resource, inserted, TransferAction.EXECUTE);
-            }
-            return new ResourceStack<>(resource, inserted);
+        } catch (Exception e) {
+            CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
+            //noinspection DataFlowIssue
+            report.addCategory("Move details")
+                    .setDetail("Input storage", from::toString)
+                    .setDetail("Output storage", to::toString)
+                    .setDetail("Filter", filter::toString)
+                    .setDetail("Max amount", amount)
+                    .setDetail("Transaction", transaction);
+            throw new ReportedException(report);
         }
 
-        return new ResourceStack<>(emptyResource, 0);
     }
+
+    /////////////////////////////////////
+
 
     /**
      * Moves a resource from one {@link IResourceHandler} to another.
      *
-     * @param <T>    the type of resource handled by the handlers
-     * @param from   the {@link IResourceHandler} to move the resource from
-     * @param to     the {@link IResourceHandler} to move the resource to
-     * @param amount the desired amount of the resource to move
-     * @param action the kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
-     *               while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return the amount of the resource and the resource itself that was (or would have been, if simulated) moved
+     * @param from        The source handler. May be null.
+     * @param to          The target handler. May be null.
+     *                    Only resources for which this filter returns {@code true} will be transferred.
+     *                    This filter will never be tested with an empty resource, and filters are encouraged to throw an
+     *                    exception if this guarantee is violated.
+     * @param amount      The maximum amount that will be transferred.
+     * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
+     * @param <T>         The type of resources to move.
+     * @return The total amount of resources that was successfully transferred.
+     * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    public static <T extends IResource> ResourceStack<T> moveAny(IResourceHandler<T> from, IResourceHandler<T> to, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action, T emptyResource) {
-        return moveFiltered(from, to, Predicate.not(IResource::isEmpty), amount, action, emptyResource);
+    public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, @Nullable TransactionContext transaction) {
+        return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
     }
 
     public static <T extends IResource> boolean hasResource(IResourceHandler<T> handler, T resource) {
-        return handler.extract(resource, 1, TransferAction.SIMULATE) > 0;
+        try (var temp = Transaction.open(null)) {
+            //Simulated, we don't commit on an inquiry
+            return handler.extract(resource, 1, temp) > 0;
+        }
     }
 
 

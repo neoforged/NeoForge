@@ -5,35 +5,36 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.Arrays;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  * A wrapper that delegates all calls to specific set of indices of a handler.
  *
  * @param <T> The type of resource this handler manages.
  */
-public class ScopedResourceHandlerWrapper<T extends IResource> extends DelegatingResourceHandlerWrapper<T> {
+public class ScopedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
     protected int[] indices;
 
-    public static <T extends IResource> ScopedResourceHandlerWrapper<T> fromHandlerExcludingIndices(IResourceHandler<T> handler, int[] exclusions) {
+    public static <T extends IResource> ScopedResourceHandler<T> fromHandlerExcludingIndices(IResourceHandler<T> handler, int[] exclusions) {
         int[] indices = IntStream.range(0, handler.size())
                 .filter(i -> Arrays.stream(exclusions).noneMatch(excluded -> excluded == i))
                 .toArray();
-        return new ScopedResourceHandlerWrapper<>(handler, indices);
+        return new ScopedResourceHandler<>(handler, indices);
     }
 
-    public ScopedResourceHandlerWrapper(IResourceHandler<T> delegate, int[] indices) {
+    public ScopedResourceHandler(IResourceHandler<T> delegate, int[] indices) {
         super(delegate);
         this.indices = indices;
     }
 
-    public ScopedResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int[] indices) {
+    public ScopedResourceHandler(Supplier<IResourceHandler<T>> delegate, int[] indices) {
         super(delegate);
         this.indices = indices;
     }
@@ -52,11 +53,11 @@ public class ScopedResourceHandlerWrapper<T extends IResource> extends Delegatin
     }
 
     @Override
-    public int insert(T resource, int amount, TransferAction action) {
+    public int insert(T resource, int amount, TransactionContext transaction) {
         int inserted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index : indices) {
-            inserted += handler.insert(index, resource, amount - inserted, action);
+            inserted += handler.insert(index, resource, amount - inserted, transaction);
             if (inserted >= amount)
                 break;
         }
@@ -64,18 +65,18 @@ public class ScopedResourceHandlerWrapper<T extends IResource> extends Delegatin
     }
 
     @Override
-    public int extract(T resource, int amount, TransferAction action) {
+    public int extract(T resource, int amount, TransactionContext transaction) {
         int extracted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index : indices) {
-            extracted += handler.extract(index, resource, amount - extracted, action);
+            extracted += handler.extract(index, resource, amount - extracted, transaction);
             if (extracted >= amount)
                 break;
         }
         return extracted;
     }
 
-    public static class Modifiable<T extends IResource> extends ScopedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends ScopedResourceHandler<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate, int[] indices) {
             super(delegate, indices);
         }
