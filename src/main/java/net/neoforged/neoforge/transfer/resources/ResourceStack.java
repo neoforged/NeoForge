@@ -12,16 +12,18 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import org.jetbrains.annotations.Range;
 
 /**
- * Represents an immutable resource and an amount.
+ * Represents an immutable {@link IResource} and an amount.
  * Can be seen as an immutable version of {@link ItemStack} or {@link FluidStack}.
  *
  * @param <T> the held resource type
  */
 public record ResourceStack<T extends IResource>(T resource, int amount) implements IResourceStack<T> {
     public ResourceStack {
-        Objects.requireNonNull(resource, "resource");
+        Objects.requireNonNull(resource, "Resource must not be null");
     }
 
     /**
@@ -69,6 +71,15 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
     public static <B extends FriendlyByteBuf, T extends IResource> StreamCodec<B, ResourceStack<T>> streamCodec(StreamCodec<? super B, T> resourceCodec) {
         return IResourceStack.streamCodec(resourceCodec, ResourceStack::new);
     }
+
+    public static <T extends IResource> ResourceStack<T> of(IResourceStack<T> stack) {
+        return of(stack.resource(), stack.amount());
+    }
+
+    public static <T extends IResource> ResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount) {
+        return new ResourceStack<>(resource, amount);
+    }
+
 
     /**
      * @return a copy of this instance with an updated amount.

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.storage;
+package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.TransferAction;
@@ -31,15 +31,15 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         this.emptyResource = emptyResource;
     }
 
-    public abstract IResourceData<T> getContents();
+    public abstract IResourceStorageData<T> getContents();
 
-    public abstract int setAndValidate(IResourceData<T> contents, int requestedAmount, int changedAmount, TransferAction action);
+    public abstract int setAndValidate(IResourceStorageData<T> contents, int requestedAmount, int changedAmount, TransferAction action);
 
     @Override
     public int insert(int index, T resource, int amount, TransferAction action) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
         if (amount <= 0 || resource.isEmpty()) return 0;
-        IResourceData<T> contents = getContents();
+        IResourceStorageData<T> contents = getContents();
         int changedAmount = insertBehavior(contents, index, resource, amount, action);
         return setAndValidate(contents, amount, changedAmount, action);
     }
@@ -47,7 +47,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     @Override
     public int insert(T resource, int amount, TransferAction action) {
         if (amount <= 0 || resource.isEmpty()) return 0;
-        IResourceData<T> contents = getContents().attachment();
+        IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
         for (int i = 0; i < size(); i++) {
             changedAmount += insertBehavior(contents, i, resource, amount - changedAmount, action);
@@ -56,7 +56,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         return setAndValidate(contents, amount, changedAmount, action);
     }
 
-    protected int insertBehavior(IResourceData<T> contents, int index, T resource, int amount, TransferAction action) {
+    protected int insertBehavior(IResourceStorageData<T> contents, int index, T resource, int amount, TransferAction action) {
         if (!isValid(index, resource)) return 0;
 
         IResourceStack<T> resourceStackInSlot = contents.get(index);
@@ -84,7 +84,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     public int extract(int index, T resource, int amount, TransferAction action) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
         if (amount <= 0 || resource.isEmpty()) return 0;
-        IResourceData<T> contents = getContents().attachment();
+        IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = extractBehavior(contents, index, resource, amount, action);
         return setAndValidate(contents, amount, changedAmount, action);
     }
@@ -94,7 +94,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         if (amount <= 0 || resource.isEmpty()) return 0;
         //Get the contents and if not mutable, make it mutable ONLY if we are executing.
         // Otherwise, we can keep the existing allocations.
-        IResourceData<T> contents = action.isExecuting() ? getContents().attachment() : getContents();
+        IResourceStorageData<T> contents = action.isExecuting() ? getContents().attachment() : getContents();
         int changedAmount = 0;
         for (int i = 0; i < size(); i++) {
             changedAmount += extractBehavior(contents, i, resource, amount - changedAmount, action);
@@ -103,7 +103,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         return setAndValidate(contents, amount, changedAmount, action);
     }
 
-    protected int extractBehavior(IResourceData<T> contents, int index, T resource, int amount, TransferAction action) {
+    protected int extractBehavior(IResourceStorageData<T> contents, int index, T resource, int amount, TransferAction action) {
         IResourceStack<T> stack = contents.get(index);
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extractAmount = Math.min(amount, stack.amount());

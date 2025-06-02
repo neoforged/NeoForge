@@ -18,22 +18,22 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  *
  * @param <T> The type of resource this handler manages.
  */
-public class ScopedHandlerWrapper<T extends IResource> extends DelegatingHandlerWrapper<T> {
+public class ScopedResourceHandlerWrapper<T extends IResource> extends DelegatingResourceHandlerWrapper<T> {
     protected int[] indices;
 
-    public static <T extends IResource> ScopedHandlerWrapper<T> fromHandlerExcludingIndices(IResourceHandler<T> handler, int[] exclusions) {
+    public static <T extends IResource> ScopedResourceHandlerWrapper<T> fromHandlerExcludingIndices(IResourceHandler<T> handler, int[] exclusions) {
         int[] indices = IntStream.range(0, handler.size())
                 .filter(i -> Arrays.stream(exclusions).noneMatch(excluded -> excluded == i))
                 .toArray();
-        return new ScopedHandlerWrapper<>(handler, indices);
+        return new ScopedResourceHandlerWrapper<>(handler, indices);
     }
 
-    public ScopedHandlerWrapper(IResourceHandler<T> delegate, int[] indices) {
+    public ScopedResourceHandlerWrapper(IResourceHandler<T> delegate, int[] indices) {
         super(delegate);
         this.indices = indices;
     }
 
-    public ScopedHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int[] indices) {
+    public ScopedResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int[] indices) {
         super(delegate);
         this.indices = indices;
     }
@@ -75,7 +75,7 @@ public class ScopedHandlerWrapper<T extends IResource> extends DelegatingHandler
         return extracted;
     }
 
-    public static class Modifiable<T extends IResource> extends ScopedHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends ScopedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate, int[] indices) {
             super(delegate, indices);
         }

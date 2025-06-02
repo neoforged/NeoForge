@@ -7,13 +7,13 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import org.jetbrains.annotations.Range;
 
 /**
- * A generic handler for handling a resource of type {@link T}.
- * 
+ * A generic handler for handling a {@link IResource resource} of type {@link T}.
+ *
  * @param <T> The type of resource this handler manages.
  */
 public interface IResourceHandler<T extends IResource> {
@@ -32,18 +32,18 @@ public interface IResourceHandler<T extends IResource> {
 
     /**
      * @param index The index to get the amount from.
-     * @return The amount of the resource at the given index.
+     * @return The amount of the resource at the given index. A range of 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
     int getAmount(int index);
 
     /**
      * Gets the theoretical maximum amount that the given index can hold of "any" resource. If there is something in the slot, it is valid to use its max bounds.
+     * <p>
+     * Needed method given that some resources may not have an "empty" instance. 
      *
      * @param index The index to get the limit from.
-     * @return The limit of the resource at the given index.
+     * @return The limit at the given index. A range of 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
     int getCapacity(int index);
 
     /**
@@ -52,14 +52,13 @@ public interface IResourceHandler<T extends IResource> {
      * but not for items.
      *
      * @param index    The index to get the limit from.
-     * @param resource The resource to get the limit for.
-     * @return The limit of the resource at the given index.
+     * @param resource The resource to get the limit for. If empty, this should defer to {@link #getCapacity(int)}
+     * @return The limit of the resource at the given index. A range of 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
     int getCapacity(int index, T resource);
 
     /**
-     * Checks if the given resource is allowed to be inserted into the handler at the given index.
+     * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransferAction)} implementation.
      *
      * @param index    The index to check.
      * @param resource The resource to check.
@@ -73,13 +72,16 @@ public interface IResourceHandler<T extends IResource> {
      * Intended use is for something like a pipe graph lookup to be able to reduce the runtime workload on handlers that can never do a specific operation.
      * <p>
      * As long as the handler could, under the right conditions, allow a resource to be inserted into the given index,
-     * this should return true. To be clear, this value assumed to be constant throughout the life-time of the handler and does <b>not</b> control the handler's logic in any way.
+     * this should return true. To be clear, this value is assumed to be constant throughout the life-time of the handler and does <b>not</b> control the handler's logic in any way.
      * <h5>IMPORTANT:</h5>
-     * This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling insert or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
+     * Returning false, will not inherently prevent something from calling insert or change the result of that call,
+     * so you will still need to handle those scenarios.
+     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * well before actually operating.
      * <p>
      * It is also advised to not use the result of this call in insert if the lookup is complex.
+     * <p>
+     * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be insertable to.
      *
      * @param index The index to check.
      * @return True if the resource can be inserted, false otherwise.
@@ -116,6 +118,8 @@ public interface IResourceHandler<T extends IResource> {
      * before actually operating.
      * <p>
      * It is also advised to not use the result of this call in extract if the lookup is complex.
+     * *<p>
+     * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be extractable from.
      *
      * @param index The index to check.
      * @return True if the resource can be extracted, false otherwise.
@@ -146,57 +150,53 @@ public interface IResourceHandler<T extends IResource> {
      *
      * @param index    The index to insert the resource into.
      * @param resource The resource to insert.
-     * @param amount   The amount of the resource to insert.
+     * @param amount   The amount of the resource to insert. A range of 1 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      * @param action   The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted.
+     * @return The amount of the resource that was (or would have been, if simulated) inserted. A range of 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
-    int insert(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount, TransferAction action);
+    int insert(int index, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransferAction)}, as you may needlessly re-check validations.
-     * See {@link ResourceStorageHandler#insert(IResource, int, TransferAction) ResourceStorage.insert} for an example.
+     * See {@link ResourceStorageHandler#insert(IResource, int, TransferAction) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource The resource to insert.
-     * @param amount   The amount of the resource to insert.
+     * @param amount   The amount of the resource to insert. A range of 1 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      * @param action   The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted.
+     * @return The amount (range from 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}) of the resource that was (or would have been, if simulated) inserted.
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
-    int insert(T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount, TransferAction action);
+    int insert(T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action);
 
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
      * @param index    The index to extract the resource from.
      * @param resource The resource to extract.
-     * @param amount   The amount of the resource to extract.
+     * @param amount   The amount of the resource to extract. A range of 1 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      * @param action   The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return The amount of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (range from 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}) of the resource that was (or would have been, if simulated) extracted.
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
-    int extract(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount, TransferAction action);
+    int extract(int index, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #extract(int, IResource, int, TransferAction)}, as you may needlessly re-check validations.
-     * See {@link ResourceStorageHandler#extract(IResource, int, TransferAction) ResourceStorage.extract} for an example.
-     *
+     * See {@link ResourceStorageHandler#extract(IResource, int, TransferAction) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource The resource to extract.
-     * @param amount   The amount of the resource to extract.
+     * @param amount   The amount of the resource to extract. A range of 1 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}
      * @param action   The kind of action being performed. {@link TransferAction#SIMULATE} will simulate the action
      *                 while {@link TransferAction#EXECUTE} will actually perform the action.
-     * @return The amount of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (range from 0 to {@value ResourceHandlerUtil#MAX_RESOURCE_SIZE}) of the resource that was (or would have been, if simulated) extracted.
      */
-    @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT)
-    int extract(T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount, TransferAction action);
+    int extract(T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action);
+
 
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {
         //noinspection unchecked

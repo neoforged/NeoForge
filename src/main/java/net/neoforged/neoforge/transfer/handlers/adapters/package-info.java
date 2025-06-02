@@ -6,8 +6,9 @@
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package net.neoforged.neoforge.transfer.handlers.templates.storage;
+package net.neoforged.neoforge.transfer.handlers.adapters;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.FieldsAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

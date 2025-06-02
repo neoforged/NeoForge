@@ -44,7 +44,7 @@ public record ItemContainerToVanillaAdapter(IResourceContainer<ItemResource> ite
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
         ItemStack stack = getItem(slot);
-        itemContainer.set(slot, MutableResourceStack.of(ItemResource.NONE, 0));
+        itemContainer.set(slot, MutableResourceStack.of(ItemResource.EMPTY, 0));
         return stack;
     }
 

@@ -5,11 +5,13 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
-import java.util.Objects;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
+
+import java.util.Objects;
 
 /**
  * A slice of a {@link IResourceContainer}. Changes to the slice should reflect in the parent.
@@ -21,6 +23,12 @@ public record ResourceContainerSlice<TResource extends IResource>(
     @Override
     public int size() {
         return length;
+    }
+
+    @Override
+    public SnapshotParticipant<MutableResourceStack<TResource>> getParticipant(int index) {
+        Objects.checkIndex(index, length);
+        return parent.getParticipant(index + start);
     }
 
     @Override

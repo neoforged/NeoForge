@@ -9,18 +9,18 @@ import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ItemContextResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 public class ItemContextFluidHandler extends ItemContextResourceHandler<FluidResource> {
     public ItemContextFluidHandler(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
-        super(context, componentType, FluidResource.NONE, singleItemLimit, validator);
+        super(context, componentType, FluidResource.EMPTY, singleItemLimit, validator);
     }
 
     public ItemContextFluidHandler(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit) {
-        super(context, componentType, FluidResource.NONE, singleItemLimit);
+        super(context, componentType, FluidResource.EMPTY, singleItemLimit);
     }
 
     public static class Consumable extends ItemContextFluidHandler {

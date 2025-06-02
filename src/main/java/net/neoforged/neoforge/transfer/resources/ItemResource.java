@@ -9,9 +9,9 @@ import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -26,30 +26,32 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
-public final class ItemResource implements IResource, DataComponentHolder {
+public final class ItemResource implements IRegisteredResource<Item> {
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
-     * Does <b>not</b> accept blank resources.
+     * Does <b>not</b> accept empty resources.
      */
     public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(() -> ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack));
     /**
-     * Codec for an item resource. Same format as {@link #CODEC}, and also accepts blank resources.
+     * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
     public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(ItemResource::fromOptional, ItemResource::asOptional);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static ItemResource fromOptional(Optional<ItemResource> optional) {
-        return optional.orElse(ItemResource.NONE);
+        return optional.orElse(ItemResource.EMPTY);
     }
 
     private Optional<ItemResource> asOptional() {
@@ -57,10 +59,10 @@ public final class ItemResource implements IResource, DataComponentHolder {
     }
 
     /**
-     * Stream codec for an item resource. Accepts blank resources.
+     * Stream codec for an item resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getItemHolder,
+            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getHolder,
             DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
             ItemResource::of);
 
@@ -68,20 +70,20 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return resourceStack.resource().toStack(resourceStack.amount());
     }
 
-    public static final ItemResource NONE = new ItemResource(ItemStack.EMPTY);
-    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(NONE, 0);
+    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     /**
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
     public static ItemResource invalidateDefault(ItemLike item) {
-        return item == Items.AIR ? NONE : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
+        return item == Items.AIR ? EMPTY : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
     }
 
     public static ItemResource of(ItemStack itemStack) {
         if (itemStack.isEmpty())
-            return NONE;
+            return EMPTY;
         if (itemStack.isComponentsPatchEmpty())
             return itemStack.getItem().defaultResource();
         return new ItemResource(itemStack.copyWithCount(1));
@@ -91,14 +93,14 @@ public final class ItemResource implements IResource, DataComponentHolder {
      * <strong>Note:</strong> This cannot be called before your item is registered
      */
     public static ItemResource of(ItemLike item) {
-        return item == Items.AIR ? NONE : item.asItem().defaultResource();
+        return item == Items.AIR ? EMPTY : item.asItem().defaultResource();
     }
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
      */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
-        if (item.value() == Items.AIR) return NONE;
+        if (item.value() == Items.AIR) return EMPTY;
 
         return item.value().defaultResource().withPatch(patch);
     }
@@ -117,12 +119,29 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.isEmpty();
     }
 
+    @Override
     public boolean is(Item item) {
         return innerStack.is(item);
     }
 
+    @Override
     public boolean is(TagKey<Item> item) {
         return innerStack.is(item);
+    }
+
+    @Override
+    public boolean is(Predicate<Holder<Item>> predicate) {
+        return innerStack.is(predicate);
+    }
+
+    public boolean test(Predicate<ItemStack> predicate){
+        return predicate.test(innerStack);
+    }
+
+
+    @Override
+    public boolean isComponentsPatchEmpty() {
+        return innerStack.isComponentsPatchEmpty();
     }
 
     public ItemResource withPatch(DataComponentPatch patch) {
@@ -151,11 +170,13 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return without(type.get());
     }
 
-    public Item getItem() {
+    @Override
+    public Item getInstanceValue() {
         return innerStack.getItem();
     }
 
-    public Holder<Item> getItemHolder() {
+    @Override
+    public Holder<Item> getHolder() {
         return innerStack.getItemHolder();
     }
 
@@ -164,6 +185,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.immutableComponents();
     }
 
+    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
@@ -213,6 +235,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return new MutableResourceStack<>(this, amount);
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -226,7 +249,9 @@ public final class ItemResource implements IResource, DataComponentHolder {
 
     @Override
     public String toString() {
-        //DO we even want to try to encode the components into the print?
+        //DO we even want to try to encode the components into the print? Often times that will likely be noise
         return innerStack.getItem().toString();
     }
+
+
 }

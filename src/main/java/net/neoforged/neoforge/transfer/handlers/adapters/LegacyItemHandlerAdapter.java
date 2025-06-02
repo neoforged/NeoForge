@@ -3,16 +3,36 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.wrappers.items;
+package net.neoforged.neoforge.transfer.handlers.adapters;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
-public record LegacyItemHandlerWrapper(IItemHandler handler) implements IResourceHandler<ItemResource> {
+/**
+ * A wrapper for devs who are still using the legacy IItemHandler interface. This should not be relied on and should be
+ * replaced with the new IResourceHandler interface. This wrapper will be removed alongside the legacy IItemHandler
+ * interface in 1.22.
+ */
+public sealed class LegacyItemHandlerAdapter implements IResourceHandler<ItemResource> permits LegacyItemHandlerAdapter.Modifiable {
+    private final IItemHandler handler;
+
+    public static LegacyItemHandlerAdapter of(IItemHandler handler){
+        return new LegacyItemHandlerAdapter(handler);
+    }
+
+    public static LegacyItemHandlerAdapter.Modifiable of(IItemHandlerModifiable handler){
+        return new LegacyItemHandlerAdapter.Modifiable(handler);
+    }
+
+    private LegacyItemHandlerAdapter(IItemHandler handler) {
+        this.handler = handler;
+    }
     @Override
     public int insert(int index, ItemResource resource, int amount, TransferAction action) {
         ItemStack notInserted = handler.insertItem(index, resource.toStack(amount), action.isSimulating());
@@ -74,5 +94,27 @@ public record LegacyItemHandlerWrapper(IItemHandler handler) implements IResourc
     @Override
     public boolean allowsExtraction(int index) {
         return true;
+    }
+
+    public IItemHandler handler() {
+        return handler;
+    }
+
+
+    public static final class Modifiable extends LegacyItemHandlerAdapter implements IResourceHandlerModifiable<ItemResource> {
+
+        public Modifiable(IItemHandlerModifiable handler) {
+            super(handler);
+        }
+
+        @Override
+        public void set(int index, ItemResource resource, int amount) {
+            handler().setStackInSlot(index,resource.toStack(amount));
+        }
+
+        @Override
+        public IItemHandlerModifiable handler() {
+            return (IItemHandlerModifiable) super.handler();
+        }
     }
 }

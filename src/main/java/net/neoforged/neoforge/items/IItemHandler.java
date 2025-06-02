@@ -11,6 +11,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.adapters.LegacyItemHandlerAdapter;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @deprecated Use {@link IResourceHandler} of {@link ItemResource} instead
  */
-@Deprecated(forRemoval = true, since = "1.21")
+@Deprecated(forRemoval = true, since = "1.21.6")
 @ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IItemHandler {
     /**
@@ -125,4 +126,13 @@ public interface IItemHandler {
      * @deprecated This is now {@link IResourceHandler#isValid(int, IResource)}
      */
     boolean isItemValid(int slot, ItemStack stack);
+
+    /**
+     * A helper method to temporarily turn your existing IItemHandler into a {@link IResourceHandler<ItemResource>}
+     * @return LegacyItemHandlerAdapter instance of this
+     */
+    @Deprecated(forRemoval = true, since = "1.21.6")
+    default LegacyItemHandlerAdapter asResourceHandler(){
+        return LegacyItemHandlerAdapter.of(this);
+    }
 }

@@ -7,20 +7,20 @@ package net.neoforged.neoforge.transfer.handlers.templates;
 
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * An {@link IResourceHandler} that represents a handler that rejects all operations.
- * You should use the static instances {@link #ITEM} and {@link #FLUID} instead of creating new instances.
- * If you're using this with a different resource type, you should create a new static instance.
- *
- * @param <T> The type of resource
+ * Note, if somehow it manages to get to {@link #getResource(int)} it will throw an error. We say "somehow" as the size is 0, so there should not be a valid path to get to that method when used correctly.
+ * Use the {@link #instance()} method to safely cast to the resource type you are expecting. This should work for all resources.
  */
-public record EmptyHandler<T extends IResource>(T emptyResource) implements IResourceHandler<T> {
-    public static final EmptyHandler<ItemResource> ITEM = new EmptyHandler<>(ItemResource.NONE);
-    public static final EmptyHandler<FluidResource> FLUID = new EmptyHandler<>(FluidResource.NONE);
+public final class EmptyResourceHandler<T extends IResource> implements IResourceHandler<T> {
+    private final static EmptyResourceHandler<?> INSTANCE = new EmptyResourceHandler<>();
+
+    public static <T extends IResource> EmptyResourceHandler<T> instance() {
+        //noinspection unchecked
+        return (EmptyResourceHandler<T>) INSTANCE;
+    }
 
     @Override
     public int size() {
@@ -49,7 +49,7 @@ public record EmptyHandler<T extends IResource>(T emptyResource) implements IRes
 
     @Override
     public T getResource(int index) {
-        return emptyResource;
+        throw new IllegalArgumentException("Invalid slot index: " + index + ". This storage is empty and has no slots.");
     }
 
     @Override
@@ -81,4 +81,11 @@ public record EmptyHandler<T extends IResource>(T emptyResource) implements IRes
     public boolean allowsExtraction(int index) {
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "EmptyResourceHandler";
+    }
+
+    private EmptyResourceHandler() { }
 }

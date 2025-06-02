@@ -8,22 +8,26 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 /**
  * Represents the underlying instruction set for mutable and immutable resource stacks.
+ * This is provided as a helper and not necessary for a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler} to function.
  *
  * @param <T> resource type
  */
 public interface IResourceStack<T extends IResource> {
     /**
      * Creates a codec with the resource being a field in the object.
-     * 
+     *
      * <pre>{@code
      * {
      *     "resource": {
@@ -41,12 +45,14 @@ public interface IResourceStack<T extends IResource> {
     static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(IResourceStack<TResource>::resource),
-                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)).apply(instance, factory));
+                NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
+                        .forGetter(IResourceStack<TResource>::amount)
+        ).apply(instance, factory));
     }
 
     /**
      * Creates a codec where the fields for the resource are at the same level as the amount
-     * 
+     *
      * <pre>{@code
      * {
      *    "id": "minecraft:water",
@@ -63,7 +69,9 @@ public interface IResourceStack<T extends IResource> {
     static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> flatCodec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 MapCodec.assumeMapUnsafe(resourceCodec).forGetter(IResourceStack<TResource>::resource),
-                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amount").forGetter(IResourceStack<TResource>::amount)).apply(instance, factory));
+                NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
+                        .forGetter(IResourceStack<TResource>::amount)
+        ).apply(instance, factory));
     }
 
     /**
@@ -88,7 +96,7 @@ public interface IResourceStack<T extends IResource> {
 
     /**
      * Checks if this is empty, meaning that the amount is not positive
-     * or that the resource is {@link IResource#isEmpty() blank}.
+     * or that the resource is {@link IResource#isEmpty() empty}.
      *
      * @return {@code true} if empty
      */
@@ -104,8 +112,7 @@ public interface IResourceStack<T extends IResource> {
 
     IResourceStack<T> with(UnaryOperator<T> operator);
 
-    // These methods allow a simple helper to return themselves if they are already an instance of that type, otherwise, a new one
-
+    // These methods allow a simple helper to reduce unnecessary allocation if they are already an instance of the correct type, otherwise, a new one is created.
     /**
      * @return a mutable resource stack that allows the amount to be changeable without the underlying resource data being set.
      */
@@ -115,6 +122,8 @@ public interface IResourceStack<T extends IResource> {
      * @return an immutable resource stack
      */
     ResourceStack<T> immutable();
+
+
 
     /**
      * Creates a hashcode derived from a resource stack list. This is similar to how vanilla handles ItemStack lists.

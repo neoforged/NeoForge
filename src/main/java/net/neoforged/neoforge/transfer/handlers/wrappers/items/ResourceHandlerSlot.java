@@ -64,7 +64,7 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public boolean mayPickup(Player player) {
-        return !ResourceHandlerUtil.extractIndexedAny(handler, getSlotIndex(), 1, TransferAction.SIMULATE, ItemResource.NONE).isEmpty();
+        return !ResourceHandlerUtil.extractIndexedAny(handler, getSlotIndex(), 1, TransferAction.SIMULATE, ItemResource.EMPTY).isEmpty();
     }
 
     @Override

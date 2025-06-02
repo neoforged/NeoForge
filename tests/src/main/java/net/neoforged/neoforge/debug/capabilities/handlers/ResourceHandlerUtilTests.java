@@ -41,31 +41,31 @@ public class ResourceHandlerUtilTests {
 
         var workingStack = new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource(), 5000);
 
-        srcHandler.set(0, ItemResource.NONE, 0);
+        srcHandler.set(0, ItemResource.EMPTY, 0);
         helper.assertTrue(ResourceHandlerUtil.isEmpty(srcHandler), "The inv was not empty");
         helper.assertFalse(ResourceHandlerUtil.isFull(srcHandler), "The inv should be empty");
         srcHandler.set(0, workingStack.resource(), workingStack.amount());
         helper.assertTrue(ResourceHandlerUtil.resourceAndCountMatches(srcHandler, 0, workingStack.resource(), workingStack.amount()), "Cobblestone in the inv did not match");
-        helper.assertTrue(ResourceHandlerUtil.moveAny(srcHandler, dstHandler, workingStack.amount(), TransferAction.EXECUTE, ItemResource.NONE).isEmpty(), "Nothing should have moved");
+        helper.assertTrue(ResourceHandlerUtil.moveAny(srcHandler, dstHandler, workingStack.amount(), TransferAction.EXECUTE, ItemResource.EMPTY).isEmpty(), "Nothing should have moved");
 
         srcHandler.set(10, workingStack.resource(), workingStack.amount());
 
-        var amountMoved = ResourceHandlerUtil.moveAny(srcHandler, VoidResourceHandler.ITEM, workingStack.amount(), TransferAction.EXECUTE, ItemResource.NONE);
+        var amountMoved = ResourceHandlerUtil.moveAny(srcHandler, VoidResourceHandler.ITEM, workingStack.amount(), TransferAction.EXECUTE, ItemResource.EMPTY);
         helper.assertTrue(amountMoved.equals(workingStack), "Did not move everything. Should have moved all 5000 cobble to it (to void)");
 
         var infiniteStackHandler = new InfiniteResourceHandler<>(workingStack.resource());
-        var amountTest = ResourceHandlerUtil.moveAny(infiniteStackHandler, dstHandler, workingStack.amount(), TransferAction.EXECUTE, ItemResource.NONE);
+        var amountTest = ResourceHandlerUtil.moveAny(infiniteStackHandler, dstHandler, workingStack.amount(), TransferAction.EXECUTE, ItemResource.EMPTY);
         helper.assertValueEqual(amountTest, workingStack.withAmount(10 * workingStack.resource().getMaxStackSize()), "The destination should hold 10 stacks");
 
         dstHandler.set(10, workingStack.resource(), workingStack.amount());
-        helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, TransferAction.SIMULATE, ItemResource.NONE), ItemResource.EMPTY_STACK, "Nothing should move");
-        helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, TransferAction.SIMULATE, ItemResource.NONE), new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource(), 100), "amount to move");
+        helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, TransferAction.SIMULATE, ItemResource.EMPTY), ItemResource.EMPTY_STACK, "Nothing should move");
+        helper.assertValueEqual(ResourceHandlerUtil.moveFiltered(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, TransferAction.SIMULATE, ItemResource.EMPTY), new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource(), 100), "amount to move");
 
         helper.assertTrue(ResourceHandlerUtil.hasResource(dstHandler, workingStack.resource()), "The dst handler should have cobble");
         helper.assertFalse(ResourceHandlerUtil.hasResource(dstHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");
 
         for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, ItemResource.NONE, 0);
+            dstHandler.set(i, ItemResource.EMPTY, 0);
         }
 
         helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(dstHandler, Items.APPLE.defaultResource(), 123, TransferAction.EXECUTE), 123, "apples inserted");
@@ -74,17 +74,17 @@ public class ResourceHandlerUtilTests {
         }
 
         helper.assertTrue(ResourceHandlerUtil.isFull(dstHandler), "Dst handler should be full");
-        helper.assertValueEqual(ResourceHandlerUtil.extractAny(dstHandler, 400, TransferAction.EXECUTE, ItemResource.NONE), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
+        helper.assertValueEqual(ResourceHandlerUtil.extractAny(dstHandler, 400, TransferAction.EXECUTE, ItemResource.EMPTY), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
         helper.assertFalse(ResourceHandlerUtil.isFull(dstHandler), "Dst handler should be full");
         for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, ItemResource.NONE, 0);
+            dstHandler.set(i, ItemResource.EMPTY, 0);
         }
         for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, ItemResource.NONE, 0);
+            dstHandler.set(i, ItemResource.EMPTY, 0);
         }
         ResourceHandlerUtil.insertStacking(dstHandler, Items.APPLE.defaultResource(), 400, TransferAction.EXECUTE);
         dstHandler.set(0, Items.HONEY_BOTTLE.defaultResource(), 3000);
-        dstHandler.set(1, ItemResource.NONE, 0);
+        dstHandler.set(1, ItemResource.EMPTY, 0);
         helper.succeed();
     }
 }

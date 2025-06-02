@@ -33,7 +33,7 @@ public class VanillaInventoryCodeHooks {
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
         for (int i = 0; i < handler.size(); i++) {
 //            ItemStack extractItem = handler.extractItem(i, 1, true);
-            var extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.SIMULATE, ItemResource.NONE);
+            var extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.SIMULATE, ItemResource.EMPTY);
             if (extracted.isEmpty()) continue;
 
             var extractItem = ItemResource.itemStackOf(extracted);
@@ -43,7 +43,7 @@ public class VanillaInventoryCodeHooks {
 
                 if (!dest.canPlaceItem(j, extractItem) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
                     continue;
-                extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.EXECUTE, ItemResource.NONE);
+                extracted = ResourceHandlerUtil.extractAny(handler, 1, TransferAction.EXECUTE, ItemResource.EMPTY);
                 if (extracted.isEmpty()) continue;//Should be unneeded
                 if (destStack.isEmpty())
                     dest.setItem(j, ItemResource.itemStackOf(extracted));

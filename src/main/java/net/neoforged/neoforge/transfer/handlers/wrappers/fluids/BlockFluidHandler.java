@@ -88,15 +88,15 @@ public class BlockFluidHandler implements ISingleResourceHandler<FluidResource> 
         if (amount < FluidType.BUCKET_VOLUME) return 0;
         BlockState state = level.getBlockState(blockPos);
         if (action.isExecuting()) {
-            boolean waterLoggable = state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(null, level, blockPos, state, resource.getFluid());
-            boolean replaceable = state.canBeReplaced(resource.getFluid());
+            boolean waterLoggable = state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(null, level, blockPos, state, resource.getInstanceValue());
+            boolean replaceable = state.canBeReplaced(resource.getInstanceValue());
             if ((waterLoggable || replaceable) && resource.isVaporizedOnPlacement(level, blockPos)) {
                 resource.onVaporize(player, level, blockPos);
             } else if (waterLoggable) {
-                ((LiquidBlockContainer) state.getBlock()).placeLiquid(level, blockPos, state, resource.getFluid().defaultFluidState());
+                ((LiquidBlockContainer) state.getBlock()).placeLiquid(level, blockPos, state, resource.getInstanceValue().defaultFluidState());
             } else if (replaceable) {
                 FluidUtil.destroyBlockOnFluidPlacement(level, blockPos);
-                level.setBlock(blockPos, resource.getFluid().defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL_IMMEDIATE);
+                level.setBlock(blockPos, resource.getInstanceValue().defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL_IMMEDIATE);
             } else {
                 return 0;
             }

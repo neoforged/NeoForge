@@ -6,12 +6,13 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+
 import java.util.Optional;
 import java.util.function.Predicate;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -36,22 +37,22 @@ import org.jetbrains.annotations.Nullable;
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IResource, DataComponentHolder {
+public final class FluidResource implements IRegisteredResource<Fluid> {
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.
-     * Does <b>not</b> accept blank resources.
+     * Does <b>not</b> accept empty resources.
      */
     public static final Codec<FluidResource> CODEC = FluidStack.fixedAmountCodec(1).xmap(FluidResource::of, FluidResource::toStack); // The bucket amount here may cause oddness, but we should effectively be able to ignore it
 
     /**
-     * Codec for an item resource. Same format as {@link #CODEC}, and also accepts blank resources.
+     * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
     public static final Codec<FluidResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(FluidResource::fromOptional, FluidResource::asOptional);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static FluidResource fromOptional(Optional<FluidResource> optional) {
-        return optional.orElse(FluidResource.NONE);
+        return optional.orElse(FluidResource.EMPTY);
     }
 
     private Optional<FluidResource> asOptional() {
@@ -62,7 +63,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * Stream codec for an item resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::getFluidHolder,
+            ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::getHolder,
             DataComponentPatch.STREAM_CODEC, FluidResource::getComponentsPatch,
             FluidResource::of);
 
@@ -70,29 +71,29 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return stack.resource().toStack(stack.amount());
     }
 
-    public static final FluidResource NONE = new FluidResource(FluidStack.EMPTY);
-    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(FluidResource.NONE, 0);
+    public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(FluidResource.EMPTY, 0);
 
     /**
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
     public static FluidResource invalidateDefault(Fluid fluid) {
-        return fluid == Fluids.EMPTY ? NONE : new FluidResource(new FluidStack(fluid, 1));
+        return fluid == Fluids.EMPTY ? EMPTY : new FluidResource(new FluidStack(fluid, 1));
     }
 
     public static FluidResource of(FluidStack fluidStack) {
         if (fluidStack.isComponentsPatchEmpty())
             return fluidStack.getFluid().defaultResource();
-        return fluidStack.isEmpty() ? NONE : new FluidResource(fluidStack.copyWithAmount(1));
+        return fluidStack.isEmpty() ? EMPTY : new FluidResource(fluidStack.copyWithAmount(1));
     }
 
     public static FluidResource of(Fluid fluid) {
-        return fluid == Fluids.EMPTY ? NONE : new FluidResource(new FluidStack(fluid, 1));
+        return fluid == Fluids.EMPTY ? EMPTY : new FluidResource(new FluidStack(fluid, 1));
     }
 
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
-        return fluid.value() == Fluids.EMPTY ? NONE : new FluidResource(new FluidStack(fluid, 1, patch));
+        return fluid.value() == Fluids.EMPTY ? EMPTY : new FluidResource(new FluidStack(fluid, 1, patch));
     }
 
     /**
@@ -107,9 +108,9 @@ public final class FluidResource implements IResource, DataComponentHolder {
     }
 
     /**
-     * Checks if this resource is blank. The resource will be blank if the fluid is {@link Fluids#EMPTY}.
+     * Checks if this resource is empty. The resource will be empty if the fluid is {@link Fluids#EMPTY}.
      *
-     * @return if this resource is blank
+     * @return if this resource is empty
      */
     @Override
     public boolean isEmpty() {
@@ -157,14 +158,15 @@ public final class FluidResource implements IResource, DataComponentHolder {
     /**
      * @return the fluid of this resource
      */
-    public Fluid getFluid() {
+    @Override
+    public Fluid getInstanceValue() {
         return innerStack.getFluid();
     }
 
     /**
      * @return the fluid holder of this resource
      */
-    public Holder<Fluid> getFluidHolder() {
+    public Holder<Fluid> getHolder() {
         return innerStack.getFluidHolder();
     }
 
@@ -181,6 +183,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.getComponents().toImmutableMap();
     }
 
+    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
@@ -197,10 +200,17 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return toStack(FluidType.BUCKET_VOLUME);
     }
 
+    @Override
+    public boolean isComponentsPatchEmpty() {
+        return innerStack.isComponentsPatchEmpty();
+    }
+
+    @Override
     public boolean is(TagKey<Fluid> tag) {
         return innerStack.is(tag);
     }
 
+    @Override
     public boolean is(Fluid fluid) {
         return innerStack.is(fluid);
     }
@@ -209,10 +219,12 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.is(predicate);
     }
 
+    @Override
     public boolean is(Holder<Fluid> holder) {
         return innerStack.is(holder);
     }
 
+    @Override
     public boolean is(HolderSet<Fluid> holders) {
         return innerStack.is(holders);
     }
@@ -230,12 +242,10 @@ public final class FluidResource implements IResource, DataComponentHolder {
     }
 
     public ItemResource getFilledBucket() {
-        //ADRIAN&SOARYN: Is this to handle write backs, or can we simplify this?
-        ItemResource bucket = filledBucket;
-        if (bucket == null) {
-            filledBucket = bucket = ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
+        if (filledBucket == null) {
+            filledBucket = ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
         }
-        return bucket;
+        return filledBucket;
     }
 
     public @Nullable SoundEvent getSound(SoundAction action) {

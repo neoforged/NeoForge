@@ -5,11 +5,13 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.EmptyHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import org.jetbrains.annotations.Range;
 
 /**
  * Wraps a set of handlers to handle each as if it was a contiguous resource handler blob.
@@ -19,15 +21,13 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * 
  * @param <T>
  */
-public class CombinedResourceWrapper<T extends IResource> implements IResourceHandler<T> {
-    private final EmptyHandler<T> emptyHandler;
+public class CombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
     protected final IResourceHandler<T>[] handlers; // the handlers
     protected final int[] baseIndex; // index-offsets of the different handlers
     protected final int sizeCache; // number of total slots
 
     @SafeVarargs
-    public CombinedResourceWrapper(EmptyHandler<T> emptyHandler, IResourceHandler<T>... handlers) {
-        this.emptyHandler = emptyHandler;
+    public CombinedResourceHandlerWrapper(IResourceHandler<T>... handlers) {
         this.handlers = handlers;
         this.baseIndex = new int[handlers.length];
         int index = 0;
@@ -52,7 +52,7 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
     }
 
     protected IResourceHandler<T> getHandlerFromIndex(int index) {
-        return index >= 0 && index < handlers.length ? handlers[index] : emptyHandler;
+        return index >= 0 && index < handlers.length ? handlers[index] : EmptyResourceHandler.instance();
     }
 
     protected int getSlotFromIndex(int index, int handlerIndex) {
@@ -107,7 +107,7 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
     }
 
     @Override
-    public int insert(int index, T resource, int amount, TransferAction action) {
+    public int insert(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount, TransferAction action) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, action);
     }
@@ -138,10 +138,10 @@ public class CombinedResourceWrapper<T extends IResource> implements IResourceHa
         return handled;
     }
 
-    public static class Modifiable<T extends IResource> extends CombinedResourceWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends CombinedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
         @SafeVarargs
-        public Modifiable(EmptyHandler<T> emptyHandler, IResourceHandlerModifiable<T>... handlers) {
-            super(emptyHandler, handlers);
+        public Modifiable(IResourceHandlerModifiable<T>... handlers) {
+            super(handlers);
         }
 
         @Override

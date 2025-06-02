@@ -11,7 +11,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -33,11 +33,11 @@ public class WrapperResourceHandlerTests {
         helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.defaultResource(), 400, TransferAction.EXECUTE), 400, "apples");
         helper.assertValueEqual(cap.insert(38, Items.DIAMOND_CHESTPLATE.defaultResource().with(DataComponents.DAMAGE, 20), 2, TransferAction.EXECUTE), 1, "armor insert");
         helper.assertValueEqual(cap.insert(39, Items.DIAMOND_CHESTPLATE.defaultResource(), 2, TransferAction.EXECUTE), 0, "armor insert");
-        helper.assertValueEqual(ResourceHandlerUtil.extractFiltered(cap, itemResource -> itemResource.is(Items.DIAMOND_CHESTPLATE), 2, TransferAction.EXECUTE, ItemResource.NONE).amount(), 1, "armor extract");
-        if (cap instanceof PlayerInventoryWrapper wrapper) {
+        helper.assertValueEqual(ResourceHandlerUtil.extractFiltered(cap, itemResource -> itemResource.is(Items.DIAMOND_CHESTPLATE), 2, TransferAction.EXECUTE, ItemResource.EMPTY).amount(), 1, "armor extract");
+        if (cap instanceof PlayerInventoryHandler wrapper) {
             wrapper.armorHandler.insert(Items.DIAMOND_BOOTS.defaultResource(), 1300, TransferAction.EXECUTE);
             wrapper.armorHandler.insert(Items.NETHERITE_HELMET.defaultResource(), 1300, TransferAction.EXECUTE);
-            ResourceHandlerUtil.extractAny(wrapper.mainHandHandler, 1000, TransferAction.EXECUTE, ItemResource.NONE);
+            ResourceHandlerUtil.extractAny(wrapper.mainHandHandler, 1000, TransferAction.EXECUTE, ItemResource.EMPTY);
         }
 
         helper.succeed();

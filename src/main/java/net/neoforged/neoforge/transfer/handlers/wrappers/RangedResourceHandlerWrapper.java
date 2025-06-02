@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import com.google.common.base.Preconditions;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
@@ -16,16 +17,18 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  *
  * @param <T> The type of resource this handler manages.
  */
-public class RangedHandlerWrapper<T extends IResource> extends DelegatingHandlerWrapper<T> {
+public class RangedResourceHandlerWrapper<T extends IResource> extends DelegatingResourceHandlerWrapper<T> {
     protected int start;
     protected int end;
 
-    public RangedHandlerWrapper(IResourceHandler<T> delegate, int start, int end) {
+    public RangedResourceHandlerWrapper(IResourceHandler<T> delegate, int start, int end) {
         this(() -> delegate, start, end);
+
     }
 
-    public RangedHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int start, int end) {
+    public RangedResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int start, int end) {
         super(delegate);
+        Preconditions.checkArgument(end > start, "Max slot must be greater than min slot");
         this.start = start;
         this.end = end;
     }
@@ -71,7 +74,7 @@ public class RangedHandlerWrapper<T extends IResource> extends DelegatingHandler
         return inserted;
     }
 
-    public static class Modifiable<T extends IResource> extends RangedHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends RangedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate, int start, int end) {
             super(delegate, start, end);
         }

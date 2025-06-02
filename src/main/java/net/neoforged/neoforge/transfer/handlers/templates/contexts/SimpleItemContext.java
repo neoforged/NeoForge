@@ -9,7 +9,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedHandlerWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.ScopedResourceHandlerWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
@@ -31,7 +31,7 @@ public class SimpleItemContext implements IItemContext {
     }
 
     public SimpleItemContext(IResourceHandlerModifiable<ItemResource> mainHandler, int index) {
-        this(mainHandler, ScopedHandlerWrapper.fromHandlerExcludingIndices(mainHandler, new int[] { index }), index);
+        this(mainHandler, ScopedResourceHandlerWrapper.fromHandlerExcludingIndices(mainHandler, new int[] { index }), index);
     }
 
     @Override

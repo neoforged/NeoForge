@@ -10,12 +10,18 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
  * A utility interface for a handler that manages a single index of a resource.
- * The index parameter in the methods from IResourceHandler are expected to be ignored from this interface down. This creates something also referred to as a `Slot-lessResourceHandler`
+ * The index parameter in the methods from IResourceHandler are expected to be ignored from this interface down. This creates something also referred to as a "Single Index Resource Handler" or a "Slotless Resource Handler" (despite having a single index)
  *
  * @param <T> The type of resource this handler manages.
  */
 public interface ISingleResourceHandler<T extends IResource> extends IResourceHandler<T> {
     //Single resource handlers only have 1 resource thus only really need one index
+
+    /**
+     * If you require more than 1 slot, please make sure to create your own implementation of {@link IResourceHandler} instead.
+     * This interface is intended as a helper interface and should not mutate the defaulted values. Java doesn't allow {@code final} on interface defaults
+     * @return 1 for ISingleResourceHandlers
+     */
     @Override
     default int size() {
         return 1;
@@ -54,10 +60,10 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     }
 
     @Override
-    int getAmount(int ignoredIndex);
+    int getAmount(int index);
 
     @Override
-    int getCapacity(int ignoredIndex);
+    int getCapacity(int index);
 
     @Override
     int getCapacity(int index, T resource);

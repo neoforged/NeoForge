@@ -17,6 +17,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerModifiableTransaction;
+import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerTransaction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.handlers.templates.container.ResourceContainer;
@@ -44,14 +46,15 @@ public class TestResourceContainerAttachment {
     public final IResourceHandlerModifiable<ItemResource> both;
 
     public final IResourceHandlerModifiable<FluidResource> fluidHandler;
+    public final IResourceHandlerModifiableTransaction<FluidResource> fluidHandler2;
 
     @Nullable
     public BlockEntity blockEntity; // We want to set data, or more accurately: mark the block entity owning this data as `changed`
 
     public TestResourceContainerAttachment(IAttachmentHolder holder) {
         this(
-                MutableResourceStack.nonNullListOfSize(20, ItemResource.NONE), // how many item indices (slots) there are
-                MutableResourceStack.nonNullListOfSize(1, FluidResource.NONE),// how many fluid indices (tanks) there are
+                MutableResourceStack.nonNullListOfSize(20, ItemResource.EMPTY), // how many item indices (slots) there are
+                MutableResourceStack.nonNullListOfSize(1, FluidResource.EMPTY),// how many fluid indices (tanks) there are
                 FluidType.BUCKET_VOLUME * 4 // The amount of fluid each fluid index can hold
         );
         setHolder(holder); // Sets the block entity for our callback in the handler
@@ -101,6 +104,7 @@ public class TestResourceContainerAttachment {
         });
 
         fluidHandler = fluidContainer.asHandler();
+        fluidHandler2 = fluidContainer.asHandler2();
     }
 
     public void markBlockEntityAsDirty() {

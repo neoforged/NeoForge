@@ -124,7 +124,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         int extracted = Math.min(amount, stack.amount());
         if (extracted > 0 && action.isExecuting()) {
             int newValue = stack.amount() - extracted;
-            set(index, newValue == 0 ? ItemResource.NONE : resource, newValue);
+            set(index, newValue == 0 ? ItemResource.EMPTY : resource, newValue);
         }
         return extracted;
     }

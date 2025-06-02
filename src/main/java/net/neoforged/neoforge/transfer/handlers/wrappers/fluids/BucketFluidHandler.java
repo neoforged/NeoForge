@@ -19,23 +19,23 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
  * A handler for empty and filled buckets. This handler makes the assumption that the item in the main context is a bucket
  * and will use an instance of check to determine the fluid resource.
  */
-public class BucketHandler implements ISingleResourceHandler<FluidResource> {
+public class BucketFluidHandler implements ISingleResourceHandler<FluidResource> {
     private final IItemContext context;
 
-    public BucketHandler(IItemContext context) {
+    public BucketFluidHandler(IItemContext context) {
         this.context = context;
     }
 
     @Override
     public FluidResource getResource(int index) {
         ItemResource resource = context.getResource();
-        if (resource.getItem() instanceof BucketItem bucket) {
+        if (resource.getInstanceValue() instanceof BucketItem bucket) {
             return bucket.content.defaultResource();
             // Should this check for milk item specifically, tag, or something else. It was an instanceof check before.
         } else if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound()) {
             return NeoForgeMod.MILK.get().defaultResource();
         }
-        return FluidResource.NONE;
+        return FluidResource.EMPTY;
     }
 
     @Override

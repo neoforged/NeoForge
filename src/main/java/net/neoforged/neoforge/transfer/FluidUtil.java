@@ -31,8 +31,6 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidUtil {
-    private FluidUtil() {}
-
     /**
      * Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler block.
      * First it tries to fill the item from the block,
@@ -94,7 +92,7 @@ public class FluidUtil {
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, TransferAction action) {
-        ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveAny(from, to, amount, action, FluidResource.NONE);
+        ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveAny(from, to, amount, action, FluidResource.EMPTY);
         if (moved.isEmpty() || action != TransferAction.EXECUTE) return moved;
 
         SoundEvent soundevent = moved.resource().getSound(soundAction);
@@ -222,4 +220,6 @@ public class FluidUtil {
     public static FluidStack getFluidContained(ItemStack stack) {
         return getFluidContained(new StaticContext(stack));
     }
+
+    private FluidUtil() {}
 }

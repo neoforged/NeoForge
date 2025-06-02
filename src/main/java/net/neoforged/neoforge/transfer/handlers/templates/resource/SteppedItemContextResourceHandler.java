@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.storage;
+package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;

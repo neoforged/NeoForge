@@ -5,25 +5,24 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.container;
 
-import java.util.Iterator;
-import java.util.Objects;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.Container;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlermk2.IResourceHandlerModifiableTransaction;
+import net.neoforged.neoforge.transfer.handlermk2.MK2ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerSlice;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerToHandlerAdapter;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceHandlerToContainerAdapter;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.VanillaToItemContainerAdapter;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import org.jetbrains.annotations.Contract;
 
+import java.util.Iterator;
+import java.util.Objects;
+
 // Originally written by Soaryn for XyCraft adopted from Amadornes's ItemContainer.
-public interface IResourceContainer<TResource extends IResource> extends Iterable<IResourceStack<TResource>> {
+public interface IResourceContainer<TResource extends IResource> extends Iterable<IResourceStack<TResource>>  {
     /**
      * Gets the size of this container.
      *
@@ -31,6 +30,8 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
      */
     @Contract(pure = true)
     int size();
+
+    SnapshotParticipant<MutableResourceStack<TResource>> getParticipant(int index);
 
     /**
      * Gets the capacity or allowed size for the specified index.
@@ -64,27 +65,27 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
         return true;
     }
 
-    /**
-     * Creates a new item holder that wraps the specified vanilla {@link Container}.
-     *
-     * @param container The vanilla container.
-     * @return A wrapping item holder.
-     */
-    @Contract(value = "_ -> new", pure = true)
-    static IResourceContainer<ItemResource> wrap(Container container) {
-        return new VanillaToItemContainerAdapter(container);
-    }
+//    /**
+//     * Creates a new item holder that wraps the specified vanilla {@link Container}.
+//     *
+//     * @param container The vanilla container.
+//     * @return A wrapping item holder.
+//     */
+//    @Contract(value = "_ -> new", pure = true)
+//    static IResourceContainer<ItemResource> wrap(Container container) {
+//        return new VanillaToItemContainerAdapter(container);
+//    }
 
-    /**
-     * Creates a new item holder that wraps the specified {@link IResourceHandler}.
-     *
-     * @param handler The resource handler.
-     * @return A wrapping item holder.
-     */
-    @Contract(value = "_, _ -> new", pure = true)
-    static <T extends IResource> IResourceContainer<T> wrap(IResourceHandler<T> handler, ResourceStack<T> emptyResource) {
-        return new ResourceHandlerToContainerAdapter<>(handler, emptyResource);
-    }
+//    /**
+//     * Creates a new item holder that wraps the specified {@link IResourceHandler}.
+//     *
+//     * @param handler The resource handler.
+//     * @return A wrapping item holder.
+//     */
+//    @Contract(value = "_, _ -> new", pure = true)
+//    static <T extends IResource> IResourceContainer<T> wrap(IResourceHandler<T> handler, ResourceStack<T> emptyResource) {
+//        return new ResourceHandlerToContainerAdapter<>(handler, emptyResource);
+//    }
 
     /**
      * Gets the {@link MutableResourceStack} in the specified index.<br/>
@@ -174,6 +175,17 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     default IResourceHandlerModifiable<TResource> asHandler() {
         return asHandler(IHandleIOBehaviour.DEFAULT);
     }
+    /// ////////////////
+    @Contract(pure = true)
+    default IResourceHandlerModifiableTransaction<TResource> asHandler2() {
+        return asHandler2(IHandleIOBehaviour.DEFAULT);
+    }
+    @Contract(pure = true)
+    default IResourceHandlerModifiableTransaction<TResource> asHandler2(IHandleIOBehaviour behavior) {
+        return new MK2ResourceContainerToHandlerAdapter<>(this, behavior);
+    }
+    /// ////////////////
+
 
     /**
      * Creates an {@link IResourceHandlerModifiable} instance that reflects this container with a specification of how to handle what slots can be inserted or extracted.

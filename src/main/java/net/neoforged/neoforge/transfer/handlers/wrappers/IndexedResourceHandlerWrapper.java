@@ -16,10 +16,10 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  *
  * @param <T> The type of resource this handler manages.
  */
-public class HandlerIndexWrapper<T extends IResource> extends DelegatingHandlerWrapper<T> {
+public class IndexedResourceHandlerWrapper<T extends IResource> extends DelegatingResourceHandlerWrapper<T> {
     int index;
 
-    public HandlerIndexWrapper(IResourceHandler<T> delegate, int index) {
+    public IndexedResourceHandlerWrapper(IResourceHandler<T> delegate, int index) {
         super(delegate);
         this.index = index;
     }
@@ -29,7 +29,7 @@ public class HandlerIndexWrapper<T extends IResource> extends DelegatingHandlerW
         return 1;
     }
 
-    public HandlerIndexWrapper(Supplier<IResourceHandler<T>> delegate, int index) {
+    public IndexedResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate, int index) {
         super(delegate);
         this.index = index;
     }
@@ -52,7 +52,7 @@ public class HandlerIndexWrapper<T extends IResource> extends DelegatingHandlerW
         return getDelegate().extract(index, resource, amount, action);
     }
 
-    public static class Modifiable<T extends IResource> extends HandlerIndexWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends IndexedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate, int index) {
             super(delegate, index);
         }

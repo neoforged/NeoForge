@@ -24,8 +24,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageAttachment;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -60,12 +60,18 @@ public record ResourceHandlerTestSetup() {
                 "resource_container",
                 () -> new BlockEntityType<>(ResourceBlockExample.Entity::new, RESOURCE_BLOCK.get()));
         Supplier<AttachmentType<TestResourceContainerAttachment>> RESOURCE_ATTACHMENT = Registry.ATTACHMENTS.register("container", TestResourceContainerAttachment.BUILDER::build);
-        Supplier<AttachmentType<ResourceStorageAttachment<FluidResource>>> FLUID_ATTACHMENT = Registry.ATTACHMENTS.register("fluid_container", AttachmentType.builder(() -> ResourceStorageAttachment.of(1, FluidResource.NONE))::build);
+        Supplier<AttachmentType<ResourceStorageAttachment<FluidResource>>> FLUID_ATTACHMENT = Registry.ATTACHMENTS.register("fluid_container", AttachmentType.builder(() -> ResourceStorageAttachment.of(1, FluidResource.EMPTY))::build);
 
-        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = Registry.COMPONENTS.register(
+        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
                 "simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
                         .persistent(ResourceStack.codec(FluidResource.OPTIONAL_CODEC))
                         .networkSynchronized(ResourceStack.streamCodec(FluidResource.STREAM_CODEC))
+                        .build());
+
+        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<ItemResource>>> SINGLE_ITEM_CONTENT = Registry.COMPONENTS.register(
+                "simple_item_content", () -> DataComponentType.<ResourceStack<ItemResource>>builder()
+                        .persistent(ResourceStack.codec(ItemResource.OPTIONAL_CODEC))
+                        .networkSynchronized(ResourceStack.streamCodec(ItemResource.STREAM_CODEC))
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<FluidResource>>> FLUID_STORAGE_COMPONENT = Registry.COMPONENTS.register(
@@ -103,6 +109,10 @@ public record ResourceHandlerTestSetup() {
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
                 Capabilities.FluidHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.RESOURCE_ATTACHMENT).fluidHandler));
+
+
+        bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
+                Capabilities.FluidHandler.BLOCKTEMP, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.RESOURCE_ATTACHMENT).fluidHandler2));
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
                 Capabilities.FluidHandler.ITEM, (object, context) -> new FluidStorageHandler.Component(context, ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT.get(), TANK_COUNT, TANK_CAPACITY),

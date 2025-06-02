@@ -15,13 +15,13 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 /**
  * An {@link ISingleResourceHandler} that automatically destroys any resources that are inserted into it.
  * You should use the static instances {@link #ITEM} and {@link #FLUID} instead of creating new instances.
- * If you're using this with a different resource type, you should create a new static instance.
+ * If you're using this with a different resource type, you should create a new static instance for your own reuse like Item and Fluid.
  *
  * @param <T> The type of resource that this storage can accept.
  */
 public class VoidResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.NONE);
-    public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.NONE);
+    public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.EMPTY);
+    public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.EMPTY);
 
     private final T emptyResource;
 
@@ -51,12 +51,12 @@ public class VoidResourceHandler<T extends IResource> implements ISingleResource
 
     @Override
     public int getCapacity(int index, T resource) {
-        return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
+        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; // Maximum capacity
     }
 
     @Override
     public int getCapacity(int index) {
-        return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
+        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; // Maximum capacity
     }
 
     @Override

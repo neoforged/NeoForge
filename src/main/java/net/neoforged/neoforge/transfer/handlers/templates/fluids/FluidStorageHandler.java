@@ -10,14 +10,14 @@ import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.IResourceData;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageComponent;
-import net.neoforged.neoforge.transfer.handlers.templates.storage.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 
 public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidResource> {
     public FluidStorageHandler(int size, int indexCapacity) {
-        super(size, indexCapacity, FluidResource.NONE);
+        super(size, indexCapacity, FluidResource.EMPTY);
     }
 
     public static class Component extends FluidStorageHandler {
@@ -31,12 +31,12 @@ public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidRe
         }
 
         @Override
-        public IResourceData<FluidResource> getContents() {
-            return context.getResource().getOrDefault(componentType, new ResourceStorageComponent<>(size, FluidResource.NONE));
+        public IResourceStorageData<FluidResource> getContents() {
+            return context.getResource().getOrDefault(componentType, new ResourceStorageComponent<>(size, FluidResource.EMPTY));
         }
 
         @Override
-        public int setAndValidate(IResourceData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
+        public int setAndValidate(IResourceStorageData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
             if (changedAmount == 0) return 0;
             var exchangeCount = requestedAmount / changedAmount;
             var result = context.exchange(context.getResource().with(componentType, contents.component()), exchangeCount, action);
@@ -46,21 +46,21 @@ public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidRe
 
     public static class Attachment extends FluidStorageHandler {
         protected final AttachmentHolder holder;
-        protected final AttachmentType<IResourceData<FluidResource>> attachmentType;
+        protected final AttachmentType<IResourceStorageData<FluidResource>> attachmentType;
 
-        public Attachment(AttachmentHolder holder, AttachmentType<IResourceData<FluidResource>> attachmentType, int size, int indexCapacity) {
+        public Attachment(AttachmentHolder holder, AttachmentType<IResourceStorageData<FluidResource>> attachmentType, int size, int indexCapacity) {
             super(size, indexCapacity);
             this.holder = holder;
             this.attachmentType = attachmentType;
         }
 
         @Override
-        public IResourceData<FluidResource> getContents() {
+        public IResourceStorageData<FluidResource> getContents() {
             return holder.getData(attachmentType);
         }
 
         @Override
-        public int setAndValidate(IResourceData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
+        public int setAndValidate(IResourceStorageData<FluidResource> contents, int requestedAmount, int changedAmount, TransferAction action) {
             if (action.isExecuting()) holder.setData(attachmentType, contents);
             return changedAmount;
         }

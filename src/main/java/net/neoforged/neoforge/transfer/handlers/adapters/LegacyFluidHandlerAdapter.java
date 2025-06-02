@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.wrappers.fluids;
+package net.neoforged.neoforge.transfer.handlers.adapters;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -15,10 +15,21 @@ import net.neoforged.neoforge.transfer.resources.FluidResource;
  * A wrapper for devs who are still using the legacy IFluidHandler interface. This should not be relied on and should be
  * replaced with the new IResourceHandler interface. This wrapper will be removed alongside the legacy IFluidHandler
  * interface in 1.22.
- * 
- * @param handler The legacy IFluidHandler to wrap
  */
-public record LegacyFluidHandlerWrapper(IFluidHandler handler) implements IResourceHandler<FluidResource> {
+public final class LegacyFluidHandlerAdapter implements IResourceHandler<FluidResource> {
+    private final IFluidHandler handler;
+
+    /**
+     * @param handler The legacy IFluidHandler to wrap
+     */
+    public static LegacyFluidHandlerAdapter of(IFluidHandler handler) {
+        return new LegacyFluidHandlerAdapter(handler);
+    }
+
+    private LegacyFluidHandlerAdapter(IFluidHandler handler) {
+        this.handler = handler;
+    }
+
     @Override
     public int insert(int index, FluidResource resource, int amount, TransferAction action) {
         FluidStack fluidInTank = handler.getFluidInTank(index);
@@ -84,5 +95,9 @@ public record LegacyFluidHandlerWrapper(IFluidHandler handler) implements IResou
     @Override
     public boolean allowsExtraction(int index) {
         return true;
+    }
+
+    public IFluidHandler handler() {
+        return handler;
     }
 }

@@ -13,10 +13,10 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifi
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
-public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
+public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     protected final Container container;
 
-    public ContainerWrapper(Container container) {
+    public VanillaContainerWrapper(Container container) {
         this.container = container;
     }
 
@@ -123,7 +123,7 @@ public class ContainerWrapper implements IResourceHandlerModifiable<ItemResource
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ContainerWrapper that)) return false;
+        if (!(o instanceof VanillaContainerWrapper that)) return false;
         return container.equals(that.container);
     }
 

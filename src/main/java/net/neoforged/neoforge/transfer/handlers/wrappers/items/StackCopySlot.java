@@ -9,11 +9,12 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemContextItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 // Is this still needed, and what did this do? Same deal as the ItemHandlerCopySlot
 /**
- * Slot to handle immutable itemstack storages (Ex: {@link net.neoforged.neoforge.transfer.handlers.templates.items.MCItemContentsHandler MCItemContentsHandler}).
+ * Slot to handle immutable itemstack storages (Ex: {@link ItemContextItemHandler}).
  * <p>
  * For an implementation for use with an {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler} see {@link ResourceHandlerCopySlot}.
  * <p>

@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
-public class HopperWrapper extends ContainerWrapper {
+public class HopperWrapper extends VanillaContainerWrapper {
     public HopperWrapper(HopperBlockEntity container) {
         super(container);
     }

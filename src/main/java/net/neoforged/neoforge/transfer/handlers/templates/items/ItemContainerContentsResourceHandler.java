@@ -17,15 +17,15 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 /**
- * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a IResourceHandler
+ * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
  */
-//Wiki wiki it is hip yo! It's rad it, is with it
-public class MCItemContentsHandler implements IResourceHandlerModifiable<ItemResource> {
+// A very verbose name, but likely the most accurate
+public class ItemContainerContentsResourceHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final int size;
     protected final DataComponentType<ItemContainerContents> componentType;
     protected final IItemContext context;
 
-    public MCItemContentsHandler(IItemContext context, DataComponentType<ItemContainerContents> componentType, int size) {
+    public ItemContainerContentsResourceHandler(IItemContext context, DataComponentType<ItemContainerContents> componentType, int size) {
         this.componentType = componentType;
         this.context = context;
         this.size = size;
@@ -141,7 +141,7 @@ public class MCItemContentsHandler implements IResourceHandlerModifiable<ItemRes
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extracted = Math.min(stack.amount(), amount);
         int newAmount = stack.amount() - extracted;
-        contents = contents.with(index, newAmount == 0 ? ItemResource.NONE : stack.resource(), newAmount);
+        contents = contents.with(index, newAmount == 0 ? ItemResource.EMPTY : stack.resource(), newAmount);
         return setAndValidate(contents, extracted, action);
     }
 
@@ -154,7 +154,7 @@ public class MCItemContentsHandler implements IResourceHandlerModifiable<ItemRes
             if (stack.isEmpty() || !stack.resource().equals(resource)) continue;
             int extracted = Math.min(remaining, stack.amount());
             int newAmount = stack.amount() - extracted;
-            contents = contents.with(slot, newAmount == 0 ? ItemResource.NONE : resource, newAmount);
+            contents = contents.with(slot, newAmount == 0 ? ItemResource.EMPTY : resource, newAmount);
             remaining -= extracted;
             if (remaining <= 0) {
                 break;

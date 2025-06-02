@@ -5,42 +5,66 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.EmptyHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceWrapper;
-import net.neoforged.neoforge.transfer.handlers.wrappers.HandlerIndexWrapper;
-import net.neoforged.neoforge.transfer.handlers.wrappers.RangedHandlerWrapper;
+import net.neoforged.neoforge.transfer.ItemUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import org.jetbrains.annotations.Nullable;
 
-public class PlayerInventoryWrapper extends CombinedResourceWrapper<ItemResource> {
-    public final IResourceHandler<ItemResource> invHandler;
-    public final IResourceHandler<ItemResource> armorHandler;
-    public final IResourceHandler<ItemResource> offHandHandler;
-    public final IResourceHandler<ItemResource> mainHandHandler;
+class PlayerInventoryWrapper extends VanillaContainerWrapper {
+    protected final Player player;
 
     public PlayerInventoryWrapper(Player player) {
-        super(EmptyHandler.ITEM, ofInv(player), ofArmor(player), ofHand(player, InteractionHand.OFF_HAND));
-        invHandler = handlers[0];
-        armorHandler = handlers[1];
-        offHandHandler = handlers[2];
-        mainHandHandler = ofHand(player, InteractionHand.MAIN_HAND);
+        super(player.getInventory());
+        this.player = player;
     }
 
-    public static IResourceHandlerModifiable<ItemResource> ofInv(Player player) {
-        PlayerInventoryHandler handler = new PlayerInventoryHandler(player);
-        return new RangedHandlerWrapper.Modifiable<>(handler, 0, player.getInventory().getNonEquipmentItems().size());
+    @Override
+    public int getCapacity(int index, ItemResource resource) {
+        return getEquipmentSlot(index) != null ? 1 : super.getCapacity(index, resource);
     }
 
-    public static IResourceHandlerModifiable<ItemResource> ofHand(Player player, InteractionHand hand) {
-        PlayerInventoryHandler handler = new PlayerInventoryHandler(player);
-        var inv = player.getInventory();
-        return new HandlerIndexWrapper.Modifiable<>(handler, hand == InteractionHand.MAIN_HAND ? inv.getSelectedSlot() : handler.size() - 1);
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        EquipmentSlot slot = getEquipmentSlot(index);
+
+        return slot != null ? resource.canEquip(slot, player) : super.isValid(index, resource);
     }
 
-    public static IResourceHandlerModifiable<ItemResource> ofArmor(Player player) {
-        return new RangedHandlerWrapper.Modifiable<>(new PlayerInventoryHandler(player), player.getInventory().getNonEquipmentItems().size(), player.getInventory().getContainerSize());
+    @Nullable
+    protected EquipmentSlot getEquipmentSlot(int slot) {
+        if (slot < player.getInventory().getNonEquipmentItems().size()) return null;
+        return Inventory.EQUIPMENT_SLOT_MAPPING.get(slot);
+    }
+
+    @Override
+    public int extract(int index, ItemResource resource, int amount, TransferAction action) {
+        EquipmentSlot slot = getEquipmentSlot(index);
+        if (slot != null && !resource.canUnequip()) return 0;
+        return super.extract(index, resource, amount, action);
+    }
+
+
+    public void insertOrDrop(ItemResource resource, int amount) {
+        int inserted = insert(resource, amount, TransferAction.EXECUTE);
+        if (inserted < amount) {
+           ItemUtil.dropFromPlayer(player, resource, amount - inserted);
+        }
+    }
+
+    public static class AutoDrop extends PlayerInventoryWrapper {
+        public AutoDrop(Player player) {
+            super(player);
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransferAction action) {
+            if (resource.isEmpty() || amount <= 0) return 0;
+            if (action.isSimulating()) return amount;
+            insertOrDrop(resource, amount);
+            return amount;
+        }
     }
 }

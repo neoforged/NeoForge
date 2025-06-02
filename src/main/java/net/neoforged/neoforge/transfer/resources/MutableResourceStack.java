@@ -15,10 +15,10 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
 
 /**
- * Represents an immutable {@link IResource} and a mutable amount.
+ * Represents an immutable {@link IResource} and a <b>mutable</b> amount.
  * This is intended to be used when you know the amount is going be in flux, but the backing resource will be the same.
  * As an example, when storing a list of stacks, instead of creating a new object on heap, the backing int value can be mutated.
- * This, however, should not be used on things like {@link net.minecraft.core.component.DataComponentType DataComponents} and instead, for that use a {@link ResourceStack}.
+ * This, however, should not be used on things like {@link net.minecraft.core.component.DataComponentType DataComponents} and instead, for that use a {@link ResourceStack} or fully immutable structure.
  */
 public final class MutableResourceStack<T extends IResource> implements IResourceStack<T> {
     /**
@@ -83,17 +83,17 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return nonNullListOfSize(count, this);
     }
 
-    public MutableResourceStack(T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount) {
-        Objects.requireNonNull(resource, "resource");
+    public MutableResourceStack(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount) {
+        Objects.requireNonNull(resource, "Resource must not be null");
         this.resource = resource;
         this.amount = amount;
     }
 
-    public static <T extends IResource> MutableResourceStack<T> of(ResourceStack<T> stack) {
+    public static <T extends IResource> MutableResourceStack<T> of(IResourceStack<T> stack) {
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int amount) {
+    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int amount) {
         return new MutableResourceStack<>(resource, amount);
     }
 
@@ -111,7 +111,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> withAmount(@Range(from = 0, to = ResourceHandlerUtil.PRETTY_MAX_INT) int newAmount) {
+    public MutableResourceStack<T> withAmount(@Range(from = 0, to = ResourceHandlerUtil.MAX_RESOURCE_SIZE) int newAmount) {
         amount = isEmpty() ? 0 : newAmount;
         return this;
     }

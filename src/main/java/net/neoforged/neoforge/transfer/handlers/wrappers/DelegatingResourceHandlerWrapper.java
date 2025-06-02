@@ -17,15 +17,15 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  *
  * @param <T> The type of resource this handler manages.
  */
-public class DelegatingHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
+public class DelegatingResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
     protected final Supplier<IResourceHandler<T>> delegate;
 
-    public DelegatingHandlerWrapper(IResourceHandler<T> delegate) {
+    public DelegatingResourceHandlerWrapper(IResourceHandler<T> delegate) {
         Objects.requireNonNull(delegate);
         this.delegate = () -> delegate;
     }
 
-    public DelegatingHandlerWrapper(Supplier<IResourceHandler<T>> delegate) {
+    public DelegatingResourceHandlerWrapper(Supplier<IResourceHandler<T>> delegate) {
         this.delegate = delegate;
     }
 
@@ -107,7 +107,7 @@ public class DelegatingHandlerWrapper<T extends IResource> implements IResourceH
         return delegate.get();
     }
 
-    public static class Modifiable<T extends IResource> extends DelegatingHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends DelegatingResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
         public Modifiable(IResourceHandlerModifiable<T> delegate) {
             super(delegate);
         }

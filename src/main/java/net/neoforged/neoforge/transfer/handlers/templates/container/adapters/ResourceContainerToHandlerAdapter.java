@@ -12,6 +12,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBeh
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 
 /**
  * A basic {@link IResourceHandlerModifiable} implementation derived from an {@link IResourceContainer}.
@@ -19,6 +20,7 @@ import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         IResourceContainer<TResource> container,
         IHandleIOBehaviour behavior) implements IResourceHandlerModifiable<TResource> {
+
     @Override
     public int size() {
         return container.size();
@@ -66,7 +68,7 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         for (var index = 0; index < size(); index++) {
             if (handled == amount)
                 break;
-            handled += indexInsert(index, resource, amount - handled, action);
+            handled += insertBehaviour(index, resource, amount - handled, action);
         }
         return handled;
     }
@@ -76,10 +78,10 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         Objects.checkIndex(index, size());
         if (resource.isEmpty())
             return 0;
-        return indexInsert(index, resource, amount, action);
+        return insertBehaviour(index, resource, amount, action);
     }
 
-    private int indexInsert(int index, TResource resource, int amount, TransferAction action) {
+    private int insertBehaviour(int index, TResource resource, int amount, TransferAction action) {
         if (!behavior.canInsert(index) || !container.isValid(index, resource)) return 0;
 
         var resourceStackInSlot = container.get(index);
@@ -109,7 +111,7 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         Objects.checkIndex(index, size());
         if (resource.isEmpty() || amount <= 0)
             return 0;
-        return indexedExtract(index, resource, amount, action);
+        return extractBehaviour(index, resource, amount, action);
     }
 
     @Override
@@ -119,12 +121,12 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         var handled = 0;
         for (var index = 0; index < container.size(); index++) {
             if (handled == amount) break;
-            handled += indexedExtract(index, resource, amount - handled, action);
+            handled += extractBehaviour(index, resource, amount - handled, action);
         }
         return handled;
     }
 
-    private int indexedExtract(int index, TResource resource, int amount, TransferAction action) {
+    private int extractBehaviour(int index, TResource resource, int amount, TransferAction action) {
         if (!behavior.canExtract(index)) return 0;
 
         var currentStack = container.get(index);

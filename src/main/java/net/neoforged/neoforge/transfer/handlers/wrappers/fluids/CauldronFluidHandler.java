@@ -17,14 +17,16 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 
+import java.util.Objects;
+
 /**
  * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
  */
-public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
+public class CauldronFluidHandler implements ISingleResourceHandler<FluidResource> {
     private final Level level;
     private final BlockPos pos;
 
-    public CauldronHandler(Level level, BlockPos pos) {
+    public CauldronFluidHandler(Level level, BlockPos pos) {
         this.level = level;
         this.pos = pos;
     }
@@ -39,6 +41,8 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public FluidResource getResource(int index) {
+        Objects.checkIndex(index, size());
+
         BlockState state = level.getBlockState(pos);
         return getContent(state).fluid.defaultResource();
     }
@@ -51,7 +55,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public int getCapacity(int index, FluidResource resource) {
-        CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getFluid());
+        CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
         return fluidContent == null ? 0 : fluidContent.totalAmount;
     }
 
@@ -65,7 +69,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
-        return CauldronFluidContent.getForFluid(resource.getFluid()) != null;
+        return CauldronFluidContent.getForFluid(resource.getInstanceValue()) != null;
     }
 
     @Override
@@ -99,7 +103,7 @@ public class CauldronHandler implements ISingleResourceHandler<FluidResource> {
             return 0;
         }
 
-        CauldronFluidContent insertContent = CauldronFluidContent.getForFluid(resource.getFluid());
+        CauldronFluidContent insertContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
         if (insertContent == null) {
             return 0;
         }

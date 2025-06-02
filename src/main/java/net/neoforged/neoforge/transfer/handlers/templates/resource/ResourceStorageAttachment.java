@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.storage;
+package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 /**
  * A mutable data structure used to store a list of resources and their amounts that can be serialized as a DataAttachment. This is ideal when working with block entities or other data attachment holders
  */
-public final class ResourceStorageAttachment<T extends IResource> implements IResourceData<T> {
+public final class ResourceStorageAttachment<T extends IResource> implements IResourceStorageData<T> {
     private final NonNullList<MutableResourceStack<T>> stacks;
     private final int hashCode;
     private final int size;
@@ -51,7 +51,7 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
     }
 
     @Override
-    public IResourceData<T> modify(int index, T resource, int amount) {
+    public IResourceStorageData<T> modify(int index, T resource, int amount) {
         var current = get(index);
         if (current.resource().equals(resource))
             current.withAmount(amount);
@@ -77,7 +77,7 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
     @SuppressWarnings("EqualsDoesntCheckParameterClass")
     @Override
     public boolean equals(Object otherObj) {
-        return IResourceData.equals(this, otherObj);
+        return IResourceStorageData.equals(this, otherObj);
     }
 
     @Override

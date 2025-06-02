@@ -38,6 +38,7 @@ public class PlayerContext implements IItemContext {
     }
 
     public PlayerContext(Player player, int index) {
+        //This could be captured by player.getCapability, but it was pointed out that has a non-zero chance to return null
         this.handler = new PlayerInventoryHandler(player);
         this.index = index;
     }

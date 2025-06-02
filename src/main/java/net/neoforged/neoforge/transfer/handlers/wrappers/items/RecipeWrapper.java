@@ -10,6 +10,7 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
+//Not tested, it at least looks to read correctly, but unsure about writing back, as well as not sure the logical use of neo having this.
 public class RecipeWrapper implements RecipeInput {
     protected final IResourceHandlerModifiable<ItemResource> handler;
 

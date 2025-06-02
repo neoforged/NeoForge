@@ -16,6 +16,9 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * @param <T> The type of resource that this storage can accept.
  */
 public class InfiniteResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
+    /**
+     * Resource that should be provided infinitely. Mustn't be {@code null}.
+     */
     public T infinite;
 
     public InfiniteResourceHandler(T resource) {
@@ -29,7 +32,7 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
 
     @Override
     public int extract(T resource, int amount, TransferAction action) {
-        return amount;
+        return resource.equals(infinite) ? amount : 0;
     }
 
     @Override
@@ -39,18 +42,18 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
 
     @Override
     public int getAmount(int ignoredIndex) {
-        return ResourceHandlerUtil.PRETTY_MAX_INT; //This is mostly for pretty printing when displayed by mods.
+        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; //This is mostly for pretty printing when displayed by mods.
     }
 
     @Override
     public int getCapacity(int index, T resource) {
         //0 or max? because technically it stores nothing nor would allow any.
-        return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
+        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; // Maximum capacity
     }
 
     @Override
     public int getCapacity(int ignoredIndex) {
-        return ResourceHandlerUtil.PRETTY_MAX_INT; // Maximum capacity
+        return ResourceHandlerUtil.MAX_RESOURCE_SIZE; // Maximum capacity
     }
 
     @Override

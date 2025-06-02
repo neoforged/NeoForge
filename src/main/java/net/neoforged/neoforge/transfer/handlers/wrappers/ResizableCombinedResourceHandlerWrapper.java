@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.EmptyHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
@@ -17,35 +17,34 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * it should be weighed if wrapping it is the right approach.
  * <p>
  * <strong>Important: This will work with constant sized handlers, but ensure what you are wrapping is dynamically sized.</strong>
+ * It is also important that the size should not change until after the transaction is finished.
  *
  * @param <T>
  */
-public class DynamicCombinedResourceWrapper<T extends IResource> implements IResourceHandler<T> {
-    private final EmptyHandler<T> emptyHandler;
-    protected final IResourceHandler<T>[] handlers; // the handlers
+public class ResizableCombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
+    private final IResourceHandler<T>[] handlers; // the handlers
 
     @SafeVarargs
-    public DynamicCombinedResourceWrapper(EmptyHandler<T> emptyHandler, IResourceHandler<T>... handlers) {
-        this.emptyHandler = emptyHandler;
+    public ResizableCombinedResourceHandlerWrapper(IResourceHandler<T>... handlers) {
         this.handlers = handlers;
     }
 
-    // returns the handler index for the slot or throws if out of bounds
-    protected int getHandlerIndex(int slot) {
+    // returns the handler index for the index or throws if out of bounds
+    protected int getHandlerIndex(int index) {
         var offset = 0;
         for (int i = 0; i < handlers.length; i++) {
             var handler = handlers[i];
             var handlerSize = handler.size();
-            if (slot >= offset && slot < handlerSize + offset) {
+            if (index >= offset && index < handlerSize + offset) {
                 return i;
             }
             offset += handlerSize;
         }
-        throw new IndexOutOfBoundsException("Index out of bounds. Passed in [%d], but should have been within [0, %d]".formatted(slot, size()));
+        throw new IndexOutOfBoundsException("Index out of bounds. Passed in [%d], but should have been within [0, %d]".formatted(index, size()));
     }
 
     protected IResourceHandler<T> getHandlerFromIndex(int index) {
-        return index >= 0 && index < handlers.length ? handlers[index] : emptyHandler;
+        return index >= 0 && index < handlers.length ? handlers[index] : EmptyResourceHandler.instance();
     }
 
     protected int getSlotFromIndex(int index, int handlerIndex) {
@@ -140,10 +139,10 @@ public class DynamicCombinedResourceWrapper<T extends IResource> implements IRes
         return handled;
     }
 
-    public static class Modifiable<T extends IResource> extends DynamicCombinedResourceWrapper<T> implements IResourceHandlerModifiable<T> {
+    public static class Modifiable<T extends IResource> extends ResizableCombinedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
         @SafeVarargs
-        public Modifiable(EmptyHandler<T> emptyHandler, IResourceHandlerModifiable<T>... handlers) {
-            super(emptyHandler, handlers);
+        public Modifiable(IResourceHandlerModifiable<T>... handlers) {
+            super(handlers);
         }
 
         @Override

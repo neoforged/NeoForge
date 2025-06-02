@@ -7,31 +7,31 @@ package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.function.Function;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ItemContainerToVanillaAdapter;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resources.*;
+import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A data storage for mutable resource stacks. This data can be put anywhere (with limited exceptions such as DataComponents), but it was designed with {@link net.neoforged.neoforge.attachment.AttachmentType DataAttachments} in mind.
  * You are able to build new containers, slice existing ones, as well as convert them to other types such as an {@link IResourceHandler IResourceHandler}.
- * To be more clear, the container itself, but by calling {@link #asHandler()} it will create one, though it is recommended you cache this rather than call it every time you need a handler of the container.
+ * To be more clear, the container itself is not an {@link IResourceHandler IResourceHandler}, but by calling {@link #asHandler()} it will create one, though may be wise to cache this rather than call it every time you need a handler of the container.
  * <p>
  *
  * <strong>Example Usage</strong>
- * 
+ *
  * <pre>
  * {@code
  * var container = SimpleItemResourceContainer.from(someSerializedList)
@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * var outputHandler = outputContainer.asHandler(IHandleIOBehaviour.EXTRACT_ONLY);
  * }
  * </pre>
- * 
+ *
  * <p>
  * To reiterate, this can work anywhere in a mutable context, but things like {@link net.minecraft.core.component.DataComponentType DataComponents} that require an immutable scope will not work properly.
  *
@@ -51,24 +51,36 @@ import org.jetbrains.annotations.Nullable;
 //Originally written by Soaryn for XyCraft adopted from Amadornes's ItemContainer.
 public class ResourceContainer<T extends IResource> implements IResourceContainer<T> {
     private final NonNullList<MutableResourceStack<T>> resourceStacks;
+    private final List<IndexSnapshot> indexSnapshots = new ArrayList<>();
     private final @Nullable Runnable updateCallback;
-    private final ResourceStack<T> emptyStack;
+    private final ResourceStack<T> defaultResource;
     private final int size;
     private final int capacity;
 
-    public ResourceContainer(NonNullList<MutableResourceStack<T>> resourceStacks, ResourceStack<T> emptyStack, int capacity, @Nullable Runnable updateCallback) {
+    /**
+     * @param resourceStacks The backing list of stacks that are stored. This is what is snapshotted
+     * @param defaultResource The resource that should fill the backing list given a reset or clear
+     * @param capacity The amount all resource stacks can stack up to.
+     * @param updateCallback Called in {@link IndexSnapshot#onCommit}
+     */
+    public ResourceContainer(NonNullList<MutableResourceStack<T>> resourceStacks, ResourceStack<T> defaultResource, int capacity, @Nullable Runnable updateCallback) {
         Objects.requireNonNull(resourceStacks);
-        Objects.requireNonNull(emptyStack);
-        if (!emptyStack.isEmpty())
-            throw new IllegalArgumentException("`emptyStack` for container must be empty!");
+        Objects.requireNonNull(defaultResource);
 
         Objects.checkIndex(0, resourceStacks.size());
         this.size = resourceStacks.size();
         this.resourceStacks = resourceStacks;
         this.updateCallback = updateCallback;
-        this.emptyStack = emptyStack;
+        this.defaultResource = defaultResource;
         this.capacity = capacity;
+        updateSlots();
     }
+
+    @Override
+    public SnapshotParticipant<MutableResourceStack<T>> getParticipant(int index) {
+        return indexSnapshots.get(index);
+    }
+
 
     public static final class Codecs {
         public static <TAttachment, TResource extends IResource> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<TResource>>> resourcesOf(String key, Codec<TResource> codec, Function<TAttachment, IResourceContainer<TResource>> containerToStackList) {
@@ -85,7 +97,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     }
 
     public ResourceStack<T> emptyResource() {
-        return emptyStack;
+        return defaultResource;
     }
 
     @Override
@@ -120,8 +132,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     public void set(int index, MutableResourceStack<T> stack) {
         Objects.checkIndex(index, size());
         resourceStacks.set(index, stack);
-        if (updateCallback != null)
-            updateCallback.run();
     }
 
     @Override
@@ -135,6 +145,12 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     public IResourceContainer<T> slice(int from, int to) {
         Objects.checkFromToIndex(from, to, size());
         return new Slice(from, to - from);
+    }
+
+    protected void updateSlots() {
+        while (indexSnapshots.size() < resourceStacks.size()) {
+            indexSnapshots.add(new IndexSnapshot(indexSnapshots.size()));
+        }
     }
 
     /**
@@ -157,7 +173,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     private static final Container EMPTY = new Container() {
         @Override
-        public void clearContent() {}
+        public void clearContent() { }
 
         @Override
         public int getContainerSize() {
@@ -185,10 +201,10 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public void setItem(int p_18944_, ItemStack p_18945_) {}
+        public void setItem(int p_18944_, ItemStack p_18945_) { }
 
         @Override
-        public void setChanged() {}
+        public void setChanged() { }
 
         @Override
         public boolean stillValid(Player p_18946_) {
@@ -210,20 +226,25 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
+        public SnapshotParticipant<MutableResourceStack<T>> getParticipant(int index) {
+            Objects.checkIndex(index, size());
+            return ResourceContainer.this.getParticipant(index+start);
+        }
+        @Override
         public MutableResourceStack<T> get(int index) {
-            Objects.checkIndex(index, size()); //audit called in the this.get
+            Objects.checkIndex(index, size());
             return ResourceContainer.this.get(index + start);
         }
 
         @Override
         public void set(int index, MutableResourceStack<T> stack) {
-            Objects.checkIndex(index, size()); //audit called in the this.get
+            Objects.checkIndex(index, size());
             ResourceContainer.this.set(index + start, stack);
         }
 
         @Override
         public int getCapacity(int index, T resource) {
-            Objects.checkIndex(index, size()); //audit called in the this.get
+            Objects.checkIndex(index, size());
             return ResourceContainer.this.getCapacity(index + start, resource);
         }
 
@@ -304,6 +325,30 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         public final ResourceContainer<T> buildRaw() {
             if (stacks == null) throw new IllegalArgumentException("ResourceContainer's stacks must not be null");
             return new ResourceContainer<>(stacks, emptyStack, capacity, updateCallback);
+        }
+    }
+
+    private class IndexSnapshot extends SnapshotParticipant<MutableResourceStack<T>> {
+        private final int slot;
+
+        private IndexSnapshot(int slot) {
+            this.slot = slot;
+        }
+
+        @Override
+        protected MutableResourceStack<T> createSnapshot() {
+            return MutableResourceStack.of(resourceStacks.get(slot));
+        }
+
+        @Override
+        protected void revertToSnapshot(MutableResourceStack<T> snapshot) {
+            resourceStacks.set(slot, snapshot);
+        }
+
+        @Override
+        protected void onCommit(MutableResourceStack<T> originalState) {
+            if(updateCallback != null)
+                updateCallback.run();
         }
     }
 }

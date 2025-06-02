@@ -14,7 +14,7 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
-public class WorldlyContainerWrapper extends ContainerWrapper {
+public class WorldlyContainerWrapper extends VanillaContainerWrapper {
     @Nullable
     protected final Direction side;
 

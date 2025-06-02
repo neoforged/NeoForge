@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.storage;
+package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 /**
  * An immutable data structure used to store a list of resources and their amounts that can be serialized as a DataComponent. This is ideal when working with ItemStacks to hold the data.
  */
-public final class ResourceStorageComponent<T extends IResource> implements IResourceData<T> {
+public final class ResourceStorageComponent<T extends IResource> implements IResourceStorageData<T> {
     private final NonNullList<ResourceStack<T>> stacks;
     private final int size;
     private final int hashCode;
@@ -81,7 +81,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
     @SuppressWarnings("EqualsDoesntCheckParameterClass")
     @Override
     public boolean equals(Object otherObj) {
-        return IResourceData.equals(this, otherObj);
+        return IResourceStorageData.equals(this, otherObj);
     }
 
     @Override
@@ -91,6 +91,6 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
 
     @Override
     public String toString() {
-        return "ResourceStorageComponent[" + stacks + ']';
+        return "ResourceStorageComponent[%s]".formatted(stacks);
     }
 }
