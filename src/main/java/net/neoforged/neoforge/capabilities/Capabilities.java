@@ -12,6 +12,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +40,7 @@ public final class Capabilities {
     public static final class FluidStorage {
         public static final BlockCapability<Storage<FluidVariant>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_storage"), Storage.asClass());
         public static final EntityCapability<Storage<FluidVariant>, @Nullable Direction> ENTITY = EntityCapability.createSided(create("fluid_storage"), Storage.asClass());
+        public static final ItemCapability<Storage<FluidVariant>, InItemStorageContext> ITEM = ItemCapability.create(create("fluid_storage"), Storage.asClass(), InItemStorageContext.class);
 
         private FluidStorage() {}
     }
@@ -72,6 +74,7 @@ public final class Capabilities {
          * in the sense that droppers, hoppers, and similar modded devices will try to use it.
          */
         public static final EntityCapability<Storage<ItemVariant>, @Nullable Direction> ENTITY_AUTOMATION = EntityCapability.createSided(create("item_storage_automation"), Storage.asClass());
+        public static final ItemCapability<Storage<ItemVariant>, InItemStorageContext> ITEM = ItemCapability.create(create("item_storage"), Storage.asClass(), InItemStorageContext.class);
 
         private ItemStorage() {}
     }
