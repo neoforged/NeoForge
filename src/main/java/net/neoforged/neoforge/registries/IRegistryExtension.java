@@ -66,6 +66,7 @@ public interface IRegistryExtension<T> {
 
     /**
      * Adds an alias that maps from the name specified by <code>alias</code> to the name specified by <code>redirectTo</code>.
+     * The <code>redirectTo</code> name points to an actual registered object in the registry.
      * <p>
      * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
      *
