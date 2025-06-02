@@ -65,15 +65,15 @@ public interface IRegistryExtension<T> {
     }
 
     /**
-     * Adds an alias that maps from the name specified by <code>alias</code> to the name specified by <code>redirectTo</code>.
-     * The <code>redirectTo</code> name points to an actual registered object in the registry.
+     * Adds an alias that maps from the name specified by <code>alias</code> to the name specified by <code>registeredName</code>.
+     * The <code>registeredName</code> name points to an actual registered object in the registry.
      * <p>
      * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
      *
      * @param alias the source registry name to alias from
-     * @param redirectTo the target registry name to alias to
+     * @param registeredName the target registry name to alias to
      */
-    void addAlias(ResourceLocation alias, ResourceLocation redirectTo);
+    void addAlias(ResourceLocation alias, ResourceLocation registeredName);
 
     /**
      * Resolves a registry name of a potential object in this registry.
