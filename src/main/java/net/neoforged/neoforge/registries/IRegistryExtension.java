@@ -65,14 +65,14 @@ public interface IRegistryExtension<T> {
     }
 
     /**
-     * Adds an alias that maps from the name specified by <code>oldName</code> to the name specified by <code>newName</code>.
+     * Adds an alias that maps from the name specified by <code>alias</code> to the name specified by <code>redirectTo</code>.
      * <p>
      * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
      *
-     * @param oldName the source registry name to alias from
-     * @param newName   the target registry name to alias to
+     * @param alias the source registry name to alias from
+     * @param redirectTo the target registry name to alias to
      */
-    void addAlias(ResourceLocation oldName, ResourceLocation newName);
+    void addAlias(ResourceLocation alias, ResourceLocation redirectTo);
 
     /**
      * Resolves a registry name of a potential object in this registry.

@@ -61,17 +61,17 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     }
 
     @Override
-    public void addAlias(ResourceLocation oldName, ResourceLocation newName) {
-        if (oldName.equals(newName))
+    public void addAlias(ResourceLocation alias, ResourceLocation redirectTo) {
+        if (alias.equals(redirectTo))
             return;
-        if (this.aliases.containsKey(oldName)) {
-            ResourceLocation old = this.aliases.get(oldName);
-            if (!old.equals(newName))
-                throw new IllegalStateException("Duplicate alias with key \"" + oldName + "\" attempting to map to \"" + newName + "\", found existing mapping \"" + old + "\"");
+        if (this.aliases.containsKey(alias)) {
+            ResourceLocation old = this.aliases.get(alias);
+            if (!old.equals(redirectTo))
+                throw new IllegalStateException("Duplicate alias with key \"" + alias + "\" attempting to map to \"" + redirectTo + "\", found existing mapping \"" + old + "\"");
         }
-        if (resolve(oldName).equals(newName))
-            throw new IllegalStateException("Infinite alias loop detected: from " + oldName + " to " + newName);
-        this.aliases.put(oldName, newName);
+        if (resolve(alias).equals(redirectTo))
+            throw new IllegalStateException("Infinite alias loop detected: from " + alias + " to " + redirectTo);
+        this.aliases.put(alias, redirectTo);
     }
 
     @Override
