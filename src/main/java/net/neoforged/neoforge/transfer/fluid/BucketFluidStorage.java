@@ -12,7 +12,7 @@ import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public abstract class BucketFluidStorage implements Storage<FluidVariant> {
+public class BucketFluidStorage implements Storage<FluidVariant> {
     private final InItemStorageContext context;
 
     public BucketFluidStorage(InItemStorageContext context) {
@@ -25,9 +25,18 @@ public abstract class BucketFluidStorage implements Storage<FluidVariant> {
     }
 
     @Override
-    public long insert(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        // TODO: OOB on index?
+    public boolean supportsInsertion() {
+        return !context.isReadOnly();
+    }
 
+    @Override
+    public boolean supportsExtraction() {
+        return !context.isReadOnly();
+    }
+
+    @Override
+    public long insert(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        StoragePreconditions.checkSlot(index, size());
         StoragePreconditions.notBlankNotNegative(resource, maxAmount);
 
         if (!context.getCurrent().is(Tags.Items.BUCKETS_EMPTY)) {
@@ -50,7 +59,7 @@ public abstract class BucketFluidStorage implements Storage<FluidVariant> {
 
     @Override
     public long extract(int index, FluidVariant resource, long maxAmount, TransactionContext transaction) {
-        // TODO: OOB on index?
+        StoragePreconditions.checkSlot(index, size());
         StoragePreconditions.notBlankNotNegative(resource, maxAmount);
 
         var containedFluid = getCurrentFluid();
@@ -69,31 +78,32 @@ public abstract class BucketFluidStorage implements Storage<FluidVariant> {
 
     @Override
     public boolean isResourceBlank(int index) {
-        // TODO: OOB on index?
+        StoragePreconditions.checkSlot(index, size());
         return getCurrentFluid().isBlank();
     }
 
     @Override
     public FluidVariant getResource(int index) {
-        // TODO: OOB on index?
+        StoragePreconditions.checkSlot(index, size());
         return getCurrentFluid();
     }
 
     @Override
     public long getAmount(int index) {
-        // TODO: OOB on index?
-        return isResourceBlank(index) ? 0 : FluidType.BUCKET_VOLUME;
+        StoragePreconditions.checkSlot(index, size());
+        return isResourceBlank(index) ? 0 : FluidType.BUCKET_VOLUME * context.getCurrentAmount();
     }
 
     @Override
     public long getCapacity(int index, FluidVariant resource) {
-        // TODO: OOB on index?
-        return context.getCurrent().isBlank() ? 0 : FluidType.BUCKET_VOLUME;
+        StoragePreconditions.checkSlot(index, size());
+        return FluidType.BUCKET_VOLUME * context.getCurrentAmount();
     }
 
     @Override
     public boolean isValid(int index, FluidVariant resource) {
-        return index == 0 && !FluidUtil.getFilledBucket(resource).isBlank();
+        StoragePreconditions.checkSlot(index, size());
+        return !FluidUtil.getFilledBucket(resource).isBlank();
     }
 
     private FluidVariant getCurrentFluid() {

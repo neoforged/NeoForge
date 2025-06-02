@@ -1,5 +1,6 @@
 package net.neoforged.neoforge.transfer.fluid;
 
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
@@ -18,9 +19,19 @@ public interface InItemStorageContext {
     ItemVariant getCurrent();
 
     /**
-     * @return The current amount of {@linkplain #getCurrent() the item} containing the storage.
+     * @return The current amount of {@linkplain #getCurrent() the item} containing the storage. Always returns 0 if
+     * {@linkplain #getCurrent() the current item} is blank.
      */
     long getCurrentAmount();
+
+    /**
+     * @return True if any attempts to modify the items in this context will not work. Storage implementations can
+     * use this to return appropriate information from {@link Storage#supportsInsertion()}
+     * or {@link Storage#supportsExtraction()}.
+     */
+    default boolean isReadOnly() {
+        return false;
+    }
 
     /**
      * Transactionally insert an item into the "slot" representing the location of the item containing the storage.
@@ -65,5 +76,48 @@ public interface InItemStorageContext {
         }
 
         return 0;
+    }
+
+    /**
+     * Creates a context object based on the given itemstack, which will only allow inspection of the contained
+     * storage, but no modification.
+     */
+    static InItemStorageContext ofReadOnly(ItemStack stack) {
+        return new ReadOnlyItemStorageContext(ItemVariant.of(stack), stack.getCount());
+    }
+
+    /**
+     * Creates a context object for working with storage contained in an item that is itself stored in the slot
+     * of a storage.
+     *
+     * @param storage The storage containing the item.
+     * @param slot    The slot in {@code storage}, where the item can be found.
+     */
+    static InItemStorageContext ofStorageSlot(Storage<ItemVariant> storage, int slot) {
+        return new InItemStorageContext() {
+            @Override
+            public ItemVariant getCurrent() {
+                return slot < storage.size() ? storage.getResource(slot) : ItemVariant.EMPTY;
+            }
+
+            @Override
+            public long getCurrentAmount() {
+                return slot < storage.size() ? storage.getAmount(slot) : 0;
+            }
+
+            @Override
+            public long insert(ItemVariant itemVariant, long maxAmount, TransactionContext transaction) {
+                long inserted = storage.insert(slot, itemVariant, maxAmount, transaction);
+                if (inserted < maxAmount) {
+                    inserted += storage.insert(itemVariant, maxAmount - inserted, transaction);
+                }
+                return inserted;
+            }
+
+            @Override
+            public long extract(ItemVariant itemVariant, long maxAmount, TransactionContext transaction) {
+                return storage.extract(slot, itemVariant, maxAmount, transaction);
+            }
+        };
     }
 }
