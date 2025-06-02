@@ -168,11 +168,11 @@ public final class CauldronFluidContent {
         for (Block block : BLOCK_TO_CAULDRON.keySet()) {
             event.registerBlock(
                     Capabilities.FluidStorage.BLOCK,
-                    (level, pos, state, be, context) -> new CauldronWrapper(level, pos),
+                    (level, pos, state, be, context) -> CauldronWrapper.get(level, pos),
                     block);
             event.registerBlock(
                     Capabilities.FluidHandler.BLOCK,
-                    (level, pos, state, be, context) -> new FluidHandlerAdapter(new CauldronWrapper(level, pos)),
+                    (level, pos, state, be, context) -> new FluidHandlerAdapter(CauldronWrapper.get(level, pos)),
                     block);
         }
     }

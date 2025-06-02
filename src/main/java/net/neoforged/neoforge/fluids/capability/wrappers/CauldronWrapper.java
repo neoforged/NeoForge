@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.fluids.capability.wrappers;
 
+import com.google.common.collect.MapMaker;
 import com.google.common.math.IntMath;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -18,14 +19,30 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Map;
+
 @ApiStatus.Internal
 public class CauldronWrapper extends SnapshotParticipant<BlockState> implements Storage<FluidVariant> {
+    /**
+     * To make sure multiple access to the same cauldron return the same wrapper,
+     * we maintain a {@code (Level, BlockPos) -> Wrapper} cache.</li>
+     */
+    private record Location(Level level, BlockPos pos) {}
+
+    // Weak values to make sure wrappers are cleaned up after use, thread-safe.
+    private static final Map<Location, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
+
+    public static CauldronWrapper get(Level level, BlockPos pos) {
+        var location = new Location(level, pos.immutable());
+        return wrappers.computeIfAbsent(location, CauldronWrapper::new);
+    }
+
     private final Level level;
     private final BlockPos pos;
 
-    public CauldronWrapper(Level level, BlockPos pos) {
-        this.level = level;
-        this.pos = pos;
+    private CauldronWrapper(Location location) {
+        this.level = location.level;
+        this.pos = location.pos;
     }
 
     @Override
