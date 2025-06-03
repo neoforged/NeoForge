@@ -19,7 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Implement this interface on your Block Entity if it can be used in a Hopper.
  * This is used to interact with Hoppers, Droppers, Vanilla automation, etc.
  *
- * @deprecated Use {@link IResourceHandler} of {@link ItemResource} instead
+ * @deprecated Use {@link IResourceHandler} bound by type {@link ItemResource} instead
  */
 @Deprecated(forRemoval = true, since = "1.21.6")
 @ApiStatus.ScheduledForRemoval(inVersion = "1.22")

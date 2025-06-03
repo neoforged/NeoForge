@@ -18,6 +18,9 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
+// TODO Neo: Do we maintain this. What is the practical purpose?
+// Possible removal
+@Deprecated
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
     private final IResourceHandler<ItemResource> handler;
@@ -65,7 +68,7 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public boolean mayPickup(Player player) {
-        try(var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
             //Simulated
             return !ResourceHandlerUtil.extractIndexedAny(handler, getSlotIndex(), 1, ItemResource.EMPTY_STACK, transaction).isEmpty();
         }
@@ -74,7 +77,7 @@ public class ResourceHandlerSlot extends Slot {
     @Override
     public ItemStack remove(int amount) {
         ItemResource resource = handler.getResource(getSlotIndex());
-        try(var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
             int extracted = handler.extract(resource, amount, transaction);
             transaction.commit();
             return extracted > 0 ? resource.toStack(extracted) : ItemStack.EMPTY;

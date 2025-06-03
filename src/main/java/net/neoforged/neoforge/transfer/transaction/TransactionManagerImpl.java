@@ -1,11 +1,14 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.transaction;
-
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public class TransactionManagerImpl {
@@ -13,7 +16,7 @@ public class TransactionManagerImpl {
 
     private final Thread thread = Thread.currentThread();
     private final List<TransactionImpl> stack = new ArrayList<>();
-    private final List<Transaction.OuterCloseCallback> outerCloseCallbacks = new ArrayList<>();
+    private final List<TransactionContext.RootCloseCallback> rootCloseCallbacks = new ArrayList<>();
     private int currentDepth = -1;
 
     public boolean isOpen() {
@@ -23,7 +26,7 @@ public class TransactionManagerImpl {
     public Transaction open(@Nullable TransactionContext parent) {
         if (parent == null) {
             if (isOpen()) {
-                throw new IllegalStateException("An outer transaction is already active on this thread " + thread);
+                throw new IllegalStateException("A root transaction is already active on this thread " + thread);
             }
         } else {
             TransactionImpl parentImpl = (TransactionImpl) parent;
@@ -129,22 +132,22 @@ public class TransactionManagerImpl {
             closeCallbacks.clear();
 
             if (currentDepth == 0) {
-                lifecycle = Lifecycle.OUTER_CLOSING;
+                lifecycle = Lifecycle.ROOT_CLOSING;
 
                 // Invoke outer close callbacks in reverse order
-                for (int i = outerCloseCallbacks.size() - 1; i >= 0; i--) {
+                for (int i = rootCloseCallbacks.size() - 1; i >= 0; i--) {
                     try {
-                        outerCloseCallbacks.get(i).afterOuterClose(result);
+                        rootCloseCallbacks.get(i).afterRootClose(result);
                     } catch (Exception exception) {
                         if (closeException == null) {
-                            closeException = new RuntimeException("Encountered an exception while invoking a transaction outer close callback.", exception);
+                            closeException = new RuntimeException("Encountered an exception while invoking a transaction root close callback.", exception);
                         } else {
                             closeException.addSuppressed(exception);
                         }
                     }
                 }
 
-                outerCloseCallbacks.clear();
+                rootCloseCallbacks.clear();
             }
 
             // Only this check will allow openOuter operations.
@@ -200,7 +203,7 @@ public class TransactionManagerImpl {
         }
 
         @Override
-        public void addOuterCloseCallback(OuterCloseCallback outerCloseCallback) {
+        public void addRootCloseCallback(RootCloseCallback rootCloseCallback) {
             validateCurrentThread();
             // Note: we don't call validateOpen() because this transaction may not be open if this is called during a CloseCallback.
             // We rely on a currentDepth check instead, as the depth is only set to -1 at the very end of close(Result).
@@ -209,7 +212,7 @@ public class TransactionManagerImpl {
                 throw new IllegalStateException("There is no open transaction on this thread.");
             }
 
-            outerCloseCallbacks.add(outerCloseCallback);
+            rootCloseCallbacks.add(rootCloseCallback);
         }
 
         @Override

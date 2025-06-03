@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.transaction;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -26,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>This is illustrated in the following example.
  *
  * <pre>{@code
- * try (Transaction outerTransaction = Transaction.open(null)) {
+ * try (Transaction outerTransaction = Transaction.open(TransactionContext.EMPTY)) {
  *     // (A) some transaction operations
  *     try (Transaction nestedTransaction = outerTransaction.open(outerTransaction)) {
  *         // (B) more operations
@@ -34,10 +39,12 @@ import org.jetbrains.annotations.Nullable;
  *         // Commit the changes that happened in this transaction.
  *         // This is a nested transaction, so changes will only be applied if the outer
  *         // transaction is committed too.
+ *         // auto-close the transaction when exiting the try block
  *     }
  *     // (C) even more operations
  *     outerTransaction.commit();
  *     // This is an outer transaction: changes (A), (B) and (C) are applied.
+ *     // auto-close the transaction when exiting the try block
  * }
  * // If we hadn't committed the outerTransaction, all changes (A), (B) and (C) would have been reverted.
  * }</pre>
@@ -45,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>Participants are responsible for upholding this contract themselves, by using {@link #addCloseCallback}
  * to react to transaction close events and properly validate or revert changes.
  * Any action that modifies state outside of the transaction, such as calls to {@code markDirty()} or neighbor updates,
- * should be deferred until {@linkplain #addOuterCloseCallback after the outer transaction is closed}
+ * should be deferred until {@linkplain #addRootCloseCallback after the outer transaction is closed}
  * to give every participant a chance to react to transaction close events.
  *
  * <p>This is very low-level for most applications, and most participants should subclass {@link SnapshotJournal}
@@ -63,7 +70,15 @@ public interface Transaction extends AutoCloseable, TransactionContext {
     /**
      * Open a new outer transaction.
      *
-     * @param parent the parent transaction, or null if this is the outermost transaction
+     * <pre>
+     * {@code
+     * try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+     *     // do exchanges
+     * }
+     * }
+     * </pre>
+     *
+     * @param parent the parent transaction, or null if this is the root transaction
      * @throws IllegalStateException If no parent is passed, but a transaction is already active on the current thread.
      * @throws IllegalStateException If a parent is passed, but it's not the current transaction.
      * @throws IllegalStateException If a parent is passed, but it was already closed.
@@ -86,23 +101,22 @@ public interface Transaction extends AutoCloseable, TransactionContext {
         return TransactionManagerImpl.MANAGERS.get().getLifecycle();
     }
 
-//    /**
-//     * Retrieve the currently open transaction, or null if there is none.
-//     *
-//     * <p><b>Usage of this function is strongly discouraged</b>, this is why it is deprecated and contains {@code unsafe} in its name.
-//     * The transaction may be aborted unbeknownst to you and anything you think that you have committed might be undone.
-//     * Only use it if you have no way to pass the transaction down the stack, for example if you are implementing compat with a simulation-based API,
-//     * and you know what you are doing, for example because you opened the outer transaction.
-//     *
-//     * @throws IllegalStateException If called from a close or outer close callback.
-//     * @deprecated Only use if you absolutely need it, there is almost always a better way.
-//     */
-//    @ApiStatus.Internal
-//    @Nullable
-//    static TransactionContext getCurrentUnsafe() {
-//        return TransactionManagerImpl.MANAGERS.get().getCurrentUnsafe();
-//    }
-
+    //    /**
+    //     * Retrieve the currently open transaction, or null if there is none.
+    //     *
+    //     * <p><b>Usage of this function is strongly discouraged</b>, this is why it is deprecated and contains {@code unsafe} in its name.
+    //     * The transaction may be aborted unbeknownst to you and anything you think that you have committed might be undone.
+    //     * Only use it if you have no way to pass the transaction down the stack, for example if you are implementing compat with a simulation-based API,
+    //     * and you know what you are doing, for example because you opened the outer transaction.
+    //     *
+    //     * @throws IllegalStateException If called from a close or outer close callback.
+    //     * @deprecated Only use if you absolutely need it, there is almost always a better way.
+    //     */
+    //    @ApiStatus.Internal
+    //    @Nullable
+    //    static TransactionContext getCurrentUnsafe() {
+    //        return TransactionManagerImpl.MANAGERS.get().getCurrentUnsafe();
+    //    }
 
     /**
      * Close the current transaction, committing all the changes that happened during this transaction and its <b>committed</b> children transactions.
@@ -140,6 +154,6 @@ public interface Transaction extends AutoCloseable, TransactionContext {
         /**
          * The current transaction is invoking its outer close callbacks.
          */
-        OUTER_CLOSING
+        ROOT_CLOSING
     }
 }

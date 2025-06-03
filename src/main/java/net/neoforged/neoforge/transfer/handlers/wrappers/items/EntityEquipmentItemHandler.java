@@ -3,8 +3,12 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2;
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -14,15 +18,10 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-
 public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final LivingEntity entity;
     protected final List<EquipmentSlot> slots;
-    private final List<EquipmentJournal> snapshots = new ArrayList<>();
+    private final List<EquipmentSlotSnapshotEntry> snapshots = new ArrayList<>();
 
     public static boolean isHands(EquipmentSlot slot) {
         return slot.getType() == EquipmentSlot.Type.HAND;
@@ -39,16 +38,16 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         updateSlots();
     }
 
-
     protected void updateSlots() {
         while (snapshots.size() < slots.size()) {
-            snapshots.add(new EquipmentJournal(snapshots.size()));
+            snapshots.add(new EquipmentSlotSnapshotEntry(snapshots.size()));
         }
     }
 
-    private class EquipmentJournal extends SnapshotJournal<ItemStack> {
+    private class EquipmentSlotSnapshotEntry extends SnapshotJournal<ItemStack> {
         private final int index;
-        public EquipmentJournal(int index) {
+
+        public EquipmentSlotSnapshotEntry(int index) {
             this.index = index;
         }
 
@@ -119,7 +118,6 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
 
-
         return insertBehaviour(index, resource, amount, transaction);
     }
 
@@ -155,6 +153,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         }
         return amount;
     }
+
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;

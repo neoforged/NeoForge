@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.resources;
+package net.neoforged.neoforge.transfer.handlers.templates;
 
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -18,6 +19,7 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     //Neo: It may be a gut reaction to try to make a proxy method like getResource() or getAmount() that don't take
     //     an index, but that in practice can get rather messy given interfaces cannot have `final` set on the default methods.
     //     If this one day changes in a future java version, then this should be revisited.
+    //     For now, let's not clutter the intellisense with misleading method override options
     @Override
     T getResource(int index);
 
@@ -36,14 +38,15 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     @Override
     boolean isValid(int index, T resource);
 
-    //Single resource handlers only have 1 resource thus only really need one index
     /**
      * If you require more than 1 slot, please make sure to create your own implementation of {@link IResourceHandler} instead.
      * This interface is intended as a helper interface and should not mutate the defaulted values. Java doesn't allow {@code final} on interface defaults
+     *
      * @return 1 for ISingleResourceHandlers
      */
     @Override
     default int size() {
+        //Single resource handlers only have 1 resource thus only really need one index
         return 1;
     }
 
@@ -61,11 +64,13 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
 
     @Override
     default boolean allowsInsertion(int index) {
+        //We effectively flip the root's check so that we check on index-less instead
         return allowsInsertion();
     }
 
     @Override
     default boolean allowsExtraction(int index) {
+        //We effectively flip the root's check so that we check on index-less instead
         return allowsExtraction();
     }
 }

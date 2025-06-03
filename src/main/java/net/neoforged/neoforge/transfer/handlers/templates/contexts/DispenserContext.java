@@ -7,6 +7,8 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.BlockSource;
@@ -16,9 +18,6 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A context that represents a dispenser's inventory.

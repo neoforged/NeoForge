@@ -5,13 +5,13 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import java.util.Objects;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-
-import java.util.Objects;
 
 public abstract class ResourceStorageHandler<T extends IResource> implements IResourceHandler<T> {
     /**
@@ -31,15 +31,14 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
      * The snapshot handler for
      */
     private final ComponentSnapshot snapshot = new ComponentSnapshot();
+
     public ResourceStorageHandler(int size, int capacity, T defaultResource) {
         this.size = size;
         this.capacity = capacity;
         this.defaultResource = defaultResource;
-
     }
 
     private class ComponentSnapshot extends SnapshotJournal<IResourceStorageData<T>> {
-
         @Override
         protected IResourceStorageData<T> createSnapshot() {
             return getContents();
@@ -60,7 +59,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
     public void setContents(IResourceStorageData<T> contents) {}
 
-    protected void onContentsChanged() { }
+    protected void onContentsChanged() {}
 
     public int modifyContents(IResourceStorageData<T> contents, int requestedAmount, int changedAmount, TransactionContext context) {
         return changedAmount;
@@ -69,7 +68,8 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     @Override
     public int insert(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+
         IResourceStorageData<T> contents = getContents();
         int changedAmount = insertBehavior(contents, index, resource, amount, context);
 
@@ -78,13 +78,15 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
     @Override
     public int insert(T resource, int amount, TransactionContext context) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
         for (int i = 0; i < size(); i++) {
             changedAmount += insertBehavior(contents, i, resource, amount - changedAmount, context);
             if (changedAmount >= amount) break;
         }
+
         return modifyContents(contents, amount, changedAmount, context);
     }
 
@@ -116,7 +118,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     @Override
     public int extract(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = extractBehavior(contents, index, resource, amount, context);
         return modifyContents(contents, amount, changedAmount, context);
@@ -124,7 +126,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
         //OLD:
         //Get the contents and if not mutable, make it mutable ONLY if we are executing.
         // Otherwise, we can keep the existing allocations.

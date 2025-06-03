@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
@@ -17,6 +18,13 @@ import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStora
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+/**
+ * A generalized resource handler prioritized for storing items. There is a {@link FluidStorageHandler.Component component} and an {@link FluidStorageHandler.Attachment attachment} variant to choose from.
+ * Both utilize a similar backing component structure, but vary slightly with how mutable they may be based on the implementation.
+ * <p>
+ * ItemStacks for example require their component data to be immutable, so changing or mutating the amount is out of the equation.
+ * On the other hand an attachment that lives on a BlockEntity can be mutable and thus reduces its GC presence.
+ */
 public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemResource> {
     public ItemStorageHandler(int size) {
         super(size, Item.ABSOLUTE_MAX_STACK_SIZE, ItemResource.EMPTY);
@@ -46,6 +54,7 @@ public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemReso
         public void setContents(IResourceStorageData<ItemResource> contents) {
             itemContext.getResource().with(componentType, (ResourceStorageComponent<ItemResource>) contents);
         }
+
         @Override
         public int modifyContents(IResourceStorageData<ItemResource> contents, int requestedAmount, int changedAmount, TransactionContext action) {
             if (changedAmount == 0) return 0;

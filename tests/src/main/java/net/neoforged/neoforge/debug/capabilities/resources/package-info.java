@@ -8,7 +8,6 @@
 @ParametersAreNonnullByDefault
 package net.neoforged.neoforge.debug.capabilities.resources;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.FieldsAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
-
-import javax.annotation.ParametersAreNonnullByDefault;

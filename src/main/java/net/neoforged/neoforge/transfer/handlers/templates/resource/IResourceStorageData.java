@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import java.util.Iterator;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import org.jetbrains.annotations.Contract;
-
-import java.util.Iterator;
 
 public interface IResourceStorageData<TResource extends IResource> extends Iterable<IResourceStack<TResource>> {
     int size();

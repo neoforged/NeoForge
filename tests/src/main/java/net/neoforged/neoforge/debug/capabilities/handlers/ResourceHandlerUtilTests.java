@@ -52,7 +52,7 @@ public class ResourceHandlerUtilTests {
 
         srcHandler.set(10, workingStack.resource(), workingStack.amount());
 
-        var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, workingStack.amount(), TransactionContext.EMPTY);
+        var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.instance(ItemResource.EMPTY), workingStack.amount(), TransactionContext.EMPTY);
         helper.assertTrue(workingStack.amount() == amountMoved, "Did not move everything. Should have moved all 5000 cobble to it (to void), moved " + amountMoved);
 
         var infiniteStackHandler = new InfiniteResourceHandler<>(workingStack.resource());
@@ -61,8 +61,8 @@ public class ResourceHandlerUtilTests {
 
         dstHandler.set(10, workingStack.resource(), workingStack.amount());
         try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
-            helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, transaction), 0, "Nothing should move");
-            helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, transaction), 100, "amount to move");
+            helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.instance(ItemResource.EMPTY), itemResource -> itemResource.is(Items.STICK), 100, transaction), 0, "Nothing should move");
+            helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.instance(ItemResource.EMPTY), itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, transaction), 100, "amount to move");
         }
         helper.assertTrue(ResourceHandlerUtil.hasResource(dstHandler, workingStack.resource()), "The dst handler should have cobble");
         helper.assertFalse(ResourceHandlerUtil.hasResource(dstHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");

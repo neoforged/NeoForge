@@ -10,9 +10,10 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
-//Not tested, it at least looks to read correctly, but unsure about writing back, as well as not sure the logical use of neo having this.
-//This also only handles of a single type, which means recipes looking for a composite of say fluid and item can't use this.
-//Leaning towards removal
+// Not tested, it at least looks to read correctly, but unsure about writing back, as well as not sure the logical use of neo having this.
+// This also only handles of a single type, which means recipes looking for a composite of say fluid and item can't use this.
+// Leaning towards removal
+@Deprecated
 public class ResourceHandlerRecipeInput implements RecipeInput {
     protected final IResourceHandler<ItemResource> handler;
 

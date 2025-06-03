@@ -42,7 +42,7 @@ public class ComponentResourceTests {
         IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
 
-        var fluidContext = new ItemContextFluidHandler(context, ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT.get(), capacity);
+        var fluidContext = new ItemContextFluidHandler.Consumable(context, ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT.get(), capacity);
 
         if (fluidContext.size() != 1)
             helper.fail("Expected a single tank");

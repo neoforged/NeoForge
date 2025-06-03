@@ -7,17 +7,17 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.InventoryResourceWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.InventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class CreativePlayerContext extends StaticContext {
-    protected final InventoryResourceWrapper handler;
+    protected final InventoryWrapper handler;
 
     public CreativePlayerContext(ItemResource resource, int amount, Player player) {
         super(resource, amount);
-        this.handler = InventoryResourceWrapper.of(player);
+        this.handler = InventoryWrapper.of(player);
     }
 
     @Override

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+//Unfortunately, this was not really feasible from what I could tell while also providing a fully generalized transaction snapshot.
+// It may be best to just have IFluidHandler be deprecated and intended to be removed rather than phase out slowly.
+// Leaving the classes in allows for a quick check on the migration path, but it shouldn't be expected to be used
+
 ///*
 // * Copyright (c) NeoForged and contributors
 // * SPDX-License-Identifier: LGPL-2.1-only
@@ -10,7 +19,7 @@
 //import net.neoforged.neoforge.transfer.TransferAction;
 //import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 //import net.neoforged.neoforge.transfer.resources.FluidResource;
-//import net.neoforged.neoforge.transfer.transaction.Transaction;
+//import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 //
 ///**
 // * A wrapper for devs who are still using the legacy IFluidHandler interface. This should not be relied on and should be
@@ -32,27 +41,27 @@
 //    }
 //
 //    @Override
-//    public int insert(int index, FluidResource resource, int amount, TransferAction action) {
+//    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
 //        FluidStack fluidInTank = handler.getFluidInTank(index);
 //        if (resource.isEmpty() || amount <= 0 || !(fluidInTank.isEmpty() || resource.matches(fluidInTank))) return 0;
-//        return insert(resource, amount, action);
+//        return insert(resource, amount, transaction);
 //    }
 //
 //    @Override
-//    public int extract(int index, FluidResource resource, int amount, Transaction transaction) {
+//    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
 //        if (resource.isEmpty() || amount <= 0 || !resource.matches(handler.getFluidInTank(index))) return 0;
 //        return extract(resource, amount, transaction);
 //    }
 //
 //    @Override
-//    public int insert(FluidResource resource, int amount, Transaction transaction) {
+//    public int insert(FluidResource resource, int amount, TransactionContext transaction) {
 //        if (resource.isEmpty() || amount <= 0) return 0;
 //
 //        return handler.fill(resource.toStack(amount), action.isExecuting() ? IFluidHandler.FluidAction.EXECUTE : IFluidHandler.FluidAction.SIMULATE);
 //    }
 //
 //    @Override
-//    public int extract(FluidResource resource, int amount, TransferAction action) {
+//    public int extract(FluidResource resource, int amount, TransactionContext action) {
 //        if (resource.isEmpty() || amount <= 0) return 0;
 //        var test = handler.drain(resource.toStack(amount), IFluidHandler.FluidAction.SIMULATE);
 //        if (test.isEmpty() || !resource.matches(test)) return 0;

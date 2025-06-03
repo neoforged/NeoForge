@@ -20,7 +20,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
@@ -42,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.fluid_util.")
 public class FluidUtilTest {
-
     private static void setFluid(ExtendedGameTestHelper helper, BlockPos blockPos, ResourceStack<FluidResource> resourceStack) {
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, blockPos, null);
         if (handler instanceof IResourceHandlerModifiable<FluidResource> modifiable) {
@@ -73,7 +71,9 @@ public class FluidUtilTest {
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 2);
 
         resetInventory(player, new ItemStack(Items.BUCKET, 5));
-        FluidUtil.moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, PlayerContext.ofHand(player, InteractionHand.MAIN_HAND).getCapability(Capabilities.FluidHandler.ITEM), Integer.MAX_VALUE, TransferAction.EXECUTE);
+        var capability = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND).getCapability(Capabilities.FluidHandler.ITEM);
+        assert capability != null;
+        FluidUtil.moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, capability, Integer.MAX_VALUE);
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 5);
 
         helper.setBlock(posOfWater, Blocks.AIR);
@@ -126,8 +126,8 @@ public class FluidUtilTest {
             helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), ResourceHandlerUtil.MAX, transaction), "fluid amount");
         }
 
-            helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
-            checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
+        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
+        checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
         try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
             helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), ResourceHandlerUtil.MAX, transaction), "fluid amount");
         }

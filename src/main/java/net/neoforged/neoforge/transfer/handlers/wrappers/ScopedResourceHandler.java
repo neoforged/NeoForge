@@ -5,17 +5,18 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import java.util.Arrays;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
 /**
  * A wrapper that delegates all calls to specific set of indices of a handler.
+ * <p>
+ * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled.
  *
  * @param <T> The type of resource this handler manages.
  */

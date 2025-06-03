@@ -22,6 +22,7 @@ public class SimpleItemResourceContainer extends ResourceContainer<ItemResource>
     }
 
     //Because Items also have their own stack sizes, there are scenarios for default chest implementations to handle this.
+    // Overriding this limit is possible, it just requires a subclass
     @Override
     public int getCapacity(int index, ItemResource resource) {
         return Math.min(resource.getMaxStackSize(), super.getCapacity(index, resource));

@@ -7,23 +7,26 @@ package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ItemContainerToVanillaAdapter;
-import net.neoforged.neoforge.transfer.resources.*;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * A data storage for mutable resource stacks. This data can be put anywhere (with limited exceptions such as DataComponents), but it was designed with {@link net.neoforged.neoforge.attachment.AttachmentType DataAttachments} in mind.
@@ -53,7 +56,7 @@ import java.util.function.Function;
 public class ResourceContainer<T extends IResource> implements IResourceContainer<T> {
     private final NonNullList<MutableResourceStack<T>> resourceStacks;
     private final List<IndexSnapshot> indexSnapshots = new ArrayList<>();
-    private final SetChangedJournal changedJournal;
+    private final SetChangedSnapshot changedJournal;
     private final ResourceStack<T> defaultResource;
     private final int size;
     private final int capacity;
@@ -62,7 +65,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
      * @param resourceStacks  The backing list of stacks that are stored. This is what is snapshotted
      * @param defaultResource The resource that should fill the backing list given a reset or clear
      * @param capacity        The amount all resource stacks can stack up to.
-     * @param updateCallback  Called in {@link #changedJournal changedJournal's} {@link SetChangedJournal#onCommit onCommit}
+     * @param updateCallback  Called in {@link #changedJournal changedJournal's} {@link SetChangedSnapshot#onCommit onCommit}
      */
     public ResourceContainer(NonNullList<MutableResourceStack<T>> resourceStacks, ResourceStack<T> defaultResource, int capacity, @Nullable Runnable updateCallback) {
         Objects.requireNonNull(resourceStacks);
@@ -71,7 +74,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         Objects.checkIndex(0, resourceStacks.size());
         this.size = resourceStacks.size();
         this.resourceStacks = resourceStacks;
-        changedJournal = SetChangedJournal.of(updateCallback);
+        changedJournal = SetChangedSnapshot.of(updateCallback);
         this.defaultResource = defaultResource;
         this.capacity = capacity;
         updateSlots();
@@ -82,7 +85,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         return indexSnapshots.get(index);
     }
 
-    public SetChangedJournal getChangeSetJournal(){
+    protected final SetChangedSnapshot getChangeSetJournal() {
         return changedJournal;
     }
 
@@ -171,7 +174,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     private static final Container EMPTY = new Container() {
         @Override
-        public void clearContent() { }
+        public void clearContent() {}
 
         @Override
         public int getContainerSize() {
@@ -199,10 +202,10 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public void setItem(int p_18944_, ItemStack p_18945_) { }
+        public void setItem(int p_18944_, ItemStack p_18945_) {}
 
         @Override
-        public void setChanged() { }
+        public void setChanged() {}
 
         @Override
         public boolean stillValid(Player p_18946_) {
@@ -258,7 +261,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
             for (int i = 0; i < length; i++)
                 ResourceContainer.this.resourceStacks.set(i + start, emptyResource().mutable());
             getChangeSetJournal().runCallback();
-
         }
 
         @Override
@@ -321,7 +323,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
     }
 
-
     private class IndexSnapshot extends SnapshotJournal<MutableResourceStack<T>> {
         private final int slot;
 
@@ -341,7 +342,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
         @Override
         public void updateSnapshots(TransactionContext transaction) {
-            changedJournal.updateSnapshots(transaction);
+            getChangeSetJournal().updateSnapshots(transaction);
             super.updateSnapshots(transaction);
         }
     }

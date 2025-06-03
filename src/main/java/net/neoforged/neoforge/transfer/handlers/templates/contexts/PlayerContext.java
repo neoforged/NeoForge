@@ -10,17 +10,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.InventoryResourceWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.InventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A context that represents a player's inventory slot.
  */
-public class PlayerContext extends SnapshotJournal<ItemStack> implements IItemContext {
-    protected final InventoryResourceWrapper handler;
+public class PlayerContext implements IItemContext {
+    protected final InventoryWrapper handler;
     protected final int index;
 
     public static IItemContext ofHand(Player player, InteractionHand hand) {
@@ -41,7 +39,7 @@ public class PlayerContext extends SnapshotJournal<ItemStack> implements IItemCo
 
     public PlayerContext(Player player, int index) {
         //This could be captured by player.getCapability, but it was pointed out that has a non-zero chance to return null
-        this.handler = InventoryResourceWrapper.of(player);
+        this.handler = InventoryWrapper.of(player);
         this.index = index;
     }
 
@@ -57,34 +55,22 @@ public class PlayerContext extends SnapshotJournal<ItemStack> implements IItemCo
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        updateSnapshots(transaction);
         int inserted = handler.insert(index, resource, amount, transaction);
         if (inserted < amount) {
             var size = handler.size();
             for (var handlerIndex = 0; handlerIndex < size; handlerIndex++) {
-                if(index == handlerIndex) continue;
-                inserted += handler.insert(handlerIndex, resource, amount-inserted, transaction);
+                if (index == handlerIndex) continue;
+                inserted += handler.insert(handlerIndex, resource, amount - inserted, transaction);
             }
         }
-        if(inserted<amount) {
-            handler.drop(resource, amount-inserted, true, true, transaction);
+        if (inserted < amount) {
+            handler.drop(resource, amount - inserted, true, true, transaction);
         }
         return amount;
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        updateSnapshots(transaction);
         return handler.extract(index, resource, amount, transaction);
-    }
-
-    @Override
-    protected ItemStack createSnapshot() {
-        return UnsafeResourceUtils.innerStackOf(getResource());
-    }
-
-    @Override
-    protected void revertToSnapshot(ItemStack snapshot) {
-        handler.set(index, ItemResource.of(snapshot), snapshot.getCount());
     }
 }

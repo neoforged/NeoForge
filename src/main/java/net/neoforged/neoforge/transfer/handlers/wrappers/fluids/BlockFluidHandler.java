@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A handler for placing and picking up fluid blocks in the world.
+ * <p>
+ * This is commonly used with the {@link FluidUtil#tryPickupFluid} or {@link FluidUtil#tryPlaceFluid}
  */
 public class BlockFluidHandler extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -99,7 +101,7 @@ public class BlockFluidHandler extends SnapshotJournal<BlockState> implements IS
             updateSnapshots(transaction);
             FluidUtil.destroyBlockOnFluidPlacement(level, pos);
             level.setBlock(pos, resource.getInstanceValue().defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL_IMMEDIATE);
-        }else{
+        } else {
             return 0;
         }
 

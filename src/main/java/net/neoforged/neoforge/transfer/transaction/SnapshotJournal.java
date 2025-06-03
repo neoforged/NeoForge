@@ -1,14 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.transaction;
 
-
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
- * A base participant implementation that modifies itself during transactions,
+ * A journal that modifies itself during transactions,
  * saving snapshots of its state in objects of type {@code T} in case it needs to revert to a previous state.
  *
  * <h3>How to use from subclasses</h3>
@@ -36,8 +39,8 @@ import java.util.Objects;
  *
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
-public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, Transaction.OuterCloseCallback {
-    private final List<T> snapshots = new ArrayList<>();
+public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
+    private final Int2ObjectMap<T> snapshots = new Int2ObjectLinkedOpenHashMap<>();
     @Nullable
     private T originalState = null;
 
@@ -73,17 +76,11 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      * This function should be called every time the participant is about to change its internal state as part of a transaction.
      */
     public void updateSnapshots(TransactionContext transaction) {
-        // Make sure we have enough storage for snapshots
-        while (snapshots.size() <= transaction.nestingDepth()) {
-            snapshots.add(null);
-        }
-
-        // If the snapshot is null, we need to create it, and we need to register a callback.
         if (snapshots.get(transaction.nestingDepth()) == null) {
             T snapshot = createSnapshot();
             Objects.requireNonNull(snapshot, "Snapshot may not be null!");
 
-            snapshots.set(transaction.nestingDepth(), snapshot);
+            snapshots.put(transaction.nestingDepth(), snapshot);
             transaction.addCloseCallback(this);
         }
     }
@@ -91,30 +88,36 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     @Override
     public void onClose(TransactionContext transaction, Transaction.Result result) {
         // Get and remove the relevant snapshot.
-        T snapshot = snapshots.set(transaction.nestingDepth(), null);
+        T snapshot = snapshots.remove(transaction.nestingDepth());
 
         if (result.wasAborted()) {
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
-        } else if (transaction.nestingDepth() > 0) {
-            if (snapshots.get(transaction.nestingDepth() - 1) == null) {
-                // No snapshot yet, so move the snapshot one nesting level up.
-                snapshots.set(transaction.nestingDepth() - 1, snapshot);
-                // This is the first snapshot at this level: we need to call addCloseCallback.
-                transaction.getOpenTransaction(transaction.nestingDepth() - 1).addCloseCallback(this);
-            } else {
-                // There is already an older snapshot at the nesting level above, just release the newer one.
-                releaseSnapshot(snapshot);
-            }
-        } else {
+            if (transaction.nestingDepth() <= 0)
+                snapshots.clear();
+            return;
+        }
+
+        if (transaction.nestingDepth() <= 0) {
             originalState = snapshot;
-            transaction.addOuterCloseCallback(this);
+            transaction.addRootCloseCallback(this);
+            return;
+        }
+
+        if (snapshots.get(transaction.nestingDepth() - 1) == null) {
+            // No snapshot yet, so move the snapshot one nesting level up.
+            snapshots.put(transaction.nestingDepth() - 1, snapshot);
+            // This is the first snapshot at this level: we need to call addCloseCallback.
+            transaction.getOpenTransaction(transaction.nestingDepth() - 1).addCloseCallback(this);
+        } else {
+            // There is already an older snapshot at the nesting level above, just release the newer one.
+            releaseSnapshot(snapshot);
         }
     }
 
     @Override
-    public void afterOuterClose(Transaction.Result result) {
+    public void afterRootClose(Transaction.Result result) {
         // The result is guaranteed to be COMMITTED,
         // as this is only scheduled during onClose() when the outer transaction is successful.
         // For the same reason, the originalState is known to be non-null.
@@ -123,5 +126,6 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         onCommit(originalState);
         releaseSnapshot(originalState);
         originalState = null;
+        //TODO should we clear the snapshots?
     }
 }

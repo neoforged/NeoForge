@@ -77,10 +77,10 @@ public class FluidUtil {
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
-        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE, TransferAction.EXECUTE);
+        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE);
         if (!tryInsert.isEmpty()) return true;
 
-        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE, TransferAction.EXECUTE);
+        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE);
         return !tryExtract.isEmpty();
     }
 
@@ -93,13 +93,12 @@ public class FluidUtil {
      * @param from        The fluid handler to move fluid from.
      * @param to          The fluid handler to move fluid to.
      * @param amount      The amount of fluid to move.
-     * @param action      The action to perform.
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
-    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, TransferAction action) {
+    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
         try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
-            var moved = ResourceHandlerUtil.moveOrDefault(from, to, r-> true, amount, transaction, FluidResource.EMPTY_STACK);
-            if (moved.isEmpty() || action.isSimulating()) return moved;
+            var moved = ResourceHandlerUtil.moveOrDefault(from, to, r -> true, amount, transaction, FluidResource.EMPTY_STACK);
+            if (moved.isEmpty()) return moved;
 
             SoundEvent soundevent = moved.resource().getSound(soundAction);
             if (soundevent != null) {
@@ -123,7 +122,7 @@ public class FluidUtil {
      */
     public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
+        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME);
         return !pickedUp.isEmpty();
     }
 
@@ -139,7 +138,7 @@ public class FluidUtil {
      */
     public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME, TransferAction.EXECUTE);
+        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME);
         return !placed.isEmpty();
     }
 
@@ -229,7 +228,6 @@ public class FluidUtil {
         return getFluidContained(new StaticContext(stack));
     }
 
-
     /**
      * @param fluidVariant contents used to fill the bucket
      * @return a filled vanilla bucket or filled universal bucket.
@@ -246,5 +244,5 @@ public class FluidUtil {
         return ItemResource.of(fluidVariant.getInstanceValue().getFluidType().getBucket(fluidVariant.toStack(FluidType.BUCKET_VOLUME)));
     }
 
-    private FluidUtil() { }
+    private FluidUtil() {}
 }

@@ -23,7 +23,7 @@
 +                    itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
 +                } else {
 +//                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack, false);
-+                    var accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack), itemstack.getCount(), net.neoforged.neoforge.transfer.TransferAction.EXECUTE, null);
++                    var accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack), itemstack.getCount(), null);
 +                    itemstack.shrink(accepted);
 +                }
                  if (i == itemstack.getCount()) {

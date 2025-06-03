@@ -82,5 +82,5 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
         return "EmptyResourceHandler";
     }
 
-    private EmptyResourceHandler() { }
+    private EmptyResourceHandler() {}
 }

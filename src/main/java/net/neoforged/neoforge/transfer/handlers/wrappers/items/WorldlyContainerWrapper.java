@@ -1,4 +1,9 @@
-package net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
@@ -10,18 +15,17 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
-public class VanillaWorldlyContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
+public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     private final WorldlyContainer worldlyContainer;
-    private final AlternateVanillaContainerResourceWrapper wrappedContainer;
+    private final VanillaContainerWrapper wrappedContainer;
     @Nullable
     private final Direction side;
-    public VanillaWorldlyContainerWrapper(WorldlyContainer container, @Nullable Direction side) {
+
+    public WorldlyContainerWrapper(WorldlyContainer container, @Nullable Direction side) {
         this.worldlyContainer = container;
-        this.wrappedContainer = AlternateVanillaContainerResourceWrapper.of(container);
+        this.wrappedContainer = VanillaContainerWrapper.of(container);
         this.side = side;
     }
-
-
 
     private int convertSlot(int slot) {
         if (slot < 0) {
@@ -36,12 +40,6 @@ public class VanillaWorldlyContainerWrapper implements IResourceHandlerModifiabl
         }
         return slots[slot];
     }
-
-
-
-    ///
-
-
 
     @Override
     public int size() {
@@ -81,6 +79,7 @@ public class VanillaWorldlyContainerWrapper implements IResourceHandlerModifiabl
     public boolean allowsExtraction(int index) {
         return true;
     }
+
     @Override
     public int insert(int index, ItemResource resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         int convertedIndex = convertSlot(index);
@@ -89,21 +88,22 @@ public class VanillaWorldlyContainerWrapper implements IResourceHandlerModifiabl
         }
         return wrappedContainer.insert(convertedIndex, resource, amount, transaction);
     }
+
     @Override
     public int insert(ItemResource resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         return 0;
     }
+
     @Override
     public int extract(int index, ItemResource resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         return 0;
     }
+
     @Override
     public int extract(ItemResource resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
-
-    }
+    public void set(int index, ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {}
 }

@@ -5,12 +5,13 @@
 
 package net.neoforged.neoforge.transfer.handlers;
 
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * <pre>{@code
  * IItemContext context = PlayerContext.ofHand(InteractionHand.MAIN_HAND);
  * }</pre>
+ *
  * <p>
  * Next, we get the capability for fluid handling. We can use the shortcut method {@link #getCapability(ItemCapability)}
  * to get the capability without needing to get the stack:
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * <pre>{@code
  * IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
  * }</pre>
+ *
  * <p>
  * Now we can extract the fluid from the stack:
  *
@@ -44,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
  * FluidResource resource = handler.getResource(0);
  * handler.extract(resource, FluidType.BUCKET_VOLUME, transaction);
  * }</pre>
+ *
  * <p>
  * And boom! We've successfully extracted a bucket's worth of honey from our stack of honey bottles.
  * <h3>Example Usage in Handler</h3>
@@ -56,12 +60,14 @@ import org.jetbrains.annotations.Nullable;
  * // other extraction code
  * context.exchange(Items.BOTTLE.defaultResource, 4, transaction);
  * }</pre>
+ *
  * <p>
  * This will remove 4 bottles of honey from the stack and replace them with 4 empty bottles. Since the stack still has
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
 public interface IItemContext {
     @Nullable
+    @ApiStatus.NonExtendable
     default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
         return capability.getCapability(getResource().toStack(), this);
     }
@@ -113,16 +119,6 @@ public interface IItemContext {
     }
 
     /**
-     * @return True if any attempts to modify the items in this context will not work. Storage implementations can
-     * use this to return appropriate information from {@link IResourceHandler#allowsInsertion}
-     * or {@link IResourceHandler#allowsExtraction}.
-     */
-    default boolean isReadOnly() {
-        return false;
-    }
-
-
-    /**
      * Creates a context object for working with resource handler contained in an item.
      *
      * @param handler The handler containing the item.
@@ -156,54 +152,54 @@ public interface IItemContext {
         };
     }
 
-    /**
-     * Creates a context object based on the given itemstack, which will only allow inspection of the contained
-     * handler, but no modification.
-     */
-    static IItemContext readOnlyOf(ItemStack stack) {
-        return new ReadOnly(ItemResource.of(stack), stack.getCount());
-    }
-
-
-    final class ReadOnly implements IItemContext {
-        private final ItemResource item;
-        private final int amount;
-
-        public ReadOnly(ItemResource item, int amount) {
-            if (amount < 0) {
-                throw new IllegalArgumentException("amount must be non-negative: " + amount);
-            }
-            this.item = item;
-            this.amount = amount;
-        }
-
-        @Override
-        public boolean isReadOnly() {
-            return true;
-        }
-
+    record ReadOnly(IItemContext context) implements IItemContext {
         @Override
         public ItemResource getResource() {
-            return item;
+            return context.getResource();
         }
 
         @Override
         public int getAmount() {
-            return amount;
+            return context.getAmount();
         }
 
         @Override
         public int insert(ItemResource itemVariant, int amount, TransactionContext transaction) {
-            return 0;
+            try (var subTransaction = Transaction.open(transaction)) {
+                return context.insert(itemVariant, amount, subTransaction);
+            }
         }
 
         @Override
         public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
-            return 0;
+            try (var subTransaction = Transaction.open(transaction)) {
+                return context.extract(itemVariant, amount, subTransaction);
+            }
         }
+
         @Override
-        public int exchange(ItemResource resource, int amount, TransactionContext context) {
-            return 0;
+        public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
+            try (var subTransaction = Transaction.open(transaction)) {
+                return context.exchange(resource, amount, subTransaction);
+            }
         }
+    }
+
+    /**
+     * Creates a context object based on the given context, which will only allow inspection of the contained
+     * handler, but no modification. You can still call insert or extract, and as long as the handler is properly setup to handle snapshots, the calls will be reverted
+     */
+    @ApiStatus.NonExtendable
+    default IItemContext asReadOnly() {
+        return new ReadOnly(this);
+    }
+
+    /**
+     * What usecases are there?
+     * Creates a wrapper around this context that allows access to a single item at the time.
+     */
+    @ApiStatus.NonExtendable
+    default IItemContext oneByOne() {
+        return new OneByOneItemContext(this);
     }
 }

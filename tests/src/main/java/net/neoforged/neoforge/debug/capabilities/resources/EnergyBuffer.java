@@ -1,12 +1,18 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Range;
 
 /**
- * This is more of a demonstration, not an implementation that should necessarily be used. This is to showcase we don't need an entire separate system
+ * This is more of a demonstration, not an implementation that should necessarily be used, that will be a followup PR that will handle typeless, primitive value based handlers.
+ * This is just to showcase we don't need an entire separate system
  * for energy or other single value amounts, we can just use a singleton resource type such as {@link EnergyUnit}.
  * Any instruction call we can assume the resource is the instance.
  * <p>

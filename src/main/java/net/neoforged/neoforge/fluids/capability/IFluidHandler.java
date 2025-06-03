@@ -7,17 +7,17 @@ package net.neoforged.neoforge.fluids.capability;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Implement this interface as a capability which should handle fluids
  * 
- * @deprecated Use {@link IResourceHandler} of {@link FluidResource} instead. It is advised to fully swap over, but as a quick test migration, there is the option of using the {@link LegacyFluidHandlerAdapter LegacyFluidHandlerWrapper}
+ * @deprecated Use {@link IResourceHandler} bound by type {@link FluidResource} instead.
  */
 
 @Deprecated(forRemoval = true, since = "1.21.6")
@@ -67,7 +67,7 @@ public interface IFluidHandler {
      *
      * @param tank Tank to query.
      * @return The maximum fluid amount held by the tank.
-     * @deprecated {@link IResourceHandler#getCapacity(int)}
+     * @deprecated {@link IResourceHandler#getCapacity(int, IResource) IResourceHandler#getCapacity(int, FluidResource.EMPTY)}
      */
     int getTankCapacity(int tank);
 
@@ -89,7 +89,7 @@ public interface IFluidHandler {
      * @param resource FluidStack representing the Fluid and maximum amount of fluid to be filled.
      * @param action   If SIMULATE, fill will only be simulated.
      * @return Amount of resource that was (or would have been, if simulated) filled.
-     * @deprecated This is now {@link IResourceHandler#insert(IResource, int, Transaction)}
+     * @deprecated This is now {@link IResourceHandler#insert(IResource, int, TransactionContext)}
      */
     int fill(FluidStack resource, FluidAction action);
 
@@ -100,7 +100,7 @@ public interface IFluidHandler {
      * @param action   If SIMULATE, drain will only be simulated.
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
      *         simulated) drained.
-     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, Transaction)}
+     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransactionContext)}
      */
     FluidStack drain(FluidStack resource, FluidAction action);
 
@@ -113,16 +113,7 @@ public interface IFluidHandler {
      * @param action   If SIMULATE, drain will only be simulated.
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
      *         simulated) drained.
-     * @deprecated This is now {@link ResourceHandlerUtil#extractAny(IResourceHandler, int, TransferAction, IResource) ResourceHandlerUtil#extractAny(IResourceHandler, int, TransferAction, IResource)}
+     * @deprecated This is now {@link ResourceHandlerUtil#extractAny(IResourceHandler, int, IResourceStack, TransactionContext)}
      */
     FluidStack drain(int maxDrain, FluidAction action);
-
-//    /**
-//     * A helper method to temporarily turn your existing IItemHandler into a {@link IResourceHandler< ItemResource >}
-//     * @return LegacyItemHandlerAdapter instance of this
-//     */
-//    @Deprecated(forRemoval = true, since = "1.21.6")
-//    default LegacyFluidHandlerAdapter asResourceHandler(){
-//        return LegacyFluidHandlerAdapter.of(this);
-//    }
 }

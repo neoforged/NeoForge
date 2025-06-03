@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer;
 
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +14,6 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class ItemUtil {
-
     /**
      * Inserts the given {@link ItemStack} into the players inventory. If the inventory can't hold it, the item will be dropped
      * in the world at the players position.
@@ -39,6 +43,7 @@ public class ItemUtil {
             if (inserted == amount) transaction.commit();
         }
     }
+
     /**
      * Inserts the given {@link ItemStack} into the players inventory.
      * If the inventory can't hold it, the item will be dropped in the world at the players position.

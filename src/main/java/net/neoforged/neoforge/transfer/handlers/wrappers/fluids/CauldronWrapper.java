@@ -5,7 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.fluids;
 
+import com.google.common.collect.MapMaker;
 import com.google.common.math.IntMath;
+import java.util.Map;
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -13,23 +16,29 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.WrapperLocation;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Objects;
-
 /**
  * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
  */
-public class CauldronFluidHandler extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
+public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
+    // Weak values to make sure wrappers are cleaned up after use, thread-safe.
+    private static final Map<WrapperLocation, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
     private final Level level;
     private final BlockPos pos;
 
-    public CauldronFluidHandler(Level level, BlockPos pos) {
-        this.level = level;
-        this.pos = pos;
+    public static CauldronWrapper get(Level level, BlockPos pos) {
+        var location = new WrapperLocation(level, pos.immutable());
+        return wrappers.computeIfAbsent(location, CauldronWrapper::new);
+    }
+
+    private CauldronWrapper(WrapperLocation location) {
+        this.level = location.level();
+        this.pos = location.pos();
     }
 
     private CauldronFluidContent getContent(BlockState state) {
@@ -166,7 +175,6 @@ public class CauldronFluidHandler extends SnapshotJournal<BlockState> implements
     protected void revertToSnapshot(BlockState snapshot) {
         level.setBlock(pos, snapshot, 0);
     }
-
 
     @Override
     protected void onCommit(BlockState originalState) {

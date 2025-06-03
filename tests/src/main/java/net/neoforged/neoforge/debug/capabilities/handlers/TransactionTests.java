@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.debug.capabilities.handlers;
 
 import net.minecraft.world.item.Item;
@@ -97,7 +102,6 @@ public class TransactionTests {
             return inserted;
         }
     }
-
 
     /**
      * Extracts 16 coal from slot 0 and inserts 1 diamond into slot 1. Only if both succeed.

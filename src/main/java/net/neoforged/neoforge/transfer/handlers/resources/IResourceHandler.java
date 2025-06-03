@@ -37,7 +37,9 @@ public interface IResourceHandler<T extends IResource> {
     int getAmount(int index);
 
     /**
-     * Gets the maximum amount that the given index can have of the given resource.
+     * Gets the maximum capacity that the given index can handle of the given resource.
+     * If an empty resource (an {@link IResource} that returns {@code true} on {@link IResource#isEmpty()}) is provided,
+     * then the theoretical maximum should be returned, regardless of the return of {@link #getResource} .
      *
      * @param index    The index to get the limit from.
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
@@ -68,9 +70,11 @@ public interface IResourceHandler<T extends IResource> {
      * This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * well before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in insert if the lookup is complex.
+     * It is also advised to not use the result of this call in insert.
      * <p>
      * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be insertable to.
+     * <p>
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check.
      * @return True if the resource can be inserted, false otherwise.
@@ -84,6 +88,8 @@ public interface IResourceHandler<T extends IResource> {
      * before actually operating.
      * <p>
      * It is also advised to not use the result of this call in insert.
+     * <p>
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @return True if a resource can be inserted, false otherwise.
      */
@@ -106,9 +112,12 @@ public interface IResourceHandler<T extends IResource> {
      * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in extract if the lookup is complex.
-     * *<p>
+     * It is also advised to not use the result of this call in extract.
+     * <p>
      * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be extractable from.
+     *
+     * <p>
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check.
      * @return True if the resource can be extracted, false otherwise.
@@ -121,7 +130,9 @@ public interface IResourceHandler<T extends IResource> {
      * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in extract if the lookup is complex.
+     * It is also advised to not use the result of this call in extract.
+     * <p>
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @return True if a resource can be extracted, false otherwise.
      */
@@ -137,10 +148,10 @@ public interface IResourceHandler<T extends IResource> {
     /**
      * Inserts a given amount of the resource into the handler at the given index.
      *
-     * @param index    The index to insert the resource into.
-     * @param resource The resource to insert.
-     * @param amount   The amount of the resource to insert. A range of 1 to {@value ResourceHandlerUtil#MAX}
-     * @param transaction  Context  The {@link TransactionContext Context } transaction to be inserting with.
+     * @param index       The index to insert the resource into.
+     * @param resource    The resource to insert.
+     * @param amount      The amount of the resource to insert. A range of 1 to {@value ResourceHandlerUtil#MAX}
+     * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
      * @return The amount of the resource that was (or would have been, if simulated) inserted. A range of 0 to {@value ResourceHandlerUtil#MAX}
      */
     int insert(int index, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction);
@@ -151,9 +162,9 @@ public interface IResourceHandler<T extends IResource> {
      * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
      * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
-     * @param resource The resource to insert.
-     * @param amount   The amount of the resource to insert. A range of 1 to {@value ResourceHandlerUtil#MAX}
-     * @param transaction  The {@link TransactionContext } transaction to be inserting with.
+     * @param resource    The resource to insert.
+     * @param amount      The amount of the resource to insert. A range of 1 to {@value ResourceHandlerUtil#MAX}
+     * @param transaction The {@link TransactionContext } transaction to be inserting with.
      * @return The amount (range from 0 to {@value ResourceHandlerUtil#MAX}) of the resource that was (or would have been, if simulated) inserted.
      */
     int insert(T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction);
@@ -161,10 +172,10 @@ public interface IResourceHandler<T extends IResource> {
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
-     * @param index    The index to extract the resource from.
-     * @param resource The resource to extract.
-     * @param amount   The amount of the resource to extract. A range of 1 to {@value ResourceHandlerUtil#MAX}
-     * @param transaction  The {@link TransactionContext } transaction to be extracting with.
+     * @param index       The index to extract the resource from.
+     * @param resource    The resource to extract.
+     * @param amount      The amount of the resource to extract. A range of 1 to {@value ResourceHandlerUtil#MAX}
+     * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (range from 0 to {@value ResourceHandlerUtil#MAX}) of the resource that was (or would have been, if simulated) extracted.
      */
     int extract(int index, T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction);
@@ -175,13 +186,12 @@ public interface IResourceHandler<T extends IResource> {
      * Implementation advice, don't just have this call {@link #extract(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
      * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
-     * @param resource The resource to extract.
-     * @param amount   The amount of the resource to extract. A range of 1 to {@value ResourceHandlerUtil#MAX}
-     * @param transaction  The {@link TransactionContext } transaction to be extracting with.
+     * @param resource    The resource to extract.
+     * @param amount      The amount of the resource to extract. A range of 1 to {@value ResourceHandlerUtil#MAX}
+     * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (range from 0 to {@value ResourceHandlerUtil#MAX}) of the resource that was (or would have been, if simulated) extracted.
      */
     int extract(T resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction);
-
 
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {
         //noinspection unchecked

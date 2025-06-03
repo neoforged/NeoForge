@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import java.util.List;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
@@ -21,8 +22,6 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class VanillaInventoryCodeHooks {
     /**
@@ -44,7 +43,7 @@ public class VanillaInventoryCodeHooks {
 
                 if (!dest.canPlaceItem(j, extractItem) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
                     continue;
-                extracted = ResourceHandlerUtil.extractAny(handler, 1,  ItemResource.EMPTY_STACK, TransactionContext.EMPTY);
+                extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.EMPTY);
                 if (extracted.isEmpty()) continue;//Should be unneeded
                 if (destStack.isEmpty())
                     dest.setItem(j, ItemResource.itemStackOf(extracted));

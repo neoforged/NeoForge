@@ -5,20 +5,24 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.container;
 
+import java.util.Iterator;
+import java.util.Objects;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Clearable;
+import net.minecraft.world.Container;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerSlice;
 import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerToHandlerAdapter;
+import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceHandlerToContainerAdapter;
+import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.VanillaToItemContainerAdapter;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import org.jetbrains.annotations.Contract;
-
-import java.util.Iterator;
-import java.util.Objects;
 
 // Originally written by Soaryn for XyCraft adopted from Amadornes's ItemContainer.
 public interface IResourceContainer<TResource extends IResource> extends Iterable<IResourceStack<TResource>>, Clearable {
@@ -30,7 +34,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     @Contract(pure = true)
     int size();
 
-    SnapshotJournal<MutableResourceStack<TResource>> getParticipant(int index);
+    SnapshotJournal<?> getParticipant(int index);
 
     /**
      * Clears all slots of resources. Sets them all to the empty variant.<br>
@@ -55,27 +59,27 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
         return true;
     }
 
-//    /**
-//     * Creates a new item holder that wraps the specified vanilla {@link Container}.
-//     *
-//     * @param container The vanilla container.
-//     * @return A wrapping item holder.
-//     */
-//    @Contract(value = "_ -> new", pure = true)
-//    static IResourceContainer<ItemResource> wrap(Container container) {
-//        return new VanillaToItemContainerAdapter(container);
-//    }
+    /**
+     * Creates a new item holder that wraps the specified vanilla {@link Container}.
+     *
+     * @param container The vanilla container.
+     * @return A wrapping item holder.
+     */
+    @Contract(value = "_ -> new", pure = true)
+    static IResourceContainer<ItemResource> wrap(Container container) {
+        return new VanillaToItemContainerAdapter(container);
+    }
 
-//    /**
-//     * Creates a new item holder that wraps the specified {@link IResourceHandler}.
-//     *
-//     * @param handler The resource handler.
-//     * @return A wrapping item holder.
-//     */
-//    @Contract(value = "_, _ -> new", pure = true)
-//    static <T extends IResource> IResourceContainer<T> wrap(IResourceHandler<T> handler, ResourceStack<T> emptyResource) {
-//        return new ResourceHandlerToContainerAdapter<>(handler, emptyResource);
-//    }
+    /**
+     * Creates a new item holder that wraps the specified {@link IResourceHandler}.
+     *
+     * @param handler The resource handler.
+     * @return A wrapping item holder.
+     */
+    @Contract(value = "_, _ -> new", pure = true)
+    static <T extends IResource> IResourceContainer<T> wrap(IResourceHandler<T> handler, ResourceStack<T> emptyResource) {
+        return new ResourceHandlerToContainerAdapter<>(handler, emptyResource);
+    }
 
     /**
      * Gets the {@link MutableResourceStack} in the specified index.<br/>

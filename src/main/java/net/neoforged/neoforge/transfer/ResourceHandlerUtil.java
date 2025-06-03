@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer;
 
+import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -18,9 +20,6 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
-
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public final class ResourceHandlerUtil {
     /**
@@ -317,7 +316,6 @@ public final class ResourceHandlerUtil {
         return extractIndexFiltered(handler, index, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
     }
 
-
     /**
      * Extracts the first resource from an {@link IResourceHandler} that is not empty.
      *
@@ -332,7 +330,6 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> IResourceStack<T> extractAny(IResourceHandler<T> handler, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
         return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
     }
-
 
     /////////////////////////////////////
     /**
@@ -374,7 +371,6 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int move(@Nullable IResourceHandler<T> from, @Nullable IResourceHandler<T> to, Predicate<T> filter, int amount, @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (from == null || to == null) return 0;
-
 
         try (Transaction subTransaction = Transaction.open(transaction)) {
             int totalMoved = 0;
@@ -484,11 +480,9 @@ public final class ResourceHandlerUtil {
                     .setDetail("Transaction", transaction);
             throw new ReportedException(report);
         }
-
     }
 
     /////////////////////////////////////
-
 
     /**
      * Moves a resource from one {@link IResourceHandler} to another.
@@ -515,6 +509,5 @@ public final class ResourceHandlerUtil {
         }
     }
 
-
-    private ResourceHandlerUtil() { }
+    private ResourceHandlerUtil() {}
 }

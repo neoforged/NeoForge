@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.capabilities;
 
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -19,15 +20,23 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.DoubleBlockCombiner;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.transfer.handlers.templates.items.ItemContainerContentsResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceHandlerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.*;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.ComposterWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.EntityEquipmentItemHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.InventoryWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.ItemContainerContentsResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.WorldlyContainerWrapper;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -52,28 +61,47 @@ public class CapabilityHooks {
         event.setProxyable(Capabilities.ItemHandler.BLOCK);
     }
 
+    private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<IResourceHandler<ItemResource>>> CHEST_COMBINED_HANDLER = new DoubleBlockCombiner.Combiner<>() {
+        @Override
+        public Optional<IResourceHandler<ItemResource>> acceptDouble(ChestBlockEntity chest1, ChestBlockEntity chest2) {
+            return Optional.of(new CombinedResourceHandlerWrapper<>(VanillaContainerWrapper.of(chest1), VanillaContainerWrapper.of(chest2)));
+        }
+
+        @Override
+        public Optional<IResourceHandler<ItemResource>> acceptSingle(ChestBlockEntity chest) {
+            return Optional.of(VanillaContainerWrapper.of(chest));
+        }
+
+        @Override
+        public Optional<IResourceHandler<ItemResource>> acceptNone() {
+            return Optional.empty();
+        }
+    };
+
     public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
         // Blocks
         var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            // Return a wrapper that gets re-evaluated every time it is accessed
             // Invalidation is taken care of by the patches to ComposterBlock
-
-            // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-            return new DelegatingResourceHandler.Modifiable<>(() -> new VanillaWorldlyContainerWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
+            return ComposterWrapper.get(level, pos, side);
         }, Blocks.COMPOSTER);
 
-        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            var container = ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true);
-            if (container == null) return null;
-            // This was allowing a possible null container, though it is unlikely it would have ever been null. Something to look into
-            return AlternateVanillaContainerResourceWrapper.of(container);
-        }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
+        event.registerBlock(
+                Capabilities.ItemHandler.BLOCK,
+                (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINED_HANDLER).orElse(null),
+                Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
-            // Use custom hopper wrapper that respects cooldown
-            return new HopperWrapper(hopper);
-        });
+        //        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
+        //            var container = ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true);
+        //            if (container == null) return null;
+        //            // This was allowing a possible null container, though it is unlikely it would have ever been null. Something to look into
+        //            return VanillaContainerWrapper.of(container);
+        //        }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
+
+        //        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
+        //            // Use custom hopper wrapper that respects cooldown
+        //            return new HopperWrapper(hopper);
+        //        });
 
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
@@ -82,7 +110,7 @@ public class CapabilityHooks {
                 BlockEntityType.SMOKER,
                 BlockEntityType.SHULKER_BOX);
         for (var type : sidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, VanillaWorldlyContainerWrapper::new);
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, WorldlyContainerWrapper::new);
         }
 
         var nonSidedVanillaContainers = List.of(
@@ -90,11 +118,12 @@ public class CapabilityHooks {
                 BlockEntityType.CHISELED_BOOKSHELF,
                 BlockEntityType.DISPENSER,
                 BlockEntityType.DROPPER,
+                BlockEntityType.HOPPER,
                 BlockEntityType.JUKEBOX,
                 BlockEntityType.CRAFTER,
                 BlockEntityType.DECORATED_POT);
         for (var type : nonSidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> AlternateVanillaContainerResourceWrapper.of(container));
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> VanillaContainerWrapper.of(container));
         }
 
         // Entities
@@ -113,10 +142,10 @@ public class CapabilityHooks {
                 EntityType.HOPPER_MINECART);
 
         for (var entityType : containerEntities) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> AlternateVanillaContainerResourceWrapper.of(entity));
-            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> AlternateVanillaContainerResourceWrapper.of(entity));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
+            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
         }
-        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> InventoryResourceWrapper.of(player));
+        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> InventoryWrapper.of(player));
 
         // Items
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ItemContainerContentsResourceHandler(ctx, DataComponents.CONTAINER, 27),
@@ -145,7 +174,7 @@ public class CapabilityHooks {
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
-                    return InventoryResourceWrapper.of(horse.getInventory());
+                    return InventoryWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
                     return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
                 return null;

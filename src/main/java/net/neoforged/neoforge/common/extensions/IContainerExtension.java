@@ -1,16 +1,20 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Extension methods for {@link Container}. These methods are used by {@link net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.AlternateVanillaContainerResourceWrapper AlternateVanillaContainerResourceWrapper},
+ * Extension methods for {@link Container}. These methods are used by {@link VanillaContainerWrapper AlternateVanillaContainerResourceWrapper},
  * to allow containers to be integrated in a transaction.
  */
 public interface IContainerExtension {
-
-
     private Container self() {
         return (Container) this;
     }
@@ -29,13 +33,13 @@ public interface IContainerExtension {
      * Perform side effects that were not done in {@link #setItem(int, ItemStack, boolean)}
      * because {@code performSideEffects} was false.
      *
-     * <p>There is no need to call {@code setChanged}, as it is already called by {@link net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2.AlternateVanillaContainerResourceWrapper AlternateVanillaContainerResourceWrapper}.
+     * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper AlternateVanillaContainerResourceWrapper}.
      */
-    default void performSideEffects(int slot, ItemStack originalStack) { }
+    default void performSideEffects(int slot, ItemStack originalStack) {}
 
     /**
      * Perform additional logic immediately after successful transfer (i.e. insert or extract with result > 0).
      * Any logic performed here should be fully transactional, and support being rolled back.
      */
-    default void onTransfer(int slot, TransactionContext context) { }
+    default void onTransfer(int slot, TransactionContext context) {}
 }

@@ -6,6 +6,11 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -25,12 +30,6 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Immutable combination of an {@link Item} and data components.
@@ -133,10 +132,9 @@ public final class ItemResource implements IRegisteredResource<Item> {
         return innerStack.is(predicate);
     }
 
-    public boolean test(Predicate<ItemStack> predicate){
+    public boolean test(Predicate<ItemStack> predicate) {
         return predicate.test(innerStack);
     }
-
 
     @Override
     public boolean isComponentsPatchEmpty() {
@@ -234,7 +232,6 @@ public final class ItemResource implements IRegisteredResource<Item> {
         return new MutableResourceStack<>(this, amount);
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -251,6 +248,4 @@ public final class ItemResource implements IRegisteredResource<Item> {
         //DO we even want to try to encode the components into the print? Often times that will likely be noise
         return innerStack.getItem().toString();
     }
-
-
 }

@@ -15,6 +15,13 @@ import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStora
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+/**
+ * A generalized resource handler prioritized for storing fluids. There is a {@link Component component} and an {@link Attachment attachment} variant to choose from.
+ * Both utilize a similar backing component structure, but vary slightly with how mutable they may be based on the implementation.
+ * <p>
+ * ItemStacks for example require their component data to be immutable, so changing or mutating the amount is out of the equation.
+ * On the other hand an attachment that lives on a BlockEntity can be mutable and thus reduces its GC presence.
+ */
 public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidResource> {
     public FluidStorageHandler(int size, int indexCapacity) {
         super(size, indexCapacity, FluidResource.EMPTY);

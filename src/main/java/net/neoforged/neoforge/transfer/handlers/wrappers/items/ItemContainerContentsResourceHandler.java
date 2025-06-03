@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.items;
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
@@ -82,7 +82,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
     public void set(int index, ItemResource resource, int amount) {
         ItemContainerContents contents = getContents();
         contents.getStackInSlot(index).setCount(amount);
-        try(var tx = Transaction.open(null)) {
+        try (var tx = Transaction.open(null)) {
             setAndValidate(contents, amount, tx);
             tx.commit();
         }
@@ -101,7 +101,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
             int newAmount = Math.min(stack.getCount() + amount, resource.getMaxStackSize());
             amount = newAmount - stack.getCount();
 //            if (action.isExecuting())
-                stack.grow(amount);
+            stack.grow(amount);
             return setAndValidate(contents, amount, context);
         }
         return 0;

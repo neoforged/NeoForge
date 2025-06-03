@@ -24,6 +24,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -62,10 +63,10 @@ public record ResourceHandlerTestSetup() {
         Supplier<AttachmentType<TestResourceContainerAttachment>> RESOURCE_ATTACHMENT = Registry.ATTACHMENTS.register("container", TestResourceContainerAttachment.BUILDER::build);
         Supplier<AttachmentType<ResourceStorageAttachment<FluidResource>>> FLUID_ATTACHMENT = Registry.ATTACHMENTS.register("fluid_container", AttachmentType.builder(() -> ResourceStorageAttachment.of(1, FluidResource.EMPTY))::build);
 
-        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
-                "simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
-                        .persistent(ResourceStack.codec(FluidResource.OPTIONAL_CODEC))
-                        .networkSynchronized(ResourceStack.streamCodec(FluidResource.STREAM_CODEC))
+        DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
+                "simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
+                        .persistent(ItemContextResourceHandler.Component.codec(ResourceStack.codec(FluidResource.OPTIONAL_CODEC)))
+                        .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(ResourceStack.streamCodec(FluidResource.STREAM_CODEC)))
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<ItemResource>>> SINGLE_ITEM_CONTENT = Registry.COMPONENTS.register(
@@ -109,7 +110,6 @@ public record ResourceHandlerTestSetup() {
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
                 Capabilities.FluidHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.RESOURCE_ATTACHMENT).fluidHandler));
-
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
                 Capabilities.FluidHandler.ITEM, (object, context) -> new FluidStorageHandler.Component(context, ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT.get(), TANK_COUNT, TANK_CAPACITY),

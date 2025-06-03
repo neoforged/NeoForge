@@ -1,9 +1,13 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
-
 
 /**
  * Wraps a set of handlers to handle each as if it was a contiguous resource handler blob. This should also be only used as a last resort,
@@ -12,6 +16,8 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * <p>
  * <strong>Important: This will work with constant sized handlers, but ensure what you are wrapping is dynamically sized.</strong>
  * It is also important that the size should not change until after the transaction is finished.
+ * <p>
+ * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled.
  *
  * @param <T>
  */

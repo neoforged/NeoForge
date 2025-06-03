@@ -1,23 +1,26 @@
-package net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
+
+import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Objects;
-
-
 /**
- * A single-index item resource storage backed by an {@link ItemStack}.
+ * A single-index item snapshot backed by an {@link ItemStack}.
  * Implementors should at least override {@link #get} and {@link #set},
  * and probably {@link #onCommit} as well for {@code markDirty()} and similar calls.
  *
  * <p>{@link #canInsert} and {@link #canExtract} can be used for more precise control over which items may be inserted or extracted.
  * {@link #getCapacity(ItemResource)} can be overridden to change the maximum capacity depending on the item resource.
  */
-public abstract class SingleStackSnapshot extends SnapshotJournal<ItemStack> implements ISingleResourceHandler<ItemResource> {
+public abstract class ItemStackJournal extends SnapshotJournal<ItemStack> implements ISingleResourceHandler<ItemResource> {
     /**
      * Return the stack of this storage. It will be modified directly sometimes to avoid needless copies.
      * However, any mutation of the stack will directly be followed by a call to {@link #set}.
@@ -115,7 +118,6 @@ public abstract class SingleStackSnapshot extends SnapshotJournal<ItemStack> imp
     public boolean allowsExtraction() {
         return true;
     }
-
 
     @Override
     public ItemResource getResource(int index) {

@@ -31,6 +31,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemContextFluidHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
@@ -43,9 +44,9 @@ public class CustomFluidContainerTest {
     public static final boolean ENABLED = true;
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
-            .persistent(ResourceStack.flatCodec(FluidResource.OPTIONAL_CODEC))
-            .networkSynchronized(ResourceStack.streamCodec(FluidResource.STREAM_CODEC)).build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
+            .persistent(ItemContextResourceHandler.Component.codec(ResourceStack.flatCodec(FluidResource.OPTIONAL_CODEC)))
+            .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(ResourceStack.streamCodec(FluidResource.STREAM_CODEC))).build());
 
     public CustomFluidContainerTest(IEventBus modEventBus) {
         if (ENABLED) {
@@ -62,7 +63,7 @@ public class CustomFluidContainerTest {
     }
 
     private void registerCaps(RegisterCapabilitiesEvent event) {
-        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> ctx == null ? null : new SteppedItemContextFluidHandler(ctx, SIMPLE_FLUID_CONTENT.get(), FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new SteppedItemContextFluidHandler.Consumable(ctx, SIMPLE_FLUID_CONTENT.get(), FluidType.BUCKET_VOLUME), CUSTOM_FLUID_CONTAINER.get());
     }
 
     /**
@@ -82,7 +83,7 @@ public class CustomFluidContainerTest {
             } else {
                 name.set(name.get() + " (" + fluidStack.getFluidType().getDescription().getString() + ")");
             }
-            return Component.literal(name.get());
+            return net.minecraft.network.chat.Component.literal(name.get());
         }
 
         @Override

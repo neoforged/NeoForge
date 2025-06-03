@@ -6,14 +6,13 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
-
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 
 /**
  * Represents an immutable {@link IResource} and a <b>mutable</b> amount.
@@ -158,6 +157,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     public IResourceStack<T> copy() {
         return of(resource, amount);
     }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

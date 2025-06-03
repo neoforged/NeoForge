@@ -1,6 +1,14 @@
-package net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import com.google.common.collect.MapMaker;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,11 +27,7 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Range;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class AlternateVanillaContainerResourceWrapper implements IResourceHandlerModifiable<ItemResource> {
+public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     /**
      * Global wrapper concurrent map.
      *
@@ -33,17 +37,20 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
      * <p>A note on GC: weak keys alone are not suitable as the ContainerStorage strongly references the Container.
      * Weak values are suitable, but we have to ensure that the ContainerStorage remains strongly reachable as int as
      * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotWrapper}.
+     *
+     * @see WorldlyContainerWrapper
+     * @see InventoryWrapper
      */
     // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
     // TODO: should have identity semantics?
-    private static final Map<Container, AlternateVanillaContainerResourceWrapper> WRAPPERS = new MapMaker().weakValues().makeMap();
+    private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakValues().makeMap();
 
-    public static AlternateVanillaContainerResourceWrapper of(Container container) {
-        AlternateVanillaContainerResourceWrapper storage = WRAPPERS.computeIfAbsent(container, inv -> {
+    public static VanillaContainerWrapper of(Container container) {
+        VanillaContainerWrapper storage = WRAPPERS.computeIfAbsent(container, inv -> {
             if (inv instanceof Inventory inventory) {
-                return new InventoryResourceWrapper(inventory);
+                return new InventoryWrapper(inventory);
             } else {
-                return new AlternateVanillaContainerResourceWrapper(inv);
+                return new VanillaContainerWrapper(inv);
             }
         });
         storage.resize();
@@ -55,10 +62,9 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
     private final List<SlotWrapper> slotWrappers = new ArrayList<>();
     private final SetChangedParticipant setChangedParticipant = new SetChangedParticipant();
 
-    AlternateVanillaContainerResourceWrapper(Container container) {
+    VanillaContainerWrapper(Container container) {
         this.container = container;
     }
-
 
     protected Container getContainer() {
         return container;
@@ -174,7 +180,6 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
         get(index).set(resource.toStack(amount));
     }
 
-
     // Boolean is used to prevent allocation. Null values are not allowed by SnapshotParticipant.
     private class SetChangedParticipant extends SnapshotJournal<Boolean> {
         @Override
@@ -183,7 +188,7 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
         }
 
         @Override
-        protected void revertToSnapshot(Boolean snapshot) { }
+        protected void revertToSnapshot(Boolean snapshot) {}
 
         @Override
         protected void onCommit(Boolean originalState) {
@@ -191,7 +196,7 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
         }
     }
 
-    private class SlotWrapper extends SingleStackSnapshot {
+    private class SlotWrapper extends ItemStackJournal {
         private final int index;
 
         private SlotWrapper(int index) {
@@ -230,7 +235,6 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
             return container.getMaxStackSize(UnsafeResourceUtils.innerStackOf(resource));
         }
 
-
         @Override
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
             int ret = super.insert(index, resource, amount, transaction);
@@ -260,7 +264,7 @@ public class AlternateVanillaContainerResourceWrapper implements IResourceHandle
                 BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
                 var level = chest.getLevel();
                 if (level != null && level.getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
-                    AlternateVanillaContainerResourceWrapper.of(otherChest).setChangedParticipant.updateSnapshots(transaction);
+                    VanillaContainerWrapper.of(otherChest).setChangedParticipant.updateSnapshots(transaction);
                 }
             }
         }

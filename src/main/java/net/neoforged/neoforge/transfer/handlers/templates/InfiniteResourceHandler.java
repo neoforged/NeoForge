@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-
-import java.util.Objects;
 
 /**
  * An {@link ISingleResourceHandler} that allows extraction of an unlimited amount of a specified resource.

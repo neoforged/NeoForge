@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.resources;
 
 import net.minecraft.world.item.ItemStack;
@@ -9,7 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public final class UnsafeResourceUtils {
-
     /**
      * <strong>Avoid use of this method.</strong>
      * <p>
@@ -30,6 +34,5 @@ public final class UnsafeResourceUtils {
         return resource.innerStack;
     }
 
-
-    private UnsafeResourceUtils() { }
+    private UnsafeResourceUtils() {}
 }

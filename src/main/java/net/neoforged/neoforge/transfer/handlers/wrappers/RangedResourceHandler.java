@@ -6,15 +6,16 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import com.google.common.base.Preconditions;
+import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.function.Supplier;
-
 /**
  * A wrapper that delegates all calls to a range of indices of a handler.
+ * <p>
+ * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled.
  *
  * @param <T> The type of resource this handler manages.
  */
@@ -24,7 +25,6 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     public RangedResourceHandler(IResourceHandler<T> delegate, int start, int end) {
         this(() -> delegate, start, end);
-
     }
 
     public RangedResourceHandler(Supplier<IResourceHandler<T>> delegate, int start, int end) {

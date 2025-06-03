@@ -54,8 +54,8 @@ public class InstancedResourceHandlerTests {
     @TestHolder(description = "Handles void handler tests")
     public static void voidHandlers(ExtendedGameTestHelper helper) {
         //VoidResourceHandlers destroys resources but doesn't allow extraction
-        testVoidResource(helper, VoidResourceHandler.ITEM, ItemResource.EMPTY);
-        testVoidResource(helper, VoidResourceHandler.FLUID, FluidResource.EMPTY);
+        testVoidResource(helper, VoidResourceHandler.instance(ItemResource.EMPTY), ItemResource.EMPTY);
+        testVoidResource(helper, VoidResourceHandler.instance(FluidResource.EMPTY), FluidResource.EMPTY);
 
         helper.succeed();
     }

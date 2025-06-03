@@ -1,6 +1,12 @@
-package net.neoforged.neoforge.transfer.handlers.wrappers.itemsmk2;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -9,21 +15,17 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * An implementation of {@code IResourceHandler<ItemResource>} for the {@link Inventory} of a {@link Player}.
  */
-public final class InventoryResourceWrapper extends AlternateVanillaContainerResourceWrapper {
-    public static InventoryResourceWrapper of(Player player) {
+public final class InventoryWrapper extends VanillaContainerWrapper {
+    public static InventoryWrapper of(Player player) {
         return of(player.getInventory());
     }
 
-    public static InventoryResourceWrapper of(Inventory inventory) {
-        return (InventoryResourceWrapper) AlternateVanillaContainerResourceWrapper.of(inventory);
+    public static InventoryWrapper of(Inventory inventory) {
+        return (InventoryWrapper) VanillaContainerWrapper.of(inventory);
     }
-
 
     @Override
     public Inventory getContainer() {
@@ -41,10 +43,11 @@ public final class InventoryResourceWrapper extends AlternateVanillaContainerRes
         EquipmentSlot slot = getEquipmentSlot(index);
         return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
     }
+
     private final DroppedItems droppedItems = new DroppedItems();
     private final Inventory inventory;
 
-    InventoryResourceWrapper(Inventory inventory) {
+    InventoryWrapper(Inventory inventory) {
         super(inventory);
         this.inventory = inventory;
     }
@@ -103,6 +106,6 @@ public final class InventoryResourceWrapper extends AlternateVanillaContainerRes
             entries.clear();
         }
 
-        private record Entry(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName) { }
+        private record Entry(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName) {}
     }
 }

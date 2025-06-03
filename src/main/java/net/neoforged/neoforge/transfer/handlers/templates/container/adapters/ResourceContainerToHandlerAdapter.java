@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
@@ -12,15 +13,12 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.Objects;
-
 /**
  * A basic {@link IResourceHandlerModifiable} implementation derived from an {@link IResourceContainer}.
  */
 public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         IResourceContainer<TResource> container,
         IHandleIOBehaviour behavior) implements IResourceHandlerModifiable<TResource> {
-
     @Override
     public int size() {
         return container.size();
