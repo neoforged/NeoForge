@@ -21,7 +21,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
@@ -136,7 +136,7 @@ public class GuiTests {
         });
     }
 
-    private static GuiLayerManager.Layer makeRightOverlay(DynamicTest test, int height, int color) {
+    private static GuiLayer makeRightOverlay(DynamicTest test, int height, int color) {
         return (guiGraphics, partialTick) -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;
@@ -152,7 +152,7 @@ public class GuiTests {
         };
     }
 
-    private static GuiLayerManager.Layer makeLeftOverlay(DynamicTest test, int height, int color) {
+    private static GuiLayer makeLeftOverlay(DynamicTest test, int height, int color) {
         return (guiGraphics, partialTick) -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;

@@ -14,13 +14,14 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.GuiLayerManager;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Allows users to register custom {@link GuiLayerManager.Layer layers} for GUI rendering.
+ * Allows users to register custom {@link GuiLayer layers} for GUI rendering.
  *
  * <p>See also {@link RenderGuiLayerEvent} to intercept rendering of registered layers.
  *
@@ -42,7 +43,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerBelowAll(ResourceLocation id, GuiLayerManager.Layer layer) {
+    public void registerBelowAll(ResourceLocation id, GuiLayer layer) {
         register(Ordering.BEFORE, null, id, layer);
     }
 
@@ -54,7 +55,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerBelow(ResourceLocation other, ResourceLocation id, GuiLayerManager.Layer layer) {
+    public void registerBelow(ResourceLocation other, ResourceLocation id, GuiLayer layer) {
         register(Ordering.BEFORE, other, id, layer);
     }
 
@@ -66,7 +67,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerAbove(ResourceLocation other, ResourceLocation id, GuiLayerManager.Layer layer) {
+    public void registerAbove(ResourceLocation other, ResourceLocation id, GuiLayer layer) {
         register(Ordering.AFTER, other, id, layer);
     }
 
@@ -76,11 +77,11 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param id    A unique resource id for this layer
      * @param layer The layer
      */
-    public void registerAboveAll(ResourceLocation id, GuiLayerManager.Layer layer) {
+    public void registerAboveAll(ResourceLocation id, GuiLayer layer) {
         register(Ordering.AFTER, null, id, layer);
     }
 
-    private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, GuiLayerManager.Layer layer) {
+    private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, GuiLayer layer) {
         Objects.requireNonNull(key);
         for (var namedLayer : layers) {
             Preconditions.checkArgument(!namedLayer.name().equals(key), "Layer already registered: " + key);
