@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 @@ -37,12 +_,17 @@
-         this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).getParticleIcon();
+         this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).particleIcon();
          this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
          this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
 +        net.neoforged.neoforge.client.textures.FluidSpriteCache.reload();
@@ -37,10 +37,10 @@
 -        int i = flag ? 16777215 : BiomeColors.getAverageWaterColor(p_234370_, p_234371_);
 +        TextureAtlasSprite[] atextureatlassprite = net.neoforged.neoforge.client.textures.FluidSpriteCache.getFluidSprites(p_234370_, p_234371_, p_234374_);
 +        int i = net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(p_234374_).getTintColor(p_234374_, p_234370_, p_234371_);
-+        float alpha = (float)(i >> 24 & 255) / 255.0F;
-         float f = (float)(i >> 16 & 0xFF) / 255.0F;
-         float f1 = (float)(i >> 8 & 0xFF) / 255.0F;
-         float f2 = (float)(i & 0xFF) / 255.0F;
++        float alpha = (i >> 24 & 255) / 255.0F;
+         float f = (i >> 16 & 0xFF) / 255.0F;
+         float f1 = (i >> 8 & 0xFF) / 255.0F;
+         float f2 = (i & 0xFF) / 255.0F;
 @@ -87,12 +_,12 @@
          FluidState fluidstate4 = blockstate4.getFluidState();
          BlockState blockstate5 = p_234370_.getBlockState(p_234371_.relative(Direction.EAST));

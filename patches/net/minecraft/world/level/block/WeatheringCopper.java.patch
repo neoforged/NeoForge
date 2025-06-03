@@ -10,10 +10,10 @@
 +    @Deprecated
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
          () -> ImmutableBiMap.<Block, Block>builder()
-                 .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
+             .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
 @@ -41,16 +_,20 @@
-                 .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
-                 .build()
+             .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
+             .build()
      );
 +    /**
 +     * @deprecated Neo: Use the {@link net.neoforged.neoforge.common.DataMapHooks#INVERSE_OXIDIZABLES_DATAMAP inverse map} generated from the data map, this field will be ignored in a future version

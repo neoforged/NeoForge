@@ -18,17 +18,17 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.Util;
+import net.minecraft.advancements.critereon.DataComponentMatchers;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.ItemSubPredicates;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.component.predicates.EnchantmentsPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -69,6 +69,7 @@ import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.condition.TestEnabledLootCondition;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "loot", idPrefix = "glm_")
@@ -252,10 +253,10 @@ public class GlobalLootModifiersTest {
             protected void start() {
                 add("smelting", new SmeltingEnchantmentModifier(
                         new LootItemCondition[] {
-                                MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(
-                                        ItemSubPredicates.ENCHANTMENTS,
-                                        ItemEnchantmentsPredicate.enchantments(
-                                                List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))))
+                                MatchTool.toolMatches(ItemPredicate.Builder.item().withComponents(
+                                        DataComponentMatchers.Builder.components().partial(
+                                                DataComponentPredicates.ENCHANTMENTS,
+                                                EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(SMELT), MinMaxBounds.Ints.atLeast(1))))).build()))
                                         .build(),
                                 new TestEnabledLootCondition(test)
                         }));
@@ -344,7 +345,7 @@ public class GlobalLootModifiersTest {
 
         test.onGameTest(helper -> helper.startSequence()
                 .thenExecute(() -> helper.setBlock(1, 2, 1, Blocks.CHEST.defaultBlockState()))
-                .thenMap(() -> helper.requireBlockEntity(1, 2, 1, ChestBlockEntity.class))
+                .thenMap(() -> helper.getBlockEntity(1, 2, 1, ChestBlockEntity.class))
                 .thenExecute(chest -> chest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.withDefaultNamespace("chests/simple_dungeon")), 124424))
 
                 .thenExecute(chest -> chest.unpackLootTable(helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL)))

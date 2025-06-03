@@ -7,23 +7,24 @@ package net.neoforged.neoforge.items;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.context.templates.PlayerContext;
-import net.neoforged.neoforge.transfer.items.ItemResource;
-import net.neoforged.neoforge.transfer.items.wrappers.PlayerInventoryHandler;
+import net.neoforged.neoforge.transfer.ItemUtil;
 
+/**
+ * @deprecated Moved to {@link ItemUtil}
+ */
+@Deprecated(forRemoval = true, since = "1.21.6")
 public class ItemHandlerHelper {
-
     /**
      * Inserts the given itemstack into the players inventory. If the inventory can't hold it, the item will be dropped
      * in the world at the players position.
+     *
      * @param player The player to give the item to
-     * @param stack The itemstack to insert
+     * @param stack  The itemstack to insert
+     * @deprecated Moved to {@link ItemUtil}
      */
+    @Deprecated(forRemoval = true, since = "1.21.6")
     public static void giveItemToPlayer(Player player, ItemStack stack) {
-        if (stack.isEmpty()) return;
-        PlayerInventoryHandler inventory = new PlayerInventoryHandler(player);
-        inventory.insertOrDrop(ItemResource.of(stack), stack.getCount());
+        ItemUtil.giveItemToPlayer(player, stack);
     }
 
     /**
@@ -32,10 +33,10 @@ public class ItemHandlerHelper {
      *
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
+     * @deprecated Moved to {@link ItemUtil}
      */
+    @Deprecated(forRemoval = true, since = "1.21.6")
     public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
-        if (stack.isEmpty()) return;
-        PlayerContext context = new PlayerContext(player, preferredSlot);
-        context.insert(ItemResource.of(stack), stack.getCount(), TransferAction.EXECUTE);
+        ItemUtil.giveItemToPlayer(player, stack, preferredSlot);
     }
 }

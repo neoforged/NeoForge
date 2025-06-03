@@ -34,7 +34,7 @@
              ShapedRecipePattern::unpack,
 @@ -206,16 +_,16 @@
  
-     public static record Data(Map<Character, Ingredient> key, List<String> pattern) {
+     public record Data(Map<Character, Ingredient> key, List<String> pattern) {
          private static final Codec<List<String>> PATTERN_CODEC = Codec.STRING.listOf().comapFlatMap(p_312085_ -> {
 -            if (p_312085_.size() > 3) {
 -                return DataResult.error(() -> "Invalid pattern: too many rows, 3 is maximum");

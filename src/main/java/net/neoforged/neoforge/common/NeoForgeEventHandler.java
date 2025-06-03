@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -22,11 +23,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -35,16 +35,23 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.internal.NeoForgeProxy;
+import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import net.neoforged.neoforge.registries.DataMapLoader;
+import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.resource.NeoForgeReloadListeners;
 import net.neoforged.neoforge.server.command.ConfigCommand;
 import net.neoforged.neoforge.server.command.NeoForgeCommand;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
+    private static LootModifierManager LOOT_MODIFIER_MANAGER;
+    private static DataMapLoader DATA_MAP_LOADER;
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
@@ -56,7 +63,7 @@ public class NeoForgeEventHandler {
                 if (newEntity != null) {
                     entity.discard();
                     event.setCanceled(true);
-                    var executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
+                    BlockableEventLoop<? super TickTask> executor = event.getLevel() instanceof ServerLevel serverLevel ? serverLevel.getServer() : NeoForgeProxy.INSTANCE.getClientExecutor();
                     executor.schedule(new TickTask(0, () -> event.getLevel().addFreshEntity(newEntity)));
                 }
             }
@@ -77,6 +84,7 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void postServerTick(ServerTickEvent.Post event) {
         WorldWorkerManager.tick(false);
+        ConfigSync.syncPendingConfigs(event.getServer());
     }
 
     @SubscribeEvent
@@ -102,7 +110,7 @@ public class NeoForgeEventHandler {
     @SubscribeEvent
     public void tagsUpdated(TagsUpdatedEvent event) {
         if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
-            DATA_MAPS.apply();
+            DATA_MAP_LOADER.apply();
         }
     }
 
@@ -116,8 +124,10 @@ public class NeoForgeEventHandler {
                 if (!player.connection.hasChannel(RegistryDataMapSyncPayload.TYPE)) {
                     return;
                 }
-                if (player.connection.getConnection().isMemoryConnection()) {
-                    // Note: don't send data maps over in-memory connections, else the client-side handling will wipe non-synced data maps.
+
+                // Note: don't send data maps over in-memory connections for normal registries, else the client-side handling will wipe non-synced data maps.
+                // Sending them for synced datapack registries is fine and required as those registries are recreated on the client
+                if (player.connection.getConnection().isMemoryConnection() && DataPackRegistriesHooks.getSyncedRegistry((ResourceKey) registry) == null) {
                     return;
                 }
                 final var playerMaps = player.connection.getConnection().channel().attr(RegistryManager.ATTRIBUTE_KNOWN_DATA_MAPS).get();
@@ -146,25 +156,18 @@ public class NeoForgeEventHandler {
         ConfigCommand.register(event.getDispatcher());
     }
 
-    private static LootModifierManager INSTANCE;
-    private static DataMapLoader DATA_MAPS;
-
     @SubscribeEvent
-    public void onResourceReload(AddReloadListenerEvent event) {
-        INSTANCE = new LootModifierManager();
-        event.addListener(INSTANCE);
-        event.addListener(DATA_MAPS = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+    public void onResourceReload(AddServerReloadListenersEvent event) {
+        event.addListener(NeoForgeReloadListeners.LOOT_MODIFIERS, LOOT_MODIFIER_MANAGER = new LootModifierManager());
+        event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
+        event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
+        event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
     }
 
     static LootModifierManager getLootModifierManager() {
-        if (INSTANCE == null)
+        if (LOOT_MODIFIER_MANAGER == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
-        return INSTANCE;
-    }
-
-    @SubscribeEvent
-    public void resourceReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(CreativeModeTabRegistry.getReloadListener());
+        return LOOT_MODIFIER_MANAGER;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

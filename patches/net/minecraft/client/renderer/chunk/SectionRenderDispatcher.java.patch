@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -399,9 +_,10 @@
+@@ -530,9 +_,10 @@
  
          public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
              this.cancelTasks();
 -            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.sectionNode));
-+            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(this.origin, SectionRenderDispatcher.this.level);
++            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(this.renderOrigin, SectionRenderDispatcher.this.level);
 +            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.sectionNode), additionalRenderers.isEmpty());
              boolean flag = this.compiled.get() != SectionRenderDispatcher.CompiledSection.UNCOMPILED;
 -            this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(renderchunkregion, flag);
@@ -13,7 +13,7 @@
              return this.lastRebuildTask;
          }
  
-@@ -441,6 +_,15 @@
+@@ -572,6 +_,15 @@
              );
          }
  
@@ -29,7 +29,7 @@
          @OnlyIn(Dist.CLIENT)
          public abstract class CompileTask {
              protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
-@@ -470,10 +_,17 @@
+@@ -601,10 +_,17 @@
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
              @Nullable
              protected volatile RenderChunkRegion region;
@@ -47,7 +47,7 @@
              }
  
              @Override
-@@ -489,6 +_,8 @@
+@@ -620,6 +_,8 @@
                      RenderChunkRegion renderchunkregion = this.region;
                      this.region = null;
                      if (renderchunkregion == null) {
@@ -56,12 +56,12 @@
                          RenderSection.this.setCompiled(SectionRenderDispatcher.CompiledSection.EMPTY);
                          return CompletableFuture.completedFuture(SectionRenderDispatcher.SectionTaskResult.SUCCESSFUL);
                      } else {
-@@ -499,7 +_,7 @@
+@@ -631,7 +_,7 @@
                              SectionCompiler.Results sectioncompiler$results;
                              try (Zone zone = Profiler.get().zone("Compile Section")) {
                                  sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler
--                                    .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), p_296138_);
-+                                    .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(), p_296138_, this.additionalRenderers);
+-                                    .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(sectionpos), p_296138_);
++                                    .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(sectionpos), p_296138_, this.additionalRenderers);
                              }
  
                              SectionRenderDispatcher.TranslucencyPointOfView sectionrenderdispatcher$translucencypointofview = SectionRenderDispatcher.TranslucencyPointOfView.of(

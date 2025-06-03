@@ -1,13 +1,6 @@
 --- a/net/minecraft/FileUtil.java
 +++ b/net/minecraft/FileUtil.java
-@@ -13,12 +_,14 @@
- import java.util.List;
- import java.util.regex.Matcher;
- import java.util.regex.Pattern;
-+
- import org.apache.commons.io.FilenameUtils;
- 
- public class FileUtil {
+@@ -19,6 +_,7 @@
      private static final Pattern COPY_COUNTER_PATTERN = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
      private static final int MAX_FILE_NAME = 255;
      private static final Pattern RESERVED_WINDOWS_FILENAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);

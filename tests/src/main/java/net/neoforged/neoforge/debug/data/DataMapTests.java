@@ -22,14 +22,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -68,6 +67,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = "data.data_map")
@@ -319,7 +319,7 @@ public class DataMapTests {
             @Override
             protected void gather(HolderLookup.Provider provider) {
                 builder(effectGrant)
-                        .add(Blocks.COPPER_BLOCK.getLootTable().orElseThrow(), new MobEffectInstance(MobEffects.CONFUSION, 100), false);
+                        .add(Blocks.COPPER_BLOCK.getLootTable().orElseThrow(), new MobEffectInstance(MobEffects.NAUSEA, 100), false);
             }
         });
 
@@ -335,7 +335,7 @@ public class DataMapTests {
         test.onGameTest(helper -> {
             final Player player = helper.makeMockPlayer();
             helper.useBlock(new BlockPos(0, 1, 0), player, Blocks.COPPER_BLOCK.asItem().getDefaultInstance());
-            helper.assertMobEffectPresent(player, MobEffects.CONFUSION, "has confusion");
+            helper.assertMobEffectPresent(player, MobEffects.NAUSEA, Component.literal("has nausea"));
             helper.succeed();
         });
     }
@@ -376,12 +376,12 @@ public class DataMapTests {
             }
         });
 
-        final AtomicReference<List<WeightedEntry.Wrapper<Item>>> entries = new AtomicReference<>();
+        final AtomicReference<List<Weighted<Item>>> entries = new AtomicReference<>();
         NeoForge.EVENT_BUS.addListener((final DataMapsUpdatedEvent event) -> {
             if (event.getCause() == DataMapsUpdatedEvent.UpdateCause.SERVER_RELOAD) {
                 event.ifRegistry(Registries.ITEM, items -> {
                     entries.set(items.getDataMap(dataMap).entrySet().stream()
-                            .map(entry -> WeightedEntry.wrap(items.getValue(entry.getKey()), entry.getValue()))
+                            .map(entry -> new Weighted<>(items.getValue(entry.getKey()), entry.getValue()))
                             .toList());
                 });
             }
@@ -389,8 +389,8 @@ public class DataMapTests {
 
         test.onGameTest(helper -> {
             helper.assertTrue(new HashSet<>(entries.get()).equals(Set.of(
-                    WeightedEntry.wrap(Items.BLUE_ORCHID, 5),
-                    WeightedEntry.wrap(Items.OMINOUS_TRIAL_KEY, 10))),
+                    new Weighted<>(Items.BLUE_ORCHID, 5),
+                    new Weighted<>(Items.OMINOUS_TRIAL_KEY, 10))),
                     "Cached entries are not as expected");
             helper.succeed();
         });
@@ -433,6 +433,7 @@ public class DataMapTests {
             helper.setBlock(blockPos, lightlyOxidizedIron.value());
             if (DataMapHooks.getNextOxidizedStage(lightlyOxidizedIron.value()) == null)
                 helper.fail("Next oxidization state for lightly oxidized iron was null!");
+            helper.assertTrue(lightlyOxidizedIron.value().defaultBlockState().isRandomlyTicking(), "Lightly Oxidized Iron is not randomly ticking. Its state cache was not invalidated!");
             helper.setBlock(blockPos, DataMapHooks.getNextOxidizedStage(lightlyOxidizedIron.value()));
             helper.assertBlock(blockPos, block -> moreOxidizedIron.value().equals(block), "Wanted: More Oxidized Iron but found something else!");
 

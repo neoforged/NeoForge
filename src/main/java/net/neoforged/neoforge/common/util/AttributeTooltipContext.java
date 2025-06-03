@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
@@ -26,11 +27,16 @@ public interface AttributeTooltipContext extends Item.TooltipContext {
     Player player();
 
     /**
+     * {@return the tooltip display}
+     */
+    TooltipDisplay tooltipDisplay();
+
+    /**
      * {@return the current tooltip flag}
      */
     TooltipFlag flag();
 
-    public static AttributeTooltipContext of(@Nullable Player player, Item.TooltipContext itemCtx, TooltipFlag flag) {
+    public static AttributeTooltipContext of(@Nullable Player player, Item.TooltipContext itemCtx, TooltipDisplay tooltipDisplay, TooltipFlag flag) {
         return new AttributeTooltipContext() {
             @Override
             public Provider registries() {
@@ -56,6 +62,11 @@ public interface AttributeTooltipContext extends Item.TooltipContext {
             @Override
             public Player player() {
                 return player;
+            }
+
+            @Override
+            public TooltipDisplay tooltipDisplay() {
+                return tooltipDisplay;
             }
 
             @Override

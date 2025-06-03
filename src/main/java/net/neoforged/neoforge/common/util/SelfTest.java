@@ -8,11 +8,8 @@ package net.neoforged.neoforge.common.util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -31,21 +28,6 @@ public final class SelfTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(SelfTest.class);
 
     private SelfTest() {}
-
-    public static void initClient() {
-        var clientSelfTestDestination = System.getenv("NEOFORGE_CLIENT_SELFTEST");
-        if (clientSelfTestDestination != null) {
-            NeoForge.EVENT_BUS.addListener((ClientTickEvent.Pre e) -> {
-                if (Minecraft.getInstance().getOverlay() instanceof LoadingOverlay) {
-                    return;
-                }
-                if (Minecraft.getInstance().isRunning()) {
-                    writeSelfTestReport(clientSelfTestDestination);
-                    Minecraft.getInstance().stop();
-                }
-            });
-        }
-    }
 
     public static void initCommon() {
         var serverSelfTestDestination = System.getenv("NEOFORGE_DEDICATED_SERVER_SELFTEST");
@@ -67,7 +49,7 @@ public final class SelfTest {
      * This is used by our GitHub Actions pipeline to run an E2E test for PRs.
      * It writes a small self-test report to the file indicated by the system property and exits.
      */
-    private static void writeSelfTestReport(String path) {
+    public static void writeSelfTestReport(String path) {
         try {
             Files.createFile(Paths.get(path));
             LOGGER.info("Wrote self-test report to '{}'", path);

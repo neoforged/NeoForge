@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BaseContainerBlockEntity.java
+@@ -119,9 +_,19 @@
+ 
+     @Override
+     public void setItem(int p_332705_, ItemStack p_332643_) {
++        setItem(p_332705_, p_332643_, true);
++    }
++
++    // Neo: Support deferring side effects until end of a transaction
++    @Override
++    public void setItem(int p_332705_, ItemStack p_332643_, boolean performSideEffects) {
+         this.getItems().set(p_332705_, p_332643_);
+         p_332643_.limitSize(this.getMaxStackSize(p_332643_));
+         this.setChanged();
++        if (performSideEffects) {
++            this.setChanged();
++
++        }
+     }
+ 
+     @Override

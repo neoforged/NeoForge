@@ -5,50 +5,54 @@
 
 package net.neoforged.neoforge.event;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Set;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestGenerator;
+import java.util.List;
+import java.util.function.Function;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestInstance;
+import net.minecraft.gametest.framework.TestData;
+import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 
 /**
  * Game tests are registered on client or server startup.
- * It is only run once for a given instance of the game if {@link GameTestHooks#isGametestEnabled} returns true.
- * This is the preferred way to register your game tests.
+ * It is run in {@link net.minecraft.resources.RegistryDataLoader#load(ResourceManager, List, List)} if {@link GameTestHooks#isGametestEnabled} returns true.
  * <p>
  * Fired on the Mod bus, see {@link IModBusEvent}.
  */
 public class RegisterGameTestsEvent extends Event implements IModBusEvent {
-    private final Set<Method> gameTestMethods;
+    private final WritableRegistry<TestEnvironmentDefinition> environmentsRegistry;
+    private final WritableRegistry<GameTestInstance> testsRegistry;
 
-    public RegisterGameTestsEvent(Set<Method> gameTestMethods) {
-        this.gameTestMethods = gameTestMethods;
+    public RegisterGameTestsEvent(WritableRegistry<TestEnvironmentDefinition> environmentsRegistry, WritableRegistry<GameTestInstance> testsRegistry) {
+        this.environmentsRegistry = environmentsRegistry;
+        this.testsRegistry = testsRegistry;
     }
 
-    /**
-     * Registers an entire class to the game test registry.
-     * All methods annotated with {@link GameTest} or {@link GameTestGenerator} will be registered.
-     * If the set of enabled namespaces is non-empty,
-     * a method will only be registered if its {@link GameTest#templateNamespace() template namespace} is in an enabled namespace.
-     *
-     * @param testClass the test class to register to the game test registry
-     */
-    public void register(Class<?> testClass) {
-        Arrays.stream(testClass.getDeclaredMethods()).forEach(this::register);
+    public Holder<TestEnvironmentDefinition> registerEnvironment(ResourceLocation name, TestEnvironmentDefinition... definitions) {
+        return registerEnvironment(name, new TestEnvironmentDefinition.AllOf(definitions));
     }
 
-    /**
-     * Registers a single method to the game test registry.
-     * The method will only be registered if it is annotated with {@link GameTest} or {@link GameTestGenerator}.
-     * If the set of enabled namespaces is non-empty,
-     * the method will only be registered if its {@link GameTest#templateNamespace() template namespace} is an enabled namespace.
-     *
-     * @param testMethod the test method to register to the game test registry
-     */
-    public void register(Method testMethod) {
-        this.gameTestMethods.add(testMethod);
+    public Holder<TestEnvironmentDefinition> registerEnvironment(ResourceLocation name, TestEnvironmentDefinition definition) {
+        return environmentsRegistry.register(
+                ResourceKey.create(Registries.TEST_ENVIRONMENT, name),
+                definition, RegistrationInfo.BUILT_IN);
+    }
+
+    public void registerTest(ResourceLocation name, Function<TestData<Holder<TestEnvironmentDefinition>>, GameTestInstance> factory, TestData<Holder<TestEnvironmentDefinition>> testData) {
+        registerTest(name, factory.apply(testData));
+    }
+
+    public void registerTest(ResourceLocation name, GameTestInstance test) {
+        testsRegistry.register(
+                ResourceKey.create(Registries.TEST_INSTANCE, name),
+                test, RegistrationInfo.BUILT_IN);
     }
 }

@@ -136,7 +136,7 @@ public class RecipeBookTestMenu extends RecipeBookMenu {
             @Override
             protected void checkTakeAchievements(ItemStack stack) {
                 if (this.removeCount > 0)
-                    stack.onCraftedBy(RecipeBookTestMenu.this.player.level(), RecipeBookTestMenu.this.player, this.removeCount);
+                    stack.onCraftedBy(RecipeBookTestMenu.this.player, this.removeCount);
                 if (this.container instanceof RecipeCraftingHolder recipeCraftingHolder)
                     recipeCraftingHolder.awardUsedRecipes(RecipeBookTestMenu.this.player, List.of());
                 this.removeCount = 0;

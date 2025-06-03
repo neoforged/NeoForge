@@ -29,9 +29,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 public class GameTestPlayer extends ServerPlayer implements GameTestListener {
@@ -43,21 +43,21 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     }
 
     @Override
-    public void moveTo(double x, double y, double z) {
-        super.moveTo(x, y, z);
+    public void snapTo(double x, double y, double z) {
+        super.snapTo(x, y, z);
         this.serverLevel().getChunkSource().move(this); //We need to move the player to the correct chunk
         this.connection.chunkSender.sendNextChunks(this); //And send the chunks to the player
         this.connection.chunkSender.onChunkBatchReceivedByClient(64f); //Also mark them as received.
     }
 
     public GameTestPlayer moveToCorner() {
-        moveTo(helper.absoluteVec(new BlockPos(0, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, 0).getCenter()).subtract(0, 0.5, 0));
+        snapTo(helper.absoluteVec(new BlockPos(0, helper.testInfo.getStructure().getPath().endsWith("_floor") ? 2 : 1, 0).getCenter()).subtract(0, 0.5, 0));
         return this;
     }
 
     public GameTestPlayer moveToCentre() {
-        Vec3i size = helper.testInfo.getStructureBlockEntity().getStructureSize();
-        moveTo(helper.absoluteVec(new BlockPos(size.getX() / 2, helper.testInfo.getStructureName().endsWith("_floor") ? 2 : 1, size.getX() / 2).getCenter()).subtract(0, 0.5, 0));
+        Vec3i size = helper.testInfo.getTestInstanceBlockEntity().getSize();
+        snapTo(helper.absoluteVec(new BlockPos(size.getX() / 2, helper.testInfo.getStructure().getPath().endsWith("_floor") ? 2 : 1, size.getX() / 2).getCenter()).subtract(0, 0.5, 0));
         return this;
     }
 

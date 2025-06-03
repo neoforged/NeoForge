@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/material/FluidState.java
 +++ b/net/minecraft/world/level/material/FluidState.java
-@@ -114,6 +_,7 @@
+@@ -117,6 +_,7 @@
          return this.getType() == p_192918_;
      }
  

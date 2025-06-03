@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.entity;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
@@ -27,6 +26,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.impl.ReflectionUtils;
 
 @ForEachTest(groups = TradeTests.GROUP)
@@ -42,7 +42,7 @@ public class TradeTests {
         test.onGameTest(helper -> helper.startSequence(() -> helper.spawn(EntityType.VILLAGER, new BlockPos(1, 1, 1)))
                 .thenExecute(villager -> {
                     // Set villager to level 6 trades
-                    villager.setVillagerData(new VillagerData(VillagerType.PLAINS, VillagerProfession.WEAPONSMITH, 0));
+                    villager.setVillagerData(new VillagerData(helper.getHolder(VillagerType.PLAINS), helper.getHolder(VillagerProfession.WEAPONSMITH), 0));
                     try {
                         MethodHandle methodHandle = ReflectionUtils.handle(villager.getClass().getDeclaredMethod("increaseMerchantCareer"));
                         methodHandle.invoke(villager);

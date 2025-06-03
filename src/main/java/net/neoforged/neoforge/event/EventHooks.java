@@ -18,8 +18,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -34,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -45,7 +44,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stat;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Unit;
-import net.minecraft.util.random.WeightedRandomList;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.Container;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
@@ -152,7 +151,6 @@ import net.neoforged.neoforge.event.entity.player.PermissionsChangedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerFlyableFallEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerRespawnPositionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSpawnPhantomsEvent;
@@ -179,6 +177,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.resource.ReloadListenerSort;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -395,7 +394,7 @@ public class EventHooks {
         return event.getBurnTime();
     }
 
-    public static int getExperienceDrop(LivingEntity entity, Player attackingPlayer, int originalExperience) {
+    public static int getExperienceDrop(LivingEntity entity, @Nullable Player attackingPlayer, int originalExperience) {
         LivingExperienceDropEvent event = new LivingExperienceDropEvent(entity, attackingPlayer, originalExperience);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
             return 0;
@@ -446,8 +445,16 @@ public class EventHooks {
         return NeoForge.EVENT_BUS.post(new EntityStruckByLightningEvent(entity, bolt)).isCanceled();
     }
 
+    /**
+     * @deprecated Use {@link #onItemUseStart(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
+     */
+    @Deprecated(since = "1.21.5", forRemoval = true)
     public static int onItemUseStart(LivingEntity entity, ItemStack item, int duration) {
-        var event = new LivingEntityUseItemEvent.Start(entity, item, duration);
+        return onItemUseStart(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
+    }
+
+    public static int onItemUseStart(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
+        var event = new LivingEntityUseItemEvent.Start(entity, item, hand, duration);
         return NeoForge.EVENT_BUS.post(event).isCanceled() ? -1 : event.getDuration();
     }
 
@@ -553,7 +560,7 @@ public class EventHooks {
         boolean isCanceled = NeoForge.EVENT_BUS.post(new EntityMountEvent(entityMounting, entityBeingMounted, entityMounting.level(), isMounting)).isCanceled();
 
         if (isCanceled) {
-            entityMounting.absMoveTo(entityMounting.getX(), entityMounting.getY(), entityMounting.getZ(), entityMounting.yRotO, entityMounting.xRotO);
+            entityMounting.absSnapTo(entityMounting.getX(), entityMounting.getY(), entityMounting.getZ(), entityMounting.yRotO, entityMounting.xRotO);
             return false;
         } else
             return true;
@@ -577,8 +584,8 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new PlayerFlyableFallEvent(player, distance, multiplier));
     }
 
-    public static boolean onPlayerSpawnSet(Player player, ResourceKey<Level> levelKey, BlockPos pos, boolean forced) {
-        return NeoForge.EVENT_BUS.post(new PlayerSetSpawnEvent(player, levelKey, pos, forced)).isCanceled();
+    public static boolean onPlayerSpawnSet(Player player, @Nullable ServerPlayer.RespawnConfig respawnConfig) {
+        return NeoForge.EVENT_BUS.post(new PlayerSetSpawnEvent(player, respawnConfig)).isCanceled();
     }
 
     public static void onPlayerClone(Player player, Player oldPlayer, boolean wasDeath) {
@@ -798,10 +805,19 @@ public class EventHooks {
         return event.getNewTime();
     }
 
+    /**
+     * Fires the {@link AddServerReloadListenersEvent} and returns the sorted list of reload listeners.
+     * 
+     * @param serverResources The just-created {@link ReloadableServerResources} instance.
+     * @param registryAccess  The registry access from the {@link ReloadableServerRegistries.LoadResult}.
+     * @return The sorted list of reload listeners.
+     * 
+     * @throws IllegalArgumentException if {@link ReloadListenerSort#sort(SortedReloadListenerEvent)} detects a cycle.
+     */
     public static List<PreparableReloadListener> onResourceReload(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
-        AddReloadListenerEvent event = new AddReloadListenerEvent(serverResources, registryAccess);
+        AddServerReloadListenersEvent event = new AddServerReloadListenersEvent(serverResources, registryAccess);
         NeoForge.EVENT_BUS.post(event);
-        return event.getListeners();
+        return ReloadListenerSort.sort(event);
     }
 
     public static void onCommandRegister(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection environment, CommandBuildContext context) {
@@ -915,18 +931,6 @@ public class EventHooks {
     }
 
     /**
-     * Called by {@link Gui.HeartType#forPlayer} to allow for modification of the displayed heart type in the
-     * health bar.
-     *
-     * @param player    The local {@link Player}
-     * @param heartType The {@link Gui.HeartType} which would be displayed by vanilla
-     * @return The heart type which should be displayed
-     */
-    public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
-        return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
-    }
-
-    /**
      * Fires {@link EntityTickEvent.Pre}. Called from the head of {@link LivingEntity#tick()}.
      * 
      * @param entity The entity being ticked
@@ -1003,15 +1007,15 @@ public class EventHooks {
         NeoForge.EVENT_BUS.post(new ServerTickEvent.Post(haveTime, server));
     }
 
-    private static final WeightedRandomList<MobSpawnSettings.SpawnerData> NO_SPAWNS = WeightedRandomList.create();
+    private static final WeightedList<MobSpawnSettings.SpawnerData> NO_SPAWNS = WeightedList.of();
 
-    public static WeightedRandomList<MobSpawnSettings.SpawnerData> getPotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedRandomList<MobSpawnSettings.SpawnerData> oldList) {
+    public static WeightedList<MobSpawnSettings.SpawnerData> getPotentialSpawns(LevelAccessor level, MobCategory category, BlockPos pos, WeightedList<MobSpawnSettings.SpawnerData> oldList) {
         LevelEvent.PotentialSpawns event = new LevelEvent.PotentialSpawns(level, category, pos, oldList);
         if (NeoForge.EVENT_BUS.post(event).isCanceled())
             return NO_SPAWNS;
         else if (event.getSpawnerDataList() == oldList.unwrap())
             return oldList;
-        return WeightedRandomList.create(event.getSpawnerDataList());
+        return WeightedList.of(event.getSpawnerDataList());
     }
 
     public static StatAwardEvent onStatAward(Player player, Stat<?> stat, int value) {

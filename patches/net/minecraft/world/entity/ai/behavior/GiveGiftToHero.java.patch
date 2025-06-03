@@ -6,16 +6,15 @@
      private static final int TIME_TO_DELAY_FOR_HEAD_TO_FINISH_TURNING = 20;
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#RAID_HERO_GIFTS data map} instead */
 +    @Deprecated
-     private static final Map<VillagerProfession, ResourceKey<LootTable>> GIFTS = ImmutableMap.<VillagerProfession, ResourceKey<LootTable>>builder()
+     private static final Map<ResourceKey<VillagerProfession>, ResourceKey<LootTable>> GIFTS = ImmutableMap.<ResourceKey<VillagerProfession>, ResourceKey<LootTable>>builder()
          .put(VillagerProfession.ARMORER, BuiltInLootTables.ARMORER_GIFT)
          .put(VillagerProfession.BUTCHER, BuiltInLootTables.BUTCHER_GIFT)
-@@ -112,7 +_,8 @@
+@@ -111,6 +_,8 @@
+         if (p_372869_.isBaby()) {
              return BuiltInLootTables.BABY_VILLAGER_GIFT;
          } else {
-             VillagerProfession villagerprofession = p_372869_.getVillagerData().getProfession();
--            return GIFTS.getOrDefault(villagerprofession, BuiltInLootTables.UNEMPLOYED_GIFT);
-+            var gift = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.wrapAsHolder(villagerprofession).getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
-+            return gift != null ? gift.lootTable() : BuiltInLootTables.UNEMPLOYED_GIFT;
++            var gift = p_372869_.getVillagerData().profession().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.RAID_HERO_GIFTS);
++            if (gift != null) return gift.lootTable();
+             Optional<ResourceKey<VillagerProfession>> optional = p_372869_.getVillagerData().profession().unwrapKey();
+             return optional.isEmpty() ? BuiltInLootTables.UNEMPLOYED_GIFT : GIFTS.getOrDefault(optional.get(), BuiltInLootTables.UNEMPLOYED_GIFT);
          }
-     }
- 

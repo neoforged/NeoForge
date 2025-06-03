@@ -7,13 +7,10 @@ import io.codechicken.diffpatch.util.Output.MultiOutput;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
@@ -23,9 +20,8 @@ abstract class GenerateSourcePatches extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getOriginalJar();
 
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
-    public abstract DirectoryProperty getModifiedSources();
+    @InputFile
+    public abstract RegularFileProperty getModifiedSources();
 
     @Optional
     @OutputFile
@@ -43,7 +39,7 @@ abstract class GenerateSourcePatches extends DefaultTask {
         var builder = DiffOperation.builder()
                 .logTo(getLogger()::lifecycle)
                 .baseInput(MultiInput.detectedArchive(getOriginalJar().get().getAsFile().toPath()))
-                .changedInput(MultiInput.folder(getModifiedSources().get().getAsFile().toPath()))
+                .changedInput(MultiInput.detectedArchive(getModifiedSources().get().getAsFile().toPath()))
                 .patchesOutput(getPatchesJar().isPresent() ? MultiOutput.detectedArchive(getPatchesJar().get().getAsFile().toPath()) : MultiOutput.folder(getPatchesFolder().getAsFile().get().toPath()))
                 .autoHeader(true)
                 .level(io.codechicken.diffpatch.util.LogLevel.WARN)

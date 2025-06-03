@@ -19,19 +19,19 @@
              }
          }
 @@ -111,7 +_,7 @@
-                         p_359633_ -> LOGGER.error(
-                                 "Couldn't load tag {} as it is missing following references: {}",
-                                 p_359645_,
--                                p_359633_.stream().map(Objects::toString).collect(Collectors.joining(", "))
-+                                p_359633_.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
-                             )
+                     p_359633_ -> LOGGER.error(
+                         "Couldn't load tag {} as it is missing following references: {}",
+                         p_359645_,
+-                        p_359633_.stream().map(Objects::toString).collect(Collectors.joining(", "))
++                        p_359633_.stream().map(Objects::toString).collect(Collectors.joining("\n\t", "\n\t", ""))
                      )
-                     .ifRight(p_364232_ -> map.put(p_359645_, (List<T>)p_364232_))
+                 )
+                 .ifRight(p_364232_ -> map.put(p_359645_, (List<T>)p_364232_))
 @@ -183,7 +_,11 @@
          }
      }
  
--    public static record EntryWithSource(TagEntry entry, String source) {
+-    public record EntryWithSource(TagEntry entry, String source) {
 +    public static record EntryWithSource(TagEntry entry, String source, boolean remove) {
 +        public EntryWithSource(TagEntry entry, String source) {
 +            this(entry, source, false);

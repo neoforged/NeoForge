@@ -16,13 +16,14 @@ import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.data.models.model.TexturedModel;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -48,10 +49,9 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.ExtendedUnbakedModel;
-import net.neoforged.neoforge.client.model.NeoForgeModelProperties;
+import net.neoforged.neoforge.client.model.DelegateUnbakedModel;
+import net.neoforged.neoforge.client.model.ExtendedUnbakedGeometry;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
@@ -138,15 +138,24 @@ public class NewModelLoaderTest {
 
     static class TestLoader implements UnbakedModelLoader<TestModel> {
         @Override
-        public TestModel read(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return new TestModel();
+        public TestModel read(JsonObject jsonObject, JsonDeserializationContext ctx) throws JsonParseException {
+            return new TestModel(ctx.deserialize(jsonObject, BlockModel.class));
         }
     }
 
-    static class TestModel implements ExtendedUnbakedModel {
+    static class TestModel extends DelegateUnbakedModel {
+        private TestModel(UnbakedModel parent) {
+            super(parent);
+        }
+
+        @Nullable
         @Override
-        public BakedModel bake(TextureSlots textures, ModelBaker baker, ModelState modelState, boolean useAmbientOcclusion, boolean usesBlockLight, ItemTransforms itemTransforms, ContextMap additionalProperties) {
-            TextureAtlasSprite texture = baker.findSprite(textures, TextureSlot.PARTICLE.getId());
+        public ExtendedUnbakedGeometry geometry() {
+            return TestModel::bake;
+        }
+
+        private static QuadCollection bake(TextureSlots textures, ModelBaker baker, ModelState state, ModelDebugName debugName, ContextMap additionalProperties) {
+            TextureAtlasSprite texture = baker.sprites().resolveSlot(textures, TextureSlot.PARTICLE.getId(), debugName);
 
             var quadBaker = new QuadBakingVertexConsumer();
 
@@ -158,15 +167,7 @@ public class NewModelLoaderTest {
             quadBaker.addVertex(1, 0, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(16), texture.getV(16)).setOverlay(0).setNormal(0, 0, 0);
             quadBaker.addVertex(1, 1, 0.5f).setColor(255, 255, 255, 255).setUv(texture.getU(16), texture.getV(0)).setOverlay(0).setNormal(0, 0, 0);
 
-            return new SimpleBakedModel.Builder(useAmbientOcclusion, usesBlockLight, true, itemTransforms)
-                    .particle(texture)
-                    .addUnculledFace(quadBaker.bakeQuad())
-                    .build(additionalProperties.getOrDefault(NeoForgeModelProperties.RENDER_TYPE, RenderTypeGroup.EMPTY));
-        }
-
-        @Override
-        public void resolveDependencies(Resolver p_387087_) {
-            // No dependencies
+            return new QuadCollection.Builder().addUnculledFace(quadBaker.bakeQuad()).build();
         }
     }
 

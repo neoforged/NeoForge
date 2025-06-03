@@ -6,8 +6,8 @@
 package net.neoforged.neoforge.items;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.items.ItemResource;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -31,4 +31,9 @@ public interface IItemHandlerModifiable extends IItemHandler {
      *                          was not expecting.
      **/
     void setStackInSlot(int slot, ItemStack stack);
+
+//    @Override
+//    default LegacyItemHandlerAdapter.Modifiable asResourceHandler() {
+//        return LegacyItemHandlerAdapter.of(this);
+//    }
 }

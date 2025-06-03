@@ -22,6 +22,7 @@ import net.neoforged.nfrtgradle.NeoFormRuntimeTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.BasePluginExtension;
@@ -133,12 +134,27 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getRejectsFolder().set(project.getRootProject().file("rejects"));
         });
 
-        // 5. Unpack jar from 4.
-        var mcSourcesPath = project.file("src/main/java");
-        tasks.register("setup", Sync.class, task -> {
-            task.setGroup(GROUP);
-            task.from(project.zipTree(applyPatches.flatMap(ApplyPatches::getPatchedJar)));
-            task.into(mcSourcesPath);
+        // 5. Split source jar from 4. into client and server.
+        var splitPatchedSources = tasks.register("splitPatchedSources", SplitMergedSources.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getMergedJar().set(applyPatches.flatMap(ApplyPatches::getPatchedJar));
+            task.getCommonJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/common-patched-sources.jar")));
+            task.getClientJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/client-patched-sources.jar")));
+        });
+
+        // 6. Unpack jars from 5.
+        var setupCommon = tasks.register("setupCommon", Sync.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.zipTree(splitPatchedSources.flatMap(SplitMergedSources::getCommonJar)));
+            task.into(project.file("src/main/java"));
+        });
+        var setupClient = tasks.register("setupClient", Sync.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.zipTree(splitPatchedSources.flatMap(SplitMergedSources::getClientJar)));
+            task.into(project.file("src/client/java"));
+        });
+        tasks.register("setup", task -> {
+            task.dependsOn(setupCommon, setupClient);
         });
 
         /*
@@ -201,11 +217,28 @@ public class NeoDevPlugin implements Plugin<Project> {
          * OTHER TASKS
          */
 
+        // Task to create a jar with both common and client classes.
+        // We cannot add the client classes to the default `jar` task because it might be used
+        // as a dependency for the compilation of the client classes, leading to a circular dependency.
+        var joinedJar = tasks.register("joinedJar", Jar.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getArchiveClassifier().set("joined");
+            task.from(project.zipTree(tasks.named("jar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+            task.from(project.zipTree(tasks.named("clientJar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+        });
+
+        var mergeSources = tasks.register("mergePatchedSources", Zip.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.files("src/main/java", "src/client/java"));
+            task.getDestinationDirectory().set(neoDevBuildDir.map(dir -> dir.dir("artifacts/merged-sources")));
+            task.getArchiveFileName().set("merged-patched-sources.jar");
+        });
+
         // Generate source patches into a patch archive, based on the jar with injected interfaces.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyInterfaceInjection.flatMap(TransformSources::getOutputJar));
-            task.getModifiedSources().set(project.file("src/main/java"));
+            task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesJar().set(neoDevBuildDir.map(dir -> dir.file("source-patches.zip")));
         });
 
@@ -213,7 +246,7 @@ public class NeoDevPlugin implements Plugin<Project> {
         var genProductionPatches = tasks.register("generateProductionSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
             task.getOriginalJar().set(applyAt.flatMap(TransformSources::getOutputJar));
-            task.getModifiedSources().set(project.file("src/main/java"));
+            task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches")));
         });
 
@@ -231,7 +264,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getArchiveClassifier().set("universal");
 
             task.from(project.zipTree(
-                    tasks.named("jar", Jar.class).flatMap(AbstractArchiveTask::getArchiveFile)));
+                    joinedJar.flatMap(AbstractArchiveTask::getArchiveFile)));
             task.exclude("net/minecraft/**");
             task.exclude("com/**");
             task.exclude("mcp/**");
@@ -268,6 +301,7 @@ public class NeoDevPlugin implements Plugin<Project> {
                 project,
                 configurations,
                 createCleanArtifacts,
+                joinedJar,
                 neoDevBuildDir,
                 genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
         );
@@ -492,6 +526,7 @@ public class NeoDevPlugin implements Plugin<Project> {
     private static BinaryPatchOutputs configureBinaryPatchCreation(Project project,
                                                                    NeoDevConfigurations configurations,
                                                                    TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
+                                                                   TaskProvider<Jar> joinedJar,
                                                                    Provider<Directory> neoDevBuildDir,
                                                                    Provider<Directory> sourcesPatchesFolder) {
         var tasks = project.getTasks();
@@ -535,7 +570,7 @@ public class NeoDevPlugin implements Plugin<Project> {
             generateBinPatchesTask.configure(task -> {
                 task.setGroup(INTERNAL_GROUP);
                 task.classpath(binpatcherConfig);
-                task.getPatchedJar().set(tasks.named("jar", Jar.class).flatMap(Jar::getArchiveFile));
+                task.getPatchedJar().set(joinedJar.flatMap(Jar::getArchiveFile));
                 task.getSourcePatchesFolder().set(sourcesPatchesFolder);
                 task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             });
@@ -570,17 +605,31 @@ public class NeoDevPlugin implements Plugin<Project> {
         var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
 
-        // Configuration for all artifacts that should be passed to NFRT to prevent repeated downloads
-        var neoFormRuntimeArtifactManifestNeoForm = configurations.create("neoFormRuntimeArtifactManifestNeoForm", spec -> {
+        // NeoForm data + tools to run it
+        var neoFormRuntimeDataOnly = configurations.create("neoFormRuntimeDataOnly", spec -> {
             spec.setCanBeConsumed(false);
             spec.setCanBeResolved(true);
             spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
                 return dependencyFactory.create("net.neoforged:neoform:" + version);
             }));
         });
+        // Minecraft's dependencies
+        var neoFormRuntimeMinecraftDependencies = configurations.create("neoFormRuntimeMinecraftDependencies", spec -> {
+            spec.setCanBeConsumed(false);
+            spec.setCanBeResolved(true);
+            spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
+                return dependencyFactory.create("net.neoforged:neoform:" + version).capabilities(caps -> {
+                    caps.requireCapability("net.neoforged:neoform-dependencies");
+                });
+            }));
+            spec.attributes(attrs -> {
+                attrs.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_API));
+            });
+        });
 
         tasks.withType(NeoFormRuntimeTask.class, task -> {
-            task.addArtifactsToManifest(neoFormRuntimeArtifactManifestNeoForm);
+            task.addArtifactsToManifest(neoFormRuntimeDataOnly);
+            task.addArtifactsToManifest(neoFormRuntimeMinecraftDependencies);
         });
 
         return tasks.register("createSourceArtifacts", CreateMinecraftArtifacts.class, task -> {

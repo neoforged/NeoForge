@@ -1,11 +1,11 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -58,12 +_,16 @@
+@@ -58,12 +_,19 @@
                  ItemStack itemstack = dispenserblockentity.getItem(i);
                  if (!itemstack.isEmpty()) {
                      Direction direction = p_52944_.getBlockState(p_52945_).getValue(FACING);
 -                    Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
-+                    var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
++                    net.neoforged.neoforge.items.ContainerOrHandler containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
                      ItemStack itemstack1;
 -                    if (container == null) {
 +                    if (containerOrHandler.isEmpty()) {
@@ -15,7 +15,10 @@
 +                        if (containerOrHandler.container() != null) {
 +                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, containerOrHandler.container(), itemstack.copyWithCount(1), direction.getOpposite());
 +                        } else {
-+                            itemstack1 = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack.copyWithCount(1), false);
++                            itemstack1 = itemstack;
++                            //noinspection DataFlowIssue
++                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack),1,null);
++                            itemstack1.shrink(accepted);
 +                        }
                          if (itemstack1.isEmpty()) {
                              itemstack1 = itemstack.copy();

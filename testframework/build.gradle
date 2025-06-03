@@ -10,25 +10,17 @@ java.withSourcesJar()
 apply plugin : net.neoforged.minecraftdependencies.MinecraftDependenciesPlugin
 
 dependencies {
-    // TODO: is this leaking in the POM? (most likely yes)
-    // TODO: does this need to be changed back to runtimeDependencies?
-    // TODO: should use attributes to resolve the right variant instead of hardcoding
-    compileOnly project(path: ':neoforge', configuration: 'apiElements')
-    runtimeOnly project(path: ':neoforge', configuration: 'runtimeElements')
+    compileOnly(project(path: ':neoforge')) {
+        capabilities {
+            requireFeature('client')
+        }
+    }
 
     compileOnly(platform("org.junit:junit-bom:${project.jupiter_api_version}"))
     compileOnly "org.junit.jupiter:junit-jupiter-params"
 
     compileOnly "org.jetbrains:annotations:${project.jetbrains_annotations_version}"
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-}
-
-sourceSets {
-    main {
-        // TODO: cursed
-        compileClasspath += project(':neoforge').sourceSets.main.compileClasspath
-        runtimeClasspath += project(':neoforge').sourceSets.main.runtimeClasspath
-    }
 }
 
 license {
@@ -61,5 +53,28 @@ publishing {
     }
     repositories {
         maven rootProject.gradleutils.getPublishingMaven()
+    }
+}
+
+// Workaround for Eclipse discarding compileOnly cross-project dependencies.
+// See also https://github.com/gradle/gradle/issues/32284
+configurations {
+    eclipseCompileClasspath {
+        attributes {
+            // Needs to be jar otherwise it will get purged
+            attribute LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR)
+            // To resolve apiElements specifically
+            attribute Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_API)
+        }
+    }
+}
+dependencies {
+    eclipseCompileClasspath project(path: ':neoforge')
+}
+plugins.withId("eclipse") {
+    eclipse {
+        classpath {
+            plusConfigurations.add(configurations.eclipseCompileClasspath)
+        }
     }
 }

@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.block;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -23,6 +23,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.DeferredBlockBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
@@ -115,7 +116,7 @@ public class OnDestroyedByPushReactionTests {
                         "onDestroyedByPushReaction was invoked before test sequence began. Was the AtomicBoolean correctly initialised?"))
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.PISTON, 1, 0, 0)) // The piston should exist
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.SLIME_BLOCK, 1, 1, 0)) // Slime block should exist
-                .thenWaitUntil(0, () -> helper.assertBlockState(new BlockPos(0, 1, 0), state -> state.canStickTo(Blocks.SLIME_BLOCK.defaultBlockState()), () -> "Block should exist & be able to stick to slime block"))
+                .thenWaitUntil(0, () -> helper.assertBlockState(new BlockPos(0, 1, 0), state -> state.canStickTo(Blocks.SLIME_BLOCK.defaultBlockState()), $ -> Component.literal("Block should exist & be able to stick to slime block")))
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(destroyOnPistonMove.get(), 0, 2, 0)) // Destroy block should exist
 
                 .thenExecute(() -> helper.pullLever(1, 1, 1))
@@ -165,7 +166,7 @@ public class OnDestroyedByPushReactionTests {
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.PISTON_HEAD, 1, 1, 0)) // The piston's head should be extended
                 .thenWaitUntil(0, () -> helper.assertBlockProperty(new BlockPos(1, 1, 0), BlockStateProperties.PISTON_TYPE, PistonType.STICKY)) // The piston's head should be sticky
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(Blocks.SLIME_BLOCK, 1, 2, 0)) // Slime block should exist
-                .thenWaitUntil(0, () -> helper.assertBlockState(new BlockPos(0, 2, 0), state -> state.canStickTo(Blocks.SLIME_BLOCK.defaultBlockState()), () -> "Block should exist & be able to stick to slime block"))
+                .thenWaitUntil(0, () -> helper.assertBlockState(new BlockPos(0, 2, 0), state -> state.canStickTo(Blocks.SLIME_BLOCK.defaultBlockState()), $ -> Component.literal("Block should exist & be able to stick to slime block")))
                 .thenWaitUntil(0, () -> helper.assertBlockPresent(destroyOnPistonMove.get(), 0, 1, 0)) // Destroy block should exist
 
                 .thenExecute(() -> helper.pullLever(1, 1, 1))

@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/item/crafting/RecipeMap.java
++++ b/net/minecraft/world/item/crafting/RecipeMap.java
+@@ -13,7 +_,7 @@
+ 
+ public class RecipeMap {
+     public static final RecipeMap EMPTY = new RecipeMap(ImmutableMultimap.of(), Map.of());
+-    private final Multimap<RecipeType<?>, RecipeHolder<?>> byType;
++    private Multimap<RecipeType<?>, RecipeHolder<?>> byType;
+     private final Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> byKey;
+ 
+     private RecipeMap(Multimap<RecipeType<?>, RecipeHolder<?>> p_379497_, Map<ResourceKey<Recipe<?>>, RecipeHolder<?>> p_380280_) {
+@@ -31,6 +_,25 @@
+         }
+ 
+         return new RecipeMap(builder.build(), builder1.build());
++    }
++
++    // Neo: handle ordering according to any recipe priorities
++    public void order(it.unimi.dsi.fastutil.objects.Object2IntMap<ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>> recipePriorities) {
++        it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap<java.util.List<RecipeHolder<?>>> priorityBuilder = new it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap<>();
++        com.google.common.collect.LinkedListMultimap<RecipeType<?>, RecipeHolder<?>> finalBuilder = com.google.common.collect.LinkedListMultimap.create();
++
++        for (RecipeHolder<?> recipeholder : this.byKey.values()) {
++            int priority = recipePriorities.getOrDefault(recipeholder.id(), 0);
++            priorityBuilder.computeIfAbsent(priority, p -> new java.util.ArrayList<>()).add(recipeholder);
++        }
++
++        for (var list : priorityBuilder.reversed().values()) {
++            for (RecipeHolder<?> recipeHolder : list) {
++                finalBuilder.put(recipeHolder.value().getType(), recipeHolder);
++            }
++        }
++
++        this.byType = ImmutableMultimap.copyOf(finalBuilder);
+     }
+ 
+     public <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> byType(RecipeType<T> p_379772_) {

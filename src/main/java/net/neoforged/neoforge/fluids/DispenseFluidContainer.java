@@ -12,10 +12,10 @@ import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.context.templates.DispenserContext;
-import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.fluids.FluidUtil;
-import net.neoforged.neoforge.transfer.handlers.IResourceHandler;
+import net.neoforged.neoforge.transfer.FluidUtil;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.DispenserContext;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 
 /**
  * Fills or drains a fluid container item using a Dispenser.
@@ -33,10 +33,10 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
     @Override
     public ItemStack execute(BlockSource source, ItemStack stack) {
-        if (FluidUtil.getFluidContained(stack).isPresent()) {
-            return dumpContainer(source, stack);
-        } else {
+        if (FluidUtil.getFluidContained(stack).isEmpty()) {
             return fillContainer(source, stack);
+        } else {
+            return dumpContainer(source, stack);
         }
     }
 

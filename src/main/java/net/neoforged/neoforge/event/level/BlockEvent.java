@@ -246,9 +246,9 @@ public abstract class BlockEvent extends Event {
      */
     public static class FarmlandTrampleEvent extends BlockEvent implements ICancellableEvent {
         private final Entity entity;
-        private final float fallDistance;
+        private final double fallDistance;
 
-        public FarmlandTrampleEvent(Level level, BlockPos pos, BlockState state, float fallDistance, Entity entity) {
+        public FarmlandTrampleEvent(Level level, BlockPos pos, BlockState state, double fallDistance, Entity entity) {
             super(level, pos, state);
             this.entity = entity;
             this.fallDistance = fallDistance;
@@ -258,7 +258,7 @@ public abstract class BlockEvent extends Event {
             return entity;
         }
 
-        public float getFallDistance() {
+        public double getFallDistance() {
             return fallDistance;
         }
     }

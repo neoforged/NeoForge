@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/AbstractSignRenderer.java
-@@ -195,4 +_,13 @@
+@@ -197,4 +_,13 @@
              return ARGB.color(0, j, k, l);
          }
      }

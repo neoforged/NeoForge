@@ -130,4 +130,8 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     public <A> Map<ResourceKey<T>, A> getDataMap(DataMapType<T, A> type) {
         return (Map<ResourceKey<T>, A>) dataMaps.getOrDefault(type, Map.of());
     }
+
+    public Map<DataMapType<T, ?>, Map<ResourceKey<T>, ?>> getDataMaps() {
+        return dataMaps;
+    }
 }

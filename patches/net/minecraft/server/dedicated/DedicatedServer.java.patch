@@ -25,7 +25,7 @@
              LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
              this.loadLevel();
              long j = Util.getNanos() - i;
-             String s = String.format(Locale.ROOT, "%.3fs", (double)j / 1.0E9);
+             String s = String.format(Locale.ROOT, "%.3fs", j / 1.0E9);
              LOGGER.info("Done ({})! For help, type \"help\"", s);
 +            this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spaming during long load.
              if (dedicatedserverproperties.announcePlayerAchievements != null) {
@@ -35,7 +35,7 @@
                  LOGGER.info("JMX monitoring enabled");
              }
  
-+            if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
++            if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.advertiseDedicatedServerToLan.get()) {
 +                this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
 +                this.dediLanPinger.start();
 +            }
@@ -44,7 +44,7 @@
              return true;
          }
      }
-@@ -277,6 +_,13 @@
+@@ -277,6 +_,10 @@
          if (this.queryThreadGs4 != null) {
              this.queryThreadGs4.stop();
          }
@@ -52,9 +52,6 @@
 +            this.dediLanPinger.interrupt();
 +            this.dediLanPinger = null;
 +        }
-+
-+        // Neo: Forcibly stop the FileWatcher default instance, to prevent it from blocking normal JVM exit; see #1626
-+        com.electronwill.nightconfig.core.file.FileWatcher.defaultInstance().stop();
      }
  
      @Override

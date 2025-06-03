@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.capabilities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -32,7 +33,7 @@ public interface IBlockCapabilityProvider<T, C extends @Nullable Object> {
      * <li>If the configuration of a block entity changes.</li>
      * <li>If a plain block is placed or changes state, by overriding {@link BlockBehaviour#onPlace(BlockState, Level, BlockPos, BlockState, boolean) onPlace}.
      * Be careful that if you don't invalidate for every state change, you should not capture the {@code state} parameter because the state might change!</li>
-     * <li>If a plain block is removed, by overriding {@link BlockBehaviour#onRemove(BlockState, Level, BlockPos, BlockState, boolean) onRemove}.</li>
+     * <li>If a plain block is removed, by overriding {@link BlockBehaviour#affectNeighborsAfterRemoval(BlockState, ServerLevel, BlockPos, boolean) affectNeighborsAfterRemoval}.</li>
      * </ul>
      *
      * @param level       The level.

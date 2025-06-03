@@ -1,6 +1,27 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -137,10 +_,11 @@
+@@ -82,6 +_,20 @@
+         p_59316_.limitSize(this.getMaxStackSize(p_59316_));
+     }
+ 
++    // Neo: Update cooldown after insertion into hopper
++      @Override
++      public void performSideEffects(int slot, ItemStack originalStack) {
++          if (originalStack.isEmpty() && !getItem(slot).isEmpty()) {
++              if (!isOnCustomCooldown()) {
++                  // This cooldown is always set to 8 in vanilla with one exception:
++                  // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
++                  // has not been updated as recently as the one pushing items into it.
++                  // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
++                  setCooldown(8);
++              }
++          }
++      }
++
+     @Override
+     public void setBlockState(BlockState p_326468_) {
+         super.setBlockState(p_326468_);
+@@ -138,10 +_,11 @@
      }
  
      private static boolean ejectItems(Level p_155563_, BlockPos p_155564_, HopperBlockEntity p_326256_) {
@@ -15,16 +36,16 @@
              Direction direction = p_326256_.facing.getOpposite();
              if (isFullContainer(container, direction)) {
                  return false;
-@@ -164,6 +_,8 @@
+@@ -165,6 +_,8 @@
  
                  return false;
              }
 +        } else {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
++            return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.insertHook(p_326256_, containerOrHandler.itemHandler());
          }
      }
  
-@@ -214,8 +_,9 @@
+@@ -215,8 +_,9 @@
      public static boolean suckInItems(Level p_155553_, Hopper p_155554_) {
          BlockPos blockpos = BlockPos.containing(p_155554_.getLevelX(), p_155554_.getLevelY() + 1.0, p_155554_.getLevelZ());
          BlockState blockstate = p_155553_.getBlockState(blockpos);
@@ -36,16 +57,16 @@
              Direction direction = Direction.DOWN;
  
              for (int i : getSlots(container, direction)) {
-@@ -225,6 +_,8 @@
+@@ -226,6 +_,8 @@
              }
  
              return false;
 +        } else if (containerOrHandler.itemHandler() != null) {
-+            return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
++            return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.extractHook(p_155554_, containerOrHandler.itemHandler());
          } else {
              boolean flag = p_155554_.isGridAligned()
                  && blockstate.isCollisionShapeFullBlock(p_155553_, blockpos)
-@@ -368,6 +_,8 @@
+@@ -355,6 +_,8 @@
          return p_155590_.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
      }
  
@@ -53,8 +74,8 @@
 +    @Deprecated
      @Nullable
      public static Container getContainerAt(Level p_59391_, BlockPos p_59392_) {
-         return getContainerAt(
-@@ -411,6 +_,28 @@
+         return getContainerAt(p_59391_, p_59392_, p_59391_.getBlockState(p_59392_), p_59392_.getX() + 0.5, p_59392_.getY() + 0.5, p_59392_.getZ() + 0.5);
+@@ -396,6 +_,28 @@
          return !list.isEmpty() ? (Container)list.get(p_326325_.random.nextInt(list.size())) : null;
      }
  
@@ -77,13 +98,13 @@
 +        if (blockItemHandler != null) {
 +            return new net.neoforged.neoforge.items.ContainerOrHandler(null, blockItemHandler);
 +        }
-+        return net.neoforged.neoforge.items.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
++        return net.neoforged.neoforge.transfer.handlers.wrappers.VanillaInventoryCodeHooks.getEntityContainerOrHandler(level, x, y, z, side);
 +    }
 +
      private static boolean canMergeItems(ItemStack p_59345_, ItemStack p_59346_) {
          return p_59345_.getCount() <= p_59345_.getMaxStackSize() && ItemStack.isSameItemSameComponents(p_59345_, p_59346_);
      }
-@@ -470,5 +_,9 @@
+@@ -453,5 +_,9 @@
      @Override
      protected AbstractContainerMenu createMenu(int p_59312_, Inventory p_59313_) {
          return new HopperMenu(p_59312_, p_59313_, this);

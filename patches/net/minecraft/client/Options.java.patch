@@ -1,18 +1,18 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -746,9 +_,10 @@
+@@ -721,9 +_,10 @@
              }
          },
          new OptionInstance.LazyEnum<>(
 +            // FORGE: fix incorrect string comparison - PR #8767
              () -> Stream.concat(Stream.of(""), Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().stream()).toList(),
              p_232011_ -> Minecraft.getInstance().isRunning()
--                        && p_232011_ != ""
-+                        && (p_232011_ == null || !p_232011_.isEmpty())
-                         && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(p_232011_)
-                     ? Optional.empty()
-                     : Optional.of(p_232011_),
-@@ -822,7 +_,7 @@
+-                    && p_232011_ != ""
++                    && (p_232011_ == null || !p_232011_.isEmpty())
+                     && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(p_232011_)
+                 ? Optional.empty()
+                 : Optional.of(p_232011_),
+@@ -798,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack pack : p_275268_.getSelectedPacks()) {
@@ -21,7 +21,7 @@
                  this.resourcePacks.add(pack.getId());
                  if (!pack.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(pack.getId());
-@@ -1130,6 +_,7 @@
+@@ -1106,6 +_,7 @@
      }
  
      public Options(Minecraft p_92138_, File p_92139_) {
@@ -29,16 +29,17 @@
          this.minecraft = p_92138_;
          this.optionsFile = new File(p_92139_, "options.txt");
          boolean flag = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1264,11 +_,21 @@
-         this.onboardAccessibility = p_168428_.process("onboardAccessibility", this.onboardAccessibility);
-         p_168428_.process("menuBackgroundBlurriness", this.menuBackgroundBlurriness);
+@@ -1126,6 +_,7 @@
+             p_366330_ -> {}
+         );
+         this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
++        net.neoforged.neoforge.client.ClientHooks.onRegisterKeyMappings(this);
+         this.load();
+     }
  
-+        net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod.processOptions(p_168428_);
-+        processOptionsForge(p_168428_);
-+    }
-+    // FORGE: split off to allow reloading options after mod loading is done
-+    private void processOptionsForge(Options.FieldAccess p_168428_)
-+    {
+@@ -1241,10 +_,14 @@
+         this.startedCleanly = p_168428_.process("startedCleanly", this.startedCleanly);
+ 
          for (KeyMapping keymapping : this.keyMappings) {
 -            String s = keymapping.saveString();
 +            String s = keymapping.saveString() + (keymapping.getKeyModifier() != net.neoforged.neoforge.client.settings.KeyModifier.NONE ? ":" + keymapping.getKeyModifier() : "");
@@ -53,35 +54,7 @@
              }
          }
  
-@@ -1286,6 +_,9 @@
-     }
- 
-     public void load() {
-+        this.load(false);
-+    }
-+    public void load(boolean limited) {
-         try {
-             if (!this.optionsFile.exists()) {
-                 return;
-@@ -1313,7 +_,8 @@
-                 }
-             }
- 
--            this.processOptions(
-+            java.util.function.Consumer<FieldAccess> processor = limited ? this::processOptionsForge : this::processOptions;
-+            processor.accept(
-                 new Options.FieldAccess() {
-                     @Nullable
-                     private String getValueOrNull(String p_168459_) {
-@@ -1484,6 +_,7 @@
-     }
- 
-     public ClientInformation buildPlayerInformation() {
-+        if (net.neoforged.neoforge.client.loading.ClientModLoader.isLoading()) return ClientInformation.createDefault(); //Don't save settings before mods add keybindigns and the like to prevent them from being deleted.
-         int i = 0;
- 
-         for (PlayerModelPart playermodelpart : this.modelParts) {
-@@ -1555,6 +_,23 @@
+@@ -1542,6 +_,23 @@
          }
  
          p_92146_.setSelected(set);

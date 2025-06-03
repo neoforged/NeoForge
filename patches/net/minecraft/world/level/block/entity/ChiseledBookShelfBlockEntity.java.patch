@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
+@@ -108,6 +_,12 @@
+ 
+     @Override
+     public void setItem(int p_256610_, ItemStack p_255789_) {
++        setItem(p_256610_, p_255789_, true);
++    }
++
++    // Neo: Support deferring side effects until end of a transaction
++    @Override
++    public void setItem(int p_256610_, ItemStack p_255789_, boolean performSideEffects) {
+         if (p_255789_.is(ItemTags.BOOKSHELF_BOOKS)) {
+             this.items.set(p_256610_, p_255789_);
+             this.updateState(p_256610_);
+@@ -115,6 +_,28 @@
+             this.removeItem(p_256610_, 1);
+         }
+     }
++
++    // Neo: Make lastInteractedSlot transactional, and defer updateState until end of a transaction
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedParticipant = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer>() {
++        @Override
++        protected Integer createSnapshot() {
++            return lastInteractedSlot;
++        }
++        @Override
++        protected void revertToSnapshot(Integer snapshot) {
++            lastInteractedSlot = snapshot;
++        }
++        @Override
++        protected void onCommit(Integer originalState) {
++            updateState(lastInteractedSlot);
++        }
++    };
++
++    @Override
++    public void onTransfer(int slot, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++        this.lastInteractedParticipant.updateSnapshots(transaction);
++        lastInteractedSlot = slot;
++     }
+ 
+     @Override
+     public boolean canTakeItem(Container p_282172_, int p_281387_, ItemStack p_283257_) {

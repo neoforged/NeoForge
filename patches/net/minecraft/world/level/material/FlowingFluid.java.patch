@@ -19,7 +19,7 @@
              FluidState fluidstate1 = blockstate1.getFluidState();
              if (blockstate1.isSolid() || this.isSourceBlockOfThisType(fluidstate1)) {
 @@ -257,6 +_,15 @@
-         return this.getSource().defaultFluidState().setValue(FALLING, Boolean.valueOf(p_76069_));
+         return this.getSource().defaultFluidState().setValue(FALLING, p_76069_);
      }
  
 +    @Override

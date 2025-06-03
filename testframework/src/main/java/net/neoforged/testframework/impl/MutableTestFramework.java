@@ -56,25 +56,21 @@ public interface MutableTestFramework extends TestFramework {
 
     default ClickEvent setStatusCommand(String testId, Test.Result result, String message) {
         if (message.isBlank()) {
-            return new ClickEvent(
-                    ClickEvent.Action.RUN_COMMAND,
+            return new ClickEvent.RunCommand(
                     buildCommand("status set \"" + testId + "\" " + result));
         } else {
-            return new ClickEvent(
-                    ClickEvent.Action.RUN_COMMAND,
+            return new ClickEvent.RunCommand(
                     buildCommand("status set \"" + testId + "\" " + result + " " + message));
         }
     }
 
     default ClickEvent enableCommand(String id) {
-        return new ClickEvent(
-                ClickEvent.Action.RUN_COMMAND,
+        return new ClickEvent.RunCommand(
                 buildCommand("enable " + id));
     }
 
     default ClickEvent disableCommand(String id) {
-        return new ClickEvent(
-                ClickEvent.Action.RUN_COMMAND,
+        return new ClickEvent.RunCommand(
                 buildCommand("disable " + id));
     }
 

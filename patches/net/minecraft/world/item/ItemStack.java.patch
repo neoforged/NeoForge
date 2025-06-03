@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -242,6 +_,10 @@
+@@ -250,6 +_,10 @@
          return !this.isEmpty() && this.components.hasNonDefault(p_389426_);
      }
  
@@ -11,7 +11,7 @@
      public ItemStack(ItemLike p_41599_) {
          this(p_41599_, 1);
      }
-@@ -347,7 +_,7 @@
+@@ -351,7 +_,7 @@
      }
  
      public boolean is(Holder<Item> p_220166_) {
@@ -20,7 +20,7 @@
      }
  
      public boolean is(HolderSet<Item> p_298683_) {
-@@ -359,13 +_,27 @@
+@@ -363,13 +_,27 @@
      }
  
      public InteractionResult useOn(UseOnContext p_41662_) {
@@ -49,7 +49,7 @@
              if (player != null
                  && interactionresult instanceof InteractionResult.Success interactionresult$success
                  && interactionresult$success.wasItemInteraction()) {
-@@ -419,7 +_,8 @@
+@@ -423,7 +_,8 @@
          if (this.isEmpty()) {
              throw new IllegalStateException("Cannot encode empty ItemStack");
          } else {
@@ -59,7 +59,7 @@
          }
      }
  
-@@ -427,7 +_,8 @@
+@@ -431,12 +_,13 @@
          if (this.isEmpty()) {
              throw new IllegalStateException("Cannot encode empty ItemStack");
          } else {
@@ -69,11 +69,8 @@
          }
      }
  
-@@ -436,7 +_,7 @@
-     }
- 
      public int getMaxStackSize() {
--        return this.getOrDefault(DataComponents.MAX_STACK_SIZE, Integer.valueOf(1));
+-        return this.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
 +        return this.getItem().getMaxStackSize(this);
      }
  
@@ -87,7 +84,7 @@
      }
  
      public int getDamageValue() {
--        return Mth.clamp(this.getOrDefault(DataComponents.DAMAGE, Integer.valueOf(0)), 0, this.getMaxDamage());
+-        return Mth.clamp(this.getOrDefault(DataComponents.DAMAGE, 0), 0, this.getMaxDamage());
 +        return this.getItem().getDamage(this);
      }
  
@@ -97,7 +94,7 @@
      }
  
      public int getMaxDamage() {
--        return this.getOrDefault(DataComponents.MAX_DAMAGE, Integer.valueOf(0));
+-        return this.getOrDefault(DataComponents.MAX_DAMAGE, 0);
 +        return this.getItem().getMaxDamage(this);
      }
  
@@ -140,7 +137,7 @@
          }
  
          this.setDamageValue(p_361754_);
-@@ -519,7 +_,7 @@
+@@ -518,7 +_,7 @@
              this.hurtAndBreak(
                  p_41623_,
                  serverlevel,
@@ -149,7 +146,16 @@
                  p_348383_ -> p_41624_.onEquippedItemBroken(p_348383_, p_319898_)
              );
          }
-@@ -800,7 +_,7 @@
+@@ -743,7 +_,7 @@
+ 
+     @Nullable
+     public <T> T set(DataComponentType<T> p_331064_, @Nullable T p_330775_) {
+-        return this.components.set(p_331064_, p_330775_);
++        return (T) this.components.set(p_331064_, p_330775_);
+     }
+ 
+     public <T> void copyFrom(DataComponentType<T> p_397950_, DataComponentGetter p_397631_) {
+@@ -816,7 +_,7 @@
      }
  
      public Component getStyledHoverName() {
@@ -158,34 +164,37 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              mutablecomponent.withStyle(ChatFormatting.ITALIC);
          }
-@@ -842,7 +_,9 @@
-             this.addToTooltip(DataComponents.ENCHANTMENTS, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.DYED_COLOR, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.LORE, p_339637_, consumer, p_41653_);
--            this.addAttributeTooltips(consumer, p_41652_);
-+            // Neo: Replace attribute tooltips with custom handling
-+            net.neoforged.neoforge.common.util.AttributeUtil.addAttributeTooltips(this, consumer,
-+                    net.neoforged.neoforge.common.util.AttributeTooltipContext.of(p_41652_, p_339637_, p_41653_));
-             this.addToTooltip(DataComponents.UNBREAKABLE, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.OMINOUS_BOTTLE_AMPLIFIER, p_339637_, consumer, p_41653_);
-             this.addToTooltip(DataComponents.SUSPICIOUS_STEW_EFFECTS, p_339637_, consumer, p_41653_);
-@@ -880,10 +_,15 @@
-                 list.addAll(OP_NBT_WARNING);
-             }
- 
+@@ -842,6 +_,7 @@
+             List<Component> list = Lists.newArrayList();
+             list.add(this.getStyledHoverName());
+             this.addDetailsToTooltip(p_339637_, tooltipdisplay, p_41652_, p_41653_, list::add);
 +            net.neoforged.neoforge.event.EventHooks.onItemTooltip(this, p_41652_, list, p_41653_, p_339637_);
              return list;
          }
      }
- 
+@@ -869,7 +_,8 @@
+         this.addToTooltip(DataComponents.ENCHANTMENTS, p_400057_, p_400252_, p_399603_, p_400174_);
+         this.addToTooltip(DataComponents.DYED_COLOR, p_400057_, p_400252_, p_399603_, p_400174_);
+         this.addToTooltip(DataComponents.LORE, p_400057_, p_400252_, p_399603_, p_400174_);
+-        this.addAttributeTooltips(p_399603_, p_400252_, p_399628_);
++        // Neo: Replace attribute tooltips with custom handling
++        net.neoforged.neoforge.common.util.AttributeUtil.addAttributeTooltips(this, p_399603_, p_400252_, net.neoforged.neoforge.common.util.AttributeTooltipContext.of(p_399628_, p_400057_, p_400252_, p_400174_));
+         if (this.has(DataComponents.UNBREAKABLE) && p_400252_.shows(DataComponents.UNBREAKABLE)) {
+             p_399603_.accept(UNBREAKABLE_TOOLTIP);
+         }
+@@ -917,7 +_,10 @@
+             OP_NBT_WARNING.forEach(p_399603_);
+         }
+     }
+-
 +    /**
-+     * @deprecated Neo: Use {@link net.neoforged.neoforge.client.util.TooltipUtil#addAttributeTooltips}
++     * @deprecated Neo: Use {@link net.neoforged.neoforge.common.util.AttributeUtil#addAttributeTooltips}
 +     */
 +    @Deprecated
-     private void addAttributeTooltips(Consumer<Component> p_330796_, @Nullable Player p_330530_) {
-         ItemAttributeModifiers itemattributemodifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-         if (itemattributemodifiers.showInTooltip()) {
-@@ -993,6 +_,17 @@
+     private void addAttributeTooltips(Consumer<Component> p_330796_, TooltipDisplay p_400175_, @Nullable Player p_330530_) {
+         if (p_400175_.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
+             for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
+@@ -1026,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
@@ -203,7 +212,7 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -1018,14 +_,26 @@
+@@ -1051,14 +_,26 @@
      }
  
      public void forEachModifier(EquipmentSlotGroup p_348610_, BiConsumer<Holder<Attribute>, AttributeModifier> p_348516_) {
@@ -230,16 +239,16 @@
          EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
      }
  
-@@ -1037,7 +_,7 @@
+@@ -1070,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
          if (!this.isEmpty()) {
--            mutablecomponent1.withStyle(this.getRarity().color())
-+            mutablecomponent1.withStyle(this.getRarity().getStyleModifier())
-                 .withStyle(p_220170_ -> p_220170_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(this))));
+-            mutablecomponent1.withStyle(this.getRarity().color()).withStyle(p_393272_ -> p_393272_.withHoverEvent(new HoverEvent.ShowItem(this)));
++            mutablecomponent1.withStyle(this.getRarity().getStyleModifier()).withStyle(p_393272_ -> p_393272_.withHoverEvent(new HoverEvent.ShowItem(this)));
          }
  
-@@ -1105,6 +_,8 @@
+         return mutablecomponent1;
+@@ -1137,11 +_,14 @@
          this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
      }
  
@@ -247,8 +256,6 @@
 +    @Deprecated
      public void onDestroyed(ItemEntity p_150925_) {
          this.getItem().onDestroyed(p_150925_);
-     }
-@@ -1114,6 +_,7 @@
      }
  
      public boolean canBeHurtBy(DamageSource p_335431_) {

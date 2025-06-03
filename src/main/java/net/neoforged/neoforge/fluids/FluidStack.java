@@ -38,10 +38,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.transfer.ResourceStack;
-import net.neoforged.neoforge.transfer.fluids.FluidResource;
-import net.neoforged.neoforge.transfer.fluids.FluidUtil;
 import net.neoforged.neoforge.common.util.DataComponentUtil;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -399,7 +398,7 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     @Nullable
     @Override
-    public <T> T set(DataComponentType<? super T> type, @Nullable T component) {
+    public <T> T set(DataComponentType<T> type, @Nullable T component) {
         return this.components.set(type, component);
     }
 
@@ -486,69 +485,5 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public boolean is(FluidType fluidType) {
         return getFluidType() == fluidType;
-    }
-
-    // Deprecated pre-1.20.5 methods that are kept around for a while to allow for a transition go below
-
-    /**
-     * @deprecated Use {@link #getHoverName} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public Component getDisplayName() {
-        return getHoverName();
-    }
-
-    /**
-     * @deprecated Prefer {@link #getHoverName()}.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public String getTranslationKey() {
-        return getFluidType().getDescriptionId(this);
-    }
-
-    /**
-     * Determines if the fluid and the components are equal. This does not check amounts.
-     * 
-     * @deprecated Use {@link #isSameFluidSameComponents} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean isFluidEqual(FluidStack other) {
-        return isSameFluidSameComponents(this, other);
-    }
-
-    /**
-     * Determines if components are equal.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public static boolean areFluidStackTagsEqual(FluidStack first, FluidStack second) {
-        return Objects.equals(first.components, second.components);
-    }
-
-    /**
-     * Determines if Fluids are equal and this stack is larger.
-     *
-     * @return true if this FluidStack contains the other FluidStack (same fluid, same components and >= amount)
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean containsFluid(FluidStack other) {
-        return isFluidEqual(other) && amount >= other.amount;
-    }
-
-    /**
-     * Determines if Fluids, Amounts, and components are all equal.
-     * 
-     * @deprecated Use {@link #matches} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean isFluidStackIdentical(FluidStack other) {
-        return matches(this, other);
-    }
-
-    /**
-     * Determines if the FluidIDs and components are equal compared to a container item stack. This does not check amounts.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean isFluidEqual(ItemStack other) {
-        return FluidUtil.getFluidContained(other).map(this::isFluidEqual).orElse(false);
     }
 }

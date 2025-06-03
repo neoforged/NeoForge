@@ -23,8 +23,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.common.NeoForgeConfig;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.config.NeoForgeCommonConfig;
 import net.neoforged.neoforge.common.util.AttributeUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +84,7 @@ public interface IAttributeExtension {
     default Component getDebugInfo(AttributeModifier modif, TooltipFlag flag) {
         Component debugInfo = CommonComponents.EMPTY;
 
-        if (flag.isAdvanced() && NeoForgeConfig.COMMON.attributeAdvancedTooltipDebugInfo.get()) {
+        if (flag.isAdvanced() && NeoForgeCommonConfig.INSTANCE.attributeAdvancedTooltipDebugInfo.get()) {
             // Advanced Tooltips show the underlying operation and the "true" value. We offset MULTIPLY_TOTAL by 1 due to how the operation is calculated.
             double advValue = (modif.operation() == Operation.ADD_MULTIPLIED_TOTAL ? 1 : 0) + modif.amount();
             String valueStr = FORMAT.format(advValue);
@@ -102,6 +102,8 @@ public interface IAttributeExtension {
      * Gets the specific ID that represents a "base" (green) modifier for this attribute.
      *
      * @return The ID of the "base" modifier, or null, if no such modifier may exist.
+     *
+     * @apiNote Base modifiers always operate as if they were using {@link Operation#ADD_VALUE}.
      */
     @Nullable
     default ResourceLocation getBaseId() {
@@ -121,6 +123,8 @@ public interface IAttributeExtension {
      * @param merged     If we are displaying a merged base component (which will have a non-merged base component as a child).
      * @param flag       The tooltip flag.
      * @return The component representation of the passed attribute modifier.
+     * 
+     * @apiNote Base modifiers always operate as if they were using {@link Operation#ADD_VALUE}.
      */
     default MutableComponent toBaseComponent(double value, double entityBase, boolean merged, TooltipFlag flag) {
         Attribute attr = self();
@@ -128,9 +132,11 @@ public interface IAttributeExtension {
 
         // Emit both the value of the modifier, and the entity's base value as debug information, since both are flattened into the modifier.
         // Skip showing debug information here when displaying a merged modifier, since it will be shown if the user holds shift to display the un-merged modifier.
-        if (flag.isAdvanced() && !merged) {
-            Component debugInfo = Component.literal(" ").append(Component.translatable("neoforge.attribute.debug.base", FORMAT.format(entityBase), FORMAT.format(value - entityBase)).withStyle(ChatFormatting.GRAY));
-            comp.append(debugInfo);
+        if (flag.isAdvanced() && !merged && NeoForgeCommonConfig.INSTANCE.attributeAdvancedTooltipDebugInfo.get()) {
+            double baseBonus = value - entityBase;
+            String baseBonusText = String.format(Locale.ROOT, baseBonus > 0 ? " + %s" : " - %s", FORMAT.format(Math.abs(baseBonus)));
+            Component debugInfo = Component.translatable("neoforge.attribute.debug.base", FORMAT.format(entityBase), baseBonusText).withStyle(ChatFormatting.GRAY);
+            comp.append(CommonComponents.SPACE).append(debugInfo);
         }
 
         return comp;

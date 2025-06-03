@@ -7,7 +7,6 @@ package net.neoforged.neoforge.server.command.generation;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,10 +21,10 @@ import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,8 +58,6 @@ public class GenerationTask {
 
     private volatile Listener listener;
     private volatile boolean stopped;
-
-    public static final TicketType<ChunkPos> NEOFORGE_GENERATE_FORCED = TicketType.create("neoforge_generate_forced", Comparator.comparingLong(ChunkPos::toLong));
 
     public GenerationTask(ServerLevel serverLevel, int x, int z, int radius) {
         this.server = serverLevel.getServer();
@@ -213,12 +210,12 @@ public class GenerationTask {
 
     private void acquireChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.addRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
+        this.chunkSource.addTicketWithRadius(NeoForgeMod.GENERATE_FORCED_TICKET.value(), pos, 0);
     }
 
     private void releaseChunk(long chunk) {
         ChunkPos pos = new ChunkPos(chunk);
-        this.chunkSource.removeRegionTicket(NEOFORGE_GENERATE_FORCED, pos, 0, pos);
+        this.chunkSource.removeTicketWithRadius(NeoForgeMod.GENERATE_FORCED_TICKET.value(), pos, 0);
     }
 
     private boolean isChunkFullyGenerated(ChunkPos chunkPosInLocalSpace) {

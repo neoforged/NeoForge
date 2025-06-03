@@ -77,7 +77,7 @@ public class ResourcePackLoader {
     private synchronized static void findResourcePacks() {
         if (modResourcePacks == null) {
             modResourcePacks = ModList.get().getModFiles().stream()
-                    .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
+                    .filter(mfi -> hasResourcePack(mfi.getFile()))
                     .map(mf -> Pair.of(mf, createPackForMod(mf)))
                     .collect(Collectors.toMap(p -> p.getFirst().getFile(), Pair::getSecond, (u, v) -> {
                         throw new IllegalStateException(String.format(Locale.ENGLISH, "Duplicate key %s", u));
@@ -92,8 +92,11 @@ public class ResourcePackLoader {
     private static void packFinder(Map<IModFile, Pack.ResourcesSupplier> modResourcePacks, Consumer<Pack> packAcceptor, PackType packType) {
         var hiddenPacks = new ArrayList<Pack>();
         for (Map.Entry<IModFile, Pack.ResourcesSupplier> e : modResourcePacks.entrySet()) {
-            IModInfo mod = e.getKey().getModInfos().get(0);
-            if ("minecraft".equals(mod.getModId())) continue; // skip the minecraft "mod"
+            var modFile = e.getKey();
+            if (!hasResourcePack(e.getKey())) {
+                continue;
+            }
+            var modFileInfo = modFile.getModFileInfo();
             final String name = "mod/" + e.getKey().getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining(","));
             final String version = e.getKey().getModInfos().stream().map(IModInfo::getVersion).map(ArtifactVersion::toString).collect(Collectors.joining(","));
             final String packName = e.getKey().getFileName();
@@ -105,7 +108,7 @@ public class ResourcePackLoader {
                         PackSource.DEFAULT,
                         Optional.of(new KnownPack("neoforge", name, version)));
 
-                final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && mod.getOwningFile().showAsResourcePack()) || (packType == PackType.SERVER_DATA && mod.getOwningFile().showAsDataPack());
+                final boolean isRequired = (packType == PackType.CLIENT_RESOURCES && modFileInfo.showAsResourcePack()) || (packType == PackType.SERVER_DATA && modFileInfo.showAsDataPack());
                 final Pack modPack;
                 // Packs displayed separately must be valid
                 if (isRequired) {
@@ -116,7 +119,7 @@ public class ResourcePackLoader {
                             MOD_PACK_SELECTION_CONFIG);
 
                     if (modPack == null) {
-                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedMod(mod));
+                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedModFile(modFile));
                         continue;
                     }
                 } else {
@@ -133,8 +136,8 @@ public class ResourcePackLoader {
                     hiddenPacks.add(modPack.hidden());
                 }
             } catch (IOException exception) {
-                LOGGER.error("Failed to read pack.mcmeta file of mod {}", mod.getModId(), exception);
-                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedMod(mod).withCause(exception));
+                LOGGER.error("Failed to read pack.mcmeta file of {}", modFile, exception);
+                ModLoader.addLoadingIssue(ModLoadingIssue.warning("fml.modloading.brokenresources", e.getKey()).withAffectedModFile(modFile).withCause(exception));
             }
         }
 
@@ -210,13 +213,19 @@ public class ResourcePackLoader {
 
     public static List<String> getPackNames(PackType packType) {
         List<String> ids = new ArrayList<>();
-        ids.addAll(ModList.get().getModFiles().stream().filter(packType == PackType.CLIENT_RESOURCES ? IModFileInfo::showAsResourcePack : IModFileInfo::showAsDataPack)
-                .filter(mf -> mf.requiredLanguageLoaders().stream().noneMatch(ls -> ls.languageName().equals("minecraft")))
+        ids.addAll(ModList.get().getModFiles().stream()
+                .filter(packType == PackType.CLIENT_RESOURCES ? IModFileInfo::showAsResourcePack : IModFileInfo::showAsDataPack)
                 .map(IModFileInfo::getFile)
+                .filter(ResourcePackLoader::hasResourcePack)
                 .map(mf -> "mod/" + mf.getModInfos().stream().map(IModInfo::getModId).collect(Collectors.joining()))
                 .toList());
         ids.add(packType == PackType.CLIENT_RESOURCES ? MOD_RESOURCES_ID : MOD_DATA_ID);
         return ids;
+    }
+
+    private static boolean hasResourcePack(IModFile mf) {
+        // Vanilla resources are already considered, so don't create another entry for the Minecraft mod-file
+        return mf.getModInfos().stream().noneMatch(m -> "minecraft".equals(m.getModId()));
     }
 
     /*

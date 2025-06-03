@@ -7,12 +7,12 @@ package net.neoforged.neoforge.common.extensions;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,7 +44,6 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
@@ -257,6 +256,37 @@ public interface IBlockStateExtension {
      */
     default boolean addRunningEffects(Level level, BlockPos pos, Entity entity) {
         return self().getBlock().addRunningEffects(self(), level, pos, entity);
+    }
+
+    /**
+     * Allows a block to override the standard fall sound played in {@link LivingEntity#playBlockFallSound()}.
+     *
+     * @param level  The level which the block is in
+     * @param pos    The position of the block in the level
+     * @param entity The entity falling onto the block
+     */
+    default void playFallSound(Level level, BlockPos pos, LivingEntity entity) {
+        self().getBlock().playFallSound(self(), level, pos, entity);
+    }
+
+    /**
+     * Allows a block to override the standard step sound played in:
+     * <ul>
+     * <li>{@link Entity#playCombinationStepSounds(BlockState, BlockState, BlockPos, BlockPos)} (primary step sound only)</li>
+     * <li>{@link Entity#playMuffledStepSound(BlockState, BlockPos)} (usually the secondary sound in a call to the above method)</li>
+     * <li>{@link Entity#playStepSound(BlockPos, BlockState)} (simple step sound)</li>
+     * </ul>
+     * The volume and pitch of any sound played in this method should be multiplied with the provided multipliers to
+     * replicate the behaviour of the callers.
+     *
+     * @param level            The level which the block is in
+     * @param pos              The position of the block in the level
+     * @param entity           The entity stepping on the block
+     * @param volumeMultiplier The volume multiplier to apply to the step sound being played
+     * @param pitchMultiplier  The pitch multiplier to apply to the step sound being played
+     */
+    default void playStepSound(Level level, BlockPos pos, Entity entity, float volumeMultiplier, float pitchMultiplier) {
+        self().getBlock().playStepSound(self(), level, pos, entity, volumeMultiplier, pitchMultiplier);
     }
 
     /**
@@ -487,14 +517,17 @@ public interface IBlockStateExtension {
 
     /**
      * If the block is flammable, this is called when it gets lit on fire.
+     * <p>
+     * The return value determines whether a flint-and-steel in a dispenser was used successfully and should be damaged
      *
      * @param level   The current level
      * @param pos     Block position in level
      * @param face    The face that the fire is coming from
      * @param igniter The entity that lit the fire
+     * @return whether the block was successfully set on fire (i.e. TNT is allowed to explode and was primed)
      */
-    default void onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
-        self().getBlock().onCaughtFire(self(), level, pos, face, igniter);
+    default boolean onCaughtFire(Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
+        return self().getBlock().onCaughtFire(self(), level, pos, face, igniter);
     }
 
     /**

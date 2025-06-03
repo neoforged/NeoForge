@@ -2,28 +2,41 @@
 +++ b/net/minecraft/client/renderer/entity/ItemEntityRenderer.java
 @@ -38,6 +_,8 @@
          super.extractRenderState(p_362393_, p_361441_, p_360849_);
-         p_361441_.ageInTicks = (float)p_362393_.getAge() + p_360849_;
+         p_361441_.ageInTicks = p_362393_.getAge() + p_360849_;
          p_361441_.bobOffset = p_362393_.bobOffs;
 +        p_361441_.shouldBob = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_362393_.getItem()).shouldBobAsEntity(p_362393_.getItem());
 +        p_361441_.shouldSpread = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_362393_.getItem()).shouldSpreadAsEntity(p_362393_.getItem());
          p_361441_.extractItemGroupRenderState(p_362393_, p_362393_.getItem(), this.itemModelResolver);
      }
  
-@@ -45,7 +_,7 @@
-         if (!p_362172_.item.isEmpty()) {
+@@ -52,7 +_,7 @@
              p_115030_.pushPose();
-             float f = 0.25F;
+             AABB aabb = calculateModelBoundingBox(p_362172_.item);
+             float f = -((float)aabb.minY) + 0.0625F;
 -            float f1 = Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F;
 +            float f1 = p_362172_.shouldBob ? Mth.sin(p_362172_.ageInTicks / 10.0F + p_362172_.bobOffset) * 0.1F + 0.1F : 0;
-             float f2 = p_362172_.item.transform().scale.y();
-             p_115030_.translate(0.0F, f1 + 0.25F * f2, 0.0F);
-             float f3 = ItemEntity.getSpin(p_362172_.ageInTicks, p_362172_.bobOffset);
-@@ -75,7 +_,7 @@
- 
-         for (int j = 0; j < i; j++) {
-             p_323763_.pushPose();
--            if (j > 0) {
-+            if (j > 0 && p_388704_.shouldSpread) {
-                 if (flag) {
-                     float f7 = (p_324507_.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                     float f9 = (p_324507_.nextFloat() * 2.0F - 1.0F) * 0.15F;
+             p_115030_.translate(0.0F, f1 + f, 0.0F);
+             float f2 = ItemEntity.getSpin(p_362172_.ageInTicks, p_362172_.bobOffset);
+             p_115030_.mulPose(Axis.YP.rotation(f2));
+@@ -84,7 +_,9 @@
+                     float f1 = (p_404894_.nextFloat() * 2.0F - 1.0F) * 0.15F;
+                     float f2 = (p_404894_.nextFloat() * 2.0F - 1.0F) * 0.15F;
+                     float f3 = (p_404894_.nextFloat() * 2.0F - 1.0F) * 0.15F;
+-                    p_404890_.translate(f1, f2, f3);
++                    if (p_405697_.shouldSpread) {
++                        p_404890_.translate(f1, f2, f3);
++                    }
+                     itemstackrenderstate.render(p_404890_, p_405782_, p_404762_, OverlayTexture.NO_OVERLAY);
+                     p_404890_.popPose();
+                 }
+@@ -98,7 +_,9 @@
+                     p_404890_.pushPose();
+                     float f5 = (p_404894_.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
+                     float f6 = (p_404894_.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
+-                    p_404890_.translate(f5, f6, 0.0F);
++                    if (p_405697_.shouldSpread) {
++                        p_404890_.translate(f5, f6, 0.0F);
++                    }
+                     itemstackrenderstate.render(p_404890_, p_405782_, p_404762_, OverlayTexture.NO_OVERLAY);
+                     p_404890_.popPose();
+                     p_404890_.translate(0.0F, 0.0F, f4);

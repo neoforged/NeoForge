@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/MappedRegistry.java
 +++ b/net/minecraft/core/MappedRegistry.java
-@@ -30,7 +_,7 @@
+@@ -29,7 +_,7 @@
  import net.minecraft.tags.TagLoader;
  import net.minecraft.util.RandomSource;
  
@@ -9,7 +9,7 @@
      private final ResourceKey<? extends Registry<T>> key;
      private final ObjectList<Holder.Reference<T>> byId = new ObjectArrayList<>(256);
      private final Reference2IntMap<T> toId = Util.make(new Reference2IntOpenHashMap<>(), p_304142_ -> p_304142_.defaultReturnValue(-1));
-@@ -86,9 +_,17 @@
+@@ -85,9 +_,17 @@
  
      @Override
      public Holder.Reference<T> register(ResourceKey<T> p_256252_, T p_256591_, RegistrationInfo p_326235_) {
@@ -27,7 +27,7 @@
          if (this.byLocation.containsKey(p_256252_.location())) {
              throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Adding duplicate key '" + p_256252_ + "' to registry"));
          } else if (this.byValue.containsKey(p_256591_)) {
-@@ -104,16 +_,18 @@
+@@ -103,16 +_,18 @@
                  reference.bindKey(p_256252_);
              } else {
                  reference = this.byKey.computeIfAbsent(p_256252_, p_367800_ -> Holder.Reference.createStandAlone(this, (ResourceKey<T>)p_367800_));
@@ -47,7 +47,7 @@
              return reference;
          }
      }
-@@ -138,7 +_,7 @@
+@@ -137,7 +_,7 @@
      @Nullable
      @Override
      public T getValue(@Nullable ResourceKey<T> p_122714_) {
@@ -56,7 +56,7 @@
      }
  
      @Nullable
-@@ -154,12 +_,12 @@
+@@ -153,12 +_,12 @@
  
      @Override
      public Optional<Holder.Reference<T>> get(ResourceLocation p_316743_) {
@@ -71,7 +71,7 @@
      }
  
      @Override
-@@ -174,12 +_,12 @@
+@@ -173,12 +_,12 @@
      }
  
      Holder.Reference<T> getOrCreateHolderOrThrow(ResourceKey<T> p_248831_) {
@@ -87,7 +87,7 @@
              }
          });
      }
-@@ -207,7 +_,7 @@
+@@ -206,7 +_,7 @@
      @Nullable
      @Override
      public T getValue(@Nullable ResourceLocation p_122739_) {
@@ -96,7 +96,7 @@
          return getValueFromNullable(reference);
      }
  
-@@ -269,13 +_,23 @@
+@@ -268,13 +_,23 @@
          return this.byKey.containsKey(p_175392_);
      }
  
@@ -121,7 +121,7 @@
              List<ResourceLocation> list = this.byKey
                  .entrySet()
                  .stream()
-@@ -291,11 +_,15 @@
+@@ -290,11 +_,15 @@
                          throw new IllegalStateException("Some intrusive holders were not registered: " + this.unregisteredIntrusiveHolders.values());
                      }
  
@@ -139,7 +139,7 @@
                  } else {
                      List<ResourceLocation> list1 = this.frozenTags
                          .entrySet()
-@@ -450,6 +_,55 @@
+@@ -449,6 +_,55 @@
                  }
              };
          }

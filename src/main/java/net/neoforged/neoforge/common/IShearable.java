@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -66,9 +67,9 @@ public interface IShearable {
     default List<ItemStack> onSheared(@Nullable Player player, ItemStack item, Level level, BlockPos pos) {
         if (this instanceof LivingEntity entity && this instanceof Shearable shearable) {
             if (level instanceof ServerLevel serverLevel) {
-                entity.captureDrops(new ArrayList<>());
+                Collection<ItemEntity> previous = entity.captureDrops(new ArrayList<>());
                 shearable.shear(serverLevel, player == null ? SoundSource.BLOCKS : SoundSource.PLAYERS, item);
-                return entity.captureDrops(null).stream().map(ItemEntity::getItem).toList();
+                return entity.captureDrops(previous).stream().map(ItemEntity::getItem).toList();
             }
         }
         return Collections.emptyList();

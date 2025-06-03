@@ -5,11 +5,11 @@
 
 package net.neoforged.neoforge.debug;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = "mixin")
 public class MixinTests {

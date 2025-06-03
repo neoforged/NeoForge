@@ -14,13 +14,13 @@ import net.minecraft.Util;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.renderer.entity.PigRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
@@ -31,17 +31,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DispensibleContainerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
@@ -62,6 +59,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.StructureTemplateBuilder;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
@@ -104,13 +102,13 @@ public class ItemTests {
                 .placeWaterConfinement(1, 2, 1, Blocks.GOLD_BLOCK.defaultBlockState(), false));
 
         test.onGameTest(helper -> helper.startSequence()
-                .thenExecute(() -> helper.setBlock(1, 1, 1, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.UP)))
-                .thenExecute(() -> ((DispenserBlockEntity) helper.getBlockEntity(new BlockPos(1, 1, 1))).setItem(0, cowBucket.get().getDefaultInstance()))
-                .thenExecute(() -> helper.pulseRedstone(new BlockPos(1, 1, 2), 3))
+                .thenExecute(() -> helper.setBlock(1, 1, 1, net.minecraft.world.level.block.Blocks.DISPENSER.defaultBlockState().setValue(net.minecraft.world.level.block.DispenserBlock.FACING, net.minecraft.core.Direction.UP)))
+                .thenExecute(() -> helper.getBlockEntity(1, 1, 1, DispenserBlockEntity.class).setItem(0, cowBucket.get().getDefaultInstance()))
+                .thenExecute(() -> helper.pulseRedstone(new net.minecraft.core.BlockPos(1, 1, 2), 3))
                 .thenIdle(5)
-                .thenExecute(() -> helper.assertBlockPresent(Blocks.WATER, new BlockPos(1, 2, 1)))
-                .thenExecute(() -> helper.assertEntityPresent(EntityType.COW, 1, 3, 1))
-                .thenExecute(() -> helper.killAllEntitiesOfClass(Cow.class))
+                .thenExecute(() -> helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.WATER, new net.minecraft.core.BlockPos(1, 2, 1)))
+                .thenExecute(() -> helper.assertEntityPresent(net.minecraft.world.entity.EntityType.COW, 1, 3, 1))
+                .thenExecute(() -> helper.killAllEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class))
                 .thenSucceed());
     }
 
@@ -149,7 +147,7 @@ public class ItemTests {
         reg.addClientProvider(event -> event.addProvider(new ModelProvider(event.getGenerator().getPackOutput(), reg.modId()) {
             @Override
             protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-                itemModels.generateSpawnEgg(egg.value(), 0xFFFFFF, 0xFFFFFF);
+                itemModels.generateFlatItem(egg.value(), ModelTemplates.FLAT_ITEM);
             }
 
             @Override
@@ -210,7 +208,7 @@ public class ItemTests {
                 .fill(0, 0, 0, 2, 0, 2, Blocks.IRON_BLOCK)
                 .fill(0, 1, 0, 2, 1, 2, Blocks.POWDER_SNOW));
 
-        final var snowBoots = reg.items().registerItem("snow_boots", props -> new ArmorItem(ArmorMaterials.DIAMOND, ArmorType.BOOTS, props) {
+        final var snowBoots = reg.items().registerItem("snow_boots", props -> new Item(props.humanoidArmor(ArmorMaterials.DIAMOND, ArmorType.BOOTS)) {
             @Override
             public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
                 return wearer.getHealth() < wearer.getMaxHealth() / 2;
@@ -240,7 +238,7 @@ public class ItemTests {
     @TestHolder(description = "Tests that registries can correctly handle named holder set references.")
     static void toolItem(final DynamicTest test, final RegistrationHelper reg) {
         var material = new ToolMaterial(BlockTags.BAMBOO_BLOCKS, 160, 5.0F, 0.5F, 10, ItemTags.BEDS);
-        reg.items().registerItem("neo_pickaxe", properties -> new PickaxeItem(material, 1.0F, -2.8F, properties));
+        reg.items().registerItem("neo_pickaxe", properties -> new Item(properties.pickaxe(material, 1.0F, -2.8F)));
         // This is invalid registration, but replicates an error suppression issue found in RegistryManager#applySnapshot
 //        reg.items().register("neo_helmet", () -> new ArmorItem(NEO_MATERIAL, ArmorType.HELMET, new Item.Properties()));
     }

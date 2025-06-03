@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -165,6 +_,10 @@
+@@ -171,6 +_,10 @@
                  }
              }
  
@@ -11,7 +11,7 @@
              profilerfiller.incrementCounter("getChunkCacheMiss");
              CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(p_8360_, p_8361_, p_330876_, p_8363_);
              this.mainThreadProcessor.managedBlock(completablefuture::isDone);
-@@ -199,6 +_,7 @@
+@@ -205,6 +_,7 @@
              if (chunkholder == null) {
                  return null;
              } else {
@@ -19,36 +19,3 @@
                  ChunkAccess chunkaccess1 = chunkholder.getChunkIfPresent(ChunkStatus.FULL);
                  if (chunkaccess1 != null) {
                      this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
-@@ -384,10 +_,11 @@
-     private void collectTickingChunks(List<LevelChunk> p_363421_) {
-         this.chunkMap.forEachSpawnCandidateChunk(p_381767_ -> {
-             LevelChunk levelchunk = p_381767_.getTickingChunk();
--            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos())) {
-+            if (levelchunk != null && this.level.isNaturalSpawningAllowed(p_381767_.getPos()) && !this.distanceManager.shouldForceTicks(p_381767_.getPos().toLong())) { // Neo: we add force ticked chunks in the list below
-                 p_363421_.add(levelchunk);
-             }
-         });
-+        chunkMap.collectForceTickingChunks(p_363421_);
-     }
- 
-     private void tickChunks(ProfilerFiller p_364065_, long p_361343_, List<LevelChunk> p_360873_) {
-@@ -480,11 +_,17 @@
-     }
- 
-     public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_) {
--        this.distanceManager.addRegionTicket(p_8388_, p_8389_, p_8390_, p_8391_);
-+        addRegionTicket(p_8388_, p_8389_, p_8390_, p_8391_, false);
-+    }
-+    public <T> void addRegionTicket(TicketType<T> p_8388_, ChunkPos p_8389_, int p_8390_, T p_8391_, boolean forceTicks) {
-+        this.distanceManager.addRegionTicket(p_8388_, p_8389_, p_8390_, p_8391_, forceTicks);
-     }
- 
-     public <T> void removeRegionTicket(TicketType<T> p_8439_, ChunkPos p_8440_, int p_8441_, T p_8442_) {
--        this.distanceManager.removeRegionTicket(p_8439_, p_8440_, p_8441_, p_8442_);
-+        removeRegionTicket(p_8439_, p_8440_, p_8441_, p_8442_, false);
-+    }
-+    public <T> void removeRegionTicket(TicketType<T> p_8439_, ChunkPos p_8440_, int p_8441_, T p_8442_, boolean forceTicks) {
-+        this.distanceManager.removeRegionTicket(p_8439_, p_8440_, p_8441_, p_8442_, forceTicks);
-     }
- 
-     @Override

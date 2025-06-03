@@ -138,7 +138,7 @@ class NeoDevConfigurations {
 
         // Libraries & module libraries & MC dependencies need to be available when compiling in NeoDev,
         // and on the runtime classpath too for IDE debugging support.
-        configurations.getByName("implementation").extendsFrom(libraries, moduleLibraries, neoFormDependencies);
+        configurations.getByName("api").extendsFrom(libraries, moduleLibraries, neoFormDependencies);
 
         // runtimeClasspath is our reference for all MC dependency versions.
         // Make sure that any classpath we resolve is consistent with it.

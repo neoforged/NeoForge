@@ -1,0 +1,54 @@
+--- a/net/minecraft/util/random/WeightedList.java
++++ b/net/minecraft/util/random/WeightedList.java
+@@ -127,7 +_,7 @@
+     }
+ 
+     public static class Builder<E> {
+-        private final ImmutableList.Builder<Weighted<E>> result = ImmutableList.builder();
++        private final List<Weighted<E>> result = new java.util.ArrayList<>();
+ 
+         public WeightedList.Builder<E> add(E p_394625_) {
+             return this.add(p_394625_, 1);
+@@ -138,8 +_,41 @@
+             return this;
+         }
+ 
++        public WeightedList.Builder<E> add(Weighted<E> value) {
++            this.result.add(value);
++            return this;
++        }
++
++        public WeightedList.Builder<E> addAll(WeightedList<E> values) {
++            return this.addAll(values.unwrap());
++        }
++
++        public WeightedList.Builder<E> addAll(java.util.Collection<Weighted<E>> values) {
++            this.result.addAll(values);
++            return this;
++        }
++
++        public WeightedList.Builder<E> remove(Weighted<E> value) {
++            this.result.remove(value);
++            return this;
++        }
++
++        public WeightedList.Builder<E> remove(E value) {
++            this.result.removeIf(weighted -> weighted.value().equals(value));
++            return this;
++        }
++
++        public WeightedList.Builder<E> removeIf(java.util.function.Predicate<Weighted<E>> filter) {
++            this.result.removeIf(filter);
++            return this;
++        }
++
++        public List<Weighted<E>> getList() {
++            return java.util.Collections.unmodifiableList(this.result);
++        }
++
+         public WeightedList<E> build() {
+-            return new WeightedList<>(this.result.build());
++            return new WeightedList<>(this.result);
+         }
+     }
+ 

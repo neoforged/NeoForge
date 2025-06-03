@@ -1,11 +1,11 @@
 --- a/net/minecraft/client/resources/model/ModelManager.java
 +++ b/net/minecraft/client/resources/model/ModelManager.java
-@@ -83,11 +_,15 @@
-     private BakedModel missingModel;
-     private ItemModel missingItemModel;
+@@ -86,11 +_,15 @@
+     private int maxMipmapLevels;
+     private ModelBakery.MissingModels missingModels;
      private Object2IntMap<BlockState> modelGroups = Object2IntMaps.emptyMap();
 +    private final java.util.concurrent.atomic.AtomicReference<ModelBakery> modelBakery = new java.util.concurrent.atomic.AtomicReference<>(null);
-+    private Map<ResourceLocation, BakedModel> bakedStandaloneModels = Map.of();
++    private net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.BakedModels bakedStandaloneModels;
 +    private Set<ResourceLocation> reportedMissingItemModels = new java.util.HashSet<>();
  
      public ModelManager(TextureManager p_119406_, BlockColors p_119407_, int p_119408_) {
@@ -16,43 +16,54 @@
          this.atlases = new AtlasSet(VANILLA_ATLASES, p_119406_);
      }
  
-@@ -100,7 +_,14 @@
+@@ -99,7 +_,14 @@
      }
  
      public ItemModel getItemModel(ResourceLocation p_387691_) {
--        return this.bakedItemStackModels.getOrDefault(p_387691_, this.missingItemModel);
+-        return this.bakedItemStackModels.getOrDefault(p_387691_, this.missingModels.item());
 +        ItemModel model = this.bakedItemStackModels.get(p_387691_);
 +        if (model == null) {
 +            if (this.reportedMissingItemModels.add(p_387691_)) {
 +                LOGGER.warn("Missing item model for location {}", p_387691_);
 +            }
-+            return this.missingItemModel;
++            return this.missingModels.item();
 +        }
 +        return model;
      }
  
      public ClientItem.Properties getItemProperties(ResourceLocation p_390438_) {
-@@ -115,6 +_,7 @@
-     public final CompletableFuture<Void> reload(
-         PreparableReloadListener.PreparationBarrier p_249079_, ResourceManager p_251134_, Executor p_250550_, Executor p_249221_
-     ) {
-+        net.neoforged.neoforge.client.model.UnbakedModelParser.init();
-         UnbakedModel unbakedmodel = MissingBlockModel.missingModel();
-         CompletableFuture<EntityModelSet> completablefuture = CompletableFuture.supplyAsync(EntityModelSet::vanilla, p_250550_);
-         CompletableFuture<SpecialBlockModelRenderer> completablefuture1 = completablefuture.thenApplyAsync(SpecialBlockModelRenderer::vanilla, p_250550_);
-@@ -154,8 +_,10 @@
-                         completablefuture3.join().plainModels(),
+@@ -119,8 +_,10 @@
+         CompletableFuture<Map<ResourceLocation, UnbakedModel>> completablefuture2 = loadBlockModels(p_251134_, p_250550_);
+         CompletableFuture<BlockStateModelLoader.LoadedModels> completablefuture3 = BlockStateModelLoader.loadBlockStates(p_251134_, p_250550_);
+         CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> completablefuture4 = ClientItemInfoLoader.scheduleLoad(p_251134_, p_250550_);
+-        CompletableFuture<ModelManager.ResolvedModels> completablefuture5 = CompletableFuture.allOf(completablefuture2, completablefuture3, completablefuture4)
+-            .thenApplyAsync(p_404152_ -> discoverModelDependencies(completablefuture2.join(), completablefuture3.join(), completablefuture4.join()), p_250550_);
++        CompletableFuture<net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels> standaloneModelsFuture =
++                net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.load(p_250550_);
++        CompletableFuture<ModelManager.ResolvedModels> completablefuture5 = CompletableFuture.allOf(completablefuture2, completablefuture3, completablefuture4, standaloneModelsFuture)
++            .thenApplyAsync(p_404152_ -> discoverModelDependencies(completablefuture2.join(), completablefuture3.join(), completablefuture4.join(), standaloneModelsFuture.join()), p_250550_);
+         CompletableFuture<Object2IntMap<BlockState>> completablefuture6 = completablefuture3.thenApplyAsync(
+             p_359309_ -> buildModelGroups(this.blockColors, p_359309_), p_250550_
+         );
+@@ -136,6 +_,7 @@
+                             completablefuture,
+                             completablefuture1,
+                             completablefuture2
++                            , standaloneModelsFuture
+                         )
+                     )
+                     .toArray(CompletableFuture[]::new)
+@@ -156,7 +_,9 @@
                          completablefuture4.join().contents(),
-                         modeldiscovery.getReferencedModels(),
--                        unbakedmodel
-+                        unbakedmodel,
-+                        modeldiscovery.standaloneModels
+                         modelmanager$resolvedmodels.models(),
+                         modelmanager$resolvedmodels.missing()
++                        , standaloneModelsFuture.join()
                      );
 +                    this.modelBakery.set(modelbakery);
-                     return loadModels(Profiler.get(), map1, modelbakery, object2intmap, completablefuture.join(), completablefuture1.join());
+                     return loadModels(map1, modelbakery, object2intmap, completablefuture.join(), completablefuture1.join(), p_250550_);
                  },
                  p_250550_
-@@ -169,7 +_,7 @@
+@@ -170,7 +_,7 @@
          return CompletableFuture.<Map<ResourceLocation, Resource>>supplyAsync(() -> MODEL_LISTER.listMatchingResources(p_251361_), p_252189_)
              .thenCompose(
                  p_250597_ -> {
@@ -61,7 +72,7 @@
  
                      for (Entry<ResourceLocation, Resource> entry : p_250597_.entrySet()) {
                          list.add(CompletableFuture.supplyAsync(() -> {
-@@ -178,7 +_,7 @@
+@@ -179,7 +_,7 @@
                              try {
                                  Pair pair;
                                  try (Reader reader = entry.getValue().openAsReader()) {
@@ -70,19 +81,47 @@
                                  }
  
                                  return pair;
-@@ -261,6 +_,8 @@
-                         p_386267_.stream().sorted().map(p_386265_ -> "    " + p_386265_).collect(Collectors.joining("\n"))
-                     )
+@@ -198,15 +_,26 @@
              );
-+        p_252136_.push("neoforge_modify_baking_result");
-+        net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(modelbakery$bakingresult, p_250646_, p_248945_);
-         p_252136_.popPush("dispatch");
-         Map<BlockState, BakedModel> map = createBlockStateToModelDispatch(modelbakery$bakingresult.blockStateModels(), modelbakery$bakingresult.missingModel());
-         CompletableFuture<Void> completablefuture = CompletableFuture.allOf(
-@@ -304,6 +_,16 @@
+     }
+ 
++    /**
++     * @deprecated Neo: use {@link #discoverModelDependencies(Map, BlockStateModelLoader.LoadedModels, ClientItemInfoLoader.LoadedClientInfos, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels)} instead
++     */
++    @Deprecated
+     private static ModelManager.ResolvedModels discoverModelDependencies(
+         Map<ResourceLocation, UnbakedModel> p_363228_, BlockStateModelLoader.LoadedModels p_361624_, ClientItemInfoLoader.LoadedClientInfos p_390496_
+     ) {
++        return discoverModelDependencies(p_363228_, p_361624_, p_390496_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels.EMPTY);
++    }
++
++    private static ModelManager.ResolvedModels discoverModelDependencies(
++            Map<ResourceLocation, UnbakedModel> p_363228_, BlockStateModelLoader.LoadedModels p_361624_, ClientItemInfoLoader.LoadedClientInfos p_390496_, net.neoforged.neoforge.client.model.standalone.StandaloneModelLoader.LoadedModels standaloneModels
++    ) {
+         ModelManager.ResolvedModels modelmanager$resolvedmodels;
+         try (Zone zone = Profiler.get().zone("dependencies")) {
+             ModelDiscovery modeldiscovery = new ModelDiscovery(p_363228_, MissingBlockModel.missingModel());
+             modeldiscovery.addSpecialModel(ItemModelGenerator.GENERATED_ITEM_MODEL_ID, new ItemModelGenerator());
+             p_361624_.models().values().forEach(modeldiscovery::addRoot);
+             p_390496_.contents().values().forEach(p_390109_ -> modeldiscovery.addRoot(p_390109_.model()));
++            standaloneModels.models().values().forEach(modeldiscovery::addRoot);
+             modelmanager$resolvedmodels = new ModelManager.ResolvedModels(modeldiscovery.missingModel(), modeldiscovery.resolve());
+         }
+ 
+@@ -268,6 +_,9 @@
+                                 p_386267_.stream().sorted().map(p_386265_ -> "    " + p_386265_).collect(Collectors.joining("\n"))
+                             )
+                         );
++                    try (Zone ignored = Profiler.get().zone("neoforge_modify_baking_result")) {
++                        net.neoforged.neoforge.client.ClientHooks.onModifyBakingResult(p_404163_, p_250646_, p_248945_);
++                    }
+                     Map<BlockState, BlockStateModel> map = createBlockStateToModelDispatch(p_404163_.blockStateModels(), p_404163_.missingModels().block());
+                     return new ModelManager.ReloadState(p_404163_, p_363498_, map, p_250646_, p_388110_, p_387466_, completablefuture);
+                 }
+@@ -310,6 +_,16 @@
+         this.itemProperties = modelbakery$bakingresult.itemProperties();
          this.modelGroups = p_248996_.modelGroups;
-         this.missingModel = modelbakery$bakingresult.missingModel();
-         this.missingItemModel = modelbakery$bakingresult.missingItemModel();
+         this.missingModels = modelbakery$bakingresult.missingModels();
 +        this.bakedStandaloneModels = modelbakery$bakingresult.standaloneModels();
 +        net.neoforged.neoforge.client.ClientHooks.onModelBake(this, modelbakery$bakingresult, this.modelBakery.get());
 +        this.reportedMissingItemModels = new java.util.HashSet<>();
@@ -90,13 +129,13 @@
 +            ResourceLocation modelId = item.components().get(net.minecraft.core.component.DataComponents.ITEM_MODEL);
 +            if (modelId != null && !this.bakedItemStackModels.containsKey(modelId)) {
 +                this.reportedMissingItemModels.add(modelId);
-+                LOGGER.warn("No model loaded for default item ID {} of {}", modelId, item);
++                LOGGER.warn("No model loaded for default item model ID {} of {}", modelId, item);
 +            }
 +        }
          p_251960_.popPush("cache");
          this.blockModelShaper.replaceCache(p_248996_.modelCache);
          this.specialBlockModelRenderer = p_248996_.specialBlockModelRenderer;
-@@ -330,6 +_,7 @@
+@@ -336,6 +_,7 @@
      }
  
      public TextureAtlas getAtlas(ResourceLocation p_119429_) {
@@ -104,17 +143,19 @@
          return this.atlases.getAtlas(p_119429_);
      }
  
-@@ -360,5 +_,13 @@
-         SpecialBlockModelRenderer specialBlockModelRenderer,
-         CompletableFuture<Void> readyForUpload
-     ) {
+@@ -354,6 +_,15 @@
+ 
+     public Supplier<EntityModelSet> entityModels() {
+         return () -> this.entityModelSet;
 +    }
 +
 +    public ModelBakery getModelBakery() {
 +        return this.modelBakery.get();
 +    }
 +
-+    public BakedModel getStandaloneModel(ResourceLocation location) {
-+        return this.bakedStandaloneModels.getOrDefault(location, this.missingModel);
++    @org.jetbrains.annotations.Nullable
++    public <T> T getStandaloneModel(net.neoforged.neoforge.client.model.standalone.StandaloneModelKey<T> modelKey) {
++        return this.bakedStandaloneModels.get(modelKey);
      }
- }
+ 
+     @OnlyIn(Dist.CLIENT)

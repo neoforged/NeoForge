@@ -17,4 +17,4 @@
 +        }
          if (ageablemob != null) {
              ageablemob.setBaby(true);
-             ageablemob.moveTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+             ageablemob.snapTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);

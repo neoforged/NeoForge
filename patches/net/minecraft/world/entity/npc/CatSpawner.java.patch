@@ -1,12 +1,16 @@
 --- a/net/minecraft/world/entity/npc/CatSpawner.java
 +++ b/net/minecraft/world/entity/npc/CatSpawner.java
-@@ -83,8 +_,8 @@
-         if (cat == null) {
-             return 0;
-         } else {
-+            cat.moveTo(p_35334_, 0.0F, 0.0F); // Fix MC-147659: Some witch huts spawn the incorrect cat
+@@ -69,12 +_,12 @@
+     private void spawnCat(BlockPos p_35334_, ServerLevel p_35335_, boolean p_399883_) {
+         Cat cat = EntityType.CAT.create(p_35335_, EntitySpawnReason.NATURAL);
+         if (cat != null) {
++            cat.snapTo(p_35334_, 0.0F, 0.0F); // Fix MC-147659: Some witch huts spawn the incorrect cat
              cat.finalizeSpawn(p_35335_, p_35335_.getCurrentDifficultyAt(p_35334_), EntitySpawnReason.NATURAL, null);
--            cat.moveTo(p_35334_, 0.0F, 0.0F);
+             if (p_399883_) {
+                 cat.setPersistenceRequired();
+             }
+ 
+-            cat.snapTo(p_35334_, 0.0F, 0.0F);
              p_35335_.addFreshEntityWithPassengers(cat);
-             return 1;
          }
+     }

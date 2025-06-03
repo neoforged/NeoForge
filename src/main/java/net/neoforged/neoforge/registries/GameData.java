@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.registries;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,7 +27,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.CreativeModeTabRegistry;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -73,9 +71,6 @@ public class GameData {
 
         RegistryManager.takeFrozenSnapshot();
 
-        // the id mapping is finalized, no ids actually changed but this is a good place to tell everyone to 'bake' their stuff.
-        fireRemapEvent(ImmutableMap.of(), true);
-
         LOGGER.debug(REGISTRIES, "All registries frozen");
     }
 
@@ -109,10 +104,6 @@ public class GameData {
         }
     }
 
-    static void fireRemapEvent(final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps, final boolean isFreezing) {
-        NeoForge.EVENT_BUS.post(new IdMappingEvent(remaps, isFreezing));
-    }
-
     /**
      * Creates a {@link LinkedHashSet} containing the ordered list of registry names in the registration order.
      * <p>
@@ -126,6 +117,7 @@ public class GameData {
         Set<ResourceLocation> ordered = new LinkedHashSet<>();
         ordered.add(Registries.ATTRIBUTE.location()); // Vanilla order is incorrect, both Item and MobEffect depend on Attribute at construction time.
         ordered.add(Registries.DATA_COMPONENT_TYPE.location()); // Vanilla order is incorrect, Item depends on data components at construction time.
+        ordered.add(Registries.PARTICLE_TYPE.location()); // Vanilla order is incorrect, both Block and MobEffect depend on ParticleType at construction time.
         ordered.addAll(BuiltInRegistries.getVanillaRegistrationOrder());
         ordered.addAll(BuiltInRegistries.REGISTRY.keySet().stream().sorted(ResourceLocation::compareNamespaced).toList());
         return ordered;

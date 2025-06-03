@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common.crafting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,7 +24,7 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
  * <p>{@link Ingredient} does not perform count checks, so this class is used to wrap an ingredient with a count,
  * and provide a standard serialization format.
  */
-public final class SizedIngredient {
+public final class SizedIngredient implements Predicate<ItemStack> {
     /**
      * The "nested" codec for {@link SizedIngredient}.
      *
@@ -79,6 +80,7 @@ public final class SizedIngredient {
      *
      * @return {@code true} if the stack matches the ingredient and has at least the required count.
      */
+    @Override
     public boolean test(ItemStack stack) {
         return ingredient.test(stack) && stack.getCount() >= count;
     }

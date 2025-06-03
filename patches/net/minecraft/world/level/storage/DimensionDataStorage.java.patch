@@ -1,15 +1,6 @@
 --- a/net/minecraft/world/level/storage/DimensionDataStorage.java
 +++ b/net/minecraft/world/level/storage/DimensionDataStorage.java
-@@ -73,7 +_,7 @@
-     }
- 
-     @Nullable
--    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, DataFixTypes p_295832_, String p_164870_) {
-+    private <T extends SavedData> T readSavedData(BiFunction<CompoundTag, HolderLookup.Provider, T> p_324609_, @Nullable DataFixTypes p_295832_, String p_164870_) {
-         try {
-             Path path = this.getDataFile(p_164870_);
-             if (Files.exists(path)) {
-@@ -92,7 +_,7 @@
+@@ -105,7 +_,7 @@
          p_164857_.setDirty();
      }
  
@@ -18,7 +9,7 @@
          CompoundTag compoundtag1;
          try (
              InputStream inputstream = Files.newInputStream(this.getDataFile(p_78159_));
-@@ -107,9 +_,16 @@
+@@ -120,9 +_,19 @@
                  }
              }
  
@@ -33,20 +24,23 @@
          }
 +
 +        // Neo: delete any temporary files so that we don't inflate disk space unnecessarily.
-+        net.neoforged.neoforge.common.IOUtilities.cleanupTempFiles(this.dataFolder, p_78159_);
++        this.pendingWriteFuture = this.pendingWriteFuture.thenRunAsync(
++                () -> net.neoforged.neoforge.common.IOUtilities.tryCleanupTempFiles(this.dataFolder, p_78159_),
++                Util.ioPool()
++        );
  
          return compoundtag1;
      }
-@@ -182,7 +_,11 @@
+@@ -205,7 +_,11 @@
+         Path path = this.getDataFile(p_401021_.id());
  
-     private static void tryWrite(Path p_390658_, CompoundTag p_390657_) {
          try {
--            NbtIo.writeCompressed(p_390657_, p_390658_);
+-            NbtIo.writeCompressed(p_390657_, path);
 +            // Neo: ensure parent directories exist if the SavedData's path contains slashes
-+            if (!Files.exists(p_390658_)) {
-+                Files.createDirectories(p_390658_.getParent());
++            if (!Files.exists(path)) {
++                Files.createDirectories(path.getParent());
 +            }
-+            net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(p_390657_, p_390658_);
++            net.neoforged.neoforge.common.IOUtilities.writeNbtCompressed(p_390657_, path);
          } catch (IOException ioexception) {
-             LOGGER.error("Could not save data to {}", p_390658_.getFileName(), ioexception);
+             LOGGER.error("Could not save data to {}", path.getFileName(), ioexception);
          }

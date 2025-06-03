@@ -11,7 +11,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -41,6 +40,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = DamageTypeTests.GROUP)
@@ -106,7 +106,7 @@ public class DamageTypeTests {
             Skeleton target = helper.spawnWithNoFreeWill(EntityType.SKELETON, 1, 1, 1);
 
             Player attacker = helper.makeMockPlayer(GameType.SURVIVAL);
-            attacker.moveTo(helper.absoluteVec(new Vec3(2, 1, 1)));
+            attacker.snapTo(helper.absoluteVec(new Vec3(2, 1, 1)));
             attacker.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(customSword));
 
             // Test that the damage type is used by the sword and set correctly.

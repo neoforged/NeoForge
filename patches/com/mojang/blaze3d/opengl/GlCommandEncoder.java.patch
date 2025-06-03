@@ -1,0 +1,94 @@
+--- a/com/mojang/blaze3d/opengl/GlCommandEncoder.java
++++ b/com/mojang/blaze3d/opengl/GlCommandEncoder.java
+@@ -147,7 +_,8 @@
+         } else if (p_410548_.isClosed()) {
+             throw new IllegalStateException("Depth texture is closed");
+         } else {
+-            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)p_410548_).id, 0, 36160);
++            boolean hasStencil = p_410548_.getFormat().hasStencilAspect();
++            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)p_410548_).id, 0, 36160, hasStencil);
+             GL11.glDrawBuffer(0);
+             GL11.glClearDepth(p_410067_);
+             GlStateManager._depthMask(true);
+@@ -160,6 +_,23 @@
+     }
+ 
+     @Override
++    public void clearStencilTexture(GpuTexture texture, int value) {
++        if (this.inRenderPass) {
++            throw new IllegalStateException("Close the existing render pass before creating a new one!");
++        } else if (!texture.getFormat().hasStencilAspect()) {
++            throw new IllegalStateException("Trying to clear stencil in a texture that has no stencil component!");
++        } else {
++            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)texture).id, 0, GlConst.GL_FRAMEBUFFER, true);
++            GL11.glDrawBuffer(GlConst.GL_NONE);
++            GL11.glClearStencil(value);
++            GlStateManager._depthMask(true);
++            GlStateManager._clear(GL11.GL_STENCIL_BUFFER_BIT);
++            GL11.glDrawBuffer(GlConst.GL_COLOR_ATTACHMENT0);
++            GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
++        }
++    }
++
++    @Override
+     public void writeToBuffer(GpuBuffer p_409838_, ByteBuffer p_410689_, int p_409997_) {
+         if (this.inRenderPass) {
+             throw new IllegalStateException("Close the existing render pass before performing additional commands");
+@@ -478,8 +_,19 @@
+                 boolean flag = p_410700_.getFormat().hasDepthAspect();
+                 int i = ((GlTexture)p_410700_).glId();
+                 int j = ((GlTexture)p_410735_).glId();
+-                this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, flag ? 0 : i, flag ? i : 0, 0, 0);
+-                this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, flag ? 0 : j, flag ? j : 0, 0, 0);
++                var hasStencil = p_410700_.getFormat().hasStencilAspect();
++                this.device.directStateAccess().bindFrameBufferTextures(this.readFbo, flag ? 0 : i, flag ? i : 0, 0, 0, hasStencil);
++                this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, flag ? 0 : j, flag ? j : 0, 0, 0, hasStencil);
++                var bufferMask = 0;
++                if (p_410700_.getFormat().hasColorAspect()) {
++                    bufferMask |= GlConst.GL_COLOR_BUFFER_BIT;
++                }
++                if (p_410700_.getFormat().hasDepthAspect()) {
++                    bufferMask |= GlConst.GL_DEPTH_BUFFER_BIT;
++                }
++                if (p_410700_.getFormat().hasStencilAspect()) {
++                    bufferMask |= GL11.GL_STENCIL_BUFFER_BIT;
++                }
+                 this.device
+                     .directStateAccess()
+                     .blitFrameBuffers(
+@@ -493,7 +_,7 @@
+                         p_410236_,
+                         p_409870_,
+                         p_409949_,
+-                        flag ? 256 : 16384,
++                        bufferMask,
+                         9728
+                     );
+                 int k = GlStateManager._getError();
+@@ -711,6 +_,26 @@
+             );
+         } else {
+             GlStateManager._disableScissorTest();
++        }
++
++        var stencilTest = p_410853_.stencilTest;
++        if (stencilTest != null) {
++            GlStateManager._enableStencilTest();
++
++            var front = stencilTest.front();
++            var back = stencilTest.back();
++            if (front.equals(back)) {
++                GlStateManager._stencilFunc(GlConst.toGl(front.compare()), stencilTest.referenceValue(), stencilTest.readMask());
++                GlStateManager._stencilOp(GlConst.toGl(front.fail()), GlConst.toGl(front.depthFail()), GlConst.toGl(front.pass()));
++            } else {
++                GlStateManager._stencilFuncFront(GlConst.toGl(front.compare()), stencilTest.referenceValue(), stencilTest.readMask());
++                GlStateManager._stencilFuncBack(GlConst.toGl(back.compare()), stencilTest.referenceValue(), stencilTest.readMask());
++                GlStateManager._stencilOpFront(GlConst.toGl(front.fail()), GlConst.toGl(front.depthFail()), GlConst.toGl(front.pass()));
++                GlStateManager._stencilOpBack(GlConst.toGl(back.fail()), GlConst.toGl(back.depthFail()), GlConst.toGl(back.pass()));
++            }
++            GlStateManager._stencilMask(stencilTest.writeMask());
++        } else {
++            GlStateManager._disableStencilTest();
+         }
+ 
+         return true;

@@ -46,5 +46,5 @@
 +        return this.modifiableStructureInfo().get().structureSettings();
 +    }
  
-     public static record GenerationContext(
+     public record GenerationContext(
          RegistryAccess registryAccess,
