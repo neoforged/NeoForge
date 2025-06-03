@@ -53,9 +53,7 @@ abstract class GenerateBinaryPatches extends JavaExec {
         args("--clean", getCleanJar().get().getAsFile().getAbsolutePath());
         args("--dirty", getPatchedJar().get().getAsFile().getAbsolutePath());
         args("--srg", getMappings().get().getAsFile().getAbsolutePath());
-        if (getSourcePatchesFolder().isPresent()) {
-            args("--patches", getSourcePatchesFolder().get().getAsFile().getAbsolutePath());
-        }
+        args("--minimize");
         args("--output", getOutputFile().get().getAsFile().getAbsolutePath());
 
         var logFile = new File(getTemporaryDir(), "console.log");
