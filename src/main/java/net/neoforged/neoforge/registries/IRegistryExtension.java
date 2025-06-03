@@ -70,7 +70,7 @@ public interface IRegistryExtension<T> {
      * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
      * unless an object with <code>alias</code> is present in the registry.
      *
-     * @param alias the original name of the registry object
+     * @param alias          the original name of the registry object
      * @param registeredName the new name of the registry object
      */
     void addAlias(ResourceLocation alias, ResourceLocation registeredName);
