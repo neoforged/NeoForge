@@ -31,9 +31,9 @@ public class GuiLayerManager {
     private final List<NamedLayer> layers = new ArrayList<>();
     private boolean initialized = false;
 
-    public record NamedLayer(ResourceLocation name, Layer layer) {}
+    public record NamedLayer(ResourceLocation name, GuiLayer layer) {}
 
-    public GuiLayerManager add(ResourceLocation name, Layer layer) {
+    public GuiLayerManager add(ResourceLocation name, GuiLayer layer) {
         this.layers.add(new NamedLayer(name, layer));
         return this;
     }
@@ -43,7 +43,7 @@ public class GuiLayerManager {
         return this;
     }
 
-    public GuiLayerManager add(ResourceLocation name, Layer layer, BooleanSupplier shouldRender) {
+    public GuiLayerManager add(ResourceLocation name, GuiLayer layer, BooleanSupplier shouldRender) {
         this.layers.add(new NamedLayer(name, (guiGraphics, deltaTracker) -> {
             if (shouldRender.getAsBoolean()) {
                 layer.render(guiGraphics, deltaTracker);
@@ -89,10 +89,5 @@ public class GuiLayerManager {
 
     public int getLayerCount() {
         return this.layers.size();
-    }
-
-    @FunctionalInterface
-    public interface Layer {
-        void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker);
     }
 }

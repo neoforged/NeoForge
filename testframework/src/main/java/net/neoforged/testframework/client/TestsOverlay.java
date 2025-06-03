@@ -26,11 +26,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.neoforge.client.gui.GuiLayerManager;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.MutableTestFramework;
 
-public final class TestsOverlay implements GuiLayerManager.Layer {
+public final class TestsOverlay implements GuiLayer {
     public static final int MAX_DISPLAYED = 5;
     public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "background");
 
