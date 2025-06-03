@@ -38,6 +38,9 @@
     "net/minecraft/client/resources/model/ModelBaker": [
         "net/neoforged/neoforge/client/extensions/IModelBakerExtension"
     ],
+    "net/minecraft/client/resources/model/ModelState": [
+        "net/neoforged/neoforge/client/extensions/ModelStateExtension"
+    ],
     "net/minecraft/client/resources/model/MultiPartBakedModel": [
         "net/neoforged/neoforge/client/model/IDynamicBakedModel"
     ],
