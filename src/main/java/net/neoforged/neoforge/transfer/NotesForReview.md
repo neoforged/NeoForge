@@ -187,11 +187,11 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 private static void example(IResourceHandler<FluidResource> handler) {
-    try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
-        var handled = handler.extract(Fluids.WATER.defaultResource(), 1000, transaction);
-        if (handled == 1000)
-            transaction.commit();
-    }
+  try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+    var handled = handler.extract(Fluids.WATER.defaultResource(), 1000, transaction);
+    if (handled == 1000)
+      transaction.commit();
+  }
 }
 ```
 
@@ -205,7 +205,7 @@ In the java documentation there is also this example:
 
 ```java
 private static void test() {
-    try (Transaction outerTransaction = Transaction.open(TransactionContext.EMPTY)) {
+    try (Transaction outerTransaction = Transaction.open(TransactionContext.ROOT)) {
         // (A) some transaction operations
         try (Transaction nestedTransaction = outerTransaction.open(outerTransaction)) {
             // (B) more operations

@@ -15,6 +15,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandle
 import net.neoforged.neoforge.transfer.handlers.templates.container.SimpleItemResourceContainer;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -62,7 +63,7 @@ public class TransactionTests {
                 tx.commit();
         }
 
-        try (var tx = Transaction.open(null)) {
+        try (var tx = Transaction.open(TransactionContext.ROOT)) {
             var amount = externalContainers[1].extract(Items.APPLE.defaultResource(), 12, tx);
             int inserted;
             try (var attempt1 = Transaction.open(tx)) {

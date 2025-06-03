@@ -68,7 +68,7 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public boolean mayPickup(Player player) {
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             //Simulated
             return !ResourceHandlerUtil.extractIndexedAny(handler, getSlotIndex(), 1, ItemResource.EMPTY_STACK, transaction).isEmpty();
         }
@@ -77,7 +77,7 @@ public class ResourceHandlerSlot extends Slot {
     @Override
     public ItemStack remove(int amount) {
         ItemResource resource = handler.getResource(getSlotIndex());
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             int extracted = handler.extract(resource, amount, transaction);
             transaction.commit();
             return extracted > 0 ? resource.toStack(extracted) : ItemStack.EMPTY;

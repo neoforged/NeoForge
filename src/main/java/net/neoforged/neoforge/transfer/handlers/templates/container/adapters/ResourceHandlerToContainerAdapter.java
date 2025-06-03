@@ -50,7 +50,7 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
         }
 
         var resource = wrappedHandler.getResource(index);
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             if (!resource.isEmpty())
                 wrappedHandler.extract(index, resource, ResourceHandlerUtil.MAX, transaction);
             wrappedHandler.insert(index, stack.resource(), stack.amount(), transaction);

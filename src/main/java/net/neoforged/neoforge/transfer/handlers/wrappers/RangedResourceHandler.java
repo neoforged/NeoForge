@@ -29,7 +29,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     public RangedResourceHandler(Supplier<IResourceHandler<T>> delegate, int start, int end) {
         super(delegate);
-        Preconditions.checkArgument(end > start, "Max slot must be greater than min slot");
+        Preconditions.checkArgument(end > start, "Max index must be greater than min index");
         this.start = start;
         this.end = end;
     }

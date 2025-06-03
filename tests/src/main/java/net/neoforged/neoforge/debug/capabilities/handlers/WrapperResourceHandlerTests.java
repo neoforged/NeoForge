@@ -31,17 +31,17 @@ public class WrapperResourceHandlerTests {
         helper.assertFalse(cap == null, "Player capability should be present");
         assert cap != null : "Player capability should be present"; // Mostly just makes the compiler understand the previous method
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.defaultResource(), 400, TransactionContext.EMPTY), 400, "apples");
+        helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.defaultResource(), 400, TransactionContext.ROOT), 400, "apples");
         var chestInserted = 0;
         var chest2Inserted = 0;
-        try (var tx = Transaction.open(TransactionContext.EMPTY)) {
+        try (var tx = Transaction.open(TransactionContext.ROOT)) {
             chestInserted = cap.insert(38, Items.DIAMOND_CHESTPLATE.defaultResource().with(DataComponents.DAMAGE, 20), 2, tx);
             chest2Inserted = cap.insert(39, Items.DIAMOND_CHESTPLATE.defaultResource(), 2, tx);
             tx.commit();
         }
         helper.assertValueEqual(chestInserted, 1, "armor insert");
         helper.assertValueEqual(chest2Inserted, 0, "armor insert");
-        helper.assertValueEqual(ResourceHandlerUtil.extractFiltered(cap, itemResource -> itemResource.is(Items.DIAMOND_CHESTPLATE), 2, ItemResource.EMPTY_STACK, TransactionContext.EMPTY).amount(), 1, "armor extract");
+        helper.assertValueEqual(ResourceHandlerUtil.extractFiltered(cap, itemResource -> itemResource.is(Items.DIAMOND_CHESTPLATE), 2, ItemResource.EMPTY_STACK, TransactionContext.ROOT).amount(), 1, "armor extract");
 //        if (cap instanceof PlayerInventoryHandler wrapper) {
 //            ResourceHandlerUtil.insertIndexForced(wrapper.armorHandler, Items.DIAMOND_BOOTS.defaultResource(), 1300, TransferAction.EXECUTE, TransactionContext.EMPTY);
 //            ResourceHandlerUtil.insertIndexForced(wrapper.armorHandler, Items.NETHERITE_HELMET.defaultResource(), 1300, TransferAction.EXECUTE, TransactionContext.EMPTY);

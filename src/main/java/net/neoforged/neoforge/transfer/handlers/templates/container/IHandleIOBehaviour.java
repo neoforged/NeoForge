@@ -16,7 +16,7 @@ public interface IHandleIOBehaviour {
     IHandleIOBehaviour DEFAULT = new IHandleIOBehaviour() {};
     IHandleIOBehaviour EXTRACT_ONLY = new IHandleIOBehaviour() {
         @Override
-        public boolean canInsert(int slot) {
+        public boolean canInsert(int index) {
             return false;
         }
     };
@@ -28,12 +28,12 @@ public interface IHandleIOBehaviour {
     };
 
     @Contract(pure = true)
-    default boolean canInsert(int slot) {
+    default boolean canInsert(int index) {
         return true;
     }
 
     @Contract(pure = true)
-    default boolean canExtract(int slot) {
+    default boolean canExtract(int index) {
         return true;
     }
 }

@@ -96,7 +96,7 @@ public class FluidUtil {
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             var moved = ResourceHandlerUtil.moveOrDefault(from, to, r -> true, amount, transaction, FluidResource.EMPTY_STACK);
             if (moved.isEmpty()) return moved;
 

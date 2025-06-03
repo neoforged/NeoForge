@@ -17,7 +17,7 @@ public interface TransactionContext {
      * An optional variable to use instead of null when opening unparented transactions.
      * This is helpful when debugging as trying to find all instances of `null` is rather difficult
      */
-    TransactionContext EMPTY = null;
+    TransactionContext ROOT = null;
 
     /**
      * @return The nesting depth of this transaction: 0 if it has no parent,

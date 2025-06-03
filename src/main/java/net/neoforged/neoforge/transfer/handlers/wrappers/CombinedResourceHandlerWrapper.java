@@ -40,13 +40,13 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
         this.sizeCache = index;
     }
 
-    // returns the handler index for the slot
-    protected int getHandlerIndex(int slot) {
-        if (slot < 0)
+    // returns the handler index for the index
+    protected int getHandlerIndex(int index) {
+        if (index < 0)
             return -1;
 
         for (int i = 0; i < baseIndex.length; i++) {
-            if (slot - baseIndex[i] < 0) {
+            if (index - baseIndex[i] < 0) {
                 return i;
             }
         }

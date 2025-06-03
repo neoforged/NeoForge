@@ -324,20 +324,20 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     }
 
     private class IndexSnapshot extends SnapshotJournal<MutableResourceStack<T>> {
-        private final int slot;
+        private final int index;
 
-        private IndexSnapshot(int slot) {
-            this.slot = slot;
+        private IndexSnapshot(int index) {
+            this.index = index;
         }
 
         @Override
         protected MutableResourceStack<T> createSnapshot() {
-            return MutableResourceStack.of(resourceStacks.get(slot));
+            return MutableResourceStack.of(resourceStacks.get(index));
         }
 
         @Override
         protected void revertToSnapshot(MutableResourceStack<T> snapshot) {
-            resourceStacks.set(slot, snapshot);
+            resourceStacks.set(index, snapshot);
         }
 
         @Override

@@ -74,7 +74,7 @@ public class ItemEnergyStorage implements IEnergyStorage {
         if (amount <= 0) return 0;
         int containerFill = getIndividualAmount();
         int spaceLeft = getIndividualLimit() - containerFill;
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             var handled = 0;
             if (amount < spaceLeft) {
                 handled = setPartial(amount + containerFill, transaction) == 1 ? amount : 0;
@@ -92,7 +92,7 @@ public class ItemEnergyStorage implements IEnergyStorage {
         maxExtract = Mth.clamp(maxExtract, 0, this.maxExtract * this.itemContext.getAmount());
         if (maxExtract <= 0) return 0;
         int containerFill = getIndividualAmount();
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             if (maxExtract < containerFill) {
                 int exchanged = setPartial(containerFill - maxExtract, transaction);
                 if (!simulate) transaction.commit();

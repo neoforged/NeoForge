@@ -37,7 +37,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     SnapshotJournal<?> getParticipant(int index);
 
     /**
-     * Clears all slots of resources. Sets them all to the empty variant.<br>
+     * Clears all indices of resources. Sets them all to the empty variant.<br>
      * <b>Note:</b> There was a point of realization that this may not be performant on inheriting classes, but keep in mind that something like the slice needs to do this operation on its sub list.
      */
     default void clearContent() {
@@ -123,7 +123,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     int getCapacity(int index, TResource resource);
 
     /**
-     * Creates an iterator over the slots in this container.
+     * Creates an iterator over the indices of this container.
      *
      * @return A new iterator.
      */
@@ -171,7 +171,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     }
 
     /**
-     * Creates an {@link IResourceHandlerModifiable} instance that reflects this container with a specification of how to handle what slots can be inserted or extracted.
+     * Creates an {@link IResourceHandlerModifiable} instance that reflects this container with a specification of how to handle what indices can be inserted or extracted.
      *
      * @param behavior The behavior of the resource handler
      * @return The resource handler.

@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>This is illustrated in the following example.
  *
  * <pre>{@code
- * try (Transaction outerTransaction = Transaction.open(TransactionContext.EMPTY)) {
+ * try (Transaction outerTransaction = Transaction.open(TransactionContext.ROOT)) {
  *     // (A) some transaction operations
  *     try (Transaction nestedTransaction = outerTransaction.open(outerTransaction)) {
  *         // (B) more operations
@@ -72,7 +72,7 @@ public interface Transaction extends AutoCloseable, TransactionContext {
      *
      * <pre>
      * {@code
-     * try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+     * try (var transaction = Transaction.open(TransactionContext.ROOT)) {
      *     // do exchanges
      * }
      * }

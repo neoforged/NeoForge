@@ -229,7 +229,7 @@ public final class ResourceHandlerUtil {
     }
 
     public static <T extends IResource> int getTotalAmountOf(IResourceHandler<T> handler, T resource) {
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             //We don't commit allow us to just inquiry the amount
             return extract(handler, resource, ResourceHandlerUtil.MAX, null);
         }

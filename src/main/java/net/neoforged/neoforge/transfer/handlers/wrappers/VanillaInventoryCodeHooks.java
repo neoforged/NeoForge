@@ -33,7 +33,7 @@ public class VanillaInventoryCodeHooks {
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
         for (int i = 0; i < handler.size(); i++) {
 //            ItemStack extractItem = handler.extractItem(i, 1, true);
-            var extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.EMPTY);
+            var extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.ROOT);
             if (extracted.isEmpty()) continue;
 
             var extractItem = ItemResource.itemStackOf(extracted);
@@ -43,7 +43,7 @@ public class VanillaInventoryCodeHooks {
 
                 if (!dest.canPlaceItem(j, extractItem) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
                     continue;
-                extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.EMPTY);
+                extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.ROOT);
                 if (extracted.isEmpty()) continue;//Should be unneeded
                 if (destStack.isEmpty())
                     dest.setItem(j, ItemResource.itemStackOf(extracted));
@@ -74,7 +74,7 @@ public class VanillaInventoryCodeHooks {
 
             ItemStack originalSlotContents = hopper.getItem(i).copy();
             ResourceStack<ItemResource> insertStack = hopper.removeItem(i, 1).immutable();
-            int accepted = ResourceHandlerUtil.insertIndexForced(handler, insertStack.resource(), insertStack.amount(), TransactionContext.EMPTY);
+            int accepted = ResourceHandlerUtil.insertIndexForced(handler, insertStack.resource(), insertStack.amount(), TransactionContext.ROOT);
             if (accepted > 0)
                 return true;
 

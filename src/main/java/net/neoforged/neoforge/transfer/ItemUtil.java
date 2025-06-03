@@ -38,7 +38,7 @@ public class ItemUtil {
         var cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         if (cap == null) return;
 
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             var inserted = cap.insert(resource, amount, transaction);
             if (inserted == amount) transaction.commit();
         }
@@ -69,7 +69,7 @@ public class ItemUtil {
         if (resource.isEmpty()) return;
 
         PlayerContext context = new PlayerContext(player, preferredSlot);
-        try (var transaction = Transaction.open(TransactionContext.EMPTY)) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             context.insert(resource, amount, transaction);
         }
     }

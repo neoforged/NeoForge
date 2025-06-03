@@ -5,42 +5,26 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceMap;
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * An {@link ISingleResourceHandler} that automatically destroys any resources that are inserted into it.
- * You should use the static instances provided by {@link #instance} instead of creating one yourself.
- * <p>
- * As an example:
- * 
- * <pre>{@code
- * VoidResourceHandler.instance(ItemResource.EMPTY);
- * }
- * </pre>
+ * You should use the static instances provided such as {@link #ITEM} or {@link #FLUID} instead of creating one yourself.
+ * In the case of your own resource type, or one not specifically builtin, it is advised to create your own cached instance for reuse.
  *
  * @param <T> The type of resource that this storage can accept.
  */
 public final class VoidResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    //Unlike the Empty handler, since the size is 1, there would be a valid empty resource to support the getResource.
-    //This however should be fine to use as an alternative.
-    private static final Reference2ReferenceMap<IResource, VoidResourceHandler<?>> instances = new Reference2ReferenceOpenHashMap<>();
-
-    public static <T extends IResource> VoidResourceHandler<T> instance(T emptyResource) {
-        if (!emptyResource.isEmpty()) {
-            throw new IllegalStateException("Resource must be empty when getting VoidResourceHandler instance");
-        }
-
-        //noinspection unchecked
-        return (VoidResourceHandler<T>) instances.computeIfAbsent(emptyResource, (iResource) -> new VoidResourceHandler<>((T) iResource));
-    }
+    public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.EMPTY);
+    public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.EMPTY);
 
     private final T emptyResource;
 
-    private VoidResourceHandler(T emptyResource) {
+    public VoidResourceHandler(T emptyResource) {
         this.emptyResource = emptyResource;
     }
 
