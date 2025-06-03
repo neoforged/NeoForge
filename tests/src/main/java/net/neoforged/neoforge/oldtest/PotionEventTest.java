@@ -37,7 +37,10 @@ public class PotionEventTest {
     public static void isPotionApplicable(MobEffectEvent.Applicable event) {
         if (!event.getEntity().getCommandSenderWorld().isClientSide) {
             event.setResult(Applicable.Result.APPLY);
-            LOGGER.info("Allowed Potion {} for Entity {}", event.getEffectInstance(), event.getEntity());
+            if (event.getEffectSource() != null)
+                LOGGER.info("Allowed Potion {} for Entity {} from Source Entity {}", event.getEffectInstance(), event.getEntity(), event.getEffectSource());
+            else
+                LOGGER.info("Allowed Potion {} for Entity {}", event.getEffectInstance(), event.getEntity());
         }
     }
 

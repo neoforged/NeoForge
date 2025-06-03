@@ -7,7 +7,9 @@ package net.neoforged.neoforge.client.extensions.common;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -69,6 +71,20 @@ public interface IClientBlockExtensions {
      */
     default boolean addDestroyEffects(BlockState state, Level Level, BlockPos pos, ParticleEngine manager) {
         return !state.shouldSpawnTerrainParticles();
+    }
+
+    /**
+     * Play hit sound(s) when the block is punched.
+     *
+     * @param state        The current state
+     * @param level        The current level
+     * @param pos          The position of the block
+     * @param face         The face of the block that was hit
+     * @param soundManager The sound manager to play the sound(s) through
+     * @return True to prevent vanilla hit sounds from playing
+     */
+    default boolean playHitSound(BlockState state, Level level, BlockPos pos, Direction face, SoundManager soundManager) {
+        return false;
     }
 
     /**

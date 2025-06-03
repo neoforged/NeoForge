@@ -194,7 +194,7 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
@@ -680,27 +680,69 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new PlayerEnchantItemEvent(player, stack, instances));
     }
 
-    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
-        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
-            outputSlot.setItem(0, ItemStack.EMPTY);
-            container.setMaximumCost(0);
-            container.repairItemCountCost = 0;
-            return false;
-        }
-        if (e.getOutput().isEmpty())
-            return true;
+    /**
+     * Called from {@link AnvilMenu#createResult()} after the vanilla result has been computed.
+     * <p>
+     * If the left input to the anvil is not empty, this method fires the {@link AnvilUpdateEvent} to allow mods to manipulate the result.
+     * 
+     * @param menu       The anvil menu
+     * @param leftInput  The left input item
+     * @param rightInput The right input item
+     * @param resultSlot A reference to the output slot
+     * @param name       The item name in the text input field.
+     * @param player     The player who is using the anvil
+     */
+    public static void onAnvilUpdate(AnvilMenu menu, ItemStack leftInput, ItemStack rightInput, Container resultSlot, @Nullable String name, Player player) {
+        if (!leftInput.isEmpty()) {
+            var event = new AnvilUpdateEvent(leftInput, rightInput, name, resultSlot.getItem(0), menu.getCost(), menu.repairItemCountCost, player);
+            // If the event is cancelled, the anvil operation is void. Set the result to empty and the cost to zero.
+            if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
+                resultSlot.setItem(0, ItemStack.EMPTY);
+                menu.setCost(0);
+                menu.repairItemCountCost = 0;
+                return;
+            }
 
-        outputSlot.setItem(0, e.getOutput());
-        container.setMaximumCost(e.getCost());
-        container.repairItemCountCost = e.getMaterialCost();
-        return false;
+            // Otherwise, update the results to the new values.
+            resultSlot.setItem(0, event.getOutput());
+            menu.setCost(event.getXpCost());
+            menu.repairItemCountCost = event.getMaterialCost();
+        }
     }
 
-    public static float onAnvilRepair(Player player, ItemStack output, ItemStack left, ItemStack right) {
-        AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
+    /**
+     * Fires the {@link AnvilCraftEvent.Pre} when the anvil is used to craft an item.
+     * <p>
+     * This is fired from the head of {@link AnvilMenu#onTake}, before any other logic is run.
+     * <p>
+     * If this event is cancelled, {@link AnvilMenu#onTake} should return immediately.
+     * 
+     * @param menu   The anvil menu
+     * @param player The player who is using the anvil
+     * @param output The output item
+     * @param left   The left input item
+     * @param right  The right input item
+     * @return The fired event
+     */
+    public static AnvilCraftEvent.Pre fireAnvilCraftPre(AnvilMenu menu, Player player, ItemStack output, ItemStack left, ItemStack right) {
+        var e = new AnvilCraftEvent.Pre(menu, player, left, right, output);
+        return NeoForge.EVENT_BUS.post(e);
+    }
+
+    /**
+     * Fires the {@link AnvilCraftEvent.Post} when the anvil is used to craft an item.
+     * <p>
+     * This is fired from the tail of {@link AnvilMenu#onTake}, after all other logic is run.
+     * 
+     * @param menu   The anvil menu
+     * @param player The player who is using the anvil
+     * @param output The output item
+     * @param left   A copy of the original left input item, before post-processing
+     * @param right  A copy of the original right input item, before post-processing
+     */
+    public static void fireAnvilCraftPost(AnvilMenu menu, Player player, ItemStack output, ItemStack left, ItemStack right) {
+        var e = new AnvilCraftEvent.Post(menu, player, left, right, output);
         NeoForge.EVENT_BUS.post(e);
-        return e.getBreakChance();
     }
 
     public static int onGrindstoneChange(ItemStack top, ItemStack bottom, Container outputSlot, int xp) {
@@ -1501,10 +1543,11 @@ public class CommonHooks {
      *
      * @param entity The target entity the mob effect is being applied to.
      * @param effect The mob effect being applied.
+     * @param source The source entity who is applying the mob effect, or {@code null} if none exists.
      * @return True if the mob effect can be applied, otherwise false.
      */
-    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
-        var event = new MobEffectEvent.Applicable(entity, effect);
+    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect, @Nullable Entity source) {
+        var event = new MobEffectEvent.Applicable(entity, effect, source);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
     }
 

@@ -6,7 +6,9 @@
 package net.neoforged.neoforge.debug.entity.living;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -360,7 +362,7 @@ public class LivingEntityEventTests {
                 /* The player's health and all the stored values from the events are checked to ensure they match the
                  * expected values from our reduction functions and changes to the damage value.*/
                 .thenWaitUntil(player -> {
-                    DecimalFormat formatter = new DecimalFormat("#.###");
+                    DecimalFormat formatter = new DecimalFormat("#.###", new DecimalFormatSymbols(Locale.ROOT));
                     String playerHealth = formatter.format(player.getHealth());
                     helper.assertTrue(playerHealth.equals("11"), "player health expected 11, actually " + playerHealth);
 

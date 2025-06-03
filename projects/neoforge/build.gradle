@@ -20,7 +20,7 @@ evaluationDependsOn(":neoforge-coremods")
 gradleutils.setupSigning(project: project, signAllPublications: true)
 
 changelog {
-    from '21.4'
+    from '21.5'
     disableAutomaticPublicationRegistration()
 }
 

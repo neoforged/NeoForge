@@ -167,6 +167,55 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.END_BARRENS);
         tag(Tags.Biomes.IS_DRY).addTag(Tags.Biomes.IS_DRY_OVERWORLD).addTag(Tags.Biomes.IS_DRY_NETHER).addTag(Tags.Biomes.IS_DRY_END);
 
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_OAK)
+                .add(Biomes.FOREST)
+                .add(Biomes.FLOWER_FOREST)
+                .add(Biomes.SWAMP)
+                .add(Biomes.WOODED_BADLANDS);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_BIRCH)
+                .add(Biomes.BIRCH_FOREST)
+                .add(Biomes.OLD_GROWTH_BIRCH_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_SPRUCE)
+                .add(Biomes.TAIGA)
+                .add(Biomes.SNOWY_TAIGA)
+                .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
+                .add(Biomes.OLD_GROWTH_PINE_TAIGA)
+                .add(Biomes.GROVE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE)
+                .add(Biomes.JUNGLE)
+                .add(Biomes.SPARSE_JUNGLE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA)
+                .add(Biomes.SAVANNA)
+                .add(Biomes.SAVANNA_PLATEAU)
+                .add(Biomes.WINDSWEPT_SAVANNA);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK)
+                .add(Biomes.DARK_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE)
+                .add(Biomes.MANGROVE_SWAMP);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY)
+                .add(Biomes.CHERRY_GROVE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK)
+                .add(Biomes.PALE_GARDEN);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_BAMBOO)
+                .add(Biomes.BAMBOO_JUNGLE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_CRIMSON)
+                .add(Biomes.CRIMSON_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_WARPED)
+                .add(Biomes.WARPED_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE).addTags(
+                Tags.Biomes.PRIMARY_WOOD_TYPE_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_BIRCH,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_SPRUCE,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_BAMBOO,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_CRIMSON,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_WARPED);
+
         tag(Tags.Biomes.IS_CONIFEROUS_TREE).addTags(Tags.Biomes.IS_TAIGA).add(Biomes.GROVE);
         tag(Tags.Biomes.IS_SAVANNA_TREE).addTags(Tags.Biomes.IS_SAVANNA);
         tag(Tags.Biomes.IS_JUNGLE_TREE).addTags(Tags.Biomes.IS_JUNGLE);

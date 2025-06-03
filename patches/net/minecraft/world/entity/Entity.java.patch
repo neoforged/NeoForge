@@ -59,32 +59,33 @@
                      ? blockpos.atY(Mth.floor(this.position.y - p_216987_))
                      : blockpos;
              }
-@@ -1184,19 +_,19 @@
+@@ -1184,20 +_,17 @@
          return !blockstate.is(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockstate.is(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? p_278049_ : blockpos;
      }
  
 -    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_) {
 -        SoundType soundtype = p_277472_.getSoundType();
-+    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_, BlockPos primaryPos, BlockPos secondaryPos) {
-+        SoundType soundtype = p_277472_.getSoundType(this.level, primaryPos, this);
-         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+-        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
 -        this.playMuffledStepSound(p_277630_);
++    protected void playCombinationStepSounds(BlockState p_277472_, BlockState p_277630_, BlockPos primaryPos, BlockPos secondaryPos) {
++        p_277472_.playStepSound(this.level, primaryPos, this, .15F, 1F);
 +        this.playMuffledStepSound(p_277630_, secondaryPos);
      }
  
 -    protected void playMuffledStepSound(BlockState p_283110_) {
 -        SoundType soundtype = p_283110_.getSoundType();
+-        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
 +    protected void playMuffledStepSound(BlockState p_283110_, BlockPos pos) {
-+        SoundType soundtype = p_283110_.getSoundType(this.level, pos, this);
-         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.05F, soundtype.getPitch() * 0.8F);
++        p_283110_.playStepSound(this.level, pos, this, .05F, .8F);
      }
  
      protected void playStepSound(BlockPos p_20135_, BlockState p_20136_) {
 -        SoundType soundtype = p_20136_.getSoundType();
-+        SoundType soundtype = p_20136_.getSoundType(this.level, p_20135_, this);
-         this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
+-        this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
++        p_20136_.playStepSound(this.level(), p_20135_, this, .15F, 1F);
      }
  
+     private boolean shouldPlayAmethystStepSound(BlockState p_278069_) {
 @@ -1351,20 +_,23 @@
  
      public void updateSwimming() {
