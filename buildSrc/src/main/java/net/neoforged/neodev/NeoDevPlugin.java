@@ -571,7 +571,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.setGroup(INTERNAL_GROUP);
                 task.classpath(binpatcherConfig);
                 task.getPatchedJar().set(joinedJar.flatMap(Jar::getArchiveFile));
-                task.getSourcePatchesFolder().set(sourcesPatchesFolder);
+                // Disabled so that lambda names are correct in production
+                //task.getSourcePatchesFolder().set(sourcesPatchesFolder);
                 task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             });
         }
