@@ -1,6 +1,7 @@
 # Preamble
 
-Spelling errors, grammatical mistakes and documentation are some of the things we are still working on, but for the most part. 
+Spelling errors, grammatical mistakes and documentation are some of the things we are still working on, but for the most
+part.
 It is enough to start getting this reviewed again.
 
 This work started roughly around 1.20.4. Adrian got it started, but ultimately started slowing down when tests were
@@ -48,8 +49,9 @@ and `IFluidHandlers` return the remainder (that is backwards on purpose for maki
 this will definitely make our lives easier in regard to handling multiple requests and inventories. As well as clean up
 some of the "simulation" code paths.
 
-`IItemContexts`
-: A way to inform how handlers, on an itemstack, should behave or be referenced when inserting/extracting. This solves
+`IItemCapabilityContexts`
+: Formerly known as `IItemContext` in previous iterations of this PR. A way to inform how handlers, on an itemstack,
+should behave or be referenced when inserting/extracting. This solves
 the common problem of "I have 10 empty buckets but 4 buckets worth of lava, I should be able to quickly fill 4 buckets
 and leave the
 other 6 in place". The interface has a pretty decent doc for what it does that Adrian wrote, though it may be out of
@@ -138,8 +140,9 @@ it may be wise to provide them for now.
   tests in the PR.
 - `ResourceStorageHandler` - Tries to match vanilla in terms of DataComponent use. Has both an attachment and component
   sub class implementation for items and fluids.
-- `Contexts` - The idea of `IItemContexts` is new, and as mentioned before help solve some problems of when Itemstacks
-  that have a handler on them are stacked.
+- `Contexts` - The idea of `IItemCapabilityContexts` is new, and as mentioned before help solve some problems of when
+  Itemstacks that have a handler on them are stacked. It is the context passed in when getting the capability of an
+  ItemStack, this is similar to how you'd pass in a direction when you get a block capability.
 
 The first notable optional templates are the resource containers such as `SimpleItemResourceContainer`.
 As the documentation expresses, these were initially designed for XyCraft so they are a lot less theory crafted and
@@ -187,11 +190,11 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 private static void example(IResourceHandler<FluidResource> handler) {
-  try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-    var handled = handler.extract(Fluids.WATER.defaultResource(), 1000, transaction);
-    if (handled == 1000)
-      transaction.commit();
-  }
+    try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        var handled = handler.extract(Fluids.WATER.defaultResource(), 1000, transaction);
+        if (handled == 1000)
+            transaction.commit();
+    }
 }
 ```
 
@@ -253,8 +256,9 @@ Alternative names for this are `mayInsert`, `supportsInsert`,
 AutoCloseable Try
 : Something that is not common in Minecraft modding is the idea of AutoClosable implementations. In short, if something
 implements AutoCloseable, when put in a `try-block` like the transactions above, once you leave the block, the object
-will call `close()`. In the case of transactions this will be something new for many of you. Be careful with this. It is 
-**very** simple to accidentally misconfigure your resource handler logic by either closing manually, forgetting to commit 
+will call `close()`. In the case of transactions this will be something new for many of you. Be careful with this. It is
+**very** simple to accidentally misconfigure your resource handler logic by either closing manually, forgetting to
+commit
 when you wanted to or calling a method like open again with the wrong context.
 
 ## Misc

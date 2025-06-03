@@ -274,13 +274,11 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
             // Try to apply the change to the original stack
             ItemStack currentStack = get();
 
-            container.performSideEffects(index, original);
+            container.onCommit(index, original);
 
             if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
-                // Components have changed, we need to copy the stack.
-                // TODO: here we need to copy exactly the components from currentStack to original
-
                 if (!ItemStack.matches(currentStack, original)) {
+                    // Components have changed, we need to copy the stack.
                     set(currentStack.copy());
                 } else {
                     // None is empty and the items and components match: just update the amount, and reuse the original stack.

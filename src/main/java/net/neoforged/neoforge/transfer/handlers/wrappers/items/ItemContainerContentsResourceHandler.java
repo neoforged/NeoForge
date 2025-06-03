@@ -10,7 +10,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -24,9 +24,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public class ItemContainerContentsResourceHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final int size;
     protected final DataComponentType<ItemContainerContents> componentType;
-    protected final IItemContext itemContext;
+    protected final IItemCapabilityContext itemContext;
 
-    public ItemContainerContentsResourceHandler(IItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
+    public ItemContainerContentsResourceHandler(IItemCapabilityContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
         this.componentType = componentType;
         this.itemContext = itemContext;
         this.size = size;

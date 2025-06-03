@@ -20,8 +20,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.energy.ItemEnergyStorage;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -66,7 +66,7 @@ public class ItemEnergyTests {
             ItemStack stack = BATTERY.toStack();
             Player player = helper.makeMockPlayer();
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
-            IItemContext context = PlayerContext.ofHand(player, InteractionHand.MAIN_HAND);
+            IItemCapabilityContext context = PlayerItemCapabilityContext.ofHand(player, InteractionHand.MAIN_HAND);
             IEnergyStorage energy = context.getCapability(EnergyHandler.ITEM);
             helper.assertValueEqual(energy.getEnergyStored(), MAX_CAPACITY, "Default stored energy should be equal to the max capacity.");
 

@@ -9,11 +9,11 @@
 +
 +    // Neo: Support deferring side effects until end of a transaction
 +    @Override
-+    public void setItem(int p_332705_, ItemStack p_332643_, boolean performSideEffects) {
++    public void setItem(int p_332705_, ItemStack p_332643_, boolean forceChanges) {
          this.getItems().set(p_332705_, p_332643_);
          p_332643_.limitSize(this.getMaxStackSize(p_332643_));
          this.setChanged();
-+        if (performSideEffects) {
++        if (forceChanges) {
 +            this.setChanged();
 +
 +        }

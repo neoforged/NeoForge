@@ -15,7 +15,7 @@ import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -26,12 +26,12 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * The intended usage is to wrap the stack provided in {@link DefaultDispenseItemBehavior#execute(BlockSource, ItemStack)}.
  * You can then use {@link #finalizeResult(BlockSource)} to return the result to the dispenser and handle overflow.
  */
-public class DispenserContext implements IItemContext {
+public class DispenserItemCapabilityContext implements IItemCapabilityContext {
     protected ItemResource resource;
     protected int amount;
     protected final Object2IntMap<ItemResource> resources = new Object2IntOpenHashMap<>();
 
-    public DispenserContext(ItemStack stack) {
+    public DispenserItemCapabilityContext(ItemStack stack) {
         this.resource = ItemResource.of(stack);
         this.amount = stack.getCount();
     }
@@ -50,7 +50,7 @@ public class DispenserContext implements IItemContext {
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         if (amount <= 0 || resource.isEmpty()) return 0;
         //        if (action.isSimulating()) return amount;
-        //todo add snapshot
+        //snapshot is handled by the handler itself
         int inserted = 0;
         if (getResource().isEmpty()) {
             inserted = Math.min(amount, resource.getMaxStackSize());
@@ -73,13 +73,11 @@ public class DispenserContext implements IItemContext {
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         if (amount <= 0 || resource.isEmpty()) return 0;
         int extracted = Math.min(amount, getAmount());
-        //todo handle snapshot
-        //        if (action.isExecuting()) {
+        //snapshot is handled by the handler itself
         this.amount -= extracted;
         if (getAmount() == 0) {
             this.resource = ItemResource.EMPTY;
         }
-        //        }
         return extracted;
     }
 

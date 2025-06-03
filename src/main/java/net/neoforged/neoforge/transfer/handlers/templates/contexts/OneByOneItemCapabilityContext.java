@@ -6,14 +6,14 @@
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class OneByOneItemContext implements IItemContext {
-    private final IItemContext itemContext;
+public class OneByOneItemCapabilityContext implements IItemCapabilityContext {
+    private final IItemCapabilityContext itemContext;
 
-    public OneByOneItemContext(IItemContext itemContext) {
+    public OneByOneItemCapabilityContext(IItemCapabilityContext itemContext) {
         this.itemContext = itemContext;
     }
 

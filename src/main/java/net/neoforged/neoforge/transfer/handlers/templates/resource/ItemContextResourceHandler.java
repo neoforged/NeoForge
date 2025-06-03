@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -20,16 +20,16 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
-    protected final IItemContext itemContext;
+    protected final IItemCapabilityContext itemContext;
     protected final DataComponentType<Component<T>> componentType;
     protected final Component<T> defaultComponent;
     protected final Predicate<T> validator;
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultComponent) {
+    public ItemContextResourceHandler(IItemCapabilityContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultComponent) {
         this(itemContext, componentType, defaultComponent, r -> true);
     }
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultComponent, Predicate<T> validator) {
+    public ItemContextResourceHandler(IItemCapabilityContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultComponent, Predicate<T> validator) {
         this.itemContext = itemContext;
         this.componentType = componentType;
         this.defaultComponent = defaultComponent;

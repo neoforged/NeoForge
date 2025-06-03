@@ -6,7 +6,7 @@
  
 +    // Neo: Update cooldown after insertion into hopper
 +      @Override
-+      public void performSideEffects(int slot, ItemStack originalStack) {
++      public void onCommit(int slot, ItemStack originalStack) {
 +          if (originalStack.isEmpty() && !getItem(slot).isEmpty()) {
 +              if (!isOnCustomCooldown()) {
 +                  // This cooldown is always set to 8 in vanilla with one exception:

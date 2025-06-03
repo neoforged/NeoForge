@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers;
 
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -65,10 +65,10 @@ import org.jetbrains.annotations.Nullable;
  * This will remove 4 bottles of honey from the stack and replace them with 4 empty bottles. Since the stack still has
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
-public interface IItemContext {
+public interface IItemCapabilityContext {
     @Nullable
     @ApiStatus.NonExtendable
-    default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
+    default <T> T getCapability(ItemCapability<T, IItemCapabilityContext> capability) {
         return capability.getCapability(getResource().toStack(), this);
     }
 
@@ -124,8 +124,8 @@ public interface IItemContext {
      * @param handler The handler containing the item.
      * @param index   The index in {@code handler}, where the item can be found.
      */
-    static IItemContext ofIndex(IResourceHandler<ItemResource> handler, int index) {
-        return new IItemContext() {
+    static IItemCapabilityContext ofIndex(IResourceHandler<ItemResource> handler, int index) {
+        return new IItemCapabilityContext() {
             @Override
             public ItemResource getResource() {
                 return index < handler.size() ? handler.getResource(index) : ItemResource.EMPTY;
@@ -152,7 +152,7 @@ public interface IItemContext {
         };
     }
 
-    record ReadOnly(IItemContext context) implements IItemContext {
+    record ReadOnly(IItemCapabilityContext context) implements IItemCapabilityContext {
         @Override
         public ItemResource getResource() {
             return context.getResource();
@@ -190,7 +190,7 @@ public interface IItemContext {
      * handler, but no modification. You can still call insert or extract, and as long as the handler is properly setup to handle snapshots, the calls will be reverted
      */
     @ApiStatus.NonExtendable
-    default IItemContext asReadOnly() {
+    default IItemCapabilityContext asReadOnly() {
         return new ReadOnly(this);
     }
 
@@ -199,7 +199,7 @@ public interface IItemContext {
      * Creates a wrapper around this context that allows access to a single item at the time.
      */
     @ApiStatus.NonExtendable
-    default IItemContext oneByOne() {
-        return new OneByOneItemContext(this);
+    default IItemCapabilityContext oneByOne() {
+        return new OneByOneItemCapabilityContext(this);
     }
 }

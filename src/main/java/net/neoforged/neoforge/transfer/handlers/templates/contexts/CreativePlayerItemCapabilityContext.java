@@ -12,10 +12,10 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class CreativePlayerContext extends StaticContext {
+public class CreativePlayerItemCapabilityContext extends StaticItemCapabilityContext {
     protected final InventoryWrapper handler;
 
-    public CreativePlayerContext(ItemResource resource, int amount, Player player) {
+    public CreativePlayerItemCapabilityContext(ItemResource resource, int amount, Player player) {
         super(resource, amount);
         this.handler = InventoryWrapper.of(player);
     }

@@ -11,7 +11,7 @@ import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,13 +60,13 @@ public final class ItemCapability<T, C extends @Nullable Object> extends BaseCap
     }
 
     /**
-     * Creates a new item capability with {@link IItemContext} context, or gets it if it already exists.
-     * This should be used for capabilities that require an {@link IItemContext} as additional context.
+     * Creates a new item capability with {@link IItemCapabilityContext} context, or gets it if it already exists.
+     * This should be used for capabilities that require an {@link IItemCapabilityContext} as additional context.
      *
      * @see #create(ResourceLocation, Class, Class)
      */
-    public static <T> ItemCapability<T, IItemContext> createContextual(ResourceLocation name, Class<T> typeClass) {
-        return create(name, typeClass, IItemContext.class);
+    public static <T> ItemCapability<T, IItemCapabilityContext> createContextual(ResourceLocation name, Class<T> typeClass) {
+        return create(name, typeClass, IItemCapabilityContext.class);
     }
 
     /**

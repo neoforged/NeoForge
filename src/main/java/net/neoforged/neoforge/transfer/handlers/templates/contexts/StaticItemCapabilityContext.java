@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -15,16 +15,16 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * A static context that holds a fixed amount of a single item. Operations on this context will still perform as if the
  * item is mutable, but the amount or resource will never change.
  */
-public class StaticContext implements IItemContext {
+public class StaticItemCapabilityContext implements IItemCapabilityContext {
     private final ItemResource resource;
     private final int amount;
 
-    public StaticContext(ItemResource resource, int amount) {
+    public StaticItemCapabilityContext(ItemResource resource, int amount) {
         this.resource = resource;
         this.amount = amount;
     }
 
-    public StaticContext(ItemStack stack) {
+    public StaticItemCapabilityContext(ItemStack stack) {
         this(ItemResource.of(stack), stack.getCount());
     }
 

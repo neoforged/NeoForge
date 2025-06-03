@@ -20,22 +20,21 @@ public interface IContainerExtension {
     }
 
     /**
-     * Variant of {@link Container#setItem(int, ItemStack)} that allows disabling side effects.
+     * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling .
      *
-     * <p>If {@code performSideEffects} is {@code false},
-     * side effects (e.g. calling {@code setChanged} or making changes to the world) should not be performed.
+     * <p>If {@code forceChanges} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the commit.
      */
-    default void setItem(int slot, ItemStack stack, boolean performSideEffects) {
+    default void setItem(int slot, ItemStack stack, boolean forceChanges) {
         self().setItem(slot, stack);
     }
 
     /**
-     * Perform side effects that were not done in {@link #setItem(int, ItemStack, boolean)}
-     * because {@code performSideEffects} was false.
+     * Perform changes that were deferred in {@link #setItem(int, ItemStack, boolean)}
+     * because {@code forceChanges} was false.
      *
      * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper AlternateVanillaContainerResourceWrapper}.
      */
-    default void performSideEffects(int slot, ItemStack originalStack) {}
+    default void onCommit(int slot, ItemStack originalStack) {}
 
     /**
      * Perform additional logic immediately after successful transfer (i.e. insert or extract with result > 0).

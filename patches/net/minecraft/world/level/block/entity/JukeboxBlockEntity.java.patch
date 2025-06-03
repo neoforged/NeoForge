@@ -6,10 +6,10 @@
  
 +    // Neo: Support deferring side effects until end of a transaction
 +    @Override
-+    public void setItem(int slot, ItemStack stack, boolean performSideEffects) {
++    public void setItem(int slot, ItemStack stack, boolean forceChanges) {
 +        if (slot != 0) return;
 +
-+        if (performSideEffects) {
++        if (forceChanges) {
 +            setTheItem(stack);
 +        } else {
 +            this.item = stack;
@@ -20,11 +20,11 @@
      @Override
      public void setTheItem(ItemStack p_304781_) {
          this.item = p_304781_;
-+        performSideEffects(0, ItemStack.EMPTY);
++        onCommit(0, ItemStack.EMPTY);
 +    }
 +
 +    @Override
-+    public void performSideEffects(int slot, ItemStack originalStack) {
++    public void onCommit(int slot, ItemStack originalStack) {
          boolean flag = !this.item.isEmpty();
          Optional<Holder<JukeboxSong>> optional = JukeboxSong.fromStack(this.level.registryAccess(), this.item);
          this.notifyItemChangedInJukebox(flag);

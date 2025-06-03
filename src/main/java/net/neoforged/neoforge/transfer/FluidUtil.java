@@ -23,10 +23,10 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerContext;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BlockFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -73,7 +73,7 @@ public class FluidUtil {
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
 
-        IItemContext itemContext = PlayerContext.ofHand(player, hand);
+        IItemCapabilityContext itemContext = PlayerItemCapabilityContext.ofHand(player, hand);
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
@@ -153,7 +153,7 @@ public class FluidUtil {
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
     public static boolean tryPickupFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        var handHandler = PlayerItemCapabilityContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPickupFluid(handHandler, playerIn.position(), level, pos);
     }
 
@@ -168,7 +168,7 @@ public class FluidUtil {
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
     public static boolean tryPlaceFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        var handHandler = PlayerItemCapabilityContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPlaceFluid(handHandler, playerIn.position(), level, pos);
     }
 
@@ -194,7 +194,7 @@ public class FluidUtil {
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
-    public static ResourceStack<FluidResource> getResourceContained(IItemContext context) {
+    public static ResourceStack<FluidResource> getResourceContained(IItemCapabilityContext context) {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return FluidResource.EMPTY_STACK;
 
@@ -213,7 +213,7 @@ public class FluidUtil {
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
-    public static FluidStack getFluidContained(IItemContext context) {
+    public static FluidStack getFluidContained(IItemCapabilityContext context) {
         var resourceStack = getResourceContained(context);
         return resourceStack.resource().toStack(resourceStack.amount());
     }
@@ -225,7 +225,7 @@ public class FluidUtil {
      * @return The fluid contained in the item stack, or empty if no fluid is contained.
      */
     public static FluidStack getFluidContained(ItemStack stack) {
-        return getFluidContained(new StaticContext(stack));
+        return getFluidContained(new StaticItemCapabilityContext(stack));
     }
 
     /**

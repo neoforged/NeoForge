@@ -9,7 +9,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -23,7 +23,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
  */
 public class ItemEnergyStorage implements IEnergyStorage {
-    protected final IItemContext itemContext;
+    protected final IItemCapabilityContext itemContext;
     protected final DataComponentType<Integer> energyComponent;
     protected final int capacity;
     protected final int maxReceive;
@@ -38,7 +38,7 @@ public class ItemEnergyStorage implements IEnergyStorage {
      * @param maxReceive      The max per-transfer power input rate
      * @param maxExtract      The max per-transfer power output rate
      */
-    public ItemEnergyStorage(IItemContext itemContext, DataComponentType<Integer> energyComponent, int capacity, int maxReceive, int maxExtract) {
+    public ItemEnergyStorage(IItemCapabilityContext itemContext, DataComponentType<Integer> energyComponent, int capacity, int maxReceive, int maxExtract) {
         this.itemContext = itemContext;
         this.energyComponent = energyComponent;
         this.capacity = capacity;
@@ -49,14 +49,14 @@ public class ItemEnergyStorage implements IEnergyStorage {
     /**
      * Creates a new ItemEnergyStorage with a unified receive / extract rate.
      */
-    public ItemEnergyStorage(IItemContext itemContext, DataComponentType<Integer> energyComponent, int capacity, int maxTransfer) {
+    public ItemEnergyStorage(IItemCapabilityContext itemContext, DataComponentType<Integer> energyComponent, int capacity, int maxTransfer) {
         this(itemContext, energyComponent, capacity, maxTransfer, maxTransfer);
     }
 
     /**
      * Creates a new ItemEnergyStorage with a transfer rate equivalent to the capacity.
      */
-    public ItemEnergyStorage(IItemContext itemContext, DataComponentType<Integer> energyComponent, int capacity) {
+    public ItemEnergyStorage(IItemCapabilityContext itemContext, DataComponentType<Integer> energyComponent, int capacity) {
         this(itemContext, energyComponent, capacity, capacity);
     }
 

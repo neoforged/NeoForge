@@ -7,9 +7,9 @@
 +        setItem(p_256610_, p_255789_, true);
 +    }
 +
-+    // Neo: Support deferring side effects until end of a transaction
++    // Neo: Support deferring changes until end of a transaction
 +    @Override
-+    public void setItem(int p_256610_, ItemStack p_255789_, boolean performSideEffects) {
++    public void setItem(int p_256610_, ItemStack p_255789_, boolean forceChanges) {
          if (p_255789_.is(ItemTags.BOOKSHELF_BOOKS)) {
              this.items.set(p_256610_, p_255789_);
              this.updateState(p_256610_);
