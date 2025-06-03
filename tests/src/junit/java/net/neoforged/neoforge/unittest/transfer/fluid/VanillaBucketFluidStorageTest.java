@@ -6,8 +6,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.fluid.BucketFluidStorage;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.fluid.VanillaBucketFluidStorage;
 import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.item.base.ItemStackStorage;
@@ -19,17 +19,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(EphemeralTestServerProvider.class)
-public class BucketFluidStorageTest {
+public class VanillaBucketFluidStorageTest {
 
     public static final FluidVariant WATER = FluidVariant.of(Fluids.WATER);
     public static final int BUCKET_VOLUME = FluidType.BUCKET_VOLUME;
 
-    public BucketFluidStorageTest(MinecraftServer server) {
+    public VanillaBucketFluidStorageTest(MinecraftServer server) {
         // Tags need to be loaded since some functionality relies on it.
     }
 
@@ -43,7 +40,7 @@ public class BucketFluidStorageTest {
             storage.setStackInSlot(0, new ItemStack(Items.BUCKET));
             return storage;
         });
-        Storage<FluidVariant> storage = new BucketFluidStorage(InItemStorageContext.ofStorageSlot(outerStorage, 0));
+        Storage<FluidVariant> storage = new VanillaBucketFluidStorage(InItemStorageContext.ofStorageSlot(outerStorage, 0));
 
         @Test
         void testSizeIsOne() {
@@ -103,7 +100,7 @@ public class BucketFluidStorageTest {
      */
     @Nested
     class EmptyHostingItem {
-        Storage<FluidVariant> storage = new BucketFluidStorage(InItemStorageContext.ofStorageSlot(new ItemStackStorage(3), 0));
+        Storage<FluidVariant> storage = new VanillaBucketFluidStorage(InItemStorageContext.ofStorageSlot(new ItemStackStorage(3), 0));
 
         @Test
         void testSizeIsOne() {
