@@ -43,6 +43,13 @@ abstract class GenerateBinaryPatches extends JavaExec {
     abstract DirectoryProperty getSourcePatchesFolder();
 
     /**
+     * This file is used as a filter for classes to include, in addition to those specified by {@link getSourcePatchesFolder()}.
+     */
+    @InputFile
+    @Optional
+    abstract RegularFileProperty getIncludeClassesJar();
+
+    /**
      * The location where the LZMA compressed binary patches are written to.
      */
     @OutputFile
@@ -56,6 +63,9 @@ abstract class GenerateBinaryPatches extends JavaExec {
         args("--minimize");
         if (getSourcePatchesFolder().isPresent()) {
             args("--patches", getSourcePatchesFolder().get().getAsFile().getAbsolutePath());
+        }
+        if (getIncludeClassesJar().isPresent()) {
+            args("--include-classes", getIncludeClassesJar().get().getAsFile().getAbsolutePath());
         }
         args("--output", getOutputFile().get().getAsFile().getAbsolutePath());
 
