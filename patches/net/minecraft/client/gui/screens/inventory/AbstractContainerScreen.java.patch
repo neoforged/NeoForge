@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
 @@ -119,6 +_,7 @@
+             this.onStopHovering(slot);
          }
  
-         this.renderLabels(p_418314_, p_418170_, p_418114_);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Foreground(this, p_418314_, p_418170_, p_418114_));
          p_418314_.pose().popMatrix();
      }
