@@ -212,8 +212,9 @@
 +    // Neo: Split off into separate method to wrap in a layer
 +    private void maybeRenderSelectedItemName(GuiGraphics p_316628_, DeltaTracker p_348543_) {
          if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
-             this.renderSelectedItemName(p_316628_);
+-            this.renderSelectedItemName(p_316628_);
 -        } else if (this.minecraft.player.isSpectator()) {
++            this.renderSelectedItemName(p_316628_, Math.max(this.leftHeight, this.rightHeight));
 +        }
 +    }
 +
