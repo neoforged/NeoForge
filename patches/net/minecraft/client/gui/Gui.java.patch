@@ -78,7 +78,7 @@
 +                .add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics));
 +        layerManager.add(playerHealthComponents, () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean());
 +        layerManager.add(VEHICLE_HEALTH, this::renderVehicleHealth, guiVisible);
-+        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::renderContextualInfoBar, guiVisible);
++        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::renderContextualInfoBarBackground, guiVisible);
 +        layerManager.add(EXPERIENCE_LEVEL, this::renderExperienceLevel, guiVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR, this::renderContextualInfoBar, guiVisible);
 +        layerManager.add(SELECTED_ITEM_NAME, this::maybeRenderSelectedItemName, guiVisible);
