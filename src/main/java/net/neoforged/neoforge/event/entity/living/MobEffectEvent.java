@@ -96,12 +96,6 @@ public abstract class MobEffectEvent extends LivingEvent {
         @Nullable
         private final Entity source;
 
-        @Deprecated(forRemoval = true)
-        @ApiStatus.Internal
-        public Applicable(LivingEntity living, MobEffectInstance effectInstance) {
-            this(living, effectInstance, null);
-        }
-
         @ApiStatus.Internal
         public Applicable(LivingEntity living, MobEffectInstance effectInstance, @Nullable Entity source) {
             super(living, effectInstance);
@@ -130,7 +124,7 @@ public abstract class MobEffectEvent extends LivingEvent {
         }
 
         /**
-         * @return the entity source of the effect, or {@code null} if none exists
+         * {@return the entity source of the effect, or {@code null} if none exists}
          */
         @Nullable
         public Entity getEffectSource() {

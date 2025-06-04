@@ -1511,6 +1511,8 @@ public class CommonHooks {
      * @param entity The target entity the mob effect is being applied to.
      * @param effect The mob effect being applied.
      * @return True if the mob effect can be applied, otherwise false.
+     *
+     * @deprecated Use {@link CommonHooks#canMobEffectBeApplied(LivingEntity, MobEffectInstance, Entity)} instead.
      */
     @Deprecated(forRemoval = true)
     public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
