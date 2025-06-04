@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -85,7 +86,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0 || !isValid(0, resource)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount) || !isValid(0, resource)) return 0;
         T presentResource = getResource(0);
         var singleItemLimit = getSingleItemLimit();
 
@@ -106,7 +107,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0 || isEmpty() || !getResource(0).equals(resource)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount) || isEmpty() || !getResource(0).equals(resource)) return 0;
         int containerFill = getSingleItemAmount();
         if (amount < containerFill) {
             var singleItemLimit = getSingleItemLimit();

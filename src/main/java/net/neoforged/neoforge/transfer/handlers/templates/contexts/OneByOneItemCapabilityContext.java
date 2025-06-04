@@ -29,13 +29,13 @@ public class OneByOneItemCapabilityContext implements IItemCapabilityContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         return itemContext.insert(resource, amount, transaction);
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         return itemContext.extract(resource, amount, transaction);
     }
 }

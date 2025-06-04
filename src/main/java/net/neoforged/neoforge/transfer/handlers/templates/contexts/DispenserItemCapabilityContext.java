@@ -15,6 +15,7 @@ import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -48,7 +49,7 @@ public class DispenserItemCapabilityContext implements IItemCapabilityContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         //        if (action.isSimulating()) return amount;
         //snapshot is handled by the handler itself
         int inserted = 0;
@@ -71,7 +72,7 @@ public class DispenserItemCapabilityContext implements IItemCapabilityContext {
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int extracted = Math.min(amount, getAmount());
         //snapshot is handled by the handler itself
         this.amount -= extracted;

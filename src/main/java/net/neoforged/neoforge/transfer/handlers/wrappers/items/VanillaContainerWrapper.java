@@ -92,7 +92,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     //This is not called from the index-less insert as the checks are done at different times.
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!isValid(index, resource)) return 0;
 
         return get(index).insert(0, resource, amount, transaction);
@@ -100,7 +100,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         var handled = 0;
         var size = size();
 
@@ -115,14 +115,14 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         return get(index).extract(0, resource, amount, transaction);
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         var handled = 0;
         var size = size();
 

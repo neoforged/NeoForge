@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers;
 
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemCapabilityContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -98,7 +99,7 @@ public interface IItemCapabilityContext {
 
     default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
         //do we actually want these checks? Since we likely should be calling them prior to exchanging.
-        if (resource.isEmpty() || amount <= 0) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         try (var subTransaction = Transaction.open(transaction)) {
             int extracted = extract(getResource(), amount, subTransaction);

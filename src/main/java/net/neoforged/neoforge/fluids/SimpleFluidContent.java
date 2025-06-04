@@ -16,6 +16,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
@@ -46,7 +47,7 @@ public class SimpleFluidContent implements DataComponentHolder {
     }
 
     public static SimpleFluidContent of(FluidResource resource, int amount) {
-        return resource.isEmpty() || amount <= 0 ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
+        return ResourceHandlerUtil.isEmpty(resource, amount) ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
     }
 
     public static SimpleFluidContent of(ResourceStack<FluidResource> resourceStack) {

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
 
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
@@ -56,12 +57,12 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
 
     @Override
     public int insert(TResource resource, int amount, TransactionContext context) {
-        if (resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         var handled = 0;
         for (var index = 0; index < size(); index++) {
+            handled += insertBehaviour(index, resource, amount - handled, context);
             if (handled == amount)
                 break;
-            handled += insertBehaviour(index, resource, amount - handled, context);
         }
         return handled;
     }
@@ -69,8 +70,8 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
     @Override
     public int insert(int index, TResource resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
-        if (resource.isEmpty())
-            return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+
         return insertBehaviour(index, resource, amount, context);
     }
 
@@ -103,19 +104,19 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
     @Override
     public int extract(int index, TResource resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
-        if (resource.isEmpty() || amount <= 0)
-            return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+
         return extractBehaviour(index, resource, amount, context);
     }
 
     @Override
     public int extract(TResource resource, int amount, TransactionContext context) {
-        if (resource.isEmpty() || amount <= 0)
-            return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+
         var handled = 0;
         for (var index = 0; index < container.size(); index++) {
-            if (handled == amount) break;
             handled += extractBehaviour(index, resource, amount - handled, context);
+            if (handled == amount) break;
         }
         return handled;
     }
@@ -137,7 +138,7 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
     @Override
     public void set(int index, TResource resource, int amount) {
         var current = container.get(index);
-        if (resource.isEmpty() || amount == 0)
+        if (ResourceHandlerUtil.isEmpty(resource, amount))
             container.set(index, container.defaultResource().mutable());
         else if (current.resource().equals(resource))
             container.set(index, current.withAmount(amount));

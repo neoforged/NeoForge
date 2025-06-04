@@ -22,7 +22,7 @@ public class CreativePlayerItemCapabilityContext extends StaticItemCapabilityCon
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         boolean isMissing;
         try (var testTransaction = Transaction.open(transaction)) {

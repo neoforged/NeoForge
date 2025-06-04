@@ -40,7 +40,7 @@ public class StaticItemCapabilityContext implements IItemCapabilityContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        return ResourceHandlerUtil.isInvalidInquiry(resource, amount) ? 0 : amount;
+        return ResourceHandlerUtil.isEmpty(resource, amount) ? 0 : amount;
     }
 
     @Override

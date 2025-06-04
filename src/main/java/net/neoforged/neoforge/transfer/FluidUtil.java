@@ -201,7 +201,7 @@ public class FluidUtil {
         for (int index = 0; index < handler.size(); index++) {
             FluidResource resource = handler.getResource(index);
             int amount = handler.getAmount(index);
-            if (resource.isEmpty() || amount == 0) continue;
+            if (ResourceHandlerUtil.isEmpty(resource, amount)) continue;
             return new ResourceStack<>(resource, amount);
         }
         return FluidResource.EMPTY_STACK;

@@ -109,7 +109,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
 
     @Override
     public int insert(FluidResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         CauldronFluidContent handledContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
         if (handledContent == null) {
@@ -141,7 +141,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
 
     @Override
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         BlockState state = level.getBlockState(pos);
         CauldronFluidContent handledContent = getContent(state);

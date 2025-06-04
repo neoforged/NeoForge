@@ -61,7 +61,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     private class Top implements ISingleResourceHandler<ItemResource> {
         @Override
         public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-            if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+            if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
             // Check amount.
             if (amount < 1) return 0;
@@ -142,7 +142,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
 
         @Override
         public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-            if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+            if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
             // Check amount.
             if (amount < 1) return 0;

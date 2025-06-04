@@ -116,14 +116,14 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         return insertBehaviour(index, resource, amount, transaction);
     }
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         var handled = 0;
         var size = size();
         for (var index = 0; index < size; index++) {
@@ -156,13 +156,13 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         return extractBehaviour(index, resource, amount, transaction);
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         var handled = 0;
         var size = size();
         for (var index = 0; index < size; index++) {

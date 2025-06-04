@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -90,7 +91,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext context) {
-        if (amount <= 0 || resource.isEmpty() || !isValid(index, resource)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount) || !isValid(index, resource)) return 0;
         ItemContainerContents contents = getContents();
         ItemStack stack = contents.getStackInSlot(index);
         if (stack.isEmpty()) {
@@ -109,7 +110,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext context) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         ItemContainerContents contents = getContents();
         int remaining = amount;
         for (int i = 0; i < size; i++) {
@@ -134,7 +135,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext context) {
-        if (amount <= 0 || resource.isEmpty()) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         ItemContainerContents contents = getContents();
         ResourceStack<ItemResource> stack = contents.getStackInSlot(index).immutable();
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;

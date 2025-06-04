@@ -75,7 +75,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public int insert(FluidResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!itemContext.getResource().is(Tags.Items.BUCKETS_EMPTY)) {
             return 0; // can't fill non-empty buckets
         }
@@ -97,7 +97,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         var containedFluid = getResource(0);
 
         if (!resource.equals(containedFluid)) {

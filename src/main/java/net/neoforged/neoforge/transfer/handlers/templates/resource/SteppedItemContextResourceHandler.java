@@ -25,7 +25,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         if (!isValid(0, resource) || !isEmpty()) return 0;
 
@@ -37,7 +37,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         if (isEmpty() || !getResource(0).equals(resource)) return 0;
 

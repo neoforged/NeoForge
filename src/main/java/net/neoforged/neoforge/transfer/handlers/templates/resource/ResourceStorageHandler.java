@@ -68,7 +68,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     @Override
     public int insert(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         IResourceStorageData<T> contents = getContents();
         int changedAmount = insertBehavior(contents, index, resource, amount, context);
@@ -78,7 +78,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
     @Override
     public int insert(T resource, int amount, TransactionContext context) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
@@ -118,7 +118,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     @Override
     public int extract(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = extractBehavior(contents, index, resource, amount, context);
         return modifyContents(contents, amount, changedAmount, context);
@@ -126,7 +126,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         //OLD:
         //Get the contents and if not mutable, make it mutable ONLY if we are executing.
         // Otherwise, we can keep the existing allocations.

@@ -10,6 +10,7 @@ import java.util.List;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -53,7 +54,7 @@ public final class InventoryWrapper extends VanillaContainerWrapper {
     }
 
     public void drop(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName, TransactionContext transaction) {
-        if (resource.isEmpty() || amount <= 0)
+        if (ResourceHandlerUtil.isEmpty(resource, amount))
             return;
         // Drop in the world on the server side (will be synced by the game with the client).
         // Dropping items is server-side only because it involves randomness.

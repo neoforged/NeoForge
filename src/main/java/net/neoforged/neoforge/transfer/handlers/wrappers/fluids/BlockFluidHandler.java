@@ -84,7 +84,7 @@ public class BlockFluidHandler extends SnapshotJournal<BlockState> implements IS
 
     @Override
     public int insert(FluidResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isInvalidInquiry(resource, amount)) return 0;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (amount < FluidType.BUCKET_VOLUME) return 0;
 
         BlockState state = level.getBlockState(pos);
