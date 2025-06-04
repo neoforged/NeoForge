@@ -1,8 +1,12 @@
 package net.neoforged.neoforge.transfer.item;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
+import net.neoforged.neoforge.transfer.storage.StorageUtil;
+import net.neoforged.neoforge.transfer.storage.base.SlotRangeStorage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -32,6 +36,80 @@ public final class InventoryStorage extends ContainerStorage {
         this.inventory = inventory;
     }
 
+    /**
+     * Retrieves a wrapper for a specific slot.
+     */
+    public Storage<ItemVariant> getSlot(int slot) {
+        StoragePreconditions.checkSlot(slot, size());
+        return new SlotRangeStorage<>(this, slot, slot+1);
+    }
+
+    /**
+     * Retrieves a wrapper for the slot corresponding to the given hand.
+     */
+    public Storage<ItemVariant> getHandSlot(InteractionHand hand) {
+        return switch (hand) {
+            case MAIN_HAND -> {
+                if (Inventory.isHotbarSlot(inventory.selected)) {
+                    yield getSlot(inventory.selected);
+                } else {
+                    throw new RuntimeException("Unexpected player selected slot: " + inventory.selected);
+                }
+            }
+            case OFF_HAND -> getSlot(Inventory.SLOT_OFFHAND);
+        };
+    }
+
+    /**
+     * Retrieves a wrapper around the main slots only.
+     */
+    public Storage<ItemVariant> getMainSlots() {
+        return new SlotRangeStorage<>(this, 0, Inventory.INVENTORY_SIZE);
+    }
+
+    /**
+     * Inserts items into this player inventory, trying to place items
+     * following the logic of {@link Inventory#placeItemBackInInventory}.
+     */
+    @Override
+    public long insert(ItemVariant resource, long maxAmount, TransactionContext transaction) {
+        StoragePreconditions.notBlankNotNegative(resource, maxAmount);
+
+        long inserted = 0;
+
+        // Stack into the main stack first and the offhand stack second.
+        for (InteractionHand hand : InteractionHand.values()) {
+            var handSlot = getHandSlot(hand);
+
+            if (handSlot.getResource(0).equals(resource)) {
+                inserted += handSlot.insert(resource, maxAmount - inserted, transaction);
+                if (inserted == maxAmount) {
+                    return inserted;
+                }
+            }
+        }
+
+        // Otherwise insert into the main slots, stacking first.
+        inserted += StorageUtil.insertStacking(getMainSlots(), resource, maxAmount - inserted, transaction);
+
+        return inserted;
+    }
+
+    /**
+     * Transactional version of {@link Inventory#placeItemBackInInventory}:
+     * tries to insert as much as possible into the player inventory, and drops the remainder.
+     */
+    public void placeItemBackInInventory(ItemVariant resource, long amount, TransactionContext transactionContext) {
+        long inserted = insert(resource, amount, transactionContext);
+        if (inserted < amount) {
+            // If we couldn't insert all of it, drop the remainder.
+            drop(resource, amount - inserted, true, false, transactionContext);
+        }
+    }
+
+    /**
+     * Transactionally drops an item in the world.
+     */
     public void drop(ItemVariant variant, long amount, boolean dropAround, boolean includeThrowerName, TransactionContext transaction) {
         StoragePreconditions.notBlankNotNegative(variant, amount);
 
