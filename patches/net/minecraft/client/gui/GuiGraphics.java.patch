@@ -148,3 +148,35 @@
          int j1 = i1;
  
          for (int k1 = 0; k1 < p_371741_.size(); k1++) {
+@@ -1212,6 +_,31 @@
+     public void submitProfilerChartRenderState(List<ResultField> p_415873_, int p_415651_, int p_416392_, int p_415782_, int p_416254_) {
+         this.guiRenderState
+             .submitPicturesInPictureState(new GuiProfilerChartRenderState(p_415873_, p_415651_, p_416392_, p_415782_, p_416254_, this.scissorStack.peek()));
++    }
++
++    /**
++     * Neo: Submit a custom {@link net.minecraft.client.gui.render.state.GuiElementRenderState} for rendering
++     */
++    public void submitGuiElementRenderState(net.minecraft.client.gui.render.state.GuiElementRenderState renderState) {
++        this.guiRenderState.submitGuiElement(renderState);
++    }
++
++    /**
++     * Neo: Submit a custom {@link net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState} for rendering
++     *
++     * @see net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent
++     */
++    public void submitPictureInPictureRenderState(net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState renderState) {
++        this.guiRenderState.submitPicturesInPictureState(renderState);
++    }
++
++    /**
++     * Neo: Returns the top-most scissor rectangle, if present, for use with custom {@link net.minecraft.client.gui.render.state.GuiElementRenderState}s
++     * and {@link net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState}s
++     */
++    @Nullable
++    public ScreenRectangle peekScissorStack() {
++        return this.scissorStack.peek();
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

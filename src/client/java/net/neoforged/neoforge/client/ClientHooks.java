@@ -47,6 +47,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Overlay;
@@ -166,6 +167,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMaterialAtlasesEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteDefaultMetadataSectionTypesEvent;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
@@ -1136,5 +1138,13 @@ public class ClientHooks {
     public static Set<MetadataSectionType<?>> getSpriteDefaultMetadataSectionTypes(Set<MetadataSectionType<?>> vanillaTypes) {
         DEFAULT_METADATA_SECTION_TYPES.addAll(vanillaTypes);
         return Collections.unmodifiableSet(DEFAULT_METADATA_SECTION_TYPES);
+    }
+
+    public static List<PictureInPictureRenderer<?>> gatherPictureInPictureRenderers(
+            MultiBufferSource.BufferSource bufferSource,
+            List<PictureInPictureRenderer<?>> vanillaRenderers) {
+        vanillaRenderers = new ArrayList<>(vanillaRenderers);
+        ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers, bufferSource));
+        return List.copyOf(vanillaRenderers);
     }
 }

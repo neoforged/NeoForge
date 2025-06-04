@@ -1,5 +1,22 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
+@@ -140,14 +_,14 @@
+         this.guiRenderer = new GuiRenderer(
+             this.guiRenderState,
+             multibuffersource$buffersource,
+-            List.of(
++            net.neoforged.neoforge.client.ClientHooks.gatherPictureInPictureRenderers(multibuffersource$buffersource, List.of(
+                 new GuiEntityRenderer(multibuffersource$buffersource, p_234219_.getEntityRenderDispatcher()),
+                 new GuiSkinRenderer(multibuffersource$buffersource),
+                 new GuiBookModelRenderer(multibuffersource$buffersource),
+                 new GuiBannerResultRenderer(multibuffersource$buffersource),
+                 new GuiSignRenderer(multibuffersource$buffersource),
+                 new GuiProfilerChartRenderer(multibuffersource$buffersource)
+-            )
++            ))
+         );
+         this.screenEffectRenderer = new ScreenEffectRenderer(p_234219_, multibuffersource$buffersource);
+     }
 @@ -194,6 +_,8 @@
              this.setPostEffect(ResourceLocation.withDefaultNamespace("spider"));
          } else if (p_109107_ instanceof EnderMan) {
