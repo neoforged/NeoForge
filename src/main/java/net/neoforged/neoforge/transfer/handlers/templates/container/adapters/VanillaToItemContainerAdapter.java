@@ -26,7 +26,7 @@ public final class VanillaToItemContainerAdapter implements IResourceContainer<I
     }
 
     @Override
-    public ResourceStack<ItemResource> emptyResource() {
+    public ResourceStack<ItemResource> defaultResource() {
         return ItemResource.EMPTY_STACK;
     }
 

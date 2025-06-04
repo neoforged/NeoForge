@@ -103,7 +103,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
     }
 
-    public ResourceStack<T> emptyResource() {
+    public ResourceStack<T> defaultResource() {
         return defaultResource;
     }
 
@@ -138,7 +138,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     @Override
     public void clearContent() {
-        Collections.fill(resourceStacks, emptyResource().mutable());
+        Collections.fill(resourceStacks, defaultResource().mutable());
         changedJournal.runCallback();
     }
 
@@ -164,7 +164,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         //This is used to determine the type of the resource container.
         // A round about way of doing it perhaps, but this was what was possible in Java
         //in C# we'd do typeof(T) but we can't do that here. Since we know the
-        if (emptyResource().resource() instanceof ItemResource) {
+        if (defaultResource().resource() instanceof ItemResource) {
             //noinspection unchecked
             return new ItemContainerToVanillaAdapter((ResourceContainer<ItemResource>) this);
         }
@@ -259,7 +259,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         @Override
         public void clearContent() {
             for (int i = 0; i < length; i++)
-                ResourceContainer.this.resourceStacks.set(i + start, emptyResource().mutable());
+                ResourceContainer.this.resourceStacks.set(i + start, defaultResource().mutable());
             getChangeSetJournal().runCallback();
         }
 
@@ -270,8 +270,8 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public ResourceStack<T> emptyResource() {
-            return ResourceContainer.this.emptyResource();
+        public ResourceStack<T> defaultResource() {
+            return ResourceContainer.this.defaultResource();
         }
     }
 

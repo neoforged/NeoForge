@@ -66,12 +66,6 @@ import org.jetbrains.annotations.Nullable;
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
 public interface IItemCapabilityContext {
-    @Nullable
-    @ApiStatus.NonExtendable
-    default <T> T getCapability(ItemCapability<T, IItemCapabilityContext> capability) {
-        return capability.getCapability(getResource().toStack(), this);
-    }
-
     /**
      * @return The resource of the main item.
      */
@@ -183,6 +177,15 @@ public interface IItemCapabilityContext {
                 return context.exchange(resource, amount, subTransaction);
             }
         }
+    }
+
+    /**
+     * A helper that grabs the specified capability from an ItemStack selected by the context.
+     */
+    @Nullable
+    @ApiStatus.NonExtendable
+    default <T> T getCapability(ItemCapability<T, IItemCapabilityContext> capability) {
+        return capability.getCapability(getResource().toStack(), this);
     }
 
     /**

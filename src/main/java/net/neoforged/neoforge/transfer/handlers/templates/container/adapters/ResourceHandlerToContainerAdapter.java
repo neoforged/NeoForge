@@ -24,7 +24,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  */
 public record ResourceHandlerToContainerAdapter<T extends IResource>(
         IResourceHandler<T> wrappedHandler,
-        ResourceStack<T> emptyResource) implements IResourceContainer<T> {
+        ResourceStack<T> defaultResource) implements IResourceContainer<T> {
     @Override
     public int size() {
         return wrappedHandler.size();
@@ -38,7 +38,7 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
     @Override
     public MutableResourceStack<T> get(int index) {
         var resource = wrappedHandler.getResource(index);
-        if (resource.isEmpty()) return emptyResource().mutable();
+        if (resource.isEmpty()) return defaultResource().mutable();
         return MutableResourceStack.of(resource, wrappedHandler.getAmount(index));
     }
 
