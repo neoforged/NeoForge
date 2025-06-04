@@ -215,7 +215,7 @@
 +            net.neoforged.neoforge.client.ClientHooks.onClientPauseChangePost(pause);
 +        }
          if (!flag1 && this.pause) {
-             this.soundManager.pauseAllExcept(SoundSource.MUSIC);
+             this.soundManager.pauseAllExcept(SoundSource.MUSIC, SoundSource.UI);
          }
 @@ -1384,10 +_,13 @@
          this.window.setGuiScale(i);
