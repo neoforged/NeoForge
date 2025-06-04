@@ -1,8 +1,14 @@
 package net.neoforged.neoforge.transfer.initem;
 
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.transfer.item.InventoryStorage;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
+import net.neoforged.neoforge.transfer.item.base.CarriedSlotStorage;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -94,6 +100,54 @@ public interface InItemStorageContext {
     }
 
     /**
+     * Returns a context for interaction with a player's hand. This is recommended for item use interactions.
+     *
+     * <p>In creative mode, {@link #forCreativeInteraction} is used with the hand stack.
+     * Otherwise, {@link #ofPlayerHand} is used.
+     * This matches the behavior of {@link ItemUtils#createFilledResult}.
+     */
+    static InItemStorageContext forPlayerInteraction(Player player, InteractionHand hand) {
+        if (player.hasInfiniteMaterials()) {
+            return forCreativeInteraction(player, player.getItemInHand(hand));
+        } else {
+            return ofPlayerHand(player, hand);
+        }
+    }
+
+    /**
+     * Returns a context for creative interaction.
+     *
+     * <p>The stack will never be modified, and any updated stack will only be added to the player's inventory
+     * if the player's inventory doesn't already contain it.
+     * This matches the creative behavior of {@link ItemUtils#createFilledResult}.
+     */
+    static InItemStorageContext forCreativeInteraction(Player player, ItemStack interactingStack) {
+        return new CreativePlayerStorageContext(InventoryStorage.of(player), ItemVariant.of(interactingStack), interactingStack.getCount());
+    }
+
+    /**
+     * Return a context for the passed player's hand.
+     */
+    static InItemStorageContext ofPlayerHand(Player player, InteractionHand hand) {
+        return new PlayerStorageContext(player, InventoryStorage.of(player).getHandSlot(hand));
+    }
+
+    /**
+     * Return a context for the passed player's cursor slot. This is recommended for menu click interactions.
+     */
+    static InItemStorageContext ofPlayerCursor(Player player, AbstractContainerMenu menu) {
+        return ofPlayerSlot(player, CarriedSlotStorage.of(menu));
+    }
+
+    /**
+     * Return a context for a slot, with the passed player as fallback.
+     * Only slot 0 of the passed storage is ever used.
+     */
+    static InItemStorageContext ofPlayerSlot(Player player, Storage<ItemVariant> slot) {
+        return new PlayerStorageContext(player, slot);
+    }
+
+    /**
      * Creates a context object based on the given itemstack, which will only allow inspection of the contained
      * storage, but no modification.
      */
@@ -111,31 +165,7 @@ public interface InItemStorageContext {
      * @param slot    The slot in {@code storage}, where the item can be found.
      */
     static InItemStorageContext ofStorageSlot(Storage<ItemVariant> storage, int slot) {
-        return new InItemStorageContext() {
-            @Override
-            public ItemVariant getCurrent() {
-                return slot < storage.size() ? storage.getResource(slot) : ItemVariant.EMPTY;
-            }
-
-            @Override
-            public long getCurrentAmount() {
-                return slot < storage.size() ? storage.getAmount(slot) : 0;
-            }
-
-            @Override
-            public long insert(ItemVariant itemVariant, long maxAmount, TransactionContext transaction) {
-                long inserted = storage.insert(slot, itemVariant, maxAmount, transaction);
-                if (inserted < maxAmount) {
-                    inserted += storage.insert(itemVariant, maxAmount - inserted, transaction);
-                }
-                return inserted;
-            }
-
-            @Override
-            public long extract(ItemVariant itemVariant, long maxAmount, TransactionContext transaction) {
-                return storage.extract(slot, itemVariant, maxAmount, transaction);
-            }
-        };
+        return new StorageSlotContext(storage, slot);
     }
 
     /**

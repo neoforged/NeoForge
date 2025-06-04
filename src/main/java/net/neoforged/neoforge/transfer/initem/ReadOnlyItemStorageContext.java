@@ -39,4 +39,12 @@ final class ReadOnlyItemStorageContext implements InItemStorageContext {
     public long extract(ItemVariant itemVariant, long maxAmount, TransactionContext transaction) {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "ReadOnlyItemStorageContext{" +
+                "item=" + item +
+                ", amount=" + amount +
+                '}';
+    }
 }

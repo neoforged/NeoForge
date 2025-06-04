@@ -98,6 +98,8 @@ public final class InventoryStorage extends ContainerStorage {
     /**
      * Transactional version of {@link Inventory#placeItemBackInInventory}:
      * tries to insert as much as possible into the player inventory, and drops the remainder.
+     *
+     * <p>Another name for this method could have been {@code insertOrDrop}.
      */
     public void placeItemBackInInventory(ItemVariant resource, long amount, TransactionContext transactionContext) {
         long inserted = insert(resource, amount, transactionContext);

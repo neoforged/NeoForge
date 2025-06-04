@@ -35,4 +35,9 @@ class OneByOneStorageContext implements InItemStorageContext {
     public long extract(ItemVariant itemVariant, long maxAmount, TransactionContext transaction) {
         return delegate.extract(itemVariant, Math.max(1, maxAmount), transaction);
     }
+
+    @Override
+    public String toString() {
+        return "OneByOneStorageContext[" + delegate + "]";
+    }
 }
