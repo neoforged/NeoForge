@@ -9,6 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.item.ItemHelper;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.item.base.ItemHandlerAdapter;
 import net.neoforged.neoforge.transfer.storage.Storage;
@@ -16,6 +17,8 @@ import net.neoforged.neoforge.transfer.storage.Storage;
 /**
  * @deprecated in favor of {@link Storage} of {@link ItemVariant}.
  *             To ease migration, {@link ItemHandlerAdapter} can be used to wrap a storage as an item handler.
+ *             See also {@link ItemHelper} which offers drop-in replacements for
+ *             {@link #getStackInSlot}, {@link #insertItem}, and {@link #extractItem}.
  */
 @Deprecated(forRemoval = true, since = "1.22")
 public interface IItemHandler {

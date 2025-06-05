@@ -9,14 +9,23 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.transfer.item.InventoryStorage;
+import net.neoforged.neoforge.transfer.item.ItemHelper;
+import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StorageUtil;
 import org.jetbrains.annotations.Nullable;
 
+@Deprecated(forRemoval = true)
 public class ItemHandlerHelper {
+    /**
+     * @deprecated in favor of {@link ItemHelper#insertItem(Storage, ItemStack, boolean)}
+     */
+    @Deprecated(forRemoval = true)
     public static ItemStack insertItem(IItemHandler dest, ItemStack stack, boolean simulate) {
         if (dest == null || stack.isEmpty())
             return stack;
@@ -35,7 +44,10 @@ public class ItemHandlerHelper {
      * Inserts the ItemStack into the inventory, filling up already present stacks first.
      * This is equivalent to the behaviour of a player picking up an item.
      * Note: This function stacks items without subtypes with different metadata together.
+     *
+     * @deprecated in favor of {@link ItemHelper#insertItemStacked}
      */
+    @Deprecated(forRemoval = true)
     public static ItemStack insertItemStacked(IItemHandler inventory, ItemStack stack, boolean simulate) {
         if (inventory == null || stack.isEmpty())
             return stack;
@@ -75,7 +87,12 @@ public class ItemHandlerHelper {
         return stack;
     }
 
-    /** giveItemToPlayer without preferred slot */
+    /**
+     * giveItemToPlayer without preferred slot
+     * 
+     * @deprecated in favor of {@link Inventory#placeItemBackInInventory}
+     */
+    @Deprecated(forRemoval = true)
     public static void giveItemToPlayer(Player player, ItemStack stack) {
         giveItemToPlayer(player, stack, -1);
     }
@@ -86,7 +103,9 @@ public class ItemHandlerHelper {
      *
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
+     * @deprecated this function has no direct equivalent, but its functionality can be replicated with {@link InventoryStorage}.
      */
+    @Deprecated(forRemoval = true)
     public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
         if (stack.isEmpty()) return;
 

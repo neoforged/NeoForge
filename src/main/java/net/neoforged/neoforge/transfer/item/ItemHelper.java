@@ -9,12 +9,12 @@ import com.google.common.primitives.Ints;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
+import net.neoforged.neoforge.transfer.storage.StorageUtil;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Helper functions to work with {@link Storage}s of {@link ItemVariant}s.
  */
-// TODO
 public class ItemHelper {
     private ItemHelper() {}
 
@@ -37,13 +37,63 @@ public class ItemHelper {
     }
 
     /**
+     * Inserts an ItemStack and returns <strong>the remainder</strong>.
+     * Distribution of the stack across the slots is left to the storage implementation.
+     * The ItemStack will not be modified in this function!
+     *
+     * <p>This function is a drop-in replacement for the old {@code ItemHandlerHelper#insertItem}.
+     *
+     * @param stack    ItemStack to insert.
+     * @param simulate If true, the insertion is only simulated
+     * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return an empty ItemStack).
+     */
+    public static ItemStack insertItem(Storage<ItemVariant> storage, ItemStack stack, boolean simulate) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        try (var tx = Transaction.openOuter()) {
+            int inserted = (int) storage.insert(ItemVariant.of(stack), stack.getCount(), tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            int leftover = stack.getCount() - inserted;
+            return leftover == 0 ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - inserted);
+        }
+    }
+
+    /**
+     * Inserts an ItemStack and returns <strong>the remainder</strong>,
+     * filling up already present stacks first.
+     * The ItemStack will not be modified in this function!
+     *
+     * <p>This function is a drop-in replacement for the old {@code ItemHandlerHelper#insertItemStacked}.
+     *
+     * @param stack    ItemStack to insert.
+     * @param simulate If true, the insertion is only simulated
+     * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return an empty ItemStack).
+     */
+    public static ItemStack insertItemStacked(Storage<ItemVariant> storage, ItemStack stack, boolean simulate) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        try (var tx = Transaction.openOuter()) {
+            int inserted = (int) StorageUtil.insertStacking(storage, ItemVariant.of(stack), stack.getCount(), tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            int leftover = stack.getCount() - inserted;
+            return leftover == 0 ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - inserted);
+        }
+    }
+
+    /**
      * Inserts an ItemStack into the given slot and returns <strong>the remainder</strong>.
      * The ItemStack will not be modified in this function!
      *
      * <p>This function is a drop-in replacement for the old {@code IItemHandler#insertItem}.
      *
      * @param slot     Slot to insert into.
-     * @param stack    ItemStack to insert. This must not be modified by the item handler.
+     * @param stack    ItemStack to insert.
      * @param simulate If true, the insertion is only simulated
      * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return an empty ItemStack).
      */
@@ -61,8 +111,20 @@ public class ItemHelper {
         }
     }
 
-    // Same signature as IItemHandler#extractItem:
-
+    /**
+     * Extracts an ItemStack from the given slot.
+     * <p>
+     * The returned value must be empty if nothing is extracted,
+     * otherwise its stack size must be less than or equal to {@code amount} and {@link ItemStack#getMaxStackSize()}.
+     *
+     * <p>This function is a drop-in replacement for the old {@code IItemHandler#extractItem}.
+     *
+     * @param slot     Slot to extract from.
+     * @param amount   Amount to extract (may be greater than the current stack's max limit)
+     * @param simulate If true, the extraction is only simulated
+     * @return ItemStack extracted from the slot, must be empty if nothing can be extracted.
+     *         The returned ItemStack can be safely modified after.
+     **/
     public static ItemStack extractItem(Storage<ItemVariant> storage, int slot, int amount, boolean simulate) {
         if (amount <= 0) {
             return ItemStack.EMPTY;
