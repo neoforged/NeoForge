@@ -8,3 +8,16 @@
              this.map.put(p_332004_, Optional.of(p_331566_));
              return this;
          }
+@@ -250,6 +_,12 @@
+ 
+         public <T> DataComponentPatch.Builder set(TypedDataComponent<T> p_331321_) {
+             return this.set(p_331321_.type(), p_331321_.value());
++        }
++
++        // Neo allow for easier merging of patches
++        public DataComponentPatch.Builder putAll(DataComponentPatch patch) {
++            map.putAll(patch.map);
++            return this;
+         }
+ 
+         public DataComponentPatch build() {

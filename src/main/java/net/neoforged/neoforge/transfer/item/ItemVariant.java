@@ -70,6 +70,11 @@ public final class ItemVariant implements RegistryObjectVariant<Item> {
         return item == Items.AIR ? EMPTY : new ItemVariant(new ItemStack(item));
     }
 
+    public static ItemVariant of(ItemLike itemLike, DataComponentPatch patch) {
+        var item = itemLike.asItem();
+        return item == Items.AIR ? EMPTY : new ItemVariant(new ItemStack(item.builtInRegistryHolder(), 1, patch));
+    }
+
     public static ItemVariant of(Holder<Item> item, DataComponentPatch patch) {
         return item.value() == Items.AIR ? EMPTY : new ItemVariant(new ItemStack(item, 1, patch));
     }
@@ -119,6 +124,11 @@ public final class ItemVariant implements RegistryObjectVariant<Item> {
     @Override
     public boolean isComponentsPatchEmpty() {
         return innerStack.isComponentsPatchEmpty();
+    }
+
+    @Override
+    public ItemVariant patch(DataComponentPatch patch) {
+        return RegistryObjectVariant.createPatched(this, patch, ItemVariant::of);
     }
 
     public boolean matches(ItemStack stack) {

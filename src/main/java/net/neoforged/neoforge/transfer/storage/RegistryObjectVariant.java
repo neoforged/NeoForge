@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.storage;
 
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -43,6 +44,27 @@ public interface RegistryObjectVariant<T> extends DataComponentHolder {
      * @return True if this variant represents the unmodified {@link #getBaseObject() base object} exactly.
      */
     boolean isComponentsPatchEmpty();
+
+    /**
+     * Returns a new variant with the given data component patch merged into the components of this variant.
+     */
+    RegistryObjectVariant<T> patch(DataComponentPatch patch);
+
+    /**
+     * Utility method for implementors of this interface to easily implement {@link #patch} correctly.
+     */
+    static <T extends RegistryObjectVariant<R>, R> T createPatched(T base, DataComponentPatch patch, BiFunction<Holder<R>, DataComponentPatch, T> factory) {
+        if (patch.isEmpty()) {
+            return base;
+        }
+        if (base.isComponentsPatchEmpty()) {
+            return factory.apply(base.getBaseObjectHolder(), patch);
+        }
+        var builder = DataComponentPatch.builder();
+        builder.putAll(base.getComponentsPatch());
+        builder.putAll(patch);
+        return factory.apply(base.getBaseObjectHolder(), builder.build());
+    }
 
     default boolean is(TagKey<T> tagKey) {
         return getBaseObjectHolder().is(tagKey);

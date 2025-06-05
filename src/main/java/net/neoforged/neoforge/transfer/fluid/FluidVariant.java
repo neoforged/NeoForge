@@ -119,6 +119,11 @@ public final class FluidVariant implements RegistryObjectVariant<Fluid> {
         return innerStack.isComponentsPatchEmpty();
     }
 
+    @Override
+    public FluidVariant patch(DataComponentPatch patch) {
+        return RegistryObjectVariant.createPatched(this, patch, FluidVariant::of);
+    }
+
     public boolean matches(FluidStack stack) {
         return FluidStack.isSameFluidSameComponents(stack, innerStack);
     }
