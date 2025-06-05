@@ -1,10 +1,14 @@
-package net.neoforged.neoforge.transfer.storage.base;
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
 
-import net.neoforged.neoforge.transfer.storage.Storage;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+package net.neoforged.neoforge.transfer.storage.base;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import net.neoforged.neoforge.transfer.storage.Storage;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A {@link Storage} that delegates each method to another {@link Storage}.

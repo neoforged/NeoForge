@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.fluid;
 
 import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
@@ -119,5 +124,4 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
         StoragePreconditions.checkSlot(index, size());
         return !getFilledItem(resource).isBlank();
     }
-
 }

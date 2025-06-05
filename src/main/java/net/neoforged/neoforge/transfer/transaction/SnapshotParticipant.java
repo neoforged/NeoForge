@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A base participant implementation that modifies itself during transactions,

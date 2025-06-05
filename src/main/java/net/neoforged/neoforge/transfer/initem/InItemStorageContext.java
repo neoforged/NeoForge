@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.initem;
 
 import net.minecraft.world.InteractionHand;
@@ -112,20 +117,20 @@ public interface InItemStorageContext {
 
     /**
      * @return The current variant of the item that contains the storage that should be accessed. This may
-     * be blank or become blank if {@link #extract} is used.
+     *         be blank or become blank if {@link #extract} is used.
      */
     ItemVariant getCurrent();
 
     /**
      * @return The current amount of {@linkplain #getCurrent() the item} containing the storage. Always returns 0 if
-     * {@linkplain #getCurrent() the current item} is blank.
+     *         {@linkplain #getCurrent() the current item} is blank.
      */
     long getCurrentAmount();
 
     /**
      * @return True if any attempts to modify the items in this context will not work. Storage implementations can
-     * use this to return appropriate information from {@link Storage#supportsInsertion()}
-     * or {@link Storage#supportsExtraction()}.
+     *         use this to return appropriate information from {@link Storage#supportsInsertion()}
+     *         or {@link Storage#supportsExtraction()}.
      */
     default boolean supportsModification() {
         return true;

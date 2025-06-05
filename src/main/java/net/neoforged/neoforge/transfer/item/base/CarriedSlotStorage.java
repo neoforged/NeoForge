@@ -1,11 +1,15 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.item.base;
 
 import com.google.common.collect.MapMaker;
+import java.util.Map;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.Map;
 
 /**
  * An implementation of {@code Storage<ItemVariant>} for the carried slot of an {@link AbstractContainerMenu}.

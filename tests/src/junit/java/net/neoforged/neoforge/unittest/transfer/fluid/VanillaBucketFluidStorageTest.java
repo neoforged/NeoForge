@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.unittest.transfer.fluid;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
@@ -18,11 +25,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @ExtendWith(EphemeralTestServerProvider.class)
 public class VanillaBucketFluidStorageTest {
-
     public static final FluidVariant WATER = FluidVariant.of(Fluids.WATER);
     public static final int BUCKET_VOLUME = FluidType.BUCKET_VOLUME;
 

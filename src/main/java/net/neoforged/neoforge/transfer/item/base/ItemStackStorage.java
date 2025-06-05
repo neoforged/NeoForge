@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.transfer.item.base;
 
 import com.google.common.primitives.Ints;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -20,17 +22,14 @@ import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Base implementation of {@code Storage<ItemVariant>} that is backed by a list of stacks.
  *
  * <p>Overriding the following methods is an easy way to customize the behavior of this storage:
  * <ul>
- *     <li>{@link #onContentsChanged} to react to changes to react to slot content changes.</li>
- *     <li>{@link #getSlotCapacity} and {@link #getCapacity} to configure the capacity of each slot.</li>
- *     <li>{@link #isValid} to configure which stacks are allowed in the storage.</li>
+ * <li>{@link #onContentsChanged} to react to changes to react to slot content changes.</li>
+ * <li>{@link #getSlotCapacity} and {@link #getCapacity} to configure the capacity of each slot.</li>
+ * <li>{@link #isValid} to configure which stacks are allowed in the storage.</li>
  * </ul>
  */
 public class ItemStackStorage implements Storage<ItemVariant>, INBTSerializable<CompoundTag> {

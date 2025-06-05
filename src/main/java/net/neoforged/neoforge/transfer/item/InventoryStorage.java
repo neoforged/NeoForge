@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.transfer.item;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -9,9 +16,6 @@ import net.neoforged.neoforge.transfer.storage.StorageUtil;
 import net.neoforged.neoforge.transfer.storage.base.SlotRangeStorage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An implementation of {@code Storage<ItemVariant>} for the {@link Inventory} of a {@link Player}.
@@ -42,7 +46,7 @@ public final class InventoryStorage extends ContainerStorage {
      */
     public Storage<ItemVariant> getSlot(int slot) {
         StoragePreconditions.checkSlot(slot, size());
-        return new SlotRangeStorage<>(this, slot, slot+1);
+        return new SlotRangeStorage<>(this, slot, slot + 1);
     }
 
     /**
@@ -169,7 +173,6 @@ public final class InventoryStorage extends ContainerStorage {
             entries.clear();
         }
 
-        private record Entry(ItemVariant variant, long amount, boolean dropAround, boolean includeThrowerName) {
-        }
+        private record Entry(ItemVariant variant, long amount, boolean dropAround, boolean includeThrowerName) {}
     }
 }

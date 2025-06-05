@@ -7,6 +7,7 @@ package net.neoforged.neoforge.fluids.capability.wrappers;
 
 import com.google.common.collect.MapMaker;
 import com.google.common.math.IntMath;
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -18,8 +19,6 @@ import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.transaction.SnapshotParticipant;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.Map;
 
 @ApiStatus.Internal
 public class CauldronWrapper extends SnapshotParticipant<BlockState> implements Storage<FluidVariant> {
