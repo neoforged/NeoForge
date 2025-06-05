@@ -34,7 +34,7 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     @Contract(pure = true)
     int size();
 
-    SnapshotJournal<?> getParticipant(int index);
+    SnapshotJournal<?> getIndexJournal(int index);
 
     /**
      * Clears all indices of resources. Sets them all to the empty variant.<br>

@@ -13,17 +13,13 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
 /**
  * Adapts a vanilla Minecraft {@link Container} to a {@link IResourceContainer<ItemResource>}.
  * This is always assumed to be of type {@link ItemResource} currently, since a {@link Container} can only handle {@link ItemStack ItemStacks}
  */
-public final class VanillaToItemContainerAdapter implements IResourceContainer<ItemResource> {
-    private final Container container;
-
-    public VanillaToItemContainerAdapter(Container container) {
-        this.container = container;
-    }
+public record VanillaToItemContainerAdapter(Container container) implements IResourceContainer<ItemResource> {
 
     @Override
     public ResourceStack<ItemResource> defaultResource() {
@@ -36,8 +32,8 @@ public final class VanillaToItemContainerAdapter implements IResourceContainer<I
     }
 
     @Override
-    public SnapshotJournal<?> getParticipant(int index) {
-        return EmptySnapshot.INSTANCE;
+    public SnapshotJournal<?> getIndexJournal(int index) {
+        return NotificationSnapshot.INSTANCE;
     }
 
     @Override
@@ -64,10 +60,6 @@ public final class VanillaToItemContainerAdapter implements IResourceContainer<I
     @Override
     public boolean isEmpty() {
         return container.isEmpty();
-    }
-
-    public Container container() {
-        return container;
     }
 
     @Override

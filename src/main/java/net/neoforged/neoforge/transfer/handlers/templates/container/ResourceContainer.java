@@ -25,6 +25,7 @@ import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,23 +66,23 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
      * @param resourceStacks  The backing list of stacks that are stored. This is what is snapshotted
      * @param defaultResource The resource that should fill the backing list given a reset or clear
      * @param capacity        The amount all resource stacks can stack up to.
-     * @param updateCallback  Called in {@link #changedJournal changedJournal's} {@link SetChangedSnapshot#onCommit onCommit}
+     * @param updateCallback  Called in {@link #changedJournal changedJournal's} {@link SetChangedSnapshot onCommit}
      */
     public ResourceContainer(NonNullList<MutableResourceStack<T>> resourceStacks, ResourceStack<T> defaultResource, int capacity, @Nullable Runnable updateCallback) {
         Objects.requireNonNull(resourceStacks);
         Objects.requireNonNull(defaultResource);
 
-        Objects.checkIndex(0, resourceStacks.size());
+        //        Objects.checkIndex(0, resourceStacks.size());
         this.size = resourceStacks.size();
         this.resourceStacks = resourceStacks;
-        changedJournal = SetChangedSnapshot.of(updateCallback);
+        this.changedJournal = SetChangedSnapshot.of(updateCallback);
         this.defaultResource = defaultResource;
         this.capacity = capacity;
         updateSlots();
     }
 
     @Override
-    public SnapshotJournal<MutableResourceStack<T>> getParticipant(int index) {
+    public SnapshotJournal<MutableResourceStack<T>> getIndexJournal(int index) {
         return indexSnapshots.get(index);
     }
 
@@ -114,7 +115,6 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     @Override
     public boolean isValid(int index, T resource) {
-        Objects.checkIndex(index, size());
         return true;
     }
 
@@ -126,13 +126,11 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
     @Override
     public MutableResourceStack<T> get(int index) {
-        Objects.checkIndex(index, size());
         return resourceStacks.get(index);
     }
 
     @Override
     public void set(int index, MutableResourceStack<T> stack) {
-        Objects.checkIndex(index, size());
         resourceStacks.set(index, stack);
     }
 
@@ -227,9 +225,9 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
         }
 
         @Override
-        public SnapshotJournal<MutableResourceStack<T>> getParticipant(int index) {
+        public SnapshotJournal<MutableResourceStack<T>> getIndexJournal(int index) {
             Objects.checkIndex(index, size());
-            return ResourceContainer.this.getParticipant(index + start);
+            return ResourceContainer.this.getIndexJournal(index + start);
         }
 
         @Override
@@ -342,8 +340,8 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
 
         @Override
         public void updateSnapshots(TransactionContext transaction) {
-            getChangeSetJournal().updateSnapshots(transaction);
             super.updateSnapshots(transaction);
+            getChangeSetJournal().updateSnapshots(transaction);
         }
     }
 }

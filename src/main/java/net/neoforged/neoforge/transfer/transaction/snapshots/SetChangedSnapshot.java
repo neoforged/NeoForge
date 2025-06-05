@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.container;
+package net.neoforged.neoforge.transfer.transaction.snapshots;
 
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import org.jetbrains.annotations.Nullable;
 
-// Boolean is used to prevent allocation. Null values are not allowed by SnapshotParticipant.
-public final class SetChangedSnapshot extends SnapshotJournal<Boolean> {
+/**
+ * A notification snapshot with a runnable callback. Useful for when you are responding from a commit, and you want to set a change once.
+ */
+public final class SetChangedSnapshot extends NotificationSnapshot {
     @Nullable
     private final Runnable callback;
 
@@ -22,20 +23,13 @@ public final class SetChangedSnapshot extends SnapshotJournal<Boolean> {
     }
 
     @Override
-    protected Boolean createSnapshot() {
-        return Boolean.TRUE;
-    }
-
-    @Override
-    protected void revertToSnapshot(Boolean snapshot) {
-        //ignored
-    }
-
-    @Override
-    protected void onCommit(Boolean originalState) {
+    protected void onCommit(EmptyValue originalState) {
         runCallback();
     }
 
+    /**
+     * A way to force running the callback if desired, instead of caching it elsewhere as well.
+     */
     public void runCallback() {
         if (callback != null)
             callback.run();

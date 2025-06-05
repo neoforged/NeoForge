@@ -15,6 +15,7 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
 /**
  * Adapts any arbitrary resource handlers and wraps it into a IResourceContainer.
@@ -31,8 +32,8 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
     }
 
     @Override
-    public SnapshotJournal<?> getParticipant(int index) {
-        return EmptySnapshot.INSTANCE;
+    public SnapshotJournal<?> getIndexJournal(int index) {
+        return NotificationSnapshot.INSTANCE;
     }
 
     @Override

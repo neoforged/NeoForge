@@ -5,8 +5,7 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +39,10 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
 public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
-    private final Int2ObjectMap<T> snapshots = new Int2ObjectLinkedOpenHashMap<>();
+
+    //There were some profiling tests performed to double-check how an int2obj map would compare. Only a basic Int2ObjOpen map was comparable to an arraylist,
+    // in an iteration of 10k depth, the arraylist was 1ms faster.
+    private final ArrayList<T> snapshots = new ArrayList<>();
     @Nullable
     private T originalState = null;
 
@@ -74,13 +76,19 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
      * committed or rolled back.
      * This function should be called every time the participant is about to change its internal state as part of a transaction.
+     * However, only the first snapshot taken of that depth will be taken.
      */
     public void updateSnapshots(TransactionContext transaction) {
+        //This should be negligible at best, but it does alleviate the resize burden when adding incrementally here on sudden spikes.
+        snapshots.ensureCapacity(transaction.nestingDepth());
+        while (snapshots.size() <= transaction.nestingDepth()) {
+            snapshots.add(null);
+        }
+
         if (snapshots.get(transaction.nestingDepth()) == null) {
             T snapshot = createSnapshot();
             Objects.requireNonNull(snapshot, "Snapshot may not be null!");
-
-            snapshots.put(transaction.nestingDepth(), snapshot);
+            snapshots.set(transaction.nestingDepth(), snapshot);
             transaction.addCloseCallback(this);
         }
     }
@@ -94,8 +102,9 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
-            if (transaction.nestingDepth() <= 0)
-                snapshots.clear();
+            //todo should we clear?
+            //            if (transaction.nestingDepth() <= 0)
+            //                snapshots.clear();
             return;
         }
 
@@ -107,7 +116,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
 
         if (snapshots.get(transaction.nestingDepth() - 1) == null) {
             // No snapshot yet, so move the snapshot one nesting level up.
-            snapshots.put(transaction.nestingDepth() - 1, snapshot);
+            snapshots.set(transaction.nestingDepth() - 1, snapshot);
             // This is the first snapshot at this level: we need to call addCloseCallback.
             transaction.getOpenTransaction(transaction.nestingDepth() - 1).addCloseCallback(this);
         } else {
@@ -127,5 +136,6 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         releaseSnapshot(originalState);
         originalState = null;
         //TODO should we clear the snapshots?
+        //                snapshots.clear();
     }
 }

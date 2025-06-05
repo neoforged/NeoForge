@@ -34,7 +34,6 @@ public final class ResourceHandlerUtil {
      * <strong>Key point:</strong> Human readable
      */
     public static final int MAX = 2000000000;
-    public static final String MAX_RESOURCE_SIZE_STRING = "2,000,000,000";
 
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         return resource.isEmpty() || amount <= 0;

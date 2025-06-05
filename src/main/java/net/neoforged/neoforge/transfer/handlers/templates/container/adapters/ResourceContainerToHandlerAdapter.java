@@ -27,26 +27,31 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
 
     @Override
     public boolean allowsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return behavior.canInsert(index);
     }
 
     @Override
     public boolean allowsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return behavior.canExtract(index);
     }
 
     @Override
     public TResource getResource(int index) {
+        Objects.checkIndex(index, size());
         return container.get(index).resource();
     }
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return container.get(index).amount();
     }
 
     @Override
     public int getCapacity(int index, TResource resource) {
+        Objects.checkIndex(index, size());
         return container.getCapacity(index, resource);
     }
 
@@ -94,9 +99,10 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
             newStackSize = resourceStackInSlot.amount() + inserted;
         }
 
-        container.getParticipant(index).updateSnapshots(transaction);
-        if (newStackSize > 0)
+        if (newStackSize > 0) {
+            container.getIndexJournal(index).updateSnapshots(transaction);
             set(index, resource, newStackSize);
+        }
 
         return inserted;
     }
@@ -130,13 +136,14 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
         var currentAmount = currentStack.amount();
         int handledAmount = Math.min(amount, currentAmount);
 
-        container.getParticipant(index).updateSnapshots(transaction);
+        container.getIndexJournal(index).updateSnapshots(transaction);
         set(index, resource, currentAmount - handledAmount);
         return handledAmount;
     }
 
     @Override
     public void set(int index, TResource resource, int amount) {
+        //Blind trust that index, resource, and amount are all valid in some way.
         var current = container.get(index);
         if (ResourceHandlerUtil.isEmpty(resource, amount))
             container.set(index, container.defaultResource().mutable());

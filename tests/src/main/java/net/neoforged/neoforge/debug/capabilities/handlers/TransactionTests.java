@@ -12,8 +12,11 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.container.ResourceContainer;
 import net.neoforged.neoforge.transfer.handlers.templates.container.SimpleItemResourceContainer;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -25,10 +28,18 @@ import net.neoforged.testframework.gametest.GameTest;
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.transaction.")
 
 public class TransactionTests {
+    private static <T extends IResource> void resetSandbox(ResourceContainer<T> destination, ResourceContainer<T> src) {
+        for (int craftingSlot = 0; craftingSlot < 9; craftingSlot++)
+            destination.set(craftingSlot, src.get(craftingSlot));
+    }
+
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that FluidUtil#tryPickupFluid works correctly")
+    @TestHolder(description = "Transactional tests. Takes the idea of looking for a subset of items and able to return the crafting ingredients")
     private static void itemTransfer(ExtendedGameTestHelper helper) {
+        //todo, the test is still in progress. This is also helping identify if anything should change
+        var b = SimpleItemResourceContainer.builder(0).build();
+
         var infiniteSource = new InfiniteResourceHandler<>(Items.DIAMOND.defaultResource());
 
         var internalContainer = SimpleItemResourceContainer.builder(9).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
@@ -38,29 +49,48 @@ public class TransactionTests {
         externalContainers[0] = SimpleItemResourceContainer.builder(4).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
         externalContainers[1] = SimpleItemResourceContainer.builder(2).build().asHandler();
         externalContainers[2] = SimpleItemResourceContainer.builder(100).capacity(32).build().asHandler();
+        for (var index = 0; index < externalContainers[0].size(); index++) {
+            externalContainers[0].set(index, Items.LAVA_BUCKET.defaultResource(), 2);
 
-        var ingredient1 = Ingredient.of(Items.STICK);
-        var need1 = 2;
-        var ingredient2 = Ingredient.of(Items.DIAMOND);
-        var need2 = 3;
+        }
+
+        var ingredient = Ingredient.of(Items.LAVA_BUCKET);
+        var need = 5;
         var result = Items.DIAMOND_PICKAXE.defaultResource();
+        var current = 0;
+        //        var craftingRecipe = CraftingInput.of(3, 3, );
 
-        try (var tx = Transaction.open(null)) {
-            var current1 = 0;
-            var current2 = 0;
-            for (var container : externalContainers) {
-                try (var innerTx = Transaction.open(tx)) {
+        try (var craftingTransaction = Transaction.open(TransactionContext.ROOT)) {
 
+            try (var scanningTransaction = Transaction.open(craftingTransaction)) {
+                for (var container : externalContainers) {
                     for (var index = 0; index < container.size(); index++) {
-                        var resource = container.getResource(index);
-                        if (!resource.test(ingredient1)) continue;
 
-                        current1 += container.extract(index, resource, need1 - current1, innerTx);
+                        var resource = container.getResource(index);
+                        if (!someFilteredCondition(resource, ingredient)) continue;
+
+                        int simulatedValue = 0;
+                        try (var optimisticTransaction = Transaction.open(scanningTransaction)) {
+                            var testValue = need - current;
+                            simulatedValue = tryIndex(container, optimisticTransaction, resource, index, testValue);
+                            if (simulatedValue == 0) continue;
+
+                            current += simulatedValue;
+                            optimisticTransaction.commit();
+                            if (simulatedValue == testValue) {
+                                break;
+                            }
+                        }
                     }
+
+                    if (current != need) continue;
+
+                    scanningTransaction.commit();
+                    break;
                 }
             }
-            if (internalContainer.insert(result, 1, tx) > 0)
-                tx.commit();
+//            if (internalContainer.insert(result, 1, craftingTransaction) > 0)
+//                craftingTransaction.commit();
         }
 
         try (var tx = Transaction.open(TransactionContext.ROOT)) {
@@ -88,6 +118,24 @@ public class TransactionTests {
         }
 
         helper.succeed();
+    }
+
+    private static boolean someFilteredCondition(ItemResource resource, Ingredient ingredient) {
+        return resource.test(ingredient);
+    }
+
+    private static int tryIndex(IResourceHandlerModifiable<ItemResource> container, Transaction transaction, ItemResource resource, int index, int amount) {
+        var remainderStack = UnsafeResourceUtils.innerStackOf(resource).getCraftingRemainder();
+        var extracted = container.extract(index, resource, amount, transaction);
+        if (extracted == 0) return 0;
+
+        if (remainderStack.isEmpty()) return extracted;
+
+        var remainder = ItemResource.of(remainderStack);
+        var inserted = container.insert(index, remainder, extracted, transaction);
+        if (inserted < extracted)
+            inserted += container.insert(remainder, extracted - inserted, transaction);
+        return inserted;
     }
 
     /**

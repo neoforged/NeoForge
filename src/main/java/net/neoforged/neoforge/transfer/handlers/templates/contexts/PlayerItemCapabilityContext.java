@@ -29,8 +29,8 @@ public class PlayerItemCapabilityContext implements IItemCapabilityContext {
         return new PlayerItemCapabilityContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : player.getInventory().getContainerSize() - 1);
     }
 
-    public static IItemCapabilityContext ofArmor(Player player, EquipmentSlot slot) {
-        if (player.isCreative()) {
+    public static IItemCapabilityContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
+        if (player.getAbilities().instabuild) {
             ItemStack itemInSlot = player.getItemBySlot(slot);
             return new CreativePlayerItemCapabilityContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
         }

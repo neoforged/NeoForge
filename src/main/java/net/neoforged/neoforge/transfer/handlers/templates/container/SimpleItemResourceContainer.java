@@ -7,8 +7,10 @@ package net.neoforged.neoforge.transfer.handlers.templates.container;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class SimpleItemResourceContainer extends ResourceContainer<ItemResource> {
@@ -19,6 +21,20 @@ public class SimpleItemResourceContainer extends ResourceContainer<ItemResource>
      */
     public SimpleItemResourceContainer(NonNullList<MutableResourceStack<ItemResource>> mutableResourceStacks, int capacity, @Nullable Runnable updateCallback) {
         super(mutableResourceStacks, ItemResource.EMPTY_STACK, capacity, updateCallback);
+    }
+
+    /**
+     * Copies all the contents of this container to a non-null list of the same size.
+     *
+     * @return A new non-null list.
+     */
+    @Contract(pure = true)
+    public NonNullList<ItemStack> copyToItemStackList() {
+        var list = NonNullList.withSize(size(), ItemStack.EMPTY);
+        for (int index = 0; index < size(); index++) {
+            list.set(index, ItemResource.itemStackOf(get(index)));
+        }
+        return list;
     }
 
     //Because Items also have their own stack sizes, there are scenarios for default chest implementations to handle this.

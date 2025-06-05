@@ -24,9 +24,9 @@ public record ResourceContainerSlice<TResource extends IResource>(
     }
 
     @Override
-    public SnapshotJournal<?> getParticipant(int index) {
+    public SnapshotJournal<?> getIndexJournal(int index) {
         Objects.checkIndex(index, length);
-        return parent.getParticipant(index + start);
+        return parent.getIndexJournal(index + start);
     }
 
     @Override
