@@ -160,16 +160,17 @@ public class CapabilityHooks {
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {
         // Entities
         // Register to all entity types to make sure we support all living entity subclasses.
-        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
-                if (entity instanceof AbstractHorse horse)
-                    return new InvWrapper(horse.getInventory());
-                else if (entity instanceof LivingEntity livingEntity)
-                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
-
-                return null;
-            });
-        }
+        // TODO: requires a transactional implementation of the EntityEquipmentInvWrapper
+//        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+//            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
+//                if (entity instanceof AbstractHorse horse)
+//                    return new InvWrapper(horse.getInventory());
+//                else if (entity instanceof LivingEntity livingEntity)
+//                    return new CombinedInvWrapper(new EntityHandsInvWrapper(livingEntity), new EntityArmorInvWrapper(livingEntity));
+//
+//                return null;
+//            });
+//        }
 
         // Items
         for (Item item : BuiltInRegistries.ITEM) {

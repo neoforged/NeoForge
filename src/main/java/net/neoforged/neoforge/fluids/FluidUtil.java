@@ -35,6 +35,7 @@ import net.neoforged.neoforge.fluids.capability.wrappers.BlockWrapper;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +84,7 @@ public class FluidUtil {
             return false;
         }
 
-        var playerInventory = player.getCapability(Capabilities.ItemHandler.ENTITY);
+        var playerInventory = new PlayerInvWrapper(player.getInventory());
         Objects.requireNonNull(playerInventory, "Player item handler is null");
 
         FluidActionResult fluidActionResult = tryFillContainerAndStow(heldItem, handler, playerInventory, Integer.MAX_VALUE, player, true);

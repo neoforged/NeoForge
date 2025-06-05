@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
 import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
@@ -43,21 +42,6 @@ public final class Capabilities {
         public static final ItemCapability<Storage<FluidVariant>, InItemStorageContext> ITEM = ItemCapability.create(create("fluid_storage"), Storage.asClass(), InItemStorageContext.class);
 
         private FluidStorage() {}
-    }
-
-    public static final class ItemHandler {
-        /**
-         * Capability for the inventory of an entity.
-         * If an entity has multiple inventory "subparts", this capability should give a combined view of all the subparts.
-         */
-        public static final EntityCapability<IItemHandler, @Nullable Void> ENTITY = EntityCapability.createVoid(create("item_handler"), IItemHandler.class);
-        /**
-         * Capability for an inventory of entity that should be accessible to automation,
-         * in the sense that droppers, hoppers, and similar modded devices will try to use it.
-         */
-        public static final EntityCapability<IItemHandler, @Nullable Direction> ENTITY_AUTOMATION = EntityCapability.createSided(create("item_handler_automation"), IItemHandler.class);
-
-        private ItemHandler() {}
     }
 
     public static final class ItemStorage {
