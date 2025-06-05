@@ -6,7 +6,12 @@
 package net.neoforged.neoforge.items.wrapper;
 
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.transfer.item.InventoryStorage;
 
+/**
+ * @deprecated in favor of {@link InventoryStorage}
+ */
+@Deprecated(forRemoval = true)
 public class PlayerInvWrapper extends CombinedInvWrapper {
     public PlayerInvWrapper(Inventory inv) {
         super(new PlayerMainInvWrapper(inv), new PlayerArmorInvWrapper(inv), new PlayerOffhandInvWrapper(inv));

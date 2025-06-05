@@ -66,7 +66,6 @@ public class CapabilityHooks {
     public static void markProxyableCapabilities(RegisterCapabilitiesEvent event) {
         event.setProxyable(Capabilities.EnergyStorage.BLOCK);
         event.setProxyable(Capabilities.FluidHandler.BLOCK);
-        event.setProxyable(Capabilities.ItemHandler.BLOCK);
 
         event.setProxyable(Capabilities.FluidStorage.BLOCK);
         event.setProxyable(Capabilities.ItemStorage.BLOCK);
@@ -155,86 +154,6 @@ public class CapabilityHooks {
 //                Items.RED_SHULKER_BOX,
 //                Items.WHITE_SHULKER_BOX,
 //                Items.YELLOW_SHULKER_BOX);
-
-        registerVanillaProvidersLegacy(event);
-    }
-
-    private static void registerVanillaProvidersLegacy(RegisterCapabilitiesEvent event) {
-        // Blocks
-        var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
-        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            // Return a wrapper that gets re-evaluated every time it is accessed
-            // Invalidation is taken care of by the patches to ComposterBlock
-
-            // Note: re-query the block state everytime instead of using `state` because the state can change at any time!
-            if (side == null) {
-                return new ForwardingItemHandler(() -> new InvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos)));
-            } else {
-                return new ForwardingItemHandler(() -> new SidedInvWrapper(composterBlock.getContainer(level.getBlockState(pos), level, pos), side));
-            }
-        }, Blocks.COMPOSTER);
-
-        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-            return new InvWrapper(ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true));
-        }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
-
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
-            // Use custom hopper wrapper that respects cooldown
-            return new VanillaHopperItemHandler(hopper);
-        });
-
-        var sidedVanillaContainers = List.of(
-                BlockEntityType.BLAST_FURNACE,
-                BlockEntityType.BREWING_STAND,
-                BlockEntityType.FURNACE,
-                BlockEntityType.SMOKER,
-                BlockEntityType.SHULKER_BOX);
-        for (var type : sidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, SidedInvWrapper::new);
-        }
-
-        var nonSidedVanillaContainers = List.of(
-                BlockEntityType.BARREL,
-                BlockEntityType.CHISELED_BOOKSHELF,
-                BlockEntityType.DISPENSER,
-                BlockEntityType.DROPPER,
-                BlockEntityType.JUKEBOX,
-                BlockEntityType.CRAFTER,
-                BlockEntityType.DECORATED_POT);
-        for (var type : nonSidedVanillaContainers) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type, (container, side) -> new InvWrapper(container));
-        }
-
-        // Entities
-        var containerEntities = List.of(
-                EntityType.CHEST_BOAT,
-                EntityType.CHEST_MINECART,
-                EntityType.HOPPER_MINECART);
-        for (var entityType : containerEntities) {
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> new InvWrapper(entity));
-            event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> new InvWrapper(entity));
-        }
-        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInvWrapper(player.getInventory()));
-
-        // Items
-        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
-                Items.SHULKER_BOX,
-                Items.BLACK_SHULKER_BOX,
-                Items.BLUE_SHULKER_BOX,
-                Items.BROWN_SHULKER_BOX,
-                Items.CYAN_SHULKER_BOX,
-                Items.GRAY_SHULKER_BOX,
-                Items.GREEN_SHULKER_BOX,
-                Items.LIGHT_BLUE_SHULKER_BOX,
-                Items.LIGHT_GRAY_SHULKER_BOX,
-                Items.LIME_SHULKER_BOX,
-                Items.MAGENTA_SHULKER_BOX,
-                Items.ORANGE_SHULKER_BOX,
-                Items.PINK_SHULKER_BOX,
-                Items.PURPLE_SHULKER_BOX,
-                Items.RED_SHULKER_BOX,
-                Items.WHITE_SHULKER_BOX,
-                Items.YELLOW_SHULKER_BOX);
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {

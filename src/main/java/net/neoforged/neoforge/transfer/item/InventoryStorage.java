@@ -19,6 +19,7 @@ import java.util.List;
  * @see ContainerStorage
  * @see WorldlyContainerStorage
  */
+// TODO: do we need to handle the pop time and change broadcasting that PlayerMainInvWrapper was doing?
 public final class InventoryStorage extends ContainerStorage {
     public static InventoryStorage of(Player player) {
         return of(player.getInventory());

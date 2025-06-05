@@ -8,11 +8,15 @@ package net.neoforged.neoforge.items.wrapper;
 import com.google.common.base.Preconditions;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.storage.base.SlotRangeStorage;
 
 /**
  * A wrapper that composes another IItemHandlerModifiable, exposing only a range of the composed slots.
  * Shifting of slot indices is handled automatically for you.
+ *
+ * @deprecated in favor of {@link SlotRangeStorage}
  */
+@Deprecated(forRemoval = true)
 public class RangedWrapper implements IItemHandlerModifiable {
     private final IItemHandlerModifiable compose;
     private final int minSlot;

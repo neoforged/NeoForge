@@ -8,11 +8,15 @@ package net.neoforged.neoforge.items.wrapper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.item.InventoryStorage;
 
 /**
  * Exposes the player inventory WITHOUT the armor inventory as IItemHandler.
  * Also takes core of inserting/extracting having the same logic as picking up items.
+ *
+ * @deprecated in favor of {@link InventoryStorage#getMainSlots()}
  */
+@Deprecated(forRemoval = true)
 public class PlayerMainInvWrapper extends RangedWrapper {
     private final Inventory inventoryPlayer;
 

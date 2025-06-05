@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
+@Deprecated(forRemoval = true)
 public class VanillaHopperItemHandler extends InvWrapper {
     private final HopperBlockEntity hopper;
 

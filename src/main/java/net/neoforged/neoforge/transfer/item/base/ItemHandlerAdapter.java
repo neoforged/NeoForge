@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.item.base;
 
+import com.google.common.primitives.Ints;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.item.ItemHelper;
@@ -13,7 +14,11 @@ import net.neoforged.neoforge.transfer.storage.Storage;
 
 /**
  * Adapts a {@link Storage} to {@link IItemHandler} with auto-commit behavior.
+ *
+ * <p>This is a temporary solution, to allow for code that makes heavy usage of {@link IItemHandler}
+ * to work with the new {@link Storage} API without requiring a full rewrite.
  */
+// TODO: should this be deprecated for removal as well?
 public final class ItemHandlerAdapter implements IItemHandler {
     private final Storage<ItemVariant> storage;
 
@@ -28,7 +33,7 @@ public final class ItemHandlerAdapter implements IItemHandler {
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return storage.getResource(slot).toStack();
+        return ItemHelper.getStackInSlot(storage, slot);
     }
 
     @Override
@@ -43,15 +48,11 @@ public final class ItemHandlerAdapter implements IItemHandler {
 
     @Override
     public int getSlotLimit(int slot) {
-        return clampToMaxAmount(storage.getCapacity(slot, ItemVariant.EMPTY));
+        return Ints.saturatedCast(storage.getCapacity(slot, ItemVariant.EMPTY));
     }
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
         return storage.isValid(slot, ItemVariant.of(stack));
-    }
-
-    private static int clampToMaxAmount(long amount) {
-        return Math.clamp(amount, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 }

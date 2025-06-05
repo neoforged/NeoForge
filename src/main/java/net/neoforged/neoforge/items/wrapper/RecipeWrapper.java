@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.neoforged.neoforge.items.IItemHandler;
 
+@Deprecated(forRemoval = true)
 public class RecipeWrapper implements RecipeInput {
     protected final IItemHandler inv;
 

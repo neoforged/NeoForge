@@ -7,7 +7,12 @@ package net.neoforged.neoforge.items.wrapper;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.storage.base.CombinedStorage;
 
+/**
+ * @deprecated in favor of {@link CombinedStorage}
+ */
+@Deprecated(forRemoval = true, since = "1.22")
 // combines multiple IItemHandlerModifiable into one interface
 public class CombinedInvWrapper implements IItemHandlerModifiable {
     protected final IItemHandlerModifiable[] itemHandler; // the handlers

@@ -33,7 +33,7 @@ public class VanillaHandlersTests {
 
         MutableInt invalidationCount = new MutableInt();
         var capCache = BlockCapabilityCache.create(
-                Capabilities.ItemHandler.BLOCK,
+                Capabilities.ItemStorage.BLOCK,
                 helper.getLevel(),
                 helper.absolutePos(composterPos),
                 Direction.UP,

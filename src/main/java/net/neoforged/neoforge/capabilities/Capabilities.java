@@ -46,7 +46,6 @@ public final class Capabilities {
     }
 
     public static final class ItemHandler {
-        public static final BlockCapability<IItemHandler, @Nullable Direction> BLOCK = BlockCapability.createSided(create("item_handler"), IItemHandler.class);
         /**
          * Capability for the inventory of an entity.
          * If an entity has multiple inventory "subparts", this capability should give a combined view of all the subparts.

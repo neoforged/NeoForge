@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.item.base.ItemHandlerAdapter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -220,9 +221,9 @@ public class VanillaInventoryCodeHooks {
         BlockEntity blockEntity = state.hasBlockEntity() ? worldIn.getBlockEntity(blockpos) : null;
 
         // Look for block capability first
-        var blockCap = worldIn.getCapability(Capabilities.ItemHandler.BLOCK, blockpos, state, blockEntity, side);
+        var blockCap = worldIn.getCapability(Capabilities.ItemStorage.BLOCK, blockpos, state, blockEntity, side);
         if (blockCap != null)
-            return Optional.of(ImmutablePair.of(blockCap, blockEntity));
+            return Optional.of(ImmutablePair.of(new ItemHandlerAdapter(blockCap), blockEntity));
 
         // Otherwise fallback to automation entity capability
         // Note: the isAlive check matches what vanilla does for hoppers in EntitySelector.CONTAINER_ENTITY_SELECTOR
@@ -230,9 +231,9 @@ public class VanillaInventoryCodeHooks {
         if (!list.isEmpty()) {
             Collections.shuffle(list);
             for (Entity entity : list) {
-                IItemHandler entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
+                var entityCap = entity.getCapability(Capabilities.ItemStorage.ENTITY_AUTOMATION, side);
                 if (entityCap != null)
-                    return Optional.of(ImmutablePair.of(entityCap, entity));
+                    return Optional.of(ImmutablePair.of(new ItemHandlerAdapter(entityCap), entity));
             }
         }
 
