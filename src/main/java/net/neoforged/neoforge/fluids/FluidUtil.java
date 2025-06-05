@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -38,7 +39,10 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
 import net.neoforged.neoforge.transfer.fluid.base.FluidHandlerAdapter;
+import net.neoforged.neoforge.transfer.fluid.base.FluidHandlerItemAdapter;
+import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
+import net.neoforged.neoforge.transfer.item.base.ItemStackStorage;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidUtil {
@@ -368,9 +372,19 @@ public class FluidUtil {
      * You can't fill or drain multiple items at once, if you do then liquid is multiplied or destroyed.
      *
      * Vanilla buckets will be converted to universal buckets if they are enabled.
+     *
+     * @deprecated in favor of using the {@link Capabilities.FluidStorage#ITEM} capability with a suitable {@link InItemStorageContext}
      */
+    @Deprecated(forRemoval = true)
     public static Optional<IFluidHandlerItem> getFluidHandler(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getCapability(Capabilities.FluidHandler.ITEM));
+        // TODO: this is a bit of a hack job, I hope that it works
+        var storage = new ItemStackStorage(NonNullList.of(ItemStack.EMPTY, itemStack));
+        var context = InItemStorageContext.ofStorageSlot(storage, 0);
+        var capability = context.getCapability(Capabilities.FluidStorage.ITEM);
+        if (capability == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new FluidHandlerItemAdapter(context, capability));
     }
 
     /**

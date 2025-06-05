@@ -8,11 +8,8 @@ package net.neoforged.neoforge.capabilities;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
@@ -20,10 +17,8 @@ import net.minecraft.world.level.block.DoubleBlockCombiner;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.transfer.item.ComposterWrapper;
 import net.neoforged.neoforge.transfer.item.ContainerStorage;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
@@ -156,15 +151,16 @@ public class CapabilityHooks {
 //        }
 
         // Items
-        for (Item item : BuiltInRegistries.ITEM) {
-            if (item.getClass() == BucketItem.class)
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
-        }
+        // TODO: needs conversion to Storage capability
+//        for (Item item : BuiltInRegistries.ITEM) {
+//            if (item.getClass() == BucketItem.class)
+//                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
+//        }
 
         // We want mods to be able to override our milk cap by default
-        if (NeoForgeMod.MILK.isBound()) {
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
-        }
+//        if (NeoForgeMod.MILK.isBound()) {
+//            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), Items.MILK_BUCKET);
+//        }
     }
 
     public static void invalidateCapsOnChunkLoad(ChunkEvent.Load event) {

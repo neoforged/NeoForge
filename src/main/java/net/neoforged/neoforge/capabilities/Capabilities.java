@@ -8,7 +8,6 @@ package net.neoforged.neoforge.capabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
 import net.neoforged.neoforge.transfer.initem.InItemStorageContext;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
@@ -25,12 +24,6 @@ public final class Capabilities {
         public static final ItemCapability<IEnergyStorage, @Nullable Void> ITEM = ItemCapability.createVoid(create("energy"), IEnergyStorage.class);
 
         private EnergyStorage() {}
-    }
-
-    public static final class FluidHandler {
-        public static final ItemCapability<IFluidHandlerItem, @Nullable Void> ITEM = ItemCapability.createVoid(create("fluid_handler"), IFluidHandlerItem.class);
-
-        private FluidHandler() {}
     }
 
     public static final class FluidStorage {
