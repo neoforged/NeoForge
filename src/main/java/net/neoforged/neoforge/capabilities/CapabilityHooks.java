@@ -43,6 +43,7 @@ import net.neoforged.neoforge.transfer.item.ContainerStorage;
 import net.neoforged.neoforge.transfer.item.InventoryStorage;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import net.neoforged.neoforge.transfer.item.WorldlyContainerStorage;
+import net.neoforged.neoforge.transfer.item.base.ComponentItemStorage;
 import net.neoforged.neoforge.transfer.storage.Storage;
 import net.neoforged.neoforge.transfer.storage.base.CombinedStorage;
 import org.jetbrains.annotations.ApiStatus;
@@ -136,24 +137,24 @@ public class CapabilityHooks {
 //        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> new PlayerInvWrapper(player.getInventory()));
 
         // Items
-//        event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ComponentItemHandler(stack, DataComponents.CONTAINER, 27),
-//                Items.SHULKER_BOX,
-//                Items.BLACK_SHULKER_BOX,
-//                Items.BLUE_SHULKER_BOX,
-//                Items.BROWN_SHULKER_BOX,
-//                Items.CYAN_SHULKER_BOX,
-//                Items.GRAY_SHULKER_BOX,
-//                Items.GREEN_SHULKER_BOX,
-//                Items.LIGHT_BLUE_SHULKER_BOX,
-//                Items.LIGHT_GRAY_SHULKER_BOX,
-//                Items.LIME_SHULKER_BOX,
-//                Items.MAGENTA_SHULKER_BOX,
-//                Items.ORANGE_SHULKER_BOX,
-//                Items.PINK_SHULKER_BOX,
-//                Items.PURPLE_SHULKER_BOX,
-//                Items.RED_SHULKER_BOX,
-//                Items.WHITE_SHULKER_BOX,
-//                Items.YELLOW_SHULKER_BOX);
+        event.registerItem(Capabilities.ItemStorage.ITEM, (stack, ctx) -> new ComponentItemStorage(ctx, DataComponents.CONTAINER, 27),
+                Items.SHULKER_BOX,
+                Items.BLACK_SHULKER_BOX,
+                Items.BLUE_SHULKER_BOX,
+                Items.BROWN_SHULKER_BOX,
+                Items.CYAN_SHULKER_BOX,
+                Items.GRAY_SHULKER_BOX,
+                Items.GREEN_SHULKER_BOX,
+                Items.LIGHT_BLUE_SHULKER_BOX,
+                Items.LIGHT_GRAY_SHULKER_BOX,
+                Items.LIME_SHULKER_BOX,
+                Items.MAGENTA_SHULKER_BOX,
+                Items.ORANGE_SHULKER_BOX,
+                Items.PINK_SHULKER_BOX,
+                Items.PURPLE_SHULKER_BOX,
+                Items.RED_SHULKER_BOX,
+                Items.WHITE_SHULKER_BOX,
+                Items.YELLOW_SHULKER_BOX);
     }
 
     public static void registerFallbackVanillaProviders(RegisterCapabilitiesEvent event) {

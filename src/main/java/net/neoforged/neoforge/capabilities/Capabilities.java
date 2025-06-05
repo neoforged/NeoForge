@@ -56,7 +56,6 @@ public final class Capabilities {
          * in the sense that droppers, hoppers, and similar modded devices will try to use it.
          */
         public static final EntityCapability<IItemHandler, @Nullable Direction> ENTITY_AUTOMATION = EntityCapability.createSided(create("item_handler_automation"), IItemHandler.class);
-        public static final ItemCapability<IItemHandler, @Nullable Void> ITEM = ItemCapability.createVoid(create("item_handler"), IItemHandler.class);
 
         private ItemHandler() {}
     }

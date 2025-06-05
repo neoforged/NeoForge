@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -231,9 +232,10 @@ public class ContainerStorage implements Storage<ItemVariant> {
 
             container.performSideEffects(slot, original);
 
+            // TODO: we should maybe re-evaluate this, it might make sense to keep it for StackStorageContext only
             if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
                 // Components have changed, we need to copy the stack.
-                // TODO: here we need to copy exactly the components from currentStack to original
+                ((PatchedDataComponentMap) original.getComponents()).restorePatch(currentStack.getComponentsPatch());
 
                 // None is empty and the items and components match: just update the amount, and reuse the original stack.
                 original.setCount(currentStack.getCount());
