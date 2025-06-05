@@ -7,13 +7,20 @@ package net.neoforged.neoforge.fluids.capability;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.transfer.fluid.base.FluidHandlerAdapter;
+import net.neoforged.neoforge.transfer.item.ItemVariant;
+import net.neoforged.neoforge.transfer.storage.Storage;
 
 /**
  * Implement this interface as a capability which should handle fluids, generally storing them in
  * one or more internal {@link IFluidTank} objects.
  * <p>
  * A reference implementation is provided {@link TileFluidHandler}.
+ *
+ * @deprecated in favor of {@link Storage} of {@link ItemVariant}.
+ *             To ease migration, {@link FluidHandlerAdapter} can be used to wrap a storage as an item handler.
  */
+@Deprecated(forRemoval = true)
 public interface IFluidHandler {
     enum FluidAction {
         EXECUTE, SIMULATE;

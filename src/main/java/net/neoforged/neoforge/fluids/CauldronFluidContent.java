@@ -19,7 +19,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.capability.wrappers.CauldronWrapper;
-import net.neoforged.neoforge.transfer.fluid.base.FluidHandlerAdapter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -169,10 +168,6 @@ public final class CauldronFluidContent {
             event.registerBlock(
                     Capabilities.FluidStorage.BLOCK,
                     (level, pos, state, be, context) -> CauldronWrapper.get(level, pos),
-                    block);
-            event.registerBlock(
-                    Capabilities.FluidHandler.BLOCK,
-                    (level, pos, state, be, context) -> new FluidHandlerAdapter(CauldronWrapper.get(level, pos)),
                     block);
         }
     }

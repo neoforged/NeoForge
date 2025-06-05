@@ -37,6 +37,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 import net.neoforged.neoforge.transfer.fluid.FluidVariant;
+import net.neoforged.neoforge.transfer.fluid.base.FluidHandlerAdapter;
 import net.neoforged.neoforge.transfer.item.ItemVariant;
 import org.jetbrains.annotations.Nullable;
 
@@ -389,9 +390,13 @@ public class FluidUtil {
 
     /**
      * Helper method to get an IFluidHandler for at a block position.
+     *
+     * @deprecated in favor of using the {@link Capabilities.FluidStorage#BLOCK} capability directly
      */
+    @Deprecated(forRemoval = true)
     public static Optional<IFluidHandler> getFluidHandler(Level level, BlockPos blockPos, @Nullable Direction side) {
-        return Optional.ofNullable(level.getCapability(Capabilities.FluidHandler.BLOCK, blockPos, side));
+        return Optional.ofNullable(level.getCapability(Capabilities.FluidStorage.BLOCK, blockPos, side))
+                .map(FluidHandlerAdapter::new);
     }
 
     /**

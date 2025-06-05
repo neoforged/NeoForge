@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Registering cauldrons is done by calling {@link CauldronFluidContent#register}
  * and allows all cauldrons registered in this way to interoperate with each other
- * when accessed via the {@link Capabilities.FluidHandler#BLOCK} capability.
+ * when accessed via the {@link Capabilities.FluidStorage#BLOCK} capability.
  */
 public class RegisterCauldronFluidContentEvent extends Event implements IModBusEvent {
     RegisterCauldronFluidContentEvent() {}

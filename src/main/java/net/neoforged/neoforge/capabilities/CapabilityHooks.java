@@ -51,8 +51,6 @@ public class CapabilityHooks {
 
     public static void markProxyableCapabilities(RegisterCapabilitiesEvent event) {
         event.setProxyable(Capabilities.EnergyStorage.BLOCK);
-        event.setProxyable(Capabilities.FluidHandler.BLOCK);
-
         event.setProxyable(Capabilities.FluidStorage.BLOCK);
         event.setProxyable(Capabilities.ItemStorage.BLOCK);
     }
