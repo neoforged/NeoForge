@@ -39,8 +39,10 @@ public record StandardModelParameters(
 
         TextureSlots.Data textures = TextureSlots.Data.EMPTY;
         if (jsonObject.has("textures")) {
+            String atlasName = GsonHelper.getAsString(jsonObject, "atlas", "");
+            ResourceLocation atlas = atlasName.isEmpty() ? TextureAtlas.LOCATION_BLOCKS : ResourceLocation.parse(atlasName);
             JsonObject jsonobject = GsonHelper.getAsJsonObject(jsonObject, "textures");
-            textures = TextureSlots.parseTextureMap(jsonobject, TextureAtlas.LOCATION_BLOCKS);
+            textures = TextureSlots.parseTextureMap(jsonobject, atlas);
         }
 
         ItemTransforms itemTransforms = null;
