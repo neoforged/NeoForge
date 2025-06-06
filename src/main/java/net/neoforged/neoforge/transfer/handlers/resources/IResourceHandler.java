@@ -79,7 +79,7 @@ public interface IResourceHandler<T extends IResource> {
      * @param index The index to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean allowsInsertion(int index);
+    boolean supportsInsertion(int index);
 
     /**
      * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -93,9 +93,9 @@ public interface IResourceHandler<T extends IResource> {
      *
      * @return True if a resource can be inserted, false otherwise.
      */
-    default boolean allowsInsertion() {
+    default boolean supportsInsertion() {
         for (int i = 0; i < size(); i++) {
-            if (allowsInsertion(i)) {
+            if (supportsInsertion(i)) {
                 return true;
             }
         }
@@ -122,7 +122,7 @@ public interface IResourceHandler<T extends IResource> {
      * @param index The index to check.
      * @return True if the resource can be extracted, false otherwise.
      */
-    boolean allowsExtraction(int index);
+    boolean supportsExtraction(int index);
 
     /**
      * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -136,9 +136,9 @@ public interface IResourceHandler<T extends IResource> {
      *
      * @return True if a resource can be extracted, false otherwise.
      */
-    default boolean allowsExtraction() {
+    default boolean supportsExtraction() {
         for (int i = 0; i < size(); i++) {
-            if (allowsExtraction(i)) {
+            if (supportsExtraction(i)) {
                 return true;
             }
         }

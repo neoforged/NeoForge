@@ -105,12 +105,12 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     }
 
     @Override
-    public boolean allowsInsertion(int index) {
+    public boolean supportsInsertion(int index) {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction(int index) {
+    public boolean supportsExtraction(int index) {
         return true;
     }
 

@@ -72,13 +72,13 @@ public class InstancedResourceHandlerTests {
 
     private static <T extends IResource> void testVoidResource(ExtendedGameTestHelper helper, VoidResourceHandler<T> handler, T emptyResource) {
         helper.assertValueEqual(handler.size(), 1, "Size should be");
-        helper.assertFalse(handler.allowsExtraction(), "Extraction should be not allowed");
-        helper.assertFalse(handler.allowsExtraction(0), "Extraction should be not allowed");
-        helper.assertFalse(handler.allowsExtraction(1337), "Extraction should be not allowed");
+        helper.assertFalse(handler.supportsExtraction(), "Extraction should be not allowed");
+        helper.assertFalse(handler.supportsExtraction(0), "Extraction should be not allowed");
+        helper.assertFalse(handler.supportsExtraction(1337), "Extraction should be not allowed");
 
-        helper.assertTrue(handler.allowsInsertion(), "Insertion should be allowed");
-        helper.assertTrue(handler.allowsInsertion(0), "Insertion should be allowed");
-        helper.assertTrue(handler.allowsInsertion(1337), "Insertion should be allowed");
+        helper.assertTrue(handler.supportsInsertion(), "Insertion should be allowed");
+        helper.assertTrue(handler.supportsInsertion(0), "Insertion should be allowed");
+        helper.assertTrue(handler.supportsInsertion(1337), "Insertion should be allowed");
 
         helper.assertTrue(ResourceHandlerUtil.isValid(handler, emptyResource), "Every resource should match");
 
@@ -99,13 +99,13 @@ public class InstancedResourceHandlerTests {
     private static <T extends IResource> void testEndlessResource(ExtendedGameTestHelper helper, T resource) {
         InfiniteResourceHandler<T> handler = new InfiniteResourceHandler<>(resource);
         helper.assertValueEqual(handler.size(), 1, "Size should be");
-        helper.assertTrue(handler.allowsExtraction(), "Extraction should be allowed");
-        helper.assertTrue(handler.allowsExtraction(0), "Extraction should be allowed");
-        helper.assertTrue(handler.allowsExtraction(1337), "Extraction should be allowed");
+        helper.assertTrue(handler.supportsExtraction(), "Extraction should be allowed");
+        helper.assertTrue(handler.supportsExtraction(0), "Extraction should be allowed");
+        helper.assertTrue(handler.supportsExtraction(1337), "Extraction should be allowed");
 
-        helper.assertFalse(handler.allowsInsertion(), "Insertion should not be allowed");
-        helper.assertFalse(handler.allowsInsertion(0), "Insertion should not be allowed");
-        helper.assertFalse(handler.allowsInsertion(1337), "Insertion should not be allowed");
+        helper.assertFalse(handler.supportsInsertion(), "Insertion should not be allowed");
+        helper.assertFalse(handler.supportsInsertion(0), "Insertion should not be allowed");
+        helper.assertFalse(handler.supportsInsertion(1337), "Insertion should not be allowed");
 
         helper.assertTrue(handler.isValid(0, resource), "Resource should match");
 
@@ -122,10 +122,10 @@ public class InstancedResourceHandlerTests {
 
     private static <T extends IResource> void testEmptyHandler(ExtendedGameTestHelper helper, EmptyResourceHandler<T> handler, T emptyResource) {
         helper.assertValueEqual(handler.size(), 0, "Empty should no-op");
-        helper.assertFalse(handler.allowsExtraction(), "Empty should no-op");
-        helper.assertFalse(handler.allowsExtraction(0), "Empty should no-op");
-        helper.assertFalse(handler.allowsInsertion(), "Empty should no-op");
-        helper.assertFalse(handler.allowsInsertion(0), "Empty should no-op");
+        helper.assertFalse(handler.supportsExtraction(), "Empty should no-op");
+        helper.assertFalse(handler.supportsExtraction(0), "Empty should no-op");
+        helper.assertFalse(handler.supportsInsertion(), "Empty should no-op");
+        helper.assertFalse(handler.supportsInsertion(0), "Empty should no-op");
         helper.assertFalse(handler.isValid(0, emptyResource), "Empty should no-op, but should return empty");
         helper.assertValueEqual(handler.getCapacity(0, emptyResource), 0, "Empty should no-op");
         helper.assertValueEqual(handler.getAmount(0), 0, "Empty should no-op");

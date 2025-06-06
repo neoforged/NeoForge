@@ -110,12 +110,12 @@ public abstract class ItemStackJournal extends SnapshotJournal<ItemStack> implem
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return true;
     }
 

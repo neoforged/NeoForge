@@ -59,12 +59,12 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return false;
     }
 }

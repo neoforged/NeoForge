@@ -73,12 +73,12 @@ public class BlockFluidHandler extends SnapshotJournal<BlockState> implements IS
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return true;
     }
 

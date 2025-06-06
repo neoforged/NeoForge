@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Contract;
 
 /**
  * Control logic for a {@link IResourceContainer} to handle a per slot interaction validation.
- * Unlike the {@link IResourceHandler#allowsInsertion() allows} methods, this is intended to be used during insert/extract, but still isn't expected to dynamically change
+ * Unlike the {@link IResourceHandler#supportsInsertion() allows} methods, this is intended to be used during insert/extract, but still isn't expected to dynamically change
  */
 public interface IHandleIOBehaviour {
     IHandleIOBehaviour DEFAULT = new IHandleIOBehaviour() {};

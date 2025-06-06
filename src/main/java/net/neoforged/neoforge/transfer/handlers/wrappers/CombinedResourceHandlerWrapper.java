@@ -95,15 +95,15 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public boolean allowsInsertion(int index) {
+    public boolean supportsInsertion(int index) {
         var handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).allowsInsertion(getSlotFromIndex(index, handlerIndex));
+        return getHandlerFromIndex(handlerIndex).supportsInsertion(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
-    public boolean allowsExtraction(int index) {
+    public boolean supportsExtraction(int index) {
         var handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).allowsExtraction(getSlotFromIndex(index, handlerIndex));
+        return getHandlerFromIndex(handlerIndex).supportsExtraction(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override

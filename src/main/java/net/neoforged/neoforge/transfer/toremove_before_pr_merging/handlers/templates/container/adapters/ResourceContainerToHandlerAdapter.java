@@ -26,13 +26,13 @@ public record ResourceContainerToHandlerAdapter<TResource extends IResource>(
     }
 
     @Override
-    public boolean allowsInsertion(int index) {
+    public boolean supportsInsertion(int index) {
         Objects.checkIndex(index, size());
         return behavior.canInsert(index);
     }
 
     @Override
-    public boolean allowsExtraction(int index) {
+    public boolean supportsExtraction(int index) {
         Objects.checkIndex(index, size());
         return behavior.canExtract(index);
     }

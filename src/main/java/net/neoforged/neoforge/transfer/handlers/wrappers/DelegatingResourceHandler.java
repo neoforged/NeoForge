@@ -63,23 +63,23 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public boolean allowsInsertion(int index) {
-        return getDelegate().allowsInsertion(convertIndex(index));
+    public boolean supportsInsertion(int index) {
+        return getDelegate().supportsInsertion(convertIndex(index));
     }
 
     @Override
-    public boolean allowsExtraction(int index) {
-        return getDelegate().allowsExtraction(convertIndex(index));
+    public boolean supportsExtraction(int index) {
+        return getDelegate().supportsExtraction(convertIndex(index));
     }
 
     @Override
-    public boolean allowsInsertion() {
-        return getDelegate().allowsInsertion();
+    public boolean supportsInsertion() {
+        return getDelegate().supportsInsertion();
     }
 
     @Override
-    public boolean allowsExtraction() {
-        return getDelegate().allowsExtraction();
+    public boolean supportsExtraction() {
+        return getDelegate().supportsExtraction();
     }
 
     @Override

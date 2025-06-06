@@ -75,12 +75,12 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return true;
     }
 

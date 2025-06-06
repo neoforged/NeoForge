@@ -64,12 +64,12 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     //These are hints to consumers, but given these are on items, the hints are less valuable to be fully stateless
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return getAmount(0) == 0;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return getAmount(0) > 0;
     }
 

@@ -60,12 +60,12 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return false;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return true;
     }
 }

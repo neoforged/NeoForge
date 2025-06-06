@@ -68,12 +68,12 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
-    public boolean allowsInsertion(int index) {
+    public boolean supportsInsertion(int index) {
         return false;
     }
 
     @Override
-    public boolean allowsExtraction(int index) {
+    public boolean supportsExtraction(int index) {
         return false;
     }
 

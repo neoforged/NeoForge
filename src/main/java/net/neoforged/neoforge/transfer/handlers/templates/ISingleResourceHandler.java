@@ -27,10 +27,10 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     int getAmount(int index);
 
     @Override
-    boolean allowsInsertion();
+    boolean supportsInsertion();
 
     @Override
-    boolean allowsExtraction();
+    boolean supportsExtraction();
 
     @Override
     int getCapacity(int index, T resource);
@@ -63,14 +63,14 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     }
 
     @Override
-    default boolean allowsInsertion(int index) {
+    default boolean supportsInsertion(int index) {
         //We effectively flip the root's check so that we check on index-less instead
-        return allowsInsertion();
+        return supportsInsertion();
     }
 
     @Override
-    default boolean allowsExtraction(int index) {
+    default boolean supportsExtraction(int index) {
         //We effectively flip the root's check so that we check on index-less instead
-        return allowsExtraction();
+        return supportsExtraction();
     }
 }

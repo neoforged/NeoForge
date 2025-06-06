@@ -136,45 +136,19 @@ Here we elected to use an empty resource, but again, that is completely up to yo
 There are several different templates we currently provide as well. These are optional for the most part to the PR, but
 it may be wise to provide them for now.
 
-- `ResourceContainer` - Designed originally for XyCraft. Only works as an attachment. This is actually one of the core
-  tests in the PR.
+- ~~`ResourceContainer` - Designed originally for XyCraft. Only works as an attachment. This is actually one of the core
+  tests in the PR.~~ Removed from pr final. In a package to remove to maintain function while collecting feedback.
 - `ResourceStorageHandler` - Tries to match vanilla in terms of DataComponent use. Has both an attachment and component
   sub class implementation for items and fluids.
 - `Contexts` - The idea of `IItemCapabilityContexts` is new, and as mentioned before help solve some problems of when
   Itemstacks that have a handler on them are stacked. It is the context passed in when getting the capability of an
   ItemStack, this is similar to how you'd pass in a direction when you get a block capability.
 
-The first notable optional templates are the resource containers such as `SimpleItemResourceContainer`.
+~~The first notable optional templates are the resource containers such as `SimpleItemResourceContainer`.
 As the documentation expresses, these were initially designed for XyCraft so they are a lot less theory crafted and
 actually what is in production now just with `IItemHandler` as the main backing feature. It is however, a lot to digest
-so while I don't mind them
-not being part of neo, I do want to emphasize it is important we maintain the ability to be implemented.
-
-Being able to call something like the following is incredible powerful when able to be resused this simply.
-
-```java
-import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.SimpleFluidResourceContainer;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
-
-private void test(NonNullList<MutableResourceStack<FluidResource>> fluids) {
-    //Creates a list of MutableResourceStacks stored in a container for simple use.  
-    var container = SimpleFluidResourceContainer.from(fluids)
-            .capacity(someArbitraryCapacity)
-            .onChange(this::markBlockEntityAsDirty)
-            .build();
-
-    // We can also create the handler with io behavior.
-    var handler = container.asHandler(IHandleIOBehaviour.INSERT_ONLY);
-}
-```
-
-Viola, we now have not only a container that has the data stored, but also a handler we can return with the express
-ability to be inserted only.
-As noted, these are intended to be data attachments and provide codecs to serialize said data how you need. The test has
-a practical example
+so while I don't mind them not being part of neo, I do want to emphasize it is important we maintain the ability to be implemented.~~ 
+We have decided it is best to not include them.
 
 ## Transactions
 

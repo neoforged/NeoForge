@@ -93,7 +93,7 @@ public class ComponentResourceTests {
         var playerCap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         helper.assertNotNull(playerCap, "IResourceHandler<ItemResource> must be present on player");
         assert playerCap != null;
-        var fluidHandler = playerCap.getResource(0).toStack().getCapability(Capabilities.FluidHandler.ITEM, context);
+        var fluidHandler = context.getCapability(Capabilities.FluidHandler.ITEM);
         helper.assertNotNull(fluidHandler, "IResourceHandler<FluidResource> must be present on item");
         assert fluidHandler != null;
 

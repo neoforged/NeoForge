@@ -85,12 +85,12 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public boolean allowsExtraction() {
+        public boolean supportsExtraction() {
             return false;
         }
 
         @Override
-        public boolean allowsInsertion() {
+        public boolean supportsInsertion() {
             return true;
         }
 
@@ -180,12 +180,12 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public boolean allowsInsertion() {
+        public boolean supportsInsertion() {
             return false;
         }
 
         @Override
-        public boolean allowsExtraction() {
+        public boolean supportsExtraction() {
             return true;
         }
 

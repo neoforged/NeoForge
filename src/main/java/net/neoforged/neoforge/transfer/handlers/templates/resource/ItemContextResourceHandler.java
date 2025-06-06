@@ -75,12 +75,12 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     }
 
     @Override
-    public boolean allowsInsertion() {
+    public boolean supportsInsertion() {
         return true;
     }
 
     @Override
-    public boolean allowsExtraction() {
+    public boolean supportsExtraction() {
         return true;
     }
 
