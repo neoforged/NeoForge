@@ -13,10 +13,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
  * {@link #SIMULATE} will simulate the action, allowing the caller to determine the outcome without actually performing the action.
  * <br>
  * {@link #EXECUTE} will actually perform the action.
- * <p>
- * This is deprecated as this was originally created before we pivoted to transactions; however, there may be some use cases with it still
  */
-@Deprecated
 public enum TransferAction {
     EXECUTE,
     SIMULATE;
