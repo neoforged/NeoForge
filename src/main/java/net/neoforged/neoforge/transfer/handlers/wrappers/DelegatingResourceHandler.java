@@ -83,22 +83,22 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public int insert(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int insert(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return getDelegate().insert(convertIndex(index), resource, amount, transaction);
     }
 
     @Override
-    public int insert(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int insert(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return getDelegate().insert(resource, amount, transaction);
     }
 
     @Override
-    public int extract(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int extract(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return getDelegate().extract(convertIndex(index), resource, amount, transaction);
     }
 
     @Override
-    public int extract(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int extract(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return getDelegate().extract(resource, amount, transaction);
     }
 

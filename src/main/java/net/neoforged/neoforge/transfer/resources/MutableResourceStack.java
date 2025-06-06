@@ -83,7 +83,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return nonNullListOfSize(count, this);
     }
 
-    public MutableResourceStack(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
+    public MutableResourceStack(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
         Objects.requireNonNull(resource, "Resource must not be null");
         this.resource = resource;
         this.amount = amount;
@@ -93,7 +93,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
+    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
         return new MutableResourceStack<>(resource, amount);
     }
 
@@ -111,7 +111,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> withAmount(@Range(from = 0, to = ResourceHandlerUtil.MAX) int newAmount) {
+    public MutableResourceStack<T> withAmount(@Range(from = 0, to = Integer.MAX_VALUE) int newAmount) {
         amount = isEmpty() ? 0 : newAmount;
         return this;
     }

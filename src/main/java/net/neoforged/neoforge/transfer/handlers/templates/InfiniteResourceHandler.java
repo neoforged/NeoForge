@@ -44,13 +44,13 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     @Override
     public int getAmount(int index) {
         Objects.checkIndex(index, size());
-        return ResourceHandlerUtil.MAX; //This is mostly for pretty printing when displayed by mods.
+        return Integer.MAX_VALUE; //This is mostly for pretty printing when displayed by mods.
     }
 
     @Override
     public int getCapacity(int index, T resource) {
         Objects.checkIndex(index, size());
-        return ResourceHandlerUtil.MAX; // Maximum capacity
+        return Integer.MAX_VALUE; // Maximum capacity
     }
 
     @Override

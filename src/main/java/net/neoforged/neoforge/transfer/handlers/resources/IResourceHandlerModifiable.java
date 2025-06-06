@@ -23,5 +23,5 @@ public interface IResourceHandlerModifiable<T extends IResource> extends IResour
      * @param resource The resource to set.
      * @param amount   The amount of the resource to set.
      */
-    void set(int index, T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount);
+    void set(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount);
 }

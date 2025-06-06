@@ -76,7 +76,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> ResourceStack<T> of(T resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
+    public static <T extends IResource> ResourceStack<T> of(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
         return new ResourceStack<>(resource, amount);
     }
 

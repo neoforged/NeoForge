@@ -176,7 +176,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {
+    public void set(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
         get(index).set(resource.toStack(amount));
     }
 

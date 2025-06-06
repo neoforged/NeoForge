@@ -49,7 +49,7 @@ public class EnergyBuffer implements ISingleResourceHandler<EnergyUnit> {
     }
 
     @Override
-    public int insert(EnergyUnit resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext context) {
+    public int insert(EnergyUnit resource, @Range(from = 1, to = Integer.MAX_VALUE) int amount, TransactionContext context) {
         var inserted = Math.min(capacity - this.amount, amount);
         //todo take snapshot
         this.amount += inserted;
@@ -57,7 +57,7 @@ public class EnergyBuffer implements ISingleResourceHandler<EnergyUnit> {
     }
 
     @Override
-    public int extract(EnergyUnit resource, @Range(from = 1, to = ResourceHandlerUtil.MAX) int amount, TransactionContext context) {
+    public int extract(EnergyUnit resource, @Range(from = 1, to = Integer.MAX_VALUE) int amount, TransactionContext context) {
         int extracted = Math.min(amount, this.amount);
         //todo take snapshot
         this.amount -= extracted;

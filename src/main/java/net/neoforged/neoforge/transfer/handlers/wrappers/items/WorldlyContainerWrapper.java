@@ -60,7 +60,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    @Range(from = 0, to = ResourceHandlerUtil.MAX)
+    @Range(from = 0, to = Integer.MAX_VALUE)
     public int getCapacity(int index, ItemResource resource) {
         return wrappedContainer.getCapacity(convertSlot(index), resource);
     }
@@ -81,7 +81,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int insert(int index, ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int insert(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         int convertedIndex = convertSlot(index);
         if (!worldlyContainer.canPlaceItemThroughFace(convertedIndex, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
@@ -90,20 +90,20 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int insert(ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int insert(ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int extract(int index, ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int extract(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int extract(ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount, TransactionContext transaction) {
+    public int extract(ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Range(from = 0, to = ResourceHandlerUtil.MAX) int amount) {}
+    public void set(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {}
 }

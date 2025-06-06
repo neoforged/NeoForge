@@ -82,14 +82,14 @@ public class InstancedResourceHandlerTests {
 
         helper.assertTrue(ResourceHandlerUtil.isValid(handler, emptyResource), "Every resource should match");
 
-        helper.assertValueEqual(handler.getCapacity(0, emptyResource), ResourceHandlerUtil.MAX, "Capacity should match");
-        helper.assertValueEqual(handler.getCapacity(1, emptyResource), ResourceHandlerUtil.MAX, "Capacity should match");
+        helper.assertValueEqual(handler.getCapacity(0, emptyResource), Integer.MAX_VALUE, "Capacity should match");
+        helper.assertValueEqual(handler.getCapacity(1, emptyResource), Integer.MAX_VALUE, "Capacity should match");
 
         helper.assertValueEqual(handler.getResource(0), emptyResource, "Resource should match");
         helper.assertValueEqual(handler.getResource(1), emptyResource, "Resource should match");
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-            helper.assertValueEqual(handler.insert(0, emptyResource, ResourceHandlerUtil.MAX, transaction), ResourceHandlerUtil.MAX, "Insertion should match");
-            helper.assertValueEqual(handler.insert(emptyResource, ResourceHandlerUtil.MAX, transaction), ResourceHandlerUtil.MAX, "Insertion should match");
+            helper.assertValueEqual(handler.insert(0, emptyResource, Integer.MAX_VALUE, transaction), Integer.MAX_VALUE, "Insertion should match");
+            helper.assertValueEqual(handler.insert(emptyResource, Integer.MAX_VALUE, transaction), Integer.MAX_VALUE, "Insertion should match");
 
             helper.assertValueEqual(handler.extract(0, emptyResource, 1, transaction), 0, "Extraction should match");
             helper.assertValueEqual(handler.extract(emptyResource, 1, transaction), 0, "Extraction should match");
@@ -109,7 +109,7 @@ public class InstancedResourceHandlerTests {
 
         helper.assertTrue(handler.isValid(0, resource), "Resource should match");
 
-        helper.assertValueEqual(handler.getCapacity(0, resource), ResourceHandlerUtil.MAX, "Capacity should match");
+        helper.assertValueEqual(handler.getCapacity(0, resource), Integer.MAX_VALUE, "Capacity should match");
         helper.assertValueEqual(handler.getResource(0), resource, "Resource should match");
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(handler.insert(0, resource, 1, transaction), 0, "Insertion should match");

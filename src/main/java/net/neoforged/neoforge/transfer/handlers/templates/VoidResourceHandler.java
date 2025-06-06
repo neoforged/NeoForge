@@ -50,7 +50,7 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
 
     @Override
     public int getCapacity(int index, T resource) {
-        return ResourceHandlerUtil.MAX; // Maximum capacity
+        return Integer.MAX_VALUE; // Maximum capacity
     }
 
     @Override
