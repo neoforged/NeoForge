@@ -29,7 +29,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.FluidUtil;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -88,7 +88,7 @@ public class CustomFluidContainerTest {
 
         @Override
         public InteractionResult use(Level level, Player player, InteractionHand hand) {
-            var context = PlayerItemCapabilityContext.ofHand(player, hand);
+            var context = PlayerItemContext.ofHand(player, hand);
             var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
             if (handler == null) return super.use(level, player, hand);
             var fluidStack = FluidUtil.getFluidContained(context);
