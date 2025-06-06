@@ -18,13 +18,13 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.ResourceContainer;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.SimpleFluidResourceContainer;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.SimpleItemResourceContainer;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 // This is the XyCraft example of how a container is used along with the helper (`holderWith`) of how to set the holder during deserializing.

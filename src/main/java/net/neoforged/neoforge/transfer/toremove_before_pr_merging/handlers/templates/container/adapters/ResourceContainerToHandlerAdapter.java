@@ -8,10 +8,10 @@ package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.temp
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**

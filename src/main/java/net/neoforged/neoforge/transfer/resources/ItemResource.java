@@ -242,12 +242,15 @@ public final class ItemResource implements IResource, DataComponentHolder {
     public String toString() {
         return innerStack.getItem().toString();
     }
+
     public boolean is(Holder<Item> holder) {
         return is(holder.value());
     }
+
     public boolean is(HolderSet<Item> holderSet) {
         return holderSet.contains(getHolder());
     }
+
     /**
      * @return the full value and data components in string form
      */

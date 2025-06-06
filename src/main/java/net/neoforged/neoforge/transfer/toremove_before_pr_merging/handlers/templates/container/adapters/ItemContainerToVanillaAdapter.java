@@ -8,9 +8,9 @@ package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.temp
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 
 /**
  * An adapter to convert an {@link IResourceContainer} to a vanilla Minecraft {@link Container}.

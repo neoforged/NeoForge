@@ -37,7 +37,7 @@ public interface IResourceStack<T extends IResource> {
      * }</pre>
      *
      * @param resourceCodec a codec for the resource
-     * @param <R>   the resource type
+     * @param <R>           the resource type
      * @return a codec for a resource stack
      */
     static <R extends IResource, S extends IResourceStack<R>> Codec<S> codec(Codec<R> resourceCodec, BiFunction<R, Integer, S> factory) {
@@ -61,7 +61,7 @@ public interface IResourceStack<T extends IResource> {
      *
      * @param resourceCodec Backing resource codec
      * @param factory       Constructor of IResourceStack implementation
-     * @param <R>   The resource type
+     * @param <R>           The resource type
      * @return Codec for the specified IResourceStack implementer
      */
     static <R extends IResource, S extends IResourceStack<R>> Codec<S> flatCodec(Codec<R> resourceCodec, BiFunction<R, Integer, S> factory) {

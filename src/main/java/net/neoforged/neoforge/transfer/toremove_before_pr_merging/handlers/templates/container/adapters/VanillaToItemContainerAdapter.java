@@ -8,10 +8,10 @@ package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.temp
 import java.util.Objects;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
@@ -20,7 +20,6 @@ import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapsho
  * This is always assumed to be of type {@link ItemResource} currently, since a {@link Container} can only handle {@link ItemStack ItemStacks}
  */
 public record VanillaToItemContainerAdapter(Container container) implements IResourceContainer<ItemResource> {
-
     @Override
     public ResourceStack<ItemResource> defaultResource() {
         return ItemResource.EMPTY_STACK;

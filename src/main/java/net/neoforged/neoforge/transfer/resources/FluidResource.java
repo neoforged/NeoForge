@@ -269,6 +269,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
         //DO we even want to try to encode the components into the print?
         return innerStack.getFluid().getFluidType().toString();
     }
+
     /**
      * @return the full value and data components in string form
      */
