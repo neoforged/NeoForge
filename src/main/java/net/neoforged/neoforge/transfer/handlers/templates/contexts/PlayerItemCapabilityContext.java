@@ -9,7 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.InventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -17,22 +17,22 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * A context that represents a player's inventory slot.
  */
-public class PlayerItemCapabilityContext implements IItemCapabilityContext {
+public class PlayerItemCapabilityContext implements IItemContext {
     protected final InventoryWrapper handler;
     protected final int index;
 
-    public static IItemCapabilityContext ofHand(Player player, InteractionHand hand) {
+    public static IItemContext ofHand(Player player, InteractionHand hand) {
         if (player.getAbilities().instabuild) {
             ItemStack itemInHand = player.getItemInHand(hand);
-            return new CreativePlayerItemCapabilityContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
+            return new CreativePlayerItemContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
         }
         return new PlayerItemCapabilityContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : player.getInventory().getContainerSize() - 1);
     }
 
-    public static IItemCapabilityContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
+    public static IItemContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
         if (player.getAbilities().instabuild) {
             ItemStack itemInSlot = player.getItemBySlot(slot);
-            return new CreativePlayerItemCapabilityContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
+            return new CreativePlayerItemContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
         }
         return new PlayerItemCapabilityContext(player, player.getInventory().getContainerSize() + slot.getIndex());
     }

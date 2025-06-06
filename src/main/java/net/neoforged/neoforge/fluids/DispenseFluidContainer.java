@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.DispenserItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.DispenserItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 
 /**
@@ -47,7 +47,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
         Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
         BlockPos blockpos = source.pos().relative(dispenserFacing);
 
-        DispenserItemCapabilityContext context = new DispenserItemCapabilityContext(stack);
+        DispenserItemContext context = new DispenserItemContext(stack);
         var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
 
         if (handler == null || !FluidUtil.tryPickupFluid(handler, source.center(), source.level(), blockpos)) {
@@ -64,7 +64,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
         Direction dispenserFacing = source.state().getValue(DispenserBlock.FACING);
         BlockPos blockpos = source.pos().relative(dispenserFacing);
 
-        DispenserItemCapabilityContext context = new DispenserItemCapabilityContext(stack);
+        DispenserItemContext context = new DispenserItemContext(stack);
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null || !FluidUtil.tryPlaceFluid(handler, source.center(), source.level(), blockpos)) {
             return super.execute(source, stack);

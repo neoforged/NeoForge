@@ -37,14 +37,14 @@ public interface IResourceStack<T extends IResource> {
      * }</pre>
      *
      * @param resourceCodec a codec for the resource
-     * @param <TResource>   the resource type
+     * @param <R>   the resource type
      * @return a codec for a resource stack
      */
-    static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> codec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <R extends IResource, S extends IResourceStack<R>> Codec<S> codec(Codec<R> resourceCodec, BiFunction<R, Integer, S> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
-                resourceCodec.fieldOf("resource").forGetter(IResourceStack<TResource>::resource),
+                resourceCodec.fieldOf("resource").forGetter(IResourceStack<R>::resource),
                 NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
-                        .forGetter(IResourceStack<TResource>::amount))
+                        .forGetter(IResourceStack<R>::amount))
                 .apply(instance, factory));
     }
 
@@ -61,21 +61,21 @@ public interface IResourceStack<T extends IResource> {
      *
      * @param resourceCodec Backing resource codec
      * @param factory       Constructor of IResourceStack implementation
-     * @param <TResource>   The resource type
+     * @param <R>   The resource type
      * @return Codec for the specified IResourceStack implementer
      */
-    static <TResource extends IResource, TStack extends IResourceStack<TResource>> Codec<TStack> flatCodec(Codec<TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <R extends IResource, S extends IResourceStack<R>> Codec<S> flatCodec(Codec<R> resourceCodec, BiFunction<R, Integer, S> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
-                MapCodec.assumeMapUnsafe(resourceCodec).forGetter(IResourceStack<TResource>::resource),
+                MapCodec.assumeMapUnsafe(resourceCodec).forGetter(IResourceStack<R>::resource),
                 NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
-                        .forGetter(IResourceStack<TResource>::amount))
+                        .forGetter(IResourceStack<R>::amount))
                 .apply(instance, factory));
     }
 
     /**
      * Creates a standard stream codec for a IResourceStack implementer of the specified resource type.
      */
-    static <B extends FriendlyByteBuf, TResource extends IResource, TStack extends IResourceStack<TResource>> StreamCodec<B, TStack> streamCodec(StreamCodec<? super B, TResource> resourceCodec, BiFunction<TResource, Integer, TStack> factory) {
+    static <B extends FriendlyByteBuf, R extends IResource, S extends IResourceStack<R>> StreamCodec<B, S> streamCodec(StreamCodec<? super B, R> resourceCodec, BiFunction<R, Integer, S> factory) {
         return StreamCodec.composite(
                 resourceCodec, IResourceStack::resource,
                 ByteBufCodecs.VAR_INT, IResourceStack::amount,

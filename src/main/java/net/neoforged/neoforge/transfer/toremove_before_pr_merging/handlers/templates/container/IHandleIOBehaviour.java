@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.container;
+package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import org.jetbrains.annotations.Contract;

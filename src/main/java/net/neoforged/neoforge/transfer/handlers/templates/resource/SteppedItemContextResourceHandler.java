@@ -8,18 +8,18 @@ package net.neoforged.neoforge.transfer.handlers.templates.resource;
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class SteppedItemContextResourceHandler<T extends IResource> extends ItemContextResourceHandler<T> {
-    public SteppedItemContextResourceHandler(IItemCapabilityContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultStep) {
+    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultStep) {
         super(itemContext, componentType, defaultStep);
     }
 
-    public SteppedItemContextResourceHandler(IItemCapabilityContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultStep, Predicate<T> validator) {
+    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultStep, Predicate<T> validator) {
         super(itemContext, componentType, defaultStep, validator);
     }
 

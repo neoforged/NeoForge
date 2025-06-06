@@ -71,11 +71,11 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     private final T resource;
     private int amount;
 
-    public static <TResource extends IResource> NonNullList<MutableResourceStack<TResource>> nonNullListOfSize(int count, MutableResourceStack<TResource> resourceStack) {
+    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, MutableResourceStack<R> resourceStack) {
         return NonNullList.withSize(count, resourceStack);
     }
 
-    public static <TResource extends IResource> NonNullList<MutableResourceStack<TResource>> nonNullListOfSize(int count, TResource emptyResource) {
+    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, R emptyResource) {
         return NonNullList.withSize(count, MutableResourceStack.of(emptyResource, 0));
     }
 

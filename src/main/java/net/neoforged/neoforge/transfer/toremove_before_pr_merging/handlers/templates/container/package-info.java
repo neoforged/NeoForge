@@ -6,7 +6,7 @@
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
+package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.FieldsAreNonnullByDefault;

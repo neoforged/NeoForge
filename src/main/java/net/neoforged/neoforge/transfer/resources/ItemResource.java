@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -35,7 +37,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
-public final class ItemResource implements IRegisteredResource<Item> {
+public final class ItemResource implements IResource, DataComponentHolder {
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
@@ -117,17 +119,14 @@ public final class ItemResource implements IRegisteredResource<Item> {
         return innerStack.isEmpty();
     }
 
-    @Override
     public boolean is(Item item) {
         return innerStack.is(item);
     }
 
-    @Override
     public boolean is(TagKey<Item> item) {
         return innerStack.is(item);
     }
 
-    @Override
     public boolean is(Predicate<Holder<Item>> predicate) {
         return innerStack.is(predicate);
     }
@@ -136,7 +135,6 @@ public final class ItemResource implements IRegisteredResource<Item> {
         return predicate.test(innerStack);
     }
 
-    @Override
     public boolean isComponentsPatchEmpty() {
         return innerStack.isComponentsPatchEmpty();
     }
@@ -167,12 +165,10 @@ public final class ItemResource implements IRegisteredResource<Item> {
         return without(type.get());
     }
 
-    @Override
     public Item getInstanceValue() {
         return innerStack.getItem();
     }
 
-    @Override
     public Holder<Item> getHolder() {
         return innerStack.getItemHolder();
     }
@@ -182,7 +178,6 @@ public final class ItemResource implements IRegisteredResource<Item> {
         return innerStack.immutableComponents();
     }
 
-    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
@@ -245,7 +240,22 @@ public final class ItemResource implements IRegisteredResource<Item> {
 
     @Override
     public String toString() {
-        //DO we even want to try to encode the components into the print? Often times that will likely be noise
         return innerStack.getItem().toString();
+    }
+    public boolean is(Holder<Item> holder) {
+        return is(holder.value());
+    }
+    public boolean is(HolderSet<Item> holderSet) {
+        return holderSet.contains(getHolder());
+    }
+    /**
+     * @return the full value and data components in string form
+     */
+    public String toExpandedString() {
+        if (isComponentsPatchEmpty()) {
+            return toString();
+        } else {
+            return "%s %s".formatted(getInstanceValue(), getComponentsPatch().toString());
+        }
     }
 }

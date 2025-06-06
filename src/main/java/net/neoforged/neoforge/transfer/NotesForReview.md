@@ -154,8 +154,8 @@ Being able to call something like the following is incredible powerful when able
 
 ```java
 import net.minecraft.core.NonNullList;
-import net.neoforged.neoforge.transfer.handlers.templates.container.IHandleIOBehaviour;
-import net.neoforged.neoforge.transfer.handlers.templates.container.SimpleFluidResourceContainer;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.SimpleFluidResourceContainer;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 

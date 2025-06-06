@@ -91,18 +91,6 @@ public class CapabilityHooks {
                 (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINED_HANDLER).orElse(null),
                 Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
-        //        event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
-        //            var container = ChestBlock.getContainer((ChestBlock) state.getBlock(), state, level, pos, true);
-        //            if (container == null) return null;
-        //            // This was allowing a possible null container, though it is unlikely it would have ever been null. Something to look into
-        //            return VanillaContainerWrapper.of(container);
-        //        }, Blocks.CHEST, Blocks.TRAPPED_CHEST);
-
-        //        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityType.HOPPER, (hopper, side) -> {
-        //            // Use custom hopper wrapper that respects cooldown
-        //            return new HopperWrapper(hopper);
-        //        });
-
         var sidedVanillaContainers = List.of(
                 BlockEntityType.BLAST_FURNACE,
                 BlockEntityType.BREWING_STAND,

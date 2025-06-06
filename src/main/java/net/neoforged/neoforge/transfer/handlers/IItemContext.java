@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -66,7 +66,7 @@ import org.jetbrains.annotations.Nullable;
  * This will remove 4 bottles of honey from the stack and replace them with 4 empty bottles. Since the stack still has
  * 12 bottles of honey, the 4 empty bottles will be inserted into the outer context (the player's inventory).
  */
-public interface IItemCapabilityContext {
+public interface IItemContext {
     /**
      * @return The resource of the main item.
      */
@@ -98,7 +98,6 @@ public interface IItemCapabilityContext {
     int extract(ItemResource resource, int amount, TransactionContext context);
 
     default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
-        //do we actually want these checks? Since we likely should be calling them prior to exchanging.
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         try (var subTransaction = Transaction.open(transaction)) {
@@ -119,8 +118,8 @@ public interface IItemCapabilityContext {
      * @param handler The handler containing the item.
      * @param index   The index in {@code handler}, where the item can be found.
      */
-    static IItemCapabilityContext ofIndex(IResourceHandler<ItemResource> handler, int index) {
-        return new IItemCapabilityContext() {
+    static IItemContext ofIndex(IResourceHandler<ItemResource> handler, int index) {
+        return new IItemContext() {
             @Override
             public ItemResource getResource() {
                 return index < handler.size() ? handler.getResource(index) : ItemResource.EMPTY;
@@ -147,7 +146,7 @@ public interface IItemCapabilityContext {
         };
     }
 
-    record ReadOnly(IItemCapabilityContext context) implements IItemCapabilityContext {
+    record ReadOnly(IItemContext context) implements IItemContext {
         @Override
         public ItemResource getResource() {
             return context.getResource();
@@ -185,7 +184,7 @@ public interface IItemCapabilityContext {
      */
     @Nullable
     @ApiStatus.NonExtendable
-    default <T> T getCapability(ItemCapability<T, IItemCapabilityContext> capability) {
+    default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
         return capability.getCapability(getResource().toStack(), this);
     }
 
@@ -194,7 +193,7 @@ public interface IItemCapabilityContext {
      * handler, but no modification. You can still call insert or extract, and as long as the handler is properly setup to handle snapshots, the calls will be reverted
      */
     @ApiStatus.NonExtendable
-    default IItemCapabilityContext asReadOnly() {
+    default IItemContext asReadOnly() {
         return new ReadOnly(this);
     }
 
@@ -203,7 +202,7 @@ public interface IItemCapabilityContext {
      * Creates a wrapper around this context that allows access to a single item at the time.
      */
     @ApiStatus.NonExtendable
-    default IItemCapabilityContext oneByOne() {
-        return new OneByOneItemCapabilityContext(this);
+    default IItemContext oneByOne() {
+        return new OneByOneItemContext(this);
     }
 }

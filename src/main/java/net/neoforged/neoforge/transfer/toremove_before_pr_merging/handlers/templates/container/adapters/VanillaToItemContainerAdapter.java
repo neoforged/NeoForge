@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.container.adapters;
+package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.adapters;
 
 import java.util.Objects;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.templates.container.IResourceContainer;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IResourceContainer;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;

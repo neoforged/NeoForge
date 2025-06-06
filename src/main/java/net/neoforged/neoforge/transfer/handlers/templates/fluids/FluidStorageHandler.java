@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
@@ -28,10 +28,10 @@ public abstract class FluidStorageHandler extends ResourceStorageHandler<FluidRe
     }
 
     public static class Component extends FluidStorageHandler {
-        protected final IItemCapabilityContext itemContext;
+        protected final IItemContext itemContext;
         protected final DataComponentType<ResourceStorageComponent<FluidResource>> componentType;
 
-        public Component(IItemCapabilityContext context, DataComponentType<ResourceStorageComponent<FluidResource>> componentType, int size, int indexCapacity) {
+        public Component(IItemContext context, DataComponentType<ResourceStorageComponent<FluidResource>> componentType, int size, int indexCapacity) {
             super(size, indexCapacity);
             this.itemContext = context;
             this.componentType = componentType;

@@ -16,7 +16,7 @@ import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -27,12 +27,12 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * The intended usage is to wrap the stack provided in {@link DefaultDispenseItemBehavior#execute(BlockSource, ItemStack)}.
  * You can then use {@link #finalizeResult(BlockSource)} to return the result to the dispenser and handle overflow.
  */
-public class DispenserItemCapabilityContext implements IItemCapabilityContext {
+public class DispenserItemContext implements IItemContext {
     protected ItemResource resource;
     protected int amount;
     protected final Object2IntMap<ItemResource> resources = new Object2IntOpenHashMap<>();
 
-    public DispenserItemCapabilityContext(ItemStack stack) {
+    public DispenserItemContext(ItemStack stack) {
         this.resource = ItemResource.of(stack);
         this.amount = stack.getCount();
     }

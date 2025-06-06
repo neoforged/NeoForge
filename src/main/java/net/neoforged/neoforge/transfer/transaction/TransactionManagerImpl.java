@@ -37,21 +37,6 @@ public class TransactionManagerImpl {
         return open();
     }
 
-    //    We should be careful adding methods that are intentionally "playing with fire". Concrete use cases are needed vs "Generally nice to have"
-    //    @Nullable
-    //    public TransactionContext getCurrentUnsafe() {
-    //        if (currentDepth == -1) {
-    //            return null;
-    //        }
-    //
-    //        var current = stack.get(currentDepth);
-    //        if (current.lifecycle == Transaction.Lifecycle.OPEN) {
-    //            return current;
-    //        } else {
-    //            throw new IllegalStateException("May not call getCurrentUnsafe() from a close callback.");
-    //        }
-    //    }
-
     /**
      * Open a new transaction, outer or nested, without performing any state check.
      */

@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -35,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IRegisteredResource<Fluid> {
+public final class FluidResource implements IResource, DataComponentHolder {
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.
@@ -157,7 +158,6 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
     /**
      * @return The fluid of this resource
      */
-    @Override
     public Fluid getInstanceValue() {
         return innerStack.getFluid();
     }
@@ -182,7 +182,6 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
         return innerStack.getComponents().toImmutableMap();
     }
 
-    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
@@ -199,17 +198,14 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
         return toStack(FluidType.BUCKET_VOLUME);
     }
 
-    @Override
     public boolean isComponentsPatchEmpty() {
         return innerStack.isComponentsPatchEmpty();
     }
 
-    @Override
     public boolean is(TagKey<Fluid> tag) {
         return innerStack.is(tag);
     }
 
-    @Override
     public boolean is(Fluid fluid) {
         return innerStack.is(fluid);
     }
@@ -218,12 +214,10 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
         return innerStack.is(predicate);
     }
 
-    @Override
     public boolean is(Holder<Fluid> holder) {
         return innerStack.is(holder);
     }
 
-    @Override
     public boolean is(HolderSet<Fluid> holders) {
         return innerStack.is(holders);
     }
@@ -274,5 +268,15 @@ public final class FluidResource implements IRegisteredResource<Fluid> {
     public String toString() {
         //DO we even want to try to encode the components into the print?
         return innerStack.getFluid().getFluidType().toString();
+    }
+    /**
+     * @return the full value and data components in string form
+     */
+    public String toExpandedString() {
+        if (isComponentsPatchEmpty()) {
+            return toString();
+        } else {
+            return "%s %s".formatted(getInstanceValue(), getComponentsPatch().toString());
+        }
     }
 }

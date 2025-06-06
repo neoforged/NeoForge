@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.container;
+package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -12,10 +12,10 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerSlice;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceContainerToHandlerAdapter;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.ResourceHandlerToContainerAdapter;
-import net.neoforged.neoforge.transfer.handlers.templates.container.adapters.VanillaToItemContainerAdapter;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.adapters.ResourceContainerSlice;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.adapters.ResourceContainerToHandlerAdapter;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.adapters.ResourceHandlerToContainerAdapter;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.adapters.VanillaToItemContainerAdapter;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;

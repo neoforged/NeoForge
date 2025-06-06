@@ -23,7 +23,7 @@ import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticItemCapabilityContext;
@@ -73,7 +73,7 @@ public class FluidUtil {
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
 
-        IItemCapabilityContext itemContext = PlayerItemCapabilityContext.ofHand(player, hand);
+        IItemContext itemContext = PlayerItemCapabilityContext.ofHand(player, hand);
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
@@ -194,7 +194,7 @@ public class FluidUtil {
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
-    public static ResourceStack<FluidResource> getResourceContained(IItemCapabilityContext context) {
+    public static ResourceStack<FluidResource> getResourceContained(IItemContext context) {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return FluidResource.EMPTY_STACK;
 
@@ -213,7 +213,7 @@ public class FluidUtil {
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
-    public static FluidStack getFluidContained(IItemCapabilityContext context) {
+    public static FluidStack getFluidContained(IItemContext context) {
         var resourceStack = getResourceContained(context);
         return resourceStack.resource().toStack(resourceStack.amount());
     }

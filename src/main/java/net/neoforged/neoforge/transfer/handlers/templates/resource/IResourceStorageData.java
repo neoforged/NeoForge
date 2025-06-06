@@ -10,16 +10,16 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import org.jetbrains.annotations.Contract;
 
-public interface IResourceStorageData<TResource extends IResource> extends Iterable<IResourceStack<TResource>> {
+public interface IResourceStorageData<R extends IResource> extends Iterable<IResourceStack<R>> {
     int size();
 
-    IResourceStack<TResource> get(int index);
+    IResourceStack<R> get(int index);
 
-    IResourceStorageData<TResource> modify(int index, TResource resource, int amount);
+    IResourceStorageData<R> modify(int index, R resource, int amount);
 
-    ResourceStorageComponent<TResource> component();
+    ResourceStorageComponent<R> component();
 
-    ResourceStorageAttachment<TResource> attachment();
+    ResourceStorageAttachment<R> attachment();
 
     static boolean equals(IResourceStorageData<?> data1, Object data2) {
         if (data1 == data2)
@@ -45,7 +45,7 @@ public interface IResourceStorageData<TResource extends IResource> extends Itera
      */
     @Contract(value = "-> new", pure = true)
     @Override
-    default Iterator<IResourceStack<TResource>> iterator() {
+    default Iterator<IResourceStack<R>> iterator() {
         return new Iterator<>() {
             final int size = size();
             int i = 0;
@@ -56,7 +56,7 @@ public interface IResourceStorageData<TResource extends IResource> extends Itera
             }
 
             @Override
-            public IResourceStack<TResource> next() {
+            public IResourceStack<R> next() {
                 return get(i++);
             }
         };

@@ -9,7 +9,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
@@ -36,10 +36,10 @@ public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemReso
     }
 
     public static class Component extends ItemStorageHandler {
-        protected final IItemCapabilityContext itemContext;
+        protected final IItemContext itemContext;
         protected final DataComponentType<ResourceStorageComponent<ItemResource>> componentType;
 
-        public Component(IItemCapabilityContext itemContext, DataComponentType<ResourceStorageComponent<ItemResource>> componentType, int size) {
+        public Component(IItemContext itemContext, DataComponentType<ResourceStorageComponent<ItemResource>> componentType, int size) {
             super(size);
             this.itemContext = itemContext;
             this.componentType = componentType;

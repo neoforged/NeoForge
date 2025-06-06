@@ -330,7 +330,6 @@ public final class ResourceHandlerUtil {
         return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
     }
 
-    /////////////////////////////////////
     /**
      * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
      *

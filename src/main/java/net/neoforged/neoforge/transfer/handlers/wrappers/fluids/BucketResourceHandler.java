@@ -13,7 +13,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -27,9 +27,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * With the item context, handling the scenario of filling or draining multiple stacked buckets is possible.
  */
 public final class BucketResourceHandler implements ISingleResourceHandler<FluidResource> {
-    private final IItemCapabilityContext itemContext;
+    private final IItemContext itemContext;
 
-    public BucketResourceHandler(IItemCapabilityContext itemContext) {
+    public BucketResourceHandler(IItemContext itemContext) {
         this.itemContext = itemContext;
     }
 
