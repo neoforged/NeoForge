@@ -25,8 +25,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticItemContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BlockFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -73,7 +73,7 @@ public class FluidUtil {
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
 
-        IItemContext itemContext = PlayerItemCapabilityContext.ofHand(player, hand);
+        IItemContext itemContext = PlayerItemContext.ofHand(player, hand);
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
@@ -153,7 +153,7 @@ public class FluidUtil {
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
     public static boolean tryPickupFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerItemCapabilityContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        var handHandler = PlayerItemContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPickupFluid(handHandler, playerIn.position(), level, pos);
     }
 
@@ -168,7 +168,7 @@ public class FluidUtil {
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
     public static boolean tryPlaceFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerItemCapabilityContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        var handHandler = PlayerItemContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPlaceFluid(handHandler, playerIn.position(), level, pos);
     }
 
@@ -225,7 +225,7 @@ public class FluidUtil {
      * @return The fluid contained in the item stack, or empty if no fluid is contained.
      */
     public static FluidStack getFluidContained(ItemStack stack) {
-        return getFluidContained(new StaticItemCapabilityContext(stack));
+        return getFluidContained(new StaticItemContext(stack));
     }
 
     /**

@@ -17,7 +17,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -39,7 +39,7 @@ public class ComponentResourceTests {
     public static void testFluidHandlerItemStack(ExtendedGameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance());
-        IItemContext context = PlayerItemCapabilityContext.ofHand(player, InteractionHand.MAIN_HAND);
+        IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
 
         var fluidContext = new ItemContextFluidHandler.Consumable(context, ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT.get(), capacity);
@@ -87,7 +87,7 @@ public class ComponentResourceTests {
     public static void testFluidStorageItemStack(ExtendedGameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
-        IItemContext context = PlayerItemCapabilityContext.ofHand(player, InteractionHand.MAIN_HAND);
+        IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
 
         var playerCap = player.getCapability(Capabilities.ItemHandler.ENTITY);
@@ -117,7 +117,7 @@ public class ComponentResourceTests {
     public static void testItemStorageItemStack(ExtendedGameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
-        IItemContext context = PlayerItemCapabilityContext.ofHand(player, InteractionHand.MAIN_HAND);
+        IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
         var storageCap = context.getCapability(Capabilities.ItemHandler.ITEM);
         if (storageCap == null) {
             helper.fail("Storage Capability was missing on item");

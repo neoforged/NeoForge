@@ -22,7 +22,7 @@ import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -71,7 +71,7 @@ public class FluidUtilTest {
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 2);
 
         resetInventory(player, new ItemStack(Items.BUCKET, 5));
-        var capability = PlayerItemCapabilityContext.ofHand(player, InteractionHand.MAIN_HAND).getCapability(Capabilities.FluidHandler.ITEM);
+        var capability = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND).getCapability(Capabilities.FluidHandler.ITEM);
         assert capability != null;
         FluidUtil.moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, capability, Integer.MAX_VALUE);
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 5);

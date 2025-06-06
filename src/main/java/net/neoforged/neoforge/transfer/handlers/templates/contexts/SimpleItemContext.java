@@ -19,18 +19,18 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * provide an index to exclude from the overflow handler, and a scoped handler will be created to exclude that index for
  * overflow operations.
  */
-public class SimpleItemCapabilityContext implements IItemContext {
+public class SimpleItemContext implements IItemContext {
     protected final IResourceHandlerModifiable<ItemResource> mainHandler;
     protected final IResourceHandler<ItemResource> overflowHandler;
     protected final int index;
 
-    public SimpleItemCapabilityContext(IResourceHandlerModifiable<ItemResource> mainHandler, IResourceHandler<ItemResource> overflowHandler, int index) {
+    public SimpleItemContext(IResourceHandlerModifiable<ItemResource> mainHandler, IResourceHandler<ItemResource> overflowHandler, int index) {
         this.mainHandler = mainHandler;
         this.overflowHandler = overflowHandler;
         this.index = index;
     }
 
-    public SimpleItemCapabilityContext(IResourceHandlerModifiable<ItemResource> mainHandler, int index) {
+    public SimpleItemContext(IResourceHandlerModifiable<ItemResource> mainHandler, int index) {
         this(mainHandler, ScopedResourceHandler.fromHandlerExcludingIndices(mainHandler, new int[] { index }), index);
     }
 

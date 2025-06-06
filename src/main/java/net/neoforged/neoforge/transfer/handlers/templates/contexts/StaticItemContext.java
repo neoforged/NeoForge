@@ -15,16 +15,16 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * A static context that holds a fixed amount of a single item. Operations on this context will still perform as if the
  * item is mutable, but the amount or resource will never change.
  */
-public class StaticItemCapabilityContext implements IItemContext {
+public class StaticItemContext implements IItemContext {
     private final ItemResource resource;
     private final int amount;
 
-    public StaticItemCapabilityContext(ItemResource resource, int amount) {
+    public StaticItemContext(ItemResource resource, int amount) {
         this.resource = resource;
         this.amount = amount;
     }
 
-    public StaticItemCapabilityContext(ItemStack stack) {
+    public StaticItemContext(ItemStack stack) {
         this(ItemResource.of(stack), stack.getCount());
     }
 

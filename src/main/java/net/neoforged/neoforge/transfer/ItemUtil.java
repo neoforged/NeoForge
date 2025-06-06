@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCapabilityContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -68,7 +68,7 @@ public class ItemUtil {
     public static void giveItemToPlayer(Player player, ItemResource resource, int amount, int preferredSlot) {
         if (resource.isEmpty()) return;
 
-        PlayerItemCapabilityContext context = new PlayerItemCapabilityContext(player, preferredSlot);
+        PlayerItemContext context = new PlayerItemContext(player, preferredSlot);
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             context.insert(resource, amount, transaction);
         }

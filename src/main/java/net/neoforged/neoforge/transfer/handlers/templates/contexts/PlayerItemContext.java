@@ -17,7 +17,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * A context that represents a player's inventory slot.
  */
-public class PlayerItemCapabilityContext implements IItemContext {
+public class PlayerItemContext implements IItemContext {
     protected final InventoryWrapper handler;
     protected final int index;
 
@@ -26,7 +26,7 @@ public class PlayerItemCapabilityContext implements IItemContext {
             ItemStack itemInHand = player.getItemInHand(hand);
             return new CreativePlayerItemContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
         }
-        return new PlayerItemCapabilityContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : player.getInventory().getContainerSize() - 1);
+        return new PlayerItemContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : player.getInventory().getContainerSize() - 1);
     }
 
     public static IItemContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
@@ -34,10 +34,10 @@ public class PlayerItemCapabilityContext implements IItemContext {
             ItemStack itemInSlot = player.getItemBySlot(slot);
             return new CreativePlayerItemContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
         }
-        return new PlayerItemCapabilityContext(player, player.getInventory().getContainerSize() + slot.getIndex());
+        return new PlayerItemContext(player, player.getInventory().getContainerSize() + slot.getIndex());
     }
 
-    public PlayerItemCapabilityContext(Player player, int index) {
+    public PlayerItemContext(Player player, int index) {
         //This could be captured by player.getCapability, but it was pointed out that has a non-zero chance to return null
         this.handler = InventoryWrapper.of(player);
         this.index = index;
