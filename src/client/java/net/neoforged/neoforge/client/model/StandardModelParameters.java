@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.RenderTypeGroup;
@@ -33,6 +34,8 @@ public record StandardModelParameters(
         @Nullable Transformation rootTransform,
         RenderTypeGroup renderTypeGroup,
         Map<String, Boolean> partVisibility) {
+    private static FileToIdConverter ATLAS_ID_CONVERTER = new FileToIdConverter("textures/atlas", ".png");
+
     public static StandardModelParameters parse(JsonObject jsonObject, JsonDeserializationContext context) {
         String parentName = GsonHelper.getAsString(jsonObject, "parent", "");
         ResourceLocation parent = parentName.isEmpty() ? null : ResourceLocation.parse(parentName);
@@ -40,7 +43,8 @@ public record StandardModelParameters(
         TextureSlots.Data textures = TextureSlots.Data.EMPTY;
         if (jsonObject.has("textures")) {
             String atlasName = GsonHelper.getAsString(jsonObject, "atlas", "");
-            ResourceLocation atlas = atlasName.isEmpty() ? TextureAtlas.LOCATION_BLOCKS : ResourceLocation.parse(atlasName);
+            ResourceLocation atlas = atlasName.isEmpty() ? TextureAtlas.LOCATION_BLOCKS :
+                    ATLAS_ID_CONVERTER.idToFile(ResourceLocation.parse(atlasName));
             JsonObject jsonobject = GsonHelper.getAsJsonObject(jsonObject, "textures");
             textures = TextureSlots.parseTextureMap(jsonobject, atlas);
         }
