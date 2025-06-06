@@ -13,8 +13,7 @@ import net.neoforged.neoforge.transfer.storage.StoragePreconditions;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Template class for storages that are solely based on items (and not their data components)
- * for storing discrete amounts of a resource.
+ * Template class for storages that can store a fixed amount of a single resource at a time in item-form.
  * <p>One example for this type of storage is the vanilla bucket (see {@link VanillaBucketFluidStorage}),
  * where the bucket represents an empty storage, while the various filled bucket items represent
  * a full storage of always 1000 amount.
@@ -28,16 +27,38 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
         this.context = context;
     }
 
+    /**
+     * @return The empty container item.
+     */
     protected abstract ItemVariant getEmptyItem();
 
-    protected abstract int getItemVolume();
+    /**
+     * @return The amount of resource that a filled item contains. This has to be constant.
+     */
+    protected abstract long getFilledAmount();
 
-    protected abstract ItemVariant getFilledItem(T fluidContent);
+    /**
+     * Gets the filled item that would contain the given resource.
+     * <p>
+     * Implementors should ensure that for the returned item, {@link #getContainedResource} returns
+     * the given resource.
+     */
+    protected abstract ItemVariant getFilledItem(T containedResource);
 
+    /**
+     * @param filledItem The filled item, which may be blank.
+     * @return The resource contained in the item.
+     */
     protected abstract T getContainedResource(ItemVariant filledItem);
 
     @Override
     public int size() {
+        var current = context.getCurrent();
+        // Handle the case where the underlying item has been swapped out for one that is not compatible
+        // with this storage.
+        if (current.isBlank() || !current.equals(getEmptyItem()) && getContainedResource(current).isBlank()) {
+            return 0;
+        }
         return 1; // we already operate on a single bucket at a time
     }
 
@@ -53,7 +74,7 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
 
     @Override
     public long insert(int index, T resource, long maxAmount, TransactionContext transaction) {
-        StoragePreconditions.checkSlot(index, size());
+        StoragePreconditions.checkSlot(index, 1);
         StoragePreconditions.notBlankNotNegative(resource, maxAmount);
 
         if (!context.getCurrent().equals(getEmptyItem())) {
@@ -65,7 +86,7 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
             return 0; // the fluid has no associated filled item
         }
 
-        int itemVolume = getItemVolume();
+        var itemVolume = getFilledAmount();
         var itemsToFill = maxAmount / itemVolume;
         if (itemsToFill > 0) {
             long itemsFilled = context.exchange(filledItem, itemsToFill, transaction);
@@ -77,7 +98,7 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
 
     @Override
     public long extract(int index, T resource, long maxAmount, TransactionContext transaction) {
-        StoragePreconditions.checkSlot(index, size());
+        StoragePreconditions.checkSlot(index, 1);
         StoragePreconditions.notBlankNotNegative(resource, maxAmount);
 
         var containedFluid = getContainedResource(context.getCurrent());
@@ -85,7 +106,7 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
             return 0; // Incompatible fluid
         }
 
-        var itemVolume = getItemVolume();
+        var itemVolume = getFilledAmount();
         var itemsToEmpty = maxAmount / itemVolume;
         if (itemsToEmpty > 0) {
             long itemsEmptied = context.exchange(getEmptyItem(), itemsToEmpty, transaction);
@@ -97,31 +118,31 @@ public abstract class DiscreteInItemStorage<T extends RegistryObjectVariant<?>> 
 
     @Override
     public boolean isResourceBlank(int index) {
-        StoragePreconditions.checkSlot(index, size());
+        StoragePreconditions.checkSlot(index, 1);
         return getContainedResource(context.getCurrent()).isBlank();
     }
 
     @Override
     public T getResource(int index) {
-        StoragePreconditions.checkSlot(index, size());
+        StoragePreconditions.checkSlot(index, 1);
         return getContainedResource(context.getCurrent());
     }
 
     @Override
     public long getAmount(int index) {
-        StoragePreconditions.checkSlot(index, size());
-        return isResourceBlank(index) ? 0 : getItemVolume() * context.getCurrentAmount();
+        StoragePreconditions.checkSlot(index, 1);
+        return isResourceBlank(index) ? 0 : getFilledAmount() * context.getCurrentAmount();
     }
 
     @Override
     public long getCapacity(int index, T resource) {
-        StoragePreconditions.checkSlot(index, size());
-        return getItemVolume() * context.getCurrentAmount();
+        StoragePreconditions.checkSlot(index, 1);
+        return getFilledAmount() * context.getCurrentAmount();
     }
 
     @Override
     public boolean isValid(int index, T resource) {
-        StoragePreconditions.checkSlot(index, size());
+        StoragePreconditions.checkSlot(index, 1);
         return !getFilledItem(resource).isBlank();
     }
 }

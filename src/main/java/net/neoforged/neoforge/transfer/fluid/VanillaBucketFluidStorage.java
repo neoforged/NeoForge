@@ -25,13 +25,13 @@ public class VanillaBucketFluidStorage extends DiscreteInItemStorage<FluidVarian
     }
 
     @Override
-    protected int getItemVolume() {
+    protected long getFilledAmount() {
         return FluidType.BUCKET_VOLUME;
     }
 
     @Override
-    protected ItemVariant getFilledItem(FluidVariant fluidContent) {
-        return FluidUtil.getFilledBucket(fluidContent);
+    protected ItemVariant getFilledItem(FluidVariant containedResource) {
+        return FluidUtil.getFilledBucket(containedResource);
     }
 
     @Override
