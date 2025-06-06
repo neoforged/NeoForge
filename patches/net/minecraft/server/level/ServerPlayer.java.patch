@@ -342,13 +342,3 @@
      }
  
      @Override
-@@ -2174,7 +_,8 @@
-                 .apply(p_405139_, ServerPlayer.RespawnConfig::new)
-         );
- 
--        static ResourceKey<Level> getDimensionOrDefault(@Nullable ServerPlayer.RespawnConfig p_405808_) {
-+        // TODO: convert to AT
-+        public static ResourceKey<Level> getDimensionOrDefault(@Nullable ServerPlayer.RespawnConfig p_405808_) {
-             return p_405808_ != null ? p_405808_.dimension() : Level.OVERWORLD;
-         }
- 
