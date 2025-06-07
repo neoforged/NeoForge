@@ -15,6 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -229,6 +230,10 @@ public final class ResourceHandlerUtil {
             //We don't commit allow us to just inquiry the amount
             return extract(handler, resource, Integer.MAX_VALUE, transaction);
         }
+    }
+
+    public static boolean any(ItemResource resource) {
+        return true;
     }
 
     @FunctionalInterface

@@ -39,7 +39,7 @@ public class VanillaInventoryCodeHooks {
             for (int j = 0; j < dest.getContainerSize(); j++) {
                 ItemStack destStack = dest.getItem(j);
 
-                if (!dest.canPlaceItem(j, extractedItemStack) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
+                if (!dest.canPlaceItem(j, extractedItemStack) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractedItemStack, destStack))))
                     continue;
                 extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceHandlerUtil::any, 1, TransactionContext.ROOT);
                 if (extractedItemStack.isEmpty()) continue;//Should be unneeded

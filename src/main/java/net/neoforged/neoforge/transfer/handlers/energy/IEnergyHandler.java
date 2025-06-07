@@ -60,6 +60,13 @@ public interface IEnergyHandler extends ITransactionHandler {
     @Range(from = 0, to = Integer.MAX_VALUE)
     int getAmount(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
+    /**
+     * This is an optional method that provides the ability to query the contents up to a long should the internals allow for it.
+     * This is only needed to be overrided should you store more than an int in a given index.
+     * 
+     * @param index The index to get the amount from.
+     * @return The amount of energy stored at the given index. This should be non-negative.
+     */
     @Range(from = 0, to = Long.MAX_VALUE)
     default long getAmountAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
         return getAmount(index);
