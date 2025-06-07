@@ -277,6 +277,7 @@ public class LivingEntityEventTests {
             helper.assertTrue(!childSlimes.isEmpty(), "No child slimes received by event");
             for (Mob s : childSlimes) {
                 helper.assertValueEqual("whatever", s.getPersistentData().getString("test.something").orElse(null), "NBT Data not copied");
+                s.kill(helper.getLevel());
             }
 
             Slime childlessSlime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
