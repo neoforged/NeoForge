@@ -67,7 +67,7 @@ and code reuse throughout those implementations.
 
 ## Migrations
 
-See `migration_paths.md` for a full list regarding `IItemHandler` & `IFluidHandler` deprecations. In short, know that
+See `resource_handlers_migration.md` for a full list regarding `IItemHandler` & `IFluidHandler` deprecations. In short, know that
 all previous methods, have an alternative or introduces a new method that wasn't previously possible.
 This is one of the major benefits to a synergistic and generalized handler.
 

@@ -14,7 +14,9 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * given the size() lookup is relatively expensive in comparison to normal handlers. While a dynamically sized IResourceHandler is a valid use case in some situations,
  * it should be weighed if wrapping it is the right approach.
  * <p>
- * <strong>Important: This will work with constant sized handlers, but ensure what you are wrapping is dynamically sized.</strong>
+ * <strong>Important: While this will work with constant sized handlers, it is advised to make sure you are using this version with at least one dynamically sized handler.</strong>
+ * If none of the handlers wrapped are resizeable, then please use the static sized version {@link CombinedResourceHandlerWrapper}
+ * <p>
  * It is also important that the size should not change until after the transaction is finished.
  * <p>
  * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled.

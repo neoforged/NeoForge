@@ -131,6 +131,10 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.is(predicate);
     }
 
+    public boolean is(ItemStack stack) {
+        return ItemStack.isSameItemSameComponents(stack, innerStack);
+    }
+
     public boolean test(Predicate<ItemStack> predicate) {
         return predicate.test(innerStack);
     }
@@ -182,10 +186,6 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.getComponentsPatch();
     }
 
-    public boolean matches(ItemStack stack) {
-        return ItemStack.isSameItemSameComponents(stack, innerStack);
-    }
-
     public ItemStack toStack() {
         return toStack(1);
     }
@@ -220,10 +220,13 @@ public final class ItemResource implements IResource, DataComponentHolder {
     }
 
     public ResourceStack<ItemResource> withAmount(int amount) {
+        if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK;
         return new ResourceStack<>(this, amount);
     }
 
     public MutableResourceStack<ItemResource> withMutableAmount(int amount) {
+        // should we have an empty mutable as well?
+        if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK.mutable();
         return new MutableResourceStack<>(this, amount);
     }
 

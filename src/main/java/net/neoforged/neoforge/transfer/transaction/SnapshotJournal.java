@@ -39,10 +39,14 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
 public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
+    /**
+     * A maximum limit of snapshots that should persist after finishing.
+     * This is intended to reduce down the memory burden for large snapshots.
+     */
+    private static final int SNAPSHOT_THRESHOLD_LIMIT = 10;
 
-    //There were some profiling tests performed to double-check how an int2obj map would compare. Only a basic Int2ObjOpen map was comparable to an arraylist,
-    // in an iteration of 10k depth, the arraylist was 1ms faster.
     private final ArrayList<T> snapshots = new ArrayList<>();
+
     @Nullable
     private T originalState = null;
 
@@ -66,9 +70,12 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     /**
      * Called after an outer transaction succeeded,
      * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     * <p>
+     * Assume that without any implementation, data on something like BlockEntities that expect to be told when its data is written to, could be potentially lost on world save.
      *
      * @param originalState state of this participant before the transactional operation.
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
+     * @see net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot SetChangedSnapShot
      */
     protected void onCommit(T originalState) {}
 
@@ -80,15 +87,17 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      */
     public void updateSnapshots(TransactionContext transaction) {
         //This should be negligible at best, but it does alleviate the resize burden when adding incrementally here on sudden spikes.
-        snapshots.ensureCapacity(transaction.nestingDepth());
-        while (snapshots.size() <= transaction.nestingDepth()) {
+        var nestingDepth = transaction.nestingDepth();
+
+        snapshots.ensureCapacity(nestingDepth);
+        for (var i = snapshots.size(); i <= nestingDepth; i++) {
             snapshots.add(null);
         }
 
-        if (snapshots.get(transaction.nestingDepth()) == null) {
+        if (snapshots.get(nestingDepth) == null) {
             T snapshot = createSnapshot();
             Objects.requireNonNull(snapshot, "Snapshot may not be null!");
-            snapshots.set(transaction.nestingDepth(), snapshot);
+            snapshots.set(nestingDepth, snapshot);
             transaction.addCloseCallback(this);
         }
     }
@@ -103,8 +112,10 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
             //todo should we clear?
-            //            if (transaction.nestingDepth() <= 0)
-            //                snapshots.clear();
+            if (transaction.nestingDepth() <= 0 && snapshots.size() > SNAPSHOT_THRESHOLD_LIMIT) {
+                snapshots.clear();
+                snapshots.ensureCapacity(SNAPSHOT_THRESHOLD_LIMIT);
+            }
             return;
         }
 
@@ -136,6 +147,9 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         releaseSnapshot(originalState);
         originalState = null;
         //TODO should we clear the snapshots?
-        //                snapshots.clear();
+        if (snapshots.size() > SNAPSHOT_THRESHOLD_LIMIT) {
+            snapshots.clear();
+            snapshots.ensureCapacity(SNAPSHOT_THRESHOLD_LIMIT);
+        }
     }
 }

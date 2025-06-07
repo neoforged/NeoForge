@@ -12,10 +12,12 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 
 /**
  * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.
- *
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
+ * 
+ * @deprecated This was moved and changed to match the new system as {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment EnergyBufferAttachment}
  */
+@Deprecated(since = "1.21.6", forRemoval = true)
 public class AttachmentEnergyStorage implements IEnergyStorage {
     protected final AttachmentHolder parent;
     protected final Supplier<AttachmentType<Integer>> attachmentType;

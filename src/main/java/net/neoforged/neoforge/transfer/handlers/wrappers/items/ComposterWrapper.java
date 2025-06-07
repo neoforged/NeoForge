@@ -29,8 +29,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     // -1 if bonemeal was extracted, otherwise the composter increase probability of the (pending) inserted item.
     private Float probability = NO_OP;
 
-    private final IResourceHandler<ItemResource> upStorage = new Top();
-    private final IResourceHandler<ItemResource> downStorage = new Bottom();
+    private final IResourceHandler<ItemResource> topHandler = new Top();
+    private final IResourceHandler<ItemResource> bottomHandler = new Bottom();
 
     // Weak values to make sure wrappers are cleaned up after use, thread-safe.
     private static final Map<WrapperLocation, ComposterWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
@@ -41,7 +41,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
 
         var location = new WrapperLocation(level, pos.immutable());
         var wrapper = wrappers.computeIfAbsent(location, ComposterWrapper::new);
-        return direction == Direction.UP ? wrapper.upStorage : wrapper.downStorage;
+        return direction == Direction.UP ? wrapper.topHandler : wrapper.bottomHandler;
     }
 
     private ComposterWrapper(WrapperLocation location) {
@@ -63,8 +63,6 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         public int insert(ItemResource resource, int amount, TransactionContext transaction) {
             if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-            // Check amount.
-            if (amount < 1) return 0;
             // Check that no action is scheduled.
             if (probability != NO_OP) return 0;
             // Check that the composter can accept items.
@@ -128,11 +126,6 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         private boolean hasBoneMeal() {
             // We only have bone meal if the level is 8 and no action was scheduled.
             return probability == NO_OP && location.getBlockState().getValue(ComposterBlock.LEVEL) == 8;
-        }
-
-        @Override
-        public int size() {
-            return 1;
         }
 
         @Override

@@ -11,7 +11,6 @@ import java.util.function.UnaryOperator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import org.jetbrains.annotations.Range;
 
 /**

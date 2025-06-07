@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentHolder;
@@ -22,8 +21,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.SoundAction;
@@ -31,6 +28,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
@@ -186,10 +184,6 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.getComponentsPatch();
     }
 
-    public boolean matches(FluidStack stack) {
-        return FluidStack.isSameFluidSameComponents(stack, innerStack);
-    }
-
     public FluidStack toStack(int amount) {
         return this.innerStack.copyWithAmount(amount);
     }
@@ -226,12 +220,8 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.is(fluidType);
     }
 
-    public boolean isVaporizedOnPlacement(Level level, BlockPos pos) {
-        return innerStack.getFluidType().isVaporizedOnPlacement(level, pos, innerStack);
-    }
-
-    public void onVaporize(@Nullable Player player, Level level, BlockPos pos) {
-        innerStack.getFluidType().onVaporize(player, level, pos, innerStack);
+    public boolean is(FluidStack stack) {
+        return FluidStack.isSameFluidSameComponents(stack, innerStack);
     }
 
     public ItemResource getFilledBucket() {
@@ -245,11 +235,12 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.getFluidType().getSound(innerStack, action);
     }
 
-    public ResourceStack<FluidResource> withAmount(int amount) {
+    public ResourceStack<FluidResource> withAmount(@Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+        if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
         return new ResourceStack<>(this, amount);
     }
 
-    public MutableResourceStack<FluidResource> withMutableAmount(int amount) {
+    public MutableResourceStack<FluidResource> withMutableAmount(@Range(from = 0, to = Integer.MAX_VALUE) int amount) {
         return new MutableResourceStack<>(this, amount);
     }
 

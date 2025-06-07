@@ -67,7 +67,7 @@ public abstract class ItemStackJournal extends SnapshotJournal<ItemStack> implem
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         ItemStack currentStack = get();
 
-        if ((resource.matches(currentStack) || currentStack.isEmpty()) && canInsert(resource)) {
+        if ((resource.is(currentStack) || currentStack.isEmpty()) && canInsert(resource)) {
             int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
 
             if (insertedAmount > 0) {
@@ -93,7 +93,7 @@ public abstract class ItemStackJournal extends SnapshotJournal<ItemStack> implem
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         ItemStack currentStack = get();
 
-        if (resource.matches(currentStack) && canExtract(resource)) {
+        if (resource.is(currentStack) && canExtract(resource)) {
             int extracted = Math.min(currentStack.getCount(), amount);
 
             if (extracted > 0) {

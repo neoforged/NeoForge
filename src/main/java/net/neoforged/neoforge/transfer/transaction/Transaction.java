@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
+import net.neoforged.neoforge.transfer.handlers.resources.Reporter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,6 +86,13 @@ public interface Transaction extends AutoCloseable, TransactionContext {
      */
     static Transaction open(@Nullable TransactionContext parent) {
         return TransactionManagerImpl.MANAGERS.get().open(parent);
+    }
+
+    // PROTOTYPE
+    @ApiStatus.Internal
+    @ApiStatus.NonExtendable
+    default Reporter reporting() {
+        return new Reporter(this);
     }
 
     /**

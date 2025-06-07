@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.Range;
  *
  * @param <T> The type of resource this handler manages.
  */
-public interface IResourceHandler<T extends IResource> {
+public interface IResourceHandler<T extends IResource> extends ITransactionHandler {
     /**
      * An index in synonymous with "slot", "tank", "buffer", etc.
      *
@@ -32,7 +31,7 @@ public interface IResourceHandler<T extends IResource> {
 
     /**
      * @param index The index to get the amount from.
-     * @return The amount of the resource at the given index. A range from {@code 0} to {@code 2,147,483,647}
+     * @return The amount of the resource at the given index. A range from {@code 0} to {@code Integer.MAX_VALUE}
      */
     int getAmount(int index);
 
@@ -43,7 +42,7 @@ public interface IResourceHandler<T extends IResource> {
      *
      * @param index    The index to get the limit from.
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
-     * @return The limit of the resource at the given index. A range from {@code 0} to {@code 2,147,483,647}
+     * @return The limit of the resource at the given index. A range from {@code 0} to {@code Integer.MAX_VALUE}
      */
     @Range(from = 0, to = Integer.MAX_VALUE)
     int getCapacity(int index, T resource);
@@ -94,7 +93,8 @@ public interface IResourceHandler<T extends IResource> {
      * @return True if a resource can be inserted, false otherwise.
      */
     default boolean supportsInsertion() {
-        for (int i = 0; i < size(); i++) {
+        var size = size();
+        for (int i = 0; i < size; i++) {
             if (supportsInsertion(i)) {
                 return true;
             }
@@ -137,7 +137,8 @@ public interface IResourceHandler<T extends IResource> {
      * @return True if a resource can be extracted, false otherwise.
      */
     default boolean supportsExtraction() {
-        for (int i = 0; i < size(); i++) {
+        var size = size();
+        for (int i = 0; i < size; i++) {
             if (supportsExtraction(i)) {
                 return true;
             }
@@ -150,9 +151,9 @@ public interface IResourceHandler<T extends IResource> {
      *
      * @param index       The index to insert the resource into.
      * @param resource    The resource to insert.
-     * @param amount      The amount of the resource to insert. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount      The amount of the resource to insert. A range from {@code 0} to {@code Integer.MAX_VALUE}
      * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted. A range from {@code 0} to {@code 2,147,483,647}
+     * @return The amount of the resource that was (or would have been, if simulated) inserted. A range from {@code 0} to {@code Integer.MAX_VALUE}
      */
     int insert(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
 
@@ -163,9 +164,9 @@ public interface IResourceHandler<T extends IResource> {
      * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource    The resource to insert.
-     * @param amount      The amount of the resource to insert. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount      The amount of the resource to insert. A range from {@code 0} to {@code Integer.MAX_VALUE}
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
-     * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) inserted.
+     * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) inserted.
      */
     int insert(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
 
@@ -174,9 +175,9 @@ public interface IResourceHandler<T extends IResource> {
      *
      * @param index       The index to extract the resource from.
      * @param resource    The resource to extract.
-     * @param amount      The amount of the resource to extract. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount      The amount of the resource to extract. A range from {@code 0} to {@code Integer.MAX_VALUE}
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
-     * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) extracted.
      */
     int extract(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
 
@@ -187,9 +188,9 @@ public interface IResourceHandler<T extends IResource> {
      * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource    The resource to extract.
-     * @param amount      The amount of the resource to extract. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount      The amount of the resource to extract. A range from {@code 0} to {@code Integer.MAX_VALUE}
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
-     * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) extracted.
      */
     int extract(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
 

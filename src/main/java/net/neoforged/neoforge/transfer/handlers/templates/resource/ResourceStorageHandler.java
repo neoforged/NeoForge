@@ -82,7 +82,8 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
-        for (int i = 0; i < size(); i++) {
+        var cachedSize = size();
+        for (int i = 0; i < cachedSize; i++) {
             changedAmount += insertBehavior(contents, i, resource, amount - changedAmount, context);
             if (changedAmount >= amount) break;
         }
@@ -133,7 +134,8 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         //NEW: We have snapshots so we should assume they are always executing and can be reverted
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
-        for (int i = 0; i < size(); i++) {
+        var cachedSize = size();
+        for (int i = 0; i < cachedSize; i++) {
             changedAmount += extractBehavior(contents, i, resource, amount - changedAmount, transaction);
             if (changedAmount >= amount) break;
         }

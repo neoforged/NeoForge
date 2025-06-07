@@ -7,9 +7,9 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -23,8 +23,8 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Range;
 
 public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
@@ -36,7 +36,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
      *
      * <p>A note on GC: weak keys alone are not suitable as the ContainerStorage strongly references the Container.
      * Weak values are suitable, but we have to ensure that the ContainerStorage remains strongly reachable as int as
-     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotWrapper}.
+     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotItemStackJournal}.
      *
      * @see WorldlyContainerWrapper
      * @see InventoryWrapper
@@ -46,24 +46,19 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakValues().makeMap();
 
     public static VanillaContainerWrapper of(Container container) {
-        VanillaContainerWrapper storage = WRAPPERS.computeIfAbsent(container, inv -> {
-            if (inv instanceof Inventory inventory) {
-                return new InventoryWrapper(inventory);
-            } else {
-                return new VanillaContainerWrapper(inv);
-            }
-        });
-        storage.resize();
-        return storage;
+        var wrapper = WRAPPERS.computeIfAbsent(container, inv -> inv instanceof Inventory inventory ? new InventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
+        wrapper.resize();
+        return wrapper;
     }
 
     private final Container container;
     private int size;
-    private final List<SlotWrapper> slotWrappers = new ArrayList<>();
-    private final SetChangedParticipant setChangedParticipant = new SetChangedParticipant();
+    private final ArrayList<SlotItemStackJournal> snapshots = new ArrayList<>();
+    private final SetChangedSnapshot setChangedParticipant;
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
+        setChangedParticipant = SetChangedSnapshot.of(container::setChanged);
     }
 
     protected Container getContainer() {
@@ -72,16 +67,17 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     private void resize() {
         size = container.getContainerSize();
-        while (slotWrappers.size() < size) {
-            slotWrappers.add(new SlotWrapper(slotWrappers.size()));
+        snapshots.ensureCapacity(size);
+        for (var i = snapshots.size(); i < size; i++) {
+            snapshots.add(new SlotItemStackJournal(i));
         }
     }
 
-    private SlotWrapper get(int index) {
+    private SlotItemStackJournal get(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Slot index out of bounds: " + index + " (size: " + size + ")");
         }
-        return slotWrappers.get(index);
+        return snapshots.get(index);
     }
 
     @Override
@@ -180,26 +176,10 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
         get(index).set(resource.toStack(amount));
     }
 
-    // Boolean is used to prevent allocation. Null values are not allowed by SnapshotParticipant.
-    private class SetChangedParticipant extends SnapshotJournal<Boolean> {
-        @Override
-        protected Boolean createSnapshot() {
-            return Boolean.TRUE;
-        }
-
-        @Override
-        protected void revertToSnapshot(Boolean snapshot) {}
-
-        @Override
-        protected void onCommit(Boolean originalState) {
-            container.setChanged();
-        }
-    }
-
-    private class SlotWrapper extends ItemStackJournal {
+    private class SlotItemStackJournal extends ItemStackJournal {
         private final int index;
 
-        private SlotWrapper(int index) {
+        private SlotItemStackJournal(int index) {
             this.index = index;
         }
 
@@ -237,20 +217,20 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
 
         @Override
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-            int ret = super.insert(index, resource, amount, transaction);
-            if (ret > 0) {
+            int inserted = super.insert(index, resource, amount, transaction);
+            if (inserted > 0) {
                 container.onTransfer(this.index, transaction);
             }
-            return ret;
+            return inserted;
         }
 
         @Override
         public int extract(int index, ItemResource variant, int maxAmount, TransactionContext transaction) {
-            int ret = super.extract(index, variant, maxAmount, transaction);
-            if (ret > 0) {
+            int extracted = super.extract(index, variant, maxAmount, transaction);
+            if (extracted > 0) {
                 container.onTransfer(this.index, transaction);
             }
-            return ret;
+            return extracted;
         }
 
         // We override updateSnapshots to also schedule a setChanged call for the backing container.
@@ -277,14 +257,15 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
             container.onCommit(index, original);
 
             if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
-                if (!ItemStack.matches(currentStack, original)) {
-                    // Components have changed, we need to copy the stack.
-                    set(currentStack.copy());
-                } else {
-                    // None is empty and the items and components match: just update the amount, and reuse the original stack.
-                    original.setCount(currentStack.getCount());
-                    set(original);
-                }
+                //                if (!ItemStack.matches(currentStack, original)) {
+                // Components have changed, we need to copy the stack.
+                //                    set(currentStack.copy());
+                ((PatchedDataComponentMap) original.getComponents()).restorePatch(currentStack.getComponentsPatch());
+                //                } else {
+                // None is empty and the items and components match: just update the amount, and reuse the original stack.
+                original.setCount(currentStack.getCount());
+                set(original);
+                //                }
             } else {
                 // Otherwise assume everything was taken from original so empty it.
                 original.setCount(0);

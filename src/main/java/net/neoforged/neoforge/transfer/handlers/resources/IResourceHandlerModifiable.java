@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import org.jetbrains.annotations.Range;
 

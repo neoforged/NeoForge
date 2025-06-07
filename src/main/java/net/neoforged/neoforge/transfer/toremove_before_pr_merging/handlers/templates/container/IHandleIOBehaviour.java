@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.IResourceContainer;
 import org.jetbrains.annotations.Contract;
 
 /**

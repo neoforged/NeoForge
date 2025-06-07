@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
@@ -36,17 +35,14 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
         }
         int[] slots = worldlyContainer.getSlotsForFace(side);
         if (slot >= slots.length) {
-            throw new IllegalArgumentException("Cannot access storage at side " + side + " with out of bounds slot index " + slot);
+            throw new IllegalArgumentException("Cannot access worldly container on side " + side + " : out of bounds slot index " + slot + " with size " + slots.length);
         }
         return slots[slot];
     }
 
     @Override
     public int size() {
-        if (side == null) {
-            return worldlyContainer.getContainerSize();
-        }
-        return worldlyContainer.getSlotsForFace(side).length;
+        return side == null ? worldlyContainer.getContainerSize() : worldlyContainer.getSlotsForFace(side).length;
     }
 
     @Override
@@ -72,12 +68,12 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     @Override
     public boolean supportsInsertion(int index) {
-        return true;
+        return wrappedContainer.supportsInsertion(convertSlot(index));
     }
 
     @Override
     public boolean supportsExtraction(int index) {
-        return true;
+        return wrappedContainer.supportsExtraction(convertSlot(index));
     }
 
     @Override
@@ -91,19 +87,37 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     @Override
     public int insert(ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
-        return 0;
+        var size = size();
+        var handled = 0;
+        for (var index = 0; index < size; index++) {
+            handled += insert(index, resource, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+        return handled;
     }
 
     @Override
     public int extract(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
-        return 0;
+        int convertedSlot = convertSlot(index);
+        if (side != null && !worldlyContainer.canTakeItemThroughFace(convertedSlot, UnsafeResourceUtils.innerStackOf(resource), side)) {
+            return 0;
+        }
+        return wrappedContainer.extract(convertedSlot, resource, amount, transaction);
     }
 
     @Override
     public int extract(ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
-        return 0;
+        var size = size();
+        var handled = 0;
+        for (var index = 0; index < size; index++) {
+            handled += extract(index, resource, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+        return handled;
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {}
+    public void set(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+        worldlyContainer.setItem(index, resource.toStack(amount), true);
+    }
 }

@@ -98,7 +98,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
             amount = Math.min(amount, resource.getMaxStackSize());
 
             return setAndValidate(contents.with(index, resource, amount), amount, context);
-        } else if (resource.matches(stack) && stack.getCount() < resource.getMaxStackSize()) {
+        } else if (resource.is(stack) && stack.getCount() < resource.getMaxStackSize()) {
             int newAmount = Math.min(stack.getCount() + amount, resource.getMaxStackSize());
             amount = newAmount - stack.getCount();
 //            if (action.isExecuting())

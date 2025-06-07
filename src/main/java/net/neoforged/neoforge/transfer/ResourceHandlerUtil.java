@@ -22,6 +22,14 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 public final class ResourceHandlerUtil {
+    /**
+     * A utility method to check both resource and amount to validate if the resource would be empty.
+     * <p>
+     * Typically used in handler insert or extract implementations to determine if the operation is valid before proceeding.
+     * 
+     * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
+     *
+     */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         return resource.isEmpty() || amount <= 0;
     }
@@ -36,7 +44,8 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the {@link IResourceHandler} is empty, {@code false} otherwise
      */
     public static boolean isEmpty(IResourceHandler<? extends IResource> handler) {
-        for (int i = 0; i < handler.size(); i++) {
+        var size = handler.size();
+        for (int i = 0; i < size; i++) {
             if (!isIndexEmpty(handler, i))
                 return false;
         }
@@ -140,6 +149,7 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
+    @Range(from = 0, to = Integer.MAX_VALUE)
     public static <T extends IResource> int insertStacking(IResourceHandler<T> handler, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, @Nullable TransactionContext transaction) {
         try (var tx = Transaction.open(transaction)) {
             int inserted = 0;
@@ -217,7 +227,43 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int getTotalAmountOf(IResourceHandler<T> handler, T resource) {
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             //We don't commit allow us to just inquiry the amount
-            return extract(handler, resource, Integer.MAX_VALUE, null);
+            return extract(handler, resource, Integer.MAX_VALUE, transaction);
+        }
+    }
+
+    @FunctionalInterface
+    public interface IStackFactory<R extends IResource, S> {
+        S create(R resource, int amount);
+    }
+
+    public static <R extends IResource, S> S extractFiltered(
+            IResourceHandler<R> handler,
+            Predicate<R> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            R defaultResource,
+            @Nullable TransactionContext transaction,
+            IStackFactory<R, S> stackCreator) {
+        try (var subTransaction = Transaction.open(transaction)) {
+            int size = handler.size();
+            var handled = 0;
+            R resourceTarget = defaultResource;
+            for (int index = 0; index < size; index++) {
+                R resource = handler.getResource(index);
+                if (resource.isEmpty()) continue;
+                if (!filter.test(resource)) continue;
+                if (resourceTarget.isEmpty())
+                    resourceTarget = resource;
+                else if (!resourceTarget.equals(resource)) continue;
+
+                handled += handler.extract(resource, amount - handled, subTransaction);
+                if (handled == amount) {
+                    subTransaction.commit();
+                    return stackCreator.create(resource, handled);
+                }
+            }
+
+            subTransaction.commit();
+            return stackCreator.create(resourceTarget, handled);
         }
     }
 
@@ -233,9 +279,13 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> IResourceStack<T> extractFiltered(IResourceHandler<T> handler, Predicate<T> filter, @Range(from = 0, to = Integer.MAX_VALUE) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> IResourceStack<T> extractFiltered(
+            IResourceHandler<T> handler,
+            Predicate<T> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            IResourceStack<T> emptyResource,
+            @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
-
             int size = handler.size();
             var handled = 0;
             var resourceTarget = emptyResource.resource();
@@ -266,15 +316,20 @@ public final class ResourceHandlerUtil {
      *
      * @param <T>         the type of resource handled by the handler
      * @param handler     the {@link IResourceHandler} to extract the resource from
-     * @param index       the index to use for the handler
      * @param filter      the filter to apply to the resources
+     * @param index       the index to use for the handler
      * @param amount      the desired amount of the resource to extract
      * @param transaction The transaction context for a given insertion.
      *                    Passing in {@code null} will essentially be the same as doing `execute`,
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> IResourceStack<T> extractIndexFiltered(IResourceHandler<T> handler, int index, Predicate<T> filter, @Range(from = 0, to = Integer.MAX_VALUE) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> IResourceStack<T> extractIndexFiltered(
+            IResourceHandler<T> handler,
+            Predicate<T> filter, @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            IResourceStack<T> emptyResource,
+            @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             T resource = handler.getResource(index);
             if (!filter.test(resource)) return new ResourceStack<>(resource, amount);
@@ -298,8 +353,13 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> IResourceStack<T> extractIndexedAny(IResourceHandler<T> handler, int index, @Range(from = 0, to = Integer.MAX_VALUE) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
-        return extractIndexFiltered(handler, index, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
+    public static <T extends IResource> IResourceStack<T> extractIndexedAny(
+            IResourceHandler<T> handler,
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            IResourceStack<T> emptyResource,
+            @Nullable TransactionContext transaction) {
+        return extractIndexFiltered(handler, Predicate.not(IResource::isEmpty), index, amount, emptyResource, transaction);
     }
 
     /**
@@ -313,7 +373,7 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> IResourceStack<T> extractAny(IResourceHandler<T> handler, @Range(from = 0, to = Integer.MAX_VALUE) int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> IResourceStack<T> extractAny(IResourceHandler<T> handler, int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
         return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
     }
 

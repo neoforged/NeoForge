@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer;
 
 import com.google.common.base.Preconditions;
+import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -34,8 +35,9 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
-public class FluidUtil {
+public final class FluidUtil {
     /**
      * Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler block.
      * First it tries to fill the item from the block,
@@ -242,6 +244,22 @@ public class FluidUtil {
             }
         }
         return ItemResource.of(fluidVariant.getInstanceValue().getFluidType().getBucket(fluidVariant.toStack(FluidType.BUCKET_VOLUME)));
+    }
+
+    public static FluidStack extractFluidStackFiltered(
+            IResourceHandler<FluidResource> handler,
+            Predicate<FluidResource> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
+    }
+
+    public static ResourceStack<FluidResource> extractResourceStackFiltered(
+            IResourceHandler<FluidResource> handler,
+            Predicate<FluidResource> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
     }
 
     private FluidUtil() {}

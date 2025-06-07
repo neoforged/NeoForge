@@ -10,6 +10,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -21,7 +22,11 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
  * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
+ *
+ * @deprecated Migrated to {@link EnergyBufferComponentHandler}
  */
+
+@Deprecated(forRemoval = true, since = "1.21.6")
 public class ItemEnergyStorage implements IEnergyStorage {
     protected final IItemContext itemContext;
     protected final DataComponentType<Integer> energyComponent;

@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 

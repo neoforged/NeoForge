@@ -21,7 +21,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final LivingEntity entity;
     protected final List<EquipmentSlot> slots;
-    private final List<EquipmentSlotSnapshotEntry> snapshots = new ArrayList<>();
+    private final ArrayList<EquipmentSlotSnapshotEntry> snapshots = new ArrayList<>();
 
     public static boolean isHands(EquipmentSlot slot) {
         return slot.getType() == EquipmentSlot.Type.HAND;
@@ -35,11 +35,10 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
             list.addAll(Arrays.stream(EquipmentSlot.values()).filter(equipmentSlotPredicate).toList());
         }
         this.slots = List.copyOf(list);
-        updateSlots();
-    }
 
-    protected void updateSlots() {
-        while (snapshots.size() < slots.size()) {
+        var handlerSize = slots.size();
+        snapshots.ensureCapacity(handlerSize);
+        for (var i = 0; i < handlerSize; i++) {
             snapshots.add(new EquipmentSlotSnapshotEntry(snapshots.size()));
         }
     }
@@ -144,7 +143,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
             return amount;
         }
 
-        if (!resource.matches(stack)) return 0;
+        if (!resource.is(stack)) return 0;
 
         amount = Math.min(amount, getCapacity(index, resource) - stack.getCount());
         if (amount > 0) {
@@ -176,7 +175,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         ItemStack stack = getStackInSlot(index);
         EquipmentSlot equipmentSlot = validateSlotIndex(index);
 
-        if (stack.isEmpty() || !resource.matches(stack) || (resource.canUnequip() && equipmentSlot.isArmor())) {
+        if (stack.isEmpty() || !resource.is(stack) || (resource.canUnequip() && equipmentSlot.isArmor())) {
             return 0;
         }
 

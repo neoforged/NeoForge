@@ -5,15 +5,20 @@
 
 package net.neoforged.neoforge.transfer;
 
+import java.util.function.Predicate;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
-public class ItemUtil {
+public final class ItemUtil {
     /**
      * Inserts the given {@link ItemStack} into the players inventory. If the inventory can't hold it, the item will be dropped
      * in the world at the players position.
@@ -85,5 +90,21 @@ public class ItemUtil {
         for (ItemStack stack : resource.toStacks(amount)) {
             player.drop(stack, false);
         }
+    }
+
+    public static ItemStack extractItemStackFiltered(
+            IResourceHandler<ItemResource> handler,
+            Predicate<ItemResource> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
+    }
+
+    public static ResourceStack<ItemResource> extractResourceStackFiltered(
+            IResourceHandler<ItemResource> handler,
+            Predicate<ItemResource> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
 }
