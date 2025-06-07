@@ -102,7 +102,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to check
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be inserted into; {@code true} otherwise.
      */
-    boolean supportsInsertion(int index);
+    boolean supportsInsertion(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
     /**
      * <b>PRIMER: Formerly</b> `canExtract`
@@ -135,7 +135,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to check
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be extracted from; {@code true} otherwise.
      */
-    boolean supportsExtraction(int index);
+    boolean supportsExtraction(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
     /**
      * <b>PRIMER: New</b>

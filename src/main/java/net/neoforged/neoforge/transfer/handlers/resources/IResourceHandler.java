@@ -27,13 +27,13 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to get the resource from.
      * @return The resource at the given index.
      */
-    T getResource(int index);
+    T getResource(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
     /**
      * @param index The index to get the amount from.
      * @return The amount of the resource at the given index. A range from {@code 0} to {@code Integer.MAX_VALUE}
      */
-    int getAmount(int index);
+    int getAmount(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
     /**
      * Gets the maximum capacity that the given index can handle of the given resource.
@@ -45,7 +45,9 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @return The limit of the resource at the given index. A range from {@code 0} to {@code Integer.MAX_VALUE}
      */
     @Range(from = 0, to = Integer.MAX_VALUE)
-    int getCapacity(int index, T resource);
+    int getCapacity(
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            T resource);
 
     /**
      * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)} implementations or general resource querying.
@@ -54,7 +56,9 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean isValid(int index, T resource);
+    boolean isValid(
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            T resource);
 
     /**
      * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -78,7 +82,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean supportsInsertion(int index);
+    boolean supportsInsertion(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
     /**
      * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -122,7 +126,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to check.
      * @return True if the resource can be extracted, false otherwise.
      */
-    boolean supportsExtraction(int index);
+    boolean supportsExtraction(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
     /**
      * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -155,7 +159,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
      * @return The amount of the resource that was (or would have been, if simulated) inserted. A range from {@code 0} to {@code Integer.MAX_VALUE}
      */
-    int insert(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
+    @Range(from = 0, to = Integer.MAX_VALUE)
+    int insert(
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            T resource,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            TransactionContext transaction);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
@@ -168,7 +177,10 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
      * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) inserted.
      */
-    int insert(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
+    int insert(
+            T resource,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler at the given index.
@@ -179,7 +191,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) extracted.
      */
-    int extract(int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
+    @Range(from = 0, to = Integer.MAX_VALUE)
+    int extract(
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            T resource,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
@@ -192,7 +209,11 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) extracted.
      */
-    int extract(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
+    @Range(from = 0, to = Integer.MAX_VALUE)
+    int extract(
+            T resource,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            TransactionContext transaction);
 
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {
         //noinspection unchecked
