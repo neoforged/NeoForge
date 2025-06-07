@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -332,10 +_,14 @@
+@@ -329,10 +_,14 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -16,7 +16,7 @@
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
          for (int i = this.getMinSectionY(); i <= this.getMaxSectionY(); i++) {
-@@ -347,8 +_,9 @@
+@@ -344,8 +_,9 @@
                      for (int k = 0; k < 16; k++) {
                          for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
@@ -28,7 +28,7 @@
                              }
                          }
                      }
-@@ -490,6 +_,75 @@
+@@ -487,6 +_,75 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
@@ -74,7 +74,7 @@
 +    /**
 +     * <strong>FOR INTERNAL USE ONLY</strong>
 +     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
++     * Only public for use in {@link net.minecraft.world.level.chunk.storage.SerializableChunkData}.
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
@@ -85,7 +85,7 @@
 +    /**
 +     * <strong>FOR INTERNAL USE ONLY</strong>
 +     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
++     * Only public for use in {@link net.minecraft.world.level.chunk.storage.SerializableChunkData}.
 +     *
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
@@ -102,5 +102,5 @@
 +    @Nullable
 +    public net.minecraft.world.level.Level getLevel() { return null; }
  
-     public record PackedTicks(List<SavedTick<Block>> blocks, List<SavedTick<Fluid>> fluids) {
-     }
+     public static ProblemReporter.PathElement problemPath(ChunkPos p_421990_) {
+         return new ChunkAccess.ChunkPathElement(p_421990_);

@@ -157,7 +157,7 @@ public class LoginPacketSplitTest {
             final JsonObject mcmeta = new JsonObject();
             final JsonObject packJson = new JsonObject();
             packJson.addProperty("description", "A virtual resource pack.");
-            packJson.addProperty("pack_format", SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
+            packJson.addProperty("pack_format", SharedConstants.getCurrentVersion().packVersion(PackType.SERVER_DATA));
             mcmeta.add("pack", packJson);
 
             putRoot("pack.mcmeta", mcmeta);

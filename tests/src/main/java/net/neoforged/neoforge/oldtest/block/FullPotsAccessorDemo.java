@@ -45,6 +45,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -180,8 +182,8 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider holderLookup) {
-            super.handleUpdateTag(tag, holderLookup);
+        public void handleUpdateTag(ValueInput input) {
+            super.handleUpdateTag(input);
             modelData = modelData.derive().with(PLANT_PROPERTY, plant).build();
             requestModelDataUpdate();
         }
@@ -192,23 +194,23 @@ public class FullPotsAccessorDemo {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider holderLookup) {
-            handleUpdateTag(pkt.getTag(), holderLookup);
+        public void onDataPacket(Connection net, ValueInput input) {
+            handleUpdateTag(input);
             //noinspection ConstantConditions
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
 
         @Override
-        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
-            super.loadAdditional(tag, holderLookup);
-            tag.getString("plant").ifPresent(id -> plant = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(id)));
+        public void loadAdditional(ValueInput input) {
+            super.loadAdditional(input);
+            input.getString("plant").ifPresent(id -> plant = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(id)));
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
+        protected void saveAdditional(ValueOutput output) {
             //noinspection ConstantConditions
-            tag.putString("plant", BuiltInRegistries.BLOCK.getKey(plant).toString());
-            super.saveAdditional(tag, holderLookup);
+            output.putString("plant", BuiltInRegistries.BLOCK.getKey(plant).toString());
+            super.saveAdditional(output);
         }
     }
 

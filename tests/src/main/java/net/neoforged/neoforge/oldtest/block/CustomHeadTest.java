@@ -144,6 +144,7 @@ public class CustomHeadTest {
         @SubscribeEvent
         static void registerSpecialBlockRenderer(RegisterSpecialBlockModelRendererEvent event) {
             event.register(BLAZE_HEAD.get(), new SkullSpecialRenderer.Unbaked(SkullType.BLAZE));
+            SkullBlockRenderer.SKIN_BY_TYPE.put(SkullType.BLAZE, ResourceLocation.withDefaultNamespace("textures/entity/blaze.png"));
         }
     }
 }

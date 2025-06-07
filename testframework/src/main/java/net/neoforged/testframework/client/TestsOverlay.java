@@ -20,17 +20,17 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.MutableTestFramework;
 
-public final class TestsOverlay implements LayeredDraw.Layer {
+public final class TestsOverlay implements GuiLayer {
     public static final int MAX_DISPLAYED = 5;
     public static final ResourceLocation BG_TEXTURE = ResourceLocation.fromNamespaceAndPath("testframework", "background");
 
@@ -61,7 +61,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
 
         final CommitBasedList<Runnable> renderingQueue = new CommitBasedList<>(new ArrayList<>());
         final Component title = Component.literal("Tests overlay for ").append(Component.literal(impl.id().toString()).withStyle(ChatFormatting.AQUA));
-        renderingQueue.addDirectly(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, 0xffffff)));
+        renderingQueue.addDirectly(withXY(x, y, (x$, y$) -> graphics.drawString(font, title, x$, y$, 0xffffffff)));
         y += font.lineHeight + 5;
         maxX += font.width(title);
 
@@ -106,7 +106,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
 
                     fading.put(test, fade);
                 } else {
-                    final XY xy = renderTest(font, test, graphics, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
+                    final XY xy = renderTest(font, test, graphics, maxWidth, x, y, 0xffffffff, renderingQueue.currentProgress());
                     y = xy.y() + 5;
                     maxX = Math.max(maxX, xy.x());
                 }
@@ -138,7 +138,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
                 int lastY = y;
                 int lastMaxX = maxX;
                 renderingQueue.push();
-                final XY xy = renderTest(font, test, graphics, maxWidth, x, y, 0xffffff, renderingQueue.currentProgress());
+                final XY xy = renderTest(font, test, graphics, maxWidth, x, y, 0xffffffff, renderingQueue.currentProgress());
                 y = xy.y() + 5;
                 maxX = Math.max(maxX, xy.x());
 
@@ -167,7 +167,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
 
         maxX += 3;
 
-        graphics.blitSprite(RenderType::guiTextured, BG_TEXTURE, startX - 4, startY - 4, (maxX - startX) + 4 + 4, (y - startY) + 4, 0x7FFFFFFF);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BG_TEXTURE, startX - 4, startY - 4, (maxX - startX) + 4 + 4, (y - startY) + 4, 0x7FFFFFFF);
         renderingQueue.forEach(Runnable::run);
     }
 
@@ -183,7 +183,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
         rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, bullet, x$, y$ - 1, colour)));
         x += font.width(bullet) + 1;
 
-        rendering.add(withXY(x, y, (x$, y$) -> graphics.blitSprite(RenderType::guiTextured, ICON_BY_RESULT.get(status.result()), x$, y$, 9, 9)));
+        rendering.add(withXY(x, y, (x$, y$) -> graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ICON_BY_RESULT.get(status.result()), x$, y$, 9, 9)));
         x += 11;
 
         final Component title = statusColoured(test.visuals().title(), status);
@@ -204,7 +204,7 @@ public final class TestsOverlay implements LayeredDraw.Layer {
                     .iterator();
             while (charSequences.hasNext()) {
                 final FormattedCharSequence extra = charSequences.next();
-                rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, extra, x$, y$, 0xffffff)));
+                rendering.add(withXY(x, y, (x$, y$) -> graphics.drawString(font, extra, x$, y$, 0xffffffff)));
                 y += font.lineHeight;
                 maxX = Math.max(maxX, x + font.width(extra));
             }

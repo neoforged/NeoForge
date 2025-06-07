@@ -1,6 +1,6 @@
 --- a/net/minecraft/resources/RegistryDataLoader.java
 +++ b/net/minecraft/resources/RegistryDataLoader.java
-@@ -128,7 +_,7 @@
+@@ -130,7 +_,7 @@
      public static final List<RegistryDataLoader.RegistryData<?>> DIMENSION_REGISTRIES = List.of(
          new RegistryDataLoader.RegistryData<>(Registries.LEVEL_STEM, LevelStem.CODEC)
      );
@@ -9,10 +9,10 @@
          new RegistryDataLoader.RegistryData<>(Registries.BIOME, Biome.NETWORK_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.CHAT_TYPE, ChatType.DIRECT_CODEC),
          new RegistryDataLoader.RegistryData<>(Registries.TRIM_PATTERN, TrimPattern.DIRECT_CODEC),
-@@ -149,12 +_,12 @@
-         new RegistryDataLoader.RegistryData<>(Registries.INSTRUMENT, Instrument.DIRECT_CODEC),
+@@ -152,12 +_,12 @@
          new RegistryDataLoader.RegistryData<>(Registries.TEST_ENVIRONMENT, TestEnvironmentDefinition.DIRECT_CODEC),
-         new RegistryDataLoader.RegistryData<>(Registries.TEST_INSTANCE, GameTestInstance.DIRECT_CODEC)
+         new RegistryDataLoader.RegistryData<>(Registries.TEST_INSTANCE, GameTestInstance.DIRECT_CODEC),
+         new RegistryDataLoader.RegistryData<>(Registries.DIALOG, Dialog.DIRECT_CODEC)
 -    );
 +    )); // Neo: Keep the list so custom registries can be added later
  
@@ -24,7 +24,7 @@
      }
  
      public static RegistryAccess.Frozen load(
-@@ -163,18 +_,35 @@
+@@ -166,18 +_,35 @@
          List<HolderLookup.RegistryLookup<?>> p_250344_,
          List<RegistryDataLoader.RegistryData<?>> p_363651_
      ) {
@@ -61,13 +61,13 @@
          list.forEach(p_396495_ -> {
              Registry<?> registry = p_396495_.registry();
  
-@@ -271,11 +_,16 @@
+@@ -274,11 +_,16 @@
          Resource p_326141_,
          RegistrationInfo p_326033_
      ) throws IOException {
 +        Decoder<Optional<E>> decoder = net.neoforged.neoforge.common.conditions.ConditionalOps.createConditionalCodec(net.neoforged.neoforge.common.util.NeoForgeExtraCodecs.decodeOnly(p_326476_));
          try (Reader reader = p_326141_.openAsReader()) {
-             JsonElement jsonelement = JsonParser.parseReader(reader);
+             JsonElement jsonelement = StrictJsonParser.parse(reader);
 -            DataResult<E> dataresult = p_326476_.parse(p_325932_, jsonelement);
 -            E e = dataresult.getOrThrow();
 +            DataResult<Optional<E>> dataresult = decoder.parse(p_325932_, jsonelement);
@@ -80,7 +80,7 @@
          }
      }
  
-@@ -287,7 +_,7 @@
+@@ -290,7 +_,7 @@
          Map<ResourceKey<?>, Exception> p_321649_
      ) {
          FileToIdConverter filetoidconverter = FileToIdConverter.registry(p_321557_.key());
@@ -89,7 +89,7 @@
  
          for (Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(p_321535_).entrySet()) {
              ResourceLocation resourcelocation = entry.getKey();
-@@ -376,13 +_,20 @@
+@@ -379,13 +_,20 @@
      public record NetworkedRegistryData(List<RegistrySynchronization.PackedRegistryEntry> elements, TagNetworkSerialization.NetworkPayload tags) {
      }
  

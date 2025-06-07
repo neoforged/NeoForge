@@ -43,7 +43,7 @@ public class StencilEnableTest {
         ENABLE_UI_LAYER,
     }
 
-    private static final State ENABLED = State.ENABLE_UI_LAYER;
+    private static final State ENABLED = State.ENABLE_REGISTRATION;
 
     private static final ResourceKey<PipelineModifier> STENCIL_FILL_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stencil_fill"));
     private static final ResourceKey<PipelineModifier> STENCIL_APPLY_KEY = ResourceKey.create(PipelineModifier.MODIFIERS_KEY, ResourceLocation.fromNamespaceAndPath(MOD_ID, "stencil_apply"));
@@ -66,10 +66,11 @@ public class StencilEnableTest {
             event.registerAboveAll(
                     ResourceLocation.fromNamespaceAndPath(MOD_ID, "block_outline"),
                     (guiGraphics, delta) -> {
-                        guiGraphics.flush(); // Flush before manipulating global rendersystem state or clearing render targets
+                        // TODO porting: stenciling needs to be moved to the pipeline
+                        //guiGraphics.flush(); // Flush before manipulating global rendersystem state or clearing render targets
 
-                        guiGraphics.pose().pushPose();
-                        guiGraphics.pose().translate(10, 10, 0);
+                        guiGraphics.pose().pushMatrix();
+                        guiGraphics.pose().translate(10, 10);
 
                         RenderSystem.pushPipelineModifier(STENCIL_FILL_KEY);
                         {
@@ -88,7 +89,8 @@ public class StencilEnableTest {
                             guiGraphics.renderItem(stack, 0, 0);
                             guiGraphics.renderItem(stack, 10, 10);
 
-                            guiGraphics.flush(); // Flush before manipulating global rendersystem state
+                            // TODO porting: stenciling needs to be moved to the pipeline
+                            //guiGraphics.flush(); // Flush before manipulating global rendersystem state
                         }
                         RenderSystem.popPipelineModifier();
 
@@ -100,17 +102,18 @@ public class StencilEnableTest {
                                     1));
 
                             var stack = new ItemStack(Blocks.DIAMOND_BLOCK);
-                            guiGraphics.pose().scale(1.1f, 1.1f, 1.1f);
-                            guiGraphics.pose().translate(-1, -1, -1);
+                            guiGraphics.pose().scale(1.1f, 1.1f);
+                            guiGraphics.pose().translate(-1, -1);
                             guiGraphics.renderItem(stack, 0, 0);
                             guiGraphics.renderItem(stack, 10, 10);
 
-                            guiGraphics.flush(); // Flush before manipulating global rendersystem state
+                            // TODO porting: stenciling needs to be moved to the pipeline
+                            //guiGraphics.flush(); // Flush before manipulating global rendersystem state
                         });
 
                         RenderSystem.disableStencil();
 
-                        guiGraphics.pose().popPose();
+                        guiGraphics.pose().popMatrix();
                     });
         });
     }

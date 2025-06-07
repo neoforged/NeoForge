@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
 +++ b/net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate.java
-@@ -250,6 +_,10 @@
+@@ -258,6 +_,10 @@
          return transform(p_74565_, p_74564_.getMirror(), p_74564_.getRotation(), p_74564_.getRotationPivot());
      }
  
@@ -11,43 +11,45 @@
      public boolean placeInWorld(
          ServerLevelAccessor p_230329_, BlockPos p_230330_, BlockPos p_230331_, StructurePlaceSettings p_230332_, RandomSource p_230333_, int p_230334_
      ) {
-@@ -273,7 +_,7 @@
+@@ -279,7 +_,7 @@
+                 int l = Integer.MIN_VALUE;
+                 int i1 = Integer.MIN_VALUE;
                  int j1 = Integer.MIN_VALUE;
+-                List<StructureTemplate.StructureBlockInfo> list4 = processBlockInfos(p_230329_, p_230330_, p_230331_, p_230332_, list);
++                List<StructureTemplate.StructureBlockInfo> list4 = processBlockInfos(p_230329_, p_230330_, p_230331_, p_230332_, list, this);
  
-                 for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : processBlockInfos(
--                    p_230329_, p_230330_, p_230331_, p_230332_, list
-+                    p_230329_, p_230330_, p_230331_, p_230332_, list, this
-                 )) {
-                     BlockPos blockpos = structuretemplate$structureblockinfo.pos;
-                     if (boundingbox == null || boundingbox.isInside(blockpos)) {
-@@ -384,15 +_,7 @@
+                 try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(LOGGER)) {
+                     for (StructureTemplate.StructureBlockInfo structuretemplate$structureblockinfo : list4) {
+@@ -398,16 +_,7 @@
+                     }
+ 
+                     if (!p_230332_.isIgnoreEntities()) {
+-                        this.placeEntities(
+-                            p_230329_,
+-                            p_230330_,
+-                            p_230332_.getMirror(),
+-                            p_230332_.getRotation(),
+-                            p_230332_.getRotationPivot(),
+-                            boundingbox,
+-                            p_230332_.shouldFinalizeEntities(),
+-                            problemreporter$scopedcollector
+-                        );
++                        this.addEntitiesToWorld(p_230329_, p_230330_, p_230332_, problemreporter$scopedcollector);
+                     }
                  }
  
-                 if (!p_230332_.isIgnoreEntities()) {
--                    this.placeEntities(
--                        p_230329_,
--                        p_230330_,
--                        p_230332_.getMirror(),
--                        p_230332_.getRotation(),
--                        p_230332_.getRotationPivot(),
--                        boundingbox,
--                        p_230332_.shouldFinalizeEntities()
--                    );
-+                    this.addEntitiesToWorld(p_230329_, p_230330_, p_230332_);
-                 }
- 
-                 return true;
-@@ -433,12 +_,20 @@
+@@ -448,6 +_,10 @@
+         );
      }
  
-     public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
 +    /**
 +     * @deprecated Forge: Use {@link #processBlockInfos(ServerLevelAccessor, BlockPos, BlockPos, StructurePlaceSettings, List, StructureTemplate)} instead.
 +     */
 +    @Deprecated
+     public static List<StructureTemplate.StructureBlockInfo> processBlockInfos(
          ServerLevelAccessor p_278297_,
          BlockPos p_74519_,
-         BlockPos p_74520_,
+@@ -455,6 +_,10 @@
          StructurePlaceSettings p_74521_,
          List<StructureTemplate.StructureBlockInfo> p_74522_
      ) {
@@ -58,7 +60,7 @@
          List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
          List<StructureTemplate.StructureBlockInfo> list1 = new ArrayList<>();
  
-@@ -453,7 +_,7 @@
+@@ -469,7 +_,7 @@
  
              while (structuretemplate$structureblockinfo1 != null && iterator.hasNext()) {
                  structuretemplate$structureblockinfo1 = iterator.next()
@@ -67,7 +69,7 @@
              }
  
              if (structuretemplate$structureblockinfo1 != null) {
-@@ -469,21 +_,29 @@
+@@ -485,22 +_,29 @@
          return list1;
      }
  
@@ -78,7 +80,8 @@
 -        Rotation p_74527_,
 -        BlockPos p_74528_,
 -        @Nullable BoundingBox p_74529_,
--        boolean p_74530_
+-        boolean p_74530_,
+-        ProblemReporter p_421857_
 -    ) {
 -        for (StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : this.entityInfoList) {
 -            BlockPos blockpos = transform(structuretemplate$structureentityinfo.blockPos, p_74526_, p_74527_, p_74528_).offset(p_74525_);
@@ -100,7 +103,7 @@
 +        return list;
 +    }
 +
-+    private void addEntitiesToWorld(ServerLevelAccessor p_74524_, BlockPos p_74525_, StructurePlaceSettings placementIn) {
++    private void addEntitiesToWorld(ServerLevelAccessor p_74524_, BlockPos p_74525_, StructurePlaceSettings placementIn, ProblemReporter p_421857_) {
 +        for(StructureTemplate.StructureEntityInfo structuretemplate$structureentityinfo : processEntityInfos(this, p_74524_, p_74525_, placementIn, this.entityInfoList)) {
 +            BlockPos blockpos = structuretemplate$structureentityinfo.blockPos; // FORGE: Position will have already been transformed by processEntityInfos
 +            if (placementIn.getBoundingBox() == null || placementIn.getBoundingBox().isInside(blockpos)) {
@@ -111,8 +114,8 @@
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
                  listtag.add(DoubleTag.valueOf(vec31.y));
-@@ -493,10 +_,10 @@
-                 createEntityIgnoreException(p_74524_, compoundtag)
+@@ -510,10 +_,10 @@
+                 createEntityIgnoreException(p_421857_, p_74524_, compoundtag)
                      .ifPresent(
                          p_275190_ -> {
 -                            float f = p_275190_.rotate(p_74527_);
@@ -125,7 +128,7 @@
                                  ((Mob)p_275190_)
                                      .finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
                              }
-@@ -852,7 +_,7 @@
+@@ -869,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

@@ -23,9 +23,9 @@ import net.minecraft.client.resources.DryFoliageColorReloadListener;
 import net.minecraft.client.resources.FoliageColorReloadListener;
 import net.minecraft.client.resources.GrassColorReloadListener;
 import net.minecraft.client.resources.MapDecorationTextureManager;
-import net.minecraft.client.resources.MobEffectTextureManager;
 import net.minecraft.client.resources.PaintingTextureManager;
 import net.minecraft.client.resources.SplashManager;
+import net.minecraft.client.resources.WaypointStyleManager;
 import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.client.resources.model.EquipmentAssetManager;
 import net.minecraft.client.resources.model.ModelManager;
@@ -82,9 +82,9 @@ public class VanillaClientListeners {
 
     public static final ResourceLocation PAINTING_TEXTURES = key(PaintingTextureManager.class);
 
-    public static final ResourceLocation MOB_EFFECT_TEXTURES = key(MobEffectTextureManager.class);
-
     public static final ResourceLocation GUI_SPRITES = key(GuiSpriteManager.class);
+
+    public static final ResourceLocation WAYPOINT_STYLES = key(WaypointStyleManager.class);
 
     public static final ResourceLocation LEVEL_RENDERER = key(LevelRenderer.class);
 

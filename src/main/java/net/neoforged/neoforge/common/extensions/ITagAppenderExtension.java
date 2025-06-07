@@ -5,72 +5,43 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.tags.TagKey;
 
-public interface ITagAppenderExtension<T> {
-    private TagsProvider.TagAppender<T> self() {
-        return (TagsProvider.TagAppender<T>) this;
+public interface ITagAppenderExtension<E, T> {
+    private TagAppender<E, T> self() {
+        return (TagAppender<E, T>) this;
     }
 
+    /**
+     * @see TagAppender#addTag(TagKey)
+     */
     @SuppressWarnings("unchecked")
-    default TagsProvider.TagAppender<T> addTags(TagKey<T>... values) {
-        TagsProvider.TagAppender<T> builder = self();
-        for (TagKey<T> value : values) {
-            builder.addTag(value);
+    default TagAppender<E, T> addTags(TagKey<T>... values) {
+        var appender = self();
+        for (var value : values) {
+            appender.addTag(value);
         }
-        return builder;
+        return appender;
     }
 
-    default TagsProvider.TagAppender<T> addOptionalTag(TagKey<T> value) {
-        return self().addOptionalTag(value.location());
-    }
-
+    /**
+     * @see TagAppender#addOptionalTag(TagKey)
+     */
     @SuppressWarnings("unchecked")
-    default TagsProvider.TagAppender<T> addOptionalTags(TagKey<T>... values) {
-        TagsProvider.TagAppender<T> builder = self();
-        for (TagKey<T> value : values) {
-            builder.addOptionalTag(value.location());
+    default TagAppender<E, T> addOptionalTags(TagKey<T>... values) {
+        var appender = self();
+        for (var value : values) {
+            appender.addOptionalTag(value);
         }
-        return builder;
+        return appender;
     }
 
-    default TagsProvider.TagAppender<T> replace() {
+    default TagAppender<E, T> replace() {
         return replace(true);
     }
 
-    default TagsProvider.TagAppender<T> replace(boolean value) {
-        self().getInternalBuilder().replace(value);
-        return self();
-    }
-
-    /**
-     * Adds a single element's ID to the tag json's remove list. Callable during datageneration.
-     * 
-     * @param location The ID of the element to remove
-     * @return The builder for chaining
-     */
-    default TagsProvider.TagAppender<T> remove(final ResourceLocation location) {
-        TagsProvider.TagAppender<T> builder = self();
-        builder.getInternalBuilder().removeElement(location);
-        return builder;
-    }
-
-    /**
-     * Adds multiple elements' IDs to the tag json's remove list. Callable during datageneration.
-     * 
-     * @param locations The IDs of the elements to remove
-     * @return The builder for chaining
-     */
-    default TagsProvider.TagAppender<T> remove(final ResourceLocation first, final ResourceLocation... locations) {
-        this.remove(first);
-        for (ResourceLocation location : locations) {
-            this.remove(location);
-        }
-        return self();
-    }
+    TagAppender<E, T> replace(boolean value);
 
     /**
      * Adds a resource key to the tag json's remove list. Callable during datageneration.
@@ -78,10 +49,7 @@ public interface ITagAppenderExtension<T> {
      * @param resourceKey The resource key of the element to remove
      * @return The appender for chaining
      */
-    default TagsProvider.TagAppender<T> remove(final ResourceKey<T> resourceKey) {
-        this.remove(resourceKey.location());
-        return self();
-    }
+    TagAppender<E, T> remove(final E e);
 
     /**
      * Adds multiple resource keys to the tag json's remove list. Callable during datageneration.
@@ -90,10 +58,10 @@ public interface ITagAppenderExtension<T> {
      * @return The appender for chaining
      */
     @SuppressWarnings("unchecked")
-    default TagsProvider.TagAppender<T> remove(final ResourceKey<T> firstResourceKey, final ResourceKey<T>... resourceKeys) {
-        this.remove(firstResourceKey.location());
-        for (ResourceKey<T> resourceKey : resourceKeys) {
-            this.remove(resourceKey.location());
+    default TagAppender<E, T> remove(final E firstE, final E... es) {
+        this.remove(firstE);
+        for (E e : es) {
+            this.remove(e);
         }
         return self();
     }
@@ -104,11 +72,7 @@ public interface ITagAppenderExtension<T> {
      * @param tag The ID of the tag to remove
      * @return The builder for chaining
      */
-    default TagsProvider.TagAppender<T> remove(TagKey<T> tag) {
-        TagsProvider.TagAppender<T> builder = self();
-        builder.getInternalBuilder().removeTag(tag.location());
-        return builder;
-    }
+    TagAppender<E, T> remove(TagKey<T> tag);
 
     /**
      * Adds multiple tags to the tag json's remove list. Callable during datageneration.
@@ -117,7 +81,7 @@ public interface ITagAppenderExtension<T> {
      * @return The builder for chaining
      */
     @SuppressWarnings("unchecked")
-    default TagsProvider.TagAppender<T> remove(TagKey<T> first, TagKey<T>... tags) {
+    default TagAppender<E, T> remove(TagKey<T> first, TagKey<T>... tags) {
         this.remove(first);
         for (TagKey<T> tag : tags) {
             this.remove(tag);

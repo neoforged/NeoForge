@@ -32,7 +32,7 @@
                      this.markPosition(p_140418_, chunkaccess.getPersistedStatus().getChunkType());
                      return chunkaccess;
                  } else {
-@@ -778,6 +_,7 @@
+@@ -775,6 +_,7 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
                  SerializableChunkData serializablechunkdata = SerializableChunkData.copyOf(this.level, p_140259_);
@@ -40,19 +40,19 @@
                  CompletableFuture<CompoundTag> completablefuture = CompletableFuture.supplyAsync(serializablechunkdata::write, Util.backgroundExecutor());
                  this.write(chunkpos, completablefuture::join).handle((p_381690_, p_381691_) -> {
                      if (p_381691_ != null) {
-@@ -844,9 +_,11 @@
+@@ -841,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
-+        net.neoforged.neoforge.event.EventHooks.fireChunkWatch(p_295834_, p_296281_, p_295834_.serverLevel());
++        net.neoforged.neoforge.event.EventHooks.fireChunkWatch(p_295834_, p_296281_, p_295834_.level());
      }
  
      private static void dropChunk(ServerPlayer p_294215_, ChunkPos p_294758_) {
-+        net.neoforged.neoforge.event.EventHooks.fireChunkUnWatch(p_294215_, p_294758_, p_294215_.serverLevel());
++        net.neoforged.neoforge.event.EventHooks.fireChunkUnWatch(p_294215_, p_294758_, p_294215_.level());
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -947,7 +_,7 @@
+@@ -944,7 +_,7 @@
              ChunkHolder chunkholder = this.visibleChunkMap.get(longiterator.nextLong());
              if (chunkholder != null) {
                  LevelChunk levelchunk = chunkholder.getTickingChunk();
@@ -61,7 +61,7 @@
                      p_401784_.add(levelchunk);
                  }
              }
-@@ -971,6 +_,18 @@
+@@ -968,6 +_,18 @@
          return tristate == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(p_183880_) : tristate.toBoolean(true);
      }
  
@@ -80,7 +80,7 @@
      private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos p_363995_) {
          for (ServerPlayer serverplayer : this.playerMap.getAllPlayers()) {
              if (this.playerIsCloseEnoughForSpawning(serverplayer, p_363995_)) {
-@@ -1079,6 +_,7 @@
+@@ -1076,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -88,7 +88,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1130,7 +_,7 @@
+@@ -1127,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {
@@ -97,7 +97,7 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
-@@ -1382,5 +_,20 @@
+@@ -1379,5 +_,20 @@
                  this.updatePlayer(serverplayer);
              }
          }

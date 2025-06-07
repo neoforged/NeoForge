@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlRenderPass.java
 +++ b/com/mojang/blaze3d/opengl/GlRenderPass.java
-@@ -19,7 +_,7 @@
+@@ -20,7 +_,7 @@
  @OnlyIn(Dist.CLIENT)
  public class GlRenderPass implements RenderPass {
      protected static final int MAX_VERTEX_BUFFERS = 1;
@@ -9,34 +9,33 @@
      private final GlCommandEncoder encoder;
      private final boolean hasDepthTexture;
      private boolean closed;
-@@ -34,6 +_,8 @@
-     protected final HashMap<String, GpuTexture> samplers = new HashMap<>();
-     protected final Set<String> dirtyUniforms = new HashSet<>();
-     protected final Set<String> dirtySamplers = new HashSet<>();
+@@ -31,6 +_,8 @@
+     protected GpuBuffer indexBuffer;
+     protected VertexFormat.IndexType indexType = VertexFormat.IndexType.INT;
+     private final ScissorState scissorState = new ScissorState();
 +    @Nullable
 +    protected net.neoforged.neoforge.client.stencil.StencilTest stencilTest;
- 
-     public GlRenderPass(GlCommandEncoder p_409888_, boolean p_410304_) {
-         this.encoder = p_409888_;
-@@ -46,6 +_,7 @@
+     protected final HashMap<String, GpuBufferSlice> uniforms = new HashMap<>();
+     protected final HashMap<String, GpuTextureView> samplers = new HashMap<>();
+     protected final Set<String> dirtyUniforms = new HashSet<>();
+@@ -69,6 +_,7 @@
  
      @Override
      public void setPipeline(RenderPipeline p_409823_) {
 +        p_409823_ = com.mojang.blaze3d.systems.RenderSystem.applyPipelineModifiers(p_409823_);
          if (this.pipeline == null || this.pipeline.info() != p_409823_) {
              this.dirtyUniforms.addAll(this.uniforms.keySet());
-             this.dirtySamplers.addAll(this.samplers.keySet());
-@@ -91,6 +_,16 @@
-     @Override
-     public void disableScissor() {
-         this.scissorState.disable();
+             this.dirtyUniforms.addAll(this.samplers.keySet());
+@@ -133,6 +_,15 @@
+ 
+     public int getScissorHeight() {
+         return this.scissorState.height();
 +    }
 +
 +    @Override
 +    public void enableStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
 +        this.stencilTest = stencilTest;
 +    }
-+
 +    @Override
 +    public void disableStencilTest() {
 +        this.stencilTest = null;

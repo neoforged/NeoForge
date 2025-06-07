@@ -6,14 +6,13 @@
 package net.neoforged.neoforge.common.util;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.ChannelFutureListener;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Consumer;
 import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.network.Connection;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.PacketListener;
-import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
@@ -140,7 +139,7 @@ public class FakePlayer extends ServerPlayer {
 
     @ParametersAreNonnullByDefault
     private static class FakePlayerNetHandler extends ServerGamePacketListenerImpl {
-        private static final Connection DUMMY_CONNECTION = new FakeConnection();
+        private static final net.minecraft.network.Connection DUMMY_CONNECTION = new FakeConnection();
 
         public FakePlayerNetHandler(MinecraftServer server, ServerPlayer player) {
             super(server, DUMMY_CONNECTION, player, CommonListenerCookie.createInitial(player.getGameProfile(), false));
@@ -240,7 +239,7 @@ public class FakePlayer extends ServerPlayer {
         public void send(Packet<?> packet) {}
 
         @Override
-        public void send(Packet<?> packet, @Nullable PacketSendListener sendListener) {}
+        public void send(Packet<?> packet, @Nullable ChannelFutureListener sendListener) {}
 
         @Override
         public void handleSetCarriedItem(ServerboundSetCarriedItemPacket packet) {}
@@ -318,7 +317,7 @@ public class FakePlayer extends ServerPlayer {
         public void handleChatSessionUpdate(ServerboundChatSessionUpdatePacket packet) {}
     }
 
-    private static final class FakeConnection extends Connection {
+    private static final class FakeConnection extends net.minecraft.network.Connection {
         public FakeConnection() {
             super(PacketFlow.SERVERBOUND);
         }
