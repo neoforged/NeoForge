@@ -19,7 +19,7 @@ public final class EnergyHandlerUtil {
         var sum = 0;
 
         for (var i = 0; i < handler.size(); i++) {
-            //this can only ever be half max long
+            //this can only ever be 1/4billionth max long
             sum += handler.getAmount(i);
         }
         return sum;
@@ -33,8 +33,28 @@ public final class EnergyHandlerUtil {
         var sum = 0;
         var size = handler.size();
         for (var i = 0; i < size; i++) {
-            //this can only ever be half max long
+            //this can only ever be 1/4billionth max long
             sum += handler.getCapacity(i);
+        }
+        return sum;
+    }
+
+    public static long getAmountAsLong(IEnergyHandler handler) {
+        var sum = 0L;
+        var size = handler.size();
+        for (var i = 0; i < size; i++) {
+            sum += handler.getAmountAsLong(i);
+            if (sum < 0) return Long.MAX_VALUE;
+        }
+        return sum;
+    }
+
+    public static long getCapacityAsLong(IEnergyHandler handler) {
+        var sum = 0L;
+        var size = handler.size();
+        for (var i = 0; i < size; i++) {
+            sum += handler.getCapacityAsLong(i);
+            if (sum < 0) return Long.MAX_VALUE;
         }
         return sum;
     }

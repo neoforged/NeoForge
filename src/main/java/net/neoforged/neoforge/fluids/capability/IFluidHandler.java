@@ -10,7 +10,6 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -113,7 +112,7 @@ public interface IFluidHandler {
      * @param action   If SIMULATE, drain will only be simulated.
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
      *         simulated) drained.
-     * @deprecated This is now {@link ResourceHandlerUtil#extractAny(IResourceHandler, int, IResourceStack, TransactionContext)}
+     * @deprecated This is now {@link ResourceHandlerUtil#extractFiltered}
      */
     FluidStack drain(int maxDrain, FluidAction action);
 }

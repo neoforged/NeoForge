@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.capabilities.handlers.resources;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -41,7 +42,8 @@ public class WrapperResourceHandlerTests {
         }
         helper.assertValueEqual(chestInserted, 1, "armor insert");
         helper.assertValueEqual(chest2Inserted, 0, "armor insert");
-        helper.assertValueEqual(ResourceHandlerUtil.extractFiltered(cap, itemResource -> itemResource.is(Items.DIAMOND_CHESTPLATE), 2, ItemResource.EMPTY_STACK, TransactionContext.ROOT).amount(), 1, "armor extract");
+        var amount = ItemUtil.extractResourceStackFiltered(cap, item -> item.is(Items.DIAMOND_CHESTPLATE), 2, TransactionContext.ROOT);
+        helper.assertValueEqual(amount.amount(), 1, "armor extract");
 //        if (cap instanceof PlayerInventoryHandler wrapper) {
 //            ResourceHandlerUtil.insertIndexForced(wrapper.armorHandler, Items.DIAMOND_BOOTS.defaultResource(), 1300, TransferAction.EXECUTE, TransactionContext.EMPTY);
 //            ResourceHandlerUtil.insertIndexForced(wrapper.armorHandler, Items.NETHERITE_HELMET.defaultResource(), 1300, TransferAction.EXECUTE, TransactionContext.EMPTY);

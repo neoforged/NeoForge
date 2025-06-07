@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ContainerOrHandler;
+import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -32,21 +33,18 @@ public class VanillaInventoryCodeHooks {
      */
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
         for (int i = 0; i < handler.size(); i++) {
-//            ItemStack extractItem = handler.extractItem(i, 1, true);
-            var extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.ROOT);
-            if (extracted.isEmpty()) continue;
-
-            var extractItem = ItemResource.itemStackOf(extracted);
+            ItemStack extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceHandlerUtil::any, 1, TransactionContext.ROOT);
+            if (extractedItemStack.isEmpty()) continue;
 
             for (int j = 0; j < dest.getContainerSize(); j++) {
                 ItemStack destStack = dest.getItem(j);
 
-                if (!dest.canPlaceItem(j, extractItem) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
+                if (!dest.canPlaceItem(j, extractedItemStack) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractItem, destStack))))
                     continue;
-                extracted = ResourceHandlerUtil.extractAny(handler, 1, ItemResource.EMPTY_STACK, TransactionContext.ROOT);
-                if (extracted.isEmpty()) continue;//Should be unneeded
+                extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceHandlerUtil::any, 1, TransactionContext.ROOT);
+                if (extractedItemStack.isEmpty()) continue;//Should be unneeded
                 if (destStack.isEmpty())
-                    dest.setItem(j, ItemResource.itemStackOf(extracted));
+                    dest.setItem(j, extractedItemStack);
                 else {
                     destStack.grow(1);
                     dest.setItem(j, destStack);

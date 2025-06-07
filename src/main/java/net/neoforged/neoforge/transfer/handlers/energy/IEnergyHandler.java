@@ -60,6 +60,11 @@ public interface IEnergyHandler extends ITransactionHandler {
     @Range(from = 0, to = Integer.MAX_VALUE)
     int getAmount(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
+    @Range(from = 0, to = Long.MAX_VALUE)
+    default long getAmountAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+        return getAmount(index);
+    }
+
     /**
      * <b>PRIMER: Formerly</b> `getMaxEnergyStored`. Now has an index similar to IResourceHandler.
      * <p>
@@ -71,6 +76,11 @@ public interface IEnergyHandler extends ITransactionHandler {
      */
     @Range(from = 0, to = Integer.MAX_VALUE)
     int getCapacity(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+
+    @Range(from = 0, to = Long.MAX_VALUE)
+    default long getCapacityAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+        return getCapacity(index);
+    }
 
     /**
      * <b>PRIMER: Formerly</b> `canReceive` This however deviates a bit from its use as it is now at ANY point can it be inserted to rather than in that point in time.

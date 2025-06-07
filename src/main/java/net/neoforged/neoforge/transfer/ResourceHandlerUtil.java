@@ -26,9 +26,8 @@ public final class ResourceHandlerUtil {
      * A utility method to check both resource and amount to validate if the resource would be empty.
      * <p>
      * Typically used in handler insert or extract implementations to determine if the operation is valid before proceeding.
-     * 
-     * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
      *
+     * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         return resource.isEmpty() || amount <= 0;
@@ -94,7 +93,8 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the resource at the specified index is full, {@code false} otherwise
      */
     public static <T extends IResource> boolean isIndexFull(IResourceHandler<T> handler, int index) {
-        return handler.getAmount(index) >= handler.getCapacity(index, handler.getResource(index));
+        //should we use the long or the "normal" returns for these?
+        return handler.getAmountAsLong(index) >= handler.getCapacityAsLong(index, handler.getResource(index));
     }
 
     public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
@@ -291,8 +291,8 @@ public final class ResourceHandlerUtil {
             var resourceTarget = emptyResource.resource();
             for (int index = 0; index < size; index++) {
                 T resource = handler.getResource(index);
-                if (resource.isEmpty()) continue;
-                if (!filter.test(resource)) continue;
+                if (resource.isEmpty() || !filter.test(resource)) continue;
+
                 if (resourceTarget.isEmpty())
                     resourceTarget = resource;
                 else if (!resourceTarget.equals(resource)) continue;
@@ -373,6 +373,7 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource and the resource itself that was (or would have been, if simulated) extracted
      */
+    @Deprecated
     public static <T extends IResource> IResourceStack<T> extractAny(IResourceHandler<T> handler, int amount, IResourceStack<T> emptyResource, @Nullable TransactionContext transaction) {
         return extractFiltered(handler, Predicate.not(IResource::isEmpty), amount, emptyResource, transaction);
     }
@@ -481,10 +482,8 @@ public final class ResourceHandlerUtil {
 
             for (int index = 0; index < size; ++index) {
                 var fromResource = from.getResource(index);
-                if (fromResource.isEmpty()) {
-                    continue;
-                }
-                if (!filter.test(fromResource)) continue;
+                if (fromResource.isEmpty() || !filter.test(fromResource)) continue;
+
                 // check how much can be extracted
                 int extracted;
                 try (var simulatedExtract = Transaction.open(subTransaction)) {
@@ -527,7 +526,27 @@ public final class ResourceHandlerUtil {
         }
     }
 
-    /////////////////////////////////////
+    /// //////////////////////////////////
+
+    public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
+        var sum = 0L;
+        var size = handler.size();
+        for (var index = 0; index < size; index++) {
+            sum += handler.getAmountAsLong(index);
+            if (sum < 0) return Long.MAX_VALUE;
+        }
+        return sum;
+    }
+
+    public static <T extends IResource> long getCapacityAsLong(IResourceHandler<T> handler) {
+        var sum = 0L;
+        var size = handler.size();
+        for (var index = 0; index < size; index++) {
+            sum += handler.getCapacityAsLong(index, handler.getResource(index));
+            if (sum < 0) return Long.MAX_VALUE;
+        }
+        return sum;
+    }
 
     /**
      * Moves a resource from one {@link IResourceHandler} to another.

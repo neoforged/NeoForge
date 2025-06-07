@@ -35,6 +35,11 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      */
     int getAmount(@Range(from = 0, to = Integer.MAX_VALUE) int index);
 
+    @Range(from = 0, to = Long.MAX_VALUE)
+    default long getAmountAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+        return getAmount(index);
+    }
+
     /**
      * Gets the maximum capacity that the given index can handle of the given resource.
      * If an empty resource (an {@link IResource} that returns {@code true} on {@link IResource#isEmpty()}) is provided,
@@ -48,6 +53,13 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     int getCapacity(
             @Range(from = 0, to = Integer.MAX_VALUE) int index,
             T resource);
+
+    @Range(from = 0, to = Long.MAX_VALUE)
+    default long getCapacityAsLong(
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            T resource) {
+        return getCapacity(index, resource);
+    }
 
     /**
      * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)} implementations or general resource querying.
