@@ -10,14 +10,18 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.DataComponentUtil;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
+public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag>, ValueIOSerializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemStackHandler.class);
 
     protected NonNullList<ItemStack> stacks;
@@ -142,7 +146,6 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
 
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        var ops = provider.createSerializationContext(NbtOps.INSTANCE);
         ListTag nbtTagList = new ListTag();
         for (int i = 0; i < stacks.size(); i++) {
             var stack = stacks.get(i);
@@ -172,6 +175,28 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
             }
         });
         onLoad();
+    }
+
+    @Override
+    public void serialize(ValueOutput output) {
+        ValueOutput.TypedOutputList<ItemStackWithSlot> itemList = output.list("Items", ItemStackWithSlot.CODEC);
+        for (int i = 0; i < stacks.size(); i++) {
+            var stack = stacks.get(i);
+            if (!stack.isEmpty()) {
+                itemList.add(new ItemStackWithSlot(i, stack));
+            }
+        }
+        output.putInt("Size", stacks.size());
+    }
+
+    @Override
+    public void deserialize(ValueInput input) {
+        setSize(input.getIntOr("Size", stacks.size()));
+        input.listOrEmpty("Items", ItemStackWithSlot.CODEC).forEach(slot -> {
+            if (slot.isValidInContainer(stacks.size())) {
+                stacks.set(slot.slot(), slot.stack());
+            }
+        });
     }
 
     protected void validateSlotIndex(int slot) {
