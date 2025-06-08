@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 public class DedicatedLanServerPinger extends Thread {
     private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final String MULTICAST_GROUP = DualStackUtils.getMulticastGroup();
+    private static final String MULTICAST_GROUP = DualStackUtils.getMulticastGroup();
     private final String motd;
     private final DatagramSocket socket;
     private boolean isRunning = true;
@@ -40,12 +40,12 @@ public class DedicatedLanServerPinger extends Thread {
     @Override
     public void run() {
         String s = createPingString(this.motd, this.serverAddress);
-        byte[] abyte = s.getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
 
         while (!this.isInterrupted() && this.isRunning) {
             try {
                 InetAddress inetaddress = InetAddress.getByName(MULTICAST_GROUP);
-                DatagramPacket datagrampacket = new DatagramPacket(abyte, abyte.length, inetaddress, 4445);
+                DatagramPacket datagrampacket = new DatagramPacket(bytes, bytes.length, inetaddress, 4445);
                 this.socket.send(datagrampacket);
             } catch (IOException ioexception) {
                 LOGGER.warn("DedicatedLanServerPinger: {}", ioexception.getMessage());
@@ -64,7 +64,7 @@ public class DedicatedLanServerPinger extends Thread {
         this.isRunning = false;
     }
 
-    public static String createPingString(String motd, String address) {
+    private static String createPingString(String motd, String address) {
         return "[MOTD]" + motd + "[/MOTD][AD]" + address + "[/AD]";
     }
 }
