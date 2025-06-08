@@ -15,8 +15,12 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Implement this interface as a capability which should handle fluids
- * 
+ *
  * @deprecated Use {@link IResourceHandler} bound by type {@link FluidResource} instead.
+ * 
+ *             <pre>{@code
+ *  IResourceHandler<FluidResource>
+ * }</pre>
  */
 
 @Deprecated(forRemoval = true, since = "1.21.6")
@@ -66,7 +70,7 @@ public interface IFluidHandler {
      *
      * @param tank Tank to query.
      * @return The maximum fluid amount held by the tank.
-     * @deprecated {@link IResourceHandler#getCapacity(int, IResource) IResourceHandler#getCapacity(int, FluidResource.EMPTY)}
+     * @deprecated {@link IResourceHandler#getCapacity(int, IResource) IResourceHandler.getCapacity(int, FluidResource.EMPTY)}
      */
     int getTankCapacity(int tank);
 
