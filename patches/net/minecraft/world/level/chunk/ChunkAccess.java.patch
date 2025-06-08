@@ -28,7 +28,7 @@
                              }
                          }
                      }
-@@ -487,6 +_,75 @@
+@@ -487,6 +_,84 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
@@ -79,7 +79,11 @@
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
-+        return getAttachmentHolder().serializeAttachments(provider);
++        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
++        var tag = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, provider);
++        getAttachmentHolder().serializeAttachments(provider, tag);
++        if (!reporter.isEmpty()) throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
++        return tag.isEmpty() ? null : tag.buildResult();
 +    }
 +
 +    /**
@@ -90,7 +94,12 @@
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
-+        getAttachmentHolder().deserializeInternal(provider, tag);
++        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
++        var input = net.minecraft.world.level.storage.TagValueInput.create(reporter, provider, tag);
++        getAttachmentHolder().deserializeInternal(provider, input);
++        if (!reporter.isEmpty()) {
++            throw new IllegalArgumentException("Attachments failed to deserialise: " + reporter.getReport());
++        }
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal

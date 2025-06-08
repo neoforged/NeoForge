@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/storage/ValueOutput.java
++++ b/net/minecraft/world/level/storage/ValueOutput.java
+@@ -12,6 +_,12 @@
+     @Deprecated
+     <T> void store(MapCodec<T> p_421608_, T p_422614_);
+ 
++    default void store(net.minecraft.nbt.CompoundTag tag) {
++        for (var entry : tag.entrySet()) {
++            store(entry.getKey(), net.minecraft.util.ExtraCodecs.NBT, entry.getValue());
++        }
++    }
++
+     void putBoolean(String p_422349_, boolean p_422395_);
+ 
+     void putByte(String p_422701_, byte p_421659_);

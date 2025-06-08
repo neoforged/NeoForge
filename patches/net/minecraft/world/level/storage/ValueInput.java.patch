@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/storage/ValueInput.java
++++ b/net/minecraft/world/level/storage/ValueInput.java
+@@ -51,6 +_,13 @@
+     @Deprecated
+     HolderLookup.Provider lookup();
+ 
++    /**
++     * {@return the top-level keys of this object}
++     */
++    default java.util.Set<String> keySet() {
++        return java.util.Set.of();
++    }
++
+     public interface TypedInputList<T> extends Iterable<T> {
+         boolean isEmpty();
+ 

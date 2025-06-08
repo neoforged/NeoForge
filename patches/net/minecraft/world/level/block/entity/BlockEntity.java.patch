@@ -35,17 +35,19 @@
  
      protected void loadAdditional(ValueInput p_422607_) {
 +        p_422607_.read("NeoForgeData", CompoundTag.CODEC).ifPresent(neoData -> this.customPersistentData = neoData);
-+        p_422607_.read(ATTACHMENTS_NBT_KEY, CompoundTag.CODEC).ifPresent(attachments -> this.deserializeAttachments(p_422607_.lookup(), attachments));
++        p_422607_.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(p_422607_.lookup(), attachments));
      }
  
      public final void loadWithComponents(ValueInput p_422624_) {
-@@ -103,6 +_,9 @@
+@@ -103,6 +_,11 @@
      }
  
      protected void saveAdditional(ValueOutput p_422639_) {
 +        if (this.customPersistentData != null) p_422639_.store("NeoForgeData", CompoundTag.CODEC, this.customPersistentData.copy());
 +        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
-+        p_422639_.storeNullable(ATTACHMENTS_NBT_KEY, CompoundTag.CODEC, serializeAttachments(registries));
++        var attachments = p_422639_.child(ATTACHMENTS_NBT_KEY);
++        serializeAttachments(registries, attachments);
++        if (attachments.isEmpty()) p_422639_.discard(ATTACHMENTS_NBT_KEY);
      }
  
      public final CompoundTag saveWithFullMetadata(HolderLookup.Provider p_323767_) {

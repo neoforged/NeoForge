@@ -172,12 +172,13 @@
      }
  
      public void moveRelative(float p_19921_, Vec3 p_19922_) {
-@@ -1915,6 +_,10 @@
+@@ -1915,6 +_,11 @@
                  p_422475_.store("data", CustomData.CODEC, this.customData);
              }
  
-+            var attachments = serializeAttachments(registryAccess());
-+            p_422475_.storeNullable(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.CompoundTag.CODEC, attachments);
++            var attachments = p_422475_.child(ATTACHMENTS_NBT_KEY);
++            serializeAttachments(registryAccess(), attachments);
++            if (attachments.isEmpty()) p_422475_.discard(ATTACHMENTS_NBT_KEY);
 +            p_422475_.storeNullable("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC, persistentData);
 +
              this.addAdditionalSaveData(p_422475_);
@@ -188,7 +189,7 @@
                  this.hasVisualFire = p_422206_.getBooleanOr("HasVisualFire", false);
                  this.customData = p_422206_.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
 +                p_422206_.read("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(neoData -> this.persistentData = neoData);
-+                p_422206_.read(ATTACHMENTS_NBT_KEY, net.minecraft.nbt.CompoundTag.CODEC).ifPresent(attachments -> this.deserializeAttachments(this.registryAccess(), attachments));
++                p_422206_.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(this.registryAccess(), attachments));
                  this.tags.clear();
                  p_422206_.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  this.readAdditionalSaveData(p_422206_);
