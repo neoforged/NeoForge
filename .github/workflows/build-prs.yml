@@ -27,6 +27,8 @@ jobs:
         with:
           java-version: 21
 
+      - run: echo '::add-matcher::${{ github.workspace }}/.github/javac.json'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
