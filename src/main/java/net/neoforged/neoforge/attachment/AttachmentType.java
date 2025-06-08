@@ -8,6 +8,11 @@ package net.neoforged.neoforge.attachment;
 import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ExtraCodecs;
@@ -26,12 +31,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Represents a data attachment type: some data that can be added to any object implementing {@link IAttachmentHolder}.

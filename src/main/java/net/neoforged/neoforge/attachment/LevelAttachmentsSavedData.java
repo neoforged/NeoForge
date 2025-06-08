@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.attachment;
 
 import com.mojang.serialization.Codec;
-import java.util.Objects;
-
 import com.mojang.serialization.DataResult;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +14,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.world.level.storage.loot.ValidationContext;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
