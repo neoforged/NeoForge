@@ -99,7 +99,7 @@ public final class FluidUtil {
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-            var moved = ResourceHandlerUtil.moveOrDefault(from, to, r -> true, amount, transaction, FluidResource.EMPTY_STACK);
+            var moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceHandlerUtil::any, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
             SoundEvent soundevent = moved.resource().getSound(soundAction);
@@ -148,30 +148,30 @@ public final class FluidUtil {
      * Attempts to pick up the fluid placed in world at the given location in the given level and insert it into a handler
      * that is attached to the item in the player's hand. If pickup is successful, the fluid is inserted into the item's fluid handler.
      *
-     * @param playerIn The player picking up the fluid.
-     * @param hand     The hand holding the item that should pick up the fluid.
-     * @param level    The level where the fluid is placed.
-     * @param pos      The position of the fluid in the level.
+     * @param player The player picking up the fluid.
+     * @param hand   The hand holding the item that should pick up the fluid.
+     * @param level  The level where the fluid is placed.
+     * @param pos    The position of the fluid in the level.
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
-    public static boolean tryPickupFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerItemContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPickupFluid(handHandler, playerIn.position(), level, pos);
+    public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
+        var handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos);
     }
 
     /**
      * Attempts to place the fluid held in the fluid handler found in the given player's hand at the given position in the
      * given level. If placement is successful, the fluid is extracted from the item's fluid handler.
      *
-     * @param playerIn The player placing the fluid.
-     * @param hand     The hand holding the item that should place the fluid.
-     * @param level    The level where the fluid is placed.
-     * @param pos      The position to place the fluid in the level.
+     * @param player The player placing the fluid.
+     * @param hand   The hand holding the item that should place the fluid.
+     * @param level  The level where the fluid is placed.
+     * @param pos    The position to place the fluid in the level.
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
-    public static boolean tryPlaceFluid(Player playerIn, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerItemContext.ofHand(playerIn, hand).getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPlaceFluid(handHandler, playerIn.position(), level, pos);
+    public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
+        var handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos);
     }
 
     /**

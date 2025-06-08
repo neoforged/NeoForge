@@ -65,8 +65,8 @@ public class ResourceHandlerUtilTests {
             helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, transaction), 0, "Nothing should move");
             helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, transaction), 100, "amount to move");
         }
-        helper.assertTrue(ResourceHandlerUtil.hasResource(dstHandler, workingStack.resource()), "The dst handler should have cobble");
-        helper.assertFalse(ResourceHandlerUtil.hasResource(dstHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");
+        helper.assertTrue(ResourceHandlerUtil.hasExtractableResource(dstHandler, workingStack.resource()), "The dst handler should have cobble");
+        helper.assertFalse(ResourceHandlerUtil.hasExtractableResource(dstHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");
 
         for (var i = 0; i < dstHandler.size(); i++) {
             dstHandler.set(i, ItemResource.EMPTY, 0);

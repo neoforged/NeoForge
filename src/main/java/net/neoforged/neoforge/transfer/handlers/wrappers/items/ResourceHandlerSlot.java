@@ -10,6 +10,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
@@ -69,8 +70,8 @@ public class ResourceHandlerSlot extends Slot {
     @Override
     public boolean mayPickup(Player player) {
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-            //Simulated
-            return !ResourceHandlerUtil.extractIndexedAny(handler, getSlotIndex(), 1, ItemResource.EMPTY_STACK, transaction).isEmpty();
+            //Simulated and we do resource stack as there are less things constructed upon a new instance (micro optimization)
+            return ItemUtil.extractResourceStackFilteredAtIndex(handler, ResourceHandlerUtil::any, getSlotIndex(), 1, transaction).isEmpty();
         }
     }
 

@@ -107,4 +107,22 @@ public final class ItemUtil {
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
+
+    public static ItemStack extractItemStackFilteredAtIndex(
+            IResourceHandler<ItemResource> handler,
+            Predicate<ItemResource> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
+    }
+
+    public static ResourceStack<ItemResource> extractResourceStackFilteredAtIndex(
+            IResourceHandler<ItemResource> handler,
+            Predicate<ItemResource> filter,
+            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
+    }
 }

@@ -14,7 +14,7 @@ contain a final backing stack of its relevant type that should otherwise not be 
 When wanting to make your own resource, there are a couple things you should ask first:
 
 - Is my resource ever empty? If so I should identify "how or perhaps why?" so that you can return it if needed.
-- Will I need more than just the instance? If not, then you might consider making it an enum.
+- Will I need several instances or is there a relatively limited amount? If not, then you might consider making it an enum.
 
 As an example, let's say you were making an element-like resource. Assuming we want to handle holding "nothing" in some
 cases, we will need to be able to handle `isEmpty`. My design takes me to wanting Fire, Water, Earth, and Air (because

@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A handler for placing and picking up fluid blocks in the world.
  * <p>
- * This is commonly used with the {@link FluidUtil#tryPickupFluid} or {@link FluidUtil#tryPlaceFluid}
+ * This is commonly used with the {@link FluidUtil#tryPickupFluidAsPlayer} or {@link FluidUtil#tryPlaceFluidAsPlayer}
  */
 public class BlockFluidHandler extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
     private static final Logger LOGGER = LogManager.getLogger();
