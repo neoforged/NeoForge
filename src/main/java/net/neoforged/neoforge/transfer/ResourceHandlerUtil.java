@@ -28,7 +28,7 @@ public final class ResourceHandlerUtil {
      * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
-        return resource.isEmpty() || amount <= 0;
+        return amount <= 0 || resource.isEmpty();
     }
 
     /**

@@ -38,7 +38,7 @@
                  || $$7 instanceof LiquidBlockContainer liquidblockcontainer
                      && liquidblockcontainer.canPlaceLiquid(p_394627_, p_150717_, p_150718_, blockstate, this.content);
 +//            java.util.Optional<net.neoforged.neoforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.neoforged.neoforge.fluids.FluidUtil::getFluidContained);
-+            net.neoforged.neoforge.fluids.FluidStack containedFluidStack = container == null || container.isEmpty() ? net.neoforged.neoforge.fluids.FluidStack.EMPTY : net.neoforged.neoforge.transfer.FluidUtil.getFluidContained(container);
++            net.neoforged.neoforge.fluids.FluidStack containedFluidStack = container == null || container.isEmpty() ? net.neoforged.neoforge.fluids.FluidStack.EMPTY : net.neoforged.neoforge.transfer.FluidUtil.getFirstFluidStackContained(container);
 +
              if (!flag1) {
 -                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
