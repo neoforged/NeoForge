@@ -97,7 +97,7 @@ public final class FluidUtil {
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-            var moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceHandlerUtil::any, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
+            var moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
             SoundEvent soundevent = moved.resource().getSound(soundAction);

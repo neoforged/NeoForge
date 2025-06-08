@@ -18,7 +18,8 @@ public final class EnergyHandlerUtil {
     public static long getAmount(IEnergyHandler handler) {
         var sum = 0;
 
-        for (var i = 0; i < handler.size(); i++) {
+        var size = handler.size();
+        for (var i = 0; i < size; i++) {
             //this can only ever be 1/4billionth max long
             sum += handler.getAmount(i);
         }

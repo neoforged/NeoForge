@@ -17,6 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ContainerOrHandler;
 import net.neoforged.neoforge.transfer.ItemUtil;
+import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -32,8 +33,9 @@ public class VanillaInventoryCodeHooks {
      * @return {@code true} if we moved an item, {@code false} if we moved no items
      */
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
-        for (int i = 0; i < handler.size(); i++) {
-            ItemStack extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceHandlerUtil::any, 1, TransactionContext.ROOT);
+        var size = handler.size();
+        for (int i = 0; i < size; i++) {
+            ItemStack extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
             if (extractedItemStack.isEmpty()) continue;
 
             for (int j = 0; j < dest.getContainerSize(); j++) {
@@ -41,7 +43,7 @@ public class VanillaInventoryCodeHooks {
 
                 if (!dest.canPlaceItem(j, extractedItemStack) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractedItemStack, destStack))))
                     continue;
-                extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceHandlerUtil::any, 1, TransactionContext.ROOT);
+                extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
                 if (extractedItemStack.isEmpty()) continue;//Should be unneeded
                 if (destStack.isEmpty())
                     dest.setItem(j, extractedItemStack);

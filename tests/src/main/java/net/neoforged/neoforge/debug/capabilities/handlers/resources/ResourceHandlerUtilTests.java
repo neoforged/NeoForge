@@ -10,6 +10,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ItemUtil;
+import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
@@ -80,7 +81,7 @@ public class ResourceHandlerUtilTests {
         var full = ResourceHandlerUtil.isFull(dstHandler);
         helper.assertTrue(full, "Dst handler should be full");
 
-        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(dstHandler, ResourceHandlerUtil::any, 400, TransactionContext.ROOT), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
+        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(dstHandler, ResourceFilters.any(), 400, TransactionContext.ROOT), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
         helper.assertFalse(ResourceHandlerUtil.isFull(dstHandler), "Dst handler should not be full");
 
         for (var i = 0; i < dstHandler.size(); i++) {

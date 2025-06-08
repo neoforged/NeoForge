@@ -49,10 +49,6 @@ public final class ResourceHandlerUtil {
         return true;
     }
 
-    public static boolean any(IResource resource) {
-        return true;
-    }
-
     /**
      * Checks if an {@link IResourceHandler} is full.
      *
@@ -63,7 +59,8 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the {@link IResourceHandler} is full, {@code false} otherwise
      */
     public static boolean isFull(IResourceHandler<? extends IResource> handler) {
-        for (int i = 0; i < handler.size(); i++) {
+        var size = handler.size();
+        for (int i = 0; i < size; i++) {
             if (!isIndexFull(handler, i))
                 return false;
         }
@@ -81,7 +78,7 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the resource at the specified index is empty, {@code false} otherwise
      */
     public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
-        return handler.getResource(index).isEmpty() || handler.getAmount(index) == 0;
+        return handler.getAmount(index) == 0 || handler.getResource(index).isEmpty();
     }
 
     /**
@@ -475,8 +472,6 @@ public final class ResourceHandlerUtil {
         }
     }
 
-    /// //////////////////////////////////
-
     public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
         var sum = 0L;
         var size = handler.size();
@@ -513,6 +508,27 @@ public final class ResourceHandlerUtil {
      */
     public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, @Nonnegative int amount, @Nullable TransactionContext transaction) {
         return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
+    }
+
+    /**
+     * @return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise
+     */
+    public static <T extends IResource> boolean contains(IResourceHandler<T> handler, @Nonnegative T resource) {
+        var size = handler.size();
+        for (var index = 0; index < size; index++) {
+            if (resource.equals(handler.getResource(index)))
+                return true;
+        }
+        return false;
+    }
+
+    public static <T extends IResource> int indexOf(IResourceHandler<T> handler, @Nonnegative T resource) {
+        var size = handler.size();
+        for (var index = 0; index < size; index++) {
+            if (resource.equals(handler.getResource(index)))
+                return index;
+        }
+        return -1;
     }
 
     public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, T resource) {

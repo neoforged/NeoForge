@@ -16,8 +16,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * @param <T> The type of resource this handler manages.
  */
 public interface IResourceHandler<T extends IResource> extends ITransactionHandler {
-    int MAX_VALUE = Integer.MAX_VALUE;
-
     /**
      * An index in synonymous with "slot", "tank", "buffer", etc.
      *
@@ -66,9 +64,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean isValid(
-            @Nonnegative int index,
-            T resource);
+    boolean isValid(@Nonnegative int index, T resource);
 
     /**
      * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
