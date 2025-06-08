@@ -40,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
  * EnergyBuffer.builder(3, 1000).maxTransfer(10).build();
  * }
  * </pre>
+ *
+ * Unlike the {@link EnergyBufferComponentHandler}, the handler also is the attachment data.
  */
 public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     public static Codec<EnergyBufferAttachment> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -63,21 +65,24 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         return AttachmentType.builder(buffer).serialize(holderWith(EnergyBufferAttachment.CODEC, EnergyBufferAttachment::setHolder));
     }
 
-    private final ArrayList<IndexedIntSnapshot> snapshots = new ArrayList<>();
+    private final ArrayList<IndexedIntSnapshot> snapshots;
 
     /**
      * Number of sub-buffers
      */
+    @Nonnegative
     private final int size;
 
     /**
      * Current amount of energy stored in the buffer
      */
+    @Nonnegative
     private final int[] energy;
 
     /**
      * How much energy can be stored in each sub buffer. This capacity is, while unique to each buffer, the value is the same.
      */
+    @Nonnegative
     private final int capacity;
 
     /**
@@ -85,6 +90,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * Note, if you need to limit how much can be inserted in a single tick,
      * then you will need to make your own implementation of {@link IEnergyHandler} that has the required information.
      */
+    @Nonnegative
     private final int maxInsert;
 
     /**
@@ -92,6 +98,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * Note, if you need to limit how much can be extracted in a single tick,
      * then you will need to make your own implementation of {@link IEnergyHandler} that has the required information.
      */
+    @Nonnegative
     private final int maxExtract;
 
     //Some holder (usually a blockentity) that will be set on being serialized
@@ -120,21 +127,9 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * @param maxExtractionRate How much energy can be extracted in a single {@link IEnergyHandler#extract} call.
      * @param energy            An array of initial or serialized energy sub-buffer amounts.
      */
-    public EnergyBufferAttachment(int size, int capacity, int maxInsertionRate, int maxExtractionRate, int... energy) {
-        if (size < 0) {
-            throw new IllegalArgumentException("Size must not be less than zero");
-        }
+    public EnergyBufferAttachment(@Nonnegative int size, @Nonnegative int capacity, @Nonnegative int maxInsertionRate, @Nonnegative int maxExtractionRate, @Nonnegative int... energy) {
         if (size < energy.length) {
             throw new IllegalArgumentException("An EnergyBuffer must have a size (" + size + ") larger than energy array length (" + energy.length + ") passed in.");
-        }
-        if (capacity < 0) {
-            throw new IllegalArgumentException("The capacity in an EnergyBuffer must not be less than zero.");
-        }
-        if (maxInsertionRate < 0) {
-            throw new IllegalArgumentException("The maximum insertion rate in an EnergyBuffer must not be less than zero.");
-        }
-        if (maxExtractionRate < 0) {
-            throw new IllegalArgumentException("The maximum extraction rate in an EnergyBuffer must not be less than zero.");
         }
         this.size = size;
         this.capacity = capacity;
@@ -144,7 +139,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         for (int i = 0; i < size; i++) {
             this.energy[i] = Math.max(0, Math.min(capacity, energy[i]));
         }
-        IndexedIntSnapshot.initSnapshots(this, snapshots, size, SetChangedSnapshot.of(this::onSetChanged));
+        this.snapshots = IndexedIntSnapshot.listOf(this, SetChangedSnapshot.of(this::onSetChanged), size);
     }
 
     //Attachment building methods
@@ -161,6 +156,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     //IEnergyHandler
 
     @Override
+    @Nonnegative
     public int size() {
         return size;
     }
@@ -169,7 +165,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     @Nonnegative
     public int insert(@Nonnegative int amount, TransactionContext transaction) {
         amount = Math.min(maxInsert, amount);
-        if (amount <= 0) return 0;
+        if (amount == 0) return 0;
 
         var handled = 0;
         var indices = size();
@@ -183,10 +179,10 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
 
     @Override
     @Nonnegative
-    public int insert(int index, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         amount = Math.min(maxInsert, amount);
-        if (amount <= 0) return 0;
+        if (amount == 0) return 0;
 
         return insertCommon(index, amount, transaction);
     }
@@ -211,7 +207,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     @Nonnegative
     public int extract(@Nonnegative int amount, TransactionContext transaction) {
         amount = Math.min(maxExtract, amount);
-        if (amount <= 0) return 0;
+        if (amount == 0) return 0;
 
         var handled = 0;
         var indices = size();
@@ -229,7 +225,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         //This check is done per external index call
         Objects.checkIndex(index, size());
         amount = Math.min(maxExtract, amount);
-        if (amount <= 0) return 0;
+        if (amount == 0) return 0;
 
         return extractCommon(index, amount, transaction);
     }

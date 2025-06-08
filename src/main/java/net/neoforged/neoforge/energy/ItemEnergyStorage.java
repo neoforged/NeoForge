@@ -9,6 +9,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -26,8 +27,8 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * @deprecated Migrated to {@link EnergyBufferComponentHandler}
  */
 
-@Deprecated(forRemoval = true, since = "1.21.6")
-public class ItemEnergyStorage implements IEnergyStorage {
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+public final class ItemEnergyStorage implements IEnergyStorage {
     protected final IItemContext itemContext;
     protected final DataComponentType<Integer> energyComponent;
     protected final int capacity;

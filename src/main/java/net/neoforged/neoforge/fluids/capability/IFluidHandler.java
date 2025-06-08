@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.fluids.capability;
 
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -23,7 +24,7 @@ import org.jetbrains.annotations.ApiStatus;
  * }</pre>
  */
 
-@Deprecated(forRemoval = true, since = "1.21.6")
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 @ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IFluidHandler {
     enum FluidAction {

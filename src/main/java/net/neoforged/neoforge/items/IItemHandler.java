@@ -8,6 +8,7 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  *  IResourceHandler<ItemResource>
  * }</pre>
  */
-@Deprecated(forRemoval = true, since = "1.21.6")
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 @ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IItemHandler {
     /**

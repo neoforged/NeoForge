@@ -26,7 +26,7 @@ import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapsho
  * <p>
  * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
  * Then reference that component from your when registering the item with a capability. Something like the following:
- * 
+ *
  * <pre>
  * {@code
  * capabilityRegistryEvent.registerItem(
@@ -46,7 +46,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
     private final int maxInsert;
     private final int maxExtract;
 
-    private final IndexedIntSnapshot snapshot = new IndexedIntSnapshot(this, 0, NotificationSnapshot.INSTANCE);
+    private final IndexedIntSnapshot snapshot;
 
     /**
      * Creates a new ComponentEnergyStorage with a data component as the backing store for the energy value.
@@ -64,6 +64,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
         this.capacity = capacity;
         this.maxInsert = maxInsert;
         this.maxExtract = maxExtract;
+        this.snapshot = IndexedIntSnapshot.of(this, NotificationSnapshot.EMPTY);
     }
 
     private int getIndividualAmount() {

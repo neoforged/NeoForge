@@ -32,7 +32,7 @@ public record VanillaToItemContainerAdapter(Container container) implements IRes
 
     @Override
     public SnapshotJournal<?> getIndexJournal(int index) {
-        return NotificationSnapshot.INSTANCE;
+        return NotificationSnapshot.EMPTY;
     }
 
     @Override

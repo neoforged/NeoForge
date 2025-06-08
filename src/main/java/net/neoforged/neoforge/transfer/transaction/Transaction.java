@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import net.neoforged.neoforge.transfer.handlers.resources.Reporter;
+import net.neoforged.neoforge.transfer.handlers.resources.experimental.Reporter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

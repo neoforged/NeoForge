@@ -8,11 +8,12 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ItemUtil;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
- * @deprecated Moved to {@link ItemUtil}
+ * @deprecated Use {@link ItemUtil} instead
  */
-@Deprecated(forRemoval = true, since = "1.21.6")
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class ItemHandlerHelper {
     /**
      * Inserts the given itemstack into the players inventory. If the inventory can't hold it, the item will be dropped
@@ -20,9 +21,8 @@ public class ItemHandlerHelper {
      *
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
-     * @deprecated Moved to {@link ItemUtil}
+     * @deprecated Use {@link ItemUtil#giveItemToPlayer(Player, ItemStack)} instead
      */
-    @Deprecated(forRemoval = true, since = "1.21.6")
     public static void giveItemToPlayer(Player player, ItemStack stack) {
         ItemUtil.giveItemToPlayer(player, stack);
     }
@@ -33,9 +33,8 @@ public class ItemHandlerHelper {
      *
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
-     * @deprecated Moved to {@link ItemUtil}
+     * @deprecated Use {@link ItemUtil#giveItemToPlayer(Player, ItemStack, int)} instead
      */
-    @Deprecated(forRemoval = true, since = "1.21.6")
     public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
         ItemUtil.giveItemToPlayer(player, stack, preferredSlot);
     }

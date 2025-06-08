@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.energy;
 
 import javax.annotation.Nonnegative;
-import net.neoforged.neoforge.transfer.handlers.resources.ITransactionHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Range;
 

@@ -165,7 +165,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 private static void example(IResourceHandler<FluidResource> handler) {
     try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-        var handled = handler.extract(Fluids.WATER.defaultResource(), 1000, transaction);
+        var handled = handler.extract(FluidResource.of(Fluids.WATER), 1000, transaction);
         if (handled == 1000)
             transaction.commit();
     }
@@ -217,15 +217,6 @@ ResourceHandlerRecipeInput
 : Seemingly niche usecase, and likely better left up to the implementer to handle recipe inputs as they need.
 
 ## Common Misunderstandings
-
-allowsInertion/Extraction
-: In essence, this method for the most part is optional, but to allow mods that provide things like pipes to run more
-efficiently, we need someway to inquire if we were to insert or extract would be denied? We are wanting to pre-emptively
-skip those in the future. The problem we see, is that some developers may assume this method is control logic and thing
-that by returning false, they disallow inserting altogether. This is incorrect and as state in the java doc, it doesn't
-control internal logic, it is only a hint.
-Alternative names for this are `mayInsert`, `supportsInsert`,
-`insertionPossible` (and the same for extraction)
 
 AutoCloseable Try
 : Something that is not common in Minecraft modding is the idea of AutoClosable implementations. In short, if something

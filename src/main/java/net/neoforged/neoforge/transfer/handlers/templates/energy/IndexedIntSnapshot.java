@@ -10,12 +10,24 @@ import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
-import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 
 public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     private final IEnergyHandlerModifiable handler;
     private final int index;
     private final NotificationSnapshot setChangedSnapshot;
+
+    public static IndexedIntSnapshot of(IEnergyHandlerModifiable handler, NotificationSnapshot snapshot) {
+        return new IndexedIntSnapshot(handler, 0, snapshot);
+    }
+
+    public static ArrayList<IndexedIntSnapshot> listOf(IEnergyHandlerModifiable handler, NotificationSnapshot notificationJournal, int size) {
+        var snapshots = new ArrayList<IndexedIntSnapshot>();
+        snapshots.ensureCapacity(size);
+        for (var i = 0; i < size; i++) {
+            snapshots.add(new IndexedIntSnapshot(handler, i, notificationJournal));
+        }
+        return snapshots;
+    }
 
     public IndexedIntSnapshot(IEnergyHandlerModifiable handler, int index, NotificationSnapshot snapshot) {
         this.handler = handler;
@@ -37,12 +49,5 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     public void updateSnapshots(TransactionContext transaction) {
         setChangedSnapshot.updateSnapshots(transaction);
         super.updateSnapshots(transaction);
-    }
-
-    public static void initSnapshots(IEnergyHandlerModifiable handler, ArrayList<IndexedIntSnapshot> snapshots, int size, SetChangedSnapshot setChangedSnapshot) {
-        snapshots.ensureCapacity(size);
-        for (var i = 0; i < size; i++) {
-            snapshots.add(new IndexedIntSnapshot(handler, i, setChangedSnapshot));
-        }
     }
 }

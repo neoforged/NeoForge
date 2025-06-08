@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicates;
 import com.google.common.primitives.Ints;
 import java.util.function.Predicate;
 import javax.annotation.Nonnegative;
@@ -84,6 +85,8 @@ public final class FluidUtil {
         return !tryExtract.isEmpty();
     }
 
+    public static final Predicate<?> ANY = Predicates.alwaysTrue();
+
     /**
      * Moves fluid between two fluid handlers, playing a sound if the action is executed.
      *
@@ -97,7 +100,7 @@ public final class FluidUtil {
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-            var moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
+            var moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
             SoundEvent soundevent = moved.resource().getSound(soundAction);
@@ -218,7 +221,7 @@ public final class FluidUtil {
         return getFirstFluidStackContained(new StaticItemContext(stack));
     }
 
-    public static <S> S getFirstStackContained(IItemContext context, ResourceHandlerUtil.IStackFactory<FluidResource, S> stackFactory) {
+    public static <S> S getFirstStackContained(IItemContext context, IStackFactory<FluidResource, S> stackFactory) {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return stackFactory.create(FluidResource.EMPTY, 0);
 

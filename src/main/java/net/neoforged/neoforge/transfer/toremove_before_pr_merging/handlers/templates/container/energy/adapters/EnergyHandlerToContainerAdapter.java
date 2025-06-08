@@ -59,7 +59,7 @@ public record EnergyHandlerToContainerAdapter(
 
     @Override
     public SnapshotJournal<?> getSnapshotJournal(int index) {
-        return NotificationSnapshot.INSTANCE;
+        return NotificationSnapshot.EMPTY;
     }
 
     @Override

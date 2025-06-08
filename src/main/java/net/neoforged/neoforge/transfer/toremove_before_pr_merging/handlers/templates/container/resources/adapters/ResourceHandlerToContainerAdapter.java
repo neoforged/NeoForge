@@ -32,7 +32,7 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
 
     @Override
     public SnapshotJournal<?> getIndexJournal(int index) {
-        return NotificationSnapshot.INSTANCE;
+        return NotificationSnapshot.EMPTY;
     }
 
     @Override

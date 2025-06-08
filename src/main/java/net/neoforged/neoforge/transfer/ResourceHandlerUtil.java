@@ -538,10 +538,5 @@ public final class ResourceHandlerUtil {
         }
     }
 
-    @FunctionalInterface
-    public interface IStackFactory<R extends IResource, S> {
-        S create(R resource, int amount);
-    }
-
     private ResourceHandlerUtil() {}
 }

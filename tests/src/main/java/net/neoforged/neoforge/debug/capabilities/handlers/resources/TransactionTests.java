@@ -8,14 +8,19 @@ package net.neoforged.neoforge.debug.capabilities.handlers.resources;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionOperation;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.ResourceContainer;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.SimpleFluidResourceContainer;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.SimpleItemResourceContainer;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -89,8 +94,8 @@ public class TransactionTests {
                     break;
                 }
             }
-//            if (internalContainer.insert(result, 1, craftingTransaction) > 0)
-//                craftingTransaction.commit();
+            //            if (internalContainer.insert(result, 1, craftingTransaction) > 0)
+            //                craftingTransaction.commit();
         }
 
         try (var tx = Transaction.open(TransactionContext.ROOT)) {
@@ -165,6 +170,35 @@ public class TransactionTests {
             if (handler.extract(0, coal, 16, tx) != 16) return false;
             if (handler.insert(1, diamond, 1, tx) != 1) return false;
             return action.commit(tx);
+        }
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Transactional tests. Takes the idea of looking for a subset of items and able to return the crafting ingredients")
+    public static void composable(ExtendedGameTestHelper helper) {
+        var item = Items.SAND.defaultResource();
+        var otherItemHandler = SimpleItemResourceContainer.builder(1).build();
+        otherItemHandler.set(0, item.withMutableAmount(5));
+        var tankWater = SimpleFluidResourceContainer.builder(1).build();
+        var tankLava = SimpleFluidResourceContainer.builder(1).build();
+
+        tankWater.set(0, FluidResource.of(Fluids.WATER).withMutableAmount(FluidType.BUCKET_VOLUME));
+        tankLava.set(0, FluidResource.of(Fluids.LAVA).withMutableAmount(FluidType.BUCKET_VOLUME));
+
+        //Still working on it. At least now it doesn't have type erasure.... it just doesn't work yet :P
+        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+
+            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
+            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {
+                var t = 2;
+                transaction.commit();
+            }).whenSuccessful(tankWater.asHandler(), (handler, transaction) -> {
+                var t = 2;
+            }).whenNotCommitted(otherItemHandler.asHandler(), (handler, transaction) -> {
+                var t = 2;
+            });
+            helper.succeed();
         }
     }
 }

@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
  * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.
@@ -17,8 +18,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
  * 
  * @deprecated This was moved and changed to match the new system as {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment EnergyBufferAttachment}
  */
-@Deprecated(since = "1.21.6", forRemoval = true)
-public class AttachmentEnergyStorage implements IEnergyStorage {
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+public final class AttachmentEnergyStorage implements IEnergyStorage {
     protected final AttachmentHolder parent;
     protected final Supplier<AttachmentType<Integer>> attachmentType;
     protected final int capacity;
