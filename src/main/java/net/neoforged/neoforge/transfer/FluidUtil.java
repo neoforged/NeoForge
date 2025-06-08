@@ -6,7 +6,9 @@
 package net.neoforged.neoforge.transfer;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
 import java.util.function.Predicate;
+import javax.annotation.Nonnegative;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -14,10 +16,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundAction;
@@ -30,12 +30,10 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCon
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticItemContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BlockFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 public final class FluidUtil {
     /**
@@ -196,17 +194,8 @@ public final class FluidUtil {
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
-    public static ResourceStack<FluidResource> getResourceContained(IItemContext context) {
-        IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
-        if (handler == null) return FluidResource.EMPTY_STACK;
-
-        for (int index = 0; index < handler.size(); index++) {
-            FluidResource resource = handler.getResource(index);
-            int amount = handler.getAmount(index);
-            if (ResourceHandlerUtil.isEmpty(resource, amount)) continue;
-            return new ResourceStack<>(resource, amount);
-        }
-        return FluidResource.EMPTY_STACK;
+    public static ResourceStack<FluidResource> getFirstResourceStackContained(IItemContext context) {
+        return getFirstStackContained(context, FluidResource::withAmount);
     }
 
     /**
@@ -215,9 +204,8 @@ public final class FluidUtil {
      * @param context The item context to get the fluid from.
      * @return The fluid contained in the item context, or empty if no fluid is contained.
      */
-    public static FluidStack getFluidContained(IItemContext context) {
-        var resourceStack = getResourceContained(context);
-        return resourceStack.resource().toStack(resourceStack.amount());
+    public static FluidStack getFirstFluidStackContained(IItemContext context) {
+        return getFirstStackContained(context, FluidResource::toStack);
     }
 
     /**
@@ -226,30 +214,35 @@ public final class FluidUtil {
      * @param stack The item stack to get the fluid from.
      * @return The fluid contained in the item stack, or empty if no fluid is contained.
      */
-    public static FluidStack getFluidContained(ItemStack stack) {
-        return getFluidContained(new StaticItemContext(stack));
+    public static FluidStack getFirstFluidStackContained(ItemStack stack) {
+        return getFirstFluidStackContained(new StaticItemContext(stack));
     }
 
-    /**
-     * @param fluidVariant contents used to fill the bucket
-     * @return a filled vanilla bucket or filled universal bucket.
-     *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
-     */
-    public static ItemResource getFilledBucket(FluidResource fluidVariant) {
-        if (fluidVariant.isComponentsPatchEmpty()) {
-            if (fluidVariant.is(Fluids.WATER)) {
-                return Items.WATER_BUCKET.defaultResource();
-            } else if (fluidVariant.is(Fluids.LAVA)) {
-                return Items.LAVA_BUCKET.defaultResource();
+    public static <S> S getFirstStackContained(IItemContext context, ResourceHandlerUtil.IStackFactory<FluidResource, S> stackFactory) {
+        IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
+        if (handler == null) return stackFactory.create(FluidResource.EMPTY, 0);
+
+        var size = handler.size();
+        FluidResource resource = FluidResource.EMPTY;
+        long sumAmount = 0;
+        for (int index = 0; index < size; index++) {
+            var current = handler.getResource(index);
+            int amount = handler.getAmount(index);
+            if (ResourceHandlerUtil.isEmpty(current, amount)) continue;
+            if (resource.isEmpty() || current.equals(resource)) {
+                resource = current;
+                sumAmount += amount;
+                if (sumAmount > Integer.MAX_VALUE) break;
             }
         }
-        return ItemResource.of(fluidVariant.getInstanceValue().getFluidType().getBucket(fluidVariant.toStack(FluidType.BUCKET_VOLUME)));
+        if (sumAmount == 0) return stackFactory.create(FluidResource.EMPTY, 0);
+        return stackFactory.create(resource, Ints.saturatedCast(sumAmount));
     }
 
     public static FluidStack extractFluidStackFiltered(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
     }
@@ -257,7 +250,7 @@ public final class FluidUtil {
     public static ResourceStack<FluidResource> extractResourceStackFiltered(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
     }

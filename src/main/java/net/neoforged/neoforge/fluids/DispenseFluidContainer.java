@@ -33,7 +33,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
     @Override
     public ItemStack execute(BlockSource source, ItemStack stack) {
-        if (FluidUtil.getFluidContained(stack).isEmpty()) {
+        if (FluidUtil.getFirstFluidStackContained(stack).isEmpty()) {
             return fillContainer(source, stack);
         } else {
             return dumpContainer(source, stack);

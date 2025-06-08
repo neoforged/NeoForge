@@ -5,9 +5,9 @@
 
 package net.neoforged.neoforge.transfer.handlers.energy;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Range;
 
 /**
  * A single buffer or indexed energy handler also referred to as a `slotless buffer`. For older mods, this should be rather familiar to you when implementing.
@@ -26,8 +26,8 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      * @return The amount that was (or would have been, if simulated) inserted. This should be non-negative.
      */
     @Override
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int insert(@Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
+    @Nonnegative
+    int insert(@Nonnegative int amount, TransactionContext transaction);
 
     /**
      * <b>PRIMER: Formerly</b> `extractEnergy(int toReceive, bool simulate)`
@@ -39,8 +39,8 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      * @return The amount that was (or would have been, if simulated) extracted. This should be non-negative.
      */
     @Override
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int extract(@Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction);
+    @Nonnegative
+    int extract(@Nonnegative int amount, TransactionContext transaction);
 
     /**
      * @return {@code true} if at any point your handler can be inserted into, {@code false} otherwise. This should not be called in your insert method.
@@ -73,12 +73,12 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     }
 
     @Override
-    default int insert(int index, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
+    default int insert(int index, @Nonnegative int amount, TransactionContext transaction) {
         return insert(amount, transaction);
     }
 
     @Override
-    default int extract(int index, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
+    default int extract(int index, @Nonnegative int amount, TransactionContext transaction) {
         return extract(amount, transaction);
     }
 }

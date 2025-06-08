@@ -27,7 +27,7 @@ public final class FluidContentsTint implements ItemTintSource {
 
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
-        var fluidStack = FluidUtil.getFluidContained(stack);
+        var fluidStack = FluidUtil.getFirstFluidStackContained(stack);
         if (!fluidStack.isEmpty())
             return IClientFluidTypeExtensions.of(fluidStack.getFluid()).getTintColor(fluidStack);
         return (0xFFFFFFFF);

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
 import java.util.Map;
+import javax.annotation.Nonnegative;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.Container;
@@ -25,7 +26,6 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
-import org.jetbrains.annotations.Range;
 
 public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     /**
@@ -172,7 +172,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public void set(int index, ItemResource resource, @Nonnegative int amount) {
         get(index).set(resource.toStack(amount));
     }
 

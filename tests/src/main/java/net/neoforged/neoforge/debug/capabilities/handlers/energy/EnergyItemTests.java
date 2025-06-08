@@ -13,6 +13,7 @@ import net.neoforged.neoforge.capabilities.Capabilities.EnergyHandler;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -36,6 +37,8 @@ public class EnergyItemTests {
 
         assert energy != null;
         var current = EnergyHandlerUtil.getAmount(energy);
+
+        EnergyBufferAttachment.builder(0, 1000).build();
 
         long storedMax = EnergyTestsSetup.MAX_CAPACITY;
         helper.assertValueEqual(current, storedMax, "Default stored energy should be equal to the max capacity.");

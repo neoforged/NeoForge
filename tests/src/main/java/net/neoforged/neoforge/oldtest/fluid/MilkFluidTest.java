@@ -29,7 +29,7 @@ public class MilkFluidTest {
     private static void useMilk(PlayerInteractEvent event) {
         ItemStack stack = event.getItemStack();
         if (stack.getItem() == Items.MILK_BUCKET) {
-            var fluidStack = FluidUtil.getFluidContained(stack);
+            var fluidStack = FluidUtil.getFirstFluidStackContained(stack);
             if (!fluidStack.isEmpty()) {
                 event.getEntity().displayClientMessage(Component.literal("Contains ").append(fluidStack.getHoverName()), true);
             }

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer;
 
 import java.util.function.Predicate;
+import javax.annotation.Nonnegative;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -16,7 +17,6 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 public final class ItemUtil {
     /**
@@ -95,7 +95,7 @@ public final class ItemUtil {
     public static ItemStack extractItemStackFiltered(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
     }
@@ -103,7 +103,7 @@ public final class ItemUtil {
     public static ResourceStack<ItemResource> extractResourceStackFiltered(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
@@ -111,8 +111,8 @@ public final class ItemUtil {
     public static ItemStack extractItemStackFilteredAtIndex(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int index,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
     }
@@ -120,8 +120,8 @@ public final class ItemUtil {
     public static ResourceStack<ItemResource> extractResourceStackFilteredAtIndex(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int index,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }

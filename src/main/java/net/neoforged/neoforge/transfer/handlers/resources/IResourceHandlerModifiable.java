@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import org.jetbrains.annotations.Range;
 
 /**
  * A generic handler for handling a {@link IResource resource} of type {@link T} allowing for direct mutations of a specific slot.
@@ -22,5 +22,5 @@ public interface IResourceHandlerModifiable<T extends IResource> extends IResour
      * @param resource The resource to set.
      * @param amount   The amount of the resource to set.
      */
-    void set(@Range(from = 0, to = Integer.MAX_VALUE) int index, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount);
+    void set(@Nonnegative int index, T resource, @Nonnegative int amount);
 }

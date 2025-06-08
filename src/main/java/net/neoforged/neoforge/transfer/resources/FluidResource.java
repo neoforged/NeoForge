@@ -8,9 +8,8 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.function.Predicate;
+import javax.annotation.Nonnegative;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -19,7 +18,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -28,13 +26,12 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IResource, DataComponentHolder {
+public final class FluidResource implements IDataComponentHolderResource<Fluid> {
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.
@@ -106,6 +103,22 @@ public final class FluidResource implements IResource, DataComponentHolder {
     }
 
     /**
+     * @return The fluid of this resource
+     */
+    @Override
+    public Fluid getInstanceValue() {
+        return innerStack.getFluid();
+    }
+
+    /**
+     * @return the fluid holder of this resource
+     */
+    @Override
+    public Holder<Fluid> getHolder() {
+        return innerStack.getFluidHolder();
+    }
+
+    /**
      * Checks if this resource is empty. The resource will be empty if the fluid is {@link Fluids#EMPTY}.
      *
      * @return if this resource is empty
@@ -121,6 +134,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * @param patch the patch to apply
      * @return the new resource
      */
+    @Override
     public FluidResource withPatch(DataComponentPatch patch) {
         FluidStack stack = innerStack.copy();
         stack.applyComponents(patch);
@@ -135,6 +149,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * @param <D>  the type of data component
      * @return the new resource
      */
+    @Override
     public <D> FluidResource with(DataComponentType<D> type, D data) {
         FluidStack stack = innerStack.copy();
         stack.set(type, data);
@@ -147,24 +162,11 @@ public final class FluidResource implements IResource, DataComponentHolder {
      * @param type The type of data component
      * @return The new resource
      */
+    @Override
     public FluidResource without(DataComponentType<?> type) {
         FluidStack stack = innerStack.copy();
         stack.remove(type);
         return new FluidResource(stack);
-    }
-
-    /**
-     * @return The fluid of this resource
-     */
-    public Fluid getInstanceValue() {
-        return innerStack.getFluid();
-    }
-
-    /**
-     * @return the fluid holder of this resource
-     */
-    public Holder<Fluid> getHolder() {
-        return innerStack.getFluidHolder();
     }
 
     /**
@@ -180,6 +182,7 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return innerStack.getComponents().toImmutableMap();
     }
 
+    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
@@ -192,28 +195,9 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return toStack(FluidType.BUCKET_VOLUME);
     }
 
+    @Override
     public boolean isComponentsPatchEmpty() {
         return innerStack.isComponentsPatchEmpty();
-    }
-
-    public boolean is(TagKey<Fluid> tag) {
-        return innerStack.is(tag);
-    }
-
-    public boolean is(Fluid fluid) {
-        return innerStack.is(fluid);
-    }
-
-    public boolean is(Predicate<Holder<Fluid>> predicate) {
-        return innerStack.is(predicate);
-    }
-
-    public boolean is(Holder<Fluid> holder) {
-        return innerStack.is(holder);
-    }
-
-    public boolean is(HolderSet<Fluid> holders) {
-        return innerStack.is(holders);
     }
 
     public boolean is(FluidType fluidType) {
@@ -224,6 +208,10 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return FluidStack.isSameFluidSameComponents(stack, innerStack);
     }
 
+    public boolean test(Predicate<FluidStack> predicate) {
+        return predicate.test(innerStack);
+    }
+
     public ItemResource getFilledBucket() {
         if (filledBucket == null) {
             filledBucket = ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
@@ -231,16 +219,17 @@ public final class FluidResource implements IResource, DataComponentHolder {
         return filledBucket;
     }
 
-    public @Nullable SoundEvent getSound(SoundAction action) {
+    @Nullable
+    public SoundEvent getSound(SoundAction action) {
         return innerStack.getFluidType().getSound(innerStack, action);
     }
 
-    public ResourceStack<FluidResource> withAmount(@Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public ResourceStack<FluidResource> withAmount(@Nonnegative int amount) {
         if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
         return new ResourceStack<>(this, amount);
     }
 
-    public MutableResourceStack<FluidResource> withMutableAmount(@Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public MutableResourceStack<FluidResource> withMutableAmount(@Nonnegative int amount) {
         return new MutableResourceStack<>(this, amount);
     }
 

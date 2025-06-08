@@ -6,28 +6,28 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters;
 
 import java.util.Objects;
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.IEnergyContainer;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Range;
 
 public record EnergyContainerToHandlerAdapter(
         IEnergyContainer container,
         IHandleIOBehaviour behavior) implements IEnergyHandlerModifiable {
     @Override
-    public @Range(from = 0, to = Integer.MAX_VALUE) int size() {
+    public @Nonnegative int size() {
         return container().size();
     }
 
     @Override
-    public @Range(from = 0, to = Integer.MAX_VALUE) int getAmount(int index) {
+    public @Nonnegative int getAmount(int index) {
         return container.get(index);
     }
 
     @Override
-    public @Range(from = 0, to = Integer.MAX_VALUE) int getCapacity(int index) {
+    public @Nonnegative int getCapacity(int index) {
         return container.getCapacity(index);
     }
 
@@ -126,7 +126,7 @@ public record EnergyContainerToHandlerAdapter(
     }
 
     @Override
-    public void set(int index, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public void set(int index, @Nonnegative int amount) {
         container.set(index, amount);
     }
 }

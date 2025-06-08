@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -21,23 +19,25 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
-public final class ItemResource implements IResource, DataComponentHolder {
+public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
@@ -115,20 +115,29 @@ public final class ItemResource implements IResource, DataComponentHolder {
     }
 
     @Override
+    public Item getInstanceValue() {
+        return innerStack.getItem();
+    }
+
+    @Override
+    public Holder<Item> getHolder() {
+        return innerStack.getItemHolder();
+    }
+
+    //Defers to the stack in case there are injections done to it at some point
+    @Override
+    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
+        return innerStack.isItemEnabled(enabledFeatures);
+    }
+
+    @Nullable
+    public <T, C extends @Nullable Object> T getCapability(ItemCapability<T, C> capability, C context) {
+        return capability.getCapability(toStack(), context);
+    }
+
+    @Override
     public boolean isEmpty() {
         return innerStack.isEmpty();
-    }
-
-    public boolean is(Item item) {
-        return innerStack.is(item);
-    }
-
-    public boolean is(TagKey<Item> item) {
-        return innerStack.is(item);
-    }
-
-    public boolean is(Predicate<Holder<Item>> predicate) {
-        return innerStack.is(predicate);
     }
 
     public boolean is(ItemStack stack) {
@@ -139,42 +148,40 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return predicate.test(innerStack);
     }
 
+    @Override
     public boolean isComponentsPatchEmpty() {
         return innerStack.isComponentsPatchEmpty();
     }
 
+    @Override
     public ItemResource withPatch(DataComponentPatch patch) {
         ItemStack stack = innerStack.copy();
         stack.applyComponents(patch);
         return new ItemResource(stack);
     }
 
+    @Override
     public <D> ItemResource with(DataComponentType<D> type, D data) {
         ItemStack stack = innerStack.copy();
         stack.set(type, data);
         return new ItemResource(stack);
     }
 
+    @Override
     public <D> ItemResource with(Supplier<DataComponentType<D>> type, D data) {
         return with(type.get(), data);
     }
 
+    @Override
     public ItemResource without(DataComponentType<?> type) {
         ItemStack stack = innerStack.copy();
         stack.remove(type);
         return new ItemResource(stack);
     }
 
+    @Override
     public ItemResource without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
-    }
-
-    public Item getInstanceValue() {
-        return innerStack.getItem();
-    }
-
-    public Holder<Item> getHolder() {
-        return innerStack.getItemHolder();
     }
 
     @Override
@@ -182,6 +189,7 @@ public final class ItemResource implements IResource, DataComponentHolder {
         return innerStack.immutableComponents();
     }
 
+    @Override
     public DataComponentPatch getComponentsPatch() {
         return innerStack.getComponentsPatch();
     }
@@ -244,14 +252,6 @@ public final class ItemResource implements IResource, DataComponentHolder {
     @Override
     public String toString() {
         return innerStack.getItem().toString();
-    }
-
-    public boolean is(Holder<Item> holder) {
-        return is(holder.value());
-    }
-
-    public boolean is(HolderSet<Item> holderSet) {
-        return holderSet.contains(getHolder());
     }
 
     /**

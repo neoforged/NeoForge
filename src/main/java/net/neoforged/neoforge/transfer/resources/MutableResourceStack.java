@@ -8,10 +8,10 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
+import javax.annotation.Nonnegative;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import org.jetbrains.annotations.Range;
 
 /**
  * Represents an immutable {@link IResource} and a <b>mutable</b> amount.
@@ -82,7 +82,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return nonNullListOfSize(count, this);
     }
 
-    public MutableResourceStack(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public MutableResourceStack(T resource, @Nonnegative int amount) {
         Objects.requireNonNull(resource, "Resource must not be null");
         this.resource = resource;
         this.amount = amount;
@@ -92,7 +92,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Nonnegative int amount) {
         return new MutableResourceStack<>(resource, amount);
     }
 
@@ -110,7 +110,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> withAmount(@Range(from = 0, to = Integer.MAX_VALUE) int newAmount) {
+    public MutableResourceStack<T> withAmount(@Nonnegative int newAmount) {
         amount = isEmpty() ? 0 : newAmount;
         return this;
     }

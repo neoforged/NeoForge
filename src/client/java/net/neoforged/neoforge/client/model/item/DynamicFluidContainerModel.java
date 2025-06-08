@@ -145,7 +145,7 @@ public class DynamicFluidContainerModel implements ItemModel {
 
     @Override
     public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver modelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int p_387820_) {
-        var fluidStack = FluidUtil.getFluidContained(stack);
+        var fluidStack = FluidUtil.getFirstFluidStackContained(stack);
         var fluid = fluidStack.isEmpty() ? unbakedModel.fluid : fluidStack.getFluid();
 
         cache.computeIfAbsent(fluid, this::bakeModelForFluid)

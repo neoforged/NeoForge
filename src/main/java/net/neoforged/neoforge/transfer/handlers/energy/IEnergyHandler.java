@@ -5,25 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.energy;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.resources.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Range;
-
-// Primer Notes:
-// - Changed name from IEnergyStorage -> IEnergyHandler
-// > Renames to handler to be consistent with the new changes to IResourceHandler as well as communicate more that this 'handles' energy not necessarily stores.
-// That is driven by the individual implementation.
-//
-// - Adds index parameters to methods to match IResourceHandler.
-// > This allows the ability to control individual "slots" or buffers of a given handler.
-// > This does NOT force a mod author to use the indexed variants for their handler, but rather provide a way to expose them if desired. EnergyBuffer is an example where both can co-exist
-// Simple containers can just use a size of 1 if desired, the same as FluidTank has done for a decade (not exaggerating). There is an interface that provides that called `ISingleEnergyHandler`
-// > The methods renamed are marked below with `Formerly`. Ensure to remove these notes as well as the markings below
-
-// Soaryn PR Notes:
-// - There is notably some technical debt by adding the indices/sub-buffers, but it is very minor and this is in favor of providing new opportunities for devs,
-// as well as maintain consistency with the other handlers. This is mostly an opt-in given the logic remains the same for the most part on single buffer energy handlers.
-// - The ranges added below are more for an IDE funnel. They are there to encourage a dev to write code without making mistakes in the case scenario of accidentally passing a negative;
 
 /**
  * Formerly `IEnergyStorage`
@@ -46,7 +31,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @return The number of indices this handler manages. You shouldn't return 0 where avoidable, but this is allowed in cases there are no buffers such as the {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EmptyEnergyHandler Empty handler}
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
+    @Nonnegative
     int size();
 
     /**
@@ -57,18 +42,18 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from.
      * @return The amount of energy stored at the given index. This should be non-negative.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int getAmount(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    @Nonnegative
+    int getAmount(@Nonnegative int index);
 
     /**
      * This is an optional method that provides the ability to query the contents up to a long should the internals allow for it.
-     * This is only needed to be overrided should you store more than an int in a given index.
-     * 
+     * This is only needed to be overridden should you store more than an int in a given index.
+     *
      * @param index The index to get the amount from.
      * @return The amount of energy stored at the given index. This should be non-negative.
      */
-    @Range(from = 0, to = Long.MAX_VALUE)
-    default long getAmountAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+    @Nonnegative
+    default long getAmountAsLong(@Nonnegative int index) {
         return getAmount(index);
     }
 
@@ -81,11 +66,18 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the limit from.
      * @return The capacity at the given index. This should be non-negative.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int getCapacity(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    @Nonnegative
+    int getCapacity(@Nonnegative int index);
 
+    /**
+     * This is an optional method that provides the ability to query the capacity up to a long should the internals allow for it.
+     * This is only needed to be overridden should you be able to store more than an int in a given index.
+     *
+     * @param index The index to get the amount from.
+     * @return The amount of energy stored at the given index. This should be non-negative.
+     */
     @Range(from = 0, to = Long.MAX_VALUE)
-    default long getCapacityAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+    default long getCapacityAsLong(@Nonnegative int index) {
         return getCapacity(index);
     }
 
@@ -119,7 +111,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to check
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be inserted into; {@code true} otherwise.
      */
-    boolean supportsInsertion(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    boolean supportsInsertion(@Nonnegative int index);
 
     /**
      * <b>PRIMER: Formerly</b> `canExtract`
@@ -152,7 +144,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to check
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be extracted from; {@code true} otherwise.
      */
-    boolean supportsExtraction(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    boolean supportsExtraction(@Nonnegative int index);
 
     /**
      * <b>PRIMER: New</b>
@@ -164,11 +156,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed. * @return The amount that was (or would have been, if simulated) inserted. This should be non-negative.
      * @return The amount that was (or would have been, if simulated) inserted. This should be non-negative.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int insert(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int insert(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction);
 
     /**
      * <b>PRIMER: Formerly</b> `receiveEnergy(int toReceive, bool simulate)`
@@ -181,10 +170,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param amount      The amount to insert.
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed. * @return The amount that was (or would have been, if simulated) inserted. This should be non-negative.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int insert(
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int insert(@Nonnegative int amount, TransactionContext transaction);
 
     /**
      * <b>PRIMER: New</b>
@@ -196,11 +183,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was (or would have been, if simulated) extracted. This should be non-negative.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int extract(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int extract(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction);
 
     /**
      * <b>PRIMER: Formerly</b> `extractEnergy(int toReceive, bool simulate)`
@@ -214,8 +198,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was (or would have been, if simulated) extracted. This should be non-negative.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int extract(
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int extract(@Nonnegative int amount, TransactionContext transaction);
 }

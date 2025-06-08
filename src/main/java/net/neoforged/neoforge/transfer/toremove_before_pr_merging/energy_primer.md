@@ -83,7 +83,7 @@ public static void energyHandlerDemonstration(IEnergyHandler handler) {
         // We can do some intermediate actions such as finding out how much energy is now in the handler
         var currentAmount = EnergyHandlerUtil.getAmount(handler);
         // insert energy back into 
-        var inserted = handler.receiveEnergy(100, transaction);
+        var inserted = handler.insert(100, transaction);
         // and if we had (for some arbitrary reason) been able to return at least 50 energy, we want to commit our changes. 
         if (inserted >= 50) {
             //without this line or having inserted over 50, then all of our previous steps would be expected to be reverted.
@@ -104,7 +104,7 @@ options around this such as the `ISingleEnergyHandler` and utility methods in `E
 for them. There should be no perceptual change if the desire is to use what "was", outside either the names or perhaps
 where the method is.
 
-Throughout the methods you may have noticed a `@Range(from = 0, to = Integer.MAX_VALUE)` decorating the methods and
+Throughout the methods you may have noticed a `@Nonnegative` decorating the methods and
 parameters. These are really just to help identify when you may be trying to pass in incorrect values into the handler.
 While these are strictly not enforced by the compiler, doing values outside of these ranges will result in odd
 behaviour. The hope is to help you catch misuse early rather than finding out in production.

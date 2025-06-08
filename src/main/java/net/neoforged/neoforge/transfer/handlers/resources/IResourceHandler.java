@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Range;
 
 /**
  * A generic handler for handling a {@link IResource resource} of type {@link T}.
@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Range;
  * @param <T> The type of resource this handler manages.
  */
 public interface IResourceHandler<T extends IResource> extends ITransactionHandler {
+    int MAX_VALUE = Integer.MAX_VALUE;
+
     /**
      * An index in synonymous with "slot", "tank", "buffer", etc.
      *
@@ -27,16 +29,16 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to get the resource from.
      * @return The resource at the given index.
      */
-    T getResource(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    T getResource(@Nonnegative int index);
 
     /**
      * @param index The index to get the amount from.
-     * @return The amount of the resource at the given index. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @return The amount of the resource at the given index. Must be non-negative
      */
-    int getAmount(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    int getAmount(@Nonnegative int index);
 
-    @Range(from = 0, to = Long.MAX_VALUE)
-    default long getAmountAsLong(@Range(from = 0, to = Integer.MAX_VALUE) int index) {
+    @Nonnegative
+    default long getAmountAsLong(@Nonnegative int index) {
         return getAmount(index);
     }
 
@@ -47,17 +49,13 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @param index    The index to get the limit from.
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
-     * @return The limit of the resource at the given index. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @return The limit of the resource at the given index. Must be non-negative
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int getCapacity(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            T resource);
+    @Nonnegative
+    int getCapacity(@Nonnegative int index, T resource);
 
-    @Range(from = 0, to = Long.MAX_VALUE)
-    default long getCapacityAsLong(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            T resource) {
+    @Nonnegative
+    default long getCapacityAsLong(@Nonnegative int index, T resource) {
         return getCapacity(index, resource);
     }
 
@@ -69,7 +67,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @return True if the resource can be inserted, false otherwise.
      */
     boolean isValid(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
+            @Nonnegative int index,
             T resource);
 
     /**
@@ -94,7 +92,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean supportsInsertion(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    boolean supportsInsertion(@Nonnegative int index);
 
     /**
      * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -138,7 +136,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to check.
      * @return True if the resource can be extracted, false otherwise.
      */
-    boolean supportsExtraction(@Range(from = 0, to = Integer.MAX_VALUE) int index);
+    boolean supportsExtraction(@Nonnegative int index);
 
     /**
      * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -167,16 +165,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @param index       The index to insert the resource into.
      * @param resource    The resource to insert.
-     * @param amount      The amount of the resource to insert. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @param amount      The amount of the resource to insert. Must be non-negative
      * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @return The amount of the resource that was (or would have been, if simulated) inserted. Must be non-negative
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int insert(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            T resource,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int insert(@Nonnegative int index, T resource, @Nonnegative int amount, TransactionContext transaction);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
@@ -185,30 +179,23 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource    The resource to insert.
-     * @param amount      The amount of the resource to insert. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @param amount      The amount of the resource to insert. Must be non-negative
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
-     * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) inserted.
+     * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) inserted.
      */
-    int insert(
-            T resource,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    int insert(T resource, @Nonnegative int amount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
      * @param index       The index to extract the resource from.
      * @param resource    The resource to extract.
-     * @param amount      The amount of the resource to extract. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @param amount      The amount of the resource to extract. Must be non-negative
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
-     * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int extract(
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            T resource,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int extract(@Nonnegative int index, T resource, @Nonnegative int amount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
@@ -217,15 +204,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource    The resource to extract.
-     * @param amount      The amount of the resource to extract. A range from {@code 0} to {@code Integer.MAX_VALUE}
+     * @param amount      The amount of the resource to extract. Must be non-negative
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
-     * @return The amount (A range from {@code 0} to {@code Integer.MAX_VALUE}) of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
-    int extract(
-            T resource,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
-            TransactionContext transaction);
+    @Nonnegative
+    int extract(T resource, @Nonnegative int amount, TransactionContext transaction);
 
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {
         //noinspection unchecked

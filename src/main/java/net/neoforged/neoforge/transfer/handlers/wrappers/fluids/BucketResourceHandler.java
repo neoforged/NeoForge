@@ -11,7 +11,6 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
@@ -80,7 +79,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
             return 0; // can't fill non-empty buckets
         }
 
-        ItemResource filledBucket = FluidUtil.getFilledBucket(resource);
+        ItemResource filledBucket = resource.getFilledBucket();
         if (filledBucket.isEmpty()) {
             return 0; // the fluid has no associated bucket item
         }
@@ -119,6 +118,6 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
-        return !FluidUtil.getFilledBucket(resource).isEmpty();
+        return !resource.getFilledBucket().isEmpty();
     }
 }

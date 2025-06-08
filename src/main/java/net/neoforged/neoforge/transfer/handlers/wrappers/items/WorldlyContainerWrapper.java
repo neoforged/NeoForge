@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
+import javax.annotation.Nonnegative;
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
@@ -12,7 +13,6 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
     private final WorldlyContainer worldlyContainer;
@@ -56,7 +56,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    @Range(from = 0, to = Integer.MAX_VALUE)
+    @Nonnegative
     public int getCapacity(int index, ItemResource resource) {
         return wrappedContainer.getCapacity(convertSlot(index), resource);
     }
@@ -77,7 +77,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int insert(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
+    public int insert(int index, ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
         int convertedIndex = convertSlot(index);
         if (!worldlyContainer.canPlaceItemThroughFace(convertedIndex, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
@@ -86,7 +86,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int insert(ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
+    public int insert(ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
         var size = size();
         var handled = 0;
         for (var index = 0; index < size; index++) {
@@ -97,7 +97,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int extract(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
+    public int extract(int index, ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
         int convertedSlot = convertSlot(index);
         if (side != null && !worldlyContainer.canTakeItemThroughFace(convertedSlot, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
@@ -106,7 +106,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int extract(ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, TransactionContext transaction) {
+    public int extract(ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
         var size = size();
         var handled = 0;
         for (var index = 0; index < size; index++) {
@@ -117,7 +117,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount) {
+    public void set(int index, ItemResource resource, @Nonnegative int amount) {
         worldlyContainer.setItem(index, resource.toStack(amount), true);
     }
 }

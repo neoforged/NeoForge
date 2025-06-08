@@ -77,7 +77,7 @@ public class CustomFluidContainerTest {
         @Override
         public Component getName(ItemStack itemStack) {
             AtomicReference<String> name = new AtomicReference<>("Custom Fluid Container");
-            var fluidStack = FluidUtil.getFluidContained(itemStack);
+            var fluidStack = FluidUtil.getFirstFluidStackContained(itemStack);
             if (fluidStack.isEmpty()) {
                 name.set(name.get() + " (empty)");
             } else {
@@ -91,7 +91,7 @@ public class CustomFluidContainerTest {
             var context = PlayerItemContext.ofHand(player, hand);
             var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
             if (handler == null) return super.use(level, player, hand);
-            var fluidStack = FluidUtil.getFluidContained(context);
+            var fluidStack = FluidUtil.getFirstFluidStackContained(context);
             if (fluidStack.isEmpty()) {
                 var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
                 if (FluidUtil.tryPickupFluidAsPlayer(player, hand, level, blockHitResult.getBlockPos())) {

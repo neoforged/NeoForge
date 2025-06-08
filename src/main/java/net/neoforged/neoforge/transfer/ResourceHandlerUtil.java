@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
 import java.util.function.Predicate;
+import javax.annotation.Nonnegative;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -17,7 +18,6 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 public final class ResourceHandlerUtil {
     /**
@@ -151,11 +151,11 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
-    @Range(from = 0, to = Integer.MAX_VALUE)
+    @Nonnegative
     public static <T extends IResource> int insertStacking(
             IResourceHandler<T> handler,
             T resource,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         try (var tx = Transaction.open(transaction)) {
             int inserted = 0;
@@ -194,7 +194,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int insertIndexForced(
             IResourceHandler<T> handler,
             T resource,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             int inserted = 0;
@@ -220,7 +220,7 @@ public final class ResourceHandlerUtil {
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, @Range(from = 0, to = Integer.MAX_VALUE) int amount, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, @Nonnegative int amount, @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             int extracted = 0;
             int size = handler.size();
@@ -258,7 +258,7 @@ public final class ResourceHandlerUtil {
     public static <R extends IResource, S> S extractFiltered(
             IResourceHandler<R> handler,
             Predicate<R> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
@@ -304,8 +304,8 @@ public final class ResourceHandlerUtil {
     public static <R extends IResource, S> S extractIndexFiltered(
             IResourceHandler<R> handler,
             Predicate<R> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int index,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int index,
+            @Nonnegative int amount,
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
@@ -360,7 +360,7 @@ public final class ResourceHandlerUtil {
             @Nullable IResourceHandler<T> from,
             @Nullable IResourceHandler<T> to,
             Predicate<T> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (from == null || to == null) return 0;
@@ -419,7 +419,7 @@ public final class ResourceHandlerUtil {
             @Nullable IResourceHandler<R> source,
             @Nullable IResourceHandler<R> destination,
             Predicate<R> filter,
-            @Range(from = 0, to = Integer.MAX_VALUE) int amount,
+            @Nonnegative int amount,
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
@@ -511,7 +511,7 @@ public final class ResourceHandlerUtil {
      * @return The total amount of resources that was successfully transferred.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, @Range(from = 0, to = Integer.MAX_VALUE) int amount, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, @Nonnegative int amount, @Nullable TransactionContext transaction) {
         return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
     }
 

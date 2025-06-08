@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.energy;
 
-import org.jetbrains.annotations.Range;
+import javax.annotation.Nonnegative;
 
 /**
  * <b>PRIMER: New</b>
@@ -21,5 +21,5 @@ public interface IEnergyHandlerModifiable extends IEnergyHandler {
      * @param index  The index for what value to set.
      * @param amount The value to set. This should be non-negative.
      */
-    void set(@Range(from = 0, to = Integer.MAX_VALUE) int index, @Range(from = 0, to = Integer.MAX_VALUE) int amount);
+    void set(@Nonnegative int index, @Nonnegative int amount);
 }
