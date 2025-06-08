@@ -29,6 +29,7 @@ import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -128,13 +129,49 @@ public final class AttachmentType<T> {
     }
 
     /**
-     * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
+     * Create a builder for an attachment type that uses {@link ValueIOSerializable} for serialization.
      * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
      *
      * <p>See {@link #serializable(Function)} for attachments that want to capture a reference to their holder.
      */
-    public static <T extends INBTSerializable<CompoundTag>> Builder<T> serializable(Supplier<T> defaultValueSupplier) {
+    public static <T extends ValueIOSerializable> Builder<T> serializable(Supplier<T> defaultValueSupplier) {
         return serializable(holder -> defaultValueSupplier.get());
+    }
+
+    /**
+     * Create a builder for an attachment type that uses {@link ValueIOSerializable} for serialization.
+     * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
+     *
+     * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
+     * To obtain a specific subtype, the holder can be cast.
+     * If the holder is of the wrong type, the constructor should throw an exception.
+     * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
+     */
+    public static <T extends ValueIOSerializable> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
+        return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<>() {
+            @Override
+            public T read(IAttachmentHolder holder, ValueInput input, HolderLookup.Provider provider) {
+                var ret = defaultValueConstructor.apply(holder);
+                ret.deserialize(input);
+                return ret;
+            }
+
+            @Override
+            public boolean write(T attachment, ValueOutput output, HolderLookup.Provider provider) {
+                attachment.serialize(output);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Create a builder for an attachment type that uses {@link INBTSerializable} for serialization.
+     * Other kinds of serialization can be implemented using {@link #builder(Supplier)} and {@link Builder#serialize(IAttachmentSerializer)}.
+     *
+     * <p>See {@link #nbtSerializable(Function)} for attachments that want to capture a reference to their holder.
+     */
+    public static <T extends INBTSerializable<CompoundTag>> Builder<T> nbtSerializable(Supplier<T> defaultValueSupplier) {
+        return nbtSerializable(holder -> defaultValueSupplier.get());
     }
 
     /**
@@ -144,9 +181,9 @@ public final class AttachmentType<T> {
      * <p>This overload allows capturing a reference to the {@link IAttachmentHolder} for the attachment.
      * To obtain a specific subtype, the holder can be cast.
      * If the holder is of the wrong type, the constructor should throw an exception.
-     * See {@link #serializable(Supplier)} for an overload that does not capture the holder.
+     * See {@link #nbtSerializable(Supplier)} for an overload that does not capture the holder.
      */
-    public static <T extends INBTSerializable<CompoundTag>> Builder<T> serializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
+    public static <T extends INBTSerializable<CompoundTag>> Builder<T> nbtSerializable(Function<IAttachmentHolder, T> defaultValueConstructor) {
         return builder(defaultValueConstructor).serialize(new IAttachmentSerializer<T>() {
             @Override
             public T read(IAttachmentHolder holder, ValueInput input, HolderLookup.Provider provider) {
