@@ -234,6 +234,12 @@
   "net/minecraft/world/level/material/FluidState": [
     "net/neoforged/neoforge/common/extensions/IFluidStateExtension"
   ],
+  "net/minecraft/world/level/storage/ValueInput": [
+    "net/neoforged/neoforge/common/extensions/ValueInputExtension"
+  ],
+  "net/minecraft/world/level/storage/ValueOutput": [
+    "net/neoforged/neoforge/common/extensions/ValueOutputExtension"
+  ],
   "net/minecraft/client/data/models/model/TexturedModel": [
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension"
   ],

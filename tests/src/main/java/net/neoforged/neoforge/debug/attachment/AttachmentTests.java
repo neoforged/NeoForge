@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.debug.attachment;
 
+import static net.minecraft.commands.Commands.literal;
+
 import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
 import net.minecraft.commands.Commands;
@@ -34,8 +36,6 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
-
-import static net.minecraft.commands.Commands.literal;
 
 @ForEachTest(groups = "attachment")
 public class AttachmentTests {
