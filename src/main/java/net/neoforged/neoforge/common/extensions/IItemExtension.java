@@ -53,7 +53,6 @@ import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-// TODO systemic review of all extension functions. lots of unused -C
 public interface IItemExtension {
     private Item self() {
         return (Item) this;

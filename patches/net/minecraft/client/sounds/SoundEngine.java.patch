@@ -16,7 +16,7 @@
      }
  
      private synchronized void loadLibrary() {
-@@ -342,7 +_,9 @@
+@@ -351,7 +_,9 @@
      public SoundEngine.PlayResult play(SoundInstance p_120313_) {
          if (!this.loaded) {
              return SoundEngine.PlayResult.NOT_STARTED;
@@ -27,23 +27,23 @@
              return SoundEngine.PlayResult.NOT_STARTED;
          } else {
              WeighedSoundEvents weighedsoundevents = p_120313_.resolve(this.soundManager);
-@@ -419,15 +_,18 @@
-                             p_194488_.setSelfPosition(vec3);
-                             p_194488_.setRelative(flag);
-                         });
-+                        final SoundInstance soundinstance = p_120313_;
-                         if (!flag1) {
-                             this.soundBuffers.getCompleteBuffer(sound.getPath()).thenAccept(p_383126_ -> channelaccess$channelhandle.execute(p_194495_ -> {
-                                 p_194495_.attachStaticBuffer(p_383126_);
-                                 p_194495_.play();
-+                                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent(this, soundinstance, p_194495_));
-                             }));
-                         } else {
--                            this.soundBuffers.getStream(sound.getPath(), flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
-+                            soundinstance.getStream(this.soundBuffers, sound, flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
-                                 p_194498_.attachBufferStream(p_383033_);
-                                 p_194498_.play();
-+                                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlayStreamingSourceEvent(this, soundinstance, p_194498_));
-                             }));
-                         }
+@@ -432,15 +_,18 @@
+                                 p_194488_.setSelfPosition(vec3);
+                                 p_194488_.setRelative(flag);
+                             });
++                            final SoundInstance soundinstance = p_120313_;
+                             if (!flag1) {
+                                 this.soundBuffers.getCompleteBuffer(sound.getPath()).thenAccept(p_383126_ -> channelaccess$channelhandle.execute(p_194495_ -> {
+                                     p_194495_.attachStaticBuffer(p_383126_);
+                                     p_194495_.play();
++                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent(this, soundinstance, p_194495_));
+                                 }));
+                             } else {
+-                                this.soundBuffers.getStream(sound.getPath(), flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
++                                soundinstance.getStream(this.soundBuffers, sound, flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
+                                     p_194498_.attachBufferStream(p_383033_);
+                                     p_194498_.play();
++                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlayStreamingSourceEvent(this, soundinstance, p_194498_));
+                                 }));
+                             }
  

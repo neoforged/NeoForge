@@ -254,14 +254,4 @@ public class ClientNeoForgeMod {
     static void registerBlockStateModels(RegisterBlockStateModels event) {
         event.registerModel(neoForgeId("composite"), CompositeBlockModel.Unbaked.MAP_CODEC);
     }
-
-    // TODO 1.21.4
-//    @SubscribeEvent(priority = EventPriority.LOWEST)
-//    static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {
-//        SpawnEggItem.eggs().forEach(egg -> {
-//            if (event.getItemColors().get(egg) == null) {
-//                event.register((stack, layer) -> ARGB.opaque(egg.getColor(layer)), egg);
-//            }
-//        });
-//    }
 }
