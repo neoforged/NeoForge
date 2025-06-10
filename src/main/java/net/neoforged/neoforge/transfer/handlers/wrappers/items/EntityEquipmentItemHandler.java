@@ -95,7 +95,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public int getCapacity(int index, ItemResource resource) {
-        return validateSlotIndex(index).getCountLimit();
+        return validateSlotIndex(index).countLimit;
     }
 
     @Override
