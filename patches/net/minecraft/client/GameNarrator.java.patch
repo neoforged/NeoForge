@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/GameNarrator.java
 +++ b/net/minecraft/client/GameNarrator.java
-@@ -74,7 +_,7 @@
+@@ -79,7 +_,7 @@
      }
  
      private void logNarratedMessage(String p_168788_) {
