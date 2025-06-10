@@ -17,7 +17,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.IndexItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -188,7 +188,7 @@ public class VanillaHandlersTests {
         //to make the IDE happy after this point
         assert chestHandler != null;
 
-        var firstChestSlot = IItemContext.ofIndex(chestHandler, 0);
+        var firstChestSlot = IndexItemContext.of(chestHandler, 0);
 
         var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.defaultResource().with(DataComponents.DAMAGE, 20), 3);
         var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.defaultResource(), 200);

@@ -5,18 +5,18 @@
      }
  
 +    // Neo: Update cooldown after insertion into hopper
-+      @Override
-+      public void onCommit(int slot, ItemStack originalStack) {
-+          if (originalStack.isEmpty() && !getItem(slot).isEmpty()) {
-+              if (!isOnCustomCooldown()) {
-+                  // This cooldown is always set to 8 in vanilla with one exception:
-+                  // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
-+                  // has not been updated as recently as the one pushing items into it.
-+                  // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
-+                  setCooldown(8);
-+              }
-+          }
-+      }
++    @Override
++    public void onCommit(int slot, ItemStack originalStack) {
++        if (originalStack.isEmpty() && !getItem(slot).isEmpty()) {
++            if (!isOnCustomCooldown()) {
++                // This cooldown is always set to 8 in vanilla with one exception:
++                // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
++                // has not been updated as recently as the one pushing items into it.
++                // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
++                setCooldown(8);
++            }
++        }
++    }
 +
      @Override
      public void setBlockState(BlockState p_326468_) {

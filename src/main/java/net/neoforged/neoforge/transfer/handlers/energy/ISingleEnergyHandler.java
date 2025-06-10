@@ -58,27 +58,30 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      * @return When implementing {@link ISingleEnergyHandler} the return should always be 1. If you find you need additional indices, please implement {@link IEnergyHandler} instead
      */
     @Override
+    @Nonnegative
     default int size() {
         return 1;
     }
 
     @Override
-    default boolean supportsInsertion(int index) {
+    default boolean supportsInsertion(@Nonnegative int index) {
         return supportsInsertion();
     }
 
     @Override
-    default boolean supportsExtraction(int index) {
+    default boolean supportsExtraction(@Nonnegative int index) {
         return supportsExtraction();
     }
 
     @Override
-    default int insert(int index, @Nonnegative int amount, TransactionContext transaction) {
+    @Nonnegative
+    default int insert(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
         return insert(amount, transaction);
     }
 
     @Override
-    default int extract(int index, @Nonnegative int amount, TransactionContext transaction) {
+    @Nonnegative
+    default int extract(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
         return extract(amount, transaction);
     }
 }

@@ -10,7 +10,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.InventoryWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * A context that represents a player's inventory slot.
  */
 public class PlayerItemContext implements IItemContext {
-    protected final InventoryWrapper handler;
+    protected final PlayerInventoryWrapper handler;
     protected final int index;
 
     public static IItemContext ofHand(Player player, InteractionHand hand) {
@@ -39,7 +39,7 @@ public class PlayerItemContext implements IItemContext {
 
     public PlayerItemContext(Player player, int index) {
         //This could be captured by player.getCapability, but it was pointed out that has a non-zero chance to return null
-        this.handler = InventoryWrapper.of(player);
+        this.handler = PlayerInventoryWrapper.of(player);
         this.index = index;
     }
 

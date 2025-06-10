@@ -19,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Capabilities {
     public static final class EnergyHandler {
-        public static final BlockCapability<IEnergyHandler, @Nullable Direction> BLOCK = BlockCapability.createSided(create("energy"), IEnergyHandler.class);
-        public static final EntityCapability<IEnergyHandler, @Nullable Direction> ENTITY = EntityCapability.createSided(create("energy"), IEnergyHandler.class);
-        public static final ItemCapability<IEnergyHandler, IItemContext> ITEM = ItemCapability.createContextual(create("energy"), IEnergyHandler.class);
+        public static final BlockCapability<IEnergyHandler, @Nullable Direction> BLOCK = BlockCapability.createSided(create("energy_handler"), IEnergyHandler.class);
+        public static final EntityCapability<IEnergyHandler, @Nullable Direction> ENTITY = EntityCapability.createSided(create("energy_handler"), IEnergyHandler.class);
+        public static final ItemCapability<IEnergyHandler, IItemContext> ITEM = ItemCapability.create(create("energy_handler"), IEnergyHandler.class, IItemContext.class);
 
         private EnergyHandler() {}
     }
@@ -29,7 +29,7 @@ public final class Capabilities {
     public static final class FluidHandler {
         public static final BlockCapability<IResourceHandler<FluidResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
         public static final EntityCapability<IResourceHandler<FluidResource>, @Nullable Direction> ENTITY = EntityCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
-        public static final ItemCapability<IResourceHandler<FluidResource>, IItemContext> ITEM = ItemCapability.createContextual(create("fluid_handler"), IResourceHandler.asClass());
+        public static final ItemCapability<IResourceHandler<FluidResource>, IItemContext> ITEM = ItemCapability.create(create("fluid_handler"), IResourceHandler.asClass(), IItemContext.class);
 
         private FluidHandler() {}
     }
@@ -46,7 +46,7 @@ public final class Capabilities {
          * in the sense that droppers, hoppers, and similar modded devices will try to use it.
          */
         public static final EntityCapability<IResourceHandler<ItemResource>, @Nullable Direction> ENTITY_AUTOMATION = EntityCapability.createSided(create("item_handler_automation"), IResourceHandler.asClass());
-        public static final ItemCapability<IResourceHandler<ItemResource>, IItemContext> ITEM = ItemCapability.createContextual(create("item_handler"), IResourceHandler.asClass());
+        public static final ItemCapability<IResourceHandler<ItemResource>, IItemContext> ITEM = ItemCapability.create(create("item_handler"), IResourceHandler.asClass(), IItemContext.class);
 
         private ItemHandler() {}
     }

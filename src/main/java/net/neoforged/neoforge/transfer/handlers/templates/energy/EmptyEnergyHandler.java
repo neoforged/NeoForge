@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -12,47 +13,54 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
     public static final IEnergyHandler INSTANCE = new EmptyEnergyHandler();
 
     @Override
+    @Nonnegative
     public int size() {
         return 0;
     }
 
     @Override
-    public int getAmount(int index) {
+    @Nonnegative
+    public int getAmount(@Nonnegative int index) {
         return 0;
     }
 
     @Override
-    public int getCapacity(int index) {
+    @Nonnegative
+    public int getCapacity(@Nonnegative int index) {
         return 0;
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
+    public boolean supportsInsertion(@Nonnegative int index) {
         return false;
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
+    public boolean supportsExtraction(@Nonnegative int index) {
         return false;
     }
 
     @Override
-    public int insert(int index, int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int insert(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int insert(int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int insert(@Nonnegative int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int extract(int index, int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int extract(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
         return 0;
     }
 
     @Override
-    public int extract(int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int extract(@Nonnegative int amount, TransactionContext transaction) {
         return 0;
     }
 }

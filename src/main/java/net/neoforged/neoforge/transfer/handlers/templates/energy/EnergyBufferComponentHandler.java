@@ -42,8 +42,11 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
     private final DataComponentType<Integer> componentType;
     // These are not handled by the component and are constant upon the handler creation.
     // If you'd like to make this controlled by ComponentData, then a different implementation would be required.
+    @Nonnegative
     private final int capacity;
+    @Nonnegative
     private final int maxInsert;
+    @Nonnegative
     private final int maxExtract;
 
     private final IndexedIntSnapshot snapshot;
@@ -76,8 +79,9 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
     }
 
     @Override
+    @Nonnegative
     public int insert(@Nonnegative int amount, TransactionContext transaction) {
-        if (amount == 0 || maxInsert <= 0) return 0;
+        if (amount == 0 || maxInsert == 0) return 0;
 
         var stackedAmount = maxInsert * itemContext.getAmount();
         //handle overflow
@@ -95,8 +99,9 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
     }
 
     @Override
+    @Nonnegative
     public int extract(@Nonnegative int amount, TransactionContext transaction) {
-        if (amount == 0 || maxExtract <= 0) return 0;
+        if (amount == 0 || maxExtract == 0) return 0;
 
         var rawStackExtract = this.maxExtract * this.itemContext.getAmount();
         if (rawStackExtract < 0) rawStackExtract = Integer.MAX_VALUE;
@@ -114,23 +119,27 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
         return empty(clampedValue / containerFill, transaction) * containerFill;
     }
 
-    private int empty(int count, TransactionContext context) {
+    @Nonnegative
+    private int empty(@Nonnegative int count, TransactionContext context) {
         ItemResource emptiedContainer = itemContext.getResource().without(componentType);
         return itemContext.exchange(emptiedContainer, count, context);
     }
 
-    private int setFull(int count, TransactionContext context) {
+    @Nonnegative
+    private int setFull(@Nonnegative int count, TransactionContext context) {
         ItemResource filledContainer = itemContext.getResource().with(componentType, getIndividualLimit());
         return itemContext.exchange(filledContainer, count, context);
     }
 
-    private int setPartial(int amount, TransactionContext context) {
+    @Nonnegative
+    private int setPartial(@Nonnegative int amount, TransactionContext context) {
         ItemResource filledContainer = itemContext.getResource().with(componentType, amount);
         return itemContext.exchange(filledContainer, 1, context);
     }
 
     @Override
-    public int getAmount(int index) {
+    @Nonnegative
+    public int getAmount(@Nonnegative int index) {
         int rawEnergy = getIndividualAmount();
         var preCalc = Mth.clamp(rawEnergy, 0, this.capacity) * this.itemContext.getAmount();
         if (preCalc < 0) return Integer.MAX_VALUE;
@@ -138,7 +147,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
     }
 
     @Override
-    public int getCapacity(int index) {
+    @Nonnegative
+    public int getCapacity(@Nonnegative int index) {
         var stackedAmount = this.capacity * itemContext.getAmount();
         //handle overflow
         if (stackedAmount < 0) return Integer.MAX_VALUE;
@@ -160,7 +170,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
      *
      * @param energy The new energy value
      */
-    public void set(int index, int energy) {
+    public void set(@Nonnegative int index, @Nonnegative int energy) {
         int realEnergy = Mth.clamp(energy, 0, this.capacity);
         this.parent.set(this.componentType, realEnergy);
     }
@@ -184,11 +194,13 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
     public static class Builder {
         private final DataComponentType<Integer> componentType;
         private int capacity;
+        @Nonnegative
         private int maxInsertRate;
+        @Nonnegative
         private int maxExtractRate;
 
         private Builder(DataComponentType<Integer> componentType) {
-            Objects.requireNonNull(componentType, "component type must be set when using ");
+            Objects.requireNonNull(componentType, "component type must be set");
             this.componentType = componentType;
         }
 
@@ -196,6 +208,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
          * @param capacity How much energy each sub-buffer can hold.
          */
         public Builder capacity(@Nonnegative int capacity) {
+            //noinspection ConstantValue
+            if (capacity < 0) throw new IllegalArgumentException("capacity must be non-negative");
             this.capacity = capacity;
             return this;
         }
@@ -204,6 +218,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
          * @param rate How much energy the buffer can insert in a single call.
          */
         public Builder maxInsertRate(@Nonnegative int rate) {
+            //noinspection ConstantValue
+            if (maxInsertRate < 0) throw new IllegalArgumentException("maxInsertRate must be non-negative");
             this.maxInsertRate = rate;
             return this;
         }
@@ -212,6 +228,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
          * @param rate How much energy the buffer can extract in a single call.
          */
         public Builder maxExtractRate(@Nonnegative int rate) {
+            //noinspection ConstantValue
+            if (maxExtractRate < 0) throw new IllegalArgumentException("maxExtractRate must be non-negative");
             this.maxExtractRate = rate;
             return this;
         }

@@ -36,24 +36,24 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
      *
      * <p>A note on GC: weak keys alone are not suitable as the ContainerStorage strongly references the Container.
      * Weak values are suitable, but we have to ensure that the ContainerStorage remains strongly reachable as int as
-     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotItemStackJournal}.
+     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotItemStackResourceHandlerJournal}.
      *
      * @see WorldlyContainerWrapper
-     * @see InventoryWrapper
+     * @see PlayerInventoryWrapper
      */
     // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
     // TODO: should have identity semantics?
     private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakValues().makeMap();
 
     public static VanillaContainerWrapper of(Container container) {
-        var wrapper = WRAPPERS.computeIfAbsent(container, inv -> inv instanceof Inventory inventory ? new InventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
+        var wrapper = WRAPPERS.computeIfAbsent(container, inv -> inv instanceof Inventory inventory ? new PlayerInventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
         wrapper.resize();
         return wrapper;
     }
 
     private final Container container;
     private int size;
-    private final ArrayList<SlotItemStackJournal> snapshots = new ArrayList<>();
+    private final ArrayList<SlotItemStackResourceHandlerJournal> snapshots = new ArrayList<>();
     private final SetChangedSnapshot setChangedParticipant;
 
     VanillaContainerWrapper(Container container) {
@@ -69,11 +69,11 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
         size = container.getContainerSize();
         snapshots.ensureCapacity(size);
         for (var i = snapshots.size(); i < size; i++) {
-            snapshots.add(new SlotItemStackJournal(i));
+            snapshots.add(new SlotItemStackResourceHandlerJournal(i));
         }
     }
 
-    private SlotItemStackJournal get(int index) {
+    private SlotItemStackResourceHandlerJournal get(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Slot index out of bounds: " + index + " (size: " + size + ")");
         }
@@ -176,10 +176,10 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
         get(index).set(resource.toStack(amount));
     }
 
-    private class SlotItemStackJournal extends ItemStackJournal {
+    private class SlotItemStackResourceHandlerJournal extends ItemStackResourceHandlerJournal {
         private final int index;
 
-        private SlotItemStackJournal(int index) {
+        private SlotItemStackResourceHandlerJournal(int index) {
             this.index = index;
         }
 

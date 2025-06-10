@@ -413,8 +413,8 @@ public final class ResourceHandlerUtil {
      * Similar to {@link #move}, but instead of all resources, it will be the first one that matches the filter. While this won't be a full list, this will simplify things like {@link FluidUtil#moveFluidWithSound}
      */
     public static <R extends IResource, S> S moveFirstOrDefault(
-            @Nullable IResourceHandler<R> source,
-            @Nullable IResourceHandler<R> destination,
+            @Nullable IResourceHandler<R> from,
+            @Nullable IResourceHandler<R> to,
             Predicate<R> filter,
             @Nonnegative int amount,
             R defaultResource,
@@ -422,31 +422,31 @@ public final class ResourceHandlerUtil {
             IStackFactory<R, S> stackFactory) {
         Objects.requireNonNull(filter, "Filter may not be null");
 
-        if (source == null || destination == null)
+        if (from == null || to == null)
             return stackFactory.create(defaultResource, 0);
 
         try {
             int totalMoved = 0;
             R lastMovedResource = defaultResource;
 
-            int size = source.size();
+            int size = from.size();
 
             for (int index = 0; index < size; ++index) {
-                R fromResource = source.getResource(index);
+                R fromResource = from.getResource(index);
                 if (fromResource.isEmpty() || !filter.test(fromResource)) continue;
 
                 // check how much can be extracted
                 int extracted;
                 try (var simulatedExtractTransaction = Transaction.open(transaction)) {
-                    extracted = source.extract(index, fromResource, amount - totalMoved, simulatedExtractTransaction);
+                    extracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtractTransaction);
                 }
 
                 try (Transaction transferTransaction = Transaction.open(transaction)) {
                     // check how much can be inserted
-                    var inserted = destination.insert(fromResource, extracted, transferTransaction);
+                    var inserted = to.insert(fromResource, extracted, transferTransaction);
 
                     // extract it, or rollback if the amounts don't match
-                    if (source.extract(index, fromResource, inserted, transferTransaction) == inserted) {
+                    if (from.extract(index, fromResource, inserted, transferTransaction) == inserted) {
                         totalMoved += inserted;
                         transferTransaction.commit();
                         lastMovedResource = fromResource;
@@ -463,8 +463,8 @@ public final class ResourceHandlerUtil {
             CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
             //noinspection DataFlowIssue
             report.addCategory("Move details")
-                    .setDetail("Input storage", source::toString)
-                    .setDetail("Output storage", destination::toString)
+                    .setDetail("Input storage", from::toString)
+                    .setDetail("Output storage", to::toString)
                     .setDetail("Filter", filter::toString)
                     .setDetail("Max amount", amount)
                     .setDetail("Transaction", transaction);
@@ -536,6 +536,16 @@ public final class ResourceHandlerUtil {
             //Simulated, we don't commit on an inquiry
             return handler.extract(resource, 1, temp) > 0;
         }
+    }
+
+    public static <T extends IResource> T getFirstResourceOrDefault(IResourceHandler<T> handler, T defaultResource) {
+        var size = handler.size();
+        for (var index = 0; index < size; index++) {
+            var resource = handler.getResource(index);
+            if (resource.isEmpty()) continue;
+            return resource;
+        }
+        return defaultResource;
     }
 
     private ResourceHandlerUtil() {}

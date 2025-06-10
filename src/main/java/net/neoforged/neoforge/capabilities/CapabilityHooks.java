@@ -32,8 +32,8 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceHandler
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ComposterWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.EntityEquipmentItemHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.InventoryWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ItemContainerContentsResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.WorldlyContainerWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -133,7 +133,7 @@ public class CapabilityHooks {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
             event.registerEntity(Capabilities.ItemHandler.ENTITY_AUTOMATION, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
         }
-        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> InventoryWrapper.of(player));
+        event.registerEntity(Capabilities.ItemHandler.ENTITY, EntityType.PLAYER, (player, ctx) -> PlayerInventoryWrapper.of(player));
 
         // Items
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> new ItemContainerContentsResourceHandler(ctx, DataComponents.CONTAINER, 27),
@@ -162,7 +162,7 @@ public class CapabilityHooks {
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
-                    return InventoryWrapper.of(horse.getInventory());
+                    return PlayerInventoryWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
                     return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
                 return null;

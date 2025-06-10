@@ -17,7 +17,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.WrapperLocation;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -28,8 +27,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
     // Weak values to make sure wrappers are cleaned up after use, thread-safe.
     private static final Map<WrapperLocation, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
-    private final Level level;
-    private final BlockPos pos;
+    private final WrapperLocation location;
 
     public static CauldronWrapper get(Level level, BlockPos pos) {
         var location = new WrapperLocation(level, pos.immutable());
@@ -37,14 +35,13 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
     }
 
     private CauldronWrapper(WrapperLocation location) {
-        this.level = location.level();
-        this.pos = location.pos();
+        this.location = location;
     }
 
     private CauldronFluidContent getContent(BlockState state) {
         CauldronFluidContent content = CauldronFluidContent.getForBlock(state.getBlock());
         if (content == null) {
-            throw new IllegalStateException("Unexpected error: no cauldron at location " + pos);
+            throw new IllegalStateException("Unexpected error: no cauldron at location " + location.pos + " in " + location.level.dimension().location());
         }
         return content;
     }
@@ -53,13 +50,13 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
     public FluidResource getResource(int index) {
         Objects.checkIndex(index, size());
 
-        BlockState state = level.getBlockState(pos);
+        BlockState state = location.getBlockState();
         return getContent(state).fluid.defaultResource();
     }
 
     @Override
     public int getAmount(int index) {
-        BlockState state = level.getBlockState(pos);
+        BlockState state = location.getBlockState();
         return getContent(state).getMillibuckets(state);
     }
 
@@ -95,7 +92,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
 
         if (fluidLevel == 0) {
             // Fully extract -> back to empty cauldron
-            this.level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 0);
+            this.location.level.setBlock(location.pos, Blocks.CAULDRON.defaultBlockState(), 0);
         } else {
             BlockState newState = newContent.block.defaultBlockState();
 
@@ -103,7 +100,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
                 newState = newState.setValue(newContent.levelProperty, fluidLevel);
             }
 
-            this.level.setBlock(pos, newState, 0);
+            this.location.level.setBlock(location.pos, newState, 0);
         }
     }
 
@@ -116,7 +113,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
             return 0;
         }
 
-        BlockState state = level.getBlockState(pos);
+        BlockState state = location.getBlockState();
         CauldronFluidContent currentContent = getContent(state);
 
         if (currentContent.fluid != Fluids.EMPTY && !resource.is(currentContent.fluid)) {
@@ -143,7 +140,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        BlockState state = level.getBlockState(pos);
+        BlockState state = location.getBlockState();
         CauldronFluidContent handledContent = getContent(state);
 
         //This handles the `is(fluid)` as well as components are `empty` with the default resource being the baseline of the fluid
@@ -168,25 +165,36 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
 
     @Override
     protected BlockState createSnapshot() {
-        return level.getBlockState(pos);
+        return location.getBlockState();
     }
 
     @Override
     protected void revertToSnapshot(BlockState snapshot) {
-        level.setBlock(pos, snapshot, 0);
+        location.level.setBlock(location.pos, snapshot, 0);
     }
 
     @Override
     protected void onCommit(BlockState originalState) {
         // State as it was modified during this outermost transaction being committed.
-        BlockState state = level.getBlockState(pos);
+        BlockState state = location.getBlockState();
 
         if (originalState == state) return;
 
         // Revert back to the blockstate before any changes happened so that the next
         // call will not short-circuit due to the blockstate not really changing.
-        level.setBlock(pos, originalState, 0);
+        location.level.setBlock(location.pos, originalState, 0);
         // Now do the change that will trigger change notifications to other blocks/neighbors/clients
-        level.setBlockAndUpdate(pos, state);
+        location.level.setBlockAndUpdate(location.pos, state);
+    }
+
+    /**
+     * Using the location, we can maintain a cache with a given wrapped by using
+     * <p>
+     * {@code (Level, BlockPos) -> Wrapper}
+     */
+    private record WrapperLocation(Level level, BlockPos pos) {
+        public BlockState getBlockState() {
+            return level.getBlockState(pos);
+        }
     }
 }

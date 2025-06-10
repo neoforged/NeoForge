@@ -12,7 +12,8 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A generic handler for handling a {@link IResource resource} of type {@link T}.
+ * A generic handler for handling a {@link IResource resource} of type {@link T} whether it be inserting, extracting, querying some size value, etc.
+ * Trying to interact with a handler with an index larger than the size is expected to often times throw an {@link IndexOutOfBoundsException} or similar error. Ensure you are within the size constraints of the handler before calling a method.
  *
  * @param <T> The type of resource this handler manages.
  */
@@ -22,6 +23,8 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @return The number of indices this handler manages.
      */
+
+    @Nonnegative
     int size();
 
     /**
@@ -208,6 +211,18 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     @Nonnegative
     int extract(T resource, @Nonnegative int amount, TransactionContext transaction);
 
+    /**
+     *
+     * <p>
+     * Example:
+     * 
+     * <pre>{@code
+     * public static final BlockCapability<IResourceHandler<FluidResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
+     *
+     * }</pre>
+     * 
+     * @return a class type ready to be used by something like the capability token registry.
+     */
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {
         //noinspection unchecked
         return (Class<IResourceHandler<T>>) (Object) IResourceHandler.class;

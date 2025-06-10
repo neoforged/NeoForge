@@ -13,6 +13,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
@@ -56,6 +59,39 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     @Override
     protected void revertToSnapshot(Float snapshot) {
         probability = snapshot;
+    }
+
+    @Override
+    protected void onCommit(Float originalState) {
+        // Apply pending action
+        //NEO: some concern about floating point equals. It SHOULD be fine, but may want to be fully sure before we ship
+        if (probability == EXTRACT) {
+            // Mimic ComposterBlock#empty logic.
+            BlockState newState = location.getBlockState().setValue(ComposterBlock.LEVEL, 0);
+            location.level.setBlockAndUpdate(location.pos, newState);
+            location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
+        } else if (probability > 0) {
+            BlockState state = location.getBlockState();
+            // Always increment on first insert (like vanilla).
+            boolean increaseSuccessful = state.getValue(ComposterBlock.LEVEL) == 0 || location.level.getRandom().nextDouble() < probability;
+
+            if (increaseSuccessful) {
+                // Mimic ComposterBlock#addItem logic.
+                int newLevel = state.getValue(ComposterBlock.LEVEL) + 1;
+                BlockState newState = state.setValue(ComposterBlock.LEVEL, newLevel);
+                location.level.setBlockAndUpdate(location.pos, newState);
+                location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
+
+                if (newLevel == 7) {
+                    location.level.scheduleTick(location.pos, state.getBlock(), 20);
+                }
+            }
+
+            location.level.levelEvent(LevelEvent.COMPOSTER_FILL, location.pos, increaseSuccessful ? 1 : 0);
+        }
+
+        // Reset after successful commit.
+        probability = NO_OP;
     }
 
     private class Top implements ISingleResourceHandler<ItemResource> {
@@ -185,6 +221,17 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public String toString() {
             return "ComposterWrapper[" + location + "/bottom]";
+        }
+    }
+
+    /**
+     * Using the location, we can maintain a cache with a given wrapped by using
+     * <p>
+     * {@code (Level, BlockPos) -> Wrapper}
+     */
+    private record WrapperLocation(Level level, BlockPos pos) {
+        public BlockState getBlockState() {
+            return level.getBlockState(pos);
         }
     }
 }

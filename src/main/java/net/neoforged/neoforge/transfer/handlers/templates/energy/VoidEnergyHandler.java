@@ -5,10 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Range;
 
 /**
  * A buffer of energy that accepts any and all energy inserted into it, but never has an extractable amount.
@@ -19,13 +19,14 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
 
     //Never has any energy
     @Override
-    @Range(from = 0, to = 0)
+    @Nonnegative
     public int getAmount(int index) {
         return 0;
     }
 
     //Has a capacity of infinite energy
     @Override
+    @Nonnegative
     public int getCapacity(int index) {
         return Integer.MAX_VALUE;
     }
@@ -44,14 +45,15 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
 
     //Accepts as much as is inserted, but rather than calling the above method, it is just simpler to return the amount.
     @Override
-    public int insert(int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int insert(@Nonnegative int amount, TransactionContext transaction) {
         return amount;
     }
 
     //Never has anything to extract so we return 0
     @Override
-    @Range(from = 0, to = 0)
-    public int extract(int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int extract(@Nonnegative int amount, TransactionContext transaction) {
         return 0;
     }
 

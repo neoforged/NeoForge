@@ -12,41 +12,6 @@ package net.neoforged.neoforge.transfer.resources;
  * and they must implement a suitable {@link Object#hashCode()}.
  * <p>
  * Note, the amount is not encoded in the resource, but rather in something like a {@link ResourceStack} or {@link MutableResourceStack} based on what you need.
- * <p>
- * It is also possible to make a resource like the following to represent elements as a resource
- * 
- * <pre>
- * {
- *     &#64;code
- *     public enum ElementResource implements IResource, StringRepresentable {
- *         NONE("none"),
- *         FIRE("fire"),
- *         WATER("water"),
- *         EARTH("earth"),
- *         AIR("air");
- *
- *         private final String elementName;
- *
- *         ElementResource(String elementName) {
- *             this.elementName = elementName;
- *         }
- *
- *         &#64;Override
- *         public boolean isEmpty() {
- *             return this == NONE;
- *         }
- *
- *         @Override
- *         public String getSerializedName() {
- *             return elementName;
- *         }
- *
- *         public static final StringRepresentableCodec<ElementResource> CODEC = StringRepresentable.fromEnum(ElementResource::values);
- *         public static final StreamCodec<FriendlyByteBuf, ElementResource> STREAM_CODEC = NeoForgeStreamCodecs.enumCodec(ElementResource.class);
- *     }
- * }
- * </pre>
- *
  */
 public interface IResource {
     /**

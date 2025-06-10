@@ -85,7 +85,44 @@ public final class FluidUtil {
         return !tryExtract.isEmpty();
     }
 
-    public static final Predicate<?> ANY = Predicates.alwaysTrue();
+    /**
+     * Fill a container from the given fluidSource.
+     *
+     * @param container   The container to be filled. Will not be modified.
+     *                    Separate handling must be done to reduce the stack size, stow containers, etc, on success.
+     *                    See {@link #tryFillContainerAndStow(ItemStack, IFluidHandler, IItemHandler, int, Player, boolean)}.
+     * @param fluidSource The fluid handler to be drained.
+     * @param maxAmount   The largest amount of fluid that should be transferred.
+     * @param player      The player to make the filling noise. Pass null for no noise.
+     * @param doFill      true if the container should actually be filled, false if it should be simulated.
+     * @return a {@link FluidStack} holding the filled container if successful.
+     */
+    //formerly tryFillContainer
+    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> handler, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+        IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
+        if (itemCapability == null) return FluidStack.EMPTY;
+        return handleContainer(handler, itemCapability, amount, player, transferAction);
+    }
+
+    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> handler, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+        IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
+        if (itemCapability == null) return FluidStack.EMPTY;
+
+        return handleContainer(itemCapability, handler, amount, player, transferAction);
+    }
+
+    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+        try (Transaction transaction = Transaction.open(TransactionContext.ROOT)) {
+            FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
+            if (!transferAction.commit(transaction) || player == null) return stack;
+
+            SoundEvent soundevent = stack.getFluidType().getSound(stack, SoundActions.BUCKET_FILL);
+            if (soundevent != null) {
+                player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return stack;
+        }
+    }
 
     /**
      * Moves fluid between two fluid handlers, playing a sound if the action is executed.
@@ -99,8 +136,8 @@ public final class FluidUtil {
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-            var moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
+        try (Transaction transaction = Transaction.open(TransactionContext.ROOT)) {
+            ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
             SoundEvent soundevent = moved.resource().getSound(soundAction);
@@ -156,7 +193,7 @@ public final class FluidUtil {
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
     public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos);
     }
 
@@ -171,7 +208,7 @@ public final class FluidUtil {
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
     public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
-        var handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos);
     }
 
@@ -225,11 +262,11 @@ public final class FluidUtil {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return stackFactory.create(FluidResource.EMPTY, 0);
 
-        var size = handler.size();
+        int size = handler.size();
         FluidResource resource = FluidResource.EMPTY;
         long sumAmount = 0;
         for (int index = 0; index < size; index++) {
-            var current = handler.getResource(index);
+            FluidResource current = handler.getResource(index);
             int amount = handler.getAmount(index);
             if (ResourceHandlerUtil.isEmpty(current, amount)) continue;
             if (resource.isEmpty() || current.equals(resource)) {
@@ -240,6 +277,29 @@ public final class FluidUtil {
         }
         if (sumAmount == 0) return stackFactory.create(FluidResource.EMPTY, 0);
         return stackFactory.create(resource, Ints.saturatedCast(sumAmount));
+    }
+
+    /**
+     * Fill a to fluid handler from a from fluid handler using a specific fluid.
+     * To specify a max amount to transfer instead of specific fluid, use {@link #tryFluidTransfer(IResourceHandler, IResourceHandler, int, boolean)}
+     * To transfer as much as possible, use {@link Integer#MAX_VALUE} for resource.amount.
+     *
+     * @param from       The fluid handler to be filled.
+     * @param to         The fluid handler to be drained.
+     * @param fluidStack The fluid that should be transferred. Amount represents the maximum amount to transfer.
+     * @param action     Decides if the move should commit its interactions in the end
+     * @return the fluidStack that was transferred from the from to the to. null on failure.
+     */
+
+    public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, TransferAction action) {
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+            FluidResource resource = FluidResource.of(fluidStack);
+            int amount = ResourceHandlerUtil.move(from, to, resource::equals, fluidStack.getAmount(), transaction);
+
+            //Commit if we are executing
+            action.commit(transaction);
+            return resource.toStack(amount);
+        }
     }
 
     public static FluidStack extractFluidStackFiltered(
@@ -256,6 +316,19 @@ public final class FluidUtil {
             @Nonnegative int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
+    }
+
+    public static FluidResource getFirstFluidResource(IResourceHandler<FluidResource> handler) {
+        return ResourceHandlerUtil.getFirstResourceOrDefault(handler, FluidResource.EMPTY);
+    }
+
+    /**
+     * Gets the first fluid found in the fluid handler of the item context.
+     */
+    public static FluidResource getFluidFromContext(IItemContext context) {
+        var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
+        if (handler == null) return FluidResource.EMPTY;
+        return getFirstFluidResource(handler);
     }
 
     private FluidUtil() {}

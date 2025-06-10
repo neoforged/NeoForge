@@ -39,11 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
 public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
-    /**
-     * A maximum limit of snapshots that should persist after finishing.
-     * This is intended to reduce down the memory burden for large snapshots.
-     */
-    private static final int SNAPSHOT_THRESHOLD_LIMIT = 10;
+    private static int DEEPEST_LAYER = -1;
 
     private final ArrayList<T> snapshots = new ArrayList<>();
 
@@ -104,6 +100,9 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
 
     @Override
     public void onClose(TransactionContext transaction, Transaction.Result result) {
+        //NEO: for testing and will be removed after deprecation period is over for handler reworks.
+        // This is to provide a quick way to give some metrics during the migration phase
+        DEEPEST_LAYER = Math.max(DEEPEST_LAYER, transaction.nestingDepth());
         // Get and remove the relevant snapshot.
         T snapshot = snapshots.remove(transaction.nestingDepth());
 
@@ -112,10 +111,6 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
             //todo should we clear?
-            if (transaction.nestingDepth() <= 0 && snapshots.size() > SNAPSHOT_THRESHOLD_LIMIT) {
-                snapshots.clear();
-                snapshots.ensureCapacity(SNAPSHOT_THRESHOLD_LIMIT);
-            }
             return;
         }
 
@@ -146,10 +141,5 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         onCommit(originalState);
         releaseSnapshot(originalState);
         originalState = null;
-        //TODO should we clear the snapshots?
-        if (snapshots.size() > SNAPSHOT_THRESHOLD_LIMIT) {
-            snapshots.clear();
-            snapshots.ensureCapacity(SNAPSHOT_THRESHOLD_LIMIT);
-        }
     }
 }

@@ -40,7 +40,8 @@ import org.jetbrains.annotations.Nullable;
  * EnergyBuffer.builder(3, 1000).maxTransfer(10).build();
  * }
  * </pre>
- *
+ * 
+ * <p>
  * Unlike the {@link EnergyBufferComponentHandler}, the handler also is the attachment data.
  */
 public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
@@ -131,12 +132,16 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         if (size < energy.length) {
             throw new IllegalArgumentException("An EnergyBuffer must have a size (" + size + ") larger than energy array length (" + energy.length + ") passed in.");
         }
+        if (capacity < 0) throw new IllegalArgumentException("Capacity must be non-negative");
+        if (maxInsertionRate < 0) throw new IllegalArgumentException("MaxInsertion rate must be non-negative");
+        if (maxExtractionRate < 0) throw new IllegalArgumentException("MaxExtraction rate must be non-negative");
         this.size = size;
         this.capacity = capacity;
         this.maxInsert = maxInsertionRate;
         this.maxExtract = maxExtractionRate;
         this.energy = new int[size];
         for (int i = 0; i < size; i++) {
+            if (energy[i] < 0) throw new IllegalArgumentException("Energy at index " + i + " must be non-negative");
             this.energy[i] = Math.max(0, Math.min(capacity, energy[i]));
         }
         this.snapshots = IndexedIntSnapshot.listOf(this, SetChangedSnapshot.of(this::onSetChanged), size);
@@ -298,6 +303,8 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
          * @param capacity How much energy each sub-buffer can hold.
          */
         public Builder capacity(@Nonnegative int capacity) {
+            //noinspection ConstantValue
+            if (capacity < 0) throw new IllegalArgumentException("Capacity must be non-negative");
             this.capacity = capacity;
             return this;
         }
@@ -306,6 +313,8 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
          * @param rate How much energy the buffer can insert in a single call.
          */
         public Builder maxInsertRate(@Nonnegative int rate) {
+            //noinspection ConstantValue
+            if (maxInsertRate < 0) throw new IllegalArgumentException("MaxInsertRate must be non-negative");
             this.maxInsertRate = rate;
             return this;
         }
@@ -314,6 +323,8 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
          * @param rate How much energy the buffer can extract in a single call.
          */
         public Builder maxExtractRate(@Nonnegative int rate) {
+            //noinspection ConstantValue
+            if (maxExtractRate < 0) throw new IllegalArgumentException("MaxExtractRate must be non-negative");
             this.maxExtractRate = rate;
             return this;
         }
@@ -330,6 +341,8 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
          */
         public Builder energy(@Nonnegative int index, @Nonnegative int amount) {
             Objects.checkIndex(index, size);
+            //noinspection ConstantValue
+            if (amount < 0) throw new IllegalArgumentException("Energy at index " + index + " must be non-negative");
             this.energy[index] = amount;
             return this;
         }
@@ -349,6 +362,8 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
          */
         //TODO this was set to 1-> max int, however, it should be fine to be zero.
         public Builder size(@Nonnegative int size) {
+            //noinspection ConstantValue
+            if (size < 0) throw new IllegalArgumentException("Size must be non-negative");
             this.size = size;
             energy = new int[size];
             return this;

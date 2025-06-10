@@ -30,7 +30,7 @@ public final class FluidContentsTint implements ItemTintSource {
         var fluidStack = FluidUtil.getFirstFluidStackContained(stack);
         if (!fluidStack.isEmpty())
             return IClientFluidTypeExtensions.of(fluidStack.getFluid()).getTintColor(fluidStack);
-        return (0xFFFFFFFF);
+        return 0xFFFFFFFF;
     }
 
     @Override

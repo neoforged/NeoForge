@@ -42,6 +42,15 @@ public enum TransferAction {
         return get(execute && isExecuting());
     }
 
+    /**
+     * Helper to combines this action with another {@link TransferAction}. This allows easily compounding actions.
+     *
+     * @return Compounded action.
+     */
+    public TransferAction combine(TransferAction other) {
+        return get(other.isExecuting());
+    }
+
     public boolean commit(Transaction context) {
         if (isExecuting())
             context.commit();

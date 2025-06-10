@@ -188,6 +188,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     public FluidStack toStack(int amount) {
+        if (amount == 0) return FluidStack.EMPTY;
         return this.innerStack.copyWithAmount(amount);
     }
 

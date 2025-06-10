@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -20,13 +21,15 @@ public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
 
     //Always has Max value available
     @Override
-    public int getAmount(int index) {
+    @Nonnegative
+    public int getAmount(@Nonnegative int index) {
         return Integer.MAX_VALUE;
     }
 
     //Holds "infinite" energy, thus always has Max value available
     @Override
-    public int getCapacity(int index) {
+    @Nonnegative
+    public int getCapacity(@Nonnegative int index) {
         return Integer.MAX_VALUE;
     }
 
@@ -44,13 +47,15 @@ public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
 
     //Ignores the amount attempted to be inserted
     @Override
-    public int insert(int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int insert(@Nonnegative int amount, TransactionContext transaction) {
         return 0;
     }
 
     //Allows extraction to the exact amount specified
     @Override
-    public int extract(int amount, TransactionContext transaction) {
+    @Nonnegative
+    public int extract(@Nonnegative int amount, TransactionContext transaction) {
         return amount;
     }
 

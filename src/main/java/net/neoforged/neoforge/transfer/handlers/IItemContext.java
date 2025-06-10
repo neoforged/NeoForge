@@ -7,8 +7,8 @@ package net.neoforged.neoforge.transfer.handlers;
 
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.ReadOnlyItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -68,6 +68,33 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface IItemContext {
     /**
+     * Creates a context object based on the given context, which will only allow inspection of the contained
+     * handler, but no modification. You can still call insert or extract, and as long as the handler is properly setup to handle snapshots, the calls will be reverted
+     */
+    @ApiStatus.NonExtendable
+    default IItemContext asReadOnly() {
+        return new ReadOnlyItemContext(this);
+    }
+
+    /**
+     * Creates a wrapper around this context that allows access to a single item of a given stack at the time.
+     * An example is if you had a stack of say 15 buckets, but only wanted to interact with 1 of them.
+     */
+    @ApiStatus.NonExtendable
+    default IItemContext oneByOne() {
+        return new OneByOneItemContext(this);
+    }
+
+    /**
+     * A helper that grabs the specified capability from an ItemStack selected by the context.
+     */
+    @Nullable
+    @ApiStatus.NonExtendable
+    default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
+        return capability.getCapability(getResource().toStack(), this);
+    }
+
+    /**
      * @return The resource of the main item.
      */
     ItemResource getResource();
@@ -110,99 +137,5 @@ public interface IItemContext {
         }
 
         return 0;
-    }
-
-    /**
-     * Creates a context object for working with resource handler contained in an item.
-     *
-     * @param handler The handler containing the item.
-     * @param index   The index in {@code handler}, where the item can be found.
-     */
-    static IItemContext ofIndex(IResourceHandler<ItemResource> handler, int index) {
-        return new IItemContext() {
-            @Override
-            public ItemResource getResource() {
-                return index < handler.size() ? handler.getResource(index) : ItemResource.EMPTY;
-            }
-
-            @Override
-            public int getAmount() {
-                return index < handler.size() ? handler.getAmount(index) : 0;
-            }
-
-            @Override
-            public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-                int inserted = handler.insert(index, resource, amount, transaction);
-                if (inserted < amount) {
-                    inserted += handler.insert(resource, amount - inserted, transaction);
-                }
-                return inserted;
-            }
-
-            @Override
-            public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
-                return handler.extract(index, itemVariant, amount, transaction);
-            }
-        };
-    }
-
-    record ReadOnly(IItemContext context) implements IItemContext {
-        @Override
-        public ItemResource getResource() {
-            return context.getResource();
-        }
-
-        @Override
-        public int getAmount() {
-            return context.getAmount();
-        }
-
-        @Override
-        public int insert(ItemResource itemVariant, int amount, TransactionContext transaction) {
-            try (var subTransaction = Transaction.open(transaction)) {
-                return context.insert(itemVariant, amount, subTransaction);
-            }
-        }
-
-        @Override
-        public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
-            try (var subTransaction = Transaction.open(transaction)) {
-                return context.extract(itemVariant, amount, subTransaction);
-            }
-        }
-
-        @Override
-        public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
-            try (var subTransaction = Transaction.open(transaction)) {
-                return context.exchange(resource, amount, subTransaction);
-            }
-        }
-    }
-
-    /**
-     * A helper that grabs the specified capability from an ItemStack selected by the context.
-     */
-    @Nullable
-    @ApiStatus.NonExtendable
-    default <T> T getCapability(ItemCapability<T, IItemContext> capability) {
-        return capability.getCapability(getResource().toStack(), this);
-    }
-
-    /**
-     * Creates a context object based on the given context, which will only allow inspection of the contained
-     * handler, but no modification. You can still call insert or extract, and as long as the handler is properly setup to handle snapshots, the calls will be reverted
-     */
-    @ApiStatus.NonExtendable
-    default IItemContext asReadOnly() {
-        return new ReadOnly(this);
-    }
-
-    /**
-     * What usecases are there?
-     * Creates a wrapper around this context that allows access to a single item at the time.
-     */
-    @ApiStatus.NonExtendable
-    default IItemContext oneByOne() {
-        return new OneByOneItemContext(this);
     }
 }

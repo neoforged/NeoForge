@@ -7,10 +7,14 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -19,13 +23,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An implementation of {@code IResourceHandler<ItemResource>} for the {@link Inventory} of a {@link Player}.
  */
-public final class InventoryWrapper extends VanillaContainerWrapper {
-    public static InventoryWrapper of(Player player) {
+public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
+    public static PlayerInventoryWrapper of(Player player) {
         return of(player.getInventory());
     }
 
-    public static InventoryWrapper of(Inventory inventory) {
-        return (InventoryWrapper) VanillaContainerWrapper.of(inventory);
+    public static PlayerInventoryWrapper of(Inventory inventory) {
+        return (PlayerInventoryWrapper) VanillaContainerWrapper.of(inventory);
     }
 
     @Override
@@ -48,9 +52,54 @@ public final class InventoryWrapper extends VanillaContainerWrapper {
     private final DroppedItems droppedItems = new DroppedItems();
     private final Inventory inventory;
 
-    InventoryWrapper(Inventory inventory) {
+    PlayerInventoryWrapper(Inventory inventory) {
         super(inventory);
         this.inventory = inventory;
+    }
+
+    /**
+     * Retrieves a wrapper for a specific slot.
+     */
+    public IResourceHandler<ItemResource> getSlot(int slot) {
+        Objects.checkIndex(slot, size());
+        return new RangedResourceHandler<>(this, slot, slot + 1);
+    }
+
+    /**
+     * Retrieves a wrapper for the slot corresponding to the given hand.
+     */
+    public IResourceHandler<ItemResource> getHandSlot(InteractionHand hand) {
+        return switch (hand) {
+            case MAIN_HAND -> {
+                if (Inventory.isHotbarSlot(inventory.getSelectedSlot())) {
+                    yield getSlot(inventory.getSelectedSlot());
+                } else {
+                    throw new RuntimeException("Unexpected player selected slot: " + inventory.getSelectedSlot());
+                }
+            }
+            case OFF_HAND -> getSlot(Inventory.SLOT_OFFHAND);
+        };
+    }
+
+    /**
+     * Retrieves a wrapper around the main slots only.
+     */
+    public IResourceHandler<ItemResource> getMainSlots() {
+        return new RangedResourceHandler<>(this, 0, Inventory.INVENTORY_SIZE);
+    }
+
+    /**
+     * Transactional version of {@link Inventory#placeItemBackInInventory}:
+     * tries to insert as much as possible into the player inventory, and drops the remainder.
+     *
+     * <p>Another name for this method could have been {@code insertOrDrop}.
+     */
+    public void placeItemBackInInventory(ItemResource resource, int amount, TransactionContext transactionContext) {
+        int inserted = insert(resource, amount, transactionContext);
+        if (inserted < amount) {
+            // If we couldn't insert all of it, drop the remainder.
+            drop(resource, amount - inserted, true, false, transactionContext);
+        }
     }
 
     public void drop(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName, TransactionContext transaction) {

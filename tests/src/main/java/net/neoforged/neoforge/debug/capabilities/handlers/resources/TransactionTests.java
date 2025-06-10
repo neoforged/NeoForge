@@ -183,6 +183,18 @@ public class TransactionTests {
         var tankWater = SimpleFluidResourceContainer.builder(1).build();
         var tankLava = SimpleFluidResourceContainer.builder(1).build();
 
+        try (var tx = Transaction.open(null)) {
+            var amount = tankWater.asHandler().extract(FluidResource.of(Fluids.WATER), 500, tx);
+            try (var subTx = Transaction.open(tx)) {
+                var moreAmount = tankWater.asHandler().extract(FluidResource.of(Fluids.WATER), 500, subTx);
+            }
+
+            if (amount > 100) {
+                tx.commit();
+            }
+
+        }
+
         tankWater.set(0, FluidResource.of(Fluids.WATER).withMutableAmount(FluidType.BUCKET_VOLUME));
         tankLava.set(0, FluidResource.of(Fluids.LAVA).withMutableAmount(FluidType.BUCKET_VOLUME));
 

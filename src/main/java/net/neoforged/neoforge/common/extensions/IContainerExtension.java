@@ -11,7 +11,7 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerW
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Extension methods for {@link Container}. These methods are used by {@link VanillaContainerWrapper AlternateVanillaContainerResourceWrapper},
+ * Extension methods for {@link Container}. These methods are used by {@link VanillaContainerWrapper},
  * to allow containers to be integrated in a transaction.
  */
 public interface IContainerExtension {
@@ -32,7 +32,7 @@ public interface IContainerExtension {
      * Perform changes that were deferred in {@link #setItem(int, ItemStack, boolean)}
      * because {@code forceChanges} was false.
      *
-     * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper AlternateVanillaContainerResourceWrapper}.
+     * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper}.
      */
     default void onCommit(int slot, ItemStack originalStack) {}
 

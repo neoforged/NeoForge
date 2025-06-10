@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
+import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -90,6 +91,21 @@ public final class ItemUtil {
         for (ItemStack stack : resource.toStacks(amount)) {
             player.drop(stack, false);
         }
+    }
+
+    /**
+     * Inserts an ItemStack into an {@link IResourceHandler} using stacking logic. It is advised to use the {@link ResourceHandlerUtil#insertStacking(IResourceHandler, IResource, int, TransactionContext) ResourceHandlerUtil} specific one instead when already working with {@link ItemResource}.
+     * ItemStacks will be inserted into filled slot(s) first, then empty slot(s).
+     *
+     * @param handler     the {@link IResourceHandler} to insert the itemstack into
+     * @param stack       the ItemStack to insert
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return the amount of the stack that was (or would have been, if simulated) inserted
+     */
+    public static int insertStacking(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.insertStacking(handler, ItemResource.of(stack), stack.getCount(), transaction);
     }
 
     public static ItemStack extractItemStackFiltered(

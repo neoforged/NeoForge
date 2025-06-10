@@ -18,7 +18,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
 
 /**
  * Stock data component class to hold a {@link FluidStack}.
@@ -50,8 +50,8 @@ public class SimpleFluidContent implements DataComponentHolder {
         return ResourceHandlerUtil.isEmpty(resource, amount) ? EMPTY : new SimpleFluidContent(resource.toStack(amount));
     }
 
-    public static SimpleFluidContent of(ResourceStack<FluidResource> resourceStack) {
-        return resourceStack.isEmpty() ? EMPTY : SimpleFluidContent.of(resourceStack.resource(), resourceStack.amount());
+    public static SimpleFluidContent of(IResourceStack<FluidResource> resourceStack) {
+        return SimpleFluidContent.of(resourceStack.resource(), resourceStack.amount());
     }
 
     public boolean isEmpty() {

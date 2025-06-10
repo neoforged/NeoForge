@@ -12,7 +12,6 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Implement this interface as a capability which should handle fluids
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-@ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IFluidHandler {
     enum FluidAction {
         EXECUTE, SIMULATE;

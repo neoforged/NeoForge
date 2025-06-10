@@ -64,12 +64,12 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     //These are hints to consumers, but given these are on items, the hints are less valuable to be fully stateless
     @Override
     public boolean supportsInsertion() {
-        return getAmount(0) == 0;
+        return true;
     }
 
     @Override
     public boolean supportsExtraction() {
-        return getAmount(0) > 0;
+        return true;
     }
 
     @Override
@@ -86,12 +86,8 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
         int bucketsToFill = amount / FluidType.BUCKET_VOLUME;
         if (bucketsToFill == 0) return 0;
-
-        try (var subTransaction = Transaction.open(transaction)) {
-            var handled = itemContext.exchange(filledBucket, bucketsToFill, subTransaction);
-            subTransaction.commit();
-            return handled * FluidType.BUCKET_VOLUME;
-        }
+        var handled = itemContext.exchange(filledBucket, bucketsToFill, transaction);
+        return handled * FluidType.BUCKET_VOLUME;
     }
 
     @Override

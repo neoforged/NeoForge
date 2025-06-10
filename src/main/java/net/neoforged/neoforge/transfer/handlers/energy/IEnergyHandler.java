@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.handlers.energy;
 import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.Range;
 
 /**
  * Formerly `IEnergyStorage`
@@ -76,7 +75,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from.
      * @return The amount of energy stored at the given index. This should be non-negative.
      */
-    @Range(from = 0, to = Long.MAX_VALUE)
+    @Nonnegative
     default long getCapacityAsLong(@Nonnegative int index) {
         return getCapacity(index);
     }

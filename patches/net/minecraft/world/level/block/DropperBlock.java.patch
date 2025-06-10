@@ -5,7 +5,7 @@
                  if (!itemstack.isEmpty()) {
                      Direction direction = p_52944_.getBlockState(p_52945_).getValue(FACING);
 -                    Container container = HopperBlockEntity.getContainerAt(p_52944_, p_52945_.relative(direction));
-+                    net.neoforged.neoforge.items.ContainerOrHandler containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
++                    var containerOrHandler = HopperBlockEntity.getContainerOrHandlerAt(p_52944_, p_52945_.relative(direction), direction.getOpposite());
                      ItemStack itemstack1;
 -                    if (container == null) {
 +                    if (containerOrHandler.isEmpty()) {
@@ -17,8 +17,8 @@
 +                        } else {
 +                            itemstack1 = itemstack;
 +                            //noinspection DataFlowIssue
-+                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack),1,null);
-+                            itemstack1.shrink(accepted);
++                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack), 1, null);
++                            itemstack1  = itemstack.copyWithCount(1 - accepted);
 +                        }
                          if (itemstack1.isEmpty()) {
                              itemstack1 = itemstack.copy();

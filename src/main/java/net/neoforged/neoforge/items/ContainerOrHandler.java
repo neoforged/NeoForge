@@ -20,10 +20,16 @@ public record ContainerOrHandler(
     }
 
     public static ContainerOrHandler container(Container container) {
+        if (container == null) {
+            throw new IllegalArgumentException("Cannot have a null specified container");
+        }
         return new ContainerOrHandler(container, null);
     }
 
     public static ContainerOrHandler handler(IResourceHandler<ItemResource> itemHandler) {
+        if (itemHandler == null) {
+            throw new IllegalArgumentException("Cannot have a null specified resource handler");
+        }
         return new ContainerOrHandler(null, itemHandler);
     }
 

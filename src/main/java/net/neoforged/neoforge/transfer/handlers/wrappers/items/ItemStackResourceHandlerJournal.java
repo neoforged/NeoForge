@@ -20,7 +20,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>{@link #canInsert} and {@link #canExtract} can be used for more precise control over which items may be inserted or extracted.
  * {@link #getCapacity(ItemResource)} can be overridden to change the maximum capacity depending on the item resource.
  */
-public abstract class ItemStackJournal extends SnapshotJournal<ItemStack> implements ISingleResourceHandler<ItemResource> {
+public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<ItemStack> implements ISingleResourceHandler<ItemResource> {
     /**
      * Return the stack of this storage. It will be modified directly sometimes to avoid needless copies.
      * However, any mutation of the stack will directly be followed by a call to {@link #set}.
@@ -67,46 +67,40 @@ public abstract class ItemStackJournal extends SnapshotJournal<ItemStack> implem
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         ItemStack currentStack = get();
 
-        if ((resource.is(currentStack) || currentStack.isEmpty()) && canInsert(resource)) {
-            int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
+        if ((!resource.is(currentStack) && !currentStack.isEmpty()) || !canInsert(resource)) return 0;
 
-            if (insertedAmount > 0) {
-                updateSnapshots(transaction);
-                currentStack = get();
+        int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
+        if (insertedAmount <= 0) return 0;
 
-                if (currentStack.isEmpty()) {
-                    currentStack = resource.toStack(insertedAmount);
-                } else {
-                    currentStack.grow(insertedAmount);
-                }
+        updateSnapshots(transaction);
+        currentStack = get();
 
-                set(currentStack);
-
-                return insertedAmount;
-            }
+        if (currentStack.isEmpty()) {
+            currentStack = resource.toStack(insertedAmount);
+        } else {
+            currentStack.grow(insertedAmount);
         }
 
-        return 0;
+        set(currentStack);
+
+        return insertedAmount;
     }
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         ItemStack currentStack = get();
 
-        if (resource.is(currentStack) && canExtract(resource)) {
-            int extracted = Math.min(currentStack.getCount(), amount);
+        if (!resource.is(currentStack) || !canExtract(resource)) return 0;
 
-            if (extracted > 0) {
-                this.updateSnapshots(transaction);
-                currentStack = get();
-                currentStack.shrink(extracted);
-                set(currentStack);
+        int extracted = Math.min(currentStack.getCount(), amount);
+        if (extracted <= 0) return 0;
 
-                return extracted;
-            }
-        }
+        this.updateSnapshots(transaction);
+        currentStack = get();
+        currentStack.shrink(extracted);
+        set(currentStack);
 
-        return 0;
+        return extracted;
     }
 
     @Override
