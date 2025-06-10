@@ -14,7 +14,6 @@ public record AcceptableHostileDistance(float distance) {
 
     public static final Codec<AcceptableHostileDistance> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(in -> in.group(
-                Codec.FLOAT.fieldOf("acceptable_hostile_distance").forGetter(AcceptableHostileDistance::distance)
-            ).apply(in, AcceptableHostileDistance::new)), DISTANCE_CODEC
-    );
+                    Codec.FLOAT.fieldOf("acceptable_hostile_distance").forGetter(AcceptableHostileDistance::distance)).apply(in, AcceptableHostileDistance::new)),
+            DISTANCE_CODEC);
 }

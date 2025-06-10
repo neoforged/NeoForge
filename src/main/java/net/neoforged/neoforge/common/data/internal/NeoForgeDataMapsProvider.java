@@ -40,7 +40,17 @@ import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
-import net.neoforged.neoforge.registries.datamaps.builtin.*;
+import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableHostileDistance;
+import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
+import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
+import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
+import net.neoforged.neoforge.registries.datamaps.builtin.MonsterRoomMob;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
+import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
+import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
+import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
+import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
 public class NeoForgeDataMapsProvider extends DataMapProvider {
     public NeoForgeDataMapsProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
