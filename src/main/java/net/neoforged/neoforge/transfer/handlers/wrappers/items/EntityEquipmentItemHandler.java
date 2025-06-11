@@ -21,7 +21,8 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<ItemResource> {
     protected final LivingEntity entity;
     protected final List<EquipmentSlot> slots;
-    private final ArrayList<EquipmentSlotSnapshotEntry> snapshots = new ArrayList<>();
+    protected final ArrayList<ItemStack> internalStacks = new ArrayList<>();
+    private final ArrayList<EquipmentSlotSnapshotJournal> snapshots = new ArrayList<>();
 
     public static boolean isHands(EquipmentSlot slot) {
         return slot.getType() == EquipmentSlot.Type.HAND;
@@ -36,17 +37,23 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         }
         this.slots = List.copyOf(list);
 
+        var size = list.size();
+        internalStacks.ensureCapacity(size);
+        for (var i = 0; i < size; i++) {
+            internalStacks.add(getStackInSlot(i));
+        }
+
         var handlerSize = slots.size();
         snapshots.ensureCapacity(handlerSize);
         for (var i = 0; i < handlerSize; i++) {
-            snapshots.add(new EquipmentSlotSnapshotEntry(snapshots.size()));
+            snapshots.add(new EquipmentSlotSnapshotJournal(snapshots.size()));
         }
     }
 
-    private class EquipmentSlotSnapshotEntry extends SnapshotJournal<ItemStack> {
+    private class EquipmentSlotSnapshotJournal extends SnapshotJournal<ItemStack> {
         private final int index;
 
-        public EquipmentSlotSnapshotEntry(int index) {
+        public EquipmentSlotSnapshotJournal(int index) {
             this.index = index;
         }
 
@@ -59,6 +66,13 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         protected void revertToSnapshot(ItemStack snapshot) {
             set(index, ItemResource.of(snapshot), snapshot.getCount());
         }
+
+        @Override
+        protected void onCommit(ItemStack originalState) {
+            var itemStack = internalStacks.get(index);
+            set(index, ItemResource.of(itemStack), originalState.getCount());
+            entity.setItemSlot(validateSlotIndex(index), itemStack);
+        }
     }
 
     protected EquipmentSlot validateSlotIndex(final int slot) {
@@ -70,8 +84,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @Override
     public void set(int index, ItemResource resource, int amount) {
-        //TODO NEO: probably want to look into handling setting equipment without equip sounds. Right now, the assumption is that this will play even on canceled transactions and reverted snapshots
-        entity.setItemSlot(validateSlotIndex(index), resource.toStack(amount));
+        internalStacks.set(index, resource.toStack(amount));
     }
 
     @Override
