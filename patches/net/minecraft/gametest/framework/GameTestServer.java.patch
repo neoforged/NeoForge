@@ -1,5 +1,17 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
+@@ -70,6 +_,11 @@
+     private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
+     @Nullable
+     private MultipleTestTracker testTracker;
++    // Neo: disable mob spawning and weather cycling when running game tests, same as for the ephemeral test server
++    private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(ENABLED_FEATURES), rules -> {
++        rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null);
++        rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
++    });
+ 
+     public static GameTestServer create(
+         Thread p_206607_, LevelStorageSource.LevelStorageAccess p_206608_, PackRepository p_206609_, Collection<TestFunction> p_206610_, BlockPos p_206611_
 @@ -151,6 +_,7 @@
      public boolean initServer() {
          this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {

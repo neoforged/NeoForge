@@ -1,0 +1,13 @@
+--- /dev/null
++++ b/net/minecraft/gametest/framework/GameTestServer.java.rej
+@@ -1,0 +_,10 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/gametest/framework/GameTestServer.java b/projects/neoforge/src/main/java/net/minecraft/gametest/framework/GameTestServer.java	(rejected hunks)
++@@ -85,7 +90,7 @@ public class GameTestServer extends MinecraftServer {
++         arraylist.addFirst("vanilla");
++         WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(new DataPackConfig(arraylist, List.of()), ENABLED_FEATURES);
++         LevelSettings levelsettings = new LevelSettings(
++-            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, new GameRules(ENABLED_FEATURES), worlddataconfiguration
+++            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, worlddataconfiguration
++         );
++         WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_206609_, worlddataconfiguration, false, true);
++         WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.DEDICATED, 4);
