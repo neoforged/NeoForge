@@ -5,7 +5,7 @@
      private DebugSampleSubscriptionTracker debugSampleSubscriptionTracker;
      private final ServerLinks serverLinks;
 +    @Nullable
-+    private net.minecraft.client.server.LanServerPinger dediLanPinger;
++    private net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger dediLanPinger;
  
      public DedicatedServer(
          Thread p_214789_,
@@ -36,7 +36,7 @@
              }
  
 +            if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.advertiseDedicatedServerToLan.get()) {
-+                this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
++                this.dediLanPinger = new net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
 +                this.dediLanPinger.start();
 +            }
 +
