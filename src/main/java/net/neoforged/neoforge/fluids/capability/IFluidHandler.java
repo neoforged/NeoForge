@@ -25,6 +25,10 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public interface IFluidHandler {
+    /**
+     * @deprecated Has been superseded by {@link net.neoforged.neoforge.transfer.TransferAction TransferAction}
+     */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     enum FluidAction {
         EXECUTE, SIMULATE;
 

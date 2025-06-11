@@ -68,6 +68,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     }
 
     private final T resource;
+    @Nonnegative
     private int amount;
 
     public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, MutableResourceStack<R> resourceStack) {
@@ -78,7 +79,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return NonNullList.withSize(count, MutableResourceStack.of(emptyResource, 0));
     }
 
-    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(int count) {
+    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(@Nonnegative int count) {
         return nonNullListOfSize(count, this);
     }
 
@@ -119,7 +120,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> shrink(int amount) {
+    public MutableResourceStack<T> shrink(@Nonnegative int amount) {
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
@@ -127,7 +128,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> grow(int amount) {
+    public MutableResourceStack<T> grow(@Nonnegative int amount) {
         return withAmount(this.amount + amount);
     }
 

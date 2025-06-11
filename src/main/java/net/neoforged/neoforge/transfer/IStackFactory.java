@@ -7,6 +7,8 @@ package net.neoforged.neoforge.transfer;
 
 import net.neoforged.neoforge.transfer.resources.IResource;
 
+import javax.annotation.Nonnegative;
+
 /**
  * Creates a stack of type {@code <S>} given a resource of type {@code <R>} and an amount.
  * It is expected that this handles cases where an empty resource or amount could occur.
@@ -30,5 +32,5 @@ public interface IStackFactory<R extends IResource, S> {
      * <p>
      * As an example would something like a ItemStack should {@link net.minecraft.world.item.ItemStack#EMPTY ItemStack.EMPTY} in the case either the resource was empty or the amount was 0.
      */
-    S create(R resource, int amount);
+    S create(R resource, @Nonnegative int amount);
 }

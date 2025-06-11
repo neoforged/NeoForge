@@ -96,8 +96,6 @@ public class EnergyContainer implements IEnergyContainer {
     public void set(int index, int value) {
         Objects.checkIndex(index, size());
         energyValues[index] = value;
-        if (updateCallback != null)
-            updateCallback.run();
     }
 
     @Override
@@ -241,6 +239,12 @@ public class EnergyContainer implements IEnergyContainer {
         @Override
         protected void revertToSnapshot(Integer snapshot) {
             set(index, snapshot);
+        }
+
+        @Override
+        protected void onCommit(Integer originalState) {
+            if (updateCallback != null)
+                updateCallback.run();
         }
     }
 }

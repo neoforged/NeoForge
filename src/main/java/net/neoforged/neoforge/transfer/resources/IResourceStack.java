@@ -18,6 +18,8 @@ import net.minecraft.world.flag.FeatureElement;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
+import javax.annotation.Nonnegative;
+
 /**
  * Represents the underlying instruction set for mutable and immutable resource stacks.
  * This is provided as a helper and not necessary for a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler} to function.
@@ -92,6 +94,7 @@ public interface IResourceStack<T extends IResource> {
     /**
      * @return the amount currently set in the stack
      */
+    @Nonnegative
     int amount();
 
     /**

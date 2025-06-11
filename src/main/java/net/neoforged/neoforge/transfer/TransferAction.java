@@ -48,7 +48,7 @@ public enum TransferAction {
      * @return Compounded action.
      */
     public TransferAction combine(TransferAction other) {
-        return get(other.isExecuting());
+        return combine(other.isExecuting());
     }
 
     public boolean commit(Transaction context) {

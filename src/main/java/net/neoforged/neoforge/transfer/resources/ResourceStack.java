@@ -6,13 +6,14 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
-import java.util.Objects;
-import java.util.function.UnaryOperator;
-import javax.annotation.Nonnegative;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+
+import javax.annotation.Nonnegative;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Represents an immutable {@link IResource} and an amount.
@@ -20,14 +21,14 @@ import net.neoforged.neoforge.fluids.FluidStack;
  *
  * @param <T> the held resource type
  */
-public record ResourceStack<T extends IResource>(T resource, int amount) implements IResourceStack<T> {
+public record ResourceStack<T extends IResource>(T resource, @Nonnegative int amount) implements IResourceStack<T> {
     public ResourceStack {
         Objects.requireNonNull(resource, "Resource must not be null");
     }
 
     /**
      * Creates a codec with the resource being a field in the object.
-     * 
+     *
      * <pre>{@code
      * {
      *     "resource": {
@@ -48,7 +49,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
 
     /**
      * Creates a codec where the fields for the resource are at the same level as the amount
-     * 
+     *
      * <pre>{@code
      * {
      *    "id": "minecraft:water",
@@ -91,7 +92,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
      * @return a copy of this instance with an updated resource.
      */
     @Override
-    public ResourceStack<T> shrink(int amount) {
+    public ResourceStack<T> shrink(@Nonnegative int amount) {
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
@@ -99,7 +100,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
      * @return a copy of this instance with an updated resource.
      */
     @Override
-    public ResourceStack<T> grow(int amount) {
+    public ResourceStack<T> grow(@Nonnegative int amount) {
         return withAmount(this.amount + amount);
     }
 

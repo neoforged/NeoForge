@@ -82,7 +82,7 @@ public record EnergyContainerToHandlerAdapter(
         newAmount = currentAmount + inserted;
 
         if (newAmount > 0) {
-            //todo snapshot
+            container.getSnapshotJournal(index).updateSnapshots(transaction);
             set(index, newAmount);
         }
         return inserted;
@@ -118,9 +118,8 @@ public record EnergyContainerToHandlerAdapter(
 
         var currentAmount = container.get(index);
         int handledAmount = Math.min(amount, currentAmount);
-        //        if (action.isExecuting())
 
-        //todo snapshot
+        container.getSnapshotJournal(index).updateSnapshots(transaction);
         set(index, currentAmount - handledAmount);
         return handledAmount;
     }

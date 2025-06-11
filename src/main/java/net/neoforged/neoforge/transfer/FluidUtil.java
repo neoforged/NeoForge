@@ -88,29 +88,39 @@ public final class FluidUtil {
     /**
      * Fill a container from the given fluidSource.
      *
-     * @param container   The container to be filled. Will not be modified.
-     *                    Separate handling must be done to reduce the stack size, stow containers, etc, on success.
-     *                    See {@link #tryFillContainerAndStow(ItemStack, IFluidHandler, IItemHandler, int, Player, boolean)}.
-     * @param fluidSource The fluid handler to be drained.
-     * @param maxAmount   The largest amount of fluid that should be transferred.
-     * @param player      The player to make the filling noise. Pass null for no noise.
-     * @param doFill      true if the container should actually be filled, false if it should be simulated.
+     * @param context        The container (Or the item context for the container) to be filled.
+     * @param from           The fluid handler to be drained.
+     * @param amount         The largest amount of fluid that should be transferred.
+     * @param player         The player to make the filling noise. Pass null for no noise.
+     * @param transferAction Indicating whether it should be simulating or executing.
      * @return a {@link FluidStack} holding the filled container if successful.
      */
     //formerly tryFillContainer
-    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> handler, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
-        return handleContainer(handler, itemCapability, amount, player, transferAction);
+        return handleContainer(from, itemCapability, amount, player, transferAction);
     }
 
-    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> handler, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+    /**
+     * Empty a container from the given fluidSource.
+     *
+     * @param context        The container (Or the item context for the container) to be drained.
+     * @param to             The fluid handler to be filled.
+     * @param amount         The largest amount of fluid that should be transferred.
+     * @param player         The player to make the filling noise. Pass null for no noise.
+     * @param transferAction Indicating whether it should be simulating or executing.
+     * @return a {@link FluidStack} holding the filled container if successful.
+     */
+    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
-
-        return handleContainer(itemCapability, handler, amount, player, transferAction);
+        return handleContainer(itemCapability, to, amount, player, transferAction);
     }
 
+    /**
+     * Common logic for filling and draining the container context.
+     */
     private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
         try (Transaction transaction = Transaction.open(TransactionContext.ROOT)) {
             FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
@@ -280,9 +290,7 @@ public final class FluidUtil {
     }
 
     /**
-     * Fill a to fluid handler from a from fluid handler using a specific fluid.
-     * To specify a max amount to transfer instead of specific fluid, use {@link #tryFluidTransfer(IResourceHandler, IResourceHandler, int, boolean)}
-     * To transfer as much as possible, use {@link Integer#MAX_VALUE} for resource.amount.
+     * Move fluids between two handlers, from and to another given some fluidstack and a decision on if it is simulating or executing.
      *
      * @param from       The fluid handler to be filled.
      * @param to         The fluid handler to be drained.

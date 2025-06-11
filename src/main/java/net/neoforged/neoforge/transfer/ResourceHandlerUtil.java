@@ -13,6 +13,7 @@ import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -132,7 +133,7 @@ public final class ResourceHandlerUtil {
         }
 
         proportion /= size;
-        return Mth.lerpDiscrete(proportion, 0, 15);
+        return Mth.lerpDiscrete(proportion, Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
     }
 
     /**
@@ -217,6 +218,7 @@ public final class ResourceHandlerUtil {
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
+    @Nonnegative
     public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, @Nonnegative int amount, @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             int extracted = 0;
@@ -320,7 +322,7 @@ public final class ResourceHandlerUtil {
     /**
      * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
      *
-     * <p>Here is a usage example with fluid variant storages:
+     * <p>Here is a usage example:
      *
      * <pre>{@code
      * // Source
@@ -353,6 +355,7 @@ public final class ResourceHandlerUtil {
      * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
+    @Nonnegative
     public static <T extends IResource> int move(
             @Nullable IResourceHandler<T> from,
             @Nullable IResourceHandler<T> to,
@@ -472,6 +475,7 @@ public final class ResourceHandlerUtil {
         }
     }
 
+    @Nonnegative
     public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
         var sum = 0L;
         var size = handler.size();
@@ -506,6 +510,7 @@ public final class ResourceHandlerUtil {
      * @return The total amount of resources that was successfully transferred.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
+    @Nonnegative
     public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, @Nonnegative int amount, @Nullable TransactionContext transaction) {
         return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
     }
