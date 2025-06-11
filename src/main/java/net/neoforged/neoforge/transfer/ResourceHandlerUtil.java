@@ -326,7 +326,7 @@ public final class ResourceHandlerUtil {
      *
      * <pre>{@code
      * // Source
-     * IResourceHandler<FluidResource> from;
+     * IResourceHandler<FluidResource> source;
      * // Target
      * IResourceHandler<FluidResource> target;
      * Predicate<FluidResource> filter = resource -> resource.is(Fluids.WATER);
