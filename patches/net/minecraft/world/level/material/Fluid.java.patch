@@ -1,24 +1,10 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -28,6 +_,8 @@
-     public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
-     protected final StateDefinition<Fluid, FluidState> stateDefinition;
-     private FluidState defaultFluidState;
-+    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.FluidResource> defaultResource;
-+
-     private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
- 
-     protected Fluid() {
-@@ -35,6 +_,12 @@
+@@ -35,6 +_,7 @@
          this.createFluidStateDefinition(builder);
          this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
          this.registerDefaultState(this.stateDefinition.any());
 +        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.FluidResource.invalidateDefault(this));
-+
-+    }
-+
-+    public final net.neoforged.neoforge.transfer.resources.FluidResource defaultResource() {
-+        return this.defaultResource.get();
      }
  
      protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76121_) {
@@ -44,17 +30,22 @@
      @Nullable
      public AABB getAABB(FluidState p_397902_, BlockGetter p_397853_, BlockPos p_397764_) {
          if (this.isEmpty()) {
-@@ -125,5 +_,13 @@
+@@ -125,5 +_,18 @@
      @Deprecated
      public Holder.Reference<Fluid> builtInRegistryHolder() {
          return this.builtInRegistryHolder;
 +    }
 +
 +    private net.neoforged.neoforge.fluids.FluidType forgeFluidType;
++    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.FluidResource> defaultResource;
 +
 +    @Override
 +    public net.neoforged.neoforge.fluids.FluidType getFluidType() {
 +        if (forgeFluidType == null) forgeFluidType = net.neoforged.neoforge.common.CommonHooks.getVanillaFluidType(this);
 +        return forgeFluidType;
++    }
++
++    public final net.neoforged.neoforge.transfer.resources.FluidResource defaultResource() {
++        return this.defaultResource.get();
      }
  }
