@@ -88,7 +88,7 @@ public final class FluidUtil {
     /**
      * Fill a container from the given fluidSource.
      *
-     * @param context        The container (Or the item context for the container) to be filled.
+     * @param context        The container (Or the item context for the container) to be filled. Won't be mutated unless executed.
      * @param from           The fluid handler to be drained.
      * @param amount         The largest amount of fluid that should be transferred.
      * @param player         The player to make the filling noise. Pass null for no noise.

@@ -7,10 +7,10 @@
 +    // Neo: Support deferring "final" actions until end of a transaction
 +    //
 +    @Override
-+    public void setItem(int slot, ItemStack stack, boolean isCommitting) {
++    public void setItem(int slot, ItemStack stack, boolean performCommitActions) {
 +        if (slot != 0) return;
 +
-+        if (isCommitting) {
++        if (performCommitActions) {
 +            setTheItem(stack);
 +        } else {
 +            this.item = stack;

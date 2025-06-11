@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
@@ -32,13 +33,14 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * This is commonly used with the {@link FluidUtil#tryPickupFluidAsPlayer} or {@link FluidUtil#tryPlaceFluidAsPlayer}
  */
-public class BlockFluidHandler extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
+public class BlockFluidHandler extends SnapshotJournal<BlockFluidHandler.Snapshot> implements ISingleResourceHandler<FluidResource> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Nullable
     protected final Player player;
     protected final Level level;
     protected final BlockPos pos;
+    protected FluidStack fluid = FluidStack.EMPTY;
 
     public BlockFluidHandler(@Nullable Player player, Level level, BlockPos pos) {
         this.player = player;
@@ -94,12 +96,16 @@ public class BlockFluidHandler extends SnapshotJournal<BlockState> implements IS
         var fluidstack = resource.toStack(amount);
         if ((waterLoggable || replaceable) && resource.getFluidType().isVaporizedOnPlacement(level, pos, fluidstack)) {
             updateSnapshots(transaction);
-            resource.getFluidType().onVaporize(player, level, pos, fluidstack);
+            fluid = resource.toStack(amount);
+            //Handled in commit instead, though it should be noted: this likely only handles the LAST fluid inserted. Something to explore a solution to
+            //resource.getFluidType().onVaporize(player, level, pos, fluidstack);
         } else if (waterLoggable) {
             updateSnapshots(transaction);
+            fluid = resource.toStack(amount);
             ((LiquidBlockContainer) state.getBlock()).placeLiquid(level, pos, state, resource.getInstanceValue().defaultFluidState());
         } else if (replaceable) {
             updateSnapshots(transaction);
+            fluid = resource.toStack(amount);
             FluidUtil.destroyBlockOnFluidPlacement(level, pos);
             level.setBlock(pos, resource.getInstanceValue().defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL_IMMEDIATE);
         } else {
@@ -108,6 +114,8 @@ public class BlockFluidHandler extends SnapshotJournal<BlockState> implements IS
 
         return FluidType.BUCKET_VOLUME;
     }
+
+    protected record Snapshot(BlockState state, FluidStack fluid) {}
 
     @Override
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
@@ -135,26 +143,31 @@ public class BlockFluidHandler extends SnapshotJournal<BlockState> implements IS
     }
 
     @Override
-    protected BlockState createSnapshot() {
-        return level.getBlockState(pos);
+    protected BlockFluidHandler.Snapshot createSnapshot() {
+        return new Snapshot(level.getBlockState(pos), fluid);
     }
 
     @Override
-    protected void revertToSnapshot(BlockState snapshot) {
-        level.setBlock(pos, snapshot, 0);
+    protected void revertToSnapshot(BlockFluidHandler.Snapshot snapshot) {
+        level.setBlock(pos, snapshot.state, 0);
+        fluid = FluidStack.EMPTY;
     }
 
     @Override
-    protected void onCommit(BlockState originalState) {
+    protected void onCommit(BlockFluidHandler.Snapshot originalState) {
         // State as it was modified during this outermost transaction being committed.
         BlockState state = level.getBlockState(pos);
 
-        if (originalState == state) return;
+        if (originalState.state == state) return;
 
         // Revert back to the blockstate before any changes happened so that the next
         // call will not short-circuit due to the blockstate not really changing.
-        level.setBlock(pos, originalState, 0);
+        level.setBlock(pos, originalState.state, 0);
         // Now do the change that will trigger change notifications to other blocks/neighbors/clients
         level.setBlockAndUpdate(pos, state);
+        if (fluid.getFluidType().isVaporizedOnPlacement(level, pos, fluid)) {
+            // Only handles the last fluid, not the full chain
+            fluid.getFluidType().onVaporize(player, level, pos, fluid);
+        }
     }
 }

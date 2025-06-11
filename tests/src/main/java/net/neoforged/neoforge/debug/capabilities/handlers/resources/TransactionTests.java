@@ -5,15 +5,19 @@
 
 package net.neoforged.neoforge.debug.capabilities.handlers.resources;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -37,12 +41,22 @@ public class TransactionTests {
             destination.set(craftingSlot, src.get(craftingSlot));
     }
 
+    //These have mostly just been experiments, to see a given result real tests for specifically transactions need to be made still.
+    // The other tests using resource handlers only partially test them
+
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Transactional tests. Takes the idea of looking for a subset of items and able to return the crafting ingredients")
     private static void itemTransfer(ExtendedGameTestHelper helper) {
         //todo, the test is still in progress. This is also helping identify if anything should change
         var b = SimpleItemResourceContainer.builder(0).build();
+
+        var water = new InfiniteResourceHandler<>(Fluids.WATER.defaultResource());
+        var player = helper.makeMockPlayer();
+        player.addItem(Items.BUCKET.getDefaultInstance());
+        var context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
+        var bucketCap = context.getCapability(Capabilities.FluidHandler.ITEM);
+        var fill = FluidUtil.fillContainer(context, water, 1000, player, TransferAction.SIMULATE);
 
         var infiniteSource = new InfiniteResourceHandler<>(Items.DIAMOND.defaultResource());
 
@@ -200,15 +214,15 @@ public class TransactionTests {
         //Still working on it. At least now it doesn't have type erasure.... it just doesn't work yet :P
         try (var tx = Transaction.open(TransactionContext.ROOT)) {
 
-//            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
-//            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {
-//                var t = 2;
-//                transaction.commit();
-//            }).whenSuccessful(tankWater.asHandler(), (handler, transaction) -> {
-//                var t = 2;
-//            }).whenNotCommitted(otherItemHandler.asHandler(), (handler, transaction) -> {
-//                var t = 2;
-//            });
+            //            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
+            //            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {
+            //                var t = 2;
+            //                transaction.commit();
+            //            }).whenSuccessful(tankWater.asHandler(), (handler, transaction) -> {
+            //                var t = 2;
+            //            }).whenNotCommitted(otherItemHandler.asHandler(), (handler, transaction) -> {
+            //                var t = 2;
+            //            });
             helper.succeed();
         }
     }

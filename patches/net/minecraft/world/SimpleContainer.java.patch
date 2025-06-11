@@ -8,10 +8,10 @@
 +    }
 +
 +    @Override
-+    public void setItem(int p_19162_, ItemStack p_19163_, boolean isCommitting) {
++    public void setItem(int p_19162_, ItemStack p_19163_, boolean performCommitActions) {
          this.items.set(p_19162_, p_19163_);
          p_19163_.limitSize(this.getMaxStackSize(p_19163_));
-+        if (isCommitting)
++        if (performCommitActions)
          this.setChanged();
      }
  

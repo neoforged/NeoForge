@@ -1,13 +1,25 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,20 @@
+@@ -82,6 +_,41 @@
          p_59316_.limitSize(this.getMaxStackSize(p_59316_));
      }
  
 +    // Neo: Update cooldown after insertion into hopper
++    private boolean insertingFlag = false;
++    private final net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal journal = new net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal() {
++        @Override
++        public void set(boolean value) {
++            insertingFlag = value;
++        }
++        @Override
++        public boolean get() {
++            return insertingFlag;
++        }
++    };
++
 +    @Override
 +    public void onCommit(int slot, ItemStack originalStack) {
-+        if (originalStack.isEmpty() && !getItem(slot).isEmpty()) {
++        if (insertingFlag && originalStack.isEmpty() && !getItem(slot).isEmpty()) {
 +            if (!isOnCustomCooldown()) {
 +                // This cooldown is always set to 8 in vanilla with one exception:
 +                // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
@@ -16,6 +28,15 @@
 +                setCooldown(8);
 +            }
 +        }
++        insertingFlag = false;
++    }
++
++    @Override
++    public void onTransfer(int slot, IODirection ioDirection, net.neoforged.neoforge.transfer.transaction.TransactionContext context) {
++        super.onTransfer(slot, ioDirection, context);
++        if(ioDirection == IODirection.EXTRACT) return;
++        journal.updateSnapshots(context);
++        insertingFlag = true;
 +    }
 +
      @Override

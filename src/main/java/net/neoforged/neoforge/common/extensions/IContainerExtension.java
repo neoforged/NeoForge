@@ -22,9 +22,9 @@ public interface IContainerExtension {
     /**
      * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling .
      *
-     * <p>If {@code isCommitting} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the isCommitting.
+     * <p>If {@code performCommitActions} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the performCommitActions.
      */
-    default void setItem(int slot, ItemStack stack, boolean isCommitting) {
+    default void setItem(int slot, ItemStack stack, boolean performCommitActions) {
         self().setItem(slot, stack);
     }
 
@@ -40,5 +40,10 @@ public interface IContainerExtension {
      * Perform additional logic immediately after successful transfer (i.e. insert or extract with result > 0).
      * Any logic performed here should be fully transactional, and support being rolled back.
      */
-    default void onTransfer(int slot, TransactionContext context) {}
+    default void onTransfer(int slot, IODirection ioDirection, TransactionContext context) {}
+
+    enum IODirection {
+        INSERT,
+        EXTRACT
+    }
 }
