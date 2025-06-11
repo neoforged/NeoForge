@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.templates.ISingleResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;

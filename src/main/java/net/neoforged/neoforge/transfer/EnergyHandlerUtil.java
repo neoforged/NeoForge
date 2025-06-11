@@ -13,7 +13,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
@@ -79,37 +78,15 @@ public final class EnergyHandlerUtil {
     /**
      * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
      *
-     * <p>Here is a usage example:
-     *
-     * <pre>{@code
-     * // Source
-     * IResourceHandler<FluidResource> source;
-     * // Target
-     * IResourceHandler<FluidResource> target;
-     * Predicate<FluidResource> filter = resource -> resource.is(Fluids.WATER);
-     *
-     * // Move up to one bucket in total from source to target, outside of a transaction:
-     * int amountMoved = ResourceHandlerUtil.move(source, target, FluidType.BUCKET, null);
-     * // Move exactly one bucket in total, only of water:
-     * try (Transaction transaction = Transaction.openOuter()) {
-     *     int waterMoved = ResourceHandlerUtil.move(source, target, filter, FluidType.BUCKET, transaction);
-     *     if (waterMoved == FluidType.BUCKET) {
-     *         // Only commit if exactly one bucket was moved (no less!).
-     *         transaction.commit();
-     *     }
-     * }
-     * }</pre>
-     *
      * @param from        The source handler. May be null.
      * @param to          The target handler. May be null.
      * @param amount      The maximum amount that will be transferred.
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
-     * @param <T>         The type of resources to move.
      * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
     @Nonnegative
-    public static <T extends IResource> int move(
+    public static int move(
             @Nullable IEnergyHandler from,
             @Nullable IEnergyHandler to,
             @Nonnegative int amount,

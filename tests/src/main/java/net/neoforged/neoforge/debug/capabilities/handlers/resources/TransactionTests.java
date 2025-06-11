@@ -201,15 +201,15 @@ public class TransactionTests {
         //Still working on it. At least now it doesn't have type erasure.... it just doesn't work yet :P
         try (var tx = Transaction.open(TransactionContext.ROOT)) {
 
-            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
-            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {
-                var t = 2;
-                transaction.commit();
-            }).whenSuccessful(tankWater.asHandler(), (handler, transaction) -> {
-                var t = 2;
-            }).whenNotCommitted(otherItemHandler.asHandler(), (handler, transaction) -> {
-                var t = 2;
-            });
+//            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
+//            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {
+//                var t = 2;
+//                transaction.commit();
+//            }).whenSuccessful(tankWater.asHandler(), (handler, transaction) -> {
+//                var t = 2;
+//            }).whenNotCommitted(otherItemHandler.asHandler(), (handler, transaction) -> {
+//                var t = 2;
+//            });
             helper.succeed();
         }
     }

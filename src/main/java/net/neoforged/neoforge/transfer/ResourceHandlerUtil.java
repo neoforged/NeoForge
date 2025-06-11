@@ -326,20 +326,19 @@ public final class ResourceHandlerUtil {
      *
      * <pre>{@code
      * // Source
-     * IResourceHandler<FluidResource> source;
+     * IResourceHandler<FluidResource> from;
      * // Target
      * IResourceHandler<FluidResource> target;
      * Predicate<FluidResource> filter = resource -> resource.is(Fluids.WATER);
      *
-     * // Move up to one bucket in total from source to target, outside of a transaction:
-     * int amountMoved = ResourceHandlerUtil.move(source, target, FluidType.BUCKET, null);
      * // Move exactly one bucket in total, only of water:
-     * try (Transaction transaction = Transaction.openOuter()) {
-     *     int waterMoved = ResourceHandlerUtil.move(source, target, filter, FluidType.BUCKET, transaction);
-     *     if (waterMoved == FluidType.BUCKET) {
-     *         // Only commit if exactly one bucket was moved (no less!).
+     * try (Transaction transaction = Transaction.open(TransactionContext.ROOT)) {
+     *     int waterMoved = ResourceHandlerUtil.move(source, target, filter, FluidType.BUCKET_VOLUME, transaction);
+     *     if (waterMoved == FluidType.BUCKET_VOLUME) {
+     *         // Only commit if exactly one bucket was moved.
      *         transaction.commit();
      *     }
+     *     //If committed, leaving this try-block will keep all changes.
      * }
      * }</pre>
      *
