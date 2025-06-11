@@ -162,7 +162,7 @@ public class CapabilityHooks {
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
-                    return PlayerInventoryWrapper.of(horse.getInventory());
+                    return VanillaContainerWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
                     return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
                 return null;

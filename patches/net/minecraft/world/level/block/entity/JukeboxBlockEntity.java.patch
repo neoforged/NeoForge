@@ -1,15 +1,16 @@
 --- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
-@@ -113,9 +_,27 @@
+@@ -113,9 +_,28 @@
          return itemstack;
      }
  
-+    // Neo: Support deferring side effects until end of a transaction
++    // Neo: Support deferring "final" actions until end of a transaction
++    //
 +    @Override
-+    public void setItem(int slot, ItemStack stack, boolean forceChanges) {
++    public void setItem(int slot, ItemStack stack, boolean isCommitting) {
 +        if (slot != 0) return;
 +
-+        if (forceChanges) {
++        if (isCommitting) {
 +            setTheItem(stack);
 +        } else {
 +            this.item = stack;
@@ -20,11 +21,11 @@
      @Override
      public void setTheItem(ItemStack p_304781_) {
          this.item = p_304781_;
-+        onCommit(0, ItemStack.EMPTY);
++        onCommit(0, /* ignored */ ItemStack.EMPTY);
 +    }
 +
 +    @Override
-+    public void onCommit(int slot, ItemStack originalStack) {
++    public void onCommit(int slot, ItemStack ignored) {
          boolean flag = !this.item.isEmpty();
          Optional<Holder<JukeboxSong>> optional = JukeboxSong.fromStack(this.level.registryAccess(), this.item);
          this.notifyItemChangedInJukebox(flag);

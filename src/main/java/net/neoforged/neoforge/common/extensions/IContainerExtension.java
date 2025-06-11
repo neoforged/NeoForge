@@ -22,9 +22,9 @@ public interface IContainerExtension {
     /**
      * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling .
      *
-     * <p>If {@code forceChanges} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the commit.
+     * <p>If {@code isCommitting} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the isCommitting.
      */
-    default void setItem(int slot, ItemStack stack, boolean forceChanges) {
+    default void setItem(int slot, ItemStack stack, boolean isCommitting) {
         self().setItem(slot, stack);
     }
 

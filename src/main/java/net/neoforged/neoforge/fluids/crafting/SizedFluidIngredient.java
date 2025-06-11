@@ -8,6 +8,7 @@ package net.neoforged.neoforge.fluids.crafting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,7 +27,7 @@ import net.neoforged.neoforge.fluids.FluidType;
  *
  * @see net.neoforged.neoforge.common.crafting.SizedIngredient
  */
-public final class SizedFluidIngredient {
+public final class SizedFluidIngredient implements Predicate<FluidStack> {
     /**
      * The codec for {@link SizedFluidIngredient}.
      *
@@ -95,6 +96,7 @@ public final class SizedFluidIngredient {
      *
      * @return {@code true} if the stack matches the ingredient and has at least the required amount.
      */
+    @Override
     public boolean test(FluidStack stack) {
         return ingredient.test(stack) && stack.getAmount() >= amount;
     }

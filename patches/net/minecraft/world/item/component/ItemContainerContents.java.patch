@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -54,6 +_,13 @@
+@@ -54,6 +_,12 @@
          }
      }
  
-+    //TODO LOOK INTO THIS SOMETIME
 +    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount){
 +        var stacks =new ArrayList<>(this.items);
 +        stacks.set(index, resource.toStack(amount));

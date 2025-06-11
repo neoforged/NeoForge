@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
-@@ -108,6 +_,12 @@
+@@ -108,6 +_,16 @@
  
      @Override
      public void setItem(int p_256610_, ItemStack p_255789_) {
@@ -9,7 +9,11 @@
 +
 +    // Neo: Support deferring changes until end of a transaction
 +    @Override
-+    public void setItem(int p_256610_, ItemStack p_255789_, boolean forceChanges) {
++    public void setItem(int p_256610_, ItemStack p_255789_, boolean isCommitting) {
++        if(isCommitting) {
++            this.items.set(p_256610_, p_255789_);
++            return;
++        }
          if (p_255789_.is(ItemTags.BOOKSHELF_BOOKS)) {
              this.items.set(p_256610_, p_255789_);
              this.updateState(p_256610_);
