@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.energy;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
-
-import javax.annotation.Nonnegative;
 
 /**
  * A utility class that wraps an {@link IEnergyHandler} and provides a simplified interface without

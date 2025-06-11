@@ -10,6 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
+import javax.annotation.Nonnegative;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,8 +18,6 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.flag.FeatureElement;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-
-import javax.annotation.Nonnegative;
 
 /**
  * Represents the underlying instruction set for mutable and immutable resource stacks.

@@ -5,9 +5,8 @@
 
 package net.neoforged.neoforge.transfer;
 
-import net.neoforged.neoforge.transfer.resources.IResource;
-
 import javax.annotation.Nonnegative;
+import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
  * Creates a stack of type {@code <S>} given a resource of type {@code <R>} and an amount.

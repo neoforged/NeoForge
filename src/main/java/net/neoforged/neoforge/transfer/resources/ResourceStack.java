@@ -6,14 +6,13 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
+import javax.annotation.Nonnegative;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-
-import javax.annotation.Nonnegative;
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 
 /**
  * Represents an immutable {@link IResource} and an amount.

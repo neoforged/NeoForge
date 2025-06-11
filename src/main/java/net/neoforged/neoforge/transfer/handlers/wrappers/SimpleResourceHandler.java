@@ -5,14 +5,13 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-
-import javax.annotation.Nonnegative;
 
 /**
  * A simple resource handler that wraps an {@link IResourceHandler} and provides a simplified interface without
