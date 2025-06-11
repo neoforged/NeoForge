@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.fluids;
 
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
  * Holds the result of a fluid action from {@link FluidUtil}.
@@ -16,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
  * Successful actions may have an empty ItemStack result in some cases,
  * for example the action succeeded and the resulting item was consumed.
  */
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class FluidActionResult {
     public static final FluidActionResult FAILURE = new FluidActionResult(false, ItemStack.EMPTY);
 

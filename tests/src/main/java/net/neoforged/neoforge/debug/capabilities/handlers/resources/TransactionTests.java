@@ -13,7 +13,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionOperation;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
