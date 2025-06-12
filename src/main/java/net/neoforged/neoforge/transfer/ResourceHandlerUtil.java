@@ -28,7 +28,8 @@ public final class ResourceHandlerUtil {
      *
      * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
      */
-    public static <T extends IResource> boolean isEmpty(T resource, int amount) {
+    public static <T extends IResource> boolean isEmpty(T resource, @Nonnegative int amount) {
+        //noinspection NonStrictComparisonCanBeEquality As we want to be doubly sure we are not out of bounds
         return amount <= 0 || resource.isEmpty();
     }
 
@@ -78,7 +79,7 @@ public final class ResourceHandlerUtil {
      * @param index   the index of the resource to check
      * @return {@code true} if the resource at the specified index is empty, {@code false} otherwise
      */
-    public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
+    public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, @Nonnegative int index) {
         return handler.getAmount(index) == 0 || handler.getResource(index).isEmpty();
     }
 
@@ -97,7 +98,7 @@ public final class ResourceHandlerUtil {
         return handler.getAmountAsLong(index) >= handler.getCapacityAsLong(index, handler.getResource(index));
     }
 
-    public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
+    public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, @Nonnegative int index, T resource, @Nonnegative int amount) {
         return resourceMatches(handler, index, resource) && handler.getAmount(index) == amount;
     }
 
@@ -219,7 +220,11 @@ public final class ResourceHandlerUtil {
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
     @Nonnegative
-    public static <T extends IResource> int extract(IResourceHandler<T> handler, T resource, @Nonnegative int amount, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> int extract(
+            IResourceHandler<T> handler,
+            T resource,
+            @Nonnegative int amount,
+            @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             int extracted = 0;
             int size = handler.size();
@@ -517,7 +522,7 @@ public final class ResourceHandlerUtil {
     /**
      * @return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise
      */
-    public static <T extends IResource> boolean contains(IResourceHandler<T> handler, @Nonnegative T resource) {
+    public static <T extends IResource> boolean contains(IResourceHandler<T> handler, T resource) {
         var size = handler.size();
         for (var index = 0; index < size; index++) {
             if (resource.equals(handler.getResource(index)))
@@ -526,7 +531,7 @@ public final class ResourceHandlerUtil {
         return false;
     }
 
-    public static <T extends IResource> int indexOf(IResourceHandler<T> handler, @Nonnegative T resource) {
+    public static <T extends IResource> int indexOf(IResourceHandler<T> handler, T resource) {
         var size = handler.size();
         for (var index = 0; index < size; index++) {
             if (resource.equals(handler.getResource(index)))

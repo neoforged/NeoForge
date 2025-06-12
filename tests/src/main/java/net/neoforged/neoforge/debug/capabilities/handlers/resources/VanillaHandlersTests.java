@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -227,6 +228,46 @@ public class VanillaHandlersTests {
             helper.assertValueEqual(inserted, 100, "Apples in slot one should have received 100.");
             transaction.commit();
         }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Test Hopper Cooldown on insert")
+    public static void testHopperCooldown(ExtendedGameTestHelper helper) {
+        var pos = new BlockPos(1, 1, 1);
+        helper.setBlock(pos, Blocks.HOPPER);
+
+        var hopperEntity = helper.getBlockEntity(pos, HopperBlockEntity.class);
+        var hopper = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+
+        helper.assertFalse(hopperEntity.isOnCooldown(), "Not committing should mean no cooldown.");
+        helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
+
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+            hopper.insert(ItemResource.of(Items.APPLE), 10, transaction);
+            hopper.extract(ItemResource.of(Items.APPLE), 10, transaction);
+        }
+
+        helper.assertFalse(hopperEntity.isOnCooldown(), "Not committing should mean no cooldown.");
+        helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
+
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+            hopper.extract(ItemResource.of(Items.APPLE), 10, transaction);
+            transaction.commit();
+        }
+
+        helper.assertFalse(hopperEntity.isOnCooldown(), "No insert committed should mean no cooldown.");
+        helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
+
+        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+            var inserted = hopper.insert(ItemResource.of(Items.APPLE), 10, transaction);
+            transaction.commit();
+        }
+
+        helper.assertTrue(hopperEntity.isOnCooldown(), "Committing should mean cooldown.");
+        helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
 
         helper.succeed();
     }

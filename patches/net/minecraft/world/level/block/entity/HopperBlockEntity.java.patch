@@ -25,7 +25,7 @@
 +                // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
 +                // has not been updated as recently as the one pushing items into it.
 +                // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
-+                setCooldown(8);
++                setCooldown(HopperBlockEntity.MOVE_ITEM_SPEED);
 +            }
 +        }
 +        insertingFlag = false;
