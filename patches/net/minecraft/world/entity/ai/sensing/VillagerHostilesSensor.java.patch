@@ -4,7 +4,7 @@
  import net.minecraft.world.entity.ai.memory.MemoryModuleType;
  
  public class VillagerHostilesSensor extends NearestVisibleLivingEntitySensor {
-+    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#ACCEPTABLE_HOSTILE_DISTANCES compostable} data map instead */
++    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#ACCEPTABLE_HOSTILE_DISTANCES acceptable hostile distances} data map instead */
 +    @Deprecated
      public static final ImmutableMap<EntityType<?>, Float> ACCEPTABLE_DISTANCE_FROM_HOSTILES = ImmutableMap.<EntityType<?>, Float>builder()
          .put(EntityType.DROWNED, 8.0F)
