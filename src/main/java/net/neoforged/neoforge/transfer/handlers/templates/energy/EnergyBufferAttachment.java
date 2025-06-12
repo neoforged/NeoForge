@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -71,19 +70,16 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     /**
      * Number of sub-buffers
      */
-    @Nonnegative
     private final int size;
 
     /**
      * Current amount of energy stored in the buffer
      */
-    @Nonnegative
     private final int[] energy;
 
     /**
      * How much energy can be stored in each sub buffer. This capacity is, while unique to each buffer, the value is the same.
      */
-    @Nonnegative
     private final int capacity;
 
     /**
@@ -91,7 +87,6 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * Note, if you need to limit how much can be inserted in a single tick,
      * then you will need to make your own implementation of {@link IEnergyHandler} that has the required information.
      */
-    @Nonnegative
     private final int maxInsert;
 
     /**
@@ -99,7 +94,6 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * Note, if you need to limit how much can be extracted in a single tick,
      * then you will need to make your own implementation of {@link IEnergyHandler} that has the required information.
      */
-    @Nonnegative
     private final int maxExtract;
 
     //Some holder (usually a blockentity) that will be set on being serialized
@@ -128,7 +122,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * @param maxExtractionRate How much energy can be extracted in a single {@link IEnergyHandler#extract} call.
      * @param energy            An array of initial or serialized energy sub-buffer amounts.
      */
-    public EnergyBufferAttachment(@Nonnegative int size, @Nonnegative int capacity, @Nonnegative int maxInsertionRate, @Nonnegative int maxExtractionRate, @Nonnegative int... energy) {
+    public EnergyBufferAttachment(int size, int capacity, int maxInsertionRate, int maxExtractionRate, int... energy) {
         if (size < energy.length) {
             throw new IllegalArgumentException("An EnergyBuffer must have a size (" + size + ") larger than energy array length (" + energy.length + ") passed in.");
         }
@@ -161,14 +155,12 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     //IEnergyHandler
 
     @Override
-    @Nonnegative
     public int size() {
         return size;
     }
 
     @Override
-    @Nonnegative
-    public int insert(@Nonnegative int amount, TransactionContext transaction) {
+    public int insert(int amount, TransactionContext transaction) {
         amount = Math.min(maxInsert, amount);
         if (amount == 0) return 0;
 
@@ -183,8 +175,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     }
 
     @Override
-    @Nonnegative
-    public int insert(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(int index, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         amount = Math.min(maxInsert, amount);
         if (amount == 0) return 0;
@@ -198,8 +189,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * <p>
      * The added benefit is less double-checking in runtime on data we already know
      */
-    @Nonnegative
-    private int insertCommon(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
+    private int insertCommon(int index, int amount, TransactionContext transaction) {
         if (energy[index] == capacity) return 0;
 
         int inserted = Math.min(capacity - energy[index], amount);
@@ -209,8 +199,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     }
 
     @Override
-    @Nonnegative
-    public int extract(@Nonnegative int amount, TransactionContext transaction) {
+    public int extract(int amount, TransactionContext transaction) {
         amount = Math.min(maxExtract, amount);
         if (amount == 0) return 0;
 
@@ -225,8 +214,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     }
 
     @Override
-    @Nonnegative
-    public int extract(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(int index, int amount, TransactionContext transaction) {
         //This check is done per external index call
         Objects.checkIndex(index, size());
         amount = Math.min(maxExtract, amount);
@@ -239,7 +227,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * Common method for extraction, but allowing the index-less and the indexed methods to have their
      * own validations for their respective calls. Avoids double-checking certain validations
      */
-    private int extractCommon(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
+    private int extractCommon(int index, int amount, TransactionContext transaction) {
         if (energy[index] == 0) return 0;
 
         int handledAmount = Math.min(energy[index], amount);
@@ -249,30 +237,28 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
     }
 
     @Override
-    @Nonnegative
-    public int getAmount(@Nonnegative int index) {
+    public int getAmount(int index) {
         Objects.checkIndex(index, size());
         return this.energy[index];
     }
 
     @Override
-    @Nonnegative
-    public int getCapacity(@Nonnegative int index) {
+    public int getCapacity(int index) {
         return capacity;
     }
 
     @Override
-    public boolean supportsInsertion(@Nonnegative int index) {
+    public boolean supportsInsertion(int index) {
         return maxInsert > 0;
     }
 
     @Override
-    public boolean supportsExtraction(@Nonnegative int index) {
+    public boolean supportsExtraction(int index) {
         return maxExtract > 0;
     }
 
     @Override
-    public void set(@Nonnegative int index, @Nonnegative int amount) {
+    public void set(int index, int amount) {
         //blind trust that the index is in bounds when using modifiable
         energy[index] = Mth.clamp(amount, 0, capacity);
     }
@@ -286,7 +272,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
      * @param capacity How much energy the sub-buffers are set to be able to hold individually. If you desire separate capacities per buffer, then you will need to implement your own variant.
      * @return Chainable builder to allow creation of a new {@link EnergyBufferAttachment}
      */
-    public static Builder builder(@Nonnegative int size, @Nonnegative int capacity) {
+    public static Builder builder(int size, int capacity) {
         return new Builder().size(size).capacity(capacity).maxTransferRate(Mth.ceil(capacity * 0.01f));
     }
 
@@ -302,8 +288,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         /**
          * @param capacity How much energy each sub-buffer can hold.
          */
-        public Builder capacity(@Nonnegative int capacity) {
-            //noinspection ConstantValue
+        public Builder capacity(int capacity) {
             if (capacity < 0) throw new IllegalArgumentException("Capacity must be non-negative");
             this.capacity = capacity;
             return this;
@@ -312,8 +297,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         /**
          * @param rate How much energy the buffer can insert in a single call.
          */
-        public Builder maxInsertRate(@Nonnegative int rate) {
-            //noinspection ConstantValue
+        public Builder maxInsertRate(int rate) {
             if (maxInsertRate < 0) throw new IllegalArgumentException("MaxInsertRate must be non-negative");
             this.maxInsertRate = rate;
             return this;
@@ -322,8 +306,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         /**
          * @param rate How much energy the buffer can extract in a single call.
          */
-        public Builder maxExtractRate(@Nonnegative int rate) {
-            //noinspection ConstantValue
+        public Builder maxExtractRate(int rate) {
             if (maxExtractRate < 0) throw new IllegalArgumentException("MaxExtractRate must be non-negative");
             this.maxExtractRate = rate;
             return this;
@@ -332,16 +315,15 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         /**
          * @param rate How much energy the buffer can insert or extract in a single call.
          */
-        public Builder maxTransferRate(@Nonnegative int rate) {
+        public Builder maxTransferRate(int rate) {
             return maxExtractRate(rate).maxInsertRate(rate);
         }
 
         /**
          * @param amount Amount to set the initial energy buffer to at the specified index
          */
-        public Builder energy(@Nonnegative int index, @Nonnegative int amount) {
+        public Builder energy(int index, int amount) {
             Objects.checkIndex(index, size);
-            //noinspection ConstantValue
             if (amount < 0) throw new IllegalArgumentException("Energy at index " + index + " must be non-negative");
             this.energy[index] = amount;
             return this;
@@ -350,7 +332,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         /**
          * @param amount Amount to set the initial energy buffer to all indices
          */
-        public Builder energy(@Nonnegative int amount) {
+        public Builder energy(int amount) {
             for (int index = 0; index < size; index++) {
                 this.energy[index] = amount;
             }
@@ -360,9 +342,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         /**
          * @param size Number of sub-buffers. In this structure, the size needs to be at least 1 due to the bound checks in the {@link EnergyBufferAttachment}
          */
-        //TODO this was set to 1-> max int, however, it should be fine to be zero.
-        public Builder size(@Nonnegative int size) {
-            //noinspection ConstantValue
+        public Builder size(int size) {
             if (size < 0) throw new IllegalArgumentException("Size must be non-negative");
             this.size = size;
             energy = new int[size];

@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -68,7 +67,6 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     }
 
     private final T resource;
-    @Nonnegative
     private int amount;
 
     public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, MutableResourceStack<R> resourceStack) {
@@ -79,11 +77,11 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return NonNullList.withSize(count, MutableResourceStack.of(emptyResource, 0));
     }
 
-    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(@Nonnegative int count) {
+    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(int count) {
         return nonNullListOfSize(count, this);
     }
 
-    public MutableResourceStack(T resource, @Nonnegative int amount) {
+    public MutableResourceStack(T resource, int amount) {
         Objects.requireNonNull(resource, "Resource must not be null");
         this.resource = resource;
         this.amount = amount;
@@ -93,7 +91,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> MutableResourceStack<T> of(T resource, @Nonnegative int amount) {
+    public static <T extends IResource> MutableResourceStack<T> of(T resource, int amount) {
         return new MutableResourceStack<>(resource, amount);
     }
 
@@ -111,7 +109,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> withAmount(@Nonnegative int newAmount) {
+    public MutableResourceStack<T> withAmount(int newAmount) {
         amount = isEmpty() ? 0 : newAmount;
         return this;
     }
@@ -120,7 +118,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> shrink(@Nonnegative int amount) {
+    public MutableResourceStack<T> shrink(int amount) {
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
@@ -128,7 +126,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      * @return this instance with an updated amount.
      */
     @Override
-    public MutableResourceStack<T> grow(@Nonnegative int amount) {
+    public MutableResourceStack<T> grow(int amount) {
         return withAmount(this.amount + amount);
     }
 

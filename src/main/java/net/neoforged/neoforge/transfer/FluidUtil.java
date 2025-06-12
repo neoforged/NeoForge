@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.primitives.Ints;
 import java.util.function.Predicate;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -96,7 +95,7 @@ public final class FluidUtil {
      * @return a {@link FluidStack} holding the filled container if successful.
      */
     //formerly tryFillContainer
-    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, TransferAction transferAction) {
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
         return handleContainer(from, itemCapability, amount, player, transferAction);
@@ -112,7 +111,7 @@ public final class FluidUtil {
      * @param transferAction Indicating whether it should be simulating or executing.
      * @return a {@link FluidStack} holding the filled container if successful.
      */
-    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, TransferAction transferAction) {
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
         return handleContainer(itemCapability, to, amount, player, transferAction);
@@ -121,7 +120,7 @@ public final class FluidUtil {
     /**
      * Common logic for filling and draining the container context.
      */
-    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, @Nonnegative int amount, @Nullable Player player, TransferAction transferAction) {
+    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, TransferAction transferAction) {
         try (Transaction transaction = Transaction.open(TransactionContext.ROOT)) {
             FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
             if (!transferAction.commit(transaction) || player == null) return stack;
@@ -298,7 +297,6 @@ public final class FluidUtil {
      * @param action     Decides if the move should commit its interactions in the end
      * @return the fluidStack that was transferred from the from to the to. null on failure.
      */
-
     public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, TransferAction action) {
         try (var transaction = Transaction.open(TransactionContext.ROOT)) {
             FluidResource resource = FluidResource.of(fluidStack);
@@ -313,7 +311,7 @@ public final class FluidUtil {
     public static FluidStack extractFluidStackFiltered(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
     }
@@ -321,7 +319,7 @@ public final class FluidUtil {
     public static ResourceStack<FluidResource> extractResourceStackFiltered(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
     }

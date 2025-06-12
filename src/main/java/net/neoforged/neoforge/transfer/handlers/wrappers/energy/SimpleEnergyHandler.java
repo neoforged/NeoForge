@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.energy;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -27,31 +26,27 @@ public final class SimpleEnergyHandler {
         this.handler = handler;
     }
 
-    @Nonnegative
     public int size() {
         return handler.size();
     }
 
-    @Nonnegative
-    public int getAmount(@Nonnegative int index) {
+    public int getAmount(int index) {
         return handler.getAmount(index);
     }
 
-    @Nonnegative
-    public long getAmountAsLong(@Nonnegative int index) {
+    public long getAmountAsLong(int index) {
         return handler.getAmountAsLong(index);
     }
 
-    @Nonnegative
-    public int getCapacity(@Nonnegative int index) {
+    public int getCapacity(int index) {
         return handler.getCapacity(index);
     }
 
-    public long getCapacityAsLong(@Nonnegative int index) {
+    public long getCapacityAsLong(int index) {
         return handler.getCapacityAsLong(index);
     }
 
-    public boolean supportsInsertion(@Nonnegative int index) {
+    public boolean supportsInsertion(int index) {
         return handler.supportsInsertion(index);
     }
 
@@ -59,7 +54,7 @@ public final class SimpleEnergyHandler {
         return handler.supportsInsertion();
     }
 
-    public boolean supportsExtraction(@Nonnegative int index) {
+    public boolean supportsExtraction(int index) {
         return handler.supportsExtraction(index);
     }
 
@@ -67,7 +62,7 @@ public final class SimpleEnergyHandler {
         return handler.supportsExtraction();
     }
 
-    public int insert(@Nonnegative int index, @Nonnegative int amount, TransferAction actionType) {
+    public int insert(int index, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int inserted = handler.insert(index, amount, transaction);
             actionType.commit(transaction);
@@ -75,7 +70,7 @@ public final class SimpleEnergyHandler {
         }
     }
 
-    public int insert(@Nonnegative int amount, TransferAction actionType) {
+    public int insert(int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int inserted = handler.insert(amount, transaction);
             actionType.commit(transaction);
@@ -83,7 +78,7 @@ public final class SimpleEnergyHandler {
         }
     }
 
-    public int extract(@Nonnegative int index, @Nonnegative int amount, TransferAction actionType) {
+    public int extract(int index, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int extracted = handler.extract(index, amount, transaction);
             actionType.commit(transaction);
@@ -91,7 +86,7 @@ public final class SimpleEnergyHandler {
         }
     }
 
-    public int extract(@Nonnegative int amount, TransferAction actionType) {
+    public int extract(int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int extracted = handler.extract(amount, transaction);
             actionType.commit(transaction);

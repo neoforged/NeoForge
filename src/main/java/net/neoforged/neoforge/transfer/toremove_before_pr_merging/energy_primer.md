@@ -104,11 +104,6 @@ options around this such as the `ISingleEnergyHandler` and utility methods in `E
 for them. There should be no perceptual change if the desire is to use what "was", outside either the names or perhaps
 where the method is.
 
-Throughout the methods you may have noticed a `@Nonnegative` decorating the methods and
-parameters. These are really just to help identify when you may be trying to pass in incorrect values into the handler.
-While these are strictly not enforced by the compiler, doing values outside of these ranges will result in odd
-behaviour. The hope is to help you catch misuse early rather than finding out in production.
-
 ## Conclusion
 
 Hopefully, with the new system, this both allows and empowers your ideas to be able to create what you are wanting to

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
-import javax.annotation.Nonnegative;
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
@@ -56,7 +55,6 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    @Nonnegative
     public int getCapacity(int index, ItemResource resource) {
         return wrappedContainer.getCapacity(convertSlot(index), resource);
     }
@@ -77,7 +75,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int insert(int index, ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         int convertedIndex = convertSlot(index);
         if (!worldlyContainer.canPlaceItemThroughFace(convertedIndex, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
@@ -86,7 +84,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int insert(ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         var size = size();
         var handled = 0;
         for (var index = 0; index < size; index++) {
@@ -97,7 +95,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int extract(int index, ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         int convertedSlot = convertSlot(index);
         if (side != null && !worldlyContainer.canTakeItemThroughFace(convertedSlot, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
@@ -106,7 +104,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public int extract(ItemResource resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         var size = size();
         var handled = 0;
         for (var index = 0; index < size; index++) {
@@ -117,7 +115,7 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Nonnegative int amount) {
+    public void set(int index, ItemResource resource, int amount) {
         worldlyContainer.setItem(index, resource.toStack(amount), true);
     }
 }

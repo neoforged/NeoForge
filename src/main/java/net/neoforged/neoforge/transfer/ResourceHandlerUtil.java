@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer;
 
 import java.util.Objects;
 import java.util.function.Predicate;
-import javax.annotation.Nonnegative;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -149,7 +148,6 @@ public final class ResourceHandlerUtil {
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
-    @Nonnegative
     public static <T extends IResource> int insertStacking(
             IResourceHandler<T> handler,
             T resource,
@@ -218,7 +216,6 @@ public final class ResourceHandlerUtil {
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
-    @Nonnegative
     public static <T extends IResource> int extract(
             IResourceHandler<T> handler,
             T resource,
@@ -358,7 +355,6 @@ public final class ResourceHandlerUtil {
      * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    @Nonnegative
     public static <T extends IResource> int move(
             @Nullable IResourceHandler<T> from,
             @Nullable IResourceHandler<T> to,
@@ -478,7 +474,6 @@ public final class ResourceHandlerUtil {
         }
     }
 
-    @Nonnegative
     public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
         var sum = 0L;
         var size = handler.size();
@@ -513,7 +508,6 @@ public final class ResourceHandlerUtil {
      * @return The total amount of resources that was successfully transferred.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    @Nonnegative
     public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, int amount, @Nullable TransactionContext transaction) {
         return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
     }

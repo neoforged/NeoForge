@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -23,7 +22,6 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @return The number of indices this handler manages. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int size();
 
     /**
@@ -36,10 +34,8 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of the resource at the given index. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int getAmount(int index);
 
-    @Nonnegative
     default long getAmountAsLong(int index) {
         return getAmount(index);
     }
@@ -53,10 +49,8 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
      * @return The limit of the resource at the given index. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int getCapacity(int index, T resource);
 
-    @Nonnegative
     default long getCapacityAsLong(int index, T resource) {
         return getCapacity(index, resource);
     }
@@ -169,7 +163,6 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
      * @return The amount of the resource that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int insert(int index, T resource, int amount, TransactionContext transaction);
 
     /**
@@ -183,7 +176,6 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) inserted.
      */
-    @Nonnegative
     int insert(T resource, int amount, TransactionContext transaction);
 
     /**
@@ -195,7 +187,6 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
      */
-    @Nonnegative
     int extract(int index, T resource, int amount, TransactionContext transaction);
 
     /**
@@ -209,7 +200,6 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
      */
-    @Nonnegative
     int extract(T resource, int amount, TransactionContext transaction);
 
     /**

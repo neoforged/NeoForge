@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.energy;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -26,8 +25,7 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      * @return The amount that was (or would have been, if simulated) inserted. This should be non-negative.
      */
     @Override
-    @Nonnegative
-    int insert(@Nonnegative int amount, TransactionContext transaction);
+    int insert(int amount, TransactionContext transaction);
 
     /**
      * <b>PRIMER: Formerly</b> `extractEnergy(int toReceive, bool simulate)`
@@ -39,8 +37,7 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      * @return The amount that was (or would have been, if simulated) extracted. This should be non-negative.
      */
     @Override
-    @Nonnegative
-    int extract(@Nonnegative int amount, TransactionContext transaction);
+    int extract(int amount, TransactionContext transaction);
 
     /**
      * @return {@code true} if at any point your handler can be inserted into, {@code false} otherwise. This should not be called in your insert method.
@@ -58,30 +55,27 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      * @return When implementing {@link ISingleEnergyHandler} the return should always be 1. If you find you need additional indices, please implement {@link IEnergyHandler} instead
      */
     @Override
-    @Nonnegative
     default int size() {
         return 1;
     }
 
     @Override
-    default boolean supportsInsertion(@Nonnegative int index) {
+    default boolean supportsInsertion(int index) {
         return supportsInsertion();
     }
 
     @Override
-    default boolean supportsExtraction(@Nonnegative int index) {
+    default boolean supportsExtraction(int index) {
         return supportsExtraction();
     }
 
     @Override
-    @Nonnegative
-    default int insert(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
+    default int insert(int index, int amount, TransactionContext transaction) {
         return insert(amount, transaction);
     }
 
     @Override
-    @Nonnegative
-    default int extract(@Nonnegative int index, @Nonnegative int amount, TransactionContext transaction) {
+    default int extract(int index, int amount, TransactionContext transaction) {
         return extract(amount, transaction);
     }
 }

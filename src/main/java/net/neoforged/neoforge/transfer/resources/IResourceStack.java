@@ -10,7 +10,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nonnegative;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -92,7 +91,7 @@ public interface IResourceStack<T extends IResource> {
     /**
      * @return the amount currently set in the stack
      */
-    @Nonnegative
+
     int amount();
 
     /**

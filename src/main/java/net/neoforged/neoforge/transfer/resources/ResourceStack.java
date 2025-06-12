@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nonnegative;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +19,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
  *
  * @param <T> the held resource type
  */
-public record ResourceStack<T extends IResource>(T resource, @Nonnegative int amount) implements IResourceStack<T> {
+public record ResourceStack<T extends IResource>(T resource, int amount) implements IResourceStack<T> {
     public ResourceStack {
         Objects.requireNonNull(resource, "Resource must not be null");
     }
@@ -75,7 +74,7 @@ public record ResourceStack<T extends IResource>(T resource, @Nonnegative int am
         return of(stack.resource(), stack.amount());
     }
 
-    public static <T extends IResource> ResourceStack<T> of(T resource, @Nonnegative int amount) {
+    public static <T extends IResource> ResourceStack<T> of(T resource, int amount) {
         return new ResourceStack<>(resource, amount);
     }
 
@@ -91,7 +90,7 @@ public record ResourceStack<T extends IResource>(T resource, @Nonnegative int am
      * @return a copy of this instance with an updated resource.
      */
     @Override
-    public ResourceStack<T> shrink(@Nonnegative int amount) {
+    public ResourceStack<T> shrink(int amount) {
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
@@ -99,7 +98,7 @@ public record ResourceStack<T extends IResource>(T resource, @Nonnegative int am
      * @return a copy of this instance with an updated resource.
      */
     @Override
-    public ResourceStack<T> grow(@Nonnegative int amount) {
+    public ResourceStack<T> grow(int amount) {
         return withAmount(this.amount + amount);
     }
 

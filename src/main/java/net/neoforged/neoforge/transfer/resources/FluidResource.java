@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.function.Predicate;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -225,12 +224,12 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return innerStack.getFluidType().getSound(innerStack, action);
     }
 
-    public ResourceStack<FluidResource> withAmount(@Nonnegative int amount) {
+    public ResourceStack<FluidResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
         return new ResourceStack<>(this, amount);
     }
 
-    public MutableResourceStack<FluidResource> withMutableAmount(@Nonnegative int amount) {
+    public MutableResourceStack<FluidResource> withMutableAmount(int amount) {
         return new MutableResourceStack<>(this, amount);
     }
 

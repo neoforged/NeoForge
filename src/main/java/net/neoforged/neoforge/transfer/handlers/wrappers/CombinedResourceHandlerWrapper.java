@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
@@ -106,13 +105,13 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public int insert(int index, T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(int index, T resource, int amount, TransactionContext transaction) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
-    public int insert(T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(T resource, int amount, TransactionContext transaction) {
         var handled = 0;
         for (var resourceHandler : handlers) {
             handled += resourceHandler.insert(resource, amount - handled, transaction);
@@ -122,13 +121,13 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public int extract(int index, T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(int index, T resource, int amount, TransactionContext transaction) {
         var handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
-    public int extract(T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(T resource, int amount, TransactionContext transaction) {
         var handled = 0;
         for (var resourceHandler : handlers) {
             handled += resourceHandler.extract(resource, amount - handled, transaction);

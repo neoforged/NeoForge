@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -82,22 +81,22 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public int insert(int index, T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(int index, T resource, int amount, TransactionContext transaction) {
         return getDelegate().insert(convertIndex(index), resource, amount, transaction);
     }
 
     @Override
-    public int insert(T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int insert(T resource, int amount, TransactionContext transaction) {
         return getDelegate().insert(resource, amount, transaction);
     }
 
     @Override
-    public int extract(int index, T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(int index, T resource, int amount, TransactionContext transaction) {
         return getDelegate().extract(convertIndex(index), resource, amount, transaction);
     }
 
     @Override
-    public int extract(T resource, @Nonnegative int amount, TransactionContext transaction) {
+    public int extract(T resource, int amount, TransactionContext transaction) {
         return getDelegate().extract(resource, amount, transaction);
     }
 

@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
@@ -31,5 +30,5 @@ public interface IStackFactory<R extends IResource, S> {
      * <p>
      * As an example would something like a ItemStack should {@link net.minecraft.world.item.ItemStack#EMPTY ItemStack.EMPTY} in the case either the resource was empty or the amount was 0.
      */
-    S create(R resource, @Nonnegative int amount);
+    S create(R resource, int amount);
 }

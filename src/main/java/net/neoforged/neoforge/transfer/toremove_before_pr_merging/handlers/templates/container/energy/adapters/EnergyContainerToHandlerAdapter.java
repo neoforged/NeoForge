@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters;
 
 import java.util.Objects;
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
@@ -17,17 +16,17 @@ public record EnergyContainerToHandlerAdapter(
         IEnergyContainer container,
         IHandleIOBehaviour behavior) implements IEnergyHandlerModifiable {
     @Override
-    public @Nonnegative int size() {
+    public int size() {
         return container().size();
     }
 
     @Override
-    public @Nonnegative int getAmount(int index) {
+    public int getAmount(int index) {
         return container.get(index);
     }
 
     @Override
-    public @Nonnegative int getCapacity(int index) {
+    public int getCapacity(int index) {
         return container.getCapacity(index);
     }
 
@@ -125,7 +124,7 @@ public record EnergyContainerToHandlerAdapter(
     }
 
     @Override
-    public void set(int index, @Nonnegative int amount) {
+    public void set(int index, int amount) {
         container.set(index, amount);
     }
 }

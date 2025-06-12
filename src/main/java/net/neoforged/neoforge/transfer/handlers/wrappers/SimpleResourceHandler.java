@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
@@ -57,7 +56,6 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
      * @return The limit of the resource at the given index. A range from {@code 0} to {@code 2,147,483,647}
      */
-    @Nonnegative
     public int getCapacity(int index, T resource) {
         return handler.getCapacity(index, resource);
     }
@@ -164,7 +162,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
      * @return The amount of the resource that was (or would have been, if simulated) inserted. A range from {@code 0} to {@code 2,147,483,647}
      */
-    public int insert(int index, T resource, @Nonnegative int amount, TransferAction actionType) {
+    public int insert(int index, T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int inserted = handler.insert(index, resource, amount, transaction);
             actionType.commit(transaction);
@@ -183,7 +181,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
      * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) inserted.
      */
-    public int insert(T resource, @Nonnegative int amount, TransferAction actionType) {
+    public int insert(T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int inserted = handler.insert(resource, amount, transaction);
             actionType.commit(transaction);
@@ -200,7 +198,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
      * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) extracted.
      */
-    public int extract(int index, T resource, @Nonnegative int amount, TransferAction actionType) {
+    public int extract(int index, T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int extracted = handler.extract(index, resource, amount, transaction);
             actionType.commit(transaction);
@@ -219,7 +217,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
      * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) extracted.
      */
-    public int extract(T resource, @Nonnegative int amount, TransferAction actionType) {
+    public int extract(T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
             int extracted = handler.extract(resource, amount, transaction);
             actionType.commit(transaction);

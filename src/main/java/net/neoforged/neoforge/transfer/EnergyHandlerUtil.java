@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import javax.annotation.Nonnegative;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -26,7 +25,6 @@ public final class EnergyHandlerUtil {
      * @param handler Energy Handler to iterate
      * @return Total energy stored across all of its sub-buffers. This is a long given the accumulation factor can be several max {@code ints} together.
      */
-    @Nonnegative
     public static long getAmount(IEnergyHandler handler) {
         var sum = 0;
 
@@ -42,7 +40,6 @@ public final class EnergyHandlerUtil {
      * @param handler Energy Handler to iterate
      * @return Total capacity across all of its sub-buffers.
      */
-    @Nonnegative
     public static long getCapacity(IEnergyHandler handler) {
         var sum = 0;
         var size = handler.size();
@@ -53,7 +50,6 @@ public final class EnergyHandlerUtil {
         return sum;
     }
 
-    @Nonnegative
     public static long getAmountAsLong(IEnergyHandler handler) {
         var sum = 0L;
         var size = handler.size();
@@ -64,7 +60,6 @@ public final class EnergyHandlerUtil {
         return sum;
     }
 
-    @Nonnegative
     public static long getCapacityAsLong(IEnergyHandler handler) {
         var sum = 0L;
         var size = handler.size();
@@ -85,11 +80,10 @@ public final class EnergyHandlerUtil {
      * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
-    @Nonnegative
     public static int move(
             @Nullable IEnergyHandler from,
             @Nullable IEnergyHandler to,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         if (from == null || to == null) return 0;
 

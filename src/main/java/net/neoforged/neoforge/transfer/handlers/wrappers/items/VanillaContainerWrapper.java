@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
 import java.util.Map;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.Container;
@@ -173,7 +172,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     }
 
     @Override
-    public void set(int index, ItemResource resource, @Nonnegative int amount) {
+    public void set(int index, ItemResource resource, int amount) {
         get(index).set(resource.toStack(amount));
     }
 

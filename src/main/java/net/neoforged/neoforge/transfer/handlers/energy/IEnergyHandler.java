@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.energy;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -32,7 +31,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      *         <p>
      *         <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int size();
 
     /**
@@ -43,7 +41,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int getAmount(int index);
 
     /**
@@ -53,7 +50,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     default long getAmountAsLong(int index) {
         return getAmount(index);
     }
@@ -67,7 +63,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the limit from. <strong>Must be non-negative</strong>
      * @return The capacity at the given index. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int getCapacity(int index);
 
     /**
@@ -77,7 +72,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     default long getCapacityAsLong(int index) {
         return getCapacity(index);
     }
@@ -157,7 +151,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed. * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int insert(int index, int amount, TransactionContext transaction);
 
     /**
@@ -171,7 +164,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param amount      The amount to insert.
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed. * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int insert(int amount, TransactionContext transaction);
 
     /**
@@ -184,7 +176,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was (or would have been, if simulated) extracted. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int extract(int index, int amount, TransactionContext transaction);
 
     /**
@@ -199,6 +190,5 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was (or would have been, if simulated) extracted. <strong>Must be non-negative</strong>
      */
-    @Nonnegative
     int extract(int amount, TransactionContext transaction);
 }

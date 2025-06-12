@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 
 /**
@@ -22,5 +21,5 @@ public interface IEnergyHandlerModifiable extends IEnergyHandler {
      * @param index  The index for what value to set.
      * @param amount The value to set. This should be non-negative.
      */
-    void set(@Nonnegative int index, @Nonnegative int amount);
+    void set(int index, int amount);
 }

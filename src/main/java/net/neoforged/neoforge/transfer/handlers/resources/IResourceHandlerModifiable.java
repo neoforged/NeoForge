@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import javax.annotation.Nonnegative;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
@@ -22,5 +21,5 @@ public interface IResourceHandlerModifiable<T extends IResource> extends IResour
      * @param resource The resource to set.
      * @param amount   The amount of the resource to set.
      */
-    void set(@Nonnegative int index, T resource, @Nonnegative int amount);
+    void set(int index, T resource, int amount);
 }
