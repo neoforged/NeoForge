@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.data.tags.TagAppender;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 
 public interface ITagAppenderExtension<E, T> {
@@ -37,10 +38,29 @@ public interface ITagAppenderExtension<E, T> {
         return appender;
     }
 
+    /**
+     * Add the given {@code entry} to the tag.
+     *
+     * @param entry the entry to add
+     * @return The appender for chaining
+     */
+    TagAppender<E, T> add(TagEntry entry);
+
+    /**
+     * Marks this tag as replacing previous entries.
+     *
+     * @return The appender for chaining
+     */
     default TagAppender<E, T> replace() {
         return replace(true);
     }
 
+    /**
+     * Set whether this tag replaces previous entries.
+     *
+     * @param value whether the tag replaces previous entries
+     * @return The appender for chaining
+     */
     TagAppender<E, T> replace(boolean value);
 
     /**
@@ -68,7 +88,7 @@ public interface ITagAppenderExtension<E, T> {
 
     /**
      * Adds a tag to the tag json's remove list. Callable during datageneration.
-     * 
+     *
      * @param tag The ID of the tag to remove
      * @return The builder for chaining
      */
@@ -76,7 +96,7 @@ public interface ITagAppenderExtension<E, T> {
 
     /**
      * Adds multiple tags to the tag json's remove list. Callable during datageneration.
-     * 
+     *
      * @param tags The IDs of the tags to remove
      * @return The builder for chaining
      */

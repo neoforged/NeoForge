@@ -6,8 +6,8 @@
          }
 +
 +        @Override
-+        public TagAppender<Block, Block> add(net.minecraft.tags.TagEntry tag) {
-+            itemAppender.add(tag);
++        public TagAppender<Block, Block> add(net.minecraft.tags.TagEntry entry) {
++            itemAppender.add(entry);
 +            return this;
 +        }
 +

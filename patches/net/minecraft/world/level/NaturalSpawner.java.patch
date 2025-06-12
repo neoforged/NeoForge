@@ -1,13 +1,5 @@
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -49,6 +_,7 @@
- import net.minecraft.world.phys.Vec3;
- import org.slf4j.Logger;
- 
-+// TODO: ForgeHooks.canEntitySpawn
- public final class NaturalSpawner {
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final int MIN_SPAWN_DISTANCE = 24;
 @@ -71,7 +_,7 @@
  
          for (Entity entity : p_186526_) {

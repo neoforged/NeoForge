@@ -975,8 +975,6 @@ public class ClientHooks {
         initializedClientHooks = true;
 
         ClientExtensionsManager.init();
-        // TODO: Porting 1.21.5 too early for registering gametests
-        //GameTestHooks.registerGametests();
         MenuScreens.init();
         initClientRegistries();
 
