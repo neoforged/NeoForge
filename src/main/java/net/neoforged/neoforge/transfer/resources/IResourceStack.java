@@ -107,7 +107,7 @@ public interface IResourceStack<T extends IResource> {
     }
 
     default boolean isEnabled(FeatureFlagSet enabledFeatures) {
-        return resource() instanceof FeatureElement element && element.isEnabled(enabledFeatures);
+        return !(resource() instanceof IRegisteredResource<?> reg) || reg.isEnabled(enabledFeatures);
     }
 
     IResourceStack<T> withAmount(int newAmount);
