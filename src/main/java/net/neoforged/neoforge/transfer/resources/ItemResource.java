@@ -78,7 +78,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     @ApiStatus.Internal
     public static ItemResource invalidateDefault(ItemLike item) {
-        return item == Items.AIR ? EMPTY : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
+        return item.asItem() == Items.AIR ? EMPTY : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
     }
 
     public static ItemResource of(ItemStack itemStack) {
@@ -93,7 +93,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * <strong>Note:</strong> This cannot be called before your item is registered
      */
     public static ItemResource of(ItemLike item) {
-        return item == Items.AIR ? EMPTY : item.asItem().defaultResource();
+        return item.asItem() == Items.AIR ? EMPTY : item.asItem().defaultResource();
     }
 
     /**
@@ -101,7 +101,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
         if (item.value() == Items.AIR) return EMPTY;
-
         return item.value().defaultResource().withPatch(patch);
     }
 
