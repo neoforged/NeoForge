@@ -21,27 +21,26 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * An index in synonymous with "slot", "tank", "buffer", etc.
      *
-     * @return The number of indices this handler manages.
+     * @return The number of indices this handler manages. <strong>Must be non-negative</strong>
      */
-
     @Nonnegative
     int size();
 
     /**
-     * @param index The index to get the resource from.
+     * @param index The index to get the resource from. <strong>Must be non-negative</strong>
      * @return The resource at the given index.
      */
-    T getResource(@Nonnegative int index);
+    T getResource(int index);
 
     /**
-     * @param index The index to get the amount from.
-     * @return The amount of the resource at the given index. Must be non-negative
+     * @param index The index to get the amount from. <strong>Must be non-negative</strong>
+     * @return The amount of the resource at the given index. <strong>Must be non-negative</strong>
      */
     @Nonnegative
-    int getAmount(@Nonnegative int index);
+    int getAmount(int index);
 
     @Nonnegative
-    default long getAmountAsLong(@Nonnegative int index) {
+    default long getAmountAsLong(int index) {
         return getAmount(index);
     }
 
@@ -50,26 +49,26 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * If an empty resource (an {@link IResource} that returns {@code true} on {@link IResource#isEmpty()}) is provided,
      * then the theoretical maximum should be returned, regardless of the return of {@link #getResource} .
      *
-     * @param index    The index to get the limit from.
+     * @param index    The index to get the limit from. <strong>Must be non-negative</strong>
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
-     * @return The limit of the resource at the given index. Must be non-negative
+     * @return The limit of the resource at the given index. <strong>Must be non-negative</strong>
      */
     @Nonnegative
-    int getCapacity(@Nonnegative int index, T resource);
+    int getCapacity(int index, T resource);
 
     @Nonnegative
-    default long getCapacityAsLong(@Nonnegative int index, T resource) {
+    default long getCapacityAsLong(int index, T resource) {
         return getCapacity(index, resource);
     }
 
     /**
      * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)} implementations or general resource querying. However, this is separate from if the resource could currently fit in the handler. This is expected to be true, even if the handler would be full.
      *
-     * @param index    The index to check.
+     * @param index    The index to check. <strong>Must be non-negative</strong>
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean isValid(@Nonnegative int index, T resource);
+    boolean isValid(int index, T resource);
 
     /**
      * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -90,10 +89,10 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @param index The index to check.
+     * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the resource can be inserted, false otherwise.
      */
-    boolean supportsInsertion(@Nonnegative int index);
+    boolean supportsInsertion(int index);
 
     /**
      * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -134,10 +133,10 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @param index The index to check.
+     * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the resource can be extracted, false otherwise.
      */
-    boolean supportsExtraction(@Nonnegative int index);
+    boolean supportsExtraction(int index);
 
     /**
      * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
@@ -164,14 +163,14 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * Inserts a given amount of the resource into the handler at the given index.
      *
-     * @param index       The index to insert the resource into.
+     * @param index       The index to insert the resource into. <strong>Must be non-negative</strong>
      * @param resource    The resource to insert.
-     * @param amount      The amount of the resource to insert. Must be non-negative
+     * @param amount      The amount of the resource to insert. <strong>Must be non-negative</strong>
      * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted. Must be non-negative
+     * @return The amount of the resource that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      */
     @Nonnegative
-    int insert(@Nonnegative int index, T resource, @Nonnegative int amount, TransactionContext transaction);
+    int insert(int index, T resource, int amount, TransactionContext transaction);
 
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
@@ -179,25 +178,25 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
      * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
-     * @param resource    The resource to insert.
-     * @param amount      The amount of the resource to insert. Must be non-negative
+     * @param resource    The resource to insert. <strong>Must be non-negative</strong>
+     * @param amount      The amount of the resource to insert. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) inserted.
      */
     @Nonnegative
-    int insert(T resource, @Nonnegative int amount, TransactionContext transaction);
+    int insert(T resource, int amount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
-     * @param index       The index to extract the resource from.
+     * @param index       The index to extract the resource from. <strong>Must be non-negative</strong>
      * @param resource    The resource to extract.
-     * @param amount      The amount of the resource to extract. Must be non-negative
+     * @param amount      The amount of the resource to extract. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
      */
     @Nonnegative
-    int extract(@Nonnegative int index, T resource, @Nonnegative int amount, TransactionContext transaction);
+    int extract(int index, T resource, int amount, TransactionContext transaction);
 
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
@@ -206,12 +205,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource    The resource to extract.
-     * @param amount      The amount of the resource to extract. Must be non-negative
+     * @param amount      The amount of the resource to extract. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
      */
     @Nonnegative
-    int extract(T resource, @Nonnegative int amount, TransactionContext transaction);
+    int extract(T resource, int amount, TransactionContext transaction);
 
     /**
      * <p>

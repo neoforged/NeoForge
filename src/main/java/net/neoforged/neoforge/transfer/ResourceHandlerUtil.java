@@ -28,8 +28,7 @@ public final class ResourceHandlerUtil {
      *
      * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
      */
-    public static <T extends IResource> boolean isEmpty(T resource, @Nonnegative int amount) {
-        //noinspection NonStrictComparisonCanBeEquality As we want to be doubly sure we are not out of bounds
+    public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         return amount <= 0 || resource.isEmpty();
     }
 
@@ -79,7 +78,7 @@ public final class ResourceHandlerUtil {
      * @param index   the index of the resource to check
      * @return {@code true} if the resource at the specified index is empty, {@code false} otherwise
      */
-    public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, @Nonnegative int index) {
+    public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
         return handler.getAmount(index) == 0 || handler.getResource(index).isEmpty();
     }
 
@@ -98,7 +97,7 @@ public final class ResourceHandlerUtil {
         return handler.getAmountAsLong(index) >= handler.getCapacityAsLong(index, handler.getResource(index));
     }
 
-    public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, @Nonnegative int index, T resource, @Nonnegative int amount) {
+    public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
         return resourceMatches(handler, index, resource) && handler.getAmount(index) == amount;
     }
 
@@ -154,7 +153,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int insertStacking(
             IResourceHandler<T> handler,
             T resource,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         try (var tx = Transaction.open(transaction)) {
             int inserted = 0;
@@ -193,7 +192,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int insertIndexForced(
             IResourceHandler<T> handler,
             T resource,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             int inserted = 0;
@@ -223,7 +222,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int extract(
             IResourceHandler<T> handler,
             T resource,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         try (var subTransaction = Transaction.open(transaction)) {
             int extracted = 0;
@@ -262,7 +261,7 @@ public final class ResourceHandlerUtil {
     public static <R extends IResource, S> S extractFiltered(
             IResourceHandler<R> handler,
             Predicate<R> filter,
-            @Nonnegative int amount,
+            int amount,
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
@@ -308,8 +307,8 @@ public final class ResourceHandlerUtil {
     public static <R extends IResource, S> S extractIndexFiltered(
             IResourceHandler<R> handler,
             Predicate<R> filter,
-            @Nonnegative int index,
-            @Nonnegative int amount,
+            int index,
+            int amount,
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
@@ -364,7 +363,7 @@ public final class ResourceHandlerUtil {
             @Nullable IResourceHandler<T> from,
             @Nullable IResourceHandler<T> to,
             Predicate<T> filter,
-            @Nonnegative int amount,
+            int amount,
             @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (from == null || to == null) return 0;
@@ -423,7 +422,7 @@ public final class ResourceHandlerUtil {
             @Nullable IResourceHandler<R> from,
             @Nullable IResourceHandler<R> to,
             Predicate<R> filter,
-            @Nonnegative int amount,
+            int amount,
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
@@ -515,7 +514,7 @@ public final class ResourceHandlerUtil {
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
     @Nonnegative
-    public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, @Nonnegative int amount, @Nullable TransactionContext transaction) {
+    public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, int amount, @Nullable TransactionContext transaction) {
         return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
     }
 
