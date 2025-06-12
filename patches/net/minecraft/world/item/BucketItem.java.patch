@@ -33,11 +33,10 @@
          if (!(this.content instanceof FlowingFluid flowingfluid)) {
              return false;
          } else {
-@@ -110,8 +_,14 @@
+@@ -110,8 +_,13 @@
                  || $$8
                  || $$7 instanceof LiquidBlockContainer liquidblockcontainer
                      && liquidblockcontainer.canPlaceLiquid(p_394627_, p_150717_, p_150718_, blockstate, this.content);
-+//            java.util.Optional<net.neoforged.neoforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.neoforged.neoforge.fluids.FluidUtil::getFluidContained);
 +            net.neoforged.neoforge.fluids.FluidStack containedFluidStack = container == null || container.isEmpty() ? net.neoforged.neoforge.fluids.FluidStack.EMPTY : net.neoforged.neoforge.transfer.FluidUtil.getFirstFluidStackContained(container);
 +
              if (!flag1) {

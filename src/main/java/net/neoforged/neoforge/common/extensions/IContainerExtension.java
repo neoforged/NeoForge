@@ -20,7 +20,7 @@ public interface IContainerExtension {
     }
 
     /**
-     * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling .
+     * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling committed actions.
      *
      * <p>If {@code performCommitActions} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the performCommitActions.
      */
