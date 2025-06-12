@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
  * calls {@code setChanged()} when that happens, so we just cache the returned stack,
  * and set it when {@code setChanged()} is called.
  */
-@Deprecated
 public abstract class StackCopySlot extends Slot {
     private static final Container emptyInventory = new SimpleContainer(0);
 

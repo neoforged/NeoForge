@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.energy;
+package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy;
 
 import javax.annotation.Nonnegative;
+import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 
 /**
  * <b>PRIMER: New</b>

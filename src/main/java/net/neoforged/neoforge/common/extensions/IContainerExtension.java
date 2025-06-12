@@ -37,8 +37,9 @@ public interface IContainerExtension {
     default void onCommit(int slot, ItemStack originalStack) {}
 
     /**
-     * Perform additional logic immediately after successful transfer (i.e. insert or extract with result > 0).
+     * Perform additional logic during the transaction after a transfer of at least 1 in value. (i.e. insert or extract with result > 0).
      * Any logic performed here should be fully transactional, and support being rolled back.
+     * In other words, the transaction is still on going.
      */
     default void onTransfer(int slot, IODirection ioDirection, TransactionContext context) {}
 

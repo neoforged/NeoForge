@@ -23,7 +23,7 @@
      }
 +
 +    // Neo: Make lastInteractedSlot transactional, and defer updateState until end of a transaction
-+    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedParticipant = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer>() {
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Integer> lastInteractedParticipant = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
 +        @Override
 +        protected Integer createSnapshot() {
 +            return lastInteractedSlot;

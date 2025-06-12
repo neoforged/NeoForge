@@ -23,9 +23,8 @@ import org.jetbrains.annotations.Nullable;
  * 
  * <pre>{@code
  * ItemStack stack = ...;
- * IItemContext context = ...;
  *
- * IItemHandler maybeHandler = stack.getCapability(Capabilities.ItemHandler.ITEM, context);
+ * IItemHandler maybeHandler = stack.getCapability(Capabilities.ItemHandler.ITEM);
  * if (maybeHandler != null) {
  *     // Use maybeHandler
  * }

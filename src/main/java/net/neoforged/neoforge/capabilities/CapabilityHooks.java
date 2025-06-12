@@ -10,7 +10,6 @@ import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -80,7 +79,6 @@ public class CapabilityHooks {
 
     public static void registerVanillaProviders(RegisterCapabilitiesEvent event) {
         // Blocks
-        var composterBlock = (WorldlyContainerHolder) Blocks.COMPOSTER;
         event.registerBlock(Capabilities.ItemHandler.BLOCK, (level, pos, state, blockEntity, side) -> {
             // Invalidation is taken care of by the patches to ComposterBlock
             return ComposterWrapper.get(level, pos, side);

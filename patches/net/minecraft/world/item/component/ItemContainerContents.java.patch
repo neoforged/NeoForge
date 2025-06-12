@@ -4,8 +4,8 @@
          }
      }
  
-+    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount){
-+        var stacks =new ArrayList<>(this.items);
++    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
++        var stacks = new ArrayList<>(this.items);
 +        stacks.set(index, resource.toStack(amount));
 +        return fromItems(stacks);
 +    }

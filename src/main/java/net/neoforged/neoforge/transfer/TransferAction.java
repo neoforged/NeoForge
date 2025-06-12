@@ -33,22 +33,12 @@ public enum TransferAction {
     }
 
     /**
-     * Helper to combines this action with a boolean based execution. This allows easily compounding actions.
-     *
-     * @param execute {@code true} if it should execute if this action already is an execute action.
-     * @return Compounded action.
-     */
-    public TransferAction combine(boolean execute) {
-        return get(execute && isExecuting());
-    }
-
-    /**
      * Helper to combines this action with another {@link TransferAction}. This allows easily compounding actions.
      *
      * @return Compounded action.
      */
     public TransferAction combine(TransferAction other) {
-        return combine(other.isExecuting());
+        return get(other.isExecuting() && isExecuting());
     }
 
     public boolean commit(Transaction context) {

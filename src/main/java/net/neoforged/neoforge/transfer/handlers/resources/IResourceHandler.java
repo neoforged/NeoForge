@@ -37,6 +37,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to get the amount from.
      * @return The amount of the resource at the given index. Must be non-negative
      */
+    @Nonnegative
     int getAmount(@Nonnegative int index);
 
     @Nonnegative
@@ -62,7 +63,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     }
 
     /**
-     * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)} implementations or general resource querying.
+     * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)} implementations or general resource querying. However, this is separate from if the resource could currently fit in the handler. This is expected to be true, even if the handler would be full.
      *
      * @param index    The index to check.
      * @param resource The resource to check.
@@ -183,6 +184,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
      * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) inserted.
      */
+    @Nonnegative
     int insert(T resource, @Nonnegative int amount, TransactionContext transaction);
 
     /**
@@ -212,15 +214,14 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     int extract(T resource, @Nonnegative int amount, TransactionContext transaction);
 
     /**
-     *
      * <p>
      * Example:
-     * 
+     *
      * <pre>{@code
      * public static final BlockCapability<IResourceHandler<FluidResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
      *
      * }</pre>
-     * 
+     *
      * @return a class type ready to be used by something like the capability token registry.
      */
     static <T extends IResource> Class<IResourceHandler<T>> asClass() {

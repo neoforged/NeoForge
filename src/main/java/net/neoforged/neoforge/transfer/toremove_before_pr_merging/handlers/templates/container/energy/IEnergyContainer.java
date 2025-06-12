@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.temp
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandlerModifiable;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters.EnergyContainerSlice;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters.EnergyContainerToHandlerAdapter;

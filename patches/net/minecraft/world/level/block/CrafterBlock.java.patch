@@ -10,7 +10,7 @@
          ItemStack itemstack = p_307296_.copy();
          if (container != null && (container instanceof CrafterBlockEntity || p_307296_.getCount() > container.getMaxStackSize(p_307296_))) {
              while (!itemstack.isEmpty()) {
-@@ -199,10 +_,16 @@
+@@ -199,10 +_,15 @@
  
                  itemstack.shrink(1);
              }
@@ -22,7 +22,6 @@
 +                if (container != null) {
 +                    itemstack = HopperBlockEntity.addItem(p_307387_, container, itemstack, direction.getOpposite());
 +                } else {
-+//                    itemstack = net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(containerOrHandler.itemHandler(), itemstack, false);
 +                    var accepted = net.neoforged.neoforge.transfer.ItemUtil.insertStacking(containerOrHandler.itemHandler(), itemstack, null);
 +                    itemstack.shrink(accepted);
 +                }

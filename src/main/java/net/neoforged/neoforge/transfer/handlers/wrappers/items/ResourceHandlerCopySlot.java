@@ -19,7 +19,6 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
  * Slot class that can be used with immutable {@link IResourceHandler IResourceHandlers}
  * like {@link ItemContextItemHandler MCItemContentsHandler}.
  */
-@Deprecated
 public class ResourceHandlerCopySlot extends StackCopySlot {
     private final ResourceHandlerSlot slotWrapper;
 

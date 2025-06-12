@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
 import java.util.ArrayList;
-import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandlerModifiable;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;

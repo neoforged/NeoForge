@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO Neo: Do we maintain this. What is the practical purpose?
 // Possible removal
-@Deprecated
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
     private final IResourceHandler<ItemResource> handler;

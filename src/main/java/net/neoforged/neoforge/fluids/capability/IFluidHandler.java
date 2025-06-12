@@ -8,6 +8,7 @@ package net.neoforged.neoforge.fluids.capability;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -26,7 +27,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public interface IFluidHandler {
     /**
-     * @deprecated Has been superseded by {@link net.neoforged.neoforge.transfer.TransferAction TransferAction}
+     * @deprecated Has been superseded by {@link TransferAction}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     enum FluidAction {

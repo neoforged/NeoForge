@@ -7,8 +7,8 @@ package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.temp
 
 import java.util.Objects;
 import javax.annotation.Nonnegative;
-import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.IEnergyContainer;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
