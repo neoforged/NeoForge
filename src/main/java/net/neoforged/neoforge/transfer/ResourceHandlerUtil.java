@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.transfer;
 
+import com.mojang.logging.LogUtils;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
+import net.minecraft.Util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -18,8 +20,11 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public final class ResourceHandlerUtil {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     /**
      * A utility method to check both resource and amount to validate if the resource would be empty.
      * <p>
@@ -28,7 +33,11 @@ public final class ResourceHandlerUtil {
      * @see net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
-        return amount <= 0 || resource.isEmpty();
+        if (amount < 0) {
+            Util.logAndPauseIfInIde("Resources should never be less than zero.", new IllegalArgumentException("Amount must be non-negative but was " + amount));
+            return true;
+        }
+        return amount == 0 || resource.isEmpty();
     }
 
     /**
@@ -399,13 +408,13 @@ public final class ResourceHandlerUtil {
             subTransaction.commit();
             return totalMoved;
         } catch (Exception e) {
-            CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
+            CrashReport report = CrashReport.forThrowable(e, "Moving resources between resource handlers");
             //noinspection DataFlowIssue
             report.addCategory("Move details")
-                    .setDetail("Input storage", from::toString)
-                    .setDetail("Output storage", to::toString)
+                    .setDetail("Input", from::toString)
+                    .setDetail("Output", to::toString)
                     .setDetail("Filter", filter::toString)
-                    .setDetail("Max amount", amount)
+                    .setDetail("Amount", amount)
                     .setDetail("Transaction", transaction);
             throw new ReportedException(report);
         }
@@ -465,10 +474,10 @@ public final class ResourceHandlerUtil {
             CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
             //noinspection DataFlowIssue
             report.addCategory("Move details")
-                    .setDetail("Input storage", from::toString)
-                    .setDetail("Output storage", to::toString)
+                    .setDetail("Input", from::toString)
+                    .setDetail("Output", to::toString)
                     .setDetail("Filter", filter::toString)
-                    .setDetail("Max amount", amount)
+                    .setDetail("Amount", amount)
                     .setDetail("Transaction", transaction);
             throw new ReportedException(report);
         }
