@@ -71,21 +71,24 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
-    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.of(EMPTY, 0);
+    public static final MutableResourceStack<ItemResource> EMPTY_MUTABLE_STACK = MutableResourceStack.of(EMPTY, 0);
 
     /**
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
     public static ItemResource invalidateDefault(ItemLike item) {
-        return item.asItem() == Items.AIR ? EMPTY : new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
+        if (item.asItem() == Items.AIR) return EMPTY;
+        return new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
     }
 
     public static ItemResource of(ItemStack itemStack) {
-        if (itemStack.isEmpty())
-            return EMPTY;
+        if (itemStack.isEmpty()) return EMPTY;
+
         if (itemStack.isComponentsPatchEmpty())
             return itemStack.getItem().defaultResource();
+
         return new ItemResource(itemStack.copyWithCount(1));
     }
 
@@ -93,7 +96,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * <strong>Note:</strong> This cannot be called before your item is registered
      */
     public static ItemResource of(ItemLike item) {
-        return item.asItem() == Items.AIR ? EMPTY : item.asItem().defaultResource();
+        if (item.asItem() == Items.AIR) return EMPTY;
+        return item.asItem().defaultResource();
     }
 
     /**
@@ -105,7 +109,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
-     * We wrap an item stack which must never be exposed and/or modified.
+     * We wrap an item stack which must never be modified.
      */
     final ItemStack innerStack;
 
@@ -198,7 +202,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     public ItemStack toStack(int count) {
-        return count == 0 || this.isEmpty() ? ItemStack.EMPTY : this.innerStack.copyWithCount(count);
+        if (count == 0 || this.isEmpty()) return ItemStack.EMPTY;
+        return this.innerStack.copyWithCount(count);
     }
 
     public List<ItemStack> toStacks(int count) {
@@ -228,19 +233,18 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     public ResourceStack<ItemResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK;
-        return new ResourceStack<>(this, amount);
+        return ResourceStack.of(this, amount);
     }
 
     public MutableResourceStack<ItemResource> withMutableAmount(int amount) {
-        // should we have an empty mutable as well?
-        if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK.mutable();
-        return new MutableResourceStack<>(this, amount);
+        if (amount == 0 || isEmpty()) return ItemResource.EMPTY_MUTABLE_STACK;
+        return MutableResourceStack.of(this, amount);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof ItemResource v && ItemStack.isSameItemSameComponents(v.innerStack, innerStack);
+        return obj instanceof ItemResource other && other.is(innerStack);
     }
 
     @Override

@@ -14,7 +14,6 @@ import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
@@ -35,7 +34,7 @@ import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapsho
  * }
  * </pre>
  */
-public final class EnergyBufferComponentHandler implements ISingleEnergyHandler, IEnergyHandlerModifiable {
+public final class EnergyBufferComponentHandler implements ISingleEnergyHandler {
     private final IItemContext itemContext;
     private final MutableDataComponentHolder parent;
     private final DataComponentType<Integer> componentType;
@@ -62,7 +61,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler,
         this.capacity = capacity;
         this.maxInsert = maxInsert;
         this.maxExtract = maxExtract;
-        this.snapshot = IndexedIntSnapshot.of(this, NotificationSnapshot.EMPTY);
+        this.snapshot = IndexedIntSnapshot.of(this::set, this::getAmount, NotificationSnapshot.EMPTY);
     }
 
     private int getIndividualAmount() {

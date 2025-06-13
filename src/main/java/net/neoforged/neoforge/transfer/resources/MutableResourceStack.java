@@ -5,12 +5,9 @@
 
 package net.neoforged.neoforge.transfer.resources;
 
-import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Represents an immutable {@link IResource} and a <b>mutable</b> amount.
@@ -19,80 +16,21 @@ import net.minecraft.network.codec.StreamCodec;
  * This, however, should not be used on things like {@link net.minecraft.core.component.DataComponentType DataComponents} and instead, for that use a {@link ResourceStack} or fully immutable structure.
  */
 public final class MutableResourceStack<T extends IResource> implements IResourceStack<T> {
-    /**
-     * Creates a codec with the resource being a field in the object.
-     * 
-     * <pre>{@code
-     * {
-     *     "resource": {
-     *         "id": "minecraft:water",
-     *         "components": { ... }
-     *     },
-     *     "amount": 1000
-     * }
-     * }</pre>
-     *
-     * @param resourceCodec a codec for the resource
-     * @param <T>           The Resource type
-     * @return A codec for a MutableResourceStack
-     */
-    public static <T extends IResource> Codec<MutableResourceStack<T>> codec(Codec<T> resourceCodec) {
-        return IResourceStack.codec(resourceCodec, MutableResourceStack::new);
+    public static <T extends IResource> MutableResourceStack<T> of(IResourceStack<T> stack) {
+        return MutableResourceStack.of(stack.resource(), stack.amount());
     }
 
-    /**
-     * Creates a codec where the fields for the resource are at the same level as the amount
-     * 
-     * <pre>{@code
-     * {
-     *    "id": "minecraft:water",
-     *    "components": { ... },
-     *    "amount": 1000
-     * }
-     * }</pre>
-     *
-     * @param resourceCodec a codec for the resource
-     * @param <T>           The Resource type
-     * @return A codec for a MutableResourceStack
-     */
-    public static <T extends IResource> Codec<MutableResourceStack<T>> flatCodec(Codec<T> resourceCodec) {
-        return IResourceStack.flatCodec(resourceCodec, MutableResourceStack::new);
-    }
-
-    /**
-     * Creates a standard stream codec for a <strong>mutable</strong> resource stack of the specified resource type.
-     */
-    public static <B extends FriendlyByteBuf, T extends IResource> StreamCodec<B, MutableResourceStack<T>> streamCodec(StreamCodec<? super B, T> resourceCodec) {
-        return IResourceStack.streamCodec(resourceCodec, MutableResourceStack::new);
+    public static <T extends IResource> MutableResourceStack<T> of(T resource, int amount) {
+        return new MutableResourceStack<>(resource, amount);
     }
 
     private final T resource;
     private int amount;
 
-    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, MutableResourceStack<R> resourceStack) {
-        return NonNullList.withSize(count, resourceStack);
-    }
-
-    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, R emptyResource) {
-        return NonNullList.withSize(count, MutableResourceStack.of(emptyResource, 0));
-    }
-
-    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(int count) {
-        return nonNullListOfSize(count, this);
-    }
-
-    public MutableResourceStack(T resource, int amount) {
-        Objects.requireNonNull(resource, "Resource must not be null");
+    private MutableResourceStack(T resource, int amount) {
+        IResourceStack.validate(resource, amount);
         this.resource = resource;
         this.amount = amount;
-    }
-
-    public static <T extends IResource> MutableResourceStack<T> of(IResourceStack<T> stack) {
-        return of(stack.resource(), stack.amount());
-    }
-
-    public static <T extends IResource> MutableResourceStack<T> of(T resource, int amount) {
-        return new MutableResourceStack<>(resource, amount);
     }
 
     @Override
@@ -148,12 +86,12 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      */
     @Override
     public ResourceStack<T> immutable() {
-        return new ResourceStack<>(resource, amount); // Creates a new immutable resource stack with the backing data
+        return ResourceStack.of(resource, amount); // Creates a new immutable resource stack with the backing data
     }
 
     @Override
     public IResourceStack<T> copy() {
-        return of(resource, amount);
+        return MutableResourceStack.of(resource, amount);
     }
 
     @Override
@@ -171,5 +109,17 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     @Override
     public String toString() {
         return "%s(%d)".formatted(resource, amount);
+    }
+
+    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, MutableResourceStack<R> resourceStack) {
+        return NonNullList.withSize(count, resourceStack);
+    }
+
+    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, R emptyResource) {
+        return NonNullList.withSize(count, MutableResourceStack.of(emptyResource, 0));
+    }
+
+    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(int count) {
+        return nonNullListOfSize(count, this);
     }
 }

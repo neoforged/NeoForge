@@ -14,7 +14,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A simple resource handler that wraps an {@link IResourceHandler} and provides a simplified interface without
- * the use of transactions
+ * needing to manually start or stop a transaction.
  * <p>
  * <p>
  * This is intended for use in simple cases where you do not need the full power of the transaction system. It is important to remember, that this is not an IResourceHandler itself.
@@ -25,14 +25,14 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
     /**
      * An index in synonymous with "slot", "tank", "buffer", etc.
      *
-     * @return The number of indices this handler manages.
+     * @return The number of indices this handler manages. <strong>Must be Non-Negative</strong>
      */
     public int size() {
         return handler.size();
     }
 
     /**
-     * @param index The index to get the resource from.
+     * @param index The index to get the resource from. <strong>Must be Non-Negative</strong>
      * @return The resource at the given index.
      */
     public T getResource(int index) {
@@ -40,8 +40,8 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
     }
 
     /**
-     * @param index The index to get the amount from.
-     * @return The amount of the resource at the given index. A range from {@code 0} to {@code 2,147,483,647}
+     * @param index The index to get the amount from. <strong>Must be Non-Negative</strong>
+     * @return The amount of the resource at the given index. <strong>Must be Non-Negative</strong>
      */
     public int getAmount(int index) {
         return handler.getAmount(index);
@@ -52,9 +52,9 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * If an empty resource (an {@link IResource} that returns {@code true} on {@link IResource#isEmpty()}) is provided,
      * then the theoretical maximum should be returned, regardless of the return of {@link #getResource} .
      *
-     * @param index    The index to get the limit from.
+     * @param index    The index to get the limit from. <strong>Must be Non-Negative</strong>
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
-     * @return The limit of the resource at the given index. A range from {@code 0} to {@code 2,147,483,647}
+     * @return The limit of the resource at the given index. <strong>Must be Non-Negative</strong>
      */
     public int getCapacity(int index, T resource) {
         return handler.getCapacity(index, resource);
@@ -63,7 +63,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
     /**
      * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransferAction action)} implementations or general resource querying.
      *
-     * @param index    The index to check.
+     * @param index    The index to check. <strong>Must be Non-Negative</strong>
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
      */
@@ -90,7 +90,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @param index The index to check.
+     * @param index The index to check. <strong>Must be Non-Negative</strong>
      * @return True if the resource can be inserted, false otherwise.
      */
     public boolean supportsInsertion(int index) {
@@ -130,7 +130,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @param index The index to check.
+     * @param index The index to check. <strong>Must be Non-Negative</strong>
      * @return True if the resource can be extracted, false otherwise.
      */
     public boolean supportsExtraction(int index) {
@@ -156,11 +156,11 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
     /**
      * Inserts a given amount of the resource into the handler at the given index.
      *
-     * @param index      The index to insert the resource into.
+     * @param index      The index to insert the resource into. <strong>Must be Non-Negative</strong>
      * @param resource   The resource to insert.
-     * @param amount     The amount of the resource to insert. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount     The amount of the resource to insert. <strong>Must be Non-Negative</strong>
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted. A range from {@code 0} to {@code 2,147,483,647}
+     * @return The amount of the resource that was (or would have been, if simulated) inserted. <strong>Must be Non-Negative</strong>
      */
     public int insert(int index, T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
@@ -177,7 +177,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource   The resource to insert.
-     * @param amount     The amount of the resource to insert. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount     The amount of the resource to insert. <strong>Must be Non-Negative</strong>
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
      * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) inserted.
      */
@@ -192,11 +192,11 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
     /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
-     * @param index      The index to extract the resource from.
+     * @param index      The index to extract the resource from. <strong>Must be Non-Negative</strong>
      * @param resource   The resource to extract.
-     * @param amount     The amount of the resource to extract. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount     The amount of the resource to extract. <strong>Must be Non-Negative</strong>
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
-     * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (<strong>Must be Non-Negative</strong>) of the resource that was (or would have been, if simulated) extracted.
      */
     public int extract(int index, T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {
@@ -213,9 +213,9 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource   The resource to extract.
-     * @param amount     The amount of the resource to extract. A range from {@code 0} to {@code 2,147,483,647}
+     * @param amount     The amount of the resource to extract. <strong>Must be Non-Negative</strong>
      * @param actionType The action to take, whether to simulate the insertion or actually perform it.
-     * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount (<strong>Must be Non-Negative</strong>) of the resource that was (or would have been, if simulated) extracted.
      */
     public int extract(T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = Transaction.open(null)) {

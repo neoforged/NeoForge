@@ -42,7 +42,7 @@ public class ResourceHandlerUtilTests {
             throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
 
-        var workingStack = new ResourceStack<>(Blocks.COBBLESTONE.asItem().defaultResource(), 5000);
+        var workingStack = ResourceStack.of(Blocks.COBBLESTONE.asItem().defaultResource(), 5000);
 
         srcHandler.set(0, ItemResource.EMPTY, 0);
         helper.assertTrue(ResourceHandlerUtil.isEmpty(srcHandler), "The inv was not empty");

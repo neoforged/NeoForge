@@ -10,6 +10,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
@@ -33,11 +34,11 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
     }
 
     public ResourceStorageComponent(int size, T emptyResource) {
-        this(NonNullList.withSize(size, new ResourceStack<>(emptyResource, 0)));
+        this(NonNullList.withSize(size, ResourceStack.of(emptyResource, 0)));
     }
 
-    public static <T extends IResource> Codec<ResourceStorageComponent<T>> codec(Codec<T> resourceCodec) {
-        return NonNullList.codecOf(ResourceStack.codec(resourceCodec)).xmap(ResourceStorageComponent::new, contents -> contents.stacks);
+    public static <T extends IResource> Codec<ResourceStorageComponent<T>> codec(Codec<T> resourceCodec, IStackFactory<T, ResourceStack<T>> stackFactory) {
+        return NonNullList.codecOf(IResourceStack.codec(resourceCodec, stackFactory)).xmap(ResourceStorageComponent::new, contents -> contents.stacks);
     }
 
     public static <T extends IResource> StreamCodec<RegistryFriendlyByteBuf, ResourceStorageComponent<T>> streamCodec(StreamCodec<RegistryFriendlyByteBuf, ResourceStack<T>> resourceCodec) {
@@ -60,7 +61,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
         for (IResourceStack<T> stack : stacks) {
             list.add(stack.immutable());
         }
-        list.set(index, new ResourceStack<>(resource, amount));
+        list.set(index, ResourceStack.of(resource, amount));
         return new ResourceStorageComponent<>(list);
     }
 

@@ -51,7 +51,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
     }
 
     protected int fill(T resource, int count, TransactionContext transaction, int singleItemLimit) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(new ResourceStack<>(resource, singleItemLimit), singleItemLimit));
+        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(ResourceStack.of(resource, singleItemLimit), singleItemLimit));
         return itemContext.exchange(filledContainer, count, transaction);
     }
 }

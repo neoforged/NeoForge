@@ -6,15 +6,15 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters;
 
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.IEnergyContainer;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public record EnergyContainerToHandlerAdapter(
         IEnergyContainer container,
-        IHandleIOBehaviour behavior) implements IEnergyHandlerModifiable {
+        IHandleIOBehaviour behavior) implements IEnergyHandler {
     @Override
     public int size() {
         return container().size();
@@ -123,7 +123,6 @@ public record EnergyContainerToHandlerAdapter(
         return handledAmount;
     }
 
-    @Override
     public void set(int index, int amount) {
         container.set(index, amount);
     }

@@ -127,12 +127,12 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     }
 
     protected int setFull(T resource, int count, int singleItemLimit, TransactionContext transaction) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(new ResourceStack<>(resource, singleItemLimit), singleItemLimit));
+        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(ResourceStack.of(resource, singleItemLimit), singleItemLimit));
         return itemContext.exchange(filledContainer, count, transaction);
     }
 
     protected int setPartial(T resource, int amount, int singleItemLimit, TransactionContext transaction) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(new ResourceStack<>(resource, amount), singleItemLimit));
+        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(ResourceStack.of(resource, amount), singleItemLimit));
         return itemContext.exchange(filledContainer, 1, transaction);
     }
 

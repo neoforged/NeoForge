@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.temp
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters.EnergyContainerSlice;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters.EnergyContainerToHandlerAdapter;
@@ -123,23 +123,23 @@ public interface IEnergyContainer extends IntIterable {
     }
 
     /**
-     * Creates an {@link IEnergyHandlerModifiable} instance that reflects this item holder.
+     * Creates an {@link IEnergyHandler} instance that reflects this item holder.
      *
      * @return The resourceHandler handler.
      */
     @Contract(pure = true)
-    default IEnergyHandlerModifiable asHandler() {
+    default IEnergyHandler asHandler() {
         return asHandler(IHandleIOBehaviour.DEFAULT);
     }
 
     /**
-     * Creates an {@link IEnergyHandlerModifiable} instance that reflects this container with a specification of how to handle what slots can be inserted or extracted.
+     * Creates an {@link IEnergyHandler} instance that reflects this container with a specification of how to handle what slots can be inserted or extracted.
      *
      * @param behavior The behavior of the resource handler
      * @return The energy handler.
      */
     @Contract(pure = true)
-    default IEnergyHandlerModifiable asHandler(IHandleIOBehaviour behavior) {
+    default IEnergyHandler asHandler(IHandleIOBehaviour behavior) {
         return new EnergyContainerToHandlerAdapter(this, behavior);
     }
 

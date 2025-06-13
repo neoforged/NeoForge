@@ -6,10 +6,8 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters;
 
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.IEnergyContainer;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
 /**
@@ -41,15 +39,10 @@ public record EnergyHandlerToContainerAdapter(
 
     @Override
     public void set(int index, int value) {
-        if (wrappedHandler instanceof IEnergyHandlerModifiable modifiable) {
-            modifiable.set(index, value);
-            return;
+        if (wrappedHandler instanceof EnergyContainerToHandlerAdapter internal) {
+            internal.set(index, value);
         }
-
-        try (var transaction = Transaction.open(Transaction.ROOT)) {
-            wrappedHandler.extract(index, Integer.MAX_VALUE, transaction);
-            wrappedHandler.insert(index, value, transaction);
-        }
+        //todo assume we can't as transactions cannot be necessarly opened here
     }
 
     @Override
@@ -63,7 +56,7 @@ public record EnergyHandlerToContainerAdapter(
     }
 
     @Override
-    public IEnergyHandlerModifiable asHandler() {
-        return wrappedHandler instanceof IEnergyHandlerModifiable modifiable ? modifiable : IEnergyContainer.super.asHandler();
+    public IEnergyHandler asHandler() {
+        return IEnergyContainer.super.asHandler();
     }
 }

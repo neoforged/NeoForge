@@ -5,12 +5,10 @@
 
 package net.neoforged.neoforge.transfer;
 
-import com.mojang.logging.LogUtils;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
-import net.minecraft.Util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -20,11 +18,8 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public final class ResourceHandlerUtil {
-    private static final Logger LOGGER = LogUtils.getLogger();
-
     /**
      * A utility method to check both resource and amount to validate if the resource would be empty.
      * <p>
@@ -34,8 +29,11 @@ public final class ResourceHandlerUtil {
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         if (amount < 0) {
-            Util.logAndPauseIfInIde("Resources should never be less than zero.", new IllegalArgumentException("Amount must be non-negative but was " + amount));
-            return true;
+            CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Resource amount was negative");
+            report.addCategory("ResourceHandler#isEmpty")
+                    .setDetail("Resource", resource)
+                    .setDetail("Amount", amount);
+            throw new ReportedException(report);
         }
         return amount == 0 || resource.isEmpty();
     }

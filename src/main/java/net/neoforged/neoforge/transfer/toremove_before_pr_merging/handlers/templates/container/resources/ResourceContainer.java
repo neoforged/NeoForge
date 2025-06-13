@@ -16,9 +16,11 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -62,6 +64,7 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     private final int size;
     private final int capacity;
 
+    //TODO consider changing this to MutableResourceStack for the Default
     /**
      * @param resourceStacks  The backing list of stacks that are stored. This is what is snapshotted
      * @param defaultResource The resource that should fill the backing list given a reset or clear
@@ -91,16 +94,16 @@ public class ResourceContainer<T extends IResource> implements IResourceContaine
     }
 
     public static final class Codecs {
-        public static <TAttachment, TResource extends IResource> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<TResource>>> resourcesOf(String key, Codec<TResource> codec, Function<TAttachment, IResourceContainer<TResource>> containerToStackList) {
-            return NonNullList.codecOf(MutableResourceStack.flatCodec(codec)).fieldOf(key).forGetter(attachment -> containerToStackList.apply(attachment).copyToList());
+        public static <TAttachment, TResource extends IResource> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<TResource>>> resourcesOf(String key, Codec<TResource> codec, Function<TAttachment, IResourceContainer<TResource>> containerToStackList, IStackFactory<TResource, MutableResourceStack<TResource>> stackFactory) {
+            return NonNullList.codecOf(IResourceStack.flatCodec(codec, stackFactory)).fieldOf(key).forGetter(attachment -> containerToStackList.apply(attachment).copyToList());
         }
 
         public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<ItemResource>>> itemsOf(String key, Function<TAttachment, IResourceContainer<ItemResource>> containerToStackList) {
-            return resourcesOf(key, ItemResource.OPTIONAL_CODEC, containerToStackList);
+            return resourcesOf(key, ItemResource.OPTIONAL_CODEC, containerToStackList, ItemResource::withMutableAmount);
         }
 
         public static <TAttachment> RecordCodecBuilder<TAttachment, NonNullList<MutableResourceStack<FluidResource>>> fluidsOf(String key, Function<TAttachment, IResourceContainer<FluidResource>> containerToStackList) {
-            return resourcesOf(key, FluidResource.OPTIONAL_CODEC, containerToStackList);
+            return resourcesOf(key, FluidResource.OPTIONAL_CODEC, containerToStackList, FluidResource::withMutableAmount);
         }
     }
 

@@ -8,14 +8,17 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.BiFunction;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import net.neoforged.neoforge.transfer.IStackFactory;
 
 /**
  * Represents the underlying instruction set for mutable and immutable resource stacks.
@@ -41,12 +44,12 @@ public interface IResourceStack<T extends IResource> {
      * @param <R>           the resource type
      * @return a codec for a resource stack
      */
-    static <R extends IResource, S extends IResourceStack<R>> Codec<S> codec(Codec<R> resourceCodec, BiFunction<R, Integer, S> factory) {
+    static <R extends IResource, S extends IResourceStack<R>> Codec<S> codec(Codec<R> resourceCodec, IStackFactory<R, S> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(IResourceStack<R>::resource),
                 NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
                         .forGetter(IResourceStack<R>::amount))
-                .apply(instance, factory));
+                .apply(instance, factory::create));
     }
 
     /**
@@ -65,22 +68,36 @@ public interface IResourceStack<T extends IResource> {
      * @param <R>           The resource type
      * @return Codec for the specified IResourceStack implementer
      */
-    static <R extends IResource, S extends IResourceStack<R>> Codec<S> flatCodec(Codec<R> resourceCodec, BiFunction<R, Integer, S> factory) {
+    static <R extends IResource, S extends IResourceStack<R>> Codec<S> flatCodec(Codec<R> resourceCodec, IStackFactory<R, S> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 MapCodec.assumeMapUnsafe(resourceCodec).forGetter(IResourceStack<R>::resource),
                 NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
                         .forGetter(IResourceStack<R>::amount))
-                .apply(instance, factory));
+                .apply(instance, factory::create));
     }
 
     /**
      * Creates a standard stream codec for a IResourceStack implementer of the specified resource type.
      */
-    static <B extends FriendlyByteBuf, R extends IResource, S extends IResourceStack<R>> StreamCodec<B, S> streamCodec(StreamCodec<? super B, R> resourceCodec, BiFunction<R, Integer, S> factory) {
+    static <B extends FriendlyByteBuf, R extends IResource, S extends IResourceStack<R>> StreamCodec<B, S> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, S> factory) {
         return StreamCodec.composite(
                 resourceCodec, IResourceStack::resource,
                 ByteBufCodecs.VAR_INT, IResourceStack::amount,
-                factory);
+                factory::create);
+    }
+
+    /**
+     * Ensures the resource is not null and the amount is non-negative, throws otherwise.
+     */
+    static void validate(IResource resource, int amount) {
+        Objects.requireNonNull(resource, "Resource must not be null");
+        if (amount >= 0) return;
+
+        CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Amount for IResourceStack was negative");
+        report.addCategory("IResourceStack")
+                .setDetail("Resource", resource)
+                .setDetail("Amount", amount);
+        throw new ReportedException(report);
     }
 
     /**
@@ -91,7 +108,6 @@ public interface IResourceStack<T extends IResource> {
     /**
      * @return the amount currently set in the stack
      */
-
     int amount();
 
     /**
@@ -117,6 +133,7 @@ public interface IResourceStack<T extends IResource> {
     IResourceStack<T> with(UnaryOperator<T> operator);
 
     // These methods allow a simple helper to reduce unnecessary allocation if they are already an instance of the correct type, otherwise, a new one is created.
+
     /**
      * @return a mutable resource stack that allows the amount to be changeable without the underlying resource data being set.
      */

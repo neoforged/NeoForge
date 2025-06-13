@@ -21,7 +21,6 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.energy.IEnergyHandlerModifiable;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Unlike the {@link EnergyBufferComponentHandler}, the handler also is the attachment data.
  */
-public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
+public final class EnergyBufferAttachment implements IEnergyHandler {
     public static Codec<EnergyBufferAttachment> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("size").forGetter(data -> data.size),
             Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity),
@@ -138,7 +137,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
             if (energy[i] < 0) throw new IllegalArgumentException("Energy at index " + i + " must be non-negative");
             this.energy[i] = Math.max(0, Math.min(capacity, energy[i]));
         }
-        this.snapshots = IndexedIntSnapshot.listOf(this, SetChangedSnapshot.of(this::onSetChanged), size);
+        this.snapshots = IndexedIntSnapshot.listOf(this::set, this::getAmount, SetChangedSnapshot.of(this::onSetChanged), size);
     }
 
     //Attachment building methods
@@ -257,8 +256,7 @@ public final class EnergyBufferAttachment implements IEnergyHandlerModifiable {
         return maxExtract > 0;
     }
 
-    @Override
-    public void set(int index, int amount) {
+    private void set(int index, int amount) {
         //blind trust that the index is in bounds when using modifiable
         energy[index] = Mth.clamp(amount, 0, capacity);
     }

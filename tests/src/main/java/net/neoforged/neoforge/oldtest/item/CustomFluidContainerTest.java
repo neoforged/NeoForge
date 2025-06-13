@@ -33,7 +33,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCon
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
 
 @Mod(CustomFluidContainerTest.MOD_ID)
 public class CustomFluidContainerTest {
@@ -45,8 +45,8 @@ public class CustomFluidContainerTest {
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
-            .persistent(ItemContextResourceHandler.Component.codec(ResourceStack.flatCodec(FluidResource.OPTIONAL_CODEC)))
-            .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(ResourceStack.streamCodec(FluidResource.STREAM_CODEC))).build());
+            .persistent(ItemContextResourceHandler.Component.codec(IResourceStack.flatCodec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount)))
+            .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount))).build());
 
     public CustomFluidContainerTest(IEventBus modEventBus) {
         if (ENABLED) {

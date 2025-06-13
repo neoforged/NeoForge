@@ -28,6 +28,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextRe
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.testframework.TestFramework;
@@ -65,26 +66,26 @@ public record ResourceHandlerTestSetup() {
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
                 "simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
-                        .persistent(ItemContextResourceHandler.Component.codec(ResourceStack.codec(FluidResource.OPTIONAL_CODEC)))
-                        .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(ResourceStack.streamCodec(FluidResource.STREAM_CODEC)))
+                        .persistent(ItemContextResourceHandler.Component.codec(IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount)))
+                        .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)))
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<ItemResource>>> SINGLE_ITEM_CONTENT = Registry.COMPONENTS.register(
                 "simple_item_content", () -> DataComponentType.<ResourceStack<ItemResource>>builder()
-                        .persistent(ResourceStack.codec(ItemResource.OPTIONAL_CODEC))
-                        .networkSynchronized(ResourceStack.streamCodec(ItemResource.STREAM_CODEC))
+                        .persistent(IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount))
+                        .networkSynchronized(IResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount))
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<FluidResource>>> FLUID_STORAGE_COMPONENT = Registry.COMPONENTS.register(
                 "fluid_storage", () -> DataComponentType.<ResourceStorageComponent<FluidResource>>builder()
-                        .persistent(ResourceStorageComponent.codec(FluidResource.OPTIONAL_CODEC))
-                        .networkSynchronized(ResourceStorageComponent.streamCodec(ResourceStack.streamCodec(FluidResource.STREAM_CODEC)))
+                        .persistent(ResourceStorageComponent.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount))
+                        .networkSynchronized(ResourceStorageComponent.streamCodec(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)))
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<ItemResource>>> ITEM_STORAGE_COMPONENT = Registry.COMPONENTS.register(
                 "item_storage", () -> DataComponentType.<ResourceStorageComponent<ItemResource>>builder()
-                        .persistent(ResourceStorageComponent.codec(ItemResource.OPTIONAL_CODEC))
-                        .networkSynchronized(ResourceStorageComponent.streamCodec(ResourceStack.streamCodec(ItemResource.STREAM_CODEC)))
+                        .persistent(ResourceStorageComponent.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount))
+                        .networkSynchronized(ResourceStorageComponent.streamCodec(IResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount)))
                         .build());
     }
 

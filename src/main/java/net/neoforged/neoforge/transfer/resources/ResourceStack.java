@@ -5,77 +5,41 @@
 
 package net.neoforged.neoforge.transfer.resources;
 
-import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
  * Represents an immutable {@link IResource} and an amount.
  * Can be seen as an immutable version of {@link ItemStack} or {@link FluidStack}.
- *
- * @param <T> the held resource type
  */
-public record ResourceStack<T extends IResource>(T resource, int amount) implements IResourceStack<T> {
-    public ResourceStack {
-        Objects.requireNonNull(resource, "Resource must not be null");
-    }
-
-    /**
-     * Creates a codec with the resource being a field in the object.
-     *
-     * <pre>{@code
-     * {
-     *     "resource": {
-     *         "id": "minecraft:water",
-     *         "components": { ... }
-     *     },
-     *     "amount": 1000
-     * }
-     * }</pre>
-     *
-     * @param resourceCodec a codec for the resource
-     * @param <T>           the resource type
-     * @return a codec for a resource stack
-     */
-    public static <T extends IResource> Codec<ResourceStack<T>> codec(Codec<T> resourceCodec) {
-        return IResourceStack.codec(resourceCodec, ResourceStack::new);
-    }
-
-    /**
-     * Creates a codec where the fields for the resource are at the same level as the amount
-     *
-     * <pre>{@code
-     * {
-     *    "id": "minecraft:water",
-     *    "components": { ... },
-     *    "amount": 1000
-     * }
-     * }</pre>
-     *
-     * @param <T> The resource type
-     * @return A flat codec that represents the ResourceStack
-     */
-    public static <T extends IResource> Codec<ResourceStack<T>> flatCodec(Codec<T> resourceCodec) {
-        return IResourceStack.flatCodec(resourceCodec, ResourceStack::new);
-    }
-
-    /**
-     * Creates a standard stream codec for a resource stack of the specified resource type.
-     */
-    public static <B extends FriendlyByteBuf, T extends IResource> StreamCodec<B, ResourceStack<T>> streamCodec(StreamCodec<? super B, T> resourceCodec) {
-        return IResourceStack.streamCodec(resourceCodec, ResourceStack::new);
-    }
-
+public final class ResourceStack<T extends IResource> implements IResourceStack<T> {
     public static <T extends IResource> ResourceStack<T> of(IResourceStack<T> stack) {
-        return of(stack.resource(), stack.amount());
+        return ResourceStack.of(stack.resource(), stack.amount());
     }
 
     public static <T extends IResource> ResourceStack<T> of(T resource, int amount) {
         return new ResourceStack<>(resource, amount);
+    }
+
+    private final T resource;
+    private final int amount;
+
+    private ResourceStack(T resource, int amount) {
+        IResourceStack.validate(resource, amount);
+        this.resource = resource;
+        this.amount = amount;
+    }
+
+    @Override
+    public T resource() {
+        return resource;
+    }
+
+    @Override
+    public int amount() {
+        return amount;
     }
 
     /**
@@ -83,7 +47,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
      */
     @Override
     public ResourceStack<T> withAmount(int newAmount) {
-        return new ResourceStack<>(resource, newAmount);
+        return ResourceStack.of(resource, newAmount);
     }
 
     /**
@@ -107,7 +71,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
      */
     @Override
     public ResourceStack<T> with(UnaryOperator<T> operator) {
-        return new ResourceStack<>(operator.apply(resource), amount);
+        return ResourceStack.of(operator.apply(resource), amount);
     }
 
     @Override
@@ -140,7 +104,7 @@ public record ResourceStack<T extends IResource>(T resource, int amount) impleme
 
     @Override
     public IResourceStack<T> copy() {
-        return of(resource, amount);
+        return ResourceStack.of(resource, amount);
     }
 
     @Override

@@ -326,7 +326,7 @@ public final class FluidStack implements MutableDataComponentHolder {
     }
 
     public ResourceStack<FluidResource> immutable() {
-        return this.isEmpty() ? FluidResource.EMPTY_STACK : new ResourceStack<>(FluidResource.of(this), this.amount);
+        return FluidResource.of(this).withAmount(amount);
     }
 
     /**

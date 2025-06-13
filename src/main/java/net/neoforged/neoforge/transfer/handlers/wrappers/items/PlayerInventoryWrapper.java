@@ -48,6 +48,8 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         EquipmentSlot slot = getEquipmentSlot(index);
         return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
     }
+    //TODO We likely need to handle the scenario of can Unequip. Considering something like the enchantment. The resource already has the method
+    // we just need the context
 
     private final DroppedItems droppedItems = new DroppedItems();
     private final Inventory inventory;

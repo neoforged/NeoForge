@@ -98,7 +98,7 @@ public class FluidUtilTest {
     private static void handlerInteractionWithItem(ExtendedGameTestHelper helper) {
         var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         var player = helper.makeMockPlayer();
-        var waterOf1BucketAmount = new ResourceStack<>(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
+        var waterOf1BucketAmount = ResourceStack.of(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
 
         if (!(helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null) instanceof IResourceHandlerModifiable<FluidResource> handler)) {
             throw helper.assertionException("The returned capability was not a Modifiable resource handler");

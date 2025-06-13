@@ -40,15 +40,14 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
     // returns the handler index for the index
     protected int getHandlerIndex(int index) {
-        if (index < 0)
-            return -1;
+        if (index < 0) throw new IndexOutOfBoundsException();
 
         for (int i = 0; i < baseIndex.length; i++) {
             if (index - baseIndex[i] < 0) {
                 return i;
             }
         }
-        return -1;
+        throw new IndexOutOfBoundsException();
     }
 
     protected IResourceHandler<T> getHandlerFromIndex(int index) {

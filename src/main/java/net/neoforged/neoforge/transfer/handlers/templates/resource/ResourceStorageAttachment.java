@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
@@ -31,8 +32,8 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
         this.hashCode = IResourceStack.hashCode(stacks);
     }
 
-    public static <T extends IResource> Codec<ResourceStorageAttachment<T>> codec(Codec<T> resourceCodec) {
-        return NonNullList.codecOf(MutableResourceStack.codec(resourceCodec)).xmap(ResourceStorageAttachment::new, contents -> contents.stacks);
+    public static <T extends IResource> Codec<ResourceStorageAttachment<T>> codec(Codec<T> resourceCodec, IStackFactory<T, MutableResourceStack<T>> stackFactory) {
+        return NonNullList.codecOf(IResourceStack.codec(resourceCodec, stackFactory)).xmap(ResourceStorageAttachment::new, contents -> contents.stacks);
     }
 
     public static <T extends IResource> StreamCodec<FriendlyByteBuf, ResourceStorageAttachment<T>> streamCodec(StreamCodec<FriendlyByteBuf, MutableResourceStack<T>> resourceCodec) {
