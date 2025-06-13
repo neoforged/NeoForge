@@ -7,18 +7,32 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 
-public abstract class HopperJournal extends SnapshotJournal<Boolean> {
-    public abstract void set(boolean value);
+public final class HopperJournal extends SnapshotJournal<Boolean> {
+    private final Revert setter;
+    private final Snapshot getter;
 
-    public abstract boolean get();
+    public HopperJournal(Revert setter, Snapshot getter) {
+        this.setter = setter;
+        this.getter = getter;
+    }
+
+    @FunctionalInterface
+    public interface Revert {
+        void set(boolean value);
+    }
+
+    @FunctionalInterface
+    public interface Snapshot {
+        boolean get();
+    }
 
     @Override
     protected Boolean createSnapshot() {
-        return get();
+        return getter.get();
     }
 
     @Override
     protected void revertToSnapshot(Boolean snapshot) {
-        set(snapshot);
+        setter.set(snapshot);
     }
 }

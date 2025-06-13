@@ -1,21 +1,12 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,41 @@
+@@ -82,6 +_,32 @@
          p_59316_.limitSize(this.getMaxStackSize(p_59316_));
      }
  
 +    // Neo: Update cooldown after insertion into hopper
 +    private boolean insertingFlag = false;
-+    private final net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal journal = new net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal() {
-+        @Override
-+        public void set(boolean value) {
-+            insertingFlag = value;
-+        }
-+        @Override
-+        public boolean get() {
-+            return insertingFlag;
-+        }
-+    };
++    private final net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal journal = new net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal(value -> insertingFlag = value, () -> insertingFlag);
 +
 +    @Override
 +    public void onCommit(int slot, ItemStack originalStack) {
