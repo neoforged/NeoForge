@@ -66,7 +66,7 @@ public class SimpleItemContext implements IItemContext {
     public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
         int currentAmount = getAmount();
         if (amount >= currentAmount) {
-            //snapshot is handled by the handler itself
+            //TODO this does not handle snapshots correctly
             mainHandler.set(index, resource, currentAmount);
             return currentAmount;
         }

@@ -24,7 +24,7 @@ public class OneByOneItemContext implements IItemContext {
 
     @Override
     public int getAmount() {
-        return Math.max(1, itemContext.getAmount());
+        return Math.min(1, itemContext.getAmount());
     }
 
     @Override
