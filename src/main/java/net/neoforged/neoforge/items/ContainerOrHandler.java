@@ -20,6 +20,7 @@ public record ContainerOrHandler(
     }
 
     public static ContainerOrHandler container(Container container) {
+        //noinspection ConstantValue This is to mitigate user error. These should NEVER be null, but if they are we should stop.
         if (container == null) {
             throw new IllegalArgumentException("Cannot have a null specified container");
         }
@@ -27,6 +28,7 @@ public record ContainerOrHandler(
     }
 
     public static ContainerOrHandler handler(IResourceHandler<ItemResource> itemHandler) {
+        //noinspection ConstantValue This is to mitigate user error. These should NEVER be null, but if they are we should stop.
         if (itemHandler == null) {
             throw new IllegalArgumentException("Cannot have a null specified resource handler");
         }

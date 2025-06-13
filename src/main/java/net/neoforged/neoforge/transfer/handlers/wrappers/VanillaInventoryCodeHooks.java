@@ -84,16 +84,6 @@ public class VanillaInventoryCodeHooks {
         return false;
     }
 
-//    private static boolean isFull(IItemHandler itemHandler) {
-//        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-//            ItemStack stackInSlot = itemHandler.getStackInSlot(slot);
-//            if (stackInSlot.isEmpty() || stackInSlot.getCount() < itemHandler.getSlotLimit(slot)) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-
     public static ContainerOrHandler getEntityContainerOrHandler(Level level, double x, double y, double z, @Nullable Direction side) {
         List<Entity> list = level.getEntities(
                 (Entity) null,
@@ -108,13 +98,13 @@ public class VanillaInventoryCodeHooks {
         if (!list.isEmpty()) {
             var entity = list.get(level.random.nextInt(list.size()));
             if (entity instanceof Container container) {
-                return ContainerOrHandler.container(container);//new ContainerOrHandler(container, null);
+                return ContainerOrHandler.container(container);
             }
             IResourceHandler<ItemResource> entityCap = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side);
             if (entityCap != null) { // Could be null even if it wasn't in the entity predicate above.
-                return ContainerOrHandler.handler(entityCap);//new ContainerOrHandler(null, entityCap);
+                return ContainerOrHandler.handler(entityCap);
             }
         }
-        return ContainerOrHandler.EMPTY; //Optional.empty();
+        return ContainerOrHandler.EMPTY;
     }
 }

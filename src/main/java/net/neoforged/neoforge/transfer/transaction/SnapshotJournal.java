@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A journal that modifies itself during transactions,
@@ -39,8 +41,10 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
 public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
+    //NEO: Remove after migrations have been established. This is more for info really.
     private static int DEEPEST_LAYER = -1;
-
+    @Nullable
+    private static SnapshotJournal<?> DEEPEST_SNAPSHOT = null;
     private final ArrayList<T> snapshots = new ArrayList<>();
 
     @Nullable
@@ -61,7 +65,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      * Signals that the snapshot will not be used anymore, and is safe to cache for next calls to {@link #createSnapshot},
      * or discard entirely.
      */
-    protected void releaseSnapshot(T snapshot) {}
+    protected void releaseSnapshot(T snapshot) { }
 
     /**
      * Called after an outer transaction succeeded,
@@ -73,7 +77,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
      * @see net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot SetChangedSnapShot
      */
-    protected void onCommit(T originalState) {}
+    protected void onCommit(T originalState) { }
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
@@ -102,7 +106,11 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     public void onClose(TransactionContext transaction, Transaction.Result result) {
         //NEO: for testing and will be removed after deprecation period is over for handler reworks.
         // This is to provide a quick way to give some metrics during the migration phase
-        DEEPEST_LAYER = Math.max(DEEPEST_LAYER, transaction.nestingDepth());
+        var max = Math.max(DEEPEST_LAYER, transaction.nestingDepth());
+        if (max != DEEPEST_LAYER) {
+            DEEPEST_LAYER = max;
+            DEEPEST_SNAPSHOT = this;
+        }
         // Get and remove the relevant snapshot.
         T snapshot = snapshots.remove(transaction.nestingDepth());
 
@@ -129,6 +137,22 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
             // There is already an older snapshot at the nesting level above, just release the newer one.
             releaseSnapshot(snapshot);
         }
+    }
+
+    /**
+     * @return The deepest nested layer from any transaction over the lifetime of the runtime. This is intended to identify some possible changes needed after migration.
+     */
+    @Deprecated
+    @ApiStatus.Internal
+    public static int getDeepestLayer() {
+        return DEEPEST_LAYER;
+    }
+
+    @Deprecated
+    @ApiStatus.Internal
+    public static String getDeepestSnapshot() {
+        if(DEEPEST_SNAPSHOT == null) return "Nothing";
+        return DEEPEST_SNAPSHOT.getClass().toString();
     }
 
     @Override

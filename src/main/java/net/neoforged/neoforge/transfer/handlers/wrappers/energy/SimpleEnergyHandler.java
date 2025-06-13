@@ -80,10 +80,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int extract(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
-            try (var sub = transaction.open()) {
-                //...
-            }
+        try (Transaction transaction = TransactionManager.open()) {
             int extracted = handler.extract(index, amount, transaction);
             actionType.commit(transaction);
             return extracted;
