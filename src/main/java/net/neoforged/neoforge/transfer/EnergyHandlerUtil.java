@@ -41,7 +41,7 @@ public final class EnergyHandlerUtil {
     }
 
     public static boolean canAcceptEnergy(IEnergyHandler handler) {
-        try (var transaction = TransactionManager.open()) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             return handler.insert(1, transaction) > 0;
         }
     }
@@ -97,15 +97,14 @@ public final class EnergyHandlerUtil {
         if (from == null || to == null) return 0;
 
         try (var subTransaction = TransactionManager.open(transaction)) {
-            var handledAmount = 0;
+            var simulatedResult = 0;
             try (var simulate = TransactionManager.open(subTransaction)) {
-                var extracted = from.extract(amount, simulate);
-                var inserted = to.insert(extracted, simulate);
-                handledAmount = Math.min(extracted, inserted);
+                simulatedResult = from.extract(amount, simulate);
             }
 
-            var extracted = from.extract(handledAmount, subTransaction);
-            if (to.insert(extracted, subTransaction) == extracted) {
+            var inserted = to.insert(simulatedResult, subTransaction);
+            var extracted = from.extract(inserted, subTransaction);
+            if (extracted == inserted) {
                 subTransaction.commit();
                 return extracted;
             }

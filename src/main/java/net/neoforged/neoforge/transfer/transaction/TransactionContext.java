@@ -19,6 +19,7 @@ public interface TransactionContext {
      * @return A child transaction of this transaction.
      * @throws IllegalStateException Transaction is already closed
      */
+    @Deprecated
     default Transaction open() {
         return TransactionManager.open(this);
     }

@@ -47,9 +47,9 @@ public static void demonstration(IResourceHandler<FluidResource> handler) {
 
     // If we wanted to chain some transactions for a more involved query:
     // I'll summarize what this does after, but try to see if it is clear enough to you first
-    try (var transaction = TransactionManager.open()) {
+    try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
         var value = 0;
-        try (var innerCheck = transaction.open()) {
+        try (var innerCheck = TransactionManager.open(transaction)) {
             value = ResourceHandlerUtil.extract(handler, FluidResource.of(Fluids.WATER), innerCheck);
             innerCheck.commit();
         }

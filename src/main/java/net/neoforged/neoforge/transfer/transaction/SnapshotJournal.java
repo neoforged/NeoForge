@@ -139,7 +139,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     }
 
     /**
-     * @return The deepest nested layer from any transaction over the lifetime of the runtime. This is intended to identify some possible changes needed after migration.
+     * @return The deepest nested layer from any transaction over the lifetime of the runtime. This is intended to identify some possible changes needed after migration. Not used outside Neo.
      */
     @Deprecated
     @ApiStatus.Internal
@@ -147,6 +147,9 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         return DEEPEST_LAYER;
     }
 
+    /**
+     * @return The deepest nested layer from any transaction over the lifetime of the runtime. This is intended to identify some possible changes needed after migration. Not used outside Neo.
+     */
     @Deprecated
     @ApiStatus.Internal
     public static String getDeepestSnapshot() {

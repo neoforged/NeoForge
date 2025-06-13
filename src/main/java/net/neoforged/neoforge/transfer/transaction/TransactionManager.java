@@ -25,6 +25,7 @@ public final class TransactionManager {
      *
      * @throws IllegalStateException A root transaction is already active on the current thread.
      */
+    @Deprecated
     public static Transaction open() {
         return TransactionManagerImpl.MANAGERS.get().open(null);
     }
