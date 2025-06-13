@@ -148,7 +148,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @param index       The index to insert into. <strong>Must be non-negative</strong>
      * @param amount      The value to insert. <strong>Must be non-negative</strong>
-     * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed. * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
+     * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      */
     int insert(int index, int amount, TransactionContext transaction);
@@ -162,7 +162,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * but rather reuse the logic already checked. See {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment#insert(int, TransactionContext) EnergyBuffer.insertCommon} for a reference of an implementation.
      *
      * @param amount      The amount to insert.
-     * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed. * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
+     * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
+     * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
      */
     int insert(int amount, TransactionContext transaction);
 

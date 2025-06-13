@@ -503,24 +503,6 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Moves a resource from one {@link IResourceHandler} to another.
-     *
-     * @param from        The source handler. May be null.
-     * @param to          The target handler. May be null.
-     *                    Only resources for which this filter returns {@code true} will be transferred.
-     *                    This filter will never be tested with an empty resource, and filters are encouraged to throw an
-     *                    exception if this guarantee is violated.
-     * @param amount      The maximum amount that will be transferred.
-     * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
-     * @param <T>         The type of resources to move.
-     * @return The total amount of resources that was successfully transferred.
-     * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
-     */
-    public static <T extends IResource> int move(IResourceHandler<T> from, IResourceHandler<T> to, int amount, @Nullable TransactionContext transaction) {
-        return move(from, to, Predicate.not(IResource::isEmpty), amount, transaction);
-    }
-
-    /**
      * @return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise
      */
     public static <T extends IResource> boolean contains(IResourceHandler<T> handler, T resource) {

@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Objects;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A journal that modifies itself during transactions,
@@ -65,7 +64,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      * Signals that the snapshot will not be used anymore, and is safe to cache for next calls to {@link #createSnapshot},
      * or discard entirely.
      */
-    protected void releaseSnapshot(T snapshot) { }
+    protected void releaseSnapshot(T snapshot) {}
 
     /**
      * Called after an outer transaction succeeded,
@@ -77,7 +76,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
      * @see net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot SetChangedSnapShot
      */
-    protected void onCommit(T originalState) { }
+    protected void onCommit(T originalState) {}
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
@@ -151,7 +150,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     @Deprecated
     @ApiStatus.Internal
     public static String getDeepestSnapshot() {
-        if(DEEPEST_SNAPSHOT == null) return "Nothing";
+        if (DEEPEST_SNAPSHOT == null) return "Nothing";
         return DEEPEST_SNAPSHOT.getClass().toString();
     }
 

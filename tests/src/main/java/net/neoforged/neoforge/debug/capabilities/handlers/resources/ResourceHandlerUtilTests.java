@@ -50,15 +50,15 @@ public class ResourceHandlerUtilTests {
         srcHandler.set(0, workingStack.resource(), workingStack.amount());
         helper.assertTrue(ResourceHandlerUtil.resourceAndCountMatches(srcHandler, 0, workingStack.resource(), workingStack.amount()), "Cobblestone in the inv did not match");
 
-        helper.assertTrue(ResourceHandlerUtil.move(srcHandler, dstHandler, workingStack.amount(), TransactionContext.ROOT) == 0, "Nothing should have moved");
+        helper.assertTrue(ResourceHandlerUtil.move(srcHandler, dstHandler, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT) == 0, "Nothing should have moved");
 
         srcHandler.set(10, workingStack.resource(), workingStack.amount());
 
-        var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, workingStack.amount(), TransactionContext.ROOT);
+        var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT);
         helper.assertTrue(workingStack.amount() == amountMoved, "Did not move everything. Should have moved all 5000 cobble to it (to void), moved " + amountMoved);
 
         var infiniteStackHandler = new InfiniteResourceHandler<>(workingStack.resource());
-        var amountTest = ResourceHandlerUtil.move(infiniteStackHandler, dstHandler, workingStack.amount(), TransactionContext.ROOT);
+        var amountTest = ResourceHandlerUtil.move(infiniteStackHandler, dstHandler, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT);
         helper.assertValueEqual(amountTest, 10 * workingStack.resource().getMaxStackSize(), "the destination to hold 10 stacks. That evaluates");
 
         dstHandler.set(10, workingStack.resource(), workingStack.amount());

@@ -12,7 +12,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +34,16 @@ public final class EnergyHandlerUtil {
             sum += handler.getAmount(i);
         }
         return sum;
+    }
+
+    public static boolean isEmpty(IEnergyHandler handler) {
+        return getAmount(handler) == 0;
+    }
+
+    public static boolean canAcceptEnergy(IEnergyHandler handler) {
+        try (var transaction = TransactionManager.open()) {
+            return handler.insert(1, transaction) > 0;
+        }
     }
 
     /**
@@ -82,50 +91,32 @@ public final class EnergyHandlerUtil {
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
     public static int move(
-            @Nullable IEnergyHandler from,
-            @Nullable IEnergyHandler to,
+            @Nullable IEnergyHandler from, @Nullable IEnergyHandler to,
             int amount,
             @Nullable TransactionContext transaction) {
         if (from == null || to == null) return 0;
 
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
-            int totalMoved = 0;
-            int size = from.size();
-
-            for (int index = 0; index < size; ++index) {
-                // check how much can be extracted
-                int maxExtracted;
-                try (var simulatedExtract = TransactionManager.open(subTransaction)) {
-                    maxExtracted = from.extract(index, amount - totalMoved, simulatedExtract);
-                }
-
-                try (Transaction transferTransaction = TransactionManager.open(subTransaction)) {
-                    // check how much can be inserted
-                    var inserted = to.insert(maxExtracted, transferTransaction);
-
-                    // extract it, or rollback if the amounts don't match
-                    if (from.extract(index, inserted, transferTransaction) == inserted) {
-                        totalMoved += inserted;
-                        transferTransaction.commit();
-                    }
-                }
-
-                if (amount == totalMoved) {
-                    // early return if nothing can be moved anymore
-                    subTransaction.commit();
-                    return totalMoved;
-                }
+        try (var subTransaction = TransactionManager.open(transaction)) {
+            var handledAmount = 0;
+            try (var simulate = subTransaction.open()) {
+                var extracted = from.extract(amount, simulate);
+                var inserted = to.insert(extracted, simulate);
+                handledAmount = Math.min(extracted, inserted);
             }
 
-            subTransaction.commit();
-            return totalMoved;
+            var extracted = from.extract(handledAmount, subTransaction);
+            if (to.insert(extracted, subTransaction) == extracted) {
+                subTransaction.commit();
+                return extracted;
+            }
+            return 0;
         } catch (Exception e) {
-            CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
+            CrashReport report = CrashReport.forThrowable(e, "Moving energy between handlers");
             //noinspection DataFlowIssue
             report.addCategory("Move details")
-                    .setDetail("Input storage", from::toString)
-                    .setDetail("Output storage", to::toString)
-                    .setDetail("Max amount", amount)
+                    .setDetail("Input", from::toString)
+                    .setDetail("Output", to::toString)
+                    .setDetail("Amount", amount)
                     .setDetail("Transaction", transaction);
             throw new ReportedException(report);
         }
