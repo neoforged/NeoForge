@@ -25,8 +25,8 @@ import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandle
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -116,19 +116,19 @@ public class FluidUtilTest {
         resetInventory(player, new ItemStack(Items.BUCKET, 1));
 
         int startingAmount;
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             startingAmount = ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), Integer.MAX_VALUE, transaction);
         }
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
         helper.succeed();

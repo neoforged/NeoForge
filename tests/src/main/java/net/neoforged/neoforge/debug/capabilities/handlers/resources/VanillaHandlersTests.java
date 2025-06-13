@@ -22,8 +22,8 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.IndexItemCont
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -115,17 +115,17 @@ public class VanillaHandlersTests {
         var waterResource = Fluids.WATER.defaultResource();
         var lavaResource = Fluids.LAVA.defaultResource();
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             // Simulate filling with water, and it should only accept 1 bucket
             helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, transaction), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
         }
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             // Can't fill with less than 1000 though...
             helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME - 1, transaction), 0, "Needs at least 1 bucket and will return 1 bucket. Fill result should match");
         }
         helper.assertBlockPresent(Blocks.CAULDRON, cauldronPos);
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
 
             // Excecute tests
             helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME * 2, transaction), FluidType.BUCKET_VOLUME, "Should only allow 1 bucket to be inserted.");
@@ -154,7 +154,7 @@ public class VanillaHandlersTests {
         helper.setBlock(cauldronPos, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
         helper.assertValueEqual(wrapper.getResource(0), waterResource, "Expected water");
         helper.assertValueEqual(wrapper.getAmount(0), 666, "Should match");
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(wrapper.extract(waterResource, FluidType.BUCKET_VOLUME, transaction), 0, "Expected no water drain from partial cauldron");
             helper.assertValueEqual(wrapper.insert(waterResource, FluidType.BUCKET_VOLUME, transaction), 0, "Expected no water fill to partial cauldron");
 
@@ -196,7 +196,7 @@ public class VanillaHandlersTests {
 
         var targetResource = Items.APPLE.defaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = chestHandler.insert(targetResource, 100, transaction);
             helper.assertValueEqual(inserted, 100, "Chest to have received 100 apples");
             transaction.commit();
@@ -205,7 +205,7 @@ public class VanillaHandlersTests {
         var slotHandler = firstChestSlot.getCapability(Capabilities.FluidHandler.ITEM);
         helper.assertNotNull(slotHandler, "The first slot of the chest should be a valid handler");
         assert slotHandler != null;
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = slotHandler.insert(FluidResource.of(Fluids.LAVA), 100, transaction);
             helper.assertValueEqual(inserted, 100, "Apples in slot one should have received 100.");
         }
@@ -214,7 +214,7 @@ public class VanillaHandlersTests {
         var lava = ResourceHandlerUtil.getTotalAmountOf(slotHandler, FluidResource.of(Fluids.LAVA));
         helper.assertValueEqual(lava, 12800, "No extra lava should be stored only what we started with ");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var extracted = chestHandler.extract(targetResource, 10, transaction);
             helper.assertValueEqual(extracted, 10, "Chest to have given 10 apples");
             // revert taking apples
@@ -223,7 +223,7 @@ public class VanillaHandlersTests {
         var amount = ResourceHandlerUtil.getTotalAmountOf(chestHandler, targetResource);
         helper.assertValueEqual(amount, 100, "Chest should have 100 apples");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = slotHandler.insert(FluidResource.of(Fluids.LAVA), 100, transaction);
             helper.assertValueEqual(inserted, 100, "Apples in slot one should have received 100.");
             transaction.commit();
@@ -245,7 +245,7 @@ public class VanillaHandlersTests {
         helper.assertFalse(hopperEntity.isOnCooldown(), "Not committing should mean no cooldown.");
         helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             hopper.insert(ItemResource.of(Items.APPLE), 10, transaction);
             hopper.extract(ItemResource.of(Items.APPLE), 10, transaction);
         }
@@ -253,7 +253,7 @@ public class VanillaHandlersTests {
         helper.assertFalse(hopperEntity.isOnCooldown(), "Not committing should mean no cooldown.");
         helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             hopper.extract(ItemResource.of(Items.APPLE), 10, transaction);
             transaction.commit();
         }
@@ -261,7 +261,7 @@ public class VanillaHandlersTests {
         helper.assertFalse(hopperEntity.isOnCooldown(), "No insert committed should mean no cooldown.");
         helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = hopper.insert(ItemResource.of(Items.APPLE), 10, transaction);
             transaction.commit();
         }

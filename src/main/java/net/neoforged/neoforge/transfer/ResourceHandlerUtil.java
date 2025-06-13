@@ -17,6 +17,7 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 public final class ResourceHandlerUtil {
@@ -160,7 +161,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        try (var tx = Transaction.open(transaction)) {
+        try (var tx = TransactionManager.open(transaction)) {
             int inserted = 0;
             int size = handler.size();
             for (int index = 0; index < size; index++) {
@@ -199,7 +200,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        try (var subTransaction = Transaction.open(transaction)) {
+        try (var subTransaction = TransactionManager.open(transaction)) {
             int inserted = 0;
             int size = handler.size();
             for (int index = 0; index < size; index++) {
@@ -228,7 +229,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        try (var subTransaction = Transaction.open(transaction)) {
+        try (var subTransaction = TransactionManager.open(transaction)) {
             int extracted = 0;
             int size = handler.size();
             for (int index = 0; index < size; index++) {
@@ -242,7 +243,7 @@ public final class ResourceHandlerUtil {
     }
 
     public static <T extends IResource> int getTotalAmountOf(IResourceHandler<T> handler, T resource) {
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             //We don't commit allow us to just inquiry the amount
             return extract(handler, resource, Integer.MAX_VALUE, transaction);
         }
@@ -269,7 +270,7 @@ public final class ResourceHandlerUtil {
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
-        try (var subTransaction = Transaction.open(transaction)) {
+        try (var subTransaction = TransactionManager.open(transaction)) {
             int size = handler.size();
             var handled = 0;
             R resourceTarget = defaultResource;
@@ -316,7 +317,7 @@ public final class ResourceHandlerUtil {
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
-        try (var subTransaction = Transaction.open(transaction)) {
+        try (var subTransaction = TransactionManager.open(transaction)) {
             R resource = handler.getResource(index);
             if (!filter.test(resource))
                 return stackFactory.create(defaultResource, 0);
@@ -371,7 +372,7 @@ public final class ResourceHandlerUtil {
         Objects.requireNonNull(filter, "Filter may not be null");
         if (from == null || to == null) return 0;
 
-        try (Transaction subTransaction = Transaction.open(transaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int totalMoved = 0;
             int size = from.size();
 
@@ -381,11 +382,11 @@ public final class ResourceHandlerUtil {
 
                 // check how much can be extracted
                 int maxExtracted;
-                try (var simulatedExtract = Transaction.open(subTransaction)) {
+                try (var simulatedExtract = TransactionManager.open(subTransaction)) {
                     maxExtracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtract);
                 }
 
-                try (Transaction transferTransaction = Transaction.open(subTransaction)) {
+                try (Transaction transferTransaction = TransactionManager.open(subTransaction)) {
                     // check how much can be inserted
                     var inserted = to.insert(fromResource, maxExtracted, transferTransaction);
 
@@ -446,11 +447,11 @@ public final class ResourceHandlerUtil {
 
                 // check how much can be extracted
                 int extracted;
-                try (var simulatedExtractTransaction = Transaction.open(transaction)) {
+                try (var simulatedExtractTransaction = TransactionManager.open(transaction)) {
                     extracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtractTransaction);
                 }
 
-                try (Transaction transferTransaction = Transaction.open(transaction)) {
+                try (Transaction transferTransaction = TransactionManager.open(transaction)) {
                     // check how much can be inserted
                     var inserted = to.insert(fromResource, extracted, transferTransaction);
 
@@ -541,7 +542,7 @@ public final class ResourceHandlerUtil {
     }
 
     public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, T resource) {
-        try (var temp = Transaction.open(null)) {
+        try (var temp = TransactionManager.open(null)) {
             //Simulated, we don't commit on an inquiry
             return handler.extract(resource, 1, temp) > 0;
         }

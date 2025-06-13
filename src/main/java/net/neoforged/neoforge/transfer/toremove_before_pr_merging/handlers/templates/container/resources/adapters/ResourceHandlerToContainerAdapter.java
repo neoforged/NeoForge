@@ -12,8 +12,8 @@ import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.IResourceContainer;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
 /**
@@ -50,7 +50,7 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
         }
 
         var resource = wrappedHandler.getResource(index);
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             if (!resource.isEmpty())
                 wrappedHandler.extract(index, resource, Integer.MAX_VALUE, transaction);
             wrappedHandler.insert(index, stack.resource(), stack.amount(), transaction);

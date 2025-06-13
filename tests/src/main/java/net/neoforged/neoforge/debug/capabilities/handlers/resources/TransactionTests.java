@@ -27,6 +27,7 @@ import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templ
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.SimpleItemResourceContainer;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -78,9 +79,9 @@ public class TransactionTests {
         var current = 0;
         //        var craftingRecipe = CraftingInput.of(3, 3, );
 
-        try (var craftingTransaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var craftingTransaction = TransactionManager.open(TransactionContext.ROOT)) {
 
-            try (var scanningTransaction = Transaction.open(craftingTransaction)) {
+            try (var scanningTransaction = TransactionManager.open(craftingTransaction)) {
                 for (var container : externalContainers) {
                     for (var index = 0; index < container.size(); index++) {
 
@@ -88,7 +89,7 @@ public class TransactionTests {
                         if (!someFilteredCondition(resource, ingredient)) continue;
 
                         int simulatedValue = 0;
-                        try (var optimisticTransaction = Transaction.open(scanningTransaction)) {
+                        try (var optimisticTransaction = TransactionManager.open(scanningTransaction)) {
                             var testValue = need - current;
                             simulatedValue = tryIndex(container, optimisticTransaction, resource, index, testValue);
                             if (simulatedValue == 0) continue;
@@ -111,10 +112,10 @@ public class TransactionTests {
             //                craftingTransaction.commit();
         }
 
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
             var amount = externalContainers[1].extract(Items.APPLE.defaultResource(), 12, tx);
             int inserted;
-            try (var attempt1 = Transaction.open(tx)) {
+            try (var attempt1 = TransactionManager.open(tx)) {
                 inserted = externalContainers[2].insert(Items.APPLE.defaultResource(), amount, tx);
                 if (inserted == amount) {
                     attempt1.commit();
@@ -123,7 +124,7 @@ public class TransactionTests {
             if (amount == inserted) {
                 tx.commit();
             } else {
-                try (var attempt2 = Transaction.open(tx)) {
+                try (var attempt2 = TransactionManager.open(tx)) {
                     inserted = externalContainers[0].insert(Items.APPLE.defaultResource(), amount, tx);
                     if (inserted == amount) {
                         attempt2.commit();
@@ -163,7 +164,7 @@ public class TransactionTests {
      */
     public static int addApples(IResourceHandler<ItemResource> handler) {
         var apple = Items.APPLE.defaultResource();
-        try (var tx = Transaction.open(null)) {
+        try (var tx = TransactionManager.open(null)) {
             int inserted = handler.insert(apple, 10, tx);
             tx.commit();
             return inserted;
@@ -179,7 +180,7 @@ public class TransactionTests {
         var coal = Items.COAL.defaultResource();
         var diamond = Items.DIAMOND.defaultResource();
 
-        try (var tx = Transaction.open(null)) {
+        try (var tx = TransactionManager.open(null)) {
             if (handler.extract(0, coal, 16, tx) != 16) return false;
             if (handler.insert(1, diamond, 1, tx) != 1) return false;
             return action.commit(tx);
@@ -196,9 +197,9 @@ public class TransactionTests {
         var tankWater = SimpleFluidResourceContainer.builder(1).build();
         var tankLava = SimpleFluidResourceContainer.builder(1).build();
 
-        try (var tx = Transaction.open(null)) {
+        try (var tx = TransactionManager.open(null)) {
             var amount = tankWater.asHandler().extract(FluidResource.of(Fluids.WATER), 500, tx);
-            try (var subTx = Transaction.open(tx)) {
+            try (var subTx = TransactionManager.open(tx)) {
                 var moreAmount = tankWater.asHandler().extract(FluidResource.of(Fluids.WATER), 500, subTx);
             }
 
@@ -212,7 +213,7 @@ public class TransactionTests {
         tankLava.set(0, FluidResource.of(Fluids.LAVA).withMutableAmount(FluidType.BUCKET_VOLUME));
 
         //Still working on it. At least now it doesn't have type erasure.... it just doesn't work yet :P
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
 
             //            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
             //            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {

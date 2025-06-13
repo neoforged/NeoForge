@@ -15,8 +15,8 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * As an example would something like a ItemStack should {@link net.minecraft.world.item.ItemStack#EMPTY ItemStack.EMPTY} in the case either the resource was empty or the amount was 0.
  * <p>
  * Common factories are:
- * <li>{@code ItemResource::withAmount}</li>
- * <li>{@code ItemResource::toStack}</li>
+ * <li>{@code ItemResource::withAmount} - Returns an {@code ResourceStack<ItemResource>}</li>
+ * <li>{@code ItemResource::toStack} - Returns an {@code ItemStack}</li>
  *
  * @param <R> The type of resource
  * @param <S> The type of the returned quantifiable stack

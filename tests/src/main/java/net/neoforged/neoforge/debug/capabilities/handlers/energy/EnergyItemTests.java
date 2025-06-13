@@ -14,8 +14,8 @@ import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -43,7 +43,7 @@ public class EnergyItemTests {
         long storedMax = EnergyTestsSetup.MAX_CAPACITY;
         helper.assertValueEqual(current, storedMax, "Default stored energy should be equal to the max capacity.");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(energy.extract(EnergyTestsSetup.MAX_CAPACITY, transaction), EnergyTestsSetup.MAX_CAPACITY, "Extracted energy should be equal to the target value.");
             helper.assertValueEqual(EnergyHandlerUtil.getAmount(energy), 0L, "Post-extraction energy stored should be zero.");
 

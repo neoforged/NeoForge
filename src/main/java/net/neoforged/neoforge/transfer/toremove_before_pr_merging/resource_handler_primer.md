@@ -14,14 +14,14 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 public static void demonstration(IResourceHandler<FluidResource> handler) {
     //To do any form of manipulation, we must first open a transaction
     // This is new, so there are likely to be growing pains! Don't get too frustrated if it doesn't click at first! :)
     //To do this, we open it with a try-block, this handles things also known as AutoCloseable
-    try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+    try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
         //What we've done, is opened a transaction with the parent set as `root`. 
         // Some things to note:
         //      - TransactionContext.ROOT currently is just a fancy 'null'. 
@@ -47,9 +47,9 @@ public static void demonstration(IResourceHandler<FluidResource> handler) {
 
     // If we wanted to chain some transactions for a more involved query:
     // I'll summarize what this does after, but try to see if it is clear enough to you first
-    try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+    try (var transaction = TransactionManager.open()) {
         var value = 0;
-        try (var innerCheck = Transaction.open(transaction)) {
+        try (var innerCheck = transaction.open()) {
             value = ResourceHandlerUtil.extract(handler, FluidResource.of(Fluids.WATER), innerCheck);
             innerCheck.commit();
         }

@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import net.neoforged.neoforge.transfer.handlers.resources.experimental.ITransactionHandler;
+import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;

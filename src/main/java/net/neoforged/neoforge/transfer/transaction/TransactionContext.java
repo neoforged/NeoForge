@@ -14,6 +14,16 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface TransactionContext {
     /**
+     * Opens a new transaction with this as its parent
+     *
+     * @return A child transaction of this transaction.
+     * @throws IllegalStateException Transaction is already closed
+     */
+    default Transaction open() {
+        return TransactionManager.open(this);
+    }
+
+    /**
      * An optional variable to use instead of null when opening unparented transactions.
      * This is helpful when debugging as trying to find all instances of `null` is rather difficult
      */

@@ -14,6 +14,7 @@ import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -87,18 +88,18 @@ public final class EnergyHandlerUtil {
             @Nullable TransactionContext transaction) {
         if (from == null || to == null) return 0;
 
-        try (Transaction subTransaction = Transaction.open(transaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int totalMoved = 0;
             int size = from.size();
 
             for (int index = 0; index < size; ++index) {
                 // check how much can be extracted
                 int maxExtracted;
-                try (var simulatedExtract = Transaction.open(subTransaction)) {
+                try (var simulatedExtract = TransactionManager.open(subTransaction)) {
                     maxExtracted = from.extract(index, amount - totalMoved, simulatedExtract);
                 }
 
-                try (Transaction transferTransaction = Transaction.open(subTransaction)) {
+                try (Transaction transferTransaction = TransactionManager.open(subTransaction)) {
                     // check how much can be inserted
                     var inserted = to.insert(maxExtracted, transferTransaction);
 

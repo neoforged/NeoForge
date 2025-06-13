@@ -15,8 +15,8 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
@@ -83,7 +83,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
     public void set(int index, ItemResource resource, int amount) {
         ItemContainerContents contents = getContents();
         contents.getStackInSlot(index).setCount(amount);
-        try (var tx = Transaction.open(null)) {
+        try (var tx = TransactionManager.open(null)) {
             setAndValidate(contents, amount, tx);
             tx.commit();
         }

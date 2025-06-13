@@ -10,20 +10,23 @@ import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Internal class for handling creation of transactions and determining if the state is valid given a thread.
+ * This should not be accessible directly, and only a small window provided through {@link TransactionManager} should be given.
+ */
 @ApiStatus.Internal
-public class TransactionManagerImpl {
-    public static final ThreadLocal<TransactionManagerImpl> MANAGERS = ThreadLocal.withInitial(TransactionManagerImpl::new);
-
+final class TransactionManagerImpl {
+    static final ThreadLocal<TransactionManagerImpl> MANAGERS = ThreadLocal.withInitial(TransactionManagerImpl::new);
     private final Thread thread = Thread.currentThread();
     private final List<TransactionImpl> stack = new ArrayList<>();
     private final List<TransactionContext.RootCloseCallback> rootCloseCallbacks = new ArrayList<>();
     private int currentDepth = -1;
 
-    public boolean isOpen() {
+    boolean isOpen() {
         return currentDepth > -1;
     }
 
-    public Transaction open(@Nullable TransactionContext parent) {
+    Transaction open(@Nullable TransactionContext parent) {
         if (parent == null) {
             if (isOpen()) {
                 throw new IllegalStateException("A root transaction is already active on this thread " + thread);
@@ -38,7 +41,7 @@ public class TransactionManagerImpl {
     }
 
     /**
-     * Open a new transaction, outer or nested, without performing any state check.
+     * Opens a new transaction, root or nested, without performing any state check.
      */
     private Transaction open() {
         TransactionImpl current;
@@ -62,7 +65,7 @@ public class TransactionManagerImpl {
         }
     }
 
-    public Transaction.Lifecycle getLifecycle() {
+    Transaction.Lifecycle getLifecycle() {
         return currentDepth == -1 ? Transaction.Lifecycle.NONE : stack.get(currentDepth).lifecycle;
     }
 

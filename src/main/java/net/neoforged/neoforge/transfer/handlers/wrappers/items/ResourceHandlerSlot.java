@@ -15,8 +15,8 @@ import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 // TODO Neo: Do we maintain this. What is the practical purpose?
@@ -68,7 +68,7 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public boolean mayPickup(Player player) {
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             //Simulated and we do resource stack as there are less things constructed upon a new instance (micro optimization)
             return ItemUtil.extractResourceStackFilteredAtIndex(handler, ResourceFilters.any(), getSlotIndex(), 1, transaction).isEmpty();
         }
@@ -77,7 +77,7 @@ public class ResourceHandlerSlot extends Slot {
     @Override
     public ItemStack remove(int amount) {
         ItemResource resource = handler.getResource(getSlotIndex());
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int extracted = handler.extract(resource, amount, transaction);
             transaction.commit();
             return extracted > 0 ? resource.toStack(extracted) : ItemStack.EMPTY;

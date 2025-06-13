@@ -12,8 +12,8 @@ import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -35,7 +35,7 @@ public class WrapperResourceHandlerTests {
         helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.defaultResource(), 400, TransactionContext.ROOT), 400, "apples");
         var chestInserted = 0;
         var chest2Inserted = 0;
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
             chestInserted = cap.insert(38, Items.DIAMOND_CHESTPLATE.defaultResource().with(DataComponents.DAMAGE, 20), 2, tx);
             chest2Inserted = cap.insert(39, Items.DIAMOND_CHESTPLATE.defaultResource(), 2, tx);
             tx.commit();

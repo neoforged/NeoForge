@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 public class CreativePlayerItemContext extends StaticItemContext {
     protected final PlayerInventoryWrapper handler;
@@ -25,7 +25,7 @@ public class CreativePlayerItemContext extends StaticItemContext {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         boolean isMissing;
-        try (var testTransaction = Transaction.open(transaction)) {
+        try (var testTransaction = TransactionManager.open(transaction)) {
             //simulates the action, makes use of the snapshot to revert
             isMissing = handler.extract(resource, 1, testTransaction) == 0;
         }

@@ -23,8 +23,8 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
@@ -331,7 +331,7 @@ public final class FluidUtil {
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static FluidStack tryFluidTransfer(IResourceHandler<FluidResource> fluidDestination, IResourceHandler<FluidResource> fluidSource, int maxAmount, boolean doTransfer) {
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var returned = ResourceHandlerUtil.moveFirstOrDefault(fluidSource, fluidDestination, ResourceFilters.any(), maxAmount, FluidResource.EMPTY, transaction, FluidResource::toStack);
             if (doTransfer) transaction.commit();
             return returned;

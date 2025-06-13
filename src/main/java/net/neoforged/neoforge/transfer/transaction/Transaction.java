@@ -5,9 +5,7 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import net.neoforged.neoforge.transfer.handlers.resources.experimental.Reporter;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A global operation where participants guarantee atomicity: either the whole operation succeeds,
@@ -15,26 +13,26 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>One can imagine that transactions are like video game checkpoints.
  * <ul>
- * <li>{@linkplain #open Opening a transaction} with a try-with-resources block creates a checkpoint.</li>
+ * <li>{@linkplain TransactionManager#open Opening a transaction} with a try-with-resources block creates a checkpoint.</li>
  * <li>Modifications to game state can then happen.</li>
  * <li>Calling {@link #commit} validates the modifications that happened during the transaction,
  * essentially discarding the checkpoint.</li>
  * <li>Calling {@link #close} or doing nothing and letting the transaction be {@linkplain #close closed} at the end
  * of the try-with-resources block cancels any modification that happened during the transaction,
  * reverting to the checkpoint.</li>
- * <li>Calling {@link #open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
+ * <li>Calling {@link TransactionManager#open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
  * Committing a nested transaction will validate the changes that happened, but they may
  * still be cancelled later if a parent transaction is cancelled.
  * Aborting a nested transaction immediately reverts the changes - cancelling any modification made after the call
- * to {@link #open}.</li>
+ * to {@link TransactionManager#open}.</li>
  * </ul>
  *
  * <p>This is illustrated in the following example.
  *
  * <pre>{@code
- * try (Transaction outerTransaction = Transaction.open(TransactionContext.ROOT)) {
+ * try (Transaction outerTransaction = TransactionManager.open(TransactionContext.ROOT)) {
  *     // (A) some transaction operations
- *     try (Transaction nestedTransaction = outerTransaction.open(outerTransaction)) {
+ *     try (Transaction nestedTransaction = outerTransaction.open()) {
  *         // (B) more operations
  *         nestedTransaction.commit();
  *         // Commit the changes that happened in this transaction.
@@ -68,64 +66,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.NonExtendable
 public interface Transaction extends AutoCloseable, TransactionContext {
-    /**
-     * Open a new outer transaction.
-     *
-     * <pre>
-     * {@code
-     * try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-     *     // do exchanges
-     * }
-     * }
-     * </pre>
-     *
-     * @param parent the parent transaction, or null if this is the root transaction
-     * @throws IllegalStateException If no parent is passed, but a transaction is already active on the current thread.
-     * @throws IllegalStateException If a parent is passed, but it's not the current transaction.
-     * @throws IllegalStateException If a parent is passed, but it was already closed.
-     */
-    static Transaction open(@Nullable TransactionContext parent) {
-        return TransactionManagerImpl.MANAGERS.get().open(parent);
-    }
-
-    // PROTOTYPE
-    @ApiStatus.Internal
-    @ApiStatus.NonExtendable
-    default Reporter reporting() {
-        return new Reporter(this);
-    }
-
-    /**
-     * @return True if a transaction is open or closing on the current thread, and false otherwise.
-     */
-    static boolean isOpen() {
-        return getLifecycle() != Lifecycle.NONE;
-    }
-
-    /**
-     * @return The current lifecycle of the transaction stack on this thread.
-     */
-    static Lifecycle getLifecycle() {
-        return TransactionManagerImpl.MANAGERS.get().getLifecycle();
-    }
-
-    //    /**
-    //     * Retrieve the currently open transaction, or null if there is none.
-    //     *
-    //     * <p><b>Usage of this function is strongly discouraged</b>, this is why it is deprecated and contains {@code unsafe} in its name.
-    //     * The transaction may be aborted unbeknownst to you and anything you think that you have committed might be undone.
-    //     * Only use it if you have no way to pass the transaction down the stack, for example if you are implementing compat with a simulation-based API,
-    //     * and you know what you are doing, for example because you opened the outer transaction.
-    //     *
-    //     * @throws IllegalStateException If called from a close or outer close callback.
-    //     * @deprecated Only use if you absolutely need it, there is almost always a better way.
-    //     */
-    //    @ApiStatus.Internal
-    //    @Nullable
-    //    static TransactionContext getCurrentUnsafe() {
-    //        return TransactionManagerImpl.MANAGERS.get().getCurrentUnsafe();
-    //    }
-
     /**
      * Close the current transaction, committing all the changes that happened during this transaction and its <b>committed</b> children transactions.
      * If this transaction was opened with a {@code null} parent, all changes are applied.

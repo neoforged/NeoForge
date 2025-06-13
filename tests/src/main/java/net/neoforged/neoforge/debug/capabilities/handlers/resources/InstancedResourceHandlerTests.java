@@ -16,8 +16,8 @@ import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -87,7 +87,7 @@ public class InstancedResourceHandlerTests {
 
         helper.assertValueEqual(handler.getResource(0), emptyResource, "Resource should match");
         helper.assertValueEqual(handler.getResource(1), emptyResource, "Resource should match");
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(handler.insert(0, emptyResource, Integer.MAX_VALUE, transaction), Integer.MAX_VALUE, "Insertion should match");
             helper.assertValueEqual(handler.insert(emptyResource, Integer.MAX_VALUE, transaction), Integer.MAX_VALUE, "Insertion should match");
 
@@ -111,7 +111,7 @@ public class InstancedResourceHandlerTests {
 
         helper.assertValueEqual(handler.getCapacity(0, resource), Integer.MAX_VALUE, "Capacity should match");
         helper.assertValueEqual(handler.getResource(0), resource, "Resource should match");
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(handler.insert(0, resource, 1, transaction), 0, "Insertion should match");
             helper.assertValueEqual(handler.insert(resource, 1, transaction), 0, "Insertion should match");
 
@@ -130,7 +130,7 @@ public class InstancedResourceHandlerTests {
         helper.assertValueEqual(handler.getCapacity(0, emptyResource), 0, "Empty should no-op");
         helper.assertValueEqual(handler.getAmount(0), 0, "Empty should no-op");
 
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(handler.insert(0, emptyResource, 1, transaction), 0, "Empty should no-op");
             helper.assertValueEqual(handler.insert(emptyResource, 1, transaction), 0, "Empty should no-op");
             helper.assertValueEqual(handler.extract(0, emptyResource, 1, transaction), 0, "Empty should no-op");

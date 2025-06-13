@@ -10,8 +10,8 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.OneByOneItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.ReadOnlyItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,7 +127,7 @@ public interface IItemContext {
     default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        try (var subTransaction = Transaction.open(transaction)) {
+        try (var subTransaction = TransactionManager.open(transaction)) {
             int extracted = extract(getResource(), amount, subTransaction);
 
             if (insert(resource, extracted, subTransaction) == extracted) {

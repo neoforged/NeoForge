@@ -70,14 +70,14 @@ their returns. The main focused difference is that you are only mutating an `int
 
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 public static void energyHandlerDemonstration(IEnergyHandler handler) {
     //Let's assume you have some energy handler already
     //to extract from it, we'd call extract with some amount and indicate if we want to not commit those changes
     // Since we have no other transaction running, we shall open one with ROOT (or null in reality) as the parent.
-    try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+    try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
         // first we simulate an extract
         var extracted = handler.extract(100, transaction);
         // We can do some intermediate actions such as finding out how much energy is now in the handler

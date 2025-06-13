@@ -22,8 +22,8 @@ import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFlui
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -52,7 +52,7 @@ public class ComponentResourceTests {
 
         if (fluidContext.getAmount(0) != 0)
             helper.fail("Expected empty tank");
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = fluidContext.insert(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, tx);
             if (inserted != FluidType.BUCKET_VOLUME)
                 helper.fail("Expected to be able to fill a bucket of water");
@@ -65,7 +65,7 @@ public class ComponentResourceTests {
         if (!ResourceHandlerUtil.resourceAndCountMatches(fluidContext, 0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME))
             helper.fail("Expected a bucket of water");
 
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
             var extracted = fluidContext.extract(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, tx);
             if (extracted != FluidType.BUCKET_VOLUME)
                 helper.fail("Expected to drain a bucket of water");
@@ -96,7 +96,7 @@ public class ComponentResourceTests {
         helper.assertNotNull(fluidHandler, "IResourceHandler<FluidResource> must be present on item");
         assert fluidHandler != null;
 
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
             var amount = fluidHandler.insert(Fluids.LAVA.defaultResource(), 80000, tx);
             helper.assertValueEqual(amount, ResourceHandlerTestSetup.TANK_CAPACITY * ResourceHandlerTestSetup.TANK_COUNT * 4, "lava");
             helper.assertValueEqual(fluidHandler.extract(Fluids.LAVA.defaultResource(), 3000, tx), 3000, "lava");
@@ -121,7 +121,7 @@ public class ComponentResourceTests {
             return;
         }
 
-        try (var tx = Transaction.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
 
             //Because of the way the context filling works, it is attempting to fill or group similar actions together.
             //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.

@@ -13,8 +13,8 @@ import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
  * Variant of {@link AttachmentEnergyStorage} for use with data components.
@@ -80,7 +80,7 @@ public final class ItemEnergyStorage implements IEnergyStorage {
         if (amount <= 0) return 0;
         int containerFill = getIndividualAmount();
         int spaceLeft = getIndividualLimit() - containerFill;
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var handled = 0;
             if (amount < spaceLeft) {
                 handled = setPartial(amount + containerFill, transaction) == 1 ? amount : 0;
@@ -98,7 +98,7 @@ public final class ItemEnergyStorage implements IEnergyStorage {
         maxExtract = Mth.clamp(maxExtract, 0, this.maxExtract * this.itemContext.getAmount());
         if (maxExtract <= 0) return 0;
         int containerFill = getIndividualAmount();
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             if (maxExtract < containerFill) {
                 int exchanged = setPartial(containerFill - maxExtract, transaction);
                 if (!simulate) transaction.commit();

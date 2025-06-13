@@ -160,15 +160,15 @@ if you like the results, commit them.
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 private static void example(IResourceHandler<FluidResource> handler) {
-    try (var transaction = Transaction.open(TransactionContext.ROOT)) {
-        var handled = handler.extract(FluidResource.of(Fluids.WATER), 1000, transaction);
-        if (handled == 1000)
-            transaction.commit();
-    }
+  try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+    var handled = handler.extract(FluidResource.of(Fluids.WATER), 1000, transaction);
+    if (handled == 1000)
+      transaction.commit();
+  }
 }
 ```
 

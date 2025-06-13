@@ -17,8 +17,8 @@ import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandle
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -62,7 +62,7 @@ public class ResourceHandlerUtilTests {
         helper.assertValueEqual(amountTest, 10 * workingStack.resource().getMaxStackSize(), "the destination to hold 10 stacks. That evaluates");
 
         dstHandler.set(10, workingStack.resource(), workingStack.amount());
-        try (var transaction = Transaction.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, transaction), 0, "Nothing should move");
             helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, transaction), 100, "amount to move");
         }

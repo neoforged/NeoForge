@@ -16,8 +16,8 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
  * A handler for empty and filled buckets. This handler makes the assumption that the item in the main context is a bucket
@@ -105,7 +105,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
             // Nothing to empty
             return 0;
         }
-        try (var subTransaction = Transaction.open(transaction)) {
+        try (var subTransaction = TransactionManager.open(transaction)) {
             int bucketsEmptied = itemContext.exchange(ItemResource.of(Items.BUCKET), bucketsToEmpty, subTransaction);
             subTransaction.commit();
             return bucketsEmptied * FluidType.BUCKET_VOLUME;
