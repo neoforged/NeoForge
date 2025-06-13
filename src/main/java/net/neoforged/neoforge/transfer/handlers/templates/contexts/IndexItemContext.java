@@ -18,15 +18,27 @@ public class IndexItemContext implements IItemContext {
      * @param index   The index in {@code handler}, where the item can be found.
      */
     public static IndexItemContext of(IResourceHandler<ItemResource> handler, int index) {
-        return new IndexItemContext(handler, index);
+        return new IndexItemContext(handler, index, true);
+    }
+
+    /**
+     * Creates a context object for working with resource handler contained in an item at a specific index of a resource handler.
+     *
+     * @param handler The handler containing the item.
+     * @param index   The index in {@code handler}, where the item can be found and only allow mutations on that {@code index}.
+     */
+    public static IndexItemContext ofSpecific(IResourceHandler<ItemResource> handler, int index) {
+        return new IndexItemContext(handler, index, false);
     }
 
     private final int index;
+    private final boolean allowsOverflow;
     private final IResourceHandler<ItemResource> handler;
 
-    private IndexItemContext(IResourceHandler<ItemResource> handler, int index) {
+    private IndexItemContext(IResourceHandler<ItemResource> handler, int index, boolean allowsOverflow) {
         this.handler = handler;
         this.index = index;
+        this.allowsOverflow = allowsOverflow;
     }
 
     @Override
@@ -42,7 +54,7 @@ public class IndexItemContext implements IItemContext {
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         int inserted = handler.insert(index, resource, amount, transaction);
-        if (inserted < amount) {
+        if (allowsOverflow && inserted < amount) {
             inserted += handler.insert(resource, amount - inserted, transaction);
         }
         return inserted;
