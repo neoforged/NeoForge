@@ -98,7 +98,7 @@ public final class EnergyHandlerUtil {
 
         try (var subTransaction = TransactionManager.open(transaction)) {
             var handledAmount = 0;
-            try (var simulate = subTransaction.open()) {
+            try (var simulate = TransactionManager.open(subTransaction)) {
                 var extracted = from.extract(amount, simulate);
                 var inserted = to.insert(extracted, simulate);
                 handledAmount = Math.min(extracted, inserted);

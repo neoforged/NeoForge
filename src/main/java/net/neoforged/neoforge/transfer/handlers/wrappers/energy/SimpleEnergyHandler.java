@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.energy;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
@@ -80,7 +81,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int extract(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open()) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int extracted = handler.extract(index, amount, transaction);
             actionType.commit(transaction);
             return extracted;

@@ -34,7 +34,7 @@ public class ItemHandlerHelper {
 
             var inserted = dest.insert(ItemResource.of(stack), stack.getCount(), transaction);
             workingStack.shrink(inserted);
-            TransferAction.get(simulate).commit(transaction);
+            TransferAction.get(!simulate).commit(transaction);
             return workingStack;
         }
     }
@@ -54,7 +54,7 @@ public class ItemHandlerHelper {
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = ItemUtil.insertStacking(inventory, stack, transaction);
             workingStack.shrink(inserted);
-            TransferAction.get(simulate).commit(transaction);
+            TransferAction.get(!simulate).commit(transaction);
             return workingStack;
         }
     }
