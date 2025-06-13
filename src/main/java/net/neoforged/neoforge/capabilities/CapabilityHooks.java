@@ -158,11 +158,12 @@ public class CapabilityHooks {
         // Entities
         // Register to all entity types to make sure we support all living entity subclasses.
         for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+            //todo possibly skip players?
             event.registerEntity(Capabilities.ItemHandler.ENTITY, entityType, (entity, ctx) -> {
                 if (entity instanceof AbstractHorse horse)
                     return VanillaContainerWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
-                    return new EntityEquipmentItemHandler(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
+                    return EntityEquipmentItemHandler.of(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
                 return null;
             });
         }

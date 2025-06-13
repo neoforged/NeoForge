@@ -34,8 +34,8 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
      * <p>Note on thread-safety: we assume that Containers are inherently single-threaded, and no attempt is made at synchronization.
      * However, the access to implementations can happen on multiple threads concurrently, which is why we use a thread-safe wrapper map.
      *
-     * <p>A note on GC: weak keys alone are not suitable as the ContainerStorage strongly references the Container.
-     * Weak values are suitable, but we have to ensure that the ContainerStorage remains strongly reachable as int as
+     * <p>A note on GC: weak keys alone are not suitable as the {@link VanillaContainerWrapper} strongly references the Container.
+     * Weak values are suitable, but we have to ensure that the {@link VanillaContainerWrapper} remains strongly reachable as int as
      * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link SlotItemStackResourceHandlerJournal}.
      *
      * @see WorldlyContainerWrapper
@@ -46,7 +46,8 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakValues().makeMap();
 
     public static VanillaContainerWrapper of(Container container) {
-        var wrapper = WRAPPERS.computeIfAbsent(container, inv -> inv instanceof Inventory inventory ? new PlayerInventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
+        var wrapper = WRAPPERS.computeIfAbsent(container,
+                inv -> inv instanceof Inventory inventory ? new PlayerInventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
         wrapper.resize();
         return wrapper;
     }

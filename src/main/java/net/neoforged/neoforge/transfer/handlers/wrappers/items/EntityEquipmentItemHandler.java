@@ -5,9 +5,11 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
+import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,8 +21,35 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<ItemResource> {
+    /**
+     * Global wrapper concurrent map.
+     *
+     * <p>Note on thread-safety: we assume that Entities are inherently single-threaded, and no attempt is made at synchronization.
+     * However, the access to implementations can happen on multiple threads concurrently, which is why we use a thread-safe wrapper map.
+     *
+     * <p>A note on GC: weak keys alone are not suitable as the {@link EntityEquipmentItemHandler} strongly references the Entity.
+     * Weak values are suitable, but we have to ensure that the {@link EntityEquipmentItemHandler} remains strongly reachable as int as
+     * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link EquipmentSlotSnapshotJournal}.
+     *
+     * @see WorldlyContainerWrapper
+     * @see PlayerInventoryWrapper
+     */
+    // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
+    // TODO: should have identity semantics?
+    private static final Map<LivingEntity, EntityEquipmentItemHandler> WRAPPERS = new MapMaker().weakValues().makeMap();
+
+    @SafeVarargs
+    public static EntityEquipmentItemHandler of(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
+        var wrapper = WRAPPERS.computeIfAbsent(entity, ent -> new EntityEquipmentItemHandler(ent, slotFilter));
+        wrapper.resize(slotFilter);
+        return wrapper;
+    }
+
     protected final LivingEntity entity;
-    protected final List<EquipmentSlot> slots;
+
+    private int size;
+
+    protected final List<EquipmentSlot> slots = new ArrayList<>();
     protected final ArrayList<ItemStack> internalStacks = new ArrayList<>();
     private final ArrayList<EquipmentSlotSnapshotJournal> snapshots = new ArrayList<>();
 
@@ -28,16 +57,17 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         return slot.getType() == EquipmentSlot.Type.HAND;
     }
 
-    @SafeVarargs
-    public EntityEquipmentItemHandler(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
-        this.entity = entity;
+    private void resize(Predicate<EquipmentSlot>[] slotFilter) {
+        //NEO: This may be needed to be redone, but this was to ensure that we have not already assigned this instance
+        if (size > 0) return;
+
         var list = new ArrayList<EquipmentSlot>();
         for (var equipmentSlotPredicate : slotFilter) {
             list.addAll(Arrays.stream(EquipmentSlot.values()).filter(equipmentSlotPredicate).toList());
         }
-        this.slots = List.copyOf(list);
+        this.slots.addAll(list);
 
-        var size = list.size();
+        size = list.size();
         internalStacks.ensureCapacity(size);
         for (var i = 0; i < size; i++) {
             internalStacks.add(getStackInSlot(i));
@@ -48,6 +78,11 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         for (var i = 0; i < handlerSize; i++) {
             snapshots.add(new EquipmentSlotSnapshotJournal(snapshots.size()));
         }
+    }
+
+    @SafeVarargs
+    private EntityEquipmentItemHandler(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
+        this.entity = entity;
     }
 
     private class EquipmentSlotSnapshotJournal extends SnapshotJournal<ItemStack> {
