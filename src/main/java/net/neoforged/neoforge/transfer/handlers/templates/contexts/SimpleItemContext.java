@@ -48,13 +48,9 @@ public class SimpleItemContext implements IItemContext {
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         int inserted = mainHandler.insert(index, resource, amount, transaction);
         if (inserted < amount) {
-            return insertOverflow(resource, amount - inserted, transaction);
+            inserted += overflowHandler.insert(resource, amount - inserted, transaction);
         }
         return inserted;
-    }
-
-    public int insertOverflow(ItemResource resource, int amount, TransactionContext transaction) {
-        return overflowHandler.insert(resource, amount, transaction);
     }
 
     @Override
@@ -62,18 +58,19 @@ public class SimpleItemContext implements IItemContext {
         return mainHandler.extract(index, resource, amount, transaction);
     }
 
-    @Override
-    public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
-        int currentAmount = getAmount();
-        if (amount >= currentAmount) {
-            //TODO this does not handle snapshots correctly
-            mainHandler.set(index, resource, currentAmount);
-            return currentAmount;
-        }
-        int extracted = extract(getResource(), amount, transaction);
-        if (extracted > 0) {
-            return insertOverflow(resource, extracted, transaction);
-        }
-        return 0;
-    }
+//    @Override
+//    public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
+//        int currentAmount = getAmount();
+//
+//
+//
+//
+//        if (amount >= currentAmount) {
+//            //TODO this does not handle snapshots correctly
+//            mainHandler.set(index, resource, currentAmount);
+//            return currentAmount;
+//        }
+//        int extracted = extract(getResource(), amount, transaction);
+//        return extracted > 0 ? overflowHandler.insert(resource, extracted, transaction) : 0;
+//    }
 }
