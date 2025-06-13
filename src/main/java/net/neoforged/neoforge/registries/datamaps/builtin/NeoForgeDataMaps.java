@@ -42,12 +42,11 @@ public class NeoForgeDataMaps {
     /**
      * The {@linkplain EntityType} data map that replaces {@link VillagerHostilesSensor#ACCEPTABLE_DISTANCE_FROM_HOSTILES}.
      * <p>
-     * The location of this data map is {@code neoforge/data_maps/item/compostables.json}, and the values are objects with 1 field:
+     * The location of this data map is {@code neoforge/data_maps/entity_type/acceptable_hostile_distances.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code chance}, a float between 0 and 1 (inclusive) - the chance that the item will add levels to the composter when composted</li>
+     * <li>{@code distance}, a float - the acceptable distance between a villager and another hostile mob.</li>
      * </ul>
      *
-     * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
      */
     public static final DataMapType<EntityType<?>, AcceptableHostileDistance> ACCEPTABLE_HOSTILE_DISTANCES = DataMapType.builder(id("acceptable_hostile_distances"), Registries.ENTITY_TYPE, AcceptableHostileDistance.CODEC)
             .synced(AcceptableHostileDistance.DISTANCE_CODEC, false).build();
