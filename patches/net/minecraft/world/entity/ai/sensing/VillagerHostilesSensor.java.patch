@@ -25,6 +25,6 @@
      private boolean isHostile(LivingEntity p_26868_) {
 -        return ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(p_26868_.getType());
 +        var acceptableDistanceFromHostile = p_26868_.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.ACCEPTABLE_HOSTILE_DISTANCES);
-+        return acceptableDistanceFromHostile != null && ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(p_26868_.getType());
++        return acceptableDistanceFromHostile != null || ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(p_26868_.getType());
      }
  }
