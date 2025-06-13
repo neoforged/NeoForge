@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
@@ -23,21 +24,21 @@ public record ReadOnlyItemContext(IItemContext context) implements IItemContext 
 
     @Override
     public int insert(ItemResource itemVariant, int amount, TransactionContext transaction) {
-        try (var subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
             return context.insert(itemVariant, amount, subTransaction);
         }
     }
 
     @Override
     public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
-        try (var subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
             return context.extract(itemVariant, amount, subTransaction);
         }
     }
 
     @Override
     public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
-        try (var subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
             return context.exchange(resource, amount, subTransaction);
         }
     }

@@ -50,7 +50,7 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
         this.stacks = stacks;
         this.size = stacks.size();
         this.journals.ensureCapacity(size);
-        for (var i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             journals.add(new StackJournal(i));
         }
     }
@@ -62,8 +62,8 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
      */
     @Contract(pure = true)
     public NonNullList<FluidStack> copyToList() {
-        var list = NonNullList.withSize(size(), FluidStack.EMPTY);
-        var size = size();
+        NonNullList<FluidStack> list = NonNullList.withSize(size(), FluidStack.EMPTY);
+        int size = size();
         for (int index = 0; index < size; index++) {
             list.set(index, stacks.get(index));
         }
@@ -114,8 +114,8 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
     @Override
     public int insert(FluidResource resource, int amount, TransactionContext context) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var handled = 0;
-        for (var index = 0; index < size; index++) {
+        int handled = 0;
+        for (int index = 0; index < size; index++) {
             handled += insertBehaviour(index, resource, amount - handled, context);
             if (handled == amount)
                 break;
@@ -134,8 +134,8 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
     private int insertBehaviour(int index, FluidResource resource, int amount, TransactionContext transaction) {
         if (!isValid(index, resource)) return 0;
 
-        var currentStack = stacks.get(index);
-        var capacity = getCapacity(index, resource);
+        FluidStack currentStack = stacks.get(index);
+        int capacity = getCapacity(index, resource);
 
         int inserted, newAmount;
         if (currentStack.isEmpty()) {
@@ -146,7 +146,7 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
             //is there an item in the specified index already?
             if (!resource.is(currentStack)) return 0;
 
-            var currentStackAmount = currentStack.getAmount();
+            int currentStackAmount = currentStack.getAmount();
             inserted = Math.min(capacity - currentStackAmount, amount);
             newAmount = currentStackAmount + inserted;
         }
@@ -171,8 +171,8 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
     public int extract(FluidResource resource, int amount, TransactionContext context) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        var handled = 0;
-        for (var index = 0; index < size; index++) {
+        int handled = 0;
+        for (int index = 0; index < size; index++) {
             handled += extractBehaviour(index, resource, amount - handled, context);
             if (handled == amount) break;
         }
@@ -180,11 +180,11 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
     }
 
     private int extractBehaviour(int index, FluidResource resource, int amount, TransactionContext transaction) {
-        var currentStack = stacks.get(index);
+        FluidStack currentStack = stacks.get(index);
 
         if (!resource.is(currentStack)) return 0;
 
-        var currentAmount = currentStack.getAmount();
+        int currentAmount = currentStack.getAmount();
         int handledAmount = Math.min(amount, currentAmount);
 
         if (handledAmount > 0) {

@@ -53,7 +53,7 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
 
     @Override
     public IResourceStorageData<T> modify(int index, T resource, int amount) {
-        var current = get(index);
+        MutableResourceStack<T> current = get(index);
         if (current.resource().equals(resource))
             current.withAmount(amount);
         else
@@ -68,7 +68,7 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
 
     @Override
     public ResourceStorageComponent<T> component() {
-        var list = NonNullList.<ResourceStack<T>>createWithCapacity(stacks.size());
+        NonNullList<ResourceStack<T>> list = NonNullList.<ResourceStack<T>>createWithCapacity(stacks.size());
         for (IResourceStack<T> stack : stacks) {
             list.add(stack.immutable());
         }

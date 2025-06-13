@@ -58,10 +58,10 @@ public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemReso
         @Override
         public int modifyContents(IResourceStorageData<ItemResource> contents, int requestedAmount, int changedAmount, TransactionContext action) {
             if (changedAmount == 0) return 0;
-            var exchangeCount = requestedAmount / changedAmount;
+            int exchangeCount = requestedAmount / changedAmount;
             //                            var partial = requestedAmount % changedAmount; // This in theory isn't actually handle here very well.
-            var resourceToExchange = itemContext.getResource().with(componentType, contents.component());
-            var result = itemContext.exchange(resourceToExchange, exchangeCount, action);
+            ItemResource resourceToExchange = itemContext.getResource().with(componentType, contents.component());
+            int result = itemContext.exchange(resourceToExchange, exchangeCount, action);
             return result * changedAmount;
         }
     }

@@ -12,6 +12,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
@@ -26,10 +27,10 @@ public final class EnergyHandlerUtil {
      * @return Total energy stored across all of its sub-buffers. This is a long given the accumulation factor can be several max {@code ints} together.
      */
     public static long getAmount(IEnergyHandler handler) {
-        var sum = 0;
+        int sum = 0;
 
-        var size = handler.size();
-        for (var i = 0; i < size; i++) {
+        int size = handler.size();
+        for (int i = 0; i < size; i++) {
             //this can only ever be 1/4billionth max long
             sum += handler.getAmount(i);
         }
@@ -41,7 +42,7 @@ public final class EnergyHandlerUtil {
     }
 
     public static boolean canAcceptEnergy(IEnergyHandler handler) {
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             return handler.insert(1, transaction) > 0;
         }
     }
@@ -51,9 +52,9 @@ public final class EnergyHandlerUtil {
      * @return Total capacity across all of its sub-buffers.
      */
     public static long getCapacity(IEnergyHandler handler) {
-        var sum = 0;
-        var size = handler.size();
-        for (var i = 0; i < size; i++) {
+        int sum = 0;
+        int size = handler.size();
+        for (int i = 0; i < size; i++) {
             //this can only ever be 1/4billionth max long
             sum += handler.getCapacity(i);
         }
@@ -61,9 +62,9 @@ public final class EnergyHandlerUtil {
     }
 
     public static long getAmountAsLong(IEnergyHandler handler) {
-        var sum = 0L;
-        var size = handler.size();
-        for (var i = 0; i < size; i++) {
+        long sum = 0L;
+        int size = handler.size();
+        for (int i = 0; i < size; i++) {
             sum += handler.getAmountAsLong(i);
             if (sum < 0) return Long.MAX_VALUE;
         }
@@ -71,9 +72,9 @@ public final class EnergyHandlerUtil {
     }
 
     public static long getCapacityAsLong(IEnergyHandler handler) {
-        var sum = 0L;
-        var size = handler.size();
-        for (var i = 0; i < size; i++) {
+        long sum = 0L;
+        int size = handler.size();
+        for (int i = 0; i < size; i++) {
             sum += handler.getCapacityAsLong(i);
             if (sum < 0) return Long.MAX_VALUE;
         }
@@ -96,14 +97,14 @@ public final class EnergyHandlerUtil {
             @Nullable TransactionContext transaction) {
         if (from == null || to == null) return 0;
 
-        try (var subTransaction = TransactionManager.open(transaction)) {
-            var simulatedResult = 0;
-            try (var simulate = TransactionManager.open(subTransaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
+            int simulatedResult = 0;
+            try (Transaction simulate = TransactionManager.open(subTransaction)) {
                 simulatedResult = from.extract(amount, simulate);
             }
 
-            var inserted = to.insert(simulatedResult, subTransaction);
-            var extracted = from.extract(inserted, subTransaction);
+            int inserted = to.insert(simulatedResult, subTransaction);
+            int extracted = from.extract(inserted, subTransaction);
             if (extracted == inserted) {
                 subTransaction.commit();
                 return extracted;

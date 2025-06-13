@@ -14,6 +14,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemCon
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
@@ -40,11 +41,11 @@ public final class ItemUtil {
      */
     public static void giveItemToPlayer(Player player, ItemResource resource, int amount) {
         if (resource.isEmpty()) return;
-        var cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
+        IResourceHandler<ItemResource> cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         if (cap == null) return;
 
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            var inserted = cap.insert(resource, amount, transaction);
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            int inserted = cap.insert(resource, amount, transaction);
             if (inserted == amount) transaction.commit();
         }
     }
@@ -74,7 +75,7 @@ public final class ItemUtil {
         if (resource.isEmpty()) return;
 
         PlayerItemContext context = new PlayerItemContext(player, preferredSlot);
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             context.insert(resource, amount, transaction);
         }
     }

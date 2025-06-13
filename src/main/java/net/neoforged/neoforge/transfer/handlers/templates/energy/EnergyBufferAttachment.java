@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -163,9 +164,9 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
         amount = Math.min(maxInsert, amount);
         if (amount == 0) return 0;
 
-        var handled = 0;
-        var indices = size();
-        for (var index = 0; index < indices; index++) {
+        int handled = 0;
+        int indices = size();
+        for (int index = 0; index < indices; index++) {
             //We don't need to check if the index is valid in this case since we already know our index is within bounds
             handled += insertCommon(index, amount - handled, transaction);
             if (handled == amount) break;
@@ -202,9 +203,9 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
         amount = Math.min(maxExtract, amount);
         if (amount == 0) return 0;
 
-        var handled = 0;
-        var indices = size();
-        for (var index = 0; index < indices; index++) {
+        int handled = 0;
+        int indices = size();
+        for (int index = 0; index < indices; index++) {
             //We don't need to check if the index is valid in this case since we already know our index is within bounds
             handled += extractCommon(index, amount - handled, transaction);
             if (handled == amount) break;
@@ -359,21 +360,21 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
         return new IAttachmentSerializer<>() {
             @Override
             public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
-                var parse = codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag);
+                DataResult<T> parse = codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag);
                 if (parse.error().isPresent()) {
                     throw new RuntimeException(parse.error().get().toString());
                 }
                 if (parse.result().isEmpty())
                     throw new RuntimeException("Result not present");
 
-                var data = parse.result().get();
+                T data = parse.result().get();
                 setter.accept(data, holder);
                 return data;
             }
 
             @Override
             public Tag write(T attachment, HolderLookup.Provider provider) {
-                var encode = codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment);
+                DataResult<Tag> encode = codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment);
                 if (encode.error().isPresent()) {
                     throw new RuntimeException(encode.error().get().toString());
                 }

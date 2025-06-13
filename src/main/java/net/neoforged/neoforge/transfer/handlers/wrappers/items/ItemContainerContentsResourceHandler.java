@@ -15,6 +15,7 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
@@ -65,7 +66,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        var current = getResource(index);
+        ItemResource current = getResource(index);
         return current.isEmpty() || current.equals(resource);
     }
 
@@ -83,7 +84,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
     public void set(int index, ItemResource resource, int amount) {
         ItemContainerContents contents = getContents();
         contents.getStackInSlot(index).setCount(amount);
-        try (var tx = TransactionManager.open(null)) {
+        try (Transaction tx = TransactionManager.open(null)) {
             setAndValidate(contents, amount, tx);
             tx.commit();
         }

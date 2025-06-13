@@ -299,7 +299,7 @@ public final class FluidUtil {
      * @return the fluidStack that was transferred from the from to the to. null on failure.
      */
     public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, TransferAction action) {
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             FluidResource resource = FluidResource.of(fluidStack);
             int amount = ResourceHandlerUtil.move(from, to, resource::equals, fluidStack.getAmount(), transaction);
 
@@ -333,7 +333,7 @@ public final class FluidUtil {
      * Gets the first fluid found in the fluid handler of the item context.
      */
     public static FluidResource getFluidFromContext(IItemContext context) {
-        var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
+        IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return FluidResource.EMPTY;
         return getFirstFluidResource(handler);
     }

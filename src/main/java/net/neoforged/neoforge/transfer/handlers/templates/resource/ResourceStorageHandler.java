@@ -82,7 +82,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
-        var cachedSize = size();
+        int cachedSize = size();
         for (int i = 0; i < cachedSize; i++) {
             changedAmount += insertBehavior(contents, i, resource, amount - changedAmount, context);
             if (changedAmount >= amount) break;
@@ -99,7 +99,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
         if (resourceStackInSlot.isEmpty()) {
             //the slot was empty so we shall accept what capacity allows as well as set the ResourceStack
-            var inserted = Math.min(capacity, amount);
+            int inserted = Math.min(capacity, amount);
             snapshot.updateSnapshots(transaction);
 
             contents.modify(index, resource, inserted);
@@ -134,7 +134,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         //NEW: We have snapshots so we should assume they are always executing and can be reverted
         IResourceStorageData<T> contents = getContents().attachment();
         int changedAmount = 0;
-        var cachedSize = size();
+        int cachedSize = size();
         for (int i = 0; i < cachedSize; i++) {
             changedAmount += extractBehavior(contents, i, resource, amount - changedAmount, transaction);
             if (changedAmount >= amount) break;

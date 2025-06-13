@@ -85,9 +85,9 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        var size = size();
-        var handled = 0;
-        for (var index = 0; index < size; index++) {
+        int size = size();
+        int handled = 0;
+        for (int index = 0; index < size; index++) {
             handled += insert(index, resource, amount - handled, transaction);
             if (handled == amount) break;
         }
@@ -105,9 +105,9 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        var size = size();
-        var handled = 0;
-        for (var index = 0; index < size; index++) {
+        int size = size();
+        int handled = 0;
+        for (int index = 0; index < size; index++) {
             handled += extract(index, resource, amount - handled, transaction);
             if (handled == amount) break;
         }

@@ -13,6 +13,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
@@ -29,10 +30,10 @@ public class ItemHandlerHelper {
     public static ItemStack insertItem(@Nullable IResourceHandler<ItemResource> dest, ItemStack stack, boolean simulate) {
         if (dest == null) return stack;
         if (stack.isEmpty()) return stack;
-        var workingStack = stack.copy();
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        ItemStack workingStack = stack.copy();
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
 
-            var inserted = dest.insert(ItemResource.of(stack), stack.getCount(), transaction);
+            int inserted = dest.insert(ItemResource.of(stack), stack.getCount(), transaction);
             workingStack.shrink(inserted);
             TransferAction.get(!simulate).commit(transaction);
             return workingStack;
@@ -50,9 +51,9 @@ public class ItemHandlerHelper {
     public static ItemStack insertItemStacked(@Nullable IResourceHandler<ItemResource> inventory, ItemStack stack, boolean simulate) {
         if (inventory == null || stack.isEmpty())
             return stack;
-        var workingStack = stack.copy();
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            var inserted = ItemUtil.insertStacking(inventory, stack, transaction);
+        ItemStack workingStack = stack.copy();
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            int inserted = ItemUtil.insertStacking(inventory, stack, transaction);
             workingStack.shrink(inserted);
             TransferAction.get(!simulate).commit(transaction);
             return workingStack;

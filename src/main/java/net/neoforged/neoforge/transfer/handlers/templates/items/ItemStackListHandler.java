@@ -50,7 +50,7 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
         this.stacks = stacks;
         this.size = stacks.size();
         this.journals.ensureCapacity(size);
-        for (var i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             journals.add(new StackJournal(i));
         }
     }
@@ -62,8 +62,8 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
      */
     @Contract(pure = true)
     public NonNullList<ItemStack> copyToList() {
-        var list = NonNullList.withSize(size(), ItemStack.EMPTY);
-        var size = size();
+        NonNullList<ItemStack> list = NonNullList.withSize(size(), ItemStack.EMPTY);
+        int size = size();
         for (int index = 0; index < size; index++) {
             list.set(index, stacks.get(index));
         }
@@ -115,8 +115,8 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext context) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var handled = 0;
-        for (var index = 0; index < size; index++) {
+        int handled = 0;
+        for (int index = 0; index < size; index++) {
             handled += insertBehaviour(index, resource, amount - handled, context);
             if (handled == amount)
                 break;
@@ -135,8 +135,8 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
     private int insertBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
         if (!isValid(index, resource)) return 0;
 
-        var currentStack = stacks.get(index);
-        var capacity = getCapacity(index, resource);
+        ItemStack currentStack = stacks.get(index);
+        int capacity = getCapacity(index, resource);
 
         int inserted, newAmount;
         if (currentStack.isEmpty()) {
@@ -147,7 +147,7 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
             //is there an item in the specified index already?
             if (!resource.is(currentStack)) return 0;
 
-            var currentStackAmount = currentStack.getCount();
+            int currentStackAmount = currentStack.getCount();
             inserted = Math.min(capacity - currentStackAmount, amount);
             newAmount = currentStackAmount + inserted;
         }
@@ -172,8 +172,8 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
     public int extract(ItemResource resource, int amount, TransactionContext context) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        var handled = 0;
-        for (var index = 0; index < size; index++) {
+        int handled = 0;
+        for (int index = 0; index < size; index++) {
             handled += extractBehaviour(index, resource, amount - handled, context);
             if (handled == amount) break;
         }
@@ -181,11 +181,11 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
     }
 
     private int extractBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        var currentStack = stacks.get(index);
+        ItemStack currentStack = stacks.get(index);
 
         if (!resource.is(currentStack)) return 0;
 
-        var currentAmount = currentStack.getCount();
+        int currentAmount = currentStack.getCount();
         int handledAmount = Math.min(amount, currentAmount);
         if (handledAmount > 0) {
             journals.get(index).updateSnapshots(transaction);

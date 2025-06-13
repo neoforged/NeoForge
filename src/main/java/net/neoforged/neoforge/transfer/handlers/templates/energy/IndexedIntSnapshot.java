@@ -31,9 +31,9 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     }
 
     public static ArrayList<IndexedIntSnapshot> listOf(Revert setter, Snapshot getter, NotificationSnapshot notificationJournal, int size) {
-        var snapshots = new ArrayList<IndexedIntSnapshot>();
+        ArrayList<IndexedIntSnapshot> snapshots = new ArrayList<>();
         snapshots.ensureCapacity(size);
-        for (var i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             snapshots.add(new IndexedIntSnapshot(setter, getter, i, notificationJournal));
         }
         return snapshots;

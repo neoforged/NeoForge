@@ -40,7 +40,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
     @SafeVarargs
     public static EntityEquipmentItemHandler of(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
-        var wrapper = WRAPPERS.computeIfAbsent(entity, ent -> new EntityEquipmentItemHandler(ent, slotFilter));
+        EntityEquipmentItemHandler wrapper = WRAPPERS.computeIfAbsent(entity, ent -> new EntityEquipmentItemHandler(ent, slotFilter));
         wrapper.resize(slotFilter);
         return wrapper;
     }
@@ -61,21 +61,21 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         //NEO: This may be needed to be redone, but this was to ensure that we have not already assigned this instance
         if (size > 0) return;
 
-        var list = new ArrayList<EquipmentSlot>();
-        for (var equipmentSlotPredicate : slotFilter) {
+        ArrayList<EquipmentSlot> list = new ArrayList<>();
+        for (Predicate<EquipmentSlot> equipmentSlotPredicate : slotFilter) {
             list.addAll(Arrays.stream(EquipmentSlot.values()).filter(equipmentSlotPredicate).toList());
         }
         this.slots.addAll(list);
 
         size = list.size();
         internalStacks.ensureCapacity(size);
-        for (var i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             internalStacks.add(getStackInSlot(i));
         }
 
-        var handlerSize = slots.size();
+        int handlerSize = slots.size();
         snapshots.ensureCapacity(handlerSize);
-        for (var i = 0; i < handlerSize; i++) {
+        for (int i = 0; i < handlerSize; i++) {
             snapshots.add(new EquipmentSlotSnapshotJournal(snapshots.size()));
         }
     }
@@ -104,7 +104,7 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
 
         @Override
         protected void onCommit(ItemStack originalState) {
-            var itemStack = internalStacks.get(index);
+            ItemStack itemStack = internalStacks.get(index);
             set(index, ItemResource.of(itemStack), originalState.getCount());
             entity.setItemSlot(validateSlotIndex(index), itemStack);
         }
@@ -171,9 +171,9 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var handled = 0;
-        var size = size();
-        for (var index = 0; index < size; index++) {
+        int handled = 0;
+        int size = size();
+        for (int index = 0; index < size; index++) {
             handled += insertBehaviour(index, resource, amount - handled, transaction);
         }
 
@@ -210,9 +210,9 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var handled = 0;
-        var size = size();
-        for (var index = 0; index < size; index++) {
+        int handled = 0;
+        int size = size();
+        for (int index = 0; index < size; index++) {
             handled += extractBehaviour(index, resource, amount - handled, transaction);
         }
 

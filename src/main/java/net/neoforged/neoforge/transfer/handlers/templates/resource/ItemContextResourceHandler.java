@@ -88,7 +88,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     public int insert(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount) || !isValid(0, resource)) return 0;
         T presentResource = getResource(0);
-        var singleItemLimit = getSingleItemLimit();
+        int singleItemLimit = getSingleItemLimit();
 
         if (presentResource.isEmpty()) {
             if (amount < singleItemLimit)
@@ -110,7 +110,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         if (ResourceHandlerUtil.isEmpty(resource, amount) || isEmpty() || !getResource(0).equals(resource)) return 0;
         int containerFill = getSingleItemAmount();
         if (amount < containerFill) {
-            var singleItemLimit = getSingleItemLimit();
+            int singleItemLimit = getSingleItemLimit();
 
             int exchanged = setPartial(resource, containerFill - amount, singleItemLimit, transaction);
             return exchanged == 1 ? amount : 0;

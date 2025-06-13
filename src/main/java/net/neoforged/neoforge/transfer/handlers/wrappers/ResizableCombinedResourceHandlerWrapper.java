@@ -31,8 +31,8 @@ public class ResizableCombinedResourceHandlerWrapper<T extends IResource> extend
 
     @Override
     public int size() {
-        var sum = 0;
-        for (var handler : handlers) {
+        int sum = 0;
+        for (IResourceHandler<T> handler : handlers) {
             sum += handler.size();
         }
         return sum;
@@ -40,10 +40,10 @@ public class ResizableCombinedResourceHandlerWrapper<T extends IResource> extend
 
     @Override
     protected int getHandlerIndex(int index) {
-        var offset = 0;
+        int offset = 0;
         for (int i = 0; i < handlers.length; i++) {
-            var handler = handlers[i];
-            var handlerSize = handler.size();
+            IResourceHandler<T> handler = handlers[i];
+            int handlerSize = handler.size();
             if (index >= offset && index < handlerSize + offset) {
                 return i;
             }
@@ -54,7 +54,7 @@ public class ResizableCombinedResourceHandlerWrapper<T extends IResource> extend
 
     @Override
     protected int getSlotFromIndex(int index, int handlerIndex) {
-        var sizeUntil = 0;
+        int sizeUntil = 0;
         //gets all total length up to the index we are in.
         for (int i = 0; i < handlerIndex; i++) {
             sizeUntil += handlers[i].size();
@@ -70,8 +70,8 @@ public class ResizableCombinedResourceHandlerWrapper<T extends IResource> extend
 
         @Override
         public void set(int index, T resource, int amount) {
-            var handlerIndex = getHandlerIndex(index);
-            var handler = getHandlerFromIndex(handlerIndex);
+            int handlerIndex = getHandlerIndex(index);
+            IResourceHandler<T> handler = getHandlerFromIndex(handlerIndex);
             if (handler instanceof IResourceHandlerModifiable<T> modifiable)
                 modifiable.set(getSlotFromIndex(index, handlerIndex), resource, amount);
         }

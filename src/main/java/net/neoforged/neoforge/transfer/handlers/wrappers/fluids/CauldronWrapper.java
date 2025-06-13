@@ -30,7 +30,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
     private final WrapperLocation location;
 
     public static CauldronWrapper get(Level level, BlockPos pos) {
-        var location = new WrapperLocation(level, pos.immutable());
+        WrapperLocation location = new WrapperLocation(level, pos.immutable());
         return wrappers.computeIfAbsent(location, CauldronWrapper::new);
     }
 

@@ -76,7 +76,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     public int insert(int amount, TransactionContext transaction) {
         if (amount == 0 || maxInsert == 0) return 0;
 
-        var stackedAmount = maxInsert * itemContext.getAmount();
+        int stackedAmount = maxInsert * itemContext.getAmount();
         //handle overflow
         if (stackedAmount < 0) stackedAmount = Integer.MAX_VALUE;
 
@@ -95,10 +95,10 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     public int extract(int amount, TransactionContext transaction) {
         if (amount == 0 || maxExtract == 0) return 0;
 
-        var rawStackExtract = this.maxExtract * this.itemContext.getAmount();
+        int rawStackExtract = this.maxExtract * this.itemContext.getAmount();
         if (rawStackExtract < 0) rawStackExtract = Integer.MAX_VALUE;
 
-        var clampedValue = Mth.clamp(amount, 0, rawStackExtract);
+        int clampedValue = Mth.clamp(amount, 0, rawStackExtract);
         if (clampedValue <= 0) return 0;
 
         int containerFill = getIndividualAmount();
@@ -129,14 +129,14 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     @Override
     public int getAmount(int index) {
         int rawEnergy = getIndividualAmount();
-        var preCalc = Mth.clamp(rawEnergy, 0, this.capacity) * this.itemContext.getAmount();
+        int preCalc = Mth.clamp(rawEnergy, 0, this.capacity) * this.itemContext.getAmount();
         if (preCalc < 0) return Integer.MAX_VALUE;
         return preCalc;
     }
 
     @Override
     public int getCapacity(int index) {
-        var stackedAmount = this.capacity * itemContext.getAmount();
+        int stackedAmount = this.capacity * itemContext.getAmount();
         //handle overflow
         if (stackedAmount < 0) return Integer.MAX_VALUE;
         return stackedAmount;

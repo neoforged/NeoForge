@@ -69,50 +69,50 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
     @Override
     public T getResource(int index) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getResource(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
     public int getAmount(int index) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getAmount(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
     public int getCapacity(int index, T resource) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getCapacity(getSlotFromIndex(index, handlerIndex), resource);
     }
 
     @Override
     public boolean isValid(int index, T resource) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).isValid(getSlotFromIndex(index, handlerIndex), resource);
     }
 
     @Override
     public boolean supportsInsertion(int index) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).supportsInsertion(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
     public boolean supportsExtraction(int index) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).supportsExtraction(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        var handled = 0;
-        for (var resourceHandler : handlers) {
+        int handled = 0;
+        for (IResourceHandler<T> resourceHandler : handlers) {
             handled += resourceHandler.insert(resource, amount - handled, transaction);
             if (handled >= amount) break;
         }
@@ -121,14 +121,14 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        var handlerIndex = getHandlerIndex(index);
+        int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        var handled = 0;
-        for (var resourceHandler : handlers) {
+        int handled = 0;
+        for (IResourceHandler<T> resourceHandler : handlers) {
             handled += resourceHandler.extract(resource, amount - handled, transaction);
             if (handled >= amount) break;
         }
@@ -143,8 +143,8 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
         @Override
         public void set(int index, T resource, int amount) {
-            var handlerIndex = getHandlerIndex(index);
-            var handler = getHandlerFromIndex(handlerIndex);
+            int handlerIndex = getHandlerIndex(index);
+            IResourceHandler<T> handler = getHandlerFromIndex(handlerIndex);
             if (handler instanceof IResourceHandlerModifiable<T> modifiable)
                 modifiable.set(getSlotFromIndex(index, handlerIndex), resource, amount);
         }

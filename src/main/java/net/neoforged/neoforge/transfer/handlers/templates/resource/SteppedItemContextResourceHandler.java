@@ -29,7 +29,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
 
         if (!isValid(0, resource) || !isEmpty()) return 0;
 
-        var singleItemLimit = getSingleItemAmount();
+        int singleItemLimit = getSingleItemAmount();
         if (amount < singleItemLimit) return 0;
 
         return fill(resource, amount / singleItemLimit, transaction, singleItemLimit) * singleItemLimit;
@@ -41,7 +41,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
 
         if (isEmpty() || !getResource(0).equals(resource)) return 0;
 
-        var singleItemLimit = getSingleItemAmount();
+        int singleItemLimit = getSingleItemAmount();
 
         if (amount <= singleItemLimit) return 0;
 

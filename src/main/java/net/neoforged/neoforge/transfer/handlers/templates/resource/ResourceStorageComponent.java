@@ -57,7 +57,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
 
     @Override
     public ResourceStorageComponent<T> modify(int index, T resource, int amount) {
-        var list = NonNullList.<ResourceStack<T>>createWithCapacity(stacks.size());
+        NonNullList<ResourceStack<T>> list = NonNullList.<ResourceStack<T>>createWithCapacity(stacks.size());
         for (IResourceStack<T> stack : stacks) {
             list.add(stack.immutable());
         }
@@ -72,7 +72,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
 
     @Override
     public ResourceStorageAttachment<T> attachment() {
-        var list = NonNullList.<MutableResourceStack<T>>createWithCapacity(stacks.size());
+        NonNullList<MutableResourceStack<T>> list = NonNullList.<MutableResourceStack<T>>createWithCapacity(stacks.size());
         for (ResourceStack<T> stack : stacks) {
             list.add(stack.mutable());
         }

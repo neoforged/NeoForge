@@ -93,7 +93,7 @@ public class BlockFluidHandler extends SnapshotJournal<BlockFluidHandler.Snapsho
 
         boolean waterLoggable = state.getBlock() instanceof LiquidBlockContainer container && container.canPlaceLiquid(null, level, pos, state, resource.getInstanceValue());
         boolean replaceable = state.canBeReplaced(resource.getInstanceValue());
-        var fluidstack = resource.toStack(amount);
+        FluidStack fluidstack = resource.toStack(amount);
         if ((waterLoggable || replaceable) && resource.getFluidType().isVaporizedOnPlacement(level, pos, fluidstack)) {
             updateSnapshots(transaction);
             fluid = resource.toStack(amount);

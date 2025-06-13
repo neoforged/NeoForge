@@ -16,6 +16,7 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
@@ -86,14 +87,14 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
         int bucketsToFill = amount / FluidType.BUCKET_VOLUME;
         if (bucketsToFill == 0) return 0;
-        var handled = itemContext.exchange(filledBucket, bucketsToFill, transaction);
+        int handled = itemContext.exchange(filledBucket, bucketsToFill, transaction);
         return handled * FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var containedFluid = getResource(0);
+        FluidResource containedFluid = getResource(0);
 
         if (!resource.equals(containedFluid)) {
             // Incompatible fluid
@@ -105,7 +106,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
             // Nothing to empty
             return 0;
         }
-        try (var subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int bucketsEmptied = itemContext.exchange(ItemResource.of(Items.BUCKET), bucketsToEmpty, subTransaction);
             subTransaction.commit();
             return bucketsEmptied * FluidType.BUCKET_VOLUME;

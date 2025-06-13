@@ -86,10 +86,10 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      */
     public void updateSnapshots(TransactionContext transaction) {
         //This should be negligible at best, but it does alleviate the resize burden when adding incrementally here on sudden spikes.
-        var nestingDepth = transaction.nestingDepth();
+        int nestingDepth = transaction.nestingDepth();
 
         snapshots.ensureCapacity(nestingDepth);
-        for (var i = snapshots.size(); i <= nestingDepth; i++) {
+        for (int i = snapshots.size(); i <= nestingDepth; i++) {
             snapshots.add(null);
         }
 
@@ -105,7 +105,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     public void onClose(TransactionContext transaction, Transaction.Result result) {
         //NEO: for testing and will be removed after deprecation period is over for handler reworks.
         // This is to provide a quick way to give some metrics during the migration phase
-        var max = Math.max(DEEPEST_LAYER, transaction.nestingDepth());
+        int max = Math.max(DEEPEST_LAYER, transaction.nestingDepth());
         if (max != DEEPEST_LAYER) {
             DEEPEST_LAYER = max;
             DEEPEST_SNAPSHOT = this;

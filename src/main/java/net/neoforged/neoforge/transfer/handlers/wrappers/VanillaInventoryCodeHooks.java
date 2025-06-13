@@ -33,7 +33,7 @@ public class VanillaInventoryCodeHooks {
      * @return {@code true} if we moved an item, {@code false} if we moved no items
      */
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
-        var size = handler.size();
+        int size = handler.size();
         for (int i = 0; i < size; i++) {
             ItemStack extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
             if (extractedItemStack.isEmpty()) continue;
@@ -96,7 +96,7 @@ public class VanillaInventoryCodeHooks {
                     return entity instanceof Container || entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, side) != null;
                 });
         if (!list.isEmpty()) {
-            var entity = list.get(level.random.nextInt(list.size()));
+            Entity entity = list.get(level.random.nextInt(list.size()));
             if (entity instanceof Container container) {
                 return ContainerOrHandler.container(container);
             }

@@ -14,6 +14,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
@@ -46,7 +47,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     private static final Map<Container, VanillaContainerWrapper> WRAPPERS = new MapMaker().weakValues().makeMap();
 
     public static VanillaContainerWrapper of(Container container) {
-        var wrapper = WRAPPERS.computeIfAbsent(container,
+        VanillaContainerWrapper wrapper = WRAPPERS.computeIfAbsent(container,
                 inv -> inv instanceof Inventory inventory ? new PlayerInventoryWrapper(inventory) : new VanillaContainerWrapper(inv));
         wrapper.resize();
         return wrapper;
@@ -69,7 +70,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     private void resize() {
         size = container.getContainerSize();
         snapshots.ensureCapacity(size);
-        for (var i = snapshots.size(); i < size; i++) {
+        for (int i = snapshots.size(); i < size; i++) {
             snapshots.add(new SlotItemStackResourceHandlerJournal(i));
         }
     }
@@ -98,10 +99,10 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var handled = 0;
-        var size = size();
+        int handled = 0;
+        int size = size();
 
-        for (var index = 0; index < size; index++) {
+        for (int index = 0; index < size; index++) {
             if (!isValid(index, resource)) continue;
 
             handled += get(index).insert(0, resource, amount - handled, transaction);
@@ -120,10 +121,10 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        var handled = 0;
-        var size = size();
+        int handled = 0;
+        int size = size();
 
-        for (var index = 0; index < size; index++) {
+        for (int index = 0; index < size; index++) {
             handled += get(index).extract(0, resource, amount - handled, transaction);
             if (handled == amount) break;
         }
@@ -243,7 +244,7 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
             // For chests: also schedule a setChanged call for the other half
             if (container instanceof ChestBlockEntity chest && chest.getBlockState().getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
                 BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
-                var level = chest.getLevel();
+                Level level = chest.getLevel();
                 if (level != null && level.getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
                     VanillaContainerWrapper.of(otherChest).setChangedParticipant.updateSnapshots(transaction);
                 }
