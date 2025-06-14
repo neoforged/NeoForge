@@ -46,7 +46,6 @@ public class NeoForgeDataMaps {
      * <ul>
      * <li>{@code distance}, a float - the acceptable distance between a villager and another hostile mob.</li>
      * </ul>
-     *
      */
     public static final DataMapType<EntityType<?>, AcceptableHostileDistance> ACCEPTABLE_HOSTILE_DISTANCES = DataMapType.builder(id("acceptable_hostile_distances"), Registries.ENTITY_TYPE, AcceptableHostileDistance.CODEC)
             .synced(AcceptableHostileDistance.DISTANCE_CODEC, false).build();

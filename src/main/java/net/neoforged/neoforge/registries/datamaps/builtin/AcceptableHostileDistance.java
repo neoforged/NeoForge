@@ -8,6 +8,11 @@ package net.neoforged.neoforge.registries.datamaps.builtin;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+/**
+ * Data map value for {@linkplain NeoForgeDataMaps#ACCEPTABLE_HOSTILE_DISTANCES acceptable hostile distances}.
+ *
+ * @param distance the acceptable distance between a villager and a hostile mob.
+ */
 public record AcceptableHostileDistance(float distance) {
     public static final Codec<AcceptableHostileDistance> DISTANCE_CODEC = Codec.FLOAT
             .xmap(AcceptableHostileDistance::new, AcceptableHostileDistance::distance);
