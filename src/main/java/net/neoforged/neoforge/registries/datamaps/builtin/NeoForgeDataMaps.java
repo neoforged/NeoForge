@@ -175,6 +175,7 @@ public class NeoForgeDataMaps {
 
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
+        event.register(ACCEPTABLE_HOSTILE_DISTANCES);
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
