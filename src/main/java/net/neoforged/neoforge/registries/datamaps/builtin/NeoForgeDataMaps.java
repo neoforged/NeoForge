@@ -58,6 +58,8 @@ public class NeoForgeDataMaps {
      * <ul>
      * <li>{@code chance}, a float between 0 and 1 (inclusive) - the chance that the item will add levels to the composter when composted</li>
      * </ul>
+     *
+     * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
      */
     public static final DataMapType<Item, Compostable> COMPOSTABLES = DataMapType.builder(
             id("compostables"), Registries.ITEM, Compostable.CODEC).synced(Compostable.CHANCE_CODEC, false).build();
