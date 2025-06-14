@@ -19,7 +19,7 @@
      public DataComponentPatch asPatch() {
          if (this.patch.isEmpty()) {
              return DataComponentPatch.EMPTY;
-@@ -232,7 +_,25 @@
+@@ -232,7 +_,26 @@
  
      @Override
      public int hashCode() {
@@ -39,7 +39,8 @@
 +        while (n-- != 0) {
 +            var entry = iterator.next();
 +            int componentId = net.minecraft.core.registries.BuiltInRegistries.DATA_COMPONENT_TYPE.getId(entry.getKey());
-+            int entryHash = com.google.common.math.IntMath.pow(31, componentId) * entry.getValue().hashCode();
++            // If the component is not registered in this registry (could be a different component registry), fall back to default strategy
++            int entryHash = componentId == -1 ? entry.hashCode() : com.google.common.math.IntMath.pow(31, componentId) * entry.getValue().hashCode();
 +            h += entryHash;
 +        }
 +        return h;
