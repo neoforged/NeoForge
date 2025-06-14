@@ -35,15 +35,23 @@ abstract class GenerateBinaryPatches extends JavaExec {
     abstract RegularFileProperty getMappings();
 
     /**
-     * This directory of patch files for the Java sources is used as a hint to only diff class files that
-     * supposedly have changed. If it is not set, the tool will diff every .class file instead.
+     * The files in this optional directory are used to filter which binary patches should be created.
+     * <p>A binary patch is only created for a file from {@link #getPatchedJar()}, if a source patch (A corresponding file
+     * with {@code .java.patch} extension) is present in this directory, or if a class with the same path is present in
+     * {@link #getIncludeClassesJar()} (if set).
+     * <p>For inner classes, only the outermost class is checked against the filters.
+     * <p>If neither this nor {@link #getIncludeClassesJar()} are set, no filtering is applied.
      */
     @InputDirectory
     @Optional
     abstract DirectoryProperty getSourcePatchesFolder();
 
     /**
-     * This file is used as a filter for classes to include, in addition to those specified by {@link getSourcePatchesFolder()}.
+     * The list of files included in this optional Jar file is used to filter for which files binary patches should be created.
+     * <p>A binary patch is only created for a file from {@link #getPatchedJar()}, if a file with the same path is
+     * either present in this jar, or if a corresponding source patch is present in {@link #getSourcePatchesFolder()} (if set).
+     * <p>For inner classes, only the outermost class is checked against the filters.
+     * <p>If neither this nor {@link #getSourcePatchesFolder()} are set, no filtering is applied.
      */
     @InputFile
     @Optional

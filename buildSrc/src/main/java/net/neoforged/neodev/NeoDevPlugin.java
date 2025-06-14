@@ -670,12 +670,12 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOriginalClientJar().set(originalClientJar);
         };
         project.getTasks().register("runProductionClient", RunProductionClient.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Runs the production client installed by installProductionClient.");
             configureRunProductionClient.accept(task);
         });
         project.getTasks().register("testProductionClient", TestProductionClient.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Tests the production client installed by installProductionClient.");
             configureRunProductionClient.accept(task);
         });
@@ -692,13 +692,13 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         project.getTasks().register("runProductionServer", RunProductionServer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Runs the production server installed by installProductionServer.");
             task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });
 
         project.getTasks().register("testProductionServer", TestProductionServer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Tests the production server installed by installProductionServer.");
             task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });
