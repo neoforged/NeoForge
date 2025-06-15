@@ -10,12 +10,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.EntityEquipmentItemHandler;
 
 /**
  * Exposes the armor inventory of an {@link LivingEntity} as an {@link IItemHandler} using {@link LivingEntity#getItemBySlot(EquipmentSlot)} and
  * {@link LivingEntity#setItemSlot(EquipmentSlot, ItemStack)}.
  * 
- * @deprecated Use {@link }
+ * @deprecated Use {@link EntityEquipmentItemHandler} not necessarily 1:1
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class EntityArmorInvWrapper extends EntityEquipmentInvWrapper {
