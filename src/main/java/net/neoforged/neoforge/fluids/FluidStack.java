@@ -325,6 +325,9 @@ public final class FluidStack implements MutableDataComponentHolder {
         }
     }
 
+    /**
+     * @return A {@link ResourceStack} with the current count. This resource stack is fully immutable in comparison.
+     */
     public ResourceStack<FluidResource> immutable() {
         return FluidResource.of(this).withAmount(amount);
     }
