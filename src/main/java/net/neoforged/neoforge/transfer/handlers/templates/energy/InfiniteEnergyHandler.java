@@ -24,10 +24,20 @@ public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
         return Integer.MAX_VALUE;
     }
 
+    @Override
+    public long getAmountAsLong(int index) {
+        return Long.MAX_VALUE;
+    }
+
     //Holds "infinite" energy, thus always has Max value available
     @Override
     public int getCapacity(int index) {
         return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public long getCapacityAsLong(int index) {
+        return Long.MAX_VALUE;
     }
 
     //Never

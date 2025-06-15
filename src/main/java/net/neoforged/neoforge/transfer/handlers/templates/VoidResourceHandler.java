@@ -54,6 +54,11 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
     }
 
     @Override
+    public long getCapacityAsLong(int index, T resource) {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
     public boolean isValid(int index, T resource) {
         return true; // What ever resource is queried is always allowed
     }

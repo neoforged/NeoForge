@@ -48,9 +48,19 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     }
 
     @Override
+    public long getAmountAsLong(int index) {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
     public int getCapacity(int index, T resource) {
         Objects.checkIndex(index, size());
         return Integer.MAX_VALUE; // Maximum capacity
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, T resource) {
+        return Long.MAX_VALUE;
     }
 
     @Override

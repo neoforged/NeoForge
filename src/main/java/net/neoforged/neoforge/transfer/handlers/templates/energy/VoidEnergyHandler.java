@@ -28,6 +28,11 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
         return Integer.MAX_VALUE;
     }
 
+    @Override
+    public long getCapacityAsLong(int index) {
+        return Long.MAX_VALUE;
+    }
+
     //Always accepts energy
     @Override
     public boolean supportsInsertion() {
