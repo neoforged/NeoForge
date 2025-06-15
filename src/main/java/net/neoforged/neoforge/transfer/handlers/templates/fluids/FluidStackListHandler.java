@@ -10,9 +10,11 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import javax.annotation.Nonnegative;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
@@ -20,19 +22,28 @@ import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 /**
  * This is provided as a simple handler to still use a {@link FluidStack} in a List as the backing data structure.
  * It is advised to use a {@link FluidResource} or similar form of {@link IResourceStack}.
  * <p>
- * This is expected to be used as an attachment.
+ * This can be used in an attachment, a block entity field, or other mutable structures.
  */
 public final class FluidStackListHandler implements IResourceHandlerModifiable<FluidResource> {
-    public static final MapCodec<FluidStackListHandler> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("stacks").forGetter(data -> data.stacks),
-            Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity)).apply(instance, FluidStackListHandler::new));
+    /**
+     * A helper method that creates a {@link MapCodec} for a {@link FluidStackListHandler} given some constructor.
+     *
+     * @param factory A constructor taking in a {@link NonNullList} of {@link FluidStack FluidStacks} and a capacity, expecting a call back to be already assigned for the instance being created
+     */
+    public static MapCodec<FluidStackListHandler> codec(BiFunction<NonNullList<FluidStack>, Integer, FluidStackListHandler> factory) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+                NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("stacks").forGetter(data -> data.stacks),
+                Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity)).apply(instance, factory));
+    }
 
     private final NonNullList<FluidStack> stacks;
     @Nonnegative
@@ -40,16 +51,23 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
     @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE)
     private final int capacity;
     private final ArrayList<StackJournal> journals = new ArrayList<>();
+    private final SetChangedSnapshot onChangeJournal;
 
-    public FluidStackListHandler(@Nonnegative int size, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity) {
-        this(NonNullList.withSize(size, FluidStack.EMPTY), capacity);
+    /**
+     * @param size              How large this list will be.
+     * @param capacity          How many of a single fluid can a single index maximally hold.
+     * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
+     */
+    public FluidStackListHandler(@Nonnegative int size, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity, @Nullable Runnable onChangedCallback) {
+        this(NonNullList.withSize(size, FluidStack.EMPTY), capacity, onChangedCallback);
     }
 
-    private FluidStackListHandler(NonNullList<FluidStack> stacks, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity) {
+    public FluidStackListHandler(NonNullList<FluidStack> stacks, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity, @Nullable Runnable onChangedCallback) {
         this.capacity = capacity;
         this.stacks = stacks;
         this.size = stacks.size();
         this.journals.ensureCapacity(size);
+        this.onChangeJournal = SetChangedSnapshot.of(onChangedCallback);
         for (int i = 0; i < size; i++) {
             journals.add(new StackJournal(i));
         }
@@ -208,6 +226,12 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
         }
 
         @Override
+        public void updateSnapshots(TransactionContext transaction) {
+            onChangeJournal.updateSnapshots(transaction);
+            super.updateSnapshots(transaction);
+        }
+
+        @Override
         protected FluidStack createSnapshot() {
             FluidStack original = stacks.get(index);
             return original.copy();
@@ -216,6 +240,11 @@ public final class FluidStackListHandler implements IResourceHandlerModifiable<F
         @Override
         protected void revertToSnapshot(FluidStack snapshot) {
             stacks.set(index, snapshot);
+        }
+
+        @Override
+        protected void onCommit(FluidStack originalState) {
+            onChangeJournal.runCallback();
         }
     }
 }

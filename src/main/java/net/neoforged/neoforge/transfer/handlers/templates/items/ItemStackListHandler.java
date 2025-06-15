@@ -10,29 +10,42 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import javax.annotation.Nonnegative;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 /**
  * This is provided as a simple handler to still use a {@link ItemStack} in a List as the backing data structure.
  * It is advised to use a {@link ItemResource} or similar form of {@link IResourceStack}.
  * <p>
- * This is expected to be used as an attachment.
+ * This can be used in an attachment, a block entity field, or other mutable structures.
  */
 public final class ItemStackListHandler implements IResourceHandlerModifiable<ItemResource> {
-    public static final MapCodec<ItemStackListHandler> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            NonNullList.codecOf(ItemStack.OPTIONAL_CODEC).fieldOf("stacks").forGetter(data -> data.stacks),
-            Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity)).apply(instance, ItemStackListHandler::new));
+    /**
+     * A helper method that creates a {@link MapCodec} for a {@link FluidStackListHandler} given some constructor.
+     *
+     * @param factory A constructor taking in a {@link NonNullList} of {@link FluidStack FluidStacks} and a capacity, expecting a call back to be already assigned for the instance being created
+     */
+    public static MapCodec<ItemStackListHandler> codec(BiFunction<NonNullList<ItemStack>, Integer, ItemStackListHandler> factory) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+                NonNullList.codecOf(ItemStack.OPTIONAL_CODEC).fieldOf("stacks").forGetter(data -> data.stacks),
+                Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity)).apply(instance, factory));
+    }
 
     private final NonNullList<ItemStack> stacks;
     @Nonnegative
@@ -40,16 +53,23 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
     @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE)
     private final int capacity;
     private final ArrayList<StackJournal> journals = new ArrayList<>();
+    private final SetChangedSnapshot onChangeJournal;
 
-    public ItemStackListHandler(@Nonnegative int size, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity) {
-        this(NonNullList.withSize(size, ItemStack.EMPTY), capacity);
+    /**
+     * @param size              How large this list will be.
+     * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
+     * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
+     */
+    public ItemStackListHandler(@Nonnegative int size, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity, @Nullable Runnable onChangedCallback) {
+        this(NonNullList.withSize(size, ItemStack.EMPTY), capacity, onChangedCallback);
     }
 
-    private ItemStackListHandler(NonNullList<ItemStack> stacks, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity) {
+    public ItemStackListHandler(NonNullList<ItemStack> stacks, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity, @Nullable Runnable onChangedCallback) {
         this.capacity = capacity;
         this.stacks = stacks;
         this.size = stacks.size();
         this.journals.ensureCapacity(size);
+        this.onChangeJournal = SetChangedSnapshot.of(onChangedCallback);
         for (int i = 0; i < size; i++) {
             journals.add(new StackJournal(i));
         }
@@ -207,6 +227,12 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
         }
 
         @Override
+        public void updateSnapshots(TransactionContext transaction) {
+            onChangeJournal.updateSnapshots(transaction);
+            super.updateSnapshots(transaction);
+        }
+
+        @Override
         protected ItemStack createSnapshot() {
             ItemStack original = stacks.get(index);
             return original.copy();
@@ -215,6 +241,11 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
         @Override
         protected void revertToSnapshot(ItemStack snapshot) {
             stacks.set(index, snapshot);
+        }
+
+        @Override
+        protected void onCommit(ItemStack originalState) {
+            onChangeJournal.runCallback();
         }
     }
 }
