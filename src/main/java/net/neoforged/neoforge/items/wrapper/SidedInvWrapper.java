@@ -53,6 +53,9 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     }
 
     public static int getSlot(WorldlyContainer inv, int slot, @Nullable Direction side) {
+        if (side == null) {
+            return slot;
+        }
         int[] slots = inv.getSlotsForFace(side);
         if (slot < slots.length)
             return slots[slot];
@@ -80,6 +83,9 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
 
     @Override
     public int getSlots() {
+        if (side == null) {
+            return inv.getContainerSize();
+        }
         return inv.getSlotsForFace(side).length;
     }
 
@@ -187,7 +193,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
         if (stackInSlot.isEmpty())
             return ItemStack.EMPTY;
 
-        if (!inv.canTakeItemThroughFace(slot1, stackInSlot, side))
+        if (side != null && !inv.canTakeItemThroughFace(slot1, stackInSlot, side))
             return ItemStack.EMPTY;
 
         if (simulate) {
