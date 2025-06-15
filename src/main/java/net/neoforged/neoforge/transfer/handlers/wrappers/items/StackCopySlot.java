@@ -12,8 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemContextItemHandler;
 import org.jetbrains.annotations.Nullable;
 
-// TODO NEO: Is this still needed, and what did this do? Same deal as the ItemHandlerCopySlot
-// Possible removal
 /**
  * Slot to handle immutable itemstack storages (Ex: {@link ItemContextItemHandler}).
  * <p>

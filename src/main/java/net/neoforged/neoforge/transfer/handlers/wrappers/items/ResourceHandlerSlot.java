@@ -19,8 +19,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
 
-// TODO Neo: Do we maintain this. What is the practical purpose?
-// Possible removal
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
     private final IResourceHandler<ItemResource> handler;

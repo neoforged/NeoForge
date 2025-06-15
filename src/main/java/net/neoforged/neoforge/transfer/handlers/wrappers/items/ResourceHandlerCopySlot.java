@@ -13,8 +13,6 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifi
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemContextItemHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
-// TODO NEO: Is this still necessary with our examples, and what did this do exactly? Fine with which ever, we need to fix the documentation linking and add the snapshotting
-// Possible removal
 /**
  * Slot class that can be used with immutable {@link IResourceHandler IResourceHandlers}
  * like {@link ItemContextItemHandler MCItemContentsHandler}.
