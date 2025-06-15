@@ -13,7 +13,6 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Implement this interface on your Block Entity if it can be used in a Hopper.
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.ApiStatus;
  * }</pre>
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-@ApiStatus.ScheduledForRemoval(inVersion = "1.22")
 public interface IItemHandler {
     /**
      * Returns the number of slots available
