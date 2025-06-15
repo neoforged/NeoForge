@@ -79,6 +79,7 @@ public final class CauldronFluidContent {
 
     /**
      * Return the amount of fluid, in millibuckets, in the cauldron given its block state.
+     * This is expected to be lossy in scenarios where division would result in a decimal number. (Floor rounding)
      */
     public int getMillibuckets(BlockState state) {
         return totalAmount * currentLevel(state) / maxLevel;

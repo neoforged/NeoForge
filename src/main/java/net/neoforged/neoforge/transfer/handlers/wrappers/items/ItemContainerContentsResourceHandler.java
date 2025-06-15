@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
+import java.util.Objects;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
@@ -61,6 +62,8 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
 
     @Override
     public int getCapacity(int index, ItemResource resource) {
+        Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return Item.ABSOLUTE_MAX_STACK_SIZE;
         return Math.min(resource.getMaxStackSize(), Item.ABSOLUTE_MAX_STACK_SIZE);
     }
 

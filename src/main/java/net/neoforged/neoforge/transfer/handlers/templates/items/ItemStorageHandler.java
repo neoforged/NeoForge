@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.items;
 
+import java.util.Objects;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
@@ -32,6 +33,8 @@ public abstract class ItemStorageHandler extends ResourceStorageHandler<ItemReso
 
     @Override
     public int getCapacity(int index, ItemResource resource) {
+        Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return capacity;
         return Math.min(resource.getMaxStackSize(), capacity);
     }
 

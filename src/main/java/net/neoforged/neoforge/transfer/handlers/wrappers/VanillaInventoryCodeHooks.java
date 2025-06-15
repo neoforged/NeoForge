@@ -21,8 +21,9 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ContainerOrHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 public class VanillaInventoryCodeHooks {
@@ -34,25 +35,46 @@ public class VanillaInventoryCodeHooks {
      */
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
         int size = handler.size();
-        for (int i = 0; i < size; i++) {
-            ItemStack extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
-            if (extractedItemStack.isEmpty()) continue;
+        var containerSize = dest.getContainerSize();
 
-            for (int j = 0; j < dest.getContainerSize(); j++) {
+        for (int i = 0; i < size; i++) {
+            ItemStack extractedItemStack;
+            //Simulates the extraction
+            try (Transaction simulate = TransactionManager.open(TransactionContext.ROOT)) {
+                extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, ResourceFilters.any(), i, 1, simulate);
+                if (extractedItemStack.isEmpty()) continue; // Next index in the handler
+            }
+
+            //Item found, now to iterate the hopper indices
+            for (int j = 0; j < containerSize; j++) {
+                //Item currently in the hopper slot.
                 ItemStack destStack = dest.getItem(j);
 
-                if (!dest.canPlaceItem(j, extractedItemStack) || (!destStack.isEmpty() && (destStack.getCount() >= destStack.getMaxStackSize() || destStack.getCount() >= dest.getMaxStackSize() || !ItemStack.isSameItemSameComponents(extractedItemStack, destStack))))
-                    continue;
-                extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
-                if (extractedItemStack.isEmpty()) continue;//Should be unneeded
-                if (destStack.isEmpty())
+                // If the item can't be placed in, skip. This is slightly different from normal vanilla behaviour.
+                if (!dest.canPlaceItem(j, extractedItemStack)) continue;
+
+                //Change logic based on if there is something there or not.
+                //All simulations are done, we now just need to follow the path based on what is there.
+                if (destStack.isEmpty()) {
+                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
+                    if (extractedItemStack.isEmpty()) continue;//Should be unneeded
                     dest.setItem(j, extractedItemStack);
-                else {
+                    dest.setChanged();
+                    return true;
+                }
+
+                var destCount = destStack.getCount();
+                var canStackHoldMore = destCount < destStack.getMaxStackSize();
+                var canSlotHoldMore = destCount < dest.getMaxStackSize();
+
+                if (canStackHoldMore && canSlotHoldMore && ItemStack.isSameItemSameComponents(extractedItemStack, destStack)) {
+                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, TransactionContext.ROOT);
+                    if (extractedItemStack.isEmpty()) continue;//Should be unneeded
                     destStack.grow(1);
                     dest.setItem(j, destStack);
+                    dest.setChanged();
+                    return true;
                 }
-                dest.setChanged();
-                return true;
             }
         }
         return false;
@@ -68,13 +90,14 @@ public class VanillaInventoryCodeHooks {
         if (ResourceHandlerUtil.isFull(handler))
             return false;
 
-        for (int i = 0; i < hopper.getContainerSize(); ++i) {
-            if (hopper.getItem(i).isEmpty())
+        var size = hopper.getContainerSize();
+        for (int i = 0; i < size; ++i) {
+            var item = hopper.getItem(i);
+            if (item.isEmpty())
                 continue;
 
-            ItemStack originalSlotContents = hopper.getItem(i).copy();
-            ResourceStack<ItemResource> insertStack = hopper.removeItem(i, 1).immutable();
-            int accepted = ResourceHandlerUtil.insertIndexForced(handler, insertStack.resource(), insertStack.amount(), TransactionContext.ROOT);
+            ItemStack originalSlotContents = item.copy();
+            int accepted = ItemUtil.insertIndexForced(handler, hopper.removeItem(i, 1), TransactionContext.ROOT);
             if (accepted > 0)
                 return true;
 

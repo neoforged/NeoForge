@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import com.google.common.primitives.Ints;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Predicate;
@@ -57,8 +58,12 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
 
     @Override
     public int getCapacity(int index, T resource) {
-        //This ignores say the resource size limits at the moment. As well as possibly able to overflow if done incorrectly
-        return getSingleItemLimit() * itemContext.getAmount();
+        return Ints.saturatedCast((long) getSingleItemLimit() * (long) itemContext.getAmount());
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, T resource) {
+        return (long) getSingleItemLimit() * (long) itemContext.getAmount();
     }
 
     private int getSingleItemLimit() {

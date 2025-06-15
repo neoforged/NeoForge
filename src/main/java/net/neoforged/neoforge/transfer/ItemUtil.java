@@ -108,6 +108,21 @@ public final class ItemUtil {
         return ResourceHandlerUtil.insertStacking(handler, ItemResource.of(stack), stack.getCount(), transaction);
     }
 
+    public static int insertIndexForced(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {
+        return ResourceHandlerUtil.insertIndexForced(handler, ItemResource.of(stack), stack.getCount(), transaction);
+    }
+
+    /**
+     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
+     *
+     * @param handler     The {@link IResourceHandler} to extract the resource from
+     * @param filter      The filter to apply to the resources
+     * @param amount      The desired amount of the resource to extract
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return an {@link ItemStack} of the first matching resource of the filter.
+     */
     public static ItemStack extractItemStackFiltered(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,

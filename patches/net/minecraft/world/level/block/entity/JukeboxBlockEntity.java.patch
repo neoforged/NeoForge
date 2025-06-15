@@ -1,11 +1,10 @@
 --- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
-@@ -113,9 +_,28 @@
+@@ -113,9 +_,27 @@
          return itemstack;
      }
  
 +    // Neo: Support deferring "final" actions until end of a transaction
-+    //
 +    @Override
 +    public void setItem(int slot, ItemStack stack, boolean performCommitActions) {
 +        if (slot != 0) return;
