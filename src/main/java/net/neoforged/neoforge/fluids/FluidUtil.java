@@ -11,7 +11,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -561,5 +563,22 @@ public final class FluidUtil {
         //                }
         //            }
         net.neoforged.neoforge.transfer.FluidUtil.destroyBlockOnFluidPlacement(level, pos);
+    }
+
+    /**
+     * @param fluidStack contents used to fill the bucket.
+     *                   FluidStack is used instead of Fluid to preserve fluid NBT, the amount is ignored.
+     * @return a filled vanilla bucket or filled universal bucket.
+     *         Returns empty itemStack if none of the enabled buckets can hold the fluid.
+     */
+    public static ItemStack getFilledBucket(FluidStack fluidStack) {
+        if (fluidStack.getComponents().isEmpty()) {
+            if (fluidStack.is(Fluids.WATER)) {
+                return new ItemStack(Items.WATER_BUCKET);
+            } else if (fluidStack.is(Fluids.LAVA)) {
+                return new ItemStack(Items.LAVA_BUCKET);
+            }
+        }
+        return fluidStack.getFluidType().getBucket(fluidStack);
     }
 }
