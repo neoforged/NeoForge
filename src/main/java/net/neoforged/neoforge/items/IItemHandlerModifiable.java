@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.items;
 
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * An item handler that supports direct modification of the contents of the
@@ -16,8 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @deprecated Use {@link IResourceHandlerModifiable} of {@link ItemResource} instead
  */
-@Deprecated(forRemoval = true, since = "1.21")
-@ApiStatus.ScheduledForRemoval(inVersion = "1.22")
+@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public interface IItemHandlerModifiable extends IItemHandler {
     /**
      * Overrides the stack in the given slot. This method is used by the

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.items;
+package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;

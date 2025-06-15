@@ -83,6 +83,14 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         };
     }
 
+    public IResourceHandler<ItemResource> getArmorSlotForEquipment(EquipmentSlot slot) {
+        return getSlot(slot.getIndex(36));
+    }
+
+    public IResourceHandler<ItemResource> getArmor() {
+        return new RangedResourceHandler<>(this, EquipmentSlot.FEET.getIndex(36), EquipmentSlot.HEAD.getIndex(36));
+    }
+
     /**
      * Retrieves a wrapper around the main slots only.
      */
