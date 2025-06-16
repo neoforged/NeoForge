@@ -73,7 +73,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
     }
 
     /**
-     * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
+     * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Meaning this value should not be dynamic.
      * <p>
      * Intended use is for something like a pipe graph lookup to be able to reduce the runtime workload on handlers that can never do a specific operation.
      * <p>
@@ -85,14 +85,14 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * well before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in insert.
+     * It is also advised to not use the result of this call in insert. Nor is it expected to be called before every insert.
      * <p>
      * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be insertable to.
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check. <strong>Must be Non-Negative</strong>
-     * @return True if the resource can be inserted, false otherwise.
+     * @return True if any resource can be inserted at the specified index, false otherwise.
      */
     public boolean supportsInsertion(int index) {
         return handler.supportsInsertion(index);
@@ -108,7 +108,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @return True if a resource can be inserted, false otherwise.
+     * @return True if any resource can be inserted, false otherwise.
      */
     public boolean supportsInsertion() {
         return handler.supportsInsertion();
@@ -132,7 +132,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check. <strong>Must be Non-Negative</strong>
-     * @return True if the resource can be extracted, false otherwise.
+     * @return True if any resource can be extracted at the specified index, false otherwise.
      */
     public boolean supportsExtraction(int index) {
         return handler.supportsExtraction(index);
@@ -148,7 +148,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @return True if a resource can be extracted, false otherwise.
+     * @return True if any resource can be extracted, false otherwise.
      */
     public boolean supportsExtraction() {
         return handler.supportsExtraction();
@@ -201,6 +201,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      */
     public int extract(int index, T resource, int amount, TransferAction actionType) {
         try (Transaction transaction = TransactionManager.open(null)) {
+
             int extracted = handler.extract(index, resource, amount, transaction);
             actionType.commit(transaction);
             return extracted;

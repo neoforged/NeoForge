@@ -5,7 +5,8 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import org.jetbrains.annotations.ApiStatus;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A global operation where participants guarantee atomicity: either the whole operation succeeds,
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <pre>{@code
  * try (Transaction outerTransaction = TransactionManager.open(TransactionContext.ROOT)) {
  *     // (A) some transaction operations
- *     try (Transaction nestedTransaction = outerTransaction.open()) {
+ *     try (Transaction nestedTransaction = TransactionManager.open(outerTransaction)) {
  *         // (B) more operations
  *         nestedTransaction.commit();
  *         // Commit the changes that happened in this transaction.
@@ -50,7 +51,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <p>Participants are responsible for upholding this contract themselves, by using {@link #addCloseCallback}
  * to react to transaction close events and properly validate or revert changes.
- * Any action that modifies state outside of the transaction, such as calls to {@code markDirty()} or neighbor updates,
+ * Any action that modifies state outside the transaction, such as calls to {@code markDirty()} or neighbor updates,
  * should be deferred until {@linkplain #addRootCloseCallback after the outer transaction is closed}
  * to give every participant a chance to react to transaction close events.
  *
@@ -64,8 +65,7 @@ import org.jetbrains.annotations.ApiStatus;
  * and attempts to use it on another thread will throw an exception.
  * Consequently, transactions can be concurrent across multiple threads, as long as they don't share any state.
  */
-@ApiStatus.NonExtendable
-public interface Transaction extends AutoCloseable, TransactionContext {
+public final class Transaction implements AutoCloseable, TransactionContext {
     /**
      * Close the current transaction, committing all the changes that happened during this transaction and its <b>committed</b> children transactions.
      * If this transaction was opened with a {@code null} parent, all changes are applied.
@@ -78,30 +78,161 @@ public interface Transaction extends AutoCloseable, TransactionContext {
      * @throws IllegalStateException If this transaction is not the current transaction.
      * @throws IllegalStateException If this transaction was closed.
      */
-    void commit();
+    public void commit() {
+        close(Result.COMMITTED);
+    }
 
     /**
      * Abort the current transaction if it was not closed already.
      */
     @Override
-    void close();
+    public void close() {
+        // check that a transaction is open on this thread and that this transaction is open.
+        if (manager.isOpen() && lifecycle == Lifecycle.OPEN) {
+            close(Result.ABORTED);
+        }
+    }
 
-    enum Lifecycle {
-        /**
-         * No transaction is currently open or closing.
-         */
-        NONE,
-        /**
-         * A transaction is currently open.
-         */
-        OPEN,
-        /**
-         * The current transaction is invoking its close callbacks.
-         */
-        CLOSING,
-        /**
-         * The current transaction is invoking its outer close callbacks.
-         */
-        ROOT_CLOSING
+    @Override
+    public int nestingDepth() {
+        validateCurrentThread();
+        return nestingDepth;
+    }
+
+    @Override
+    public Transaction getOpenTransaction(int nestingDepth) {
+        validateCurrentThread();
+
+        if (nestingDepth < 0) {
+            throw new IndexOutOfBoundsException("Nesting depth may not be negative.");
+        }
+
+        if (nestingDepth > manager.currentDepth) {
+            throw new IndexOutOfBoundsException("There is no open transaction for nesting depth " + nestingDepth);
+        }
+
+        Transaction transaction = manager.stack.get(nestingDepth);
+        transaction.validateOpen();
+        return transaction;
+    }
+
+    @Override
+    public void addCloseCallback(CloseCallback closeCallback) {
+        validateCurrentThread();
+        validateOpen();
+        closeCallbacks.add(closeCallback);
+    }
+
+    @Override
+    public void addRootCloseCallback(RootCloseCallback rootCloseCallback) {
+        validateCurrentThread();
+        // Note: we don't call validateOpen() because this transaction may not be open if this is called during a CloseCallback.
+        // We rely on a currentDepth check instead, as the depth is only set to -1 at the very end of close(Result).
+
+        if (manager.currentDepth == -1) {
+            throw new IllegalStateException("There is no open transaction on this thread.");
+        }
+
+        manager.rootCloseCallbacks.add(rootCloseCallback);
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction[depth=%d, lifecycle=%s, thread=%s]".formatted(nestingDepth, lifecycle.name(), manager.thread.getName());
+    }
+
+    //Internal handling
+    Lifecycle lifecycle = Lifecycle.NONE;
+
+    private final TransactionManager manager;
+    private final int nestingDepth;
+    private final List<CloseCallback> closeCallbacks = new ArrayList<>();
+
+    //Package protected constructor
+    Transaction(TransactionManager manager, int nestingDepth) {
+        this.manager = manager;
+        this.nestingDepth = nestingDepth;
+    }
+
+    private void validateCurrentThread() {
+        if (Thread.currentThread() != manager.thread) {
+            String errorMessage = String.format(
+                    "Attempted to access transaction state from thread %s, but this transaction is only valid on thread %s.",
+                    Thread.currentThread().getName(),
+                    manager.thread.getName());
+            throw new IllegalStateException(errorMessage);
+        }
+    }
+
+    void validateCurrentTransaction() {
+        validateCurrentThread();
+
+        if (manager.currentDepth != -1) {
+            if (manager.stack.get(manager.currentDepth) == this) return;
+        }
+
+        throw new IllegalStateException("Transaction function was called on a transaction with depth %d, but the current transaction has depth %d."
+                .formatted(nestingDepth, manager.currentDepth));
+    }
+
+    // Validate that this transaction is open.
+    void validateOpen() {
+        if (lifecycle != Lifecycle.OPEN) {
+            throw new IllegalStateException("Transaction operation cannot be applied to a closed transaction.");
+        }
+    }
+
+    void close(Result result) {
+        validateCurrentTransaction();
+        validateOpen();
+        // Block transaction operations
+        lifecycle = Lifecycle.CLOSING;
+
+        // Note: it is important that we don't let exceptions corrupt the global state of the transaction manager.
+        // That is why any callback has to run inside a try block.
+        RuntimeException closeException = null;
+
+        // Invoke callbacks in reverse order
+        for (int i = closeCallbacks.size() - 1; i >= 0; i--) {
+            try {
+                closeCallbacks.get(i).onClose(this, result);
+            } catch (Exception exception) {
+                if (closeException == null) {
+                    closeException = new RuntimeException("Encountered an exception while invoking a transaction close callback.", exception);
+                } else {
+                    closeException.addSuppressed(exception);
+                }
+            }
+        }
+
+        closeCallbacks.clear();
+
+        if (manager.currentDepth == 0) {
+            lifecycle = Lifecycle.ROOT_CLOSING;
+
+            // Invoke outer close callbacks in reverse order
+            for (int i = manager.rootCloseCallbacks.size() - 1; i >= 0; i--) {
+                try {
+                    manager.rootCloseCallbacks.get(i).afterRootClose(result);
+                } catch (Exception exception) {
+                    if (closeException == null) {
+                        closeException = new RuntimeException("Encountered an exception while invoking a transaction root close callback.", exception);
+                    } else {
+                        closeException.addSuppressed(exception);
+                    }
+                }
+            }
+
+            manager.rootCloseCallbacks.clear();
+        }
+
+        // Only this check will allow openOuter operations.
+        manager.currentDepth--;
+        lifecycle = Lifecycle.NONE;
+
+        // Throw exception if necessary
+        if (closeException != null) {
+            throw closeException;
+        }
     }
 }

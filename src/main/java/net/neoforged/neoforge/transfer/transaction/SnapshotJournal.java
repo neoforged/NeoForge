@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +41,8 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The objects that this participant uses to save its state snapshots.
  */
 public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
-    //NEO: Remove after migrations have been established. This is more for info really.
+    //Neo: Remove after migrations have been established. This is more for info really.
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6)
     private static int DEEPEST_LAYER = -1;
     @Nullable
     private static SnapshotJournal<?> DEEPEST_SNAPSHOT = null;
@@ -103,7 +105,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
 
     @Override
     public void onClose(TransactionContext transaction, Transaction.Result result) {
-        //NEO: for testing and will be removed after deprecation period is over for handler reworks.
+        //Neo: for testing and will be removed after deprecation period is over for handler reworks.
         // This is to provide a quick way to give some metrics during the migration phase
         int max = Math.max(DEEPEST_LAYER, transaction.nestingDepth());
         if (max != DEEPEST_LAYER) {
@@ -113,11 +115,11 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         // Get and remove the relevant snapshot.
         T snapshot = snapshots.remove(transaction.nestingDepth());
 
+        //If the transaction was aborted, revert to snapshot
         if (result.wasAborted()) {
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
-            //todo should we clear?
             return;
         }
 

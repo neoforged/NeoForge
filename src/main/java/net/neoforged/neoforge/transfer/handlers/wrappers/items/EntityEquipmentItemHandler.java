@@ -58,7 +58,8 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
     }
 
     private void resize(Predicate<EquipmentSlot>[] slotFilter) {
-        //NEO: This may be needed to be redone, but this was to ensure that we have not already assigned this instance
+        //Neo: This may be needed to be redone, but this was to ensure that we have not already assigned this instance
+        //TODO A maintainer likely should validate this method; but it should be correct.
         if (size > 0) return;
 
         ArrayList<EquipmentSlot> list = new ArrayList<>();

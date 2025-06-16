@@ -64,7 +64,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     @Override
     protected void onCommit(Float originalState) {
         // Apply pending action
-        //NEO: some concern about floating point equals. It SHOULD be fine, but may want to be fully sure before we ship
+        //Neo: some concern about floating point equals. It SHOULD be fine, but may want to be fully sure before we ship
+        //todo validate the floating point comparison.
         if (probability == EXTRACT) {
             // Mimic ComposterBlock#empty logic.
             BlockState newState = location.getBlockState().setValue(ComposterBlock.LEVEL, 0);

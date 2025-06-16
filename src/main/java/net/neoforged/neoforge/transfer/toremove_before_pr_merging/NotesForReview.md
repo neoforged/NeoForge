@@ -162,6 +162,7 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import net.neoforged.neoforge.transfer.transaction.TransactionManagerImpl;
 
 private static void example(IResourceHandler<FluidResource> handler) {
   try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {

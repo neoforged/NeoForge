@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  */
 public interface IResourceHandler<T extends IResource> extends ITransactionHandler {
     /**
-     * An index in synonymous with "slot", "tank", "buffer", etc.
+     * An index is synonymous with "slot", "tank", "buffer", etc.
      *
      * @return The number of indices this handler manages. <strong>Must be non-negative</strong>
      */
@@ -65,7 +66,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     boolean isValid(int index, T resource);
 
     /**
-     * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
+     * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Meaning this value should not be dynamic.
      * <p>
      * Intended use is for something like a pipe graph lookup to be able to reduce the runtime workload on handlers that can never do a specific operation.
      * <p>
@@ -84,12 +85,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
-     * @return True if the resource can be inserted, false otherwise.
+     * @return True if the handler supports insertion to the specified index regardless of contents, false otherwise.
      */
     boolean supportsInsertion(int index);
 
     /**
-     * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
+     * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Meaning this value should not be dynamic.
      * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling insert or change the result of that call,
      * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
@@ -98,7 +99,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @return True if a resource can be inserted, false otherwise.
+     * @return True if the handler supports insertion regardless of contents, false otherwise.
      */
     default boolean supportsInsertion() {
         var size = size();
@@ -111,7 +112,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     }
 
     /**
-     * Checks if the given index allows extraction of a resource, regardless of the state of the handler. Also meaning this value is non-dynamic.
+     * Checks if the given index allows extraction of a resource, regardless of the state of the handler. Meaning this value should not be dynamic.
      * <p>
      * As long as the handler could, under the right conditions, allow a resource to be extracted from the given index,
      * this should return true.
@@ -128,12 +129,12 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
-     * @return True if the resource can be extracted, false otherwise.
+     * @return True if the handler supports extraction from the specified index regardless of contents, false otherwise.
      */
     boolean supportsExtraction(int index);
 
     /**
-     * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Also meaning this value is non-dynamic.
+     * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Meaning this value should not be dynamic.
      * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling extract or change the result of that call,
      * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
      * before actually operating.
@@ -142,7 +143,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <p>
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
-     * @return True if a resource can be extracted, false otherwise.
+     * @return True if the handler supports extraction regardless of contents, false otherwise.
      */
     default boolean supportsExtraction() {
         var size = size();
@@ -160,8 +161,9 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index       The index to insert the resource into. <strong>Must be non-negative</strong>
      * @param resource    The resource to insert.
      * @param amount      The amount of the resource to insert. <strong>Must be non-negative</strong>
-     * @param transaction Context The {@link TransactionContext Context } transaction to be inserting with.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
+     * @param transaction The {@link TransactionContext} transaction to be inserting with.
+     *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
+     * @return The amount of the resource that was inserted. <strong>Must be non-negative.</strong>
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
 
@@ -174,7 +176,8 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource    The resource to insert. <strong>Must be non-negative</strong>
      * @param amount      The amount of the resource to insert. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
-     * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) inserted.
+     *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
+     * @return The amount (Must be non-negative) of the resource that was inserted.
      */
     int insert(T resource, int amount, TransactionContext transaction);
 
@@ -184,8 +187,9 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index       The index to extract the resource from. <strong>Must be non-negative</strong>
      * @param resource    The resource to extract.
      * @param amount      The amount of the resource to extract. <strong>Must be non-negative</strong>
-     * @param transaction The {@link TransactionContext } transaction to be extracting with.
-     * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
+     * @param transaction The {@link TransactionContext} transaction to be extracting with.
+     *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
+     * @return The amount (Must be non-negative) of the resource that was extracted.
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
 
@@ -198,7 +202,8 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource    The resource to extract.
      * @param amount      The amount of the resource to extract. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
-     * @return The amount (Must be non-negative) of the resource that was (or would have been, if simulated) extracted.
+     *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
+     * @return The amount (Must be non-negative) of the resource that was extracted.
      */
     int extract(T resource, int amount, TransactionContext transaction);
 

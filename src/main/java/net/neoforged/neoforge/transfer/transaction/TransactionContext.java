@@ -14,17 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface TransactionContext {
     /**
-     * Opens a new transaction with this as its parent
-     *
-     * @return A child transaction of this transaction.
-     * @throws IllegalStateException Transaction is already closed
-     */
-    @Deprecated
-    default Transaction open() {
-        return TransactionManager.open(this);
-    }
-
-    /**
      * An optional variable to use instead of null when opening unparented transactions.
      * This is helpful when debugging as trying to find all instances of `null` is rather difficult
      */
@@ -116,5 +105,24 @@ public interface TransactionContext {
         public boolean wasCommitted() {
             return this == COMMITTED;
         }
+    }
+
+    enum Lifecycle {
+        /**
+         * No transaction is currently open or closing.
+         */
+        NONE,
+        /**
+         * A transaction is currently open.
+         */
+        OPEN,
+        /**
+         * The current transaction is invoking its close callbacks.
+         */
+        CLOSING,
+        /**
+         * The current transaction is invoking its outer close callbacks.
+         */
+        ROOT_CLOSING
     }
 }

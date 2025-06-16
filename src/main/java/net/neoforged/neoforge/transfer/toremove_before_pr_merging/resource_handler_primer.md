@@ -16,6 +16,7 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import net.neoforged.neoforge.transfer.transaction.TransactionManagerImpl;
 
 public static void demonstration(IResourceHandler<FluidResource> handler) {
     //To do any form of manipulation, we must first open a transaction
