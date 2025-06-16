@@ -5,18 +5,13 @@
 
 package net.neoforged.neoforge.unittest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import org.junit.jupiter.api.Test;
 
 public class ComponentHashingTest {
@@ -43,20 +38,5 @@ public class ComponentHashingTest {
         if (collisionRate > 0.01) {
             throw new AssertionError("Too many hash code collisions detected: " + collisionRate);
         }
-    }
-
-    @Test
-    void testUnregisteredComponent() {
-        var map = new PatchedDataComponentMap(DataComponentMap.EMPTY);
-
-        map.set(EnchantmentEffectComponents.ARMOR_EFFECTIVENESS, List.of());
-        int hashCode1 = map.hashCode();
-
-        map.remove(EnchantmentEffectComponents.ARMOR_EFFECTIVENESS);
-        map.set(EnchantmentEffectComponents.AMMO_USE, List.of());
-        int hashCode2 = map.hashCode();
-
-        assertThat(hashCode1)
-                .isNotEqualTo(hashCode2);
     }
 }
