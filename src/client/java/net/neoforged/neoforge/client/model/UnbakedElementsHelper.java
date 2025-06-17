@@ -182,6 +182,10 @@ public final class UnbakedElementsHelper {
      * {@return a {@link ModelState} that combines the existing model state and the {@linkplain Transformation root transform}}
      */
     public static ModelState composeRootTransformIntoModelState(ModelState modelState, Transformation rootTransform) {
+        if (rootTransform.isIdentity()) {
+            return modelState;
+        }
+
         // Move the origin of the root transform as if the negative corner were the block center to match the way the
         // ModelState transform is applied in the FaceBakery by moving the vertices to be centered on that corner
         rootTransform = rootTransform.applyOrigin(new Vector3f(-.5F, -.5F, -.5F));
