@@ -120,7 +120,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             if (type.serializer != null) {
                 try {
                     var serialized = tag.child(key.toString());
-                    boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized, provider);
+                    boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized);
                     if (!doSerialise) {
                         tag.discard(key.toString());
                     }
@@ -150,7 +150,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             }
 
             try {
-                getAttachmentMap().put(type, type.serializer.read(getExposedHolder(), input.childOrEmpty(key), provider));
+                getAttachmentMap().put(type, type.serializer.read(getExposedHolder(), input.childOrEmpty(key)));
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }

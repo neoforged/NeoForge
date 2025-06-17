@@ -20,13 +20,12 @@ import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.lighting.LightEngine;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightManager, INBTSerializable<ListTag> {
+public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightManager {
     public static final String LIGHT_NBT_KEY = "neoforge:aux_lights";
 
     private final LevelChunk owner;
@@ -59,7 +58,6 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
     }
 
     @Nullable
-    @Override
     public ListTag serializeNBT(HolderLookup.Provider provider) {
         if (lights.isEmpty()) {
             return null;
@@ -75,7 +73,6 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
         return list;
     }
 
-    @Override
     public void deserializeNBT(HolderLookup.Provider provider, ListTag list) {
         list.compoundStream().forEach(tag -> lights.put(BlockPos.of(tag.getLongOr("pos", 0)), tag.getByteOr("level", (byte) 0)));
     }
