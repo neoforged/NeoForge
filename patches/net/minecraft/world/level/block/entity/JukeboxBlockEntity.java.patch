@@ -9,7 +9,7 @@
 +    public void setItem(int slot, ItemStack stack, boolean insideTransaction) {
 +        if (slot != 0) return;
 +
-+        if (insideTransaction) {
++        if (!insideTransaction) {
 +            setTheItem(stack);
 +        } else {
 +            this.item = stack;

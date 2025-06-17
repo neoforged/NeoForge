@@ -11,7 +11,7 @@
 +    public void setItem(int p_19162_, ItemStack p_19163_, boolean insideTransaction) {
          this.items.set(p_19162_, p_19163_);
          p_19163_.limitSize(this.getMaxStackSize(p_19163_));
-+        if (insideTransaction)
++        if (!insideTransaction)
          this.setChanged();
      }
  
