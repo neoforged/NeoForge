@@ -152,7 +152,7 @@ public class AttachmentTests {
             helper.catchException(() -> {
                 var reporter = new ProblemReporter.Collector();
                 var tag = TagValueOutput.createWithContext(reporter, helper.getLevel().registryAccess());
-                player.serializeAttachments(helper.getLevel().registryAccess(), tag); // This will throw if it fails
+                player.serializeAttachments(tag); // This will throw if it fails
                 helper.assertTrue(reporter.isEmpty(), "expected no serialisation problems");
             });
             helper.succeed();
