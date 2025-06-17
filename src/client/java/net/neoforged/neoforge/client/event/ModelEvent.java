@@ -153,16 +153,16 @@ public abstract class ModelEvent extends Event {
         /**
          * Registers a model to be loaded, along with its dependencies.
          */
-        public <T> void register(StandaloneModelKey<T> modelKey, StandaloneModelBaker<T> baker) {
-            modelMap.put(modelKey, new StandaloneModelBakerWrapper<>(modelKey.getModelId(), baker));
+        public <T> void register(StandaloneModelKey<T> modelKey, ResourceLocation modelId, StandaloneModelBaker<T> baker) {
+            modelMap.put(modelKey, new StandaloneModelBakerWrapper<>(modelId, baker));
         }
 
         /**
          * Registers a {@linkplain UnbakedStandaloneModel model} to be loaded, along with its dependencies.
          *
-         * <p>Unlike {@link #register(StandaloneModelKey, StandaloneModelBaker)}, dependency gathering and baking is
-         * performed by an {@link UnbakedStandaloneModel}. This allows you to depend on multiple models files at once,
-         * baking them into a single dynamic model.
+         * <p>Unlike {@link #register(StandaloneModelKey, ResourceLocation, StandaloneModelBaker)}, dependency gathering
+         * and baking is performed by an {@link UnbakedStandaloneModel}. This allows you to depend on multiple models
+         * files at once, baking them into a single dynamic model.
          */
         public <T> void register(StandaloneModelKey<T> modelKey, UnbakedStandaloneModel<T> baker) {
             modelMap.put(modelKey, baker);

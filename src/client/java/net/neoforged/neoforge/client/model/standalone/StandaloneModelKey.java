@@ -5,8 +5,8 @@
 
 package net.neoforged.neoforge.client.model.standalone;
 
+import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.ModelEvent;
 
 /**
@@ -16,23 +16,23 @@ import net.neoforged.neoforge.client.event.ModelEvent;
  * {@link ModelEvent.RegisterStandalone} and later used to retrieve the model baked by the {@link StandaloneModelBaker},
  * using {@link ModelManager#getStandaloneModel(StandaloneModelKey)}.
  * <p>
- * The key is compared by identity as multiple keys may refer to the same model file while using different bakers.
+ * The key is compared by identity as multiple keys may refer to the same model while using different bakers.
  *
  * @param <T> The type returned by the {@link StandaloneModelBaker} this key is registered with
  */
 public final class StandaloneModelKey<T> {
-    private final ResourceLocation modelId;
+    private final ModelDebugName name;
 
-    public StandaloneModelKey(ResourceLocation modelId) {
-        this.modelId = modelId;
+    public StandaloneModelKey(ModelDebugName name) {
+        this.name = name;
     }
 
-    public ResourceLocation getModelId() {
-        return this.modelId;
+    public String getName() {
+        return this.name.debugName();
     }
 
     @Override
     public String toString() {
-        return "StandaloneModelKey[modelId=" + this.modelId + ']';
+        return "StandaloneModelKey[name=" + this.name.debugName() + ']';
     }
 }
