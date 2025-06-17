@@ -15,12 +15,12 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 /**
  * Slot class that can be used with immutable {@link IResourceHandler IResourceHandlers}
- * like {@link ItemContextItemHandler MCItemContentsHandler}.
+ * like {@link ItemContextItemHandler}.
  */
 public class ResourceHandlerCopySlot extends StackCopySlot {
     private final ResourceHandlerSlot slotWrapper;
 
-    public ResourceHandlerCopySlot(IResourceHandler<ItemResource> handler, int index, int xPosition, int yPosition) {
+    public ResourceHandlerCopySlot(IResourceHandlerModifiable<ItemResource> handler, int index, int xPosition, int yPosition) {
         super(xPosition, yPosition);
         slotWrapper = new ResourceHandlerSlot(handler, index, xPosition, yPosition);
     }
@@ -40,6 +40,7 @@ public class ResourceHandlerCopySlot extends StackCopySlot {
         return slotWrapper.getItem();
     }
 
+    // Override if your IResourceHandler does not implement IResourceHandlerModifiable
     @Override
     protected void setStackCopy(ItemStack stack) {
         ((IResourceHandlerModifiable<ItemResource>) slotWrapper.asResourceHandler()).set(slotWrapper.index, ItemResource.of(stack), stack.getCount());

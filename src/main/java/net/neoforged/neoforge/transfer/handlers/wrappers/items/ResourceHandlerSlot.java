@@ -17,13 +17,11 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifi
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
-import org.jetbrains.annotations.Nullable;
 
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
+    //todo should we just make this an IResourceHandlerModifiable?
     private final IResourceHandler<ItemResource> handler;
-    @Nullable
-    private ItemStack cachedStack = null;
 
     public ResourceHandlerSlot(IResourceHandler<ItemResource> handler, int index, int xPosition, int yPosition) {
         super(EMPTY, index, xPosition, yPosition);
@@ -39,14 +37,22 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public ItemStack getItem() {
-        cachedStack = handler.getResource(getSlotIndex()).toStack(handler.getAmount(getSlotIndex()));
-        return cachedStack;
+        return handler.getResource(getSlotIndex()).toStack(handler.getAmount(getSlotIndex()));
     }
 
+    // TODO should we just make it require an IResourceHandlerModifiable?
+    // Override if your IResourceHandler does not implement IResourceHandlerModifiable
     @Override
     public void set(ItemStack stack) {
         ((IResourceHandlerModifiable<ItemResource>) handler).set(getSlotIndex(), ItemResource.of(stack), stack.getCount());
-        //this used to setChanged() are we handling that now a little more sensibly?
+        setChanged();
+    }
+
+    // Override if your IResourceHandler does not implement IResourceHandlerModifiable
+    // @Override
+    public void initialize(ItemStack stack) {
+        ((IResourceHandlerModifiable<ItemResource>) handler).set(index, ItemResource.of(stack), stack.getCount());
+        this.setChanged();
     }
 
     //From old SlotItemHandler
@@ -84,13 +90,5 @@ public class ResourceHandlerSlot extends Slot {
 
     public IResourceHandler<ItemResource> asResourceHandler() {
         return handler;
-    }
-
-    @Override
-    public void setChanged() {
-        //Won't this cause a possible infinite loop. Not versed enough in how `vanilla` Slots/Containers work anymore so if not, then no changes needed
-        if (cachedStack != null) {
-            set(cachedStack);
-        }
     }
 }
