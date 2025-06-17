@@ -58,7 +58,7 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
     }
 
     @Nullable
-    public ListTag serializeNBT(HolderLookup.Provider provider) {
+    public ListTag serializeNBT() {
         if (lights.isEmpty()) {
             return null;
         }
@@ -73,7 +73,7 @@ public final class LevelChunkAuxiliaryLightManager implements AuxiliaryLightMana
         return list;
     }
 
-    public void deserializeNBT(HolderLookup.Provider provider, ListTag list) {
+    public void deserializeNBT(ListTag list) {
         list.compoundStream().forEach(tag -> lights.put(BlockPos.of(tag.getLongOr("pos", 0)), tag.getByteOr("level", (byte) 0)));
     }
 
