@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import java.util.Objects;
-import java.util.function.Predicate;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -19,6 +17,9 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public final class ResourceHandlerUtil {
     /**
@@ -523,6 +524,27 @@ public final class ResourceHandlerUtil {
         return -1;
     }
 
+    public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, Predicate<T> filter) {
+        try (Transaction temp = TransactionManager.open(null)) {
+            //Simulated, we don't commit on an inquiry
+            var size = handler.size();
+            for (int index = 0; index < size; index++) {
+                var resource = handler.getResource(index);
+                if (resource.isEmpty() || !filter.test(resource)) continue;
+                if (handler.extract(resource, 1, temp) > 0) return true;
+            }
+            return false;
+        }
+    }
+
+    public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
+        try (Transaction temp = TransactionManager.open(null)) {
+            //Simulated: we don't commit
+            var resource = handler.getResource(index);
+            return !resource.isEmpty() && filter.test(resource) && handler.extract(resource, 1, temp) > 0;
+        }
+    }
+
     public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, T resource) {
         try (Transaction temp = TransactionManager.open(null)) {
             //Simulated, we don't commit on an inquiry
@@ -540,5 +562,5 @@ public final class ResourceHandlerUtil {
         return defaultResource;
     }
 
-    private ResourceHandlerUtil() {}
+    private ResourceHandlerUtil() { }
 }

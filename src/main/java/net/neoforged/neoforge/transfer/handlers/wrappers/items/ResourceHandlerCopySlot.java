@@ -8,8 +8,8 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemContextItemHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
@@ -20,9 +20,9 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 public class ResourceHandlerCopySlot extends StackCopySlot {
     private final ResourceHandlerSlot slotWrapper;
 
-    public ResourceHandlerCopySlot(IResourceHandlerModifiable<ItemResource> handler, int index, int xPosition, int yPosition) {
+    public ResourceHandlerCopySlot(IResourceHandler<ItemResource> handler, int index, int xPosition, int yPosition, IIndexModifier<ItemResource> slotModifier) {
         super(xPosition, yPosition);
-        slotWrapper = new ResourceHandlerSlot(handler, index, xPosition, yPosition);
+        slotWrapper = new ResourceHandlerSlot(handler, index, xPosition, yPosition, slotModifier);
     }
 
     public ResourceHandlerCopySlot(ResourceHandlerSlot slotWrapper) {
@@ -40,10 +40,9 @@ public class ResourceHandlerCopySlot extends StackCopySlot {
         return slotWrapper.getItem();
     }
 
-    // Override if your IResourceHandler does not implement IResourceHandlerModifiable
     @Override
     protected void setStackCopy(ItemStack stack) {
-        ((IResourceHandlerModifiable<ItemResource>) slotWrapper.asResourceHandler()).set(slotWrapper.index, ItemResource.of(stack), stack.getCount());
+        slotWrapper.getSlotModifier().set(slotWrapper.getSlotIndex(), ItemResource.of(stack), stack.getCount());
     }
 
     @Override

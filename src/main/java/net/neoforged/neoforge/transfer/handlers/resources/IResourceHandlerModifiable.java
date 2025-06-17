@@ -13,7 +13,9 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  *
  * @param <T> The type of {@link IResource resource} this handler manages.
  */
+@Deprecated(forRemoval = true)
 public interface IResourceHandlerModifiable<T extends IResource> extends IResourceHandler<T> {
+
     /**
      * Overrides the resource and amount at the given index. It is not intended for
      * general use by other mods, and the handler may throw an error if it
