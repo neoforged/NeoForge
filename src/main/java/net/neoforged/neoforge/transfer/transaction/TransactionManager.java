@@ -53,7 +53,6 @@ public final class TransactionManager {
 
     // Internal calls //
 
-    @ApiStatus.Internal
     private static final ThreadLocal<TransactionManager> MANAGERS = ThreadLocal.withInitial(TransactionManager::new);
     @ApiStatus.Internal
     final Thread thread = Thread.currentThread();
@@ -99,10 +98,6 @@ public final class TransactionManager {
 
     Transaction.Lifecycle internalGetLifecycle() {
         return currentDepth == -1 ? TransactionContext.Lifecycle.NONE : stack.get(currentDepth).lifecycle;
-    }
-
-    public int getCurrentDepth() {
-        return currentDepth;
     }
 
     private TransactionManager() {}

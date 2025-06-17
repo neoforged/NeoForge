@@ -109,6 +109,14 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
+     * <strong>Note:</strong> This cannot be called before your item is registered
+     */
+    public static ItemResource of(Holder<Item> item) {
+        if (item.value() == Items.AIR) return EMPTY;
+        return item.value().defaultResource();
+    }
+
+    /**
      * We wrap an item stack which must never be modified.
      */
     final ItemStack innerStack;
@@ -208,11 +216,13 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     public List<ItemStack> toStacks(int count) {
         ArrayList<ItemStack> stacks = new ArrayList<>();
-        int stackCount = count / getMaxStackSize();
+        var maxStackSize = getMaxStackSize();
+        int stackCount = count / maxStackSize;
+        stacks.ensureCapacity(stackCount + 1);
         for (int i = 0; i < stackCount; i++) {
-            stacks.add(toStack(getMaxStackSize()));
+            stacks.add(toStack(maxStackSize));
         }
-        int remainder = count % getMaxStackSize();
+        int remainder = count % maxStackSize;
         if (remainder > 0) {
             stacks.add(toStack(remainder));
         }

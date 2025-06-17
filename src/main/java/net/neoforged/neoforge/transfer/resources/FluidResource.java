@@ -91,6 +91,11 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return fluid.defaultResource();
     }
 
+    public static FluidResource of(Holder<Fluid> fluid) {
+        if (fluid.value() == Fluids.EMPTY) return EMPTY;
+        return fluid.value().defaultResource();
+    }
+
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
         if (fluid.value() == Fluids.EMPTY) return EMPTY;
         return new FluidResource(new FluidStack(fluid, 1, patch));
@@ -101,6 +106,9 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      */
     final FluidStack innerStack;
 
+    /**
+     * Lazily initialized.
+     */
     @Nullable
     private ItemResource filledBucket;
 
@@ -197,6 +205,9 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return amount == 0 || this.isEmpty() ? FluidStack.EMPTY : this.innerStack.copyWithAmount(amount);
     }
 
+    /**
+     * @return A {@link FluidStack} copy of the inner stack. The size is by default {@value FluidType#BUCKET_VOLUME}
+     */
     public FluidStack toStack() {
         return toStack(FluidType.BUCKET_VOLUME);
     }

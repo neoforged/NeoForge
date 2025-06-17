@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -38,11 +39,13 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
 
     @Override
     public int insert(int index, int amount, TransactionContext transaction) {
+        EnergyHandlerUtil.checkEnergy(amount);
         return 0;
     }
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
+        EnergyHandlerUtil.checkEnergy(amount);
         return 0;
     }
 

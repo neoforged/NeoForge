@@ -31,7 +31,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         if (amount < 0) {
             CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Resource amount was negative");
-            report.addCategory("ResourceHandler#isEmpty")
+            report.addCategory("ResourceHandlerUtil#isEmpty")
                     .setDetail("Resource", resource)
                     .setDetail("Amount", amount);
             throw new ReportedException(report);

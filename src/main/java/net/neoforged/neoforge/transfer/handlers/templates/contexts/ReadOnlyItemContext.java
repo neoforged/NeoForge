@@ -10,7 +10,9 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public record ReadOnlyItemContext(IItemContext context) implements IItemContext {
     @Override
     public ItemResource getResource() {

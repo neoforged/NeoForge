@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
@@ -162,7 +163,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
     @Override
     public int insert(int amount, TransactionContext transaction) {
         amount = Math.min(maxInsert, amount);
-        if (amount == 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         int handled = 0;
         int indices = size();
@@ -178,7 +179,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
     public int insert(int index, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         amount = Math.min(maxInsert, amount);
-        if (amount == 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         return insertCommon(index, amount, transaction);
     }
@@ -201,7 +202,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
     @Override
     public int extract(int amount, TransactionContext transaction) {
         amount = Math.min(maxExtract, amount);
-        if (amount == 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         int handled = 0;
         int indices = size();
@@ -218,7 +219,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
         //This check is done per external index call
         Objects.checkIndex(index, size());
         amount = Math.min(maxExtract, amount);
-        if (amount == 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         return extractCommon(index, amount, transaction);
     }

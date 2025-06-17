@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.energy.adapters;
 
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.IHandleIOBehaviour;
@@ -43,7 +44,7 @@ public record EnergyContainerToHandlerAdapter(
     @Override
     public int insert(int amount, TransactionContext transaction) {
         amount = Math.min(container.getMaxInsertRate(), amount);
-        if (amount <= 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         var handled = 0;
         var indices = size();
@@ -59,7 +60,7 @@ public record EnergyContainerToHandlerAdapter(
     public int insert(int index, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
         amount = Math.min(container.getMaxInsertRate(), amount);
-        if (amount <= 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         return insertCommon(index, amount, transaction);
     }
@@ -90,7 +91,7 @@ public record EnergyContainerToHandlerAdapter(
     @Override
     public int extract(int amount, TransactionContext transaction) {
         amount = Math.min(container.getMaxExtractRate(), amount);
-        if (amount <= 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         var handled = 0;
         var indices = size();
@@ -107,7 +108,7 @@ public record EnergyContainerToHandlerAdapter(
         //This check is done per external index call
         Objects.checkIndex(index, size());
         amount = Math.min(container.getMaxExtractRate(), amount);
-        if (amount <= 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         return indexedExtract(index, amount, transaction);
     }

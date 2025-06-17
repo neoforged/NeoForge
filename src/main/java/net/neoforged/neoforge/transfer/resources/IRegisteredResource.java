@@ -12,6 +12,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureElement;
 import net.minecraft.world.flag.FeatureFlagSet;
 
+/**
+ * A helper version of {@link IResource} intended for resources registered to some registry bound by some backing instance.
+ *
+ * @param <T> The type of the backing instance.
+ * @see ItemResource
+ * @see FluidResource
+ */
 public interface IRegisteredResource<T> extends IResource {
     T getInstanceValue();
 
@@ -19,7 +26,7 @@ public interface IRegisteredResource<T> extends IResource {
 
     default boolean is(TagKey<T> tag) {
         return getHolder().is(tag);
-    };
+    }
 
     default boolean is(T instance) {
         return instance == getInstanceValue();

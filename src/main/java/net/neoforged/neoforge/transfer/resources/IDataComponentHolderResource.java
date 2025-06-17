@@ -7,10 +7,20 @@ package net.neoforged.neoforge.transfer.resources;
 
 import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentHolder;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
+/**
+ * A helper version of {@link IResource} intended for resources registered to some registry bound by some backing
+ * that also holds data component values. Such as {@link ItemResource} that has an inner {@link ItemStack}
+ * which holds data components and patches associated to it; backed by an {@link Item}
+ *
+ * @param <T> The type of the backing instance.
+ * @see ItemResource
+ * @see FluidResource
+ */
 public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
     boolean isComponentsPatchEmpty();
 
@@ -19,8 +29,6 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
     <D> IDataComponentHolderResource<T> with(DataComponentType<D> type, D data);
 
     IDataComponentHolderResource<T> without(DataComponentType<?> type);
-
-    DataComponentMap getComponents();
 
     DataComponentPatch getComponentsPatch();
 

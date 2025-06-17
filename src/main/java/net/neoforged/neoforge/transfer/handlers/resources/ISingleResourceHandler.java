@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A utility interface for a handler that manages a single index of a resource.
@@ -43,30 +44,35 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
      *
      * @return 1 for ISingleResourceHandlers
      */
+    @ApiStatus.NonExtendable
     @Override
     default int size() {
         //Single resource handlers only have 1 resource thus only really need one index
         return 1;
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default int insert(int index, T resource, int amount, TransactionContext context) {
         // With single resource handlers the index is ignored
         return insert(resource, amount, context);
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default int extract(int index, T resource, int amount, TransactionContext context) {
         // With single resource handlers the index is ignored
         return extract(resource, amount, context);
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default boolean supportsInsertion(int index) {
         //We effectively flip the root's check so that we check on index-less instead
         return supportsInsertion();
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default boolean supportsExtraction(int index) {
         //We effectively flip the root's check so that we check on index-less instead

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -55,12 +56,14 @@ public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
     //Ignores the amount attempted to be inserted
     @Override
     public int insert(int amount, TransactionContext transaction) {
+        EnergyHandlerUtil.checkEnergy(amount);
         return 0;
     }
 
     //Allows extraction to the exact amount specified
     @Override
     public int extract(int amount, TransactionContext transaction) {
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         return amount;
     }
 

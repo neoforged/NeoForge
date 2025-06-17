@@ -38,7 +38,6 @@ public class PlayerItemContext implements IItemContext {
     }
 
     public PlayerItemContext(Player player, int index) {
-        //This could be captured by player.getCapability, but it was pointed out that has a non-zero chance to return null
         this.handler = PlayerInventoryWrapper.of(player);
         this.index = index;
     }
@@ -55,16 +54,11 @@ public class PlayerItemContext implements IItemContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        //Try inserting to the specified index of the context first
         int inserted = handler.insert(index, resource, amount, transaction);
-        if (inserted < amount) {
-            var size = handler.size();
-            for (var handlerIndex = 0; handlerIndex < size; handlerIndex++) {
-                if (index == handlerIndex) continue;
-                inserted += handler.insert(handlerIndex, resource, amount - inserted, transaction);
-            }
-        }
-        if (inserted < amount) {
-            handler.drop(resource, amount - inserted, true, true, transaction);
+        //If we still have some items, try filling the rest of the inventory with the remaining.
+        if (amount > inserted) {
+            handler.placeItemBackInInventory(resource, amount - inserted, transaction);
         }
         return amount;
     }

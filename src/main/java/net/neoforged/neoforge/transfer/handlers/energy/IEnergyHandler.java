@@ -36,10 +36,13 @@ public interface IEnergyHandler extends ITransactionHandler {
     /**
      * <b>PRIMER: Formerly</b> `getEnergyStored`. Now needs an index.
      * <p>
-     * To know the total amount of energy stored in a {@link IEnergyHandler} consider using {@link net.neoforged.neoforge.transfer.EnergyHandlerUtil#getAmount(IEnergyHandler) EnergyHandlerUtil.getAmount(IEnergyHandler)}
+     * To know the total amount of energy stored in an {@link IEnergyHandler} consider using {@link net.neoforged.neoforge.transfer.EnergyHandlerUtil#getAmount(IEnergyHandler) EnergyHandlerUtil.getAmount(IEnergyHandler)}
+     * <p>
+     * It should be expected that {@code getAmount(index) <= getCapacity(index)}.
      *
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
+     * @see #getAmountAsLong(int)
      */
     int getAmount(int index);
 
@@ -49,6 +52,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
+     * @see #getAmount(int)
      */
     default long getAmountAsLong(int index) {
         return getAmount(index);
@@ -58,10 +62,11 @@ public interface IEnergyHandler extends ITransactionHandler {
      * <b>PRIMER: Formerly</b> `getMaxEnergyStored`. Now has an index similar to IResourceHandler.
      * <p>
      * Gets the capacity that index can hold.
-     * To know the total capacity of energy in a {@link IEnergyHandler} consider using {@link net.neoforged.neoforge.transfer.EnergyHandlerUtil#getCapacity(IEnergyHandler) EnergyHandlerUtil.getCapacity(IEnergyHandler)}
+     * To know the total capacity of energy in an {@link IEnergyHandler} consider using {@link net.neoforged.neoforge.transfer.EnergyHandlerUtil#getCapacity(IEnergyHandler) EnergyHandlerUtil.getCapacity(IEnergyHandler)}
      *
      * @param index The index to get the limit from. <strong>Must be non-negative</strong>
      * @return The capacity at the given index. <strong>Must be non-negative</strong>
+     * @see #getCapacityAsLong(int)
      */
     int getCapacity(int index);
 
@@ -71,6 +76,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
+     * @see #getCapacity(int)
      */
     default long getCapacityAsLong(int index) {
         return getCapacity(index);
@@ -85,6 +91,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * <strong>Note:</strong> It is advised to override this and return true or false if you already know the handler will have a possible true result
      *
      * @return True if the handler can be inserted into at this time, false otherwise. If using indices, this should return true if any index allows insertion
+     * @see #supportsInsertion(int)
      */
     default boolean supportsInsertion() {
         var indices = size();
@@ -105,6 +112,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be inserted into; {@code true} otherwise.
+     * @see #supportsInsertion()
      */
     boolean supportsInsertion(int index);
 
@@ -118,6 +126,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * rather than having it require a full iteration to look up the results.
      *
      * @return {@code true} if the handler can be extracted from in its configuration, false otherwise. If using indices, this should return true if any index allows insertion.
+     * @see #supportsExtraction(int)
      */
     default boolean supportsExtraction() {
         var indices = size();
@@ -138,6 +147,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @param index The index to check <strong>Must be non-negative</strong>
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be extracted from; {@code true} otherwise.
+     * @see #supportsExtraction()
      */
     boolean supportsExtraction(int index);
 
@@ -149,7 +159,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index       The index to insert into. <strong>Must be non-negative</strong>
      * @param amount      The value to insert. <strong>Must be non-negative</strong>
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
+     * @return The amount that was inserted. <strong>Must be non-negative</strong>
+     * @see #insert(int, TransactionContext) Inserting into any index in the handler
      */
     int insert(int index, int amount, TransactionContext transaction);
 
@@ -158,12 +169,13 @@ public interface IEnergyHandler extends ITransactionHandler {
      * <p>
      * Inserts a given amount into the handler. Distribution is up to the handler.
      * <p>
-     * When implementing, it is advised to not make this call {@link IEnergyHandler#insert(int, int, TransactionContext) insert(index, ...)} for each index directly,
+     * When implementing, it is advised to not make this call {@link IEnergyHandler#insert(int, int, TransactionContext)} for each index directly,
      * but rather reuse the logic already checked. See {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment#insert(int, TransactionContext) EnergyBuffer.insertCommon} for a reference of an implementation.
      *
      * @param amount      The amount to insert.
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was (or would have been, if simulated) inserted. <strong>Must be non-negative</strong>
+     * @return The amount that was inserted. <strong>Must be non-negative</strong>
+     * @see #insert(int, int, TransactionContext) Inserting by index
      */
     int insert(int amount, TransactionContext transaction);
 
@@ -175,7 +187,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index       The index to extract from. <strong>Must be non-negative</strong>
      * @param amount      The amount to extract. <strong>Must be non-negative</strong>
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was (or would have been, if simulated) extracted. <strong>Must be non-negative</strong>
+     * @return The amount that was extracted. <strong>Must be non-negative</strong>
+     * @see #extract(int, TransactionContext) Extracting from any index in the handler
      */
     int extract(int index, int amount, TransactionContext transaction);
 
@@ -184,12 +197,13 @@ public interface IEnergyHandler extends ITransactionHandler {
      * <p>
      * Extracts a given amount from the handler. Distribution is up to the handler.
      * <p>
-     * When implementing this method, it is advised to not make this call {@link IEnergyHandler#extract(int, int, TransactionContext) extract(index, ...)} for each index directly,
+     * When implementing this method, it is advised to not make this call {@link IEnergyHandler#extract(int, int, TransactionContext)} for each index directly,
      * but rather reuse the logic already checked. See {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment#extract(int, TransactionContext) EnergyBuffer.extractCommon} for a reference of an implementation.
      *
      * @param amount      The amount of energy to extract. <strong>Must be non-negative</strong>
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was (or would have been, if simulated) extracted. <strong>Must be non-negative</strong>
+     * @return The amount that was extracted. <strong>Must be non-negative</strong>
+     * @see #extract(int, int, TransactionContext) Extracting by index
      */
     int extract(int amount, TransactionContext transaction);
 }

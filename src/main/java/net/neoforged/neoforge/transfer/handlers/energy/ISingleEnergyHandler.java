@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.energy;
 
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A single buffer or indexed energy handler also referred to as a `slotless buffer`. For older mods, this should be rather familiar to you when implementing.
@@ -22,7 +23,7 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      *
      * @param amount      The amount to insert.
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was (or would have been, if simulated) inserted. This should be non-negative.
+     * @return The amount that was inserted. This should be non-negative.
      */
     @Override
     int insert(int amount, TransactionContext transaction);
@@ -34,7 +35,7 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
      *
      * @param amount      The amount of energy to extract.
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was (or would have been, if simulated) extracted. This should be non-negative.
+     * @return The amount that was extracted. This should be non-negative.
      */
     @Override
     int extract(int amount, TransactionContext transaction);
@@ -54,26 +55,31 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     /**
      * @return When implementing {@link ISingleEnergyHandler} the return should always be 1. If you find you need additional indices, please implement {@link IEnergyHandler} instead
      */
+    @ApiStatus.NonExtendable
     @Override
     default int size() {
         return 1;
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default boolean supportsInsertion(int index) {
         return supportsInsertion();
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default boolean supportsExtraction(int index) {
         return supportsExtraction();
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default int insert(int index, int amount, TransactionContext transaction) {
         return insert(amount, transaction);
     }
 
+    @ApiStatus.NonExtendable
     @Override
     default int extract(int index, int amount, TransactionContext transaction) {
         return extract(amount, transaction);

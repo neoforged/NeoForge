@@ -9,8 +9,10 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 
-public class OneByOneItemContext implements IItemContext {
+@ApiStatus.Internal
+public final class OneByOneItemContext implements IItemContext {
     private final IItemContext itemContext;
 
     public OneByOneItemContext(IItemContext itemContext) {

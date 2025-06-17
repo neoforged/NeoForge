@@ -9,8 +9,8 @@
 +
 +    // Neo: Support deferring changes until end of a transaction
 +    @Override
-+    public void setItem(int p_256610_, ItemStack p_255789_, boolean performCommitActions) {
-+        if (performCommitActions) {
++    public void setItem(int p_256610_, ItemStack p_255789_, boolean insideTransaction) {
++        if (insideTransaction) {
 +            this.items.set(p_256610_, p_255789_);
 +            return;
 +        }

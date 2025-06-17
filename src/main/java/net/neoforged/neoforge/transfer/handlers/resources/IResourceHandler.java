@@ -34,9 +34,15 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of the resource at the given index. <strong>Must be non-negative</strong>
+     * @see #getAmountAsLong(int)
      */
     int getAmount(int index);
 
+    /**
+     * @param index The index to get the amount from. <strong>Must be non-negative</strong>
+     * @return The amount as a long of the resource at the given index. <strong>Must be non-negative</strong>
+     * @see #getAmount(int) (int)
+     */
     default long getAmountAsLong(int index) {
         return getAmount(index);
     }
@@ -86,6 +92,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the handler supports insertion to the specified index regardless of contents, false otherwise.
+     * @see #supportsInsertion()
      */
     boolean supportsInsertion(int index);
 
@@ -100,6 +107,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @return True if the handler supports insertion regardless of contents, false otherwise.
+     * @see #supportsInsertion(int)
      */
     default boolean supportsInsertion() {
         var size = size();
@@ -130,6 +138,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the handler supports extraction from the specified index regardless of contents, false otherwise.
+     * @see #supportsExtraction()
      */
     boolean supportsExtraction(int index);
 
@@ -144,6 +153,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
      *
      * @return True if the handler supports extraction regardless of contents, false otherwise.
+     * @see #supportsExtraction(int)
      */
     default boolean supportsExtraction() {
         var size = size();
@@ -164,6 +174,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext} transaction to be inserting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount of the resource that was inserted. <strong>Must be non-negative.</strong>
+     * @see #insert(IResource, int, TransactionContext) Inserting into any index in the handler
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
 
@@ -178,6 +189,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was inserted.
+     * @see #insert(int, IResource, int, TransactionContext) Inserting by index
      */
     int insert(T resource, int amount, TransactionContext transaction);
 
@@ -190,6 +202,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext} transaction to be extracting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was extracted.
+     * @see #extract(IResource, int, TransactionContext) Extracting from any index in the handler
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
 
@@ -204,6 +217,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was extracted.
+     * @see #extract(int, IResource, int, TransactionContext) Extracting by index
      */
     int extract(T resource, int amount, TransactionContext transaction);
 

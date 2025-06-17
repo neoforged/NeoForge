@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class ItemUtil {
     /**
-     * Inserts the given {@link ItemStack} into the players inventory. If the inventory can't hold it, the item will be dropped
+     * Inserts the given {@link ItemStack} into the players inventory. If the player's inventory can't hold it, the item will be dropped
      * in the world at the players position.
      *
      * @param player The player to give the item to
@@ -32,7 +32,7 @@ public final class ItemUtil {
     }
 
     /**
-     * Inserts the given {@link ItemStack} into the players inventory. If the inventory can't hold it, the item will be dropped
+     * Inserts the given {@link ItemResource} and {@code amount} into the players inventory. If the player's inventory can't hold it, the item will be dropped
      * in the world at the players position.
      *
      * @param player   The player to give the item to
@@ -52,7 +52,7 @@ public final class ItemUtil {
 
     /**
      * Inserts the given {@link ItemStack} into the players inventory.
-     * If the inventory can't hold it, the item will be dropped in the world at the players position.
+     * If the player's inventory can't hold it, the item will be dropped in the world at the players position.
      *
      * @param player        The player to give the item to
      * @param stack         The {@link ItemStack} to insert
@@ -63,8 +63,8 @@ public final class ItemUtil {
     }
 
     /**
-     * Inserts the given {@link ItemStack} into the players inventory.
-     * If the inventory can't hold it, the item will be dropped in the world at the players position.
+     * Inserts the given {@link ItemResource} and {@code amount} into the players inventory.
+     * If the player's inventory can't hold it, the item will be dropped in the world at the players position.
      *
      * @param player        The player to give the item to
      * @param resource      The {@link ItemResource} to give
@@ -76,7 +76,8 @@ public final class ItemUtil {
 
         PlayerItemContext context = new PlayerItemContext(player, preferredSlot);
         try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            context.insert(resource, amount, transaction);
+            if (amount == context.insert(resource, amount, transaction))
+                transaction.commit();
         }
     }
 
@@ -94,7 +95,7 @@ public final class ItemUtil {
     }
 
     /**
-     * Inserts an ItemStack into an {@link IResourceHandler} using stacking logic. It is advised to use the {@link ResourceHandlerUtil#insertStacking(IResourceHandler, IResource, int, TransactionContext) ResourceHandlerUtil} specific one instead when already working with {@link ItemResource}.
+     * Inserts an ItemStack into an {@link IResourceHandler} using stacking logic.
      * ItemStacks will be inserted into filled slot(s) first, then empty slot(s).
      *
      * @param handler     the {@link IResourceHandler} to insert the itemstack into
@@ -103,11 +104,23 @@ public final class ItemUtil {
      *                    Passing in {@code null} will essentially be the same as doing `execute`,
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
      * @return the amount of the stack that was (or would have been, if simulated) inserted
+     * @see ResourceHandlerUtil#insertStacking(IResourceHandler, IResource, int, TransactionContext) ResourceHandlerUtil when already working with ItemResources
      */
     public static int insertStacking(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.insertStacking(handler, ItemResource.of(stack), stack.getCount(), transaction);
     }
 
+    /**
+     * Inserts an {@link ItemStack} into an {@link IResourceHandler} using non-stacking logic.
+     * Resources will be inserted into the first slot(s) that can accept the resource.
+     *
+     * @param handler     The {@link IResourceHandler} to insert the resource into
+     * @param stack       The {@link ItemStack} to insert.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return the amount of the {@link ItemStack} that was inserted
+     */
     public static int insertIndexForced(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.insertIndexForced(handler, ItemResource.of(stack), stack.getCount(), transaction);
     }
@@ -131,6 +144,17 @@ public final class ItemUtil {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
     }
 
+    /**
+     * Extracts the first {@link ItemResource} from an {@link IResourceHandler} that matches the given filter.
+     *
+     * @param handler     The {@link IResourceHandler} to extract the resource from
+     * @param filter      The filter to apply to the resources in the handler.
+     * @param amount      The desired amount of the resource to extract
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return a {@link ResourceStack} of the first matching resource for the specified filter; otherwise {@link ItemResource#EMPTY}
+     */
     public static ResourceStack<ItemResource> extractResourceStackFiltered(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
@@ -139,6 +163,17 @@ public final class ItemUtil {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
 
+    /**
+     * Extracts the {@link ItemResource} from an {@link IResourceHandler} that matches the given filter at the specified index.
+     *
+     * @param index       The index that is being checked in the handler.
+     * @param handler     the {@link IResourceHandler} to extract the resource from.
+     * @param amount      the desired amount of the resource to extract.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return an ItemStack that matches both the filter and index specified; otherwise {@link ItemStack#EMPTY}
+     */
     public static ItemStack extractItemStackFilteredAtIndex(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
@@ -148,6 +183,17 @@ public final class ItemUtil {
         return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
     }
 
+    /**
+     * Extracts the {@link ItemResource} from an {@link IResourceHandler} that matches the given filter at the specified index.
+     *
+     * @param index       The index that is being checked in the handler.
+     * @param handler     the {@link IResourceHandler} to extract the resource from.
+     * @param amount      the desired amount of the resource to extract.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will essentially be the same as doing `execute`,
+     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @return A {@link ResourceStack} that matches both the filter and index specified; otherwise {@link ItemResource#EMPTY}
+     */
     public static ResourceStack<ItemResource> extractResourceStackFilteredAtIndex(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,

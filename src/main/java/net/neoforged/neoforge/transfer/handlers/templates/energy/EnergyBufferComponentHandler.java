@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -74,7 +75,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        if (amount == 0 || maxInsert == 0) return 0;
+        if (maxInsert == 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         int stackedAmount = maxInsert * itemContext.getAmount();
         //handle overflow
@@ -93,7 +95,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (amount == 0 || maxExtract == 0) return 0;
+        if (maxExtract == 0) return 0;
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
 
         int rawStackExtract = this.maxExtract * this.itemContext.getAmount();
         if (rawStackExtract < 0) rawStackExtract = Integer.MAX_VALUE;

@@ -22,9 +22,9 @@ public interface IContainerExtension {
     /**
      * An extension of {@link Container#setItem(int, ItemStack)} that allows disabling committed actions.
      *
-     * <p>If {@code performCommitActions} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the performCommitActions.
+     * <p>If {@code insideTransaction} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the insideTransaction.
      */
-    default void setItem(int slot, ItemStack stack, boolean performCommitActions) {
+    default void setItem(int slot, ItemStack stack, boolean insideTransaction) {
         self().setItem(slot, stack);
     }
 

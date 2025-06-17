@@ -23,6 +23,20 @@ import org.jetbrains.annotations.Range;
  */
 public final class EnergyHandlerUtil {
     /**
+     * @return True if the specified amount is 0 and should skip being processed.
+     * @throws ReportedException when amount is negative.
+     */
+    public static boolean checkEnergy(int amount) {
+        if (amount < 0) {
+            CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Energy amount was negative");
+            report.addCategory("EnergyHandlerUtil#isEmpty")
+                    .setDetail("Amount", amount);
+            throw new ReportedException(report);
+        }
+        return amount == 0;
+    }
+
+    /**
      * @param handler Energy Handler to iterate
      * @return Total energy stored across all of its sub-buffers. This is a long given the accumulation factor can be several max {@code ints} together.
      */
@@ -38,7 +52,11 @@ public final class EnergyHandlerUtil {
     }
 
     public static boolean isEmpty(IEnergyHandler handler) {
-        return getAmount(handler) == 0;
+        int size = handler.size();
+        for (int i = 0; i < size; i++) {
+            if (handler.getAmount(i) > 0) return false;
+        }
+        return true;
     }
 
     public static boolean canAcceptEnergy(IEnergyHandler handler) {
@@ -82,13 +100,13 @@ public final class EnergyHandlerUtil {
     }
 
     /**
-     * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
+     * Moves energy between two handlers, and return the amount that was successfully transferred.
      *
-     * @param from        The source handler. May be null.
-     * @param to          The target handler. May be null.
+     * @param from        The source handler. Will no-op if null.
+     * @param to          The target handler. Will no-op if null.
      * @param amount      The maximum amount that will be transferred.
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
-     * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
+     * @return The total amount of energy that was successfully transferred.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
     public static int move(
@@ -96,15 +114,18 @@ public final class EnergyHandlerUtil {
             int amount,
             @Nullable TransactionContext transaction) {
         if (from == null || to == null) return 0;
+        if (checkEnergy(amount)) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
-            int simulatedResult = 0;
-            try (Transaction simulate = TransactionManager.open(subTransaction)) {
-                simulatedResult = from.extract(amount, simulate);
+            int extractableAmount;
+            try (Transaction simulatedTransaction = TransactionManager.open(subTransaction)) {
+                extractableAmount = from.extract(amount, simulatedTransaction);
+                //Don't commit. This will revert the extraction to allow work with the amount we "simulated".
             }
 
-            int inserted = to.insert(simulatedResult, subTransaction);
+            int inserted = to.insert(extractableAmount, subTransaction);
             int extracted = from.extract(inserted, subTransaction);
+            //Check to be sure the amount we inserted is able to be fully extracted before committing.
             if (extracted == inserted) {
                 subTransaction.commit();
                 return extracted;

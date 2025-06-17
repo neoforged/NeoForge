@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -16,13 +17,11 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public final class VoidEnergyHandler implements ISingleEnergyHandler {
     public static final IEnergyHandler INSTANCE = new VoidEnergyHandler();
 
-    //Never has any energy
     @Override
     public int getAmount(int index) {
         return 0;
     }
 
-    //Has a capacity of infinite energy
     @Override
     public int getCapacity(int index) {
         return Integer.MAX_VALUE;
@@ -33,27 +32,27 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
         return Long.MAX_VALUE;
     }
 
-    //Always accepts energy
     @Override
     public boolean supportsInsertion() {
         return true;
     }
 
-    //Voids do not provide energy
     @Override
     public boolean supportsExtraction() {
         return false;
     }
 
-    //Accepts as much as is inserted, but rather than calling the above method, it is just simpler to return the amount.
+    //Accepts as much as is inserted
     @Override
     public int insert(int amount, TransactionContext transaction) {
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         return amount;
     }
 
     //Never has anything to extract so we return 0
     @Override
     public int extract(int amount, TransactionContext transaction) {
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         return 0;
     }
 
