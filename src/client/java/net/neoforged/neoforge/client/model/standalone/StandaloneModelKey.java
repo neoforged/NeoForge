@@ -12,13 +12,13 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 /**
  * A key referring to a model file to be loaded and baked as a standalone model (not bound to a block or item).
  * <p>
- * This key is registered together with a {@link StandaloneModelBaker} or {@link UnbakedStandaloneModel} in
- * {@link ModelEvent.RegisterStandalone} and later used to retrieve the model baked by the {@link StandaloneModelBaker},
+ * This key is registered together with a {@link SimpleUnbakedStandaloneModel} or {@link UnbakedStandaloneModel} in
+ * {@link ModelEvent.RegisterStandalone} and later used to retrieve the model baked by the {@link SimpleUnbakedStandaloneModel},
  * using {@link ModelManager#getStandaloneModel(StandaloneModelKey)}.
  * <p>
  * The key is compared by identity as multiple keys may refer to the same model while using different bakers.
  *
- * @param <T> The type returned by the {@link StandaloneModelBaker} this key is registered with
+ * @param <T> The type returned by the {@link SimpleUnbakedStandaloneModel} this key is registered with
  */
 public final class StandaloneModelKey<T> {
     private final ModelDebugName name;
