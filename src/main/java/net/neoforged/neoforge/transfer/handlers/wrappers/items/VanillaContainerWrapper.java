@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import com.google.common.collect.MapMaker;
-import java.util.ArrayList;
-import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.Container;
@@ -22,13 +20,16 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.neoforge.common.extensions.IContainerExtension;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 
-public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
+import java.util.ArrayList;
+import java.util.Map;
+
+public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     /**
      * Global wrapper concurrent map.
      *
@@ -173,7 +174,6 @@ public class VanillaContainerWrapper implements IResourceHandlerModifiable<ItemR
         return "AlternateVanillaContainerWrapper{%s}".formatted(container);
     }
 
-    @Override
     public void set(int index, ItemResource resource, int amount) {
         get(index).set(resource.toStack(amount));
     }

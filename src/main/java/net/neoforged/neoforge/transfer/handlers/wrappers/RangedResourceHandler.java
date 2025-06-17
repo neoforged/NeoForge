@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 import com.google.common.base.Preconditions;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -73,25 +72,5 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
         }
 
         return inserted;
-    }
-
-    public static class Modifiable<T extends IResource> extends RangedResourceHandler<T> implements IResourceHandlerModifiable<T> {
-        public Modifiable(IResourceHandlerModifiable<T> delegate, int start, int end) {
-            super(delegate, start, end);
-        }
-
-        public Modifiable(Supplier<IResourceHandlerModifiable<T>> delegate, int start, int end) {
-            super(delegate::get, start, end);
-        }
-
-        @Override
-        public void set(int index, T resource, int amount) {
-            getDelegate().set(convertIndex(index), resource, amount);
-        }
-
-        @Override
-        public IResourceHandlerModifiable<T> getDelegate() {
-            return (IResourceHandlerModifiable<T>) super.getDelegate();
-        }
     }
 }

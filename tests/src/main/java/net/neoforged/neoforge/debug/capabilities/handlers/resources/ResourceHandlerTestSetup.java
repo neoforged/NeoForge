@@ -98,6 +98,7 @@ public record ResourceHandlerTestSetup() {
         Registry.COMPONENTS.register(bus);
         var dummy = Content.INSTANCE;
 
+        //TODO change out the attachment used from ResourceContainer to one of the other templates. I had forgotten to do this, but the tests were at least validating the infrastructure.
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> {
                     var data = blockEntity.getData(Content.RESOURCE_ATTACHMENT);

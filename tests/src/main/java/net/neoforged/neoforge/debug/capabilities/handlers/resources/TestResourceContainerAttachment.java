@@ -17,7 +17,7 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
@@ -40,11 +40,11 @@ public class TestResourceContainerAttachment {
     public final ResourceContainer<ItemResource> itemContainer;
     public final SimpleFluidResourceContainer fluidContainer;
 
-    public final IResourceHandlerModifiable<ItemResource> input;
-    public final IResourceHandlerModifiable<ItemResource> output;
-    public final IResourceHandlerModifiable<ItemResource> both;
+    public final IResourceHandler<ItemResource> input;
+    public final IResourceHandler<ItemResource> output;
+    public final IResourceHandler<ItemResource> both;
 
-    public final IResourceHandlerModifiable<FluidResource> fluidHandler;
+    public final IResourceHandler<FluidResource> fluidHandler;
 
     @Nullable
     public BlockEntity blockEntity; // We want to set data, or more accurately: mark the block entity owning this data as `changed`

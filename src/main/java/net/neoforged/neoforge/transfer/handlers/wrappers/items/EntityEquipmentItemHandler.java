@@ -6,21 +6,22 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import com.google.common.collect.MapMaker;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<ItemResource> {
+public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource> {
     /**
      * Global wrapper concurrent map.
      *
@@ -118,7 +119,6 @@ public class EntityEquipmentItemHandler implements IResourceHandlerModifiable<It
         return slots.get(slot);
     }
 
-    @Override
     public void set(int index, ItemResource resource, int amount) {
         internalStacks.set(index, resource.toStack(amount));
     }

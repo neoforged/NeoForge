@@ -11,20 +11,17 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.ResourceContainer;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.SimpleFluidResourceContainer;
 import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.SimpleItemResourceContainer;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
@@ -50,6 +47,7 @@ public class TransactionTests {
     @TestHolder(description = "Transactional tests. Takes the idea of looking for a subset of items and able to return the crafting ingredients")
     private static void itemTransfer(ExtendedGameTestHelper helper) {
         //todo, the test is still in progress. This is also helping identify if anything should change
+        // The more notable changes to be made is swapping out the container types used.
         var b = SimpleItemResourceContainer.builder(0).build();
 
         var water = new InfiniteResourceHandler<>(Fluids.WATER.defaultResource());
@@ -64,13 +62,15 @@ public class TransactionTests {
         var internalContainer = SimpleItemResourceContainer.builder(9).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
 
         //noinspection unchecked
-        IResourceHandlerModifiable<ItemResource>[] externalContainers = new IResourceHandlerModifiable[3];
+        IResourceHandler<ItemResource>[] externalContainers = new IResourceHandler[3];
         externalContainers[0] = SimpleItemResourceContainer.builder(4).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
         externalContainers[1] = SimpleItemResourceContainer.builder(2).build().asHandler();
         externalContainers[2] = SimpleItemResourceContainer.builder(100).capacity(32).build().asHandler();
-        for (var index = 0; index < externalContainers[0].size(); index++) {
-            externalContainers[0].set(index, Items.LAVA_BUCKET.defaultResource(), 2);
-
+        if (externalContainers[0] instanceof ResourceContainerToHandlerAdapter<ItemResource> modifiableContainer) {
+            int size = modifiableContainer.size();
+            for (var index = 0; index < size; index++) {
+                modifiableContainer.set(index, Items.LAVA_BUCKET.defaultResource(), 2);
+            }
         }
 
         var ingredient = Ingredient.of(Items.LAVA_BUCKET);
@@ -143,7 +143,7 @@ public class TransactionTests {
         return resource.test(ingredient);
     }
 
-    private static int tryIndex(IResourceHandlerModifiable<ItemResource> container, Transaction transaction, ItemResource resource, int index, int amount) {
+    private static int tryIndex(IResourceHandler<ItemResource> container, Transaction transaction, ItemResource resource, int index, int amount) {
         var remainderStack = UnsafeResourceUtils.innerStackOf(resource).getCraftingRemainder();
         var extracted = container.extract(index, resource, amount, transaction);
         if (extracted == 0) return 0;
@@ -184,47 +184,6 @@ public class TransactionTests {
             if (handler.extract(0, coal, 16, tx) != 16) return false;
             if (handler.insert(1, diamond, 1, tx) != 1) return false;
             return action.commit(tx);
-        }
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Transactional tests. Takes the idea of looking for a subset of items and able to return the crafting ingredients")
-    public static void composable(ExtendedGameTestHelper helper) {
-        var item = Items.SAND.defaultResource();
-        var otherItemHandler = SimpleItemResourceContainer.builder(1).build();
-        otherItemHandler.set(0, item.withMutableAmount(5));
-        var tankWater = SimpleFluidResourceContainer.builder(1).build();
-        var tankLava = SimpleFluidResourceContainer.builder(1).build();
-
-        try (var tx = TransactionManager.open(null)) {
-            var amount = tankWater.asHandler().extract(FluidResource.of(Fluids.WATER), 500, tx);
-            try (var subTx = TransactionManager.open(tx)) {
-                var moreAmount = tankWater.asHandler().extract(FluidResource.of(Fluids.WATER), 500, subTx);
-            }
-
-            if (amount > 100) {
-                tx.commit();
-            }
-
-        }
-
-        tankWater.set(0, FluidResource.of(Fluids.WATER).withMutableAmount(FluidType.BUCKET_VOLUME));
-        tankLava.set(0, FluidResource.of(Fluids.LAVA).withMutableAmount(FluidType.BUCKET_VOLUME));
-
-        //Still working on it. At least now it doesn't have type erasure.... it just doesn't work yet :P
-        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-
-            //            var operation = ITransactionOperation.<IResourceHandler<ItemResource>>begin();
-            //            operation.whenSuccessful(tankLava.asHandler(), (handler, transaction) -> {
-            //                var t = 2;
-            //                transaction.commit();
-            //            }).whenSuccessful(tankWater.asHandler(), (handler, transaction) -> {
-            //                var t = 2;
-            //            }).whenNotCommitted(otherItemHandler.asHandler(), (handler, transaction) -> {
-            //                var t = 2;
-            //            });
-            helper.succeed();
         }
     }
 }

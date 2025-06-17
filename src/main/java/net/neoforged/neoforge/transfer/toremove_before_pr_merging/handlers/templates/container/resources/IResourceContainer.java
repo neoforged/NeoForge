@@ -11,7 +11,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -164,23 +163,23 @@ public interface IResourceContainer<TResource extends IResource> extends Iterabl
     }
 
     /**
-     * Creates an {@link IResourceHandlerModifiable} instance that reflects this item holder.
+     * Creates an {@link IResourceHandler} instance that reflects this item holder.
      *
      * @return The resourceHandler handler.
      */
     @Contract(pure = true)
-    default IResourceHandlerModifiable<TResource> asHandler() {
+    default IResourceHandler<TResource> asHandler() {
         return asHandler(IHandleIOBehaviour.DEFAULT);
     }
 
     /**
-     * Creates an {@link IResourceHandlerModifiable} instance that reflects this container with a specification of how to handle what indices can be inserted or extracted.
+     * Creates an {@link IResourceHandler} instance that reflects this container with a specification of how to handle what indices can be inserted or extracted.
      *
      * @param behavior The behavior of the resource handler
      * @return The resource handler.
      */
     @Contract(pure = true)
-    default IResourceHandlerModifiable<TResource> asHandler(IHandleIOBehaviour behavior) {
+    default IResourceHandler<TResource> asHandler(IHandleIOBehaviour behavior) {
         return new ResourceContainerToHandlerAdapter<>(this, behavior);
     }
 

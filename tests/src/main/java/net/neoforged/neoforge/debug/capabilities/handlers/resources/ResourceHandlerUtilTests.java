@@ -12,11 +12,11 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -34,11 +34,11 @@ public class ResourceHandlerUtilTests {
         var src = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         var dst = ResourceHandlerTestSetup.setupLevelEnvironmentSecond(helper);
 
-        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.UP) instanceof IResourceHandlerModifiable<ItemResource> srcHandler)) {
+        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.UP) instanceof ResourceContainerToHandlerAdapter<ItemResource> srcHandler)) {
             throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
 
-        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, dst, Direction.UP) instanceof IResourceHandlerModifiable<ItemResource> dstHandler)) {
+        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, dst, Direction.UP) instanceof ResourceContainerToHandlerAdapter<ItemResource> dstHandler)) {
             throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
 

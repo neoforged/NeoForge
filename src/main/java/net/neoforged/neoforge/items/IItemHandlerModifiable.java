@@ -7,14 +7,13 @@ package net.neoforged.neoforge.items;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 
 /**
  * An item handler that supports direct modification of the contents of the
  * inventory.
  *
- * @deprecated Use {@link IResourceHandlerModifiable} of {@link ItemResource} instead
+ * @deprecated For slots, this is handled by {@link IIndexModifier}
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public interface IItemHandlerModifiable extends IItemHandler {

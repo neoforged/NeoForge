@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -44,11 +43,13 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
 
     @Override
     public void set(int index, MutableResourceStack<T> stack) {
-        if (wrappedHandler instanceof IResourceHandlerModifiable<T> modifiable) {
+        if (wrappedHandler instanceof ResourceContainerToHandlerAdapter<T> modifiable) {
             modifiable.set(index, stack.resource(), stack.amount());
             return;
         }
 
+        // It wasn't ours that we wrapped, so as a last resort we should be able to extract all, and then insert
+        // Try not to wrap external handlers when possible.
         var resource = wrappedHandler.getResource(index);
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             if (!resource.isEmpty())
@@ -69,7 +70,7 @@ public record ResourceHandlerToContainerAdapter<T extends IResource>(
     }
 
     @Override
-    public IResourceHandlerModifiable<T> asHandler() {
-        return wrappedHandler instanceof IResourceHandlerModifiable<T> modifiable ? modifiable : IResourceContainer.super.asHandler();
+    public IResourceHandler<T> asHandler() {
+        return IResourceContainer.super.asHandler();
     }
 }

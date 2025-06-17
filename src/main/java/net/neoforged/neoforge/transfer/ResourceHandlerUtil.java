@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer;
 
+import java.util.Objects;
+import java.util.function.Predicate;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.util.Mth;
@@ -17,9 +19,6 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public final class ResourceHandlerUtil {
     /**
@@ -562,5 +561,5 @@ public final class ResourceHandlerUtil {
         return defaultResource;
     }
 
-    private ResourceHandlerUtil() { }
+    private ResourceHandlerUtil() {}
 }

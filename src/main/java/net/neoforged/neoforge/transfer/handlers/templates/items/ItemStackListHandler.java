@@ -8,17 +8,13 @@ package net.neoforged.neoforge.transfer.handlers.templates.items;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import javax.annotation.Nonnegative;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -29,13 +25,18 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import javax.annotation.Nonnegative;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.function.BiFunction;
+
 /**
  * This is provided as a simple handler to still use a {@link ItemStack} in a List as the backing data structure.
  * It is advised to use a {@link ItemResource} or similar form of {@link IResourceStack}.
  * <p>
  * This can be used in an attachment, a block entity field, or other mutable structures.
  */
-public final class ItemStackListHandler implements IResourceHandlerModifiable<ItemResource> {
+public final class ItemStackListHandler implements IResourceHandler<ItemResource> {
     /**
      * A helper method that creates a {@link MapCodec} for a {@link FluidStackListHandler} given some constructor.
      *
@@ -214,7 +215,6 @@ public final class ItemStackListHandler implements IResourceHandlerModifiable<It
         return handledAmount;
     }
 
-    @Override
     public void set(int index, ItemResource resource, int amount) {
         stacks.set(index, resource.toStack(amount));
     }

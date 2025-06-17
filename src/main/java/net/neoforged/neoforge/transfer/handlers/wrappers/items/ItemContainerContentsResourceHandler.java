@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
-import java.util.Objects;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
@@ -13,18 +12,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
+import java.util.Objects;
+
 /**
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
  */
 // A very verbose name, but likely the most accurate
-public class ItemContainerContentsResourceHandler implements IResourceHandlerModifiable<ItemResource> {
+public class ItemContainerContentsResourceHandler implements IResourceHandler<ItemResource> {
     protected final int size;
     protected final DataComponentType<ItemContainerContents> componentType;
     protected final IItemContext itemContext;
@@ -83,7 +84,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandlerMod
         return true;
     }
 
-    @Override
+    //TODO the resource should be in theory ignored here, but I want to be sure.
     public void set(int index, ItemResource resource, int amount) {
         ItemContainerContents contents = getContents();
         contents.getStackInSlot(index).setCount(amount);

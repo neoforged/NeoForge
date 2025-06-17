@@ -29,7 +29,6 @@ public class ResourceHandlerSlot extends Slot {
         this.slotModifier = slotModifier;
     }
 
-
     @Override
     public boolean mayPlace(ItemStack stack) {
         if (stack.isEmpty())
@@ -48,10 +47,9 @@ public class ResourceHandlerSlot extends Slot {
         setChanged();
     }
 
-
     //From old SlotItemHandler
     @Override
-    public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) { }
+    public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) {}
 
     @Override
     public int getMaxStackSize() {

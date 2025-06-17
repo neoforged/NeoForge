@@ -5,12 +5,12 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import java.util.Objects;
-import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * A wrapper that delegates all calls to a handler.
@@ -112,25 +112,5 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
 
     public IResourceHandler<T> getDelegate() {
         return delegate.get();
-    }
-
-    public static class Modifiable<T extends IResource> extends DelegatingResourceHandler<T> implements IResourceHandlerModifiable<T> {
-        public Modifiable(IResourceHandlerModifiable<T> delegate) {
-            super(delegate);
-        }
-
-        public Modifiable(Supplier<IResourceHandlerModifiable<T>> delegate) {
-            super(delegate::get);
-        }
-
-        @Override
-        public void set(int index, T resource, int amount) {
-            getDelegate().set(convertIndex(index), resource, amount);
-        }
-
-        @Override
-        public IResourceHandlerModifiable<T> getDelegate() {
-            return (IResourceHandlerModifiable<T>) super.getDelegate();
-        }
     }
 }

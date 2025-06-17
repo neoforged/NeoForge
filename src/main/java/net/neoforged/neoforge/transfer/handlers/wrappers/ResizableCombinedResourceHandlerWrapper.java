@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
@@ -24,11 +23,6 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * @param <T>
  */
 public class ResizableCombinedResourceHandlerWrapper<T extends IResource> extends CombinedResourceHandlerWrapper<T> {
-    @SafeVarargs
-    public ResizableCombinedResourceHandlerWrapper(IResourceHandler<T>... handlers) {
-        super(handlers);
-    }
-
     @Override
     public int size() {
         int sum = 0;
@@ -60,20 +54,5 @@ public class ResizableCombinedResourceHandlerWrapper<T extends IResource> extend
             sizeUntil += handlers[i].size();
         }
         return index - sizeUntil;
-    }
-
-    public static class Modifiable<T extends IResource> extends ResizableCombinedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
-        @SafeVarargs
-        public Modifiable(IResourceHandlerModifiable<T>... handlers) {
-            super(handlers);
-        }
-
-        @Override
-        public void set(int index, T resource, int amount) {
-            int handlerIndex = getHandlerIndex(index);
-            IResourceHandler<T> handler = getHandlerFromIndex(handlerIndex);
-            if (handler instanceof IResourceHandlerModifiable<T> modifiable)
-                modifiable.set(getSlotFromIndex(index, handlerIndex), resource, amount);
-        }
     }
 }

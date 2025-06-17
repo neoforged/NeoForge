@@ -5,9 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -19,6 +16,10 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * An implementation of {@code IResourceHandler<ItemResource>} for the {@link Inventory} of a {@link Player}.
@@ -48,6 +49,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         EquipmentSlot slot = getEquipmentSlot(index);
         return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
     }
+
     //TODO We likely need to handle the scenario of can Unequip. Considering something like the enchantment. The resource already has the method
     // we just need the context
 

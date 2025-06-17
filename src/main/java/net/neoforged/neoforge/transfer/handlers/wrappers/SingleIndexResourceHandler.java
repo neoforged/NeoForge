@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -52,29 +51,5 @@ public class SingleIndexResourceHandler<T extends IResource> extends DelegatingR
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
         return getDelegate().extract(index, resource, amount, transaction);
-    }
-
-    public static class Modifiable<T extends IResource> extends SingleIndexResourceHandler<T> implements IResourceHandlerModifiable<T> {
-        public Modifiable(IResourceHandlerModifiable<T> delegate, int index) {
-            super(delegate, index);
-        }
-
-        public Modifiable(Supplier<IResourceHandlerModifiable<T>> delegate, int index) {
-            super(delegate::get, index);
-        }
-
-        @Override
-        public IResourceHandlerModifiable<T> getDelegate() {
-            return (IResourceHandlerModifiable<T>) super.getDelegate();
-        }
-
-        @Override
-        public void set(int index, T resource, int amount) {
-            getDelegate().set(this.index, resource, amount);
-        }
-
-        public void set(T resource, int amount) {
-            getDelegate().set(this.index, resource, amount);
-        }
     }
 }

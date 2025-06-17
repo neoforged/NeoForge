@@ -16,12 +16,12 @@ import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -132,7 +132,7 @@ public class ComponentResourceTests {
 
             //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
             var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
-            if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP) instanceof IResourceHandlerModifiable<ItemResource> blockHandler)) {
+            if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP) instanceof ResourceContainerToHandlerAdapter<ItemResource> blockHandler)) {
                 throw helper.assertionException("The returned capability was not a Modifiable resource handler");
             }
             var applesWithContents = ItemResource.of(player.getInventory().getItem(1));

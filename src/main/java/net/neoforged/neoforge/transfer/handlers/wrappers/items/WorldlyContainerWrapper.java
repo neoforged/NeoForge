@@ -7,13 +7,13 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
-public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemResource> {
+public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
     private final WorldlyContainer worldlyContainer;
     private final VanillaContainerWrapper wrappedContainer;
     @Nullable
@@ -114,7 +114,6 @@ public class WorldlyContainerWrapper implements IResourceHandlerModifiable<ItemR
         return handled;
     }
 
-    @Override
     public void set(int index, ItemResource resource, int amount) {
         worldlyContainer.setItem(index, resource.toStack(amount), true);
     }

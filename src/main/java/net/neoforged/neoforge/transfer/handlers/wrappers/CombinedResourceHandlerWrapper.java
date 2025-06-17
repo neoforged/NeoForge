@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -145,20 +144,5 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
             if (handled >= amount) break;
         }
         return handled;
-    }
-
-    public static class Modifiable<T extends IResource> extends CombinedResourceHandlerWrapper<T> implements IResourceHandlerModifiable<T> {
-        @SafeVarargs
-        public Modifiable(IResourceHandlerModifiable<T>... handlers) {
-            super(handlers);
-        }
-
-        @Override
-        public void set(int index, T resource, int amount) {
-            int handlerIndex = getHandlerIndex(index);
-            IResourceHandler<T> handler = getHandlerFromIndex(handlerIndex);
-            if (handler instanceof IResourceHandlerModifiable<T> modifiable)
-                modifiable.set(getSlotFromIndex(index, handlerIndex), resource, amount);
-        }
     }
 }

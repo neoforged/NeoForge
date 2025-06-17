@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * A wrapper that delegates all calls to specific set of indices of a handler.
@@ -31,11 +30,6 @@ public class ScopedResourceHandler<T extends IResource> extends DelegatingResour
     }
 
     public ScopedResourceHandler(IResourceHandler<T> delegate, int[] indices) {
-        super(delegate);
-        this.indices = indices;
-    }
-
-    public ScopedResourceHandler(Supplier<IResourceHandler<T>> delegate, int[] indices) {
         super(delegate);
         this.indices = indices;
     }
@@ -75,25 +69,5 @@ public class ScopedResourceHandler<T extends IResource> extends DelegatingResour
                 break;
         }
         return extracted;
-    }
-
-    public static class Modifiable<T extends IResource> extends ScopedResourceHandler<T> implements IResourceHandlerModifiable<T> {
-        public Modifiable(IResourceHandlerModifiable<T> delegate, int[] indices) {
-            super(delegate, indices);
-        }
-
-        public Modifiable(Supplier<IResourceHandlerModifiable<T>> delegate, int[] indices) {
-            super(delegate::get, indices);
-        }
-
-        @Override
-        public void set(int index, T resource, int amount) {
-            getDelegate().set(convertIndex(index), resource, amount);
-        }
-
-        @Override
-        public IResourceHandlerModifiable<T> getDelegate() {
-            return (IResourceHandlerModifiable<T>) super.getDelegate();
-        }
     }
 }

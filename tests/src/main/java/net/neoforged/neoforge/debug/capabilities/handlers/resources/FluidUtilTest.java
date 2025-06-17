@@ -20,11 +20,11 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandlerModifiable;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 public class FluidUtilTest {
     private static void setFluid(ExtendedGameTestHelper helper, BlockPos blockPos, ResourceStack<FluidResource> resourceStack) {
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, blockPos, null);
-        if (handler instanceof IResourceHandlerModifiable<FluidResource> modifiable) {
+        if (handler instanceof ResourceContainerToHandlerAdapter<FluidResource> modifiable) {
             modifiable.set(0, resourceStack.resource(), resourceStack.amount());
         }
     }
@@ -100,7 +100,7 @@ public class FluidUtilTest {
         var player = helper.makeMockPlayer();
         var waterOf1BucketAmount = ResourceStack.of(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
 
-        if (!(helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null) instanceof IResourceHandlerModifiable<FluidResource> handler)) {
+        if (!(helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null) instanceof ResourceContainerToHandlerAdapter<FluidResource> handler)) {
             throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
 
