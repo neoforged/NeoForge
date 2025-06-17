@@ -45,7 +45,7 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
     @Override
     public void snapTo(double x, double y, double z) {
         super.snapTo(x, y, z);
-        this.serverLevel().getChunkSource().move(this); //We need to move the player to the correct chunk
+        this.level().getChunkSource().move(this); //We need to move the player to the correct chunk
         this.connection.chunkSender.sendNextChunks(this); //And send the chunks to the player
         this.connection.chunkSender.onChunkBatchReceivedByClient(64f); //Also mark them as received.
     }

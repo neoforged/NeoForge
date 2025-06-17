@@ -6,20 +6,19 @@
 package net.neoforged.neoforge.client.extensions;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.util.TriState;
 import net.minecraft.world.level.block.state.BlockState;
 
 public interface BlockModelPartExtension {
     /**
-     * Gets the set of {@link RenderType render types} to use when drawing this block in the level.
-     * Supported types are those returned by {@link RenderType#chunkBufferLayers()}.
+     * Get the set {@link ChunkSectionLayer} to use when drawing this block in the level.
      * <p>
      * By default, defers query to {@link ItemBlockRenderTypes}.
      */
-    default RenderType getRenderType(BlockState state) {
+    default ChunkSectionLayer getRenderType(BlockState state) {
         return ItemBlockRenderTypes.getChunkRenderType(state);
     }
 

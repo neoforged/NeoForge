@@ -16,9 +16,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.thread.BlockableEventLoop;
-import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.network.handlers.ClientPayloadHandler;
 import net.neoforged.neoforge.client.network.handling.ClientPayloadContext;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
@@ -56,11 +54,6 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
     @Override
     public TooltipFlag getTooltipFlag() {
         return Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL;
-    }
-
-    @Override
-    public RecipeBookType[] getFilteredRecipeBookTypeValues() {
-        return ClientHooks.getFilteredRecipeBookTypeValues();
     }
 
     @Override

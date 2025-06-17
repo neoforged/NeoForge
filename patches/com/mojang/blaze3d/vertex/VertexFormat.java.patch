@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormat.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormat.java
-@@ -222,4 +_,28 @@
+@@ -214,4 +_,28 @@
              };
          }
      }

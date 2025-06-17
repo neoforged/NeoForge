@@ -3,7 +3,7 @@
 @@ -9,8 +_,13 @@
  import net.minecraft.world.damagesource.DamageTypes;
  
- public class DamageTypeTagsProvider extends TagsProvider<DamageType> {
+ public class DamageTypeTagsProvider extends KeyTagProvider<DamageType> {
 +    /** @deprecated Forge: Use the {@linkplain #DamageTypeTagsProvider(PackOutput, CompletableFuture, String) mod id variant} */
 +    @Deprecated
      public DamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {

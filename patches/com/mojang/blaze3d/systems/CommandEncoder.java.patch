@@ -1,11 +1,11 @@
 --- a/com/mojang/blaze3d/systems/CommandEncoder.java
 +++ b/com/mojang/blaze3d/systems/CommandEncoder.java
-@@ -25,6 +_,8 @@
+@@ -35,6 +_,8 @@
  
      void clearDepthTexture(GpuTexture p_410276_, double p_410184_);
  
 +    void clearStencilTexture(GpuTexture texture, int value);
 +
-     void writeToBuffer(GpuBuffer p_410195_, ByteBuffer p_410481_, int p_410055_);
+     void writeToBuffer(GpuBufferSlice p_418507_, ByteBuffer p_410481_);
  
-     GpuBuffer.ReadView readBuffer(GpuBuffer p_410459_);
+     GpuBuffer.MappedView mapBuffer(GpuBuffer p_418099_, boolean p_418103_, boolean p_418179_);

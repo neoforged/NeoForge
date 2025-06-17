@@ -6,10 +6,12 @@
 package net.neoforged.neoforge.energy;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 /**
  * Reference implementation of {@link IEnergyStorage}. Use/extend this or implement your own.
@@ -17,7 +19,7 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  */
-public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
+public class EnergyStorage implements IEnergyStorage, INBTSerializable<CompoundTag>, ValueIOSerializable {
     protected int energy;
     protected int capacity;
     protected int maxReceive;
@@ -87,14 +89,24 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     }
 
     @Override
-    public Tag serializeNBT(HolderLookup.Provider provider) {
-        return IntTag.valueOf(this.getEnergyStored());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("energy", this.energy);
+        return tag;
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
-        if (!(nbt instanceof IntTag(int value)))
-            throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
-        this.energy = value;
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        this.energy = nbt.getIntOr("energy", 0);
+    }
+
+    @Override
+    public void serialize(ValueOutput output) {
+        output.putInt("energy", energy);
+    }
+
+    @Override
+    public void deserialize(ValueInput input) {
+        this.energy = input.getIntOr("energy", 0);
     }
 }

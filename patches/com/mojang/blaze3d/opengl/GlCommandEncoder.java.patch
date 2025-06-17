@@ -1,19 +1,20 @@
 --- a/com/mojang/blaze3d/opengl/GlCommandEncoder.java
 +++ b/com/mojang/blaze3d/opengl/GlCommandEncoder.java
-@@ -147,7 +_,8 @@
-         } else if (p_410548_.isClosed()) {
-             throw new IllegalStateException("Depth texture is closed");
+@@ -200,7 +_,8 @@
+             throw new IllegalStateException("Close the existing render pass before creating a new one!");
          } else {
+             this.verifyDepthTexture(p_410548_);
 -            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)p_410548_).id, 0, 36160);
 +            boolean hasStencil = p_410548_.getFormat().hasStencilAspect();
 +            this.device.directStateAccess().bindFrameBufferTextures(this.drawFbo, 0, ((GlTexture)p_410548_).id, 0, 36160, hasStencil);
              GL11.glDrawBuffer(0);
              GL11.glClearDepth(p_410067_);
              GlStateManager._depthMask(true);
-@@ -160,6 +_,23 @@
+@@ -212,6 +_,23 @@
+         }
      }
  
-     @Override
++    @Override
 +    public void clearStencilTexture(GpuTexture texture, int value) {
 +        if (this.inRenderPass) {
 +            throw new IllegalStateException("Close the existing render pass before creating a new one!");
@@ -30,11 +31,10 @@
 +        }
 +    }
 +
-+    @Override
-     public void writeToBuffer(GpuBuffer p_409838_, ByteBuffer p_410689_, int p_409997_) {
-         if (this.inRenderPass) {
-             throw new IllegalStateException("Close the existing render pass before performing additional commands");
-@@ -478,8 +_,19 @@
+     private void verifyColorTexture(GpuTexture p_416690_) {
+         if (!p_416690_.getFormat().hasColorAspect()) {
+             throw new IllegalStateException("Trying to clear a non-color texture as color");
+@@ -606,8 +_,19 @@
                  boolean flag = p_410700_.getFormat().hasDepthAspect();
                  int i = ((GlTexture)p_410700_).glId();
                  int j = ((GlTexture)p_410735_).glId();
@@ -56,7 +56,7 @@
                  this.device
                      .directStateAccess()
                      .blitFrameBuffers(
-@@ -493,7 +_,7 @@
+@@ -621,7 +_,7 @@
                          p_410236_,
                          p_409870_,
                          p_409949_,
@@ -65,8 +65,8 @@
                          9728
                      );
                  int k = GlStateManager._getError();
-@@ -711,6 +_,26 @@
-             );
+@@ -935,6 +_,25 @@
+             GlStateManager._scissorBox(p_410853_.getScissorX(), p_410853_.getScissorY(), p_410853_.getScissorWidth(), p_410853_.getScissorHeight());
          } else {
              GlStateManager._disableScissorTest();
 +        }
@@ -74,7 +74,6 @@
 +        var stencilTest = p_410853_.stencilTest;
 +        if (stencilTest != null) {
 +            GlStateManager._enableStencilTest();
-+
 +            var front = stencilTest.front();
 +            var back = stencilTest.back();
 +            if (front.equals(back)) {

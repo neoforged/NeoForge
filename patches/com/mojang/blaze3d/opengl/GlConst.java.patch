@@ -1,17 +1,17 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
-@@ -275,6 +_,8 @@
-             case RGBA8 -> 32856;
+@@ -251,6 +_,8 @@
              case RED8 -> 33321;
+             case RED8I -> 33329;
              case DEPTH32 -> 33191;
 +            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH24_STENCIL8;
 +            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH32F_STENCIL8;
          };
      }
  
-@@ -283,6 +_,10 @@
-             case RGBA8 -> 6408;
+@@ -260,6 +_,10 @@
              case RED8 -> 6403;
+             case RED8I -> 6403;
              case DEPTH32 -> 6402;
 +            // As long as null data will be passed to texImage2D, the external format does not matter as long as it matches the internalFormat.
 +            // So the usage, for depth, of unsigned int in one case and float in the other case, is not a problem.
@@ -20,20 +20,19 @@
          };
      }
  
-@@ -291,6 +_,8 @@
-             case RGBA8 -> 5121;
+@@ -269,6 +_,8 @@
              case RED8 -> 5121;
+             case RED8I -> 5121;
              case DEPTH32 -> 5126;
 +            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8;
 +            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
          };
      }
  
-@@ -298,6 +_,32 @@
-         return switch (p_412490_) {
-             case VERTEX -> 35633;
-             case FRAGMENT -> 35632;
-+        };
+@@ -309,5 +_,31 @@
+         } else {
+             return 35044;
+         }
 +    }
 +
 +    public static int toGl(net.neoforged.neoforge.client.stencil.StencilFunction func) {
@@ -59,6 +58,6 @@
 +            case INVERT -> org.lwjgl.opengl.GL32.GL_INVERT;
 +            case INCR_WRAP -> org.lwjgl.opengl.GL32.GL_INCR_WRAP;
 +            case DECR_WRAP -> org.lwjgl.opengl.GL32.GL_DECR_WRAP;
-         };
++        };
      }
  }

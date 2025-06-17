@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderer.java
-@@ -110,6 +_,8 @@
+@@ -114,6 +_,8 @@
          }
  
          if (p_364816_.nameTag != null) {
@@ -9,7 +9,7 @@
              this.renderNameTag(p_364816_, p_364816_.nameTag, p_114488_, p_114489_, p_114490_);
          }
      }
-@@ -254,6 +_,7 @@
+@@ -228,6 +_,7 @@
      public final S createRenderState(T p_361382_, float p_360885_) {
          S s = this.reusedState;
          this.extractRenderState(p_361382_, s, p_360885_);
@@ -17,21 +17,21 @@
          return s;
      }
  
-@@ -280,9 +_,11 @@
+@@ -254,9 +_,11 @@
          }
  
          p_361028_.distanceToCameraSq = this.entityRenderDispatcher.distanceToSqr(p_362104_);
--        boolean flag = p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq);
+-        boolean flag1 = p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq);
 +        var event = new net.neoforged.neoforge.client.event.RenderNameTagEvent.CanRender(p_362104_, p_361028_, this.getNameTag(p_362104_), this, p_362204_);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-+        boolean flag = event.canRender().isTrue() || (event.canRender().isDefault() && p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq));
-         if (flag) {
++        boolean flag1 = event.canRender().isTrue() || (event.canRender().isDefault() && p_361028_.distanceToCameraSq < 4096.0 && this.shouldShowName(p_362104_, p_361028_.distanceToCameraSq));
+         if (flag1) {
 -            p_361028_.nameTag = this.getNameTag(p_362104_);
 +            p_361028_.nameTag = event.getContent();
              p_361028_.nameTagAttachment = p_362104_.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, p_362104_.getYRot(p_362204_));
          } else {
              p_361028_.nameTag = null;
-@@ -319,6 +_,8 @@
+@@ -334,6 +_,8 @@
              p_361028_.hitboxesRenderState = null;
              p_361028_.serverHitboxesRenderState = null;
          }

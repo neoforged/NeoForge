@@ -1,0 +1,73 @@
+--- a/net/minecraft/data/tags/TagAppender.java
++++ b/net/minecraft/data/tags/TagAppender.java
+@@ -54,6 +_,30 @@
+                 p_422107_.addOptionalTag(p_422597_.location());
+                 return this;
+             }
++
++            @Override
++            public TagAppender<ResourceKey<T>, T> add(net.minecraft.tags.TagEntry entry) {
++                p_422107_.add(entry);
++                return this;
++            }
++
++            @Override
++            public TagAppender<ResourceKey<T>, T> replace(boolean value) {
++                p_422107_.replace(value);
++                return this;
++            }
++
++            @Override
++            public TagAppender<ResourceKey<T>, T> remove(final ResourceKey<T> resourceKey) {
++                p_422107_.removeElement(resourceKey.location());
++                return this;
++            }
++
++            @Override
++            public TagAppender<ResourceKey<T>, T> remove(TagKey<T> tag) {
++                p_422107_.removeTag(tag.location());
++                return this;
++            }
+         };
+     }
+ 
+@@ -68,7 +_,7 @@
+ 
+             @Override
+             public TagAppender<U, T> addOptional(U p_422325_) {
+-                tagappender.add(p_421966_.apply(p_422325_));
++                tagappender.addOptional(p_421966_.apply(p_422325_));
+                 return this;
+             }
+ 
+@@ -81,6 +_,30 @@
+             @Override
+             public TagAppender<U, T> addOptionalTag(TagKey<T> p_421878_) {
+                 tagappender.addOptionalTag(p_421878_);
++                return this;
++            }
++
++            @Override
++            public TagAppender<U, T> add(net.minecraft.tags.TagEntry entry) {
++                tagappender.add(entry);
++                return this;
++            }
++
++            @Override
++            public TagAppender<U, T> replace(boolean value) {
++                tagappender.replace(value);
++                return this;
++            }
++
++            @Override
++            public TagAppender<U, T> remove(final U u) {
++                tagappender.remove(p_421966_.apply(u));
++                return this;
++            }
++
++            @Override
++            public TagAppender<U, T> remove(TagKey<T> tag) {
++                tagappender.remove(tag);
+                 return this;
+             }
+         };

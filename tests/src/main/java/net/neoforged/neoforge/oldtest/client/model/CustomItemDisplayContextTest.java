@@ -47,6 +47,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -215,25 +217,22 @@ public class CustomItemDisplayContextTest {
         }
 
         @Override
-        public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-            handleUpdateTag(pkt.getTag(), lookupProvider);
+        public void onDataPacket(Connection net, ValueInput input) {
+            handleUpdateTag(input);
         }
 
         @Override
-        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
-            super.saveAdditional(tag, holderLookup);
+        protected void saveAdditional(ValueOutput output) {
+            super.saveAdditional(output);
             if (heldItem != null) {
-                tag.put("item", heldItem.save(holderLookup, new CompoundTag()));
+                output.store("item", ItemStack.CODEC, heldItem);
             }
         }
 
         @Override
-        public void loadAdditional(CompoundTag tag, HolderLookup.Provider holderLookup) {
-            super.loadAdditional(tag, holderLookup);
-            var itemTag = tag.getCompound("item").orElse(null);
-            if (itemTag != null) {
-                heldItem = ItemStack.parse(holderLookup, itemTag).orElseThrow();
-            }
+        public void loadAdditional(ValueInput input) {
+            super.loadAdditional(input);
+            heldItem = input.read("item", ItemStack.CODEC).orElse(null);
         }
     }
 
