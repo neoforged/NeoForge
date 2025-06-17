@@ -101,6 +101,11 @@ immaculate {
                 return fileContents
             }
 
+            // The anvil menu patches a method to be final, which cannot be done with an AT, but trips this check otherwise.
+            if (fileContents.startsWith("--- a/net/minecraft/world/inventory/AnvilMenu.java")) {
+                return fileContents
+            }
+
             def accessChanges = fileContents.findAll(accessLevelChange)
             if (accessChanges.isEmpty()) return fileContents
             Map<String, Set<String>> removals = Map.of("private", new HashSet<>(), "protected", new HashSet<>(), "public", new HashSet<>())

@@ -38,7 +38,7 @@
  
      void startTicking(T p_157565_) {
 @@ -232,7 +_,10 @@
-     private void processPendingLoads() {
+     public void processPendingLoads() {
          ChunkEntities<T> chunkentities;
          while ((chunkentities = this.loadingInbox.poll()) != null) {
 -            chunkentities.getEntities().forEach(p_157593_ -> this.addEntity((T)p_157593_, true));

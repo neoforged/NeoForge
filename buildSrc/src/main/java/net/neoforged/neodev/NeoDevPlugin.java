@@ -22,6 +22,7 @@ import net.neoforged.nfrtgradle.NeoFormRuntimeTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.BasePluginExtension;
@@ -570,6 +571,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.setGroup(INTERNAL_GROUP);
                 task.classpath(binpatcherConfig);
                 task.getPatchedJar().set(joinedJar.flatMap(Jar::getArchiveFile));
+                // Included so that lambda names are correct in production
+                task.getIncludeClassesJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
                 task.getSourcePatchesFolder().set(sourcesPatchesFolder);
                 task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             });
@@ -604,17 +607,31 @@ public class NeoDevPlugin implements Plugin<Project> {
         var minecraftVersion = project.getProviders().gradleProperty("minecraft_version");
         var mcAndNeoFormVersion = minecraftVersion.zip(rawNeoFormVersion, (mc, nf) -> mc + "-" + nf);
 
-        // Configuration for all artifacts that should be passed to NFRT to prevent repeated downloads
-        var neoFormRuntimeArtifactManifestNeoForm = configurations.create("neoFormRuntimeArtifactManifestNeoForm", spec -> {
+        // NeoForm data + tools to run it
+        var neoFormRuntimeDataOnly = configurations.create("neoFormRuntimeDataOnly", spec -> {
             spec.setCanBeConsumed(false);
             spec.setCanBeResolved(true);
             spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
                 return dependencyFactory.create("net.neoforged:neoform:" + version);
             }));
         });
+        // Minecraft's dependencies
+        var neoFormRuntimeMinecraftDependencies = configurations.create("neoFormRuntimeMinecraftDependencies", spec -> {
+            spec.setCanBeConsumed(false);
+            spec.setCanBeResolved(true);
+            spec.getDependencies().addLater(mcAndNeoFormVersion.map(version -> {
+                return dependencyFactory.create("net.neoforged:neoform:" + version).capabilities(caps -> {
+                    caps.requireCapability("net.neoforged:neoform-dependencies");
+                });
+            }));
+            spec.attributes(attrs -> {
+                attrs.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_API));
+            });
+        });
 
         tasks.withType(NeoFormRuntimeTask.class, task -> {
-            task.addArtifactsToManifest(neoFormRuntimeArtifactManifestNeoForm);
+            task.addArtifactsToManifest(neoFormRuntimeDataOnly);
+            task.addArtifactsToManifest(neoFormRuntimeMinecraftDependencies);
         });
 
         return tasks.register("createSourceArtifacts", CreateMinecraftArtifacts.class, task -> {
@@ -653,12 +670,12 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOriginalClientJar().set(originalClientJar);
         };
         project.getTasks().register("runProductionClient", RunProductionClient.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Runs the production client installed by installProductionClient.");
             configureRunProductionClient.accept(task);
         });
         project.getTasks().register("testProductionClient", TestProductionClient.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Tests the production client installed by installProductionClient.");
             configureRunProductionClient.accept(task);
         });
@@ -675,13 +692,13 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         project.getTasks().register("runProductionServer", RunProductionServer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Runs the production server installed by installProductionServer.");
             task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });
 
         project.getTasks().register("testProductionServer", TestProductionServer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Tests the production server installed by installProductionServer.");
             task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });

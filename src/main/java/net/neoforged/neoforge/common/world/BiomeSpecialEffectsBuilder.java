@@ -24,6 +24,7 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
         BiomeSpecialEffectsBuilder builder = BiomeSpecialEffectsBuilder.create(baseEffects.getFogColor(), baseEffects.getWaterColor(), baseEffects.getWaterFogColor(), baseEffects.getSkyColor());
         builder.grassColorModifier = baseEffects.getGrassColorModifier();
         baseEffects.getFoliageColorOverride().ifPresent(builder::foliageColorOverride);
+        baseEffects.getDryFoliageColorOverride().ifPresent(builder::dryFoliageColorOverride);
         baseEffects.getGrassColorOverride().ifPresent(builder::grassColorOverride);
         baseEffects.getAmbientParticleSettings().ifPresent(builder::ambientParticle);
         baseEffects.getAmbientLoopSoundEvent().ifPresent(builder::ambientLoopSound);
@@ -68,6 +69,10 @@ public class BiomeSpecialEffectsBuilder extends BiomeSpecialEffects.Builder {
 
     public Optional<Integer> getFoliageColorOverride() {
         return this.foliageColorOverride;
+    }
+
+    public Optional<Integer> getDryFoliageColorOverride() {
+        return this.dryFoliageColorOverride;
     }
 
     public Optional<Integer> getGrassColorOverride() {

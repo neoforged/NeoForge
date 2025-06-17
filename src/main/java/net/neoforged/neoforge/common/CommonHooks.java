@@ -12,7 +12,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -37,6 +42,7 @@ import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.SharedConstants;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
@@ -55,12 +61,14 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ChatDecorator;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.PlainTextContents;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -70,6 +78,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
@@ -149,7 +158,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
@@ -194,7 +202,7 @@ import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingUseTotemEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+import net.neoforged.neoforge.event.entity.player.AnvilCraftEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent;
@@ -419,7 +427,7 @@ public class CommonHooks {
             return null;
 
         if (!player.level().isClientSide)
-            player.getCommandSenderWorld().addFreshEntity(event.getEntity());
+            player.level().addFreshEntity(event.getEntity());
         return event.getEntity();
     }
 
@@ -680,23 +688,69 @@ public class CommonHooks {
         NeoForge.EVENT_BUS.post(new PlayerEnchantItemEvent(player, stack, instances));
     }
 
-    public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
-        AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (NeoForge.EVENT_BUS.post(e).isCanceled())
-            return false;
-        if (e.getOutput().isEmpty())
-            return true;
+    /**
+     * Called from {@link AnvilMenu#createResult()} after the vanilla result has been computed.
+     * <p>
+     * If the left input to the anvil is not empty, this method fires the {@link AnvilUpdateEvent} to allow mods to manipulate the result.
+     * 
+     * @param menu       The anvil menu
+     * @param leftInput  The left input item
+     * @param rightInput The right input item
+     * @param resultSlot A reference to the output slot
+     * @param name       The item name in the text input field.
+     * @param player     The player who is using the anvil
+     */
+    public static void onAnvilUpdate(AnvilMenu menu, ItemStack leftInput, ItemStack rightInput, Container resultSlot, @Nullable String name, Player player) {
+        if (!leftInput.isEmpty()) {
+            var event = new AnvilUpdateEvent(leftInput, rightInput, name, resultSlot.getItem(0), menu.getCost(), menu.repairItemCountCost, player);
+            // If the event is cancelled, the anvil operation is void. Set the result to empty and the cost to zero.
+            if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
+                resultSlot.setItem(0, ItemStack.EMPTY);
+                menu.setCost(0);
+                menu.repairItemCountCost = 0;
+                return;
+            }
 
-        outputSlot.setItem(0, e.getOutput());
-        container.setMaximumCost(e.getCost());
-        container.repairItemCountCost = e.getMaterialCost();
-        return false;
+            // Otherwise, update the results to the new values.
+            resultSlot.setItem(0, event.getOutput());
+            menu.setCost(event.getXpCost());
+            menu.repairItemCountCost = event.getMaterialCost();
+        }
     }
 
-    public static float onAnvilRepair(Player player, ItemStack output, ItemStack left, ItemStack right) {
-        AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
+    /**
+     * Fires the {@link AnvilCraftEvent.Pre} when the anvil is used to craft an item.
+     * <p>
+     * This is fired from the head of {@link AnvilMenu#onTake}, before any other logic is run.
+     * <p>
+     * If this event is cancelled, {@link AnvilMenu#onTake} should return immediately.
+     * 
+     * @param menu   The anvil menu
+     * @param player The player who is using the anvil
+     * @param output The output item
+     * @param left   The left input item
+     * @param right  The right input item
+     * @return The fired event
+     */
+    public static AnvilCraftEvent.Pre fireAnvilCraftPre(AnvilMenu menu, Player player, ItemStack output, ItemStack left, ItemStack right) {
+        var e = new AnvilCraftEvent.Pre(menu, player, left, right, output);
+        return NeoForge.EVENT_BUS.post(e);
+    }
+
+    /**
+     * Fires the {@link AnvilCraftEvent.Post} when the anvil is used to craft an item.
+     * <p>
+     * This is fired from the tail of {@link AnvilMenu#onTake}, after all other logic is run.
+     * 
+     * @param menu   The anvil menu
+     * @param player The player who is using the anvil
+     * @param output The output item
+     * @param left   A copy of the original left input item, before post-processing
+     * @param right  A copy of the original right input item, before post-processing
+     */
+    public static void fireAnvilCraftPost(AnvilMenu menu, Player player, ItemStack output, ItemStack left, ItemStack right) {
+        var e = new AnvilCraftEvent.Post(menu, player, left, right, output);
         NeoForge.EVENT_BUS.post(e);
-        return e.getBreakChance();
     }
 
     public static int onGrindstoneChange(ItemStack top, ItemStack bottom, Container outputSlot, int xp) {
@@ -1497,10 +1551,11 @@ public class CommonHooks {
      *
      * @param entity The target entity the mob effect is being applied to.
      * @param effect The mob effect being applied.
+     * @param source The source entity who is applying the mob effect, or {@code null} if none exists.
      * @return True if the mob effect can be applied, otherwise false.
      */
-    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
-        var event = new MobEffectEvent.Applicable(entity, effect);
+    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect, @Nullable Entity source) {
+        var event = new MobEffectEvent.Applicable(entity, effect, source);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
     }
 
@@ -1567,20 +1622,85 @@ public class CommonHooks {
         return true;
     }
 
-    public static Map<RecipeBookType, Pair<String, String>> buildRecipeBookTypeTagFields(Map<RecipeBookType, Pair<String, String>> vanillaMap) {
-        ExtensionInfo extInfo = RecipeBookType.getExtensionInfo();
-        if (extInfo.extended()) {
-            vanillaMap = new HashMap<>(vanillaMap);
-            for (RecipeBookType type : RecipeBookType.values()) {
-                if (type.ordinal() < extInfo.vanillaCount()) {
-                    continue;
-                }
-                String name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, type.name());
-                vanillaMap.put(type, Pair.of("is" + name + "GuiOpen", "is" + name + "FilteringCraftable"));
-            }
-            vanillaMap = Map.copyOf(vanillaMap);
+    /**
+     * A list of recipe book types that were added via the enum extension method.
+     */
+    @ApiStatus.Internal
+    public static final List<RecipeBookType> MODDED_RECIPE_BOOK_TYPES = Util.make(() -> {
+        var extensionInfo = RecipeBookType.getExtensionInfo();
+        if (!extensionInfo.extended()) {
+            return List.of();
         }
-        return vanillaMap;
+        return Arrays.stream(RecipeBookType.values())
+                .filter(t -> t.ordinal() >= extensionInfo.vanillaCount())
+                .toList();
+    });
+
+    @ApiStatus.Internal
+    public static final StreamCodec<RegistryFriendlyByteBuf, Map<RecipeBookType, RecipeBookSettings.TypeSettings>> MODDED_RECIPE_BOOK_TYPES_SETTINGS_STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public Map<RecipeBookType, RecipeBookSettings.TypeSettings> decode(RegistryFriendlyByteBuf buf) {
+            if (buf.getConnectionType().isOther()) {
+                return Map.of(); // Don't expect Vanilla to send modded settings
+            }
+
+            Map<RecipeBookType, RecipeBookSettings.TypeSettings> map = new EnumMap<>(RecipeBookType.class);
+            for (var type : MODDED_RECIPE_BOOK_TYPES) {
+                map.put(type, RecipeBookSettings.TypeSettings.STREAM_CODEC.decode(buf));
+            }
+            return map;
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buf, Map<RecipeBookType, RecipeBookSettings.TypeSettings> value) {
+            if (buf.getConnectionType().isOther()) {
+                return; // Don't send modded settings to Vanilla
+            }
+
+            for (var type : MODDED_RECIPE_BOOK_TYPES) {
+                RecipeBookSettings.TypeSettings settings = value.getOrDefault(type, RecipeBookSettings.TypeSettings.DEFAULT);
+                RecipeBookSettings.TypeSettings.STREAM_CODEC.encode(buf, settings);
+            }
+        }
+    };
+
+    @ApiStatus.Internal
+    public static MapCodec<Map<RecipeBookType, RecipeBookSettings.TypeSettings>> makeModdedRecipeBookTypesSettingsCodec() {
+        Map<RecipeBookType, MapCodec<RecipeBookSettings.TypeSettings>> codecs = MODDED_RECIPE_BOOK_TYPES.stream()
+                .map(type -> {
+                    String name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, type.name());
+                    String openName = "is" + name + "GuiOpen";
+                    String filteringName = "is" + name + "FilteringCraftable";
+                    var codec = RecipeBookSettings.TypeSettings.codec(openName, filteringName);
+                    return Pair.of(type, codec);
+                })
+                .collect(Pair.toMap());
+
+        return new MapCodec<>() {
+            @Override
+            public <T> Stream<T> keys(DynamicOps<T> ops) {
+                return codecs.values().stream().flatMap(codec -> codec.keys(ops));
+            }
+
+            @Override
+            public <T> DataResult<Map<RecipeBookType, RecipeBookSettings.TypeSettings>> decode(DynamicOps<T> ops, MapLike<T> input) {
+                Map<RecipeBookType, RecipeBookSettings.TypeSettings> map = new EnumMap<>(RecipeBookType.class);
+                for (var entry : codecs.entrySet()) {
+                    var result = entry.getValue().decode(ops, input);
+                    result.error().ifPresent(error -> LOGGER.error("Failed to decode RecipeBookSettings.TypeSettings for key {}: {}", entry.getKey(), error));
+                    result.result().ifPresent(settings -> map.put(entry.getKey(), settings));
+                }
+                return DataResult.success(map);
+            }
+
+            @Override
+            public <T> RecordBuilder<T> encode(Map<RecipeBookType, RecipeBookSettings.TypeSettings> input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+                for (var entry : codecs.entrySet()) {
+                    prefix = entry.getValue().encode(input.getOrDefault(entry.getKey(), RecipeBookSettings.TypeSettings.DEFAULT), ops, prefix);
+                }
+                return prefix;
+            }
+        };
     }
 
     /**

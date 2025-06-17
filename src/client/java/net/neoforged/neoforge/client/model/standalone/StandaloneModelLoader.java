@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ResolvedModel;
 import net.minecraft.util.thread.ParallelMapTransform;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.ModelEvent;
@@ -26,17 +25,16 @@ public final class StandaloneModelLoader {
 
     public static CompletableFuture<LoadedModels> load(Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            Map<StandaloneModelKey<?>, StandaloneModelBaker<?>> models = new IdentityHashMap<>();
+            Map<StandaloneModelKey<?>, UnbakedStandaloneModel<?>> models = new IdentityHashMap<>();
             ModLoader.postEvent(new ModelEvent.RegisterStandalone(models));
             return new LoadedModels(models);
         }, executor);
     }
 
     public static CompletableFuture<BakedModels> bake(LoadedModels standaloneModels, ModelBaker baker, Executor executor) {
-        return ParallelMapTransform.schedule(standaloneModels.models, (key, standaloneModelBaker) -> {
+        return ParallelMapTransform.schedule(standaloneModels.models, (key, model) -> {
             try {
-                ResolvedModel model = baker.getModel(key.getModelId());
-                return standaloneModelBaker.bake(model, baker);
+                return model.bake(baker);
             } catch (Exception e) {
                 LOGGER.warn("Unable to bake standalone model: '{}': {}", key.getModelId(), e);
                 return null;
@@ -44,7 +42,7 @@ public final class StandaloneModelLoader {
         }, executor).thenApply(BakedModels::new);
     }
 
-    public record LoadedModels(Map<StandaloneModelKey<?>, StandaloneModelBaker<?>> models) {
+    public record LoadedModels(Map<StandaloneModelKey<?>, UnbakedStandaloneModel<?>> models) {
         public static final LoadedModels EMPTY = new LoadedModels(Map.of());
     }
 

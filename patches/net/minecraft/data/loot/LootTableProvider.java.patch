@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/loot/LootTableProvider.java
 +++ b/net/minecraft/data/loot/LootTableProvider.java
-@@ -62,7 +_,7 @@
+@@ -61,7 +_,7 @@
      private CompletableFuture<?> run(CachedOutput p_324447_, HolderLookup.Provider p_323978_) {
          WritableRegistry<LootTable> writableregistry = new MappedRegistry<>(Registries.LOOT_TABLE, Lifecycle.experimental());
          Map<RandomSupport.Seed128bit, ResourceLocation> map = new Object2ObjectOpenHashMap<>();
@@ -9,27 +9,27 @@
              ResourceLocation resourcelocation = sequenceIdForLootTable(p_380827_);
              ResourceLocation resourcelocation1 = map.put(RandomSequence.seedForKey(resourcelocation), resourcelocation);
              if (resourcelocation1 != null) {
-@@ -78,18 +_,8 @@
+@@ -77,18 +_,8 @@
          HolderGetter.Provider holdergetter$provider = new RegistryAccess.ImmutableRegistryAccess(List.of(writableregistry)).freeze();
          ValidationContext validationcontext = new ValidationContext(problemreporter$collector, LootContextParamSets.ALL_PARAMS, holdergetter$provider);
  
 -        for (ResourceKey<LootTable> resourcekey : Sets.difference(this.requiredTables, writableregistry.registryKeySet())) {
--            problemreporter$collector.report("Missing built-in table: " + resourcekey.location());
+-            problemreporter$collector.report(new LootTableProvider.MissingTableProblem(resourcekey));
 -        }
 +        validate(writableregistry, validationcontext, problemreporter$collector);
  
 -        writableregistry.listElements()
 -            .forEach(
--                p_380823_ -> p_380823_.value()
+-                p_421302_ -> p_421302_.value()
 -                    .validate(
--                        validationcontext.setContextKeySet(p_380823_.value().getParamSet())
--                            .enterElement("{" + p_380823_.key().location() + "}", p_380823_.key())
+-                        validationcontext.setContextKeySet(p_421302_.value().getParamSet())
+-                            .enterElement(new ProblemReporter.RootElementPathElement(p_421302_.key()), p_421302_.key())
 -                    )
 -            );
-         Multimap<String, String> multimap = problemreporter$collector.get();
-         if (!multimap.isEmpty()) {
-             multimap.forEach((p_124446_, p_124447_) -> LOGGER.warn("Found validation problem in {}: {}", p_124446_, p_124447_));
-@@ -102,6 +_,25 @@
+         if (!problemreporter$collector.isEmpty()) {
+             problemreporter$collector.forEach((p_421299_, p_421300_) -> LOGGER.warn("Found validation problem in {}: {}", p_421299_, p_421300_.description()));
+             throw new IllegalStateException("Failed to validate loot tables, see logs");
+@@ -100,6 +_,25 @@
                  return DataProvider.saveStable(p_324447_, p_323978_, LootTable.DIRECT_CODEC, loottable, path);
              }).toArray(CompletableFuture[]::new));
          }
@@ -41,7 +41,7 @@
 +
 +    protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
 +        for (ResourceKey<LootTable> resourcekey : Sets.difference(this.requiredTables, writableregistry.registryKeySet())) {
-+            problemreporter$collector.report("Missing built-in table: " + resourcekey.location());
++            problemreporter$collector.report(new LootTableProvider.MissingTableProblem(resourcekey));
 +        }
 +
 +        writableregistry.listElements()
@@ -49,7 +49,7 @@
 +                        p_380823_ -> p_380823_.value()
 +                                .validate(
 +                                        validationcontext.setContextKeySet(p_380823_.value().getParamSet())
-+                                                .enterElement("{" + p_380823_.key().location() + "}", p_380823_.key())
++                                                .enterElement(new ProblemReporter.RootElementPathElement(p_380823_.key()), p_380823_.key())
 +                                )
 +                );
      }

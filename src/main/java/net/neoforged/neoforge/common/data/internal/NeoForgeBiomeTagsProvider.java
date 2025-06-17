@@ -7,8 +7,10 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -167,6 +169,55 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
                 .add(Biomes.END_BARRENS);
         tag(Tags.Biomes.IS_DRY).addTag(Tags.Biomes.IS_DRY_OVERWORLD).addTag(Tags.Biomes.IS_DRY_NETHER).addTag(Tags.Biomes.IS_DRY_END);
 
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_OAK)
+                .add(Biomes.FOREST)
+                .add(Biomes.FLOWER_FOREST)
+                .add(Biomes.SWAMP)
+                .add(Biomes.WOODED_BADLANDS);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_BIRCH)
+                .add(Biomes.BIRCH_FOREST)
+                .add(Biomes.OLD_GROWTH_BIRCH_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_SPRUCE)
+                .add(Biomes.TAIGA)
+                .add(Biomes.SNOWY_TAIGA)
+                .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA)
+                .add(Biomes.OLD_GROWTH_PINE_TAIGA)
+                .add(Biomes.GROVE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE)
+                .add(Biomes.JUNGLE)
+                .add(Biomes.SPARSE_JUNGLE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA)
+                .add(Biomes.SAVANNA)
+                .add(Biomes.SAVANNA_PLATEAU)
+                .add(Biomes.WINDSWEPT_SAVANNA);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK)
+                .add(Biomes.DARK_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE)
+                .add(Biomes.MANGROVE_SWAMP);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY)
+                .add(Biomes.CHERRY_GROVE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK)
+                .add(Biomes.PALE_GARDEN);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_BAMBOO)
+                .add(Biomes.BAMBOO_JUNGLE);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_CRIMSON)
+                .add(Biomes.CRIMSON_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE_WARPED)
+                .add(Biomes.WARPED_FOREST);
+        tag(Tags.Biomes.PRIMARY_WOOD_TYPE).addTags(
+                Tags.Biomes.PRIMARY_WOOD_TYPE_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_BIRCH,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_SPRUCE,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_BAMBOO,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_CRIMSON,
+                Tags.Biomes.PRIMARY_WOOD_TYPE_WARPED);
+
         tag(Tags.Biomes.IS_CONIFEROUS_TREE).addTags(Tags.Biomes.IS_TAIGA).add(Biomes.GROVE);
         tag(Tags.Biomes.IS_SAVANNA_TREE).addTags(Tags.Biomes.IS_SAVANNA);
         tag(Tags.Biomes.IS_JUNGLE_TREE).addTags(Tags.Biomes.IS_JUNGLE);
@@ -219,8 +270,8 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
-        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_slope"));
-        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_peak"));
+        tag(Tags.Biomes.IS_MOUNTAIN_SLOPE).addOptionalTag(forge("is_slope"));
+        tag(Tags.Biomes.IS_MOUNTAIN_PEAK).addOptionalTag(forge("is_peak"));
         tagWithOptionalLegacy(Tags.Biomes.IS_MOUNTAIN);
         tagWithOptionalLegacy(Tags.Biomes.IS_HOT_OVERWORLD);
         tagWithOptionalLegacy(Tags.Biomes.IS_HOT_NETHER);
@@ -234,14 +285,14 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER);
         tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION_END);
         tagWithOptionalLegacy(Tags.Biomes.IS_SPARSE_VEGETATION);
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse/overworld"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse/nether"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse/end"));
-        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_sparse"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense/overworld"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense/nether"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION_END).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense/end"));
-        tag(Tags.Biomes.IS_DENSE_VEGETATION).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_dense"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD).addOptionalTag(forge("is_sparse/overworld"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER).addOptionalTag(forge("is_sparse/nether"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION_END).addOptionalTag(forge("is_sparse/end"));
+        tag(Tags.Biomes.IS_SPARSE_VEGETATION).addOptionalTag(forge("is_sparse"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_OVERWORLD).addOptionalTag(forge("is_dense/overworld"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_NETHER).addOptionalTag(forge("is_dense/nether"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION_END).addOptionalTag(forge("is_dense/end"));
+        tag(Tags.Biomes.IS_DENSE_VEGETATION).addOptionalTag(forge("is_dense"));
         tagWithOptionalLegacy(Tags.Biomes.IS_WET_OVERWORLD);
         tagWithOptionalLegacy(Tags.Biomes.IS_WET_NETHER);
         tagWithOptionalLegacy(Tags.Biomes.IS_WET_END);
@@ -259,7 +310,7 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         tagWithOptionalLegacy(Tags.Biomes.IS_RARE);
         tagWithOptionalLegacy(Tags.Biomes.IS_PLATEAU);
         tagWithOptionalLegacy(Tags.Biomes.IS_FLORAL);
-        tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "is_water"));
+        tag(Tags.Biomes.IS_AQUATIC).addOptionalTag(forge("is_water"));
         tagWithOptionalLegacy(Tags.Biomes.IS_DESERT);
         tagWithOptionalLegacy(Tags.Biomes.IS_PLAINS);
         tagWithOptionalLegacy(Tags.Biomes.IS_SWAMP);
@@ -280,8 +331,12 @@ public final class NeoForgeBiomeTagsProvider extends BiomeTagsProvider {
         }
     }
 
-    private TagAppender<Biome> tagWithOptionalLegacy(TagKey<Biome> tag) {
-        return tag(tag).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath()));
+    private TagAppender<ResourceKey<Biome>, Biome> tagWithOptionalLegacy(TagKey<Biome> tag) {
+        return tag(tag).addOptionalTag(forge(tag.location().getPath()));
+    }
+
+    private TagKey<Biome> forge(String id) {
+        return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath("forge", id));
     }
 
     @Override

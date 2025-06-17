@@ -121,6 +121,7 @@ import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -138,6 +139,7 @@ import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
 import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 import net.neoforged.neoforge.forge.snapshots.ForgeSnapshotsMod;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.DualStackUtils;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -526,7 +528,7 @@ public class NeoForgeMod {
     }
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
-        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.getName());
+        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.name());
         ForgeSnapshotsMod.logStartupWarning();
 
         SelfTest.initCommon();
@@ -566,6 +568,7 @@ public class NeoForgeMod {
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
+        ConfigSync.registerEventListeners();
         container.registerConfig(ModConfig.Type.SERVER, NeoForgeServerConfig.SPEC);
         container.registerConfig(ModConfig.Type.COMMON, NeoForgeCommonConfig.SPEC);
         NeoForgeRegistriesSetup.setup(modEventBus);
@@ -579,6 +582,7 @@ public class NeoForgeMod {
         DualStackUtils.initialise();
         TagConventionLogWarning.init();
 
+        modEventBus.addListener(EventPriority.HIGH, CapabilityHooks::markProxyableCapabilities);
         modEventBus.addListener(CapabilityHooks::registerVanillaProviders);
         modEventBus.addListener(EventPriority.LOW, CapabilityHooks::registerFallbackVanillaProviders);
         modEventBus.addListener(CauldronFluidContent::registerCapabilities);
@@ -618,7 +622,7 @@ public class NeoForgeMod {
 
     // done in an event instead of deferred to only enable if a mod requests it
     public void registerFluids(RegisterEvent event) {
-        if (enableMilkFluid) {
+        if (enableMilkFluid || DatagenModLoader.isRunningDataGen()) {
             // register milk fill, empty sounds (delegates to water fill, empty sounds)
             event.register(Registries.SOUND_EVENT, helper -> {
                 helper.register(BUCKET_EMPTY_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_EMPTY_MILK.getId()));

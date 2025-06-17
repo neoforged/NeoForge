@@ -77,7 +77,7 @@
 @@ -141,7 +_,7 @@
              }
  
-             ServerPlayer serverplayer = playerlist.getPlayerForLogin(this.gameProfile, this.clientInformation);
+             ServerPlayer serverplayer = new ServerPlayer(this.server, this.server.overworld(), this.gameProfile, this.clientInformation);
 -            playerlist.placeNewPlayer(this.connection, serverplayer, this.createCookie(this.clientInformation));
 +            playerlist.placeNewPlayer(this.connection, serverplayer, this.createCookie(this.clientInformation, this.connectionType));
          } catch (Exception exception) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -44,6 +_,9 @@
+@@ -54,6 +_,9 @@
      private KnownPacksManager knownPacks;
      @Nullable
      protected ChatComponent.State chatState;
@@ -10,7 +10,7 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -82,6 +_,11 @@
+@@ -92,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
@@ -22,7 +22,7 @@
      }
  
      @Override
-@@ -121,7 +_,7 @@
+@@ -131,7 +_,7 @@
          );
          this.connection
              .setupInboundProtocol(
@@ -31,12 +31,12 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -136,14 +_,22 @@
+@@ -146,14 +_,22 @@
                          this.serverCookies,
                          this.chatState,
                          this.customReportDetails,
--                        this.serverLinks
-+                        this.serverLinks,
+-                        this.serverLinks()
++                        this.serverLinks(),
 +                        this.connectionType
                      )
                  )
@@ -56,7 +56,7 @@
                      @Override
                      public boolean hasInfiniteMaterials() {
                          return true;
-@@ -161,5 +_,51 @@
+@@ -171,6 +_,53 @@
      public void onDisconnect(DisconnectionDetails p_351005_) {
          super.onDisconnect(p_351005_);
          this.minecraft.clearDownloadedResourcePacks();
@@ -104,7 +104,9 @@
 +        return new net.neoforged.neoforge.client.gui.ModMismatchDisconnectedScreen(superScreen, net.minecraft.network.chat.Component.translatable("disconnect.lost"), failureReasons);
 +    }
 +
++    @Override
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
 +        return connectionType;
      }
- }
+ 
+     @Override

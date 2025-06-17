@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerProperties.java
-@@ -45,7 +_,7 @@
+@@ -47,7 +_,7 @@
      static final Logger LOGGER = LogUtils.getLogger();
      private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
      private static final Splitter COMMA_SPLITTER = Splitter.on(',').trimResults();

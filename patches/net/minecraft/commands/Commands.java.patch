@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -253,6 +_,7 @@
+@@ -281,6 +_,7 @@
          if (p_230943_.includeIntegrated) {
              PublishCommand.register(this.dispatcher);
          }
@@ -8,7 +8,7 @@
  
          this.dispatcher.setConsumer(ExecutionCommandSource.resultConsumer());
      }
-@@ -270,6 +_,16 @@
+@@ -302,6 +_,16 @@
  
      public void performCommand(ParseResults<CommandSourceStack> p_242844_, String p_242841_) {
          CommandSourceStack commandsourcestack = p_242844_.getContext().getSource();
@@ -25,13 +25,17 @@
          Profiler.get().push(() -> "/" + p_242841_);
          ContextChain<CommandSourceStack> contextchain = finishParsing(p_242844_, p_242841_, commandsourcestack);
  
-@@ -366,7 +_,8 @@
-         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> map = Maps.newHashMap();
-         RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
+@@ -398,10 +_,12 @@
+         Map<CommandNode<CommandSourceStack>, CommandNode<CommandSourceStack>> map = new HashMap<>();
+         RootCommandNode<CommandSourceStack> rootcommandnode = new RootCommandNode<>();
          map.put(this.dispatcher.getRoot(), rootcommandnode);
--        this.fillUsableCommands(this.dispatcher.getRoot(), rootcommandnode, p_82096_.createCommandSourceStack(), map);
-+        // FORGE: Use our own command node merging method to handle redirect nodes properly, see issue #7551
-+        net.neoforged.neoforge.server.command.CommandHelper.mergeCommandNode(this.dispatcher.getRoot(), rootcommandnode, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.safelySwap((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
-         p_82096_.connection.send(new ClientboundCommandsPacket(rootcommandnode));
+-        fillUsableCommands(this.dispatcher.getRoot(), rootcommandnode, p_82096_.createCommandSourceStack(), map);
++        // Neo: Use our own command node merging method to handle redirect nodes properly, see issue Forge-7551
++        net.neoforged.neoforge.server.command.CommandHelper.mergeCommandNode(this.dispatcher.getRoot(), rootcommandnode, map, p_82096_.createCommandSourceStack(), ctx -> 0, suggest -> SuggestionProviders.cast((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
+         p_82096_.connection.send(new ClientboundCommandsPacket(rootcommandnode, COMMAND_NODE_INSPECTOR));
      }
  
++    // Neo: Replaced by our own command merging logic
+     private static <S> void fillUsableCommands(CommandNode<S> p_82113_, CommandNode<S> p_82114_, S p_426114_, Map<CommandNode<S>, CommandNode<S>> p_82116_) {
+         for (CommandNode<S> commandnode : p_82113_.getChildren()) {
+             if (commandnode.canUse(p_426114_)) {

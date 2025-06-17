@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.entity;
 import java.util.function.Consumer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,6 +22,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
@@ -95,10 +96,10 @@ public class EntityTests {
         protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput data) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
         public void writeSpawnData(RegistryFriendlyByteBuf buffer) {}
@@ -121,10 +122,10 @@ public class EntityTests {
         protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput data) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
         public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> bundleBuilder) {
@@ -146,10 +147,10 @@ public class EntityTests {
         protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput data) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
         public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {

@@ -13,7 +13,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.BlockableEventLoop;
-import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -63,10 +62,6 @@ public class NeoForgeProxy {
 
     public TooltipFlag getTooltipFlag() {
         return TooltipFlag.NORMAL;
-    }
-
-    public RecipeBookType[] getFilteredRecipeBookTypeValues() {
-        return RecipeBookType.values();
     }
 
     @Nullable

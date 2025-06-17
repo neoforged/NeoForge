@@ -9,10 +9,10 @@
          }
      }
  
-@@ -117,5 +_,15 @@
-                 p_389624_ != null ? p_389624_ : Minecraft.getInstance().getSkinManager().getInsecureSkin(p_389483_.gameProfile()).texture()
-             )
-             : RenderType.entityCutoutNoCullZOffset(p_389624_ != null ? p_389624_ : SKIN_BY_TYPE.get(p_389566_));
+@@ -119,5 +_,15 @@
+ 
+     public static RenderType getPlayerSkinRenderType(ResourceLocation p_428466_) {
+         return RenderType.entityTranslucent(p_428466_);
 +    }
 +
 +    @Override

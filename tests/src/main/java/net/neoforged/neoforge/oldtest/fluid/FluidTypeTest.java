@@ -5,16 +5,15 @@
 
 package net.neoforged.neoforge.oldtest.fluid;
 
-import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.stream.Stream;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.FogParameters;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.fog.FogData;
+import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -54,6 +53,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
 
 /**
@@ -138,7 +138,7 @@ public class FluidTypeTest {
 
         private void clientSetup(FMLClientSetupEvent event) {
             Stream.of(TEST_FLUID, TEST_FLUID_FLOWING).map(DeferredHolder::get)
-                    .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, RenderType.translucent()));
+                    .forEach(fluid -> ItemBlockRenderTypes.setRenderLayer(fluid, ChunkSectionLayer.TRANSLUCENT));
         }
 
         private void registerBlockColors(RegisterColorHandlersEvent.Block event) {
@@ -189,17 +189,9 @@ public class FluidTypeTest {
                 }
 
                 @Override
-                public FogParameters modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick, FogParameters parameters) {
-                    float nearDistance = -8F;
-                    float farDistance = 24F;
-                    FogShape shape = parameters.shape();
-
-                    if (farDistance > renderDistance) {
-                        farDistance = renderDistance;
-                        shape = FogShape.CYLINDER;
-                    }
-
-                    return new FogParameters(nearDistance, farDistance, shape, parameters.red(), parameters.green(), parameters.blue(), parameters.alpha());
+                public void modifyFogRender(Camera camera, @Nullable FogEnvironment environment, float renderDistance, float partialTick, FogData fogData) {
+                    fogData.environmentalStart = -8F;
+                    fogData.environmentalEnd = 24F;
                 }
 
                 @Override

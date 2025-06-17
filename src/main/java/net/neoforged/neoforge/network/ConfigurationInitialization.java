@@ -37,7 +37,8 @@ public class ConfigurationInitialization {
     public static void configureEarlyTasks(ServerConfigurationPacketListener listener, Consumer<ConfigurationTask> tasks) {
         if (listener.hasChannel(FrozenRegistrySyncStartPayload.TYPE) &&
                 listener.hasChannel(FrozenRegistryPayload.TYPE) &&
-                listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE)) {
+                listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE) &&
+                !listener.getConnection().isMemoryConnection()) {
             tasks.accept(new SyncRegistries());
         }
     }

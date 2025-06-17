@@ -707,7 +707,6 @@ public class DeferredRegister<T> {
             this.registryKey = registryKey;
         }
 
-        // FIXME porting: there must be a better way than using a rawtype
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public @Nullable Registry<V> get() {

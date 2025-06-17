@@ -5,17 +5,24 @@
 
 package net.neoforged.neoforge.event.entity.living;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.ICancellableEvent;
 
 public class LivingEntityUseItemEvent extends LivingEvent {
     private final ItemStack item;
+    private final InteractionHand hand;
     private int duration;
 
     private LivingEntityUseItemEvent(LivingEntity entity, ItemStack item, int duration) {
+        this(entity, item, entity.getUsedItemHand(), duration);
+    }
+
+    private LivingEntityUseItemEvent(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
         super(entity);
         this.item = item;
+        this.hand = hand;
         this.setDuration(duration);
     }
 
@@ -32,6 +39,13 @@ public class LivingEntityUseItemEvent extends LivingEvent {
     }
 
     /**
+     * {@return the hand the entity is using the item in}
+     */
+    public InteractionHand getHand() {
+        return hand;
+    }
+
+    /**
      * Fired when a player starts 'using' an item, typically when they hold right mouse.
      * Examples:
      * Drawing a bow
@@ -43,8 +57,16 @@ public class LivingEntityUseItemEvent extends LivingEvent {
      *
      */
     public static class Start extends LivingEntityUseItemEvent implements ICancellableEvent {
+        /**
+         * @deprecated Use {@link Start#Start(LivingEntity, ItemStack, InteractionHand, int) the hand sensitive version} as this version provides wrong hand information
+         */
+        @Deprecated(since = "1.21.5", forRemoval = true)
         public Start(LivingEntity entity, ItemStack item, int duration) {
-            super(entity, item, duration);
+            super(entity, item, entity.getItemInHand(InteractionHand.MAIN_HAND) == item ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, duration);
+        }
+
+        public Start(LivingEntity entity, ItemStack item, InteractionHand hand, int duration) {
+            super(entity, item, hand, duration);
         }
     }
 

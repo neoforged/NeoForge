@@ -361,6 +361,41 @@ public interface IBlockExtension {
     }
 
     /**
+     * Allows a block to override the standard fall sound played in {@link LivingEntity#playBlockFallSound()}.
+     *
+     * @param state  The block being fallen onto
+     * @param level  The level which the block is in
+     * @param pos    The position of the block in the level
+     * @param entity The entity falling onto the block
+     */
+    default void playFallSound(BlockState state, Level level, BlockPos pos, LivingEntity entity) {
+        SoundType soundType = state.getSoundType(level, pos, entity);
+        entity.playSound(soundType.getFallSound(), soundType.getVolume() * .5F, soundType.getPitch() * .75F);
+    }
+
+    /**
+     * Allows a block to override the standard step sound played in:
+     * <ul>
+     * <li>{@link Entity#playCombinationStepSounds(BlockState, BlockState, BlockPos, BlockPos)} (primary step sound only)</li>
+     * <li>{@link Entity#playMuffledStepSound(BlockState, BlockPos)} (usually the secondary sound in a call to the above method)</li>
+     * <li>{@link Entity#playStepSound(BlockPos, BlockState)} (simple step sound)</li>
+     * </ul>
+     * The volume and pitch of any sound played in this method should be multiplied with the provided multipliers to
+     * replicate the behaviour of the callers.
+     *
+     * @param state            The block being stepped on
+     * @param level            The level which the block is in
+     * @param pos              The position of the block in the level
+     * @param entity           The entity stepping on the block
+     * @param volumeMultiplier The volume multiplier to apply to the step sound being played
+     * @param pitchMultiplier  The pitch multiplier to apply to the step sound being played
+     */
+    default void playStepSound(BlockState state, Level level, BlockPos pos, Entity entity, float volumeMultiplier, float pitchMultiplier) {
+        SoundType soundType = state.getSoundType(level, pos, entity);
+        entity.playSound(soundType.getStepSound(), soundType.getVolume() * volumeMultiplier, soundType.getPitch() * pitchMultiplier);
+    }
+
+    /**
      * Determines if this block either force allow or force disallow a plant from being placed on it. (Or pass and let the plant's decision win)
      * This will be called in plant's canSurvive method and/or mayPlace method.
      *

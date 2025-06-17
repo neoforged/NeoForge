@@ -104,7 +104,7 @@
              modeldiscovery.addSpecialModel(ItemModelGenerator.GENERATED_ITEM_MODEL_ID, new ItemModelGenerator());
              p_361624_.models().values().forEach(modeldiscovery::addRoot);
              p_390496_.contents().values().forEach(p_390109_ -> modeldiscovery.addRoot(p_390109_.model()));
-+            standaloneModels.models().keySet().forEach(key -> modeldiscovery.addRoot(resolver -> resolver.markDependency(key.getModelId())));
++            standaloneModels.models().values().forEach(modeldiscovery::addRoot);
              modelmanager$resolvedmodels = new ModelManager.ResolvedModels(modeldiscovery.missingModel(), modeldiscovery.resolve());
          }
  

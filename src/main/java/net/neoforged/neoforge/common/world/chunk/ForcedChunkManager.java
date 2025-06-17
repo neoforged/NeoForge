@@ -36,6 +36,7 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.TicketStorage;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -172,8 +173,8 @@ public class ForcedChunkManager {
     }
 
     public record OwnedChunks(ResourceLocation controller, Map<BlockPos, TicketSet> blockChunks, Map<UUID, TicketSet> entityChunks) {
-        private static final Codec<Map<BlockPos, TicketSet>> BLOCK_CHUNK_CODEC = Codec.unboundedMap(BlockPos.CODEC, TicketSet.CODEC);
-        private static final Codec<Map<UUID, TicketSet>> ENTITY_CHUNK_CODEC = Codec.unboundedMap(UUIDUtil.CODEC, TicketSet.CODEC);
+        private static final Codec<Map<BlockPos, TicketSet>> BLOCK_CHUNK_CODEC = NeoForgeExtraCodecs.unboundedMapAsList("position", BlockPos.CODEC, "tickets", TicketSet.CODEC);
+        private static final Codec<Map<UUID, TicketSet>> ENTITY_CHUNK_CODEC = NeoForgeExtraCodecs.unboundedMapAsList("uuid", UUIDUtil.CODEC, "tickets", TicketSet.CODEC);
         public static final Codec<OwnedChunks> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ResourceLocation.CODEC.fieldOf("controller").forGetter(OwnedChunks::controller),
                 BLOCK_CHUNK_CODEC.optionalFieldOf("block_chunks", Map.of()).forGetter(OwnedChunks::blockChunks),

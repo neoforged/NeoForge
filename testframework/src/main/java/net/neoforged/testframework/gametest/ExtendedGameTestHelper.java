@@ -355,6 +355,10 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         this.assertFalse(value, Component.translatable(message));
     }
 
+    public void assertNotNull(@Nullable Object var, String message) {
+        this.assertTrue(var != null, message);
+    }
+
     public void fail(String message) {
         this.fail(Component.translatable(message));
     }

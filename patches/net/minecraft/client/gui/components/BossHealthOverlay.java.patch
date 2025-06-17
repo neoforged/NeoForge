@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/BossHealthOverlay.java
 +++ b/net/minecraft/client/gui/components/BossHealthOverlay.java
-@@ -66,13 +_,16 @@
+@@ -67,13 +_,16 @@
  
              for (LerpingBossEvent lerpingbossevent : this.events.values()) {
                  int k = i / 2 - 91;
@@ -11,7 +11,7 @@
                  int l = this.minecraft.font.width(component);
                  int i1 = i / 2 - l / 2;
                  int j1 = j - 9;
-                 p_283175_.drawString(this.minecraft.font, component, i1, j1, 16777215);
+                 p_283175_.drawString(this.minecraft.font, component, i1, j1, -1);
 -                j += 10 + 9;
 +                }
 +                j += event.getIncrement();

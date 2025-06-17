@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -332,10 +_,14 @@
+@@ -329,10 +_,14 @@
  
      @Override
      public final void findBlockLightSources(BiConsumer<BlockPos, BlockState> p_285269_) {
@@ -16,7 +16,7 @@
          BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
          for (int i = this.getMinSectionY(); i <= this.getMaxSectionY(); i++) {
-@@ -347,8 +_,9 @@
+@@ -344,8 +_,9 @@
                      for (int k = 0; k < 16; k++) {
                          for (int l = 0; l < 16; l++) {
                              BlockState blockstate = levelchunksection.getBlockState(l, j, k);
@@ -28,7 +28,7 @@
                              }
                          }
                      }
-@@ -490,6 +_,74 @@
+@@ -487,6 +_,84 @@
      public ChunkSkyLightSources getSkyLightSources() {
          return this.skyLightSources;
      }
@@ -52,8 +52,9 @@
 +    }
 +
 +    @Override
-+    public <T> java.util.Optional<T> getExistingData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
-+        return getAttachmentHolder().getExistingData(type);
++    @Nullable
++    public <T> T getExistingDataOrNull(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
++        return getAttachmentHolder().getExistingDataOrNull(type);
 +    }
 +
 +    @Override
@@ -73,23 +74,32 @@
 +    /**
 +     * <strong>FOR INTERNAL USE ONLY</strong>
 +     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
++     * Only public for use in {@link net.minecraft.world.level.chunk.storage.SerializableChunkData}.
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    @Nullable
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
-+        return getAttachmentHolder().serializeAttachments(provider);
++        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
++        var tag = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, provider);
++        getAttachmentHolder().serializeAttachments(provider, tag);
++        if (!reporter.isEmpty()) throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
++        return tag.isEmpty() ? null : tag.buildResult();
 +    }
 +
 +    /**
 +     * <strong>FOR INTERNAL USE ONLY</strong>
 +     * <p>
-+     * Only public for use in {@link net.minecraft.world.level.chunk.storage.ChunkSerializer}.
++     * Only public for use in {@link net.minecraft.world.level.chunk.storage.SerializableChunkData}.
 +     *
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final void readAttachmentsFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
-+        getAttachmentHolder().deserializeInternal(provider, tag);
++        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
++        var input = net.minecraft.world.level.storage.TagValueInput.create(reporter, provider, tag);
++        getAttachmentHolder().deserializeInternal(provider, input);
++        if (!reporter.isEmpty()) {
++            throw new IllegalArgumentException("Attachments failed to deserialise: " + reporter.getReport());
++        }
 +    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
@@ -101,5 +111,5 @@
 +    @Nullable
 +    public net.minecraft.world.level.Level getLevel() { return null; }
  
-     public record PackedTicks(List<SavedTick<Block>> blocks, List<SavedTick<Fluid>> fluids) {
-     }
+     public static ProblemReporter.PathElement problemPath(ChunkPos p_421990_) {
+         return new ChunkAccess.ChunkPathElement(p_421990_);

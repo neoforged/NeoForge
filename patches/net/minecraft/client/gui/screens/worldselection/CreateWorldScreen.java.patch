@@ -19,7 +19,7 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, p_374211_);
-@@ -483,7 +_,7 @@
+@@ -485,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
@@ -28,7 +28,7 @@
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),
-@@ -597,6 +_,7 @@
+@@ -599,6 +_,7 @@
          if (path != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(path, this.packValidator);
