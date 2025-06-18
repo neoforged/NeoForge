@@ -38,16 +38,25 @@ public class LootTableLoadEvent extends Event implements ICancellableEvent {
     @Nullable
     private ResourceKey<LootTable> key;
 
+    /**
+     * @deprecated Neo: use the constructor {@link #LootTableLoadEvent(HolderLookup.Provider, ResourceLocation, LootTable) with a lookup provider}
+     */
+    @Deprecated
+    public LootTableLoadEvent(ResourceLocation name, LootTable table) {
+        this(null, name, table);
+    }
+
     @ApiStatus.Internal
-    public LootTableLoadEvent(HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
+    public LootTableLoadEvent(@Nullable HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
         this.registries = registries;
         this.name = name;
         this.table = table;
     }
 
     /**
-     * {@return a lookup provider that can be used to access registries}
+     * {@return a lookup provider that can be used to access registries, could be null}
      */
+    @Nullable
     public HolderLookup.Provider getRegistries() {
         return this.registries;
     }
