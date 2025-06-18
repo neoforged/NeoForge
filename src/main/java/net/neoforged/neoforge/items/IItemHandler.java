@@ -15,11 +15,8 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Implement this interface on your Block Entity if it can be used in a Hopper.
- * This is used to interact with Hoppers, Droppers, Vanilla automation, etc.
- *
  * @deprecated Use {@link IResourceHandler} bound by type {@link ItemResource} instead
- * 
+ *
  *             <pre>{@code
  *  IResourceHandler<ItemResource>
  * }</pre>
@@ -86,7 +83,7 @@ public interface IItemHandler {
      * @return ItemStack extracted from the slot, must be empty if nothing can be extracted.
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
      * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransactionContext)} & {@link IResourceHandler#getResource(int)}
-     * 
+     *
      *             <pre>
      *     {@code
      *      T resource = handler.getResource(index);
@@ -118,7 +115,7 @@ public interface IItemHandler {
      * <li>When isItemValid is true, no assumptions can be made and insertion must be simulated case-by-case.</li>
      * <li>The actual items in the inventory, its fullness, or any other state are <strong>not</strong> considered by isItemValid.</li>
      * </ul>
-     * 
+     *
      * @param slot  Slot to query for validity
      * @param stack Stack to test with for validity
      *
@@ -127,13 +124,4 @@ public interface IItemHandler {
      * @deprecated This is now {@link IResourceHandler#isValid(int, IResource)}
      */
     boolean isItemValid(int slot, ItemStack stack);
-
-//    /**
-//     * A helper method to temporarily turn your existing IItemHandler into a {@link IResourceHandler<ItemResource>}
-//     * @return LegacyItemHandlerAdapter instance of this
-//     */
-//    @Deprecated(forRemoval = true, since = "1.21.6")
-//    default LegacyItemHandlerAdapter asResourceHandler(){
-//        return LegacyItemHandlerAdapter.of(this);
-//    }
 }

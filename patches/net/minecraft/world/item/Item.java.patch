@@ -70,7 +70,7 @@
 +    protected final boolean canCombineRepair;
 +    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.ItemResource> defaultResource;
 +
-+    public final net.neoforged.neoforge.transfer.resources.ItemResource defaultResource() {
++    public final net.neoforged.neoforge.transfer.resources.ItemResource getDefaultResource() {
 +        return this.defaultResource.get();
 +    }
 +

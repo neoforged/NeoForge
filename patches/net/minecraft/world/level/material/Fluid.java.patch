@@ -4,7 +4,7 @@
          this.createFluidStateDefinition(builder);
          this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
          this.registerDefaultState(this.stateDefinition.any());
-+        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.FluidResource.invalidateDefault(this));
++        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(() -> net.neoforged.neoforge.transfer.resources.FluidResource.invalidateDefault(this));
      }
  
      protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> p_76121_) {
@@ -45,7 +45,7 @@
 +        return forgeFluidType;
 +    }
 +
-+    public final net.neoforged.neoforge.transfer.resources.FluidResource defaultResource() {
++    public final net.neoforged.neoforge.transfer.resources.FluidResource getDefaultResource() {
 +        return this.defaultResource.get();
      }
  }

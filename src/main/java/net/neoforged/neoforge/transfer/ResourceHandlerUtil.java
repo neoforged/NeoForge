@@ -276,8 +276,7 @@ public final class ResourceHandlerUtil {
             R resourceTarget = defaultResource;
             for (int index = 0; index < size; index++) {
                 R resource = handler.getResource(index);
-                if (resource.isEmpty()) continue;
-                if (!filter.test(resource)) continue;
+                if (doesNotMatch(filter, resource)) continue;
                 if (resourceTarget.isEmpty())
                     resourceTarget = resource;
                 else if (!resourceTarget.equals(resource)) continue;
@@ -319,7 +318,7 @@ public final class ResourceHandlerUtil {
             IStackFactory<R, S> stackFactory) {
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             R resource = handler.getResource(index);
-            if (!filter.test(resource))
+            if (doesNotMatch(filter, resource))
                 return stackFactory.create(defaultResource, 0);
             int extract = handler.extract(resource, amount, subTransaction);
             subTransaction.commit();
@@ -378,7 +377,7 @@ public final class ResourceHandlerUtil {
 
             for (int index = 0; index < size; ++index) {
                 T fromResource = from.getResource(index);
-                if (fromResource.isEmpty() || !filter.test(fromResource)) continue;
+                if (doesNotMatch(filter, fromResource)) continue;
 
                 // check how much can be extracted
                 int maxExtracted;
@@ -443,7 +442,7 @@ public final class ResourceHandlerUtil {
 
             for (int index = 0; index < size; ++index) {
                 R fromResource = from.getResource(index);
-                if (fromResource.isEmpty() || !filter.test(fromResource)) continue;
+                if (doesNotMatch(filter, fromResource)) continue;
 
                 // check how much can be extracted
                 int extracted;
@@ -506,12 +505,7 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise
      */
     public static <T extends IResource> boolean contains(IResourceHandler<T> handler, T resource) {
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            if (resource.equals(handler.getResource(index)))
-                return true;
-        }
-        return false;
+        return indexOf(handler, resource) != -1;
     }
 
     public static <T extends IResource> int indexOf(IResourceHandler<T> handler, T resource) {
@@ -529,18 +523,27 @@ public final class ResourceHandlerUtil {
             var size = handler.size();
             for (int index = 0; index < size; index++) {
                 var resource = handler.getResource(index);
-                if (resource.isEmpty() || !filter.test(resource)) continue;
-                if (handler.extract(resource, 1, temp) > 0) return true;
+                if (!doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0)
+                    return true;
             }
             return false;
         }
+    }
+
+    /**
+     * Empty never matches, and uses the filter to validate the resource.
+     * 
+     * @return {@code false} if the resource does match the filter. Empty is always {@code true}
+     */
+    private static <T extends IResource> boolean doesNotMatch(Predicate<T> filter, T resource) {
+        return resource.isEmpty() || !filter.test(resource);
     }
 
     public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
         try (Transaction temp = TransactionManager.open(null)) {
             //Simulated: we don't commit
             var resource = handler.getResource(index);
-            return !resource.isEmpty() && filter.test(resource) && handler.extract(resource, 1, temp) > 0;
+            return !doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0;
         }
     }
 
@@ -555,8 +558,8 @@ public final class ResourceHandlerUtil {
         int size = handler.size();
         for (int index = 0; index < size; index++) {
             T resource = handler.getResource(index);
-            if (resource.isEmpty()) continue;
-            return resource;
+            if (!resource.isEmpty())
+                return resource;
         }
         return defaultResource;
     }

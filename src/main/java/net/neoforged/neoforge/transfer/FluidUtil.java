@@ -124,7 +124,8 @@ public final class FluidUtil {
     private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, TransferAction transferAction) {
         try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
-            if (!transferAction.commit(transaction) || player == null) return stack;
+            transferAction.commit(transaction);
+            if (player == null) return stack;
 
             SoundEvent soundevent = stack.getFluidType().getSound(stack, SoundActions.BUCKET_FILL);
             if (soundevent != null) {

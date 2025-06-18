@@ -43,7 +43,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
             return FluidResource.of(bucket.content);
             // Should this check for milk item specifically, tag, or something else. It was an instanceof check before.
         } else if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound()) {
-            return NeoForgeMod.MILK.get().defaultResource();
+            return FluidResource.of(NeoForgeMod.MILK.get());
         }
         return FluidResource.EMPTY;
     }

@@ -1,13 +1,17 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -54,6 +_,12 @@
+@@ -54,6 +_,16 @@
          }
      }
  
-+    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
++    public ItemContainerContents with(int index, ItemStack stack) {
 +        var stacks = new ArrayList<>(this.items);
-+        stacks.set(index, resource.toStack(amount));
++        stacks.set(index, stack);
 +        return fromItems(stacks);
++    }
++
++    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
++        return with(index, resource.toStack(amount));
 +    }
 +
      private static ItemContainerContents fromSlots(List<ItemContainerContents.Slot> p_331424_) {

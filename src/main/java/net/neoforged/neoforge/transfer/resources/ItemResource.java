@@ -87,7 +87,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         if (itemStack.isEmpty()) return EMPTY;
 
         if (itemStack.isComponentsPatchEmpty())
-            return itemStack.getItem().defaultResource();
+            return itemStack.getItem().getDefaultResource();
 
         return new ItemResource(itemStack.copyWithCount(1));
     }
@@ -97,7 +97,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public static ItemResource of(ItemLike item) {
         if (item.asItem() == Items.AIR) return EMPTY;
-        return item.asItem().defaultResource();
+        return item.asItem().getDefaultResource();
     }
 
     /**
@@ -105,7 +105,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
         if (item.value() == Items.AIR) return EMPTY;
-        return item.value().defaultResource().withPatch(patch);
+        return item.value().getDefaultResource().withPatch(patch);
     }
 
     /**
@@ -113,7 +113,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public static ItemResource of(Holder<Item> item) {
         if (item.value() == Items.AIR) return EMPTY;
-        return item.value().defaultResource();
+        return item.value().getDefaultResource();
     }
 
     /**

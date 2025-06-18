@@ -21,7 +21,10 @@ import net.neoforged.neoforge.transfer.handlers.templates.energy.EmptyEnergyHand
  * @deprecated the new empty is {@link EmptyEnergyHandler}
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-public final class EmptyEnergyStorage implements IEnergyStorage {
+public class EmptyEnergyStorage implements IEnergyStorage {
+    /**
+     * @deprecated Use {@link EmptyEnergyHandler#INSTANCE} instead.
+     */
     public static final EmptyEnergyStorage INSTANCE = new EmptyEnergyStorage();
 
     protected EmptyEnergyStorage() {}

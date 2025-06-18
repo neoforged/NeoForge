@@ -18,7 +18,7 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.WorldlyContainerW
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @deprecated Not a 1:1 but {@link WorldlyContainerWrapper}
+ * @deprecated Not a 1:1, but use {@link WorldlyContainerWrapper} instead
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class SidedInvWrapper implements IItemHandlerModifiable {

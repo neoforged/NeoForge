@@ -37,7 +37,7 @@ public class TransactionTests {
      * @return how many apples were inserted.
      */
     public static int addApples(IResourceHandler<ItemResource> handler) {
-        var apple = Items.APPLE.defaultResource();
+        var apple = Items.APPLE.getDefaultResource();
         try (var tx = TransactionManager.open(null)) {
             int inserted = handler.insert(apple, 10, tx);
             tx.commit();
@@ -51,8 +51,8 @@ public class TransactionTests {
      * @return {@code true} if both operations succeeded, {@code false} otherwise.
      */
     public static boolean coalToDiamonds(IResourceHandler<ItemResource> handler, TransferAction action) {
-        var coal = Items.COAL.defaultResource();
-        var diamond = Items.DIAMOND.defaultResource();
+        var coal = Items.COAL.getDefaultResource();
+        var diamond = Items.DIAMOND.getDefaultResource();
 
         try (var tx = TransactionManager.open(null)) {
             if (handler.extract(0, coal, 16, tx) != 16) return false;

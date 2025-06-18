@@ -29,9 +29,4 @@ public interface IItemHandlerModifiable extends IItemHandler {
      *                          was not expecting.
      **/
     void setStackInSlot(int slot, ItemStack stack);
-
-//    @Override
-//    default LegacyItemHandlerAdapter.Modifiable asResourceHandler() {
-//        return LegacyItemHandlerAdapter.of(this);
-//    }
 }

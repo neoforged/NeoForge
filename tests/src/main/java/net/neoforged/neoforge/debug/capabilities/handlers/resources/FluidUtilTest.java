@@ -58,7 +58,7 @@ public class FluidUtilTest {
     private static void pickupFluid(ExtendedGameTestHelper helper) {
         var posOfWater = helper.relativePos(new BlockPos(1, 0, 0));
         var player = helper.makeMockPlayer();
-        var endlessWaterSource = new InfiniteResourceHandler<>(Fluids.WATER.defaultResource());
+        var endlessWaterSource = new InfiniteResourceHandler<>(Fluids.WATER.getDefaultResource());
 
         // test pickup of water and ensure exchange shrinks main stack and puts overflow in inventory
         resetInventory(player, new ItemStack(Items.BUCKET, 2));
@@ -102,7 +102,7 @@ public class FluidUtilTest {
     private static void handlerInteractionWithItem(ExtendedGameTestHelper helper) {
         var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         var player = helper.makeMockPlayer();
-        var waterOf1BucketAmount = ResourceStack.of(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
+        var waterOf1BucketAmount = ResourceStack.of(Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME);
 
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null);
 
@@ -119,19 +119,19 @@ public class FluidUtilTest {
 
         int startingAmount;
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            startingAmount = ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), Integer.MAX_VALUE, transaction);
+            startingAmount = ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction);
         }
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
+            helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.defaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
+            helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
         helper.succeed();
     }

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  * 
- * @deprecated Use {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment EnergyBufferAttachment}, {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler}, a custom solution instead
+ * @deprecated Use {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment EnergyBufferAttachment}, {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler}, or a custom solution instead.
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {

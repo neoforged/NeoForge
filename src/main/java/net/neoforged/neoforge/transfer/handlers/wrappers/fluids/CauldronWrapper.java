@@ -51,7 +51,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
         Objects.checkIndex(index, size());
 
         BlockState state = location.getBlockState();
-        return getContent(state).fluid.defaultResource();
+        return getContent(state).fluid.getDefaultResource();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
         CauldronFluidContent handledContent = getContent(state);
 
         //This handles the `is(fluid)` as well as components are `empty` with the default resource being the baseline of the fluid
-        if (amount < handledContent.getMillibuckets(state) || !resource.equals(handledContent.fluid.defaultResource())) {
+        if (amount < handledContent.getMillibuckets(state) || !resource.equals(handledContent.fluid.getDefaultResource())) {
             return 0;
         }
 

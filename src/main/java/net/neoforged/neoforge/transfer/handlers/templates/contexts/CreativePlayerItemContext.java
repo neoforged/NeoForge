@@ -22,7 +22,10 @@ public class CreativePlayerItemContext extends StaticItemContext {
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        boolean wasFound = ResourceHandlerUtil.contains(handler, resource);
-        return wasFound ? amount : handler.insert(resource, 1, transaction);
+        if (!ResourceHandlerUtil.contains(handler, resource)) {
+            //if the resource was not in the creative player's inventory, we will give them one;
+            handler.insert(resource, 1, transaction);
+        }
+        return amount;
     }
 }

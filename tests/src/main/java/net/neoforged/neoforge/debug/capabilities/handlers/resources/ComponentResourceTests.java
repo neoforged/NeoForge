@@ -52,7 +52,7 @@ public class ComponentResourceTests {
         if (fluidContext.getAmount(0) != 0)
             helper.fail("Expected empty tank");
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-            var inserted = fluidContext.insert(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, tx);
+            var inserted = fluidContext.insert(0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME, tx);
             if (inserted != FluidType.BUCKET_VOLUME)
                 helper.fail("Expected to be able to fill a bucket of water");
             tx.commit();
@@ -61,11 +61,11 @@ public class ComponentResourceTests {
         if (!player.getMainHandItem().has(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT))
             helper.fail("Expected fluid stack component");
 
-        if (!ResourceHandlerUtil.resourceAndCountMatches(fluidContext, 0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME))
+        if (!ResourceHandlerUtil.resourceAndCountMatches(fluidContext, 0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME))
             helper.fail("Expected a bucket of water");
 
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-            var extracted = fluidContext.extract(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME, tx);
+            var extracted = fluidContext.extract(0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME, tx);
             if (extracted != FluidType.BUCKET_VOLUME)
                 helper.fail("Expected to drain a bucket of water");
             tx.commit();
@@ -96,11 +96,11 @@ public class ComponentResourceTests {
         assert fluidHandler != null;
 
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-            var amount = fluidHandler.insert(Fluids.LAVA.defaultResource(), 80000, tx);
+            var amount = fluidHandler.insert(Fluids.LAVA.getDefaultResource(), 80000, tx);
             helper.assertValueEqual(amount, ResourceHandlerTestSetup.TANK_CAPACITY * ResourceHandlerTestSetup.TANK_COUNT * 4, "lava");
-            helper.assertValueEqual(fluidHandler.extract(Fluids.LAVA.defaultResource(), 3000, tx), 3000, "lava");
+            helper.assertValueEqual(fluidHandler.extract(Fluids.LAVA.getDefaultResource(), 3000, tx), 3000, "lava");
 
-            helper.assertValueEqual(fluidHandler.insert(Fluids.LAVA.defaultResource(), 100, tx), 0, "lava");
+            helper.assertValueEqual(fluidHandler.insert(Fluids.LAVA.getDefaultResource(), 100, tx), 0, "lava");
             tx.commit();
         }
 
@@ -126,7 +126,7 @@ public class ComponentResourceTests {
             //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
             var appleClone = player.getInventory().getItem(0).copy();
             //holds 100 stacks each.
-            var amount = storageCap.insert(Items.DIAMOND.defaultResource(), 13000, tx);
+            var amount = storageCap.insert(Items.DIAMOND.getDefaultResource(), 13000, tx);
             helper.assertValueEqual(amount, 12800, "diamond");
 
             //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
@@ -145,10 +145,10 @@ public class ComponentResourceTests {
     @TestHolder(description = "Tests that Codec for resources work along side component storage")
     public static void testCodec(ExtendedGameTestHelper helper) {
         FriendlyByteBufUtil.writeCustomData(buf -> {
-            var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.defaultResource().with(DataComponents.DAMAGE, 20), 3);
-            var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.defaultResource(), 200);
+            var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
+            var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
 
-            var resource = Items.APPLE.defaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
+            var resource = Items.APPLE.getDefaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
             //this should cross ItemResource, FluidResource, & ResourceStack stream codecs
             ItemResource.STREAM_CODEC.encode(buf, resource);
             var result = ItemResource.STREAM_CODEC.decode(buf);

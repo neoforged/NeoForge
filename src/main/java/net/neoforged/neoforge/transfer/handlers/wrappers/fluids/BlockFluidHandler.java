@@ -55,12 +55,12 @@ public class BlockFluidHandler extends SnapshotJournal<BlockFluidHandler.Snapsho
     @Override
     public FluidResource getResource(int index) {
         FluidState fluidState = level.getFluidState(pos);
-        return fluidState.getType().defaultResource();
+        return fluidState.getType().getDefaultResource();
     }
 
     @Override
     public int getAmount(int ignoredIndex) {
-        return level.getFluidState(pos).getType().defaultResource().isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
+        return level.getFluidState(pos).getType().getDefaultResource().isEmpty() ? 0 : FluidType.BUCKET_VOLUME;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class BlockFluidHandler extends SnapshotJournal<BlockFluidHandler.Snapsho
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
         BlockState state = level.getBlockState(pos);
         FluidState fluidState = level.getFluidState(pos);
-        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !resource.equals(fluidState.getType().defaultResource()))
+        if (amount < FluidType.BUCKET_VOLUME || resource.isEmpty() || !resource.equals(fluidState.getType().getDefaultResource()))
             return 0;
 
         if (state.getFluidState().isEmpty()) return 0;
@@ -132,7 +132,7 @@ public class BlockFluidHandler extends SnapshotJournal<BlockFluidHandler.Snapsho
 
         ItemStack stack = pickupHandler.pickupBlock(player, level, pos, state);
         if (!stack.isEmpty()) {
-            if (stack.getItem() instanceof BucketItem bucket && !resource.equals(bucket.content.defaultResource())) {
+            if (stack.getItem() instanceof BucketItem bucket && !resource.equals(bucket.content.getDefaultResource())) {
                 LOGGER.error("Fluid removed without successfully being picked up. Fluid {} at {} in {} matched requested type, but after performing pickup was {}.",
                         BuiltInRegistries.FLUID.getKey(fluidState.getType()), pos, level.dimension().location(), BuiltInRegistries.FLUID.getKey(bucket.content));
                 return 0;

@@ -20,8 +20,18 @@ import net.minecraft.world.flag.FeatureFlagSet;
  * @see FluidResource
  */
 public interface IRegisteredResource<T> extends IResource {
+    /**
+     * @return The backing instance of the resource.
+     * @see ItemResource#getInstanceValue() returns an Item
+     * @see FluidResource#getInstanceValue() returns an Fluid
+     */
     T getInstanceValue();
 
+    /**
+     * A helper override that allows the {@code is} methods in {@link IRegisteredResource} to not need to manually be overridden.
+     * 
+     * @return The holder of the backing resource.
+     */
     Holder<T> getHolder();
 
     default boolean is(TagKey<T> tag) {

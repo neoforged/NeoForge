@@ -12,8 +12,8 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * An energy storage is the unit of interaction with Energy inventories.
  * <p>
- * A reference implementation can be found at {@link AttachmentEnergyStorage} for attachment holders or {@link ItemEnergyStorage} for items
- * <p>
+ * A reference implementation can be found at {@link EnergyStorage}.
+ *
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  *
@@ -28,7 +28,9 @@ public interface IEnergyStorage {
      * @param toReceive The amount of energy being received.
      * @param simulate  If true, the insertion will only be simulated, meaning {@link #getEnergyStored()} will not change.
      * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
+     * @deprecated becomes {@link IEnergyHandler#insert(int, TransactionContext)}
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int receiveEnergy(int toReceive, boolean simulate);
 
     /**
@@ -37,9 +39,9 @@ public interface IEnergyStorage {
      * @param toExtract The amount of energy being extracted.
      * @param simulate  If true, the extraction will only be simulated, meaning {@link #getEnergyStored()} will not change.
      * @return Amount of energy that was (or would have been, if simulated) extracted from the storage.
-     * @deprecated becomes {@link net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler#extract(int index, TransactionContext)}
+     * @deprecated becomes {@link net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler#extract(int, TransactionContext)}
      */
-
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int extractEnergy(int toExtract, boolean simulate);
 
     /**
@@ -48,6 +50,7 @@ public interface IEnergyStorage {
      * @deprecated split into two, if you want to know the total current amount (index-less) {@link net.neoforged.neoforge.transfer.EnergyHandlerUtil#getAmount(IEnergyHandler)
      *             EnergyHandlerUtil#getAmount(IEnergyHandler)} will be an option; otherwise this has a new parameter in the handler {@link IEnergyHandler#getAmount(int index)}
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int getEnergyStored();
 
     /**
@@ -56,6 +59,7 @@ public interface IEnergyStorage {
      * @deprecated split into two, if you want to know the total capacity (index-less) {@link net.neoforged.neoforge.transfer.EnergyHandlerUtil#getCapacity(IEnergyHandler)
      *             EnergyHandlerUtil#getCapacity(IEnergyHandler)} will be an option; otherwise this has a new parameter in the handler {@link IEnergyHandler#getCapacity(int index)}
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int getMaxEnergyStored();
 
     /**
@@ -64,6 +68,7 @@ public interface IEnergyStorage {
      *
      * @deprecated This no longer is controlled by the interface but rather your own implementation. It is expected that it is handled on a case-by-case basis in the extract method.
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     boolean canExtract();
 
     /**
@@ -72,5 +77,6 @@ public interface IEnergyStorage {
      *
      * @deprecated This no longer is controlled by the interface but rather your own implementation. It is expected that it is handled on a case-by-case basis in the insert method.
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     boolean canReceive();
 }

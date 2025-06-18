@@ -7,27 +7,11 @@ package net.neoforged.neoforge.energy;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
-/**
- * Variant of {@link AttachmentEnergyStorage} for use with data components.
- * <p>
- * The actual data storage is managed by a data component, and all changes will write back to that component.
- * <p>
- * To use this class, register a new {@link DataComponentType} which holds an {@link Integer} for your item.
- * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
- *
- * @deprecated Migrated to {@link EnergyBufferComponentHandler}
- */
-
-@Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public final class ItemEnergyStorage implements IEnergyStorage {
     protected final IItemContext itemContext;
     protected final DataComponentType<Integer> energyComponent;

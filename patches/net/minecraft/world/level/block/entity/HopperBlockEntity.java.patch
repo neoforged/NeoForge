@@ -5,12 +5,12 @@
      }
  
 +    // Neo: Update cooldown after insertion into hopper
-+    private boolean insertingFlag = false;
-+    private final net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal journal = new net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal(value -> insertingFlag = value, () -> insertingFlag);
++    private boolean isInserting = false;
++    private final net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal journal = new net.neoforged.neoforge.transfer.handlers.wrappers.items.HopperJournal(value -> isInserting = value, () -> isInserting);
 +
 +    @Override
 +    public void onCommit(int slot, ItemStack originalStack) {
-+        if (insertingFlag && originalStack.isEmpty() && !getItem(slot).isEmpty()) {
++        if (isInserting && originalStack.isEmpty() && !getItem(slot).isEmpty()) {
 +            if (!isOnCustomCooldown()) {
 +                // This cooldown is always set to 8 in vanilla with one exception:
 +                // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
@@ -19,7 +19,7 @@
 +                setCooldown(HopperBlockEntity.MOVE_ITEM_SPEED);
 +            }
 +        }
-+        insertingFlag = false;
++        isInserting = false;
 +    }
 +
 +    @Override
@@ -27,7 +27,7 @@
 +        super.onTransfer(slot, ioDirection, context);
 +        if(ioDirection == IODirection.EXTRACT) return;
 +        journal.updateSnapshots(context);
-+        insertingFlag = true;
++        isInserting = true;
 +    }
 +
      @Override

@@ -81,19 +81,19 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         if (fluidStack.isEmpty()) return FluidResource.EMPTY;
 
         if (fluidStack.isComponentsPatchEmpty())
-            return fluidStack.getFluid().defaultResource();
+            return fluidStack.getFluid().getDefaultResource();
 
         return fluidStack.isEmpty() ? EMPTY : new FluidResource(fluidStack.copyWithAmount(1));
     }
 
     public static FluidResource of(Fluid fluid) {
         if (fluid == Fluids.EMPTY) return EMPTY;
-        return fluid.defaultResource();
+        return fluid.getDefaultResource();
     }
 
     public static FluidResource of(Holder<Fluid> fluid) {
         if (fluid.value() == Fluids.EMPTY) return EMPTY;
-        return fluid.value().defaultResource();
+        return fluid.value().getDefaultResource();
     }
 
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {

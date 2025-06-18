@@ -112,8 +112,8 @@ public class VanillaHandlersTests {
 
         helper.assertTrue(wrapper.size() == 1, "Got %d tanks".formatted(wrapper.size()));
 
-        var waterResource = Fluids.WATER.defaultResource();
-        var lavaResource = Fluids.LAVA.defaultResource();
+        var waterResource = Fluids.WATER.getDefaultResource();
+        var lavaResource = Fluids.LAVA.getDefaultResource();
 
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             // Simulate filling with water, and it should only accept 1 bucket
@@ -191,10 +191,10 @@ public class VanillaHandlersTests {
 
         var firstChestSlot = IndexItemContext.of(chestHandler, 0);
 
-        var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.defaultResource().with(DataComponents.DAMAGE, 20), 3);
-        var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.defaultResource(), 200);
+        var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
+        var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
 
-        var targetResource = Items.APPLE.defaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
+        var targetResource = Items.APPLE.getDefaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
 
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             var inserted = chestHandler.insert(targetResource, 100, transaction);

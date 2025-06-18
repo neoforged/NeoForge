@@ -20,7 +20,8 @@ public class VoidFluidHandler implements IFluidHandler {
     /**
      * @deprecated Use {@link VoidResourceHandler#FLUID}
      */
-    public static IResourceHandler<FluidResource> INSTANCE = VoidResourceHandler.FLUID;
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    public static final IResourceHandler<FluidResource> INSTANCE = VoidResourceHandler.FLUID;
 
     @Override
     public int getTanks() {

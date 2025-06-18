@@ -65,8 +65,8 @@ public class InstancedResourceHandlerTests {
     @TestHolder(description = "Handles endless handler tests")
     public static void endlessHandlers(ExtendedGameTestHelper helper) {
         //InfiniteResourceHandlers creates infinite of a specified resource, but doesn't allow insertion
-        testEndlessResource(helper, Fluids.WATER.defaultResource());
-        testEndlessResource(helper, Blocks.COBBLESTONE.asItem().defaultResource());
+        testEndlessResource(helper, Fluids.WATER.getDefaultResource());
+        testEndlessResource(helper, Blocks.COBBLESTONE.asItem().getDefaultResource());
         helper.succeed();
     }
 
