@@ -693,9 +693,17 @@ public class EventHooks {
     }
 
     /**
+     * Use the {@link #loadLootTable(HolderLookup.Provider, ResourceLocation, LootTable) instead}
+     */
+    @Deprecated
+    public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
+        return loadLootTable(null, name, table);
+    }
+
+    /**
      * Fires the {@link LootTableLoadEvent} for non-empty loot tables and returns the table if the event was not
      * canceled and the table was not set to {@link LootTable#EMPTY} in the event. Otherwise returns {@code null}
-     * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(HolderLookup.Provider, ResourceLocation, DynamicOps, Object)}
+     * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(ResourceLocation, DynamicOps, Object)}
      */
     @Nullable
     @ApiStatus.Internal
