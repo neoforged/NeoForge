@@ -112,7 +112,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     /**
      * Writes the serializable attachments to a tag.
      */
-    public final void serializeAttachments(HolderLookup.Provider provider, ValueOutput tag) {
+    public final void serializeAttachments(ValueOutput tag) {
         if (attachments == null) return;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
@@ -120,7 +120,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             if (type.serializer != null) {
                 try {
                     var serialized = tag.child(key.toString());
-                    boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized, provider);
+                    boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized);
                     if (!doSerialise) {
                         tag.discard(key.toString());
                     }
@@ -132,9 +132,9 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     /**
-     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider, ValueOutput)}.
+     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(ValueOutput)}.
      */
-    protected final void deserializeAttachments(HolderLookup.Provider provider, ValueInput input) {
+    protected final void deserializeAttachments(ValueInput input) {
         for (var key : input.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
@@ -150,7 +150,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             }
 
             try {
-                getAttachmentMap().put(type, type.serializer.read(getExposedHolder(), input.childOrEmpty(key), provider));
+                getAttachmentMap().put(type, type.serializer.read(getExposedHolder(), input.childOrEmpty(key)));
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
@@ -175,7 +175,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
         }
 
         public void deserializeInternal(HolderLookup.Provider provider, ValueInput tag) {
-            deserializeAttachments(provider, tag);
+            deserializeAttachments(tag);
         }
     }
 }

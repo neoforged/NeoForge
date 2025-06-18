@@ -5,12 +5,9 @@
 
 package net.neoforged.neoforge.energy;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 /**
@@ -19,7 +16,7 @@ import net.neoforged.neoforge.common.util.ValueIOSerializable;
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
  */
-public class EnergyStorage implements IEnergyStorage, INBTSerializable<CompoundTag>, ValueIOSerializable {
+public class EnergyStorage implements IEnergyStorage, ValueIOSerializable {
     protected int energy;
     protected int capacity;
     protected int maxReceive;
@@ -86,18 +83,6 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<CompoundT
     @Override
     public boolean canReceive() {
         return this.maxReceive > 0;
-    }
-
-    @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        tag.putInt("energy", this.energy);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        this.energy = nbt.getIntOr("energy", 0);
     }
 
     @Override

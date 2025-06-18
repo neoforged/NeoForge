@@ -219,7 +219,7 @@
   "fluid_type.minecraft.milk": "Mléko",
   "fluid_type.minecraft.flowing_milk": "Mléko",
   "neoforge.froge.warningScreen.title": "NeoForge snapshot oznámení",
-  "neoforge.froge.warningScreen.text": "Froge is not officially supported. Bugs and instability are expected.",
+  "neoforge.froge.warningScreen.text": "Froge není oficiálně podporován. Očekávají se chyby a nestabilita.",
   "neoforge.froge.supportWarning": "UPOZORNĚNÍ: NeoForge nepodporuje Froge",
   "neoforge.gui.exit": "Opustit",
   "neoforge.experimentalsettings.tooltip": "Tento svět používá experimentální nastavení, které mohou kdykoliv přestat fungovat.",
