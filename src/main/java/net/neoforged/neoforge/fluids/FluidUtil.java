@@ -24,13 +24,9 @@ import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.apache.commons.lang3.NotImplementedException;
-import net.neoforged.neoforge.transfer.TransferAction;
-import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -100,6 +96,7 @@ public final class FluidUtil {
         //            }
         return net.neoforged.neoforge.transfer.FluidUtil.interactWithFluidHandler(player, hand, handler);
     }
+
     /**
      * Fill a container from the given fluidSource.
      *
@@ -388,6 +385,7 @@ public final class FluidUtil {
 
     /**
      * Helper method to get an IFluidHandler for at a block position.
+     * 
      * @deprecated Use {@link Level#getCapability(BlockCapability, BlockPos, Object)} instead with a null check rather than Optional
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
@@ -451,7 +449,6 @@ public final class FluidUtil {
 //                .map(FluidActionResult::new)
 //                .orElse(FluidActionResult.FAILURE);
         throw new NotImplementedException("This has been moved to the new FluidUtil and split between two methods.");
-
     }
 
     /**
