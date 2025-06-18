@@ -6,18 +6,18 @@
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
@@ -40,12 +40,12 @@ import org.jetbrains.annotations.Nullable;
  * EnergyBuffer.builder(3, 1000).maxTransfer(10).build();
  * }
  * </pre>
- * 
+ *
  * <p>
  * Unlike the {@link EnergyBufferComponentHandler}, the handler also is the attachment data.
  */
 public final class EnergyBufferAttachment implements IEnergyHandler {
-    public static Codec<EnergyBufferAttachment> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static MapCodec<EnergyBufferAttachment> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("size").forGetter(data -> data.size),
             Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity),
             Codec.INT.fieldOf("max_insertion").forGetter(data -> data.maxInsert),
@@ -357,32 +357,24 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
         }
     }
 
-    public static <T> IAttachmentSerializer<Tag, T> holderWith(Codec<T> codec, BiConsumer<T, IAttachmentHolder> setter) {
+    public static <T> IAttachmentSerializer<T> holderWith(MapCodec<T> codec, BiConsumer<T, IAttachmentHolder> setter) {
         return new IAttachmentSerializer<>() {
             @Override
-            public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
-                DataResult<T> parse = codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag);
-                if (parse.error().isPresent()) {
-                    throw new RuntimeException(parse.error().get().toString());
-                }
-                if (parse.result().isEmpty())
-                    throw new RuntimeException("Result not present");
-
-                T data = parse.result().get();
-                setter.accept(data, holder);
-                return data;
+            public T read(IAttachmentHolder holder, ValueInput input) {
+                final Optional<T> parsingResult = input.read(codec);
+                var value = parsingResult.orElseThrow(() -> buildException("read"));
+                setter.accept(value, holder);
+                return value;
             }
 
             @Override
-            public Tag write(T attachment, HolderLookup.Provider provider) {
-                DataResult<Tag> encode = codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment);
-                if (encode.error().isPresent()) {
-                    throw new RuntimeException(encode.error().get().toString());
-                }
-                if (encode.result().isEmpty())
-                    throw new RuntimeException("Result not present");
+            public boolean write(T attachment, ValueOutput output) {
+                output.store(codec, attachment);
+                return true;
+            }
 
-                return encode.result().get();
+            private RuntimeException buildException(final String operation) {
+                return new IllegalStateException("Unable to " + operation + " attachment due to an internal codec error.");
             }
         };
     }

@@ -134,6 +134,23 @@ public class ComponentResourceTests {
             var blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
             var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
             blockHandler.insert(applesWithContents, 2, tx);
+        }
+        helper.assertTrue(ResourceHandlerUtil.isEmpty(storageCap), "handler");
+
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
+
+            //Because of the way the context filling works, it is attempting to fill or group similar actions together.
+            //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
+            var appleClone = player.getInventory().getItem(0).copy();
+            //holds 100 stacks each.
+            var amount = storageCap.insert(Items.DIAMOND.getDefaultResource(), 13000, tx);
+            helper.assertValueEqual(amount, 12800, "diamond");
+
+            //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
+            var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
+            var blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
+            var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
+            blockHandler.insert(applesWithContents, 2, tx);
             tx.commit();
         }
 

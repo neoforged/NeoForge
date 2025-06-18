@@ -78,10 +78,10 @@ public final class FluidUtil {
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
-        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE);
+        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE);
         if (!tryInsert.isEmpty()) return true;
 
-        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE);
+        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE);
         return !tryExtract.isEmpty();
     }
 

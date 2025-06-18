@@ -77,7 +77,7 @@ public class FluidUtilTest {
         resetInventory(player, new ItemStack(Items.BUCKET, 5));
         var capability = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND).getCapability(Capabilities.FluidHandler.ITEM);
         assert capability != null;
-        FluidUtil.moveFluidWithSound(player.getCommandSenderWorld(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, capability, Integer.MAX_VALUE);
+        FluidUtil.moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, capability, Integer.MAX_VALUE);
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 5);
 
         helper.setBlock(posOfWater, Blocks.AIR);

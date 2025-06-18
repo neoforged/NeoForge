@@ -5,17 +5,16 @@
 
 package net.neoforged.neoforge.debug.capabilities.handlers.resources;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import java.util.function.BiConsumer;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
@@ -35,7 +34,7 @@ public class TestResourceTemplateAttachment {
             NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("fluids").forGetter(data -> data.fluidHandler.copyToList())).apply(builder, TestResourceTemplateAttachment::new));
 
     public static final AttachmentType.Builder<TestResourceTemplateAttachment> BUILDER = AttachmentType.builder(TestResourceTemplateAttachment::new)
-            .serialize(holderWith(TestResourceTemplateAttachment.MAP_CODEC.codec(), TestResourceTemplateAttachment::setHolder));
+            .serialize(holderWith(TestResourceTemplateAttachment.MAP_CODEC, TestResourceTemplateAttachment::setHolder));
 
     public ItemStackListHandler itemHandler;
     public ResourceStackListHandler<ItemResource> itemResourceHandler;
@@ -72,32 +71,24 @@ public class TestResourceTemplateAttachment {
         }
     }
 
-    public static <T> IAttachmentSerializer<Tag, T> holderWith(Codec<T> codec, BiConsumer<T, IAttachmentHolder> setter) {
+    public static <T> IAttachmentSerializer<T> holderWith(MapCodec<T> codec, BiConsumer<T, IAttachmentHolder> setter) {
         return new IAttachmentSerializer<>() {
             @Override
-            public T read(IAttachmentHolder holder, Tag tag, HolderLookup.Provider provider) {
-                var parse = codec.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag);
-                if (parse.error().isPresent()) {
-                    throw new RuntimeException(parse.error().get().toString());
-                }
-                if (parse.result().isEmpty())
-                    throw new RuntimeException("Result not present");
-
-                var data = parse.result().get();
-                setter.accept(data, holder);
-                return data;
+            public T read(IAttachmentHolder holder, ValueInput input) {
+                final Optional<T> parsingResult = input.read(codec);
+                var value = parsingResult.orElseThrow(() -> buildException("read"));
+                setter.accept(value, holder);
+                return value;
             }
 
             @Override
-            public Tag write(T attachment, HolderLookup.Provider provider) {
-                var encode = codec.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), attachment);
-                if (encode.error().isPresent()) {
-                    throw new RuntimeException(encode.error().get().toString());
-                }
-                if (encode.result().isEmpty())
-                    throw new RuntimeException("Result not present");
+            public boolean write(T attachment, ValueOutput output) {
+                output.store(codec, attachment);
+                return true;
+            }
 
-                return encode.result().get();
+            private RuntimeException buildException(final String operation) {
+                return new IllegalStateException("Unable to " + operation + " attachment due to an internal codec error.");
             }
         };
     }
