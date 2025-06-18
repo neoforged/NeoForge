@@ -5,12 +5,15 @@
 
 package net.neoforged.neoforge.items;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
@@ -20,7 +23,9 @@ import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStackListHan
  * @deprecated Use {@link ItemStackListHandler} that uses a {@link IResourceHandler}
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag> {
+public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, ValueIOSerializable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemStackHandler.class);
+
     protected NonNullList<ItemStack> stacks;
 
     public ItemStackHandler() {
@@ -142,32 +147,26 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        ListTag nbtTagList = new ListTag();
+    public void serialize(ValueOutput output) {
+        ValueOutput.TypedOutputList<ItemStackWithSlot> itemList = output.list("Items", ItemStackWithSlot.CODEC);
         for (int i = 0; i < stacks.size(); i++) {
-            if (!stacks.get(i).isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putInt("Slot", i);
-                nbtTagList.add(stacks.get(i).save(provider, itemTag));
+            var stack = stacks.get(i);
+            if (!stack.isEmpty()) {
+                itemList.add(new ItemStackWithSlot(i, stack));
             }
         }
-        CompoundTag nbt = new CompoundTag();
-        nbt.put("Items", nbtTagList);
-        nbt.putInt("Size", stacks.size());
-        return nbt;
+        output.putInt("Size", stacks.size());
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        setSize(nbt.getIntOr("Size", stacks.size()));
-        nbt.getListOrEmpty("Items").compoundStream().forEach(itemTags -> {
-            int slot = itemTags.getIntOr("Slot", -1);
-
-            if (slot >= 0 && slot < stacks.size()) {
-                ItemStack.parse(provider, itemTags).ifPresent(stack -> stacks.set(slot, stack));
+    public void deserialize(ValueInput input) {
+        setSize(input.getIntOr("Size", stacks.size()));
+        input.listOrEmpty("Items", ItemStackWithSlot.CODEC).forEach(slot -> {
+            if (slot.isValidInContainer(stacks.size())) {
+                stacks.set(slot.slot(), slot.stack());
             }
         });
-        onLoad();
+        //onLoad(); todo not called, was removed before merge
     }
 
     protected void validateSlotIndex(int slot) {

@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
 +++ b/net/minecraft/client/gui/screens/worldselection/WorldOpenFlows.java
-@@ -66,7 +_,7 @@
- import org.slf4j.Logger;
- 
- @OnlyIn(Dist.CLIENT)
--public class WorldOpenFlows {
-+public class WorldOpenFlows { // TODO 1.20.3 PORTING: re-add the autoconfirm code
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final UUID WORLD_PACK_ID = UUID.fromString("640a6a92-b6cb-48a0-b391-831586500359");
-     private final Minecraft minecraft;
 @@ -215,7 +_,10 @@
              component1 = Component.translatable("selectWorld.backupWarning.customized");
          } else {

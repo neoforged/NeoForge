@@ -65,6 +65,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.util.InclusiveRange;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -137,7 +138,7 @@ public class DataGeneratorTest {
                         new WithConditions<>(new OverlayMetadataSection.OverlayEntry(new InclusiveRange<>(0, Integer.MAX_VALUE), "conditional_overlays_enabled"), NeoForgeConditions.modLoaded("does_not_exist")))))
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.literal("NeoForge tests resource pack"),
-                        DetectedVersion.BUILT_IN.getPackVersion(PackType.CLIENT_RESOURCES),
+                        DetectedVersion.BUILT_IN.packVersion(PackType.CLIENT_RESOURCES),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
         gen.addProvider(true, new Lang(packOutput));
         gen.addProvider(true, new SoundDefinitions(packOutput, event.getResourceManager(PackType.CLIENT_RESOURCES)));
@@ -486,8 +487,8 @@ public class DataGeneratorTest {
                     .add(Blocks.DIAMOND_BLOCK)
                     .addTag(BlockTags.STONE_BRICKS)
                     .addTag(net.neoforged.neoforge.common.Tags.Blocks.COBBLESTONES)
-                    .addOptional(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw"))
-                    .addOptionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "storage_blocks/ruby"));
+                    .add(TagEntry.optionalElement(ResourceLocation.fromNamespaceAndPath("chisel", "marble/raw")))
+                    .add(TagEntry.optionalTag(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "storage_blocks/ruby")));
 
             // Hopefully sorting issues
             tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, "thing/one")))

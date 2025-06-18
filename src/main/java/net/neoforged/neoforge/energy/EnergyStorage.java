@@ -1,15 +1,14 @@
 /*
- * Copyright (c) NeoForged and contributors
+ * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
 package net.neoforged.neoforge.energy;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 
 /**
@@ -17,11 +16,11 @@ import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
  *
  * Derived from the Redstone Flux power system designed by King Lemming and originally utilized in Thermal Expansion and related mods.
  * Created with consent and permission of King Lemming and Team CoFH. Released with permission under LGPL 2.1 when bundled with Forge.
- * 
+ *
  * @deprecated Use {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment EnergyBufferAttachment}, {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferComponentHandler}, or a custom solution instead.
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
+public class EnergyStorage implements IEnergyStorage, ValueIOSerializable {
     protected int energy;
     protected int capacity;
     protected int maxReceive;
@@ -91,14 +90,12 @@ public class EnergyStorage implements IEnergyStorage, INBTSerializable<Tag> {
     }
 
     @Override
-    public Tag serializeNBT(HolderLookup.Provider provider) {
-        return IntTag.valueOf(this.getEnergyStored());
+    public void serialize(ValueOutput output) {
+        output.putInt("energy", energy);
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, Tag nbt) {
-        if (!(nbt instanceof IntTag(int value)))
-            throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
-        this.energy = value;
+    public void deserialize(ValueInput input) {
+        this.energy = input.getIntOr("energy", 0);
     }
 }

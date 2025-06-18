@@ -47,6 +47,9 @@
   "net/minecraft/client/resources/model/ModelBaker": [
     "net/neoforged/neoforge/client/extensions/ModelBakerExtension"
   ],
+  "net/minecraft/client/resources/model/ModelState": [
+    "net/neoforged/neoforge/client/extensions/ModelStateExtension"
+  ],
   "net/minecraft/client/resources/model/QuadCollection$Builder": [
     "net/neoforged/neoforge/client/extensions/QuadCollectionBuilderExtension"
   ],
@@ -92,8 +95,8 @@
   "net/minecraft/data/tags/IntrinsicHolderTagsProvider$IntrinsicTagAppender": [
     "net/neoforged/neoforge/common/extensions/IIntrinsicHolderTagAppenderExtension<T>"
   ],
-  "net/minecraft/data/tags/TagsProvider$TagAppender": [
-    "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<T>"
+  "net/minecraft/data/tags/TagAppender": [
+    "net/neoforged/neoforge/common/extensions/ITagAppenderExtension<E, T>"
   ],
   "net/minecraft/network/FriendlyByteBuf": [
     "net/neoforged/neoforge/common/extensions/IFriendlyByteBufExtension"
@@ -236,6 +239,12 @@
   ],
   "net/minecraft/world/level/material/FluidState": [
     "net/neoforged/neoforge/common/extensions/IFluidStateExtension"
+  ],
+  "net/minecraft/world/level/storage/ValueInput": [
+    "net/neoforged/neoforge/common/extensions/ValueInputExtension"
+  ],
+  "net/minecraft/world/level/storage/ValueOutput": [
+    "net/neoforged/neoforge/common/extensions/ValueOutputExtension"
   ],
   "net/minecraft/client/data/models/model/TexturedModel": [
     "net/neoforged/neoforge/client/extensions/ITexturedModelExtension"

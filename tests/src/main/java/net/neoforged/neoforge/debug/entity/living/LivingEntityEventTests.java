@@ -277,6 +277,7 @@ public class LivingEntityEventTests {
             helper.assertTrue(!childSlimes.isEmpty(), "No child slimes received by event");
             for (Mob s : childSlimes) {
                 helper.assertValueEqual("whatever", s.getPersistentData().getString("test.something").orElse(null), "NBT Data not copied");
+                s.kill(helper.getLevel());
             }
 
             Slime childlessSlime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
@@ -355,10 +356,14 @@ public class LivingEntityEventTests {
                     EnchantmentHelper.setEnchantments(player.getItemBySlot(EquipmentSlot.CHEST), enchants.toImmutable());
                     player.getFoodData().setFoodLevel(1);
                 })
-                /* ServerPlayers have spawn invulnerability.  This waits out that period.*/
-                .thenIdle(2001)
-                /* The player is damaged with a single point of damage which will be modified in the event listeners*/
-                .thenExecute(player -> player.hurtServer(helper.getLevel(), new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK)), 1))
+                .thenIdle(5)
+                .thenExecute(player -> {
+                    // remove spawn invulnerability
+                    player.setClientLoaded(true);
+                    helper.assertTrue(player.getHealth() == player.getMaxHealth(), "Expected player to be at max health: " + player.getHealth() + " / " + player.getMaxHealth() + " - " + player.getLastDamageSource());
+                    /* The player is damaged with a single point of damage which will be modified in the event listeners*/
+                    player.hurtServer(helper.getLevel(), new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK)), 1);
+                })
                 /* The player's health and all the stored values from the events are checked to ensure they match the
                  * expected values from our reduction functions and changes to the damage value.*/
                 .thenWaitUntil(player -> {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/net/minecraft/world/level/storage/loot/LootTable.java
-@@ -40,8 +_,8 @@
+@@ -41,8 +_,8 @@
              p_380905_ -> p_380905_.group(
                      LootContextParamSets.CODEC.lenientOptionalFieldOf("type", DEFAULT_PARAM_SET).forGetter(p_380906_ -> p_380906_.paramSet),
                      ResourceLocation.CODEC.optionalFieldOf("random_sequence").forGetter(p_297998_ -> p_297998_.randomSequence),
@@ -11,7 +11,7 @@
                  )
                  .apply(p_380905_, LootTable::new)
          )
-@@ -57,7 +_,7 @@
+@@ -58,7 +_,7 @@
      LootTable(ContextKeySet p_380952_, Optional<ResourceLocation> p_299055_, List<LootPool> p_298390_, List<LootItemFunction> p_298775_) {
          this.paramSet = p_380952_;
          this.randomSequence = p_299055_;
@@ -20,7 +20,7 @@
          this.functions = p_298775_;
          this.compositeFunction = LootItemFunctions.compose(p_298775_);
      }
-@@ -80,10 +_,12 @@
+@@ -81,10 +_,12 @@
          };
      }
  
@@ -33,7 +33,7 @@
      public void getRandomItemsRaw(LootContext p_79132_, Consumer<ItemStack> p_79133_) {
          LootContext.VisitedEntry<?> visitedentry = LootContext.createVisitedEntry(this);
          if (p_79132_.pushVisitedElement(visitedentry)) {
-@@ -100,18 +_,15 @@
+@@ -101,18 +_,15 @@
      }
  
      public void getRandomItems(LootParams p_287748_, long p_287729_, Consumer<ItemStack> p_287583_) {
@@ -55,7 +55,7 @@
      }
  
      public ObjectArrayList<ItemStack> getRandomItems(LootParams p_347545_, RandomSource p_347680_) {
-@@ -128,7 +_,8 @@
+@@ -129,7 +_,8 @@
  
      private ObjectArrayList<ItemStack> getRandomItems(LootContext p_230923_) {
          ObjectArrayList<ItemStack> objectarraylist = new ObjectArrayList<>();
@@ -65,7 +65,7 @@
          return objectarraylist;
      }
  
-@@ -217,6 +_,62 @@
+@@ -218,6 +_,62 @@
  
      public static LootTable.Builder lootTable() {
          return new LootTable.Builder();

@@ -76,7 +76,7 @@ public interface ICondition {
 
     MapCodec<? extends ICondition> codec();
 
-    interface IContext { // TODO 1.21.2: potentially remove since all the info is available via RegistryOps
+    interface IContext {
         IContext EMPTY = new IContext() {
             @Override
             public <T> boolean isTagLoaded(TagKey<T> key) {

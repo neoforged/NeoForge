@@ -1,5 +1,5 @@
 /*
- * Copyright (c) NeoForged and contributors
+ * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
@@ -8,6 +8,9 @@ package net.neoforged.neoforge.fluids.capability.templates;
 import java.util.function.Predicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -20,7 +23,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStack
  * @deprecated For components use {@link FluidStorageComponentHandler} or for attachments use either {@link ResourceStackListHandler.Fluid} or {@link FluidStackListHandler}
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-public class FluidTank implements IFluidHandler, IFluidTank {
+public class FluidTank implements IFluidHandler, IFluidTank, ValueIOSerializable {
     protected Predicate<FluidStack> validator;
     protected FluidStack fluid = FluidStack.EMPTY;
     protected int capacity;
@@ -73,6 +76,18 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         }
 
         return nbt;
+    }
+
+    @Override
+    public void deserialize(ValueInput input) {
+        this.fluid = input.read("Fluid", FluidStack.CODEC).orElse(FluidStack.EMPTY);
+    }
+
+    @Override
+    public void serialize(ValueOutput output) {
+        if (!this.fluid.isEmpty()) {
+            output.store("Fluid", FluidStack.CODEC, this.fluid);
+        }
     }
 
     @Override

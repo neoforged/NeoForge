@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/level/storage/TagValueInput.java
++++ b/net/minecraft/world/level/storage/TagValueInput.java
+@@ -218,6 +_,11 @@
+         return this.context.lookup();
+     }
+ 
++    @Override
++    public java.util.Set<String> keySet() {
++        return java.util.Collections.unmodifiableSet(input.keySet());
++    }
++
+     private ValueInput wrapChild(String p_422021_, CompoundTag p_422689_) {
+         return (ValueInput)(p_422689_.isEmpty()
+             ? this.context.empty()

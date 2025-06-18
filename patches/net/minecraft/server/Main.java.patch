@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -94,6 +_,13 @@
+@@ -95,6 +_,13 @@
                  optionparser.printHelpOn(System.err);
                  return;
              }
@@ -14,7 +14,7 @@
  
              Path path = optionset.valueOf(optionspec14);
              if (path != null) {
-@@ -109,24 +_,22 @@
+@@ -110,24 +_,22 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
              Path path1 = Paths.get("server.properties");
@@ -44,7 +44,7 @@
              LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
              LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
              Dynamic<?> dynamic;
-@@ -135,6 +_,7 @@
+@@ -136,6 +_,7 @@
                  try {
                      dynamic = levelstoragesource$levelstorageaccess.getDataTag();
                      levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
@@ -52,7 +52,7 @@
                  } catch (NbtException | ReportedNbtException | IOException ioexception1) {
                      LevelStorageSource.LevelDirectory levelstoragesource$leveldirectory = levelstoragesource$levelstorageaccess.getLevelDirectory();
                      LOGGER.warn("Failed to load world data from {}", levelstoragesource$leveldirectory.dataFile(), ioexception1);
-@@ -143,6 +_,7 @@
+@@ -144,6 +_,7 @@
                      try {
                          dynamic = levelstoragesource$levelstorageaccess.getDataTagFallback();
                          levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
@@ -60,7 +60,7 @@
                      } catch (NbtException | ReportedNbtException | IOException ioexception) {
                          LOGGER.error("Failed to load world data from {}", levelstoragesource$leveldirectory.oldDataFile(), ioexception);
                          LOGGER.error(
-@@ -218,6 +_,9 @@
+@@ -219,6 +_,9 @@
                                          worlddimensions = dedicatedserverproperties.createDimensions(p_359487_.datapackWorldgen());
                                      }
  
@@ -70,7 +70,7 @@
                                      WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
                                      Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_359487_.datapackWorldgen().allRegistriesLifecycle());
                                      return new WorldLoader.DataLoadOutput<>(
-@@ -283,6 +_,7 @@
+@@ -285,6 +_,7 @@
                  @Override
                  public void run() {
                      dedicatedserver.halt(true);

@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/systems/RenderPass.java
 +++ b/com/mojang/blaze3d/systems/RenderPass.java
-@@ -31,6 +_,10 @@
+@@ -32,6 +_,10 @@
  
      void disableScissor();
  

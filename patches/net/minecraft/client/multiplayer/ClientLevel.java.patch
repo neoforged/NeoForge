@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/multiplayer/ClientLevel.java
 +++ b/net/minecraft/client/multiplayer/ClientLevel.java
-@@ -117,7 +_,7 @@
+@@ -121,7 +_,7 @@
      private final TickRateManager tickRateManager;
      private final Minecraft minecraft = Minecraft.getInstance();
      final List<AbstractClientPlayer> players = Lists.newArrayList();
@@ -9,7 +9,7 @@
      private final Map<MapId, MapItemSavedData> mapData = Maps.newHashMap();
      private static final int CLOUD_COLOR = -1;
      private int skyFlashTime;
-@@ -137,6 +_,7 @@
+@@ -141,6 +_,7 @@
              p_406186_.put(
                  BiomeColors.WATER_COLOR_RESOLVER, new BlockTintCache(p_194168_ -> this.calculateBlockTint(p_194168_, BiomeColors.WATER_COLOR_RESOLVER))
              );
@@ -17,7 +17,7 @@
          }
      );
      private final ClientChunkCache chunkSource;
-@@ -146,6 +_,7 @@
+@@ -151,6 +_,7 @@
      private final int seaLevel;
      private boolean tickDayTime;
      private static final Set<Item> MARKER_PARTICLE_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
@@ -25,7 +25,7 @@
  
      public void handleBlockChangedAck(int p_233652_) {
          this.blockStatePredictionHandler.endPredictionsUpTo(p_233652_, this);
-@@ -175,10 +_,15 @@
+@@ -192,10 +_,15 @@
      @Override
      public boolean setBlock(BlockPos p_233643_, BlockState p_233644_, int p_233645_, int p_233646_) {
          if (this.blockStatePredictionHandler.isPredicting()) {
@@ -41,7 +41,7 @@
              }
  
              return flag;
-@@ -212,6 +_,7 @@
+@@ -229,6 +_,7 @@
          this.serverSimulationDistance = p_363776_;
          this.updateSkyBrightness();
          this.prepareWeather();
@@ -49,7 +49,7 @@
      }
  
      public void queueLightUpdate(Runnable p_194172_) {
-@@ -255,7 +_,7 @@
+@@ -272,7 +_,7 @@
      private void tickTime() {
          this.clientLevelData.setGameTime(this.clientLevelData.getGameTime() + 1L);
          if (this.tickDayTime) {
@@ -58,7 +58,7 @@
          }
      }
  
-@@ -294,7 +_,11 @@
+@@ -311,7 +_,11 @@
          p_104640_.setOldPosAndRot();
          p_104640_.tickCount++;
          Profiler.get().push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_104640_.getType()).toString());
@@ -71,7 +71,7 @@
          Profiler.get().pop();
  
          for (Entity entity : p_104640_.getPassengers()) {
-@@ -345,8 +_,10 @@
+@@ -362,8 +_,10 @@
      }
  
      public void addEntity(Entity p_104741_) {
@@ -82,7 +82,7 @@
      }
  
      public void removeEntity(int p_171643_, Entity.RemovalReason p_171644_) {
-@@ -523,6 +_,13 @@
+@@ -539,6 +_,13 @@
          float p_263349_,
          long p_263408_
      ) {
@@ -96,7 +96,7 @@
          if (p_393665_ == this.minecraft.player) {
              this.playSound(p_263372_, p_263404_, p_263365_, p_263335_.value(), p_263417_, p_263416_, p_263349_, false, p_263408_);
          }
-@@ -532,6 +_,12 @@
+@@ -548,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity p_263536_, Entity p_394209_, Holder<SoundEvent> p_263518_, SoundSource p_263487_, float p_263538_, float p_263524_, long p_263509_
      ) {
@@ -109,7 +109,7 @@
          if (p_263536_ == this.minecraft.player) {
              this.minecraft.getSoundManager().play(new EntityBoundSoundInstance(p_263518_.value(), p_263487_, p_263538_, p_263524_, p_394209_, p_263509_));
          }
-@@ -743,7 +_,7 @@
+@@ -759,7 +_,7 @@
          return this.players;
      }
  
@@ -118,7 +118,7 @@
          return this.dragonParts;
      }
  
-@@ -1076,6 +_,7 @@
+@@ -1092,6 +_,7 @@
          }
  
          public void setDifficulty(Difficulty p_104852_) {
@@ -126,7 +126,7 @@
              this.difficulty = p_104852_;
          }
  
-@@ -1117,6 +_,9 @@
+@@ -1133,6 +_,9 @@
                      ClientLevel.this.dragonParts.addAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:
@@ -136,7 +136,7 @@
              }
          }
  
-@@ -1130,10 +_,59 @@
+@@ -1146,10 +_,59 @@
                      ClientLevel.this.dragonParts.removeAll(Arrays.asList(enderdragon.getSubEntities()));
                      break;
                  default:

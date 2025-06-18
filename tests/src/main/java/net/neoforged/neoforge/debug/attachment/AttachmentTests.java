@@ -11,11 +11,10 @@ import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.IntTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,9 +22,12 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
@@ -41,7 +43,7 @@ public class AttachmentTests {
     @EmptyTemplate
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void chunkAttachmentReferenceTest(DynamicTest test, RegistrationHelper reg) {
-        class ChunkMutableInt implements INBTSerializable<IntTag> {
+        class ChunkMutableInt implements ValueIOSerializable {
             private final LevelChunk chunk;
             private int value;
 
@@ -60,13 +62,13 @@ public class AttachmentTests {
             }
 
             @Override
-            public IntTag serializeNBT(HolderLookup.Provider provider) {
-                return IntTag.valueOf(value);
+            public void serialize(ValueOutput output) {
+                output.putInt("value", value);
             }
 
             @Override
-            public void deserializeNBT(HolderLookup.Provider provider, IntTag nbt) {
-                this.value = nbt.asInt().orElse(0);
+            public void deserialize(ValueInput input) {
+                this.value = input.getIntOr("value", 0);
             }
         }
 
@@ -111,9 +113,9 @@ public class AttachmentTests {
     @TestHolder(description = "Ensures that player attachments are copied on respawn when appropriate.")
     static void playerAttachmentCopyOnRespawn(DynamicTest test, RegistrationHelper reg) {
         var lostOnDeathBoolean = reg.attachments()
-                .register("lost_on_death_boolean", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build());
+                .register("lost_on_death_boolean", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL.fieldOf("value")).build());
         var keptOnDeathBoolean = reg.attachments()
-                .register("kept_on_death_boolean", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).copyOnDeath().build());
+                .register("kept_on_death_boolean", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL.fieldOf("value")).copyOnDeath().build());
 
         test.onGameTest(helper -> {
             var player = helper.makeTickingMockServerPlayerInLevel(GameType.SURVIVAL);
@@ -139,7 +141,7 @@ public class AttachmentTests {
     @TestHolder(description = "Tests that attachments with dynamic data are de/serialized well")
     static void dynamicDataContentSerialization(DynamicTest test, RegistrationHelper reg) {
         var stackType = reg.attachments()
-                .register("stack", () -> AttachmentType.builder(() -> new ItemStack(Items.IRON_AXE)).serialize(ItemStack.CODEC).build());
+                .register("stack", () -> AttachmentType.builder(() -> new ItemStack(Items.IRON_AXE)).serialize(ItemStack.CODEC.fieldOf("stack")).build());
         test.onGameTest(helper -> {
             var player = helper.makeMockPlayer();
             var stack = new ItemStack(Items.IRON_SWORD);
@@ -148,7 +150,10 @@ public class AttachmentTests {
             stack.set(DataComponents.ENCHANTMENTS, enchantments.toImmutable());
             player.setData(stackType, stack);
             helper.catchException(() -> {
-                player.serializeAttachments(helper.getLevel().registryAccess()); // This will throw if it fails
+                var reporter = new ProblemReporter.Collector();
+                var tag = TagValueOutput.createWithContext(reporter, helper.getLevel().registryAccess());
+                player.serializeAttachments(tag); // This will throw if it fails
+                helper.assertTrue(reporter.isEmpty(), "expected no serialisation problems");
             });
             helper.succeed();
         });

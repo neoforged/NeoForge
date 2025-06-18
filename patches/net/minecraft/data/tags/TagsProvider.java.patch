@@ -76,20 +76,3 @@
                                      }
                                  }
                              )
-@@ -169,6 +_,16 @@
-         public TagsProvider.TagAppender<T> addOptionalTag(ResourceLocation p_176842_) {
-             this.builder.addOptionalTag(p_176842_);
-             return this;
-+        }
-+
-+        public TagsProvider.TagAppender<T> add(TagEntry tag) {
-+             builder.add(tag);
-+             return this;
-+        }
-+
-+        @org.jetbrains.annotations.ApiStatus.Internal
-+        public TagBuilder getInternalBuilder() {
-+             return builder;
-         }
-     }
- 

@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/chunk/SectionCopy.java
++++ b/net/minecraft/client/renderer/chunk/SectionCopy.java
+@@ -26,8 +_,10 @@
+     private final PalettedContainer<BlockState> section;
+     private final boolean debug;
+     private final LevelHeightAccessor levelHeightAccessor;
++    final LevelChunk wrapped;
+ 
+     SectionCopy(LevelChunk p_427469_, int p_427413_) {
++        this.wrapped = p_427469_;
+         this.levelHeightAccessor = p_427469_;
+         this.debug = p_427469_.getLevel().isDebug();
+         this.blockEntities = ImmutableMap.copyOf(p_427469_.getBlockEntities());

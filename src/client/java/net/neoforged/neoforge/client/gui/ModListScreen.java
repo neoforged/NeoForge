@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.gui;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -181,7 +180,6 @@ public class ModListScreen extends Screen {
         @Override
         protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, int mouseX, int mouseY) {
             if (logoPath != null) {
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 // Draw the logo image inscribed in a rectangle with width entryWidth (minus some padding) and height 50
                 int headerHeight = 50;
                 guiGraphics.blitInscribed(logoPath, left + PADDING, relativeY, width - (PADDING * 2), headerHeight, logoDims.width, logoDims.height, false, true);
@@ -190,7 +188,7 @@ public class ModListScreen extends Screen {
 
             for (FormattedCharSequence line : lines) {
                 if (line != null) {
-                    guiGraphics.drawString(ModListScreen.this.font, line, left + PADDING, relativeY, 0xFFFFFF);
+                    guiGraphics.drawString(ModListScreen.this.font, line, left + PADDING, relativeY, 0xFFFFFFFF);
                 }
                 relativeY += font.lineHeight;
             }
@@ -343,7 +341,7 @@ public class ModListScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         Component text = Component.translatable("fml.menu.mods.search");
         int x = modList.getX() + ((modList.getRight() - modList.getX()) / 2) - (getFontRenderer().width(text) / 2);
-        guiGraphics.drawString(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFF, false);
+        guiGraphics.drawString(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFFFF, false);
     }
 
     public Minecraft getMinecraftInstance() {

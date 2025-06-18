@@ -219,7 +219,7 @@
   "fluid_type.minecraft.milk": "Молоко",
   "fluid_type.minecraft.flowing_milk": "Молоко",
   "neoforge.froge.warningScreen.title": "Повідомлення про снапшоти NeoForge",
-  "neoforge.froge.warningScreen.text": "Froge is not officially supported. Bugs and instability are expected.",
+  "neoforge.froge.warningScreen.text": "Froge офіційно не підтримується. Очікуються помилки та нестабільність.",
   "neoforge.froge.supportWarning": "УВАГА: Froge не підтримується NeoForge",
   "neoforge.gui.exit": "Вийти",
   "neoforge.experimentalsettings.tooltip": "Цей світ використовує експериментальні налаштування, які можуть припинити роботу в будь-який час.",
