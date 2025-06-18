@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -22,11 +23,13 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageComponentHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageComponentHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -55,14 +58,17 @@ public record ResourceHandlerTestSetup() {
 
     public interface Content {
         Content INSTANCE = new Content() {};
-        DeferredBlock<Block> RESOURCE_BLOCK = Registry.BLOCKS.registerBlock(
-                "resource_block",
-                ResourceBlockExample::new);
+        DeferredBlock<Block> RESOURCE_BLOCK = Registry.BLOCKS.registerBlock("resource_block", ResourceBlockExample::new);
+
         DeferredHolder<BlockEntityType<?>, BlockEntityType<ResourceBlockExample.Entity>> RESOURCE_BLOCK_ENTITY = Registry.BLOCK_ENTITIES.register(
                 "resource_container",
                 () -> new BlockEntityType<>(ResourceBlockExample.Entity::new, RESOURCE_BLOCK.get()));
-        Supplier<AttachmentType<TestResourceContainerAttachment>> RESOURCE_ATTACHMENT = Registry.ATTACHMENTS.register("container", TestResourceContainerAttachment.BUILDER::build);
-        Supplier<AttachmentType<ResourceStorageAttachment<FluidResource>>> FLUID_ATTACHMENT = Registry.ATTACHMENTS.register("fluid_container", AttachmentType.builder(() -> ResourceStorageAttachment.of(1, FluidResource.EMPTY))::build);
+
+        //        Supplier<AttachmentType<ItemStackListHandler2>> ITEM_STORAGE_ATTACHMENT = Registry.ATTACHMENTS.register("item_container",
+        //                AttachmentType.builder(holder->)::build);
+        Supplier<AttachmentType<TestResourceTemplateAttachment>> TEST_TEMPLATE_ATTACHMENT = Registry.ATTACHMENTS.register("stack_template_attachment", TestResourceTemplateAttachment.BUILDER::build);
+
+        Supplier<AttachmentType<IResourceStorageData<FluidResource>>> FLUID_STORAGE_ATTACHMENT = Registry.ATTACHMENTS.register("fluid_container", AttachmentType.<IResourceStorageData<FluidResource>>builder(() -> ResourceStorageAttachment.of(1, FluidResource.EMPTY))::build);
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
                 "simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
@@ -101,24 +107,24 @@ public record ResourceHandlerTestSetup() {
         //TODO change out the attachment used from ResourceContainer to one of the other templates. I had forgotten to do this, but the tests were at least validating the infrastructure.
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
                 Capabilities.ItemHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> {
-                    var data = blockEntity.getData(Content.RESOURCE_ATTACHMENT);
+                    var data = blockEntity.getData(Content.TEST_TEMPLATE_ATTACHMENT);
                     return switch (context) {
-                        case UP -> data.both;
-                        case NORTH -> data.input;
-                        case SOUTH -> data.output;
+                        case UP -> data.itemResourceHandler;
+                        case NORTH -> new RangedResourceHandler<>(data.itemHandler, 0, 10);
+                        case SOUTH -> new RangedResourceHandler<>(data.itemHandler, 10, 20);
                         case null, default -> null;
                     };
                 }));
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerBlockEntity(
-                Capabilities.FluidHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.RESOURCE_ATTACHMENT).fluidHandler));
+                Capabilities.FluidHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.TEST_TEMPLATE_ATTACHMENT).fluidHandler));
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
-                Capabilities.FluidHandler.ITEM, (object, context) -> new FluidStorageHandler.Component(context, ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT.get(), TANK_COUNT, TANK_CAPACITY),
+                Capabilities.FluidHandler.ITEM, (object, context) -> new FluidStorageComponentHandler(context, ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT.get(), TANK_COUNT, TANK_CAPACITY),
                 Items.APPLE));
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
-                Capabilities.ItemHandler.ITEM, (object, context) -> new ItemStorageHandler.Component(context, ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT.get(), 100),
+                Capabilities.ItemHandler.ITEM, (object, context) -> new ItemStorageComponentHandler(context, ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT.get(), 100, Item.DEFAULT_MAX_STACK_SIZE),
                 Items.APPLE));
     }
 

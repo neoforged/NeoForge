@@ -48,6 +48,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      */
     @Override
     public MutableResourceStack<T> withAmount(int newAmount) {
+        if (isEmpty()) return this;
         amount = isEmpty() ? 0 : newAmount;
         return this;
     }
@@ -57,6 +58,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      */
     @Override
     public MutableResourceStack<T> shrink(int amount) {
+        if (isEmpty()) return this;
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
@@ -65,6 +67,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      */
     @Override
     public MutableResourceStack<T> grow(int amount) {
+        if (isEmpty()) return this;
         return withAmount(this.amount + amount);
     }
 
@@ -73,6 +76,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
      */
     @Override
     public MutableResourceStack<T> with(UnaryOperator<T> operator) {
+        if (isEmpty()) return this;
         return new MutableResourceStack<>(operator.apply(resource), amount);
     }
 
@@ -82,7 +86,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     }
 
     /**
-     * @return a new immutable copy of this resource stack
+     * @return a new immutable copy of this resource stack.
      */
     @Override
     public ResourceStack<T> immutable() {
@@ -90,7 +94,7 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
     }
 
     @Override
-    public IResourceStack<T> copy() {
+    public MutableResourceStack<T> copy() {
         return MutableResourceStack.of(resource, amount);
     }
 

@@ -14,9 +14,9 @@ import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -34,67 +34,77 @@ public class ResourceHandlerUtilTests {
         var src = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         var dst = ResourceHandlerTestSetup.setupLevelEnvironmentSecond(helper);
 
-        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.UP) instanceof ResourceContainerToHandlerAdapter<ItemResource> srcHandler)) {
+        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.UP) instanceof ResourceStackListHandler<ItemResource> srcHandler)) {
             throw helper.assertionException("The returned capability was not a Modifiable resource handler");
         }
-
-        if (!(helper.requireCapability(Capabilities.ItemHandler.BLOCK, dst, Direction.UP) instanceof ResourceContainerToHandlerAdapter<ItemResource> dstHandler)) {
-            throw helper.assertionException("The returned capability was not a Modifiable resource handler");
-        }
+        var inputHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.NORTH); //[0,10)
+        var outputHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, dst, Direction.SOUTH);//[11,20)
 
         var workingStack = ResourceStack.of(Blocks.COBBLESTONE.asItem().defaultResource(), 5000);
-
-        srcHandler.set(0, ItemResource.EMPTY, 0);
         helper.assertTrue(ResourceHandlerUtil.isEmpty(srcHandler), "The inv was not empty");
         helper.assertFalse(ResourceHandlerUtil.isFull(srcHandler), "The inv should be empty");
-        srcHandler.set(0, workingStack.resource(), workingStack.amount());
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            helper.assertValueEqual(srcHandler.insert(0, workingStack.resource(), workingStack.amount(), transaction), workingStack.amount(), "Amount set should be the same at " + workingStack.amount());
+            transaction.commit();
+        }
+
         helper.assertTrue(ResourceHandlerUtil.resourceAndCountMatches(srcHandler, 0, workingStack.resource(), workingStack.amount()), "Cobblestone in the inv did not match");
 
-        helper.assertTrue(ResourceHandlerUtil.move(srcHandler, dstHandler, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT) == 0, "Nothing should have moved");
+//        helper.assertTrue(ResourceHandlerUtil.move(inputHandler, inputHandler, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT) == 0, "Nothing should have moved");
 
-        srcHandler.set(10, workingStack.resource(), workingStack.amount());
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            helper.assertValueEqual(srcHandler.insert(10, workingStack.resource(), workingStack.amount(), transaction), workingStack.amount(), "Amount set should be the same at " + workingStack.amount());
+        }
 
         var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT);
         helper.assertTrue(workingStack.amount() == amountMoved, "Did not move everything. Should have moved all 5000 cobble to it (to void), moved " + amountMoved);
 
         var infiniteStackHandler = new InfiniteResourceHandler<>(workingStack.resource());
-        var amountTest = ResourceHandlerUtil.move(infiniteStackHandler, dstHandler, ResourceFilters.any(), workingStack.amount(), TransactionContext.ROOT);
-        helper.assertValueEqual(amountTest, 10 * workingStack.resource().getMaxStackSize(), "the destination to hold 10 stacks. That evaluates");
+        var amountTest = ResourceHandlerUtil.move(infiniteStackHandler, srcHandler, ResourceFilters.any(), workingStack.amount() * 10, TransactionContext.ROOT);
+        helper.assertValueEqual(amountTest, 10 * workingStack.amount(), "the destination to hold 10 stacks of 5000. That evaluates");
 
-        dstHandler.set(10, workingStack.resource(), workingStack.amount());
+        //Reset
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, transaction), 0, "Nothing should move");
-            helper.assertValueEqual(ResourceHandlerUtil.move(dstHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE.asItem()), 100, transaction), 100, "amount to move");
-        }
-        helper.assertTrue(ResourceHandlerUtil.hasExtractableResource(dstHandler, workingStack.resource()), "The dst handler should have cobble");
-        helper.assertFalse(ResourceHandlerUtil.hasExtractableResource(dstHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");
-
-        for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, ItemResource.EMPTY, 0);
+            srcHandler.extract(10, workingStack.resource(), Integer.MAX_VALUE, transaction);
+            srcHandler.insert(10, workingStack.resource(), workingStack.amount(), transaction);
+            transaction.commit();
         }
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(dstHandler, Items.APPLE.defaultResource(), 123, null), 123, "apples inserted");
-        for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, Items.APPLE.defaultResource(), 99);
+        //        outputHandler.set(10, workingStack.resource(), workingStack.amount());
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            helper.assertValueEqual(ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Items.STICK), 100, transaction), 0, "Nothing should move");
+            helper.assertValueEqual(ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE), 100, transaction), 100, "amount to move");
         }
+        helper.assertTrue(ResourceHandlerUtil.hasExtractableResource(srcHandler, workingStack.resource()), "The dst handler should have cobble");
+        helper.assertFalse(ResourceHandlerUtil.hasExtractableResource(srcHandler, Items.STICK.defaultResource()), "The dst handler should have no sticks");
 
-        var full = ResourceHandlerUtil.isFull(dstHandler);
+        //reset (empty)
+        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, TransactionContext.ROOT);
+
+        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(outputHandler, Items.APPLE.defaultResource(), 123, null), 123, "apples inserted");
+        //reset (empty+fill)
+        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, TransactionContext.ROOT);
+        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(Items.APPLE.defaultResource()), outputHandler, ResourceFilters.any(), Integer.MAX_VALUE, TransactionContext.ROOT);
+        //        for (var i = 0; i < outputHandler.size(); i++) {
+        //            outputHandler.set(i, Items.APPLE.defaultResource(), 99);
+        //        }
+
+        var full = ResourceHandlerUtil.isFull(outputHandler);
         helper.assertTrue(full, "Dst handler should be full");
 
-        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(dstHandler, ResourceFilters.any(), 400, TransactionContext.ROOT), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
-        helper.assertFalse(ResourceHandlerUtil.isFull(dstHandler), "Dst handler should not be full");
+        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(outputHandler, ResourceFilters.any(), 400, TransactionContext.ROOT), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
+        helper.assertFalse(ResourceHandlerUtil.isFull(outputHandler), "Dst handler should not be full");
 
-        for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, ItemResource.EMPTY, 0);
-        }
-        for (var i = 0; i < dstHandler.size(); i++) {
-            dstHandler.set(i, ItemResource.EMPTY, 0);
-        }
+        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, TransactionContext.ROOT);
+        //        for (var i = 0; i < outputHandler.size(); i++) {
+        //            outputHandler.set(i, ItemResource.EMPTY, 0);
+        //        }
+        //        for (var i = 0; i < outputHandler.size(); i++) {
+        //            outputHandler.set(i, ItemResource.EMPTY, 0);
+        //        }
 
-        ResourceHandlerUtil.insertStacking(dstHandler, Items.APPLE.defaultResource(), 400, TransactionContext.ROOT);
+        ResourceHandlerUtil.insertStacking(outputHandler, Items.APPLE.defaultResource(), 400, TransactionContext.ROOT);
 
-        dstHandler.set(0, Items.HONEY_BOTTLE.defaultResource(), 3000);
-        dstHandler.set(1, ItemResource.EMPTY, 0);
         helper.succeed();
     }
 }

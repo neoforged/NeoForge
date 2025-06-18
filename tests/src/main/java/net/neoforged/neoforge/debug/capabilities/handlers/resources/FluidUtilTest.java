@@ -19,12 +19,13 @@ import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
+import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -43,9 +44,12 @@ import org.jetbrains.annotations.Nullable;
 public class FluidUtilTest {
     private static void setFluid(ExtendedGameTestHelper helper, BlockPos blockPos, ResourceStack<FluidResource> resourceStack) {
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, blockPos, null);
-        if (handler instanceof ResourceContainerToHandlerAdapter<FluidResource> modifiable) {
-            modifiable.set(0, resourceStack.resource(), resourceStack.amount());
-        }
+        ResourceHandlerUtil.move(handler, VoidResourceHandler.FLUID, ResourceFilters.any(), Integer.MAX_VALUE, TransactionContext.ROOT);
+        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(resourceStack.resource()), handler, ResourceFilters.any(), resourceStack.amount(), TransactionContext.ROOT);
+
+//        if (handler instanceof ResourceContainerToHandlerAdapter<FluidResource> modifiable) {
+//            modifiable.set(0, resourceStack.resource(), resourceStack.amount());
+//        }
     }
 
     @GameTest
@@ -100,9 +104,7 @@ public class FluidUtilTest {
         var player = helper.makeMockPlayer();
         var waterOf1BucketAmount = ResourceStack.of(Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
 
-        if (!(helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null) instanceof ResourceContainerToHandlerAdapter<FluidResource> handler)) {
-            throw helper.assertionException("The returned capability was not a Modifiable resource handler");
-        }
+        var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null);
 
         //It can store 4 buckets, but we are setting to 1
         setFluid(helper, pos, waterOf1BucketAmount);
@@ -112,7 +114,7 @@ public class FluidUtilTest {
         helper.assertValueEqual(handler.getAmount(0), 0, "fluid amount in index `0`");
         helper.assertValueEqual(handler.getResource(0), FluidResource.EMPTY, "fluid in index `0`");
 
-        handler.set(0, Fluids.WATER.defaultResource(), FluidType.BUCKET_VOLUME);
+        setFluid(helper, pos, waterOf1BucketAmount);
         resetInventory(player, new ItemStack(Items.BUCKET, 1));
 
         int startingAmount;

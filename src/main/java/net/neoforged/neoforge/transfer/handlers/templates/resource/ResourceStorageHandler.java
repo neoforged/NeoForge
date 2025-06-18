@@ -5,13 +5,19 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
 public abstract class ResourceStorageHandler<T extends IResource> implements IResourceHandler<T> {
     /**
@@ -30,28 +36,72 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     /**
      * The snapshot handler for
      */
-    private final ComponentSnapshot snapshot = new ComponentSnapshot();
+    private final List<ComponentSnapshot> snapshot;
+
+    private final List<MutableResourceStack<T>> resourceSnapshots;
+    private final BooleanList indexMutations;
+    private final GroupSnapshot groupSnapshot = new GroupSnapshot();
 
     public ResourceStorageHandler(int size, int capacity, T defaultResource) {
         this.size = size;
         this.capacity = capacity;
         this.defaultResource = defaultResource;
+        snapshot = new ArrayList<>(size);
+        resourceSnapshots = new ArrayList<>(size);
+        indexMutations = new BooleanArrayList(size);
+        for (var i = 0; i < size; i++) {
+            snapshot.add(new ComponentSnapshot(i));
+            resourceSnapshots.add(MutableResourceStack.of(defaultResource, 0));
+            indexMutations.add(false);
+        }
     }
 
-    private class ComponentSnapshot extends SnapshotJournal<IResourceStorageData<T>> {
+    private class GroupSnapshot extends NotificationSnapshot {
         @Override
-        protected IResourceStorageData<T> createSnapshot() {
-            return getContents();
+        protected void revertToSnapshot(EmptyValue snapshot) {
+            var data = getContents().attachment();
+
+            var dataSize = data.size();
+            for (var index = 0; index < dataSize; index++) {
+                if (!indexMutations.getBoolean(index)) continue;
+
+                var workingStack = resourceSnapshots.get(index);
+                data.modify(index, workingStack.resource(), workingStack.amount());
+                indexMutations.set(index, false);
+                resourceSnapshots.set(index, MutableResourceStack.of(defaultResource, 0));
+            }
+            setContents(data);
         }
 
         @Override
-        protected void revertToSnapshot(IResourceStorageData<T> snapshot) {
-            setContents(snapshot);
-        }
-
-        @Override
-        protected void onCommit(IResourceStorageData<T> originalState) {
+        protected void onCommit(EmptyValue originalState) {
             onContentsChanged();
+        }
+    }
+
+    private class ComponentSnapshot extends SnapshotJournal<IResourceStack<T>> {
+        private final int index;
+        //mutable work area
+
+        public ComponentSnapshot(int index) {
+            this.index = index;
+        }
+
+        @Override
+        protected IResourceStack<T> createSnapshot() {
+            return getContents().get(index).copy();
+        }
+
+        @Override
+        public void updateSnapshots(TransactionContext transaction) {
+            groupSnapshot.updateSnapshots(transaction);
+            super.updateSnapshots(transaction);
+        }
+
+        @Override
+        protected void revertToSnapshot(IResourceStack<T> snapshot) {
+            resourceSnapshots.set(index, snapshot.mutable());
+            indexMutations.set(index, true);
         }
     }
 
@@ -100,8 +150,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         if (resourceStackInSlot.isEmpty()) {
             //the slot was empty so we shall accept what capacity allows as well as set the ResourceStack
             int inserted = Math.min(capacity, amount);
-            snapshot.updateSnapshots(transaction);
-
+            snapshot.get(index).updateSnapshots(transaction);
             contents.modify(index, resource, inserted);
             return inserted;
         }
@@ -111,7 +160,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
         //The resource was the same, now we grow the existing stack by how much can fit
         int inserted = Math.min(capacity - resourceStackInSlot.amount(), amount);
-        snapshot.updateSnapshots(transaction);
+        snapshot.get(index).updateSnapshots(transaction);
         resourceStackInSlot.grow(inserted);
         return inserted;
     }
@@ -147,7 +196,7 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extractAmount = Math.min(amount, stack.amount());
 
-        snapshot.updateSnapshots(transaction);
+        snapshot.get(index).updateSnapshots(transaction);
         stack.shrink(extractAmount);
         contents.modify(index, !stack.isEmpty() ? stack.resource() : defaultResource, stack.amount());
         return extractAmount;

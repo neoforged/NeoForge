@@ -5,25 +5,10 @@
 
 package net.neoforged.neoforge.debug.capabilities.handlers.resources;
 
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
-import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.ResourceContainer;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.SimpleItemResourceContainer;
-import net.neoforged.neoforge.transfer.toremove_before_pr_merging.handlers.templates.container.resources.adapters.ResourceContainerToHandlerAdapter;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -34,127 +19,16 @@ import net.neoforged.testframework.gametest.GameTest;
 @ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.transaction.")
 
 public class TransactionTests {
-    private static <T extends IResource> void resetSandbox(ResourceContainer<T> destination, ResourceContainer<T> src) {
-        for (int craftingSlot = 0; craftingSlot < 9; craftingSlot++)
-            destination.set(craftingSlot, src.get(craftingSlot));
-    }
 
     //These have mostly just been experiments, to see a given result real tests for specifically transactions need to be made still.
     // The other tests using resource handlers only partially test them
-
     @GameTest
     @EmptyTemplate
     @TestHolder(description = "Transactional tests. Takes the idea of looking for a subset of items and able to return the crafting ingredients")
     private static void itemTransfer(ExtendedGameTestHelper helper) {
         //todo, the test is still in progress. This is also helping identify if anything should change
         // The more notable changes to be made is swapping out the container types used.
-        var b = SimpleItemResourceContainer.builder(0).build();
-
-        var water = new InfiniteResourceHandler<>(Fluids.WATER.defaultResource());
-        var player = helper.makeMockPlayer();
-        player.addItem(Items.BUCKET.getDefaultInstance());
-        var context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
-        var bucketCap = context.getCapability(Capabilities.FluidHandler.ITEM);
-        var fill = FluidUtil.fillContainer(context, water, 1000, player, TransferAction.SIMULATE);
-
-        var infiniteSource = new InfiniteResourceHandler<>(Items.DIAMOND.defaultResource());
-
-        var internalContainer = SimpleItemResourceContainer.builder(9).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
-
-        //noinspection unchecked
-        IResourceHandler<ItemResource>[] externalContainers = new IResourceHandler[3];
-        externalContainers[0] = SimpleItemResourceContainer.builder(4).capacity(Item.DEFAULT_MAX_STACK_SIZE).build().asHandler();
-        externalContainers[1] = SimpleItemResourceContainer.builder(2).build().asHandler();
-        externalContainers[2] = SimpleItemResourceContainer.builder(100).capacity(32).build().asHandler();
-        if (externalContainers[0] instanceof ResourceContainerToHandlerAdapter<ItemResource> modifiableContainer) {
-            int size = modifiableContainer.size();
-            for (var index = 0; index < size; index++) {
-                modifiableContainer.set(index, Items.LAVA_BUCKET.defaultResource(), 2);
-            }
-        }
-
-        var ingredient = Ingredient.of(Items.LAVA_BUCKET);
-        var need = 5;
-        var result = Items.DIAMOND_PICKAXE.defaultResource();
-        var current = 0;
-        //        var craftingRecipe = CraftingInput.of(3, 3, );
-
-        try (var craftingTransaction = TransactionManager.open(TransactionContext.ROOT)) {
-
-            try (var scanningTransaction = TransactionManager.open(craftingTransaction)) {
-                for (var container : externalContainers) {
-                    for (var index = 0; index < container.size(); index++) {
-
-                        var resource = container.getResource(index);
-                        if (!someFilteredCondition(resource, ingredient)) continue;
-
-                        int simulatedValue = 0;
-                        try (var optimisticTransaction = TransactionManager.open(scanningTransaction)) {
-                            var testValue = need - current;
-                            simulatedValue = tryIndex(container, optimisticTransaction, resource, index, testValue);
-                            if (simulatedValue == 0) continue;
-
-                            current += simulatedValue;
-                            optimisticTransaction.commit();
-                            if (simulatedValue == testValue) {
-                                break;
-                            }
-                        }
-                    }
-
-                    if (current != need) continue;
-
-                    scanningTransaction.commit();
-                    break;
-                }
-            }
-            //            if (internalContainer.insert(result, 1, craftingTransaction) > 0)
-            //                craftingTransaction.commit();
-        }
-
-        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-            var amount = externalContainers[1].extract(Items.APPLE.defaultResource(), 12, tx);
-            int inserted;
-            try (var attempt1 = TransactionManager.open(tx)) {
-                inserted = externalContainers[2].insert(Items.APPLE.defaultResource(), amount, tx);
-                if (inserted == amount) {
-                    attempt1.commit();
-                }
-            }
-            if (amount == inserted) {
-                tx.commit();
-            } else {
-                try (var attempt2 = TransactionManager.open(tx)) {
-                    inserted = externalContainers[0].insert(Items.APPLE.defaultResource(), amount, tx);
-                    if (inserted == amount) {
-                        attempt2.commit();
-                    }
-                }
-                if (amount == inserted)
-                    tx.commit();
-            }
-
-        }
-
         helper.succeed();
-    }
-
-    private static boolean someFilteredCondition(ItemResource resource, Ingredient ingredient) {
-        return resource.test(ingredient);
-    }
-
-    private static int tryIndex(IResourceHandler<ItemResource> container, Transaction transaction, ItemResource resource, int index, int amount) {
-        var remainderStack = UnsafeResourceUtils.innerStackOf(resource).getCraftingRemainder();
-        var extracted = container.extract(index, resource, amount, transaction);
-        if (extracted == 0) return 0;
-
-        if (remainderStack.isEmpty()) return extracted;
-
-        var remainder = ItemResource.of(remainderStack);
-        var inserted = container.insert(index, remainder, extracted, transaction);
-        if (inserted < extracted)
-            inserted += container.insert(remainder, extracted - inserted, transaction);
-        return inserted;
     }
 
     /**

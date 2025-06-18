@@ -103,7 +103,7 @@ public final class ResourceStack<T extends IResource> implements IResourceStack<
     }
 
     @Override
-    public IResourceStack<T> copy() {
+    public ResourceStack<T> copy() {
         return ResourceStack.of(resource, amount);
     }
 

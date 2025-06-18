@@ -155,6 +155,10 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
     }
 
+    public boolean is(ItemLike item) {
+        return is(item.asItem());
+    }
+
     public boolean test(Predicate<ItemStack> predicate) {
         return predicate.test(innerStack);
     }

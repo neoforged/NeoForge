@@ -5,247 +5,53 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.items;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
-import javax.annotation.Nonnegative;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.function.BiFunction;
-
-/**
- * This is provided as a simple handler to still use a {@link ItemStack} in a List as the backing data structure.
- * It is advised to use a {@link ItemResource} or similar form of {@link IResourceStack}.
- * <p>
- * This can be used in an attachment, a block entity field, or other mutable structures.
- */
-public final class ItemStackListHandler implements IResourceHandler<ItemResource> {
-    /**
-     * A helper method that creates a {@link MapCodec} for a {@link FluidStackListHandler} given some constructor.
-     *
-     * @param factory A constructor taking in a {@link NonNullList} of {@link FluidStack FluidStacks} and a capacity, expecting a call back to be already assigned for the instance being created
-     */
-    public static MapCodec<ItemStackListHandler> codec(BiFunction<NonNullList<ItemStack>, Integer, ItemStackListHandler> factory) {
-        return RecordCodecBuilder.mapCodec(instance -> instance.group(
-                NonNullList.codecOf(ItemStack.OPTIONAL_CODEC).fieldOf("stacks").forGetter(data -> data.stacks),
-                Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity)).apply(instance, factory));
+public class ItemStackListHandler extends StackListHandler<ItemStack, ItemResource> {
+    public ItemStackListHandler(int size, int capacity, @Nullable Runnable onChangedCallback) {
+        super(size, ItemStack.EMPTY, capacity, onChangedCallback);
     }
 
-    private final NonNullList<ItemStack> stacks;
-    @Nonnegative
-    private final int size;
-    @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE)
-    private final int capacity;
-    private final ArrayList<StackJournal> journals = new ArrayList<>();
-    private final SetChangedSnapshot onChangeJournal;
-
-    /**
-     * @param size              How large this list will be.
-     * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
-     * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
-     */
-    public ItemStackListHandler(@Nonnegative int size, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity, @Nullable Runnable onChangedCallback) {
-        this(NonNullList.withSize(size, ItemStack.EMPTY), capacity, onChangedCallback);
-    }
-
-    public ItemStackListHandler(NonNullList<ItemStack> stacks, @Range(from = 0, to = Item.ABSOLUTE_MAX_STACK_SIZE) int capacity, @Nullable Runnable onChangedCallback) {
-        this.capacity = capacity;
-        this.stacks = stacks;
-        this.size = stacks.size();
-        this.journals.ensureCapacity(size);
-        this.onChangeJournal = SetChangedSnapshot.of(onChangedCallback);
-        for (int i = 0; i < size; i++) {
-            journals.add(new StackJournal(i));
-        }
-    }
-
-    /**
-     * Copies all the contents of this handler to a non-null list of the same size.
-     *
-     * @return A new non-null list.
-     */
-    @Contract(pure = true)
-    public NonNullList<ItemStack> copyToList() {
-        NonNullList<ItemStack> list = NonNullList.withSize(size(), ItemStack.EMPTY);
-        int size = size();
-        for (int index = 0; index < size; index++) {
-            list.set(index, stacks.get(index));
-        }
-        return list;
+    public ItemStackListHandler(NonNullList<ItemStack> stacks, int capacity, @Nullable Runnable onChangedCallback) {
+        super(stacks, ItemStack.EMPTY, capacity, onChangedCallback);
     }
 
     @Override
-    public int size() {
-        return size;
+    public ItemResource getResourceFrom(ItemStack stack) {
+        return ItemResource.of(stack);
     }
 
     @Override
-    public ItemResource getResource(int index) {
-        Objects.checkIndex(index, size());
-        return ItemResource.of(stacks.get(index));
+    public int getAmountFrom(ItemStack stack) {
+        return stack.getCount();
     }
 
     @Override
-    public int getAmount(int index) {
-        Objects.checkIndex(index, size());
-        return stacks.get(index).getCount();
+    public int getCapacityFrom(ItemResource stack) {
+        return stack.getMaxStackSize();
     }
 
     @Override
-    public int getCapacity(int index, ItemResource resource) {
-        Objects.checkIndex(index, size());
-        if (resource.isEmpty()) return capacity;
-        return Math.min(capacity, resource.getMaxStackSize());
+    public boolean isStackEmpty(ItemStack stack) {
+        return stack.isEmpty();
     }
 
     @Override
-    public boolean isValid(int index, ItemResource resource) {
-        Objects.checkIndex(index, size());
-        return true;
+    public boolean matches(ItemResource resource, ItemStack stack) {
+        return resource.is(stack);
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
-        Objects.checkIndex(index, size());
-        return true;
+    public ItemStack toStack(ItemResource resource, int amount) {
+        return resource.toStack(amount);
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        Objects.checkIndex(index, size());
-        return true;
-    }
-
-    @Override
-    public int insert(ItemResource resource, int amount, TransactionContext context) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        for (int index = 0; index < size; index++) {
-            handled += insertBehaviour(index, resource, amount - handled, context);
-            if (handled == amount)
-                break;
-        }
-        return handled;
-    }
-
-    @Override
-    public int insert(int index, ItemResource resource, int amount, TransactionContext context) {
-        Objects.checkIndex(index, size());
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-
-        return insertBehaviour(index, resource, amount, context);
-    }
-
-    private int insertBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (!isValid(index, resource)) return 0;
-
-        ItemStack currentStack = stacks.get(index);
-        int capacity = getCapacity(index, resource);
-
-        int inserted, newAmount;
-        if (currentStack.isEmpty()) {
-            //the specified index is empty
-            inserted = Math.min(capacity, amount);
-            newAmount = inserted;
-        } else {
-            //is there an item in the specified index already?
-            if (!resource.is(currentStack)) return 0;
-
-            int currentStackAmount = currentStack.getCount();
-            inserted = Math.min(capacity - currentStackAmount, amount);
-            newAmount = currentStackAmount + inserted;
-        }
-
-        if (inserted > 0) {
-            journals.get(index).updateSnapshots(transaction);
-            set(index, resource, newAmount);
-        }
-
-        return inserted;
-    }
-
-    @Override
-    public int extract(int index, ItemResource resource, int amount, TransactionContext context) {
-        Objects.checkIndex(index, size());
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-
-        return extractBehaviour(index, resource, amount, context);
-    }
-
-    @Override
-    public int extract(ItemResource resource, int amount, TransactionContext context) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-
-        int handled = 0;
-        for (int index = 0; index < size; index++) {
-            handled += extractBehaviour(index, resource, amount - handled, context);
-            if (handled == amount) break;
-        }
-        return handled;
-    }
-
-    private int extractBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        ItemStack currentStack = stacks.get(index);
-
-        if (!resource.is(currentStack)) return 0;
-
-        int currentAmount = currentStack.getCount();
-        int handledAmount = Math.min(amount, currentAmount);
-        if (handledAmount > 0) {
-            journals.get(index).updateSnapshots(transaction);
-            set(index, resource, currentAmount - handledAmount);
-        }
-        return handledAmount;
-    }
-
-    public void set(int index, ItemResource resource, int amount) {
-        stacks.set(index, resource.toStack(amount));
-    }
-
-    private class StackJournal extends SnapshotJournal<ItemStack> {
-        private final int index;
-
-        private StackJournal(int index) {
-            this.index = index;
-        }
-
-        @Override
-        public void updateSnapshots(TransactionContext transaction) {
-            onChangeJournal.updateSnapshots(transaction);
-            super.updateSnapshots(transaction);
-        }
-
-        @Override
-        protected ItemStack createSnapshot() {
-            ItemStack original = stacks.get(index);
-            return original.copy();
-        }
-
-        @Override
-        protected void revertToSnapshot(ItemStack snapshot) {
-            stacks.set(index, snapshot);
-        }
-
-        @Override
-        protected void onCommit(ItemStack originalState) {
-            onChangeJournal.runCallback();
-        }
+    public ItemStack copyOf(ItemStack stack) {
+        return stack.copy();
     }
 }

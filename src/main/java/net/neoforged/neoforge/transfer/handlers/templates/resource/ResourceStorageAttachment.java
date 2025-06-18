@@ -32,6 +32,14 @@ public final class ResourceStorageAttachment<T extends IResource> implements IRe
         this.hashCode = IResourceStack.hashCode(stacks);
     }
 
+    public static <T extends IResource> ResourceStorageAttachment<T> withSize(int size, T defaultResource) {
+        return withSize(size, defaultResource, 0);
+    }
+
+    public static <T extends IResource> ResourceStorageAttachment<T> withSize(int size, T defaultResource, int defaultAmount) {
+        return new ResourceStorageAttachment<>(NonNullList.withSize(size, MutableResourceStack.of(defaultResource, defaultAmount)));
+    }
+
     public static <T extends IResource> Codec<ResourceStorageAttachment<T>> codec(Codec<T> resourceCodec, IStackFactory<T, MutableResourceStack<T>> stackFactory) {
         return NonNullList.codecOf(IResourceStack.codec(resourceCodec, stackFactory)).xmap(ResourceStorageAttachment::new, contents -> contents.stacks);
     }
