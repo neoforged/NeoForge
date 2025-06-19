@@ -10,24 +10,28 @@ import it.unimi.dsi.fastutil.booleans.BooleanList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
+import net.minecraft.core.component.DataComponentType;
+import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
-import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
 
-public abstract class ResourceStorageHandler<T extends IResource> implements IResourceHandler<T> {
+public abstract class ResourceStorageComponentHandler<T extends IResource> implements IResourceHandler<T> {
     /**
      * Default resource that should fill the initial buffer
      */
     protected final T defaultResource;
-    /**
-     * Number of indices the storage has.
-     */
+    protected final DataComponentType<ResourceStorageComponent<T>> componentType;
     protected final int size;
+    protected final IItemContext itemContext;
     /**
      * Capacity per index. This value is the same across all indices.
      */
@@ -36,22 +40,26 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     /**
      * The snapshot handler for
      */
-    private final List<ComponentSnapshot> snapshot;
+    private final List<IndexSnapShot> snapshot;
 
-    private final List<MutableResourceStack<T>> resourceSnapshots;
+    private final List<ResourceStack<T>> resourceSnapshots;
     private final BooleanList indexMutations;
+    private final IStackFactory<T, ResourceStack<T>> stackFactory;
     private final GroupSnapshot groupSnapshot = new GroupSnapshot();
 
-    public ResourceStorageHandler(int size, int capacity, T defaultResource) {
+    public ResourceStorageComponentHandler(IItemContext context, DataComponentType<ResourceStorageComponent<T>> componentType, int size, int capacity, T defaultResource, IStackFactory<T, ResourceStack<T>> stackFactory) {
+        this.itemContext = context;
+        this.componentType = componentType;
         this.size = size;
         this.capacity = capacity;
         this.defaultResource = defaultResource;
-        snapshot = new ArrayList<>(size);
-        resourceSnapshots = new ArrayList<>(size);
-        indexMutations = new BooleanArrayList(size);
+        this.snapshot = new ArrayList<>(size);
+        this.resourceSnapshots = new ArrayList<>(size);
+        this.indexMutations = new BooleanArrayList(size);
+        this.stackFactory = stackFactory;
         for (var i = 0; i < size; i++) {
-            snapshot.add(new ComponentSnapshot(i));
-            resourceSnapshots.add(MutableResourceStack.of(defaultResource, 0));
+            snapshot.add(new IndexSnapShot(i));
+            resourceSnapshots.add(stackFactory.create(defaultResource, 0));
             indexMutations.add(false);
         }
     }
@@ -59,7 +67,8 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     private class GroupSnapshot extends NotificationSnapshot {
         @Override
         protected void revertToSnapshot(EmptyValue snapshot) {
-            var data = getContents().attachment();
+            //get a working copy to set all the values in one go then reconstruct as immutable
+            var data = getContents().mutable();
 
             var dataSize = data.size();
             for (var index = 0; index < dataSize; index++) {
@@ -68,9 +77,9 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
                 var workingStack = resourceSnapshots.get(index);
                 data.modify(index, workingStack.resource(), workingStack.amount());
                 indexMutations.set(index, false);
-                resourceSnapshots.set(index, MutableResourceStack.of(defaultResource, 0));
+                resourceSnapshots.set(index, data.stackFactory.create(defaultResource, 0));
             }
-            setContents(data);
+            setContents(data.immutable());
         }
 
         @Override
@@ -79,11 +88,10 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         }
     }
 
-    private class ComponentSnapshot extends SnapshotJournal<IResourceStack<T>> {
+    private class IndexSnapShot extends SnapshotJournal<IResourceStack<T>> {
         private final int index;
-        //mutable work area
 
-        public ComponentSnapshot(int index) {
+        public IndexSnapShot(int index) {
             this.index = index;
         }
 
@@ -100,19 +108,35 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
 
         @Override
         protected void revertToSnapshot(IResourceStack<T> snapshot) {
-            resourceSnapshots.set(index, snapshot.mutable());
+            resourceSnapshots.set(index, snapshot.immutable());
             indexMutations.set(index, true);
         }
     }
 
-    public abstract IResourceStorageData<T> getContents();
+    /**
+     * @return a default storage component to be used in the {@link ItemResource#getOrDefault(Supplier, Object)} call used in {@link #getContents()}
+     */
+    public ResourceStorageComponent<T> instantiateContents() {
+        return ResourceStorageComponent.of(size, defaultResource, stackFactory);
+    }
 
-    public void setContents(IResourceStorageData<T> contents) {}
+    protected ResourceStorageComponent<T> getContents() {
+        return itemContext.getResource().getOrDefault(componentType, instantiateContents());
+    }
+
+    public void setContents(ResourceStorageComponent<T> contents) {
+        itemContext.getResource().with(componentType, contents);
+    }
 
     protected void onContentsChanged() {}
 
-    public int modifyContents(IResourceStorageData<T> contents, int requestedAmount, int changedAmount, TransactionContext context) {
-        return changedAmount;
+    public int modifyContents(ResourceStorageComponent<T> contents, int requestedAmount, int changedAmount, TransactionContext transaction) {
+        if (changedAmount == 0) return 0;
+        int exchangeCount = requestedAmount / changedAmount;
+        //context in this case is the stack storing the items
+        ItemResource context = itemContext.getResource().with(componentType, contents.immutable());
+        int result = itemContext.exchange(context, exchangeCount, transaction);
+        return result * changedAmount;
     }
 
     @Override
@@ -120,17 +144,17 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        IResourceStorageData<T> contents = getContents();
+        ResourceStorageComponent.Mutable<T> contents = getContents().mutable();
         int changedAmount = insertBehavior(contents, index, resource, amount, context);
 
-        return modifyContents(contents, amount, changedAmount, context);
+        return modifyContents(contents.immutable(), amount, changedAmount, context);
     }
 
     @Override
     public int insert(T resource, int amount, TransactionContext context) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-        IResourceStorageData<T> contents = getContents().attachment();
+        ResourceStorageComponent.Mutable<T> contents = getContents().mutable();
         int changedAmount = 0;
         int cachedSize = size();
         for (int i = 0; i < cachedSize; i++) {
@@ -138,10 +162,10 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
             if (changedAmount >= amount) break;
         }
 
-        return modifyContents(contents, amount, changedAmount, context);
+        return modifyContents(contents.immutable(), amount, changedAmount, context);
     }
 
-    protected int insertBehavior(IResourceStorageData<T> contents, int index, T resource, int amount, TransactionContext transaction) {
+    protected int insertBehavior(ResourceStorageComponent.Mutable<T> contents, int index, T resource, int amount, TransactionContext transaction) {
         if (!isValid(index, resource)) return 0;
 
         IResourceStack<T> resourceStackInSlot = contents.get(index);
@@ -169,29 +193,27 @@ public abstract class ResourceStorageHandler<T extends IResource> implements IRe
     public int extract(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        IResourceStorageData<T> contents = getContents().attachment();
+        ResourceStorageComponent.Mutable<T> contents = getContents().mutable();
         int changedAmount = extractBehavior(contents, index, resource, amount, context);
-        return modifyContents(contents, amount, changedAmount, context);
+        return modifyContents(contents.immutable(), amount, changedAmount, context);
     }
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        //OLD:
-        //Get the contents and if not mutable, make it mutable ONLY if we are executing.
-        // Otherwise, we can keep the existing allocations.
-        //NEW: We have snapshots so we should assume they are always executing and can be reverted
-        IResourceStorageData<T> contents = getContents().attachment();
+        //grab a mutable copy of our resources to work with so that if we happen to extract from multiple indices we aren't needing to create a new list every time
+        ResourceStorageComponent.Mutable<T> contents = getContents().mutable();
         int changedAmount = 0;
         int cachedSize = size();
         for (int i = 0; i < cachedSize; i++) {
             changedAmount += extractBehavior(contents, i, resource, amount - changedAmount, transaction);
             if (changedAmount >= amount) break;
         }
-        return modifyContents(contents, amount, changedAmount, transaction);
+        //Make it immutable again for the item component
+        return modifyContents(contents.immutable(), amount, changedAmount, transaction);
     }
 
-    protected int extractBehavior(IResourceStorageData<T> contents, int index, T resource, int amount, TransactionContext transaction) {
+    protected int extractBehavior(ResourceStorageComponent.Mutable<T> contents, int index, T resource, int amount, TransactionContext transaction) {
         IResourceStack<T> stack = contents.get(index);
         if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
         int extractAmount = Math.min(amount, stack.amount());

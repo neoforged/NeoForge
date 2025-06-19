@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponentHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -175,7 +175,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransferAction)}, as you may needlessly re-check validations.
-     * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
+     * See {@link ResourceStorageComponentHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource   The resource to insert.
      * @param amount     The amount of the resource to insert. <strong>Must be Non-Negative</strong>
@@ -212,7 +212,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #extract(int, IResource, int, TransferAction)}, as you may needlessly re-check validations.
-     * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
+     * See {@link ResourceStorageComponentHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource   The resource to extract.
      * @param amount     The amount of the resource to extract. <strong>Must be Non-Negative</strong>

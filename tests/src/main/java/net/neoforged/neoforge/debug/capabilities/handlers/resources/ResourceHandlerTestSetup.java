@@ -80,14 +80,14 @@ public record ResourceHandlerTestSetup() {
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<FluidResource>>> FLUID_STORAGE_COMPONENT = Registry.COMPONENTS.register(
                 "fluid_storage", () -> DataComponentType.<ResourceStorageComponent<FluidResource>>builder()
-                        .persistent(ResourceStorageComponent.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount))
-                        .networkSynchronized(ResourceStorageComponent.streamCodec(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)))
+                        .persistent(FluidStorageComponentHandler.COMPONENT_CODEC)
+                        .networkSynchronized(FluidStorageComponentHandler.COMPONENT_STREAM_CODEC)
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<ItemResource>>> ITEM_STORAGE_COMPONENT = Registry.COMPONENTS.register(
                 "item_storage", () -> DataComponentType.<ResourceStorageComponent<ItemResource>>builder()
-                        .persistent(ResourceStorageComponent.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount))
-                        .networkSynchronized(ResourceStorageComponent.streamCodec(IResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount)))
+                        .persistent(ItemStorageComponentHandler.COMPONENT_CODEC)
+                        .networkSynchronized(ItemStorageComponentHandler.COMPONENT_STREAM_CODEC)
                         .build());
     }
 

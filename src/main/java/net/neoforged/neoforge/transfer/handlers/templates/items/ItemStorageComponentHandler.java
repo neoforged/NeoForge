@@ -5,41 +5,21 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.items;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponentHandler;
+import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class ItemStorageComponentHandler extends ResourceStorageHandler<ItemResource> {
-    protected final IItemContext itemContext;
-    protected final DataComponentType<ResourceStorageComponent<ItemResource>> componentType;
+public class ItemStorageComponentHandler extends ResourceStorageComponentHandler<ItemResource> {
+    public static final Codec<ResourceStorageComponent<ItemResource>> COMPONENT_CODEC = ResourceStorageComponent.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStorageComponent<ItemResource>> COMPONENT_STREAM_CODEC = ResourceStorageComponent.streamCodec(IResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount), ItemResource::withAmount);
 
     public ItemStorageComponentHandler(IItemContext itemContext, DataComponentType<ResourceStorageComponent<ItemResource>> componentType, int size, int indexCapacity) {
-        super(size, indexCapacity, ItemResource.EMPTY);
-        this.itemContext = itemContext;
-        this.componentType = componentType;
-    }
-
-    @Override
-    public IResourceStorageData<ItemResource> getContents() {
-        return itemContext.getResource().getOrDefault(componentType, ResourceStorageComponent.of(size, defaultResource));
-    }
-
-    @Override
-    public void setContents(IResourceStorageData<ItemResource> contents) {
-        itemContext.getResource().with(componentType, contents.component());
-    }
-
-    @Override
-    public int modifyContents(IResourceStorageData<ItemResource> contents, int requestedAmount, int changedAmount, TransactionContext action) {
-        if (changedAmount == 0) return 0;
-        int exchangeCount = requestedAmount / changedAmount;
-        //                            var partial = requestedAmount % changedAmount; // This in theory isn't actually handle here very well.
-        ItemResource resourceToExchange = itemContext.getResource().with(componentType, contents.component());
-        int result = itemContext.exchange(resourceToExchange, exchangeCount, action);
-        return result * changedAmount;
+        super(itemContext, componentType, size, indexCapacity, ItemResource.EMPTY, ItemResource::withAmount);
     }
 }

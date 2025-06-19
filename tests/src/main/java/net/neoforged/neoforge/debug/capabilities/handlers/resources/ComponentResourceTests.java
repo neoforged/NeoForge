@@ -121,7 +121,6 @@ public class ComponentResourceTests {
         }
 
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-
             //Because of the way the context filling works, it is attempting to fill or group similar actions together.
             //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
             var appleClone = player.getInventory().getItem(0).copy();
@@ -162,8 +161,8 @@ public class ComponentResourceTests {
     @TestHolder(description = "Tests that Codec for resources work along side component storage")
     public static void testCodec(ExtendedGameTestHelper helper) {
         FriendlyByteBufUtil.writeCustomData(buf -> {
-            var itemContents = ResourceStorageComponent.of(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
-            var fluidContents = ResourceStorageComponent.of(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
+            var itemContents = ResourceStorageComponent.of(3, ItemResource.EMPTY, ItemResource::withAmount).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
+            var fluidContents = ResourceStorageComponent.of(3, FluidResource.EMPTY, FluidResource::withAmount).modify(0, Fluids.LAVA.getDefaultResource(), 200);
 
             var resource = Items.APPLE.getDefaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
             //this should cross ItemResource, FluidResource, & ResourceStack stream codecs

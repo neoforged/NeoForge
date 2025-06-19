@@ -19,7 +19,8 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 /**
  * An immutable data structure used to store a list of resources and their amounts that can be serialized as a DataComponent. This is ideal when working with ItemStacks to hold the data.
  */
-public final class ResourceStorageComponent<T extends IResource> implements IResourceStorageData<T> {
+public final class ResourceStorageComponent<T extends IResource> {
+    public final IStackFactory<T, ResourceStack<T>> stackFactory;
     private final NonNullList<ResourceStack<T>> stacks;
     private final int size;
     private final int hashCode;
@@ -27,62 +28,72 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
     /**
      * Intended to be used as a data component on an ItemStack. This stores an immutable list, and any changes needed, create a new list.
      */
-    public ResourceStorageComponent(NonNullList<ResourceStack<T>> stacks) {
+    public ResourceStorageComponent(NonNullList<ResourceStack<T>> stacks, IStackFactory<T, ResourceStack<T>> stackFactory) {
         this.stacks = stacks;
         this.size = stacks.size();
         this.hashCode = IResourceStack.hashCode(stacks);
+        this.stackFactory = stackFactory;
     }
 
-    public static <T extends IResource> ResourceStorageComponent<T> of(int size, T emptyResource) {
-        return new ResourceStorageComponent<>(NonNullList.withSize(size, ResourceStack.of(emptyResource, 0)));
+    public static <T extends IResource> ResourceStorageComponent<T> of(int size, T emptyResource, IStackFactory<T, ResourceStack<T>> stackFactory) {
+        return new ResourceStorageComponent<>(NonNullList.withSize(size, stackFactory.create(emptyResource, 0)), stackFactory);
     }
 
     public static <T extends IResource> Codec<ResourceStorageComponent<T>> codec(Codec<T> resourceCodec, IStackFactory<T, ResourceStack<T>> stackFactory) {
-        return NonNullList.codecOf(IResourceStack.codec(resourceCodec, stackFactory)).xmap(ResourceStorageComponent::new, contents -> contents.stacks);
+        return NonNullList.codecOf(IResourceStack.codec(resourceCodec, stackFactory)).xmap(resourceStacks -> new ResourceStorageComponent<>(resourceStacks, stackFactory), contents -> contents.stacks);
     }
 
-    public static <T extends IResource> StreamCodec<RegistryFriendlyByteBuf, ResourceStorageComponent<T>> streamCodec(StreamCodec<RegistryFriendlyByteBuf, ResourceStack<T>> resourceCodec) {
-        return resourceCodec.apply(ByteBufCodecs.collection(NonNullList::<ResourceStack<T>>createWithCapacity)).map(ResourceStorageComponent::new, component -> component.stacks);
+    public static <T extends IResource> StreamCodec<RegistryFriendlyByteBuf, ResourceStorageComponent<T>> streamCodec(StreamCodec<RegistryFriendlyByteBuf, ResourceStack<T>> resourceCodec, IStackFactory<T, ResourceStack<T>> stackFactory) {
+        return resourceCodec.apply(ByteBufCodecs.collection(NonNullList::<ResourceStack<T>>createWithCapacity))
+                .map(resourceStacks -> new ResourceStorageComponent<>(resourceStacks, stackFactory),
+                        component -> component.stacks);
     }
 
-    @Override
     public int size() {
         return size;
     }
 
-    @Override
     public ResourceStack<T> get(int index) {
         return stacks.get(index);
     }
 
-    @Override
     public ResourceStorageComponent<T> modify(int index, T resource, int amount) {
         NonNullList<ResourceStack<T>> list = NonNullList.createWithCapacity(stacks.size());
         for (IResourceStack<T> stack : stacks) {
             list.add(stack.immutable());
         }
-        list.set(index, ResourceStack.of(resource, amount));
-        return new ResourceStorageComponent<>(list);
+        list.set(index, stackFactory.create(resource, amount));
+        return new ResourceStorageComponent<>(list, stackFactory);
     }
 
-    @Override
-    public ResourceStorageComponent<T> component() {
+    public ResourceStorageComponent<T> immutable() {
         return this;
     }
 
-    @Override
-    public ResourceStorageAttachment<T> attachment() {
+    public Mutable<T> mutable() {
         NonNullList<MutableResourceStack<T>> list = NonNullList.<MutableResourceStack<T>>createWithCapacity(stacks.size());
         for (ResourceStack<T> stack : stacks) {
             list.add(stack.mutable());
         }
-        return new ResourceStorageAttachment<>(list);
+        return new Mutable<>(list, stackFactory);
     }
 
-    @SuppressWarnings("EqualsDoesntCheckParameterClass")
     @Override
     public boolean equals(Object otherObj) {
-        return IResourceStorageData.equals(this, otherObj);
+        if (this == otherObj)
+            return true;
+
+        if (!(otherObj instanceof ResourceStorageComponent<?> otherData) || otherData.size() != size())
+            return false;
+
+        for (var i = 0; i < otherData.size(); i++) {
+            var current = get(i);
+            var other = otherData.get(i);
+            if (!current.resource().equals(other.resource())) return false;
+            if (current.amount() != other.amount()) return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -93,5 +104,60 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
     @Override
     public String toString() {
         return "ResourceStorageComponent[%s]".formatted(stacks);
+    }
+
+    /**
+     * A mutable data structure used to store a list of resources and their amounts.
+     */
+    public static final class Mutable<T extends IResource> {
+        public final IStackFactory<T, ResourceStack<T>> stackFactory;
+        private final NonNullList<MutableResourceStack<T>> stacks;
+        private final int size;
+
+        /**
+         * @param stacks a list of MutableResourceStacks. The stacks are expected to have their amount mutated internally never externally.
+         */
+        private Mutable(NonNullList<MutableResourceStack<T>> stacks, IStackFactory<T, ResourceStack<T>> stackFactory) {
+            this.stacks = stacks;
+            this.size = stacks.size();
+            this.stackFactory = stackFactory;
+        }
+
+        public int size() {
+            return size;
+        }
+
+        public MutableResourceStack<T> get(int index) {
+            return stacks.get(index);
+        }
+
+        public Mutable<T> modify(int index, T resource, int amount) {
+            MutableResourceStack<T> current = get(index);
+            if (current.resource().equals(resource))
+                current.withAmount(amount);
+            else {
+                //We do .mutable() to get the advantage of not creating new empty instances with our stackFactory.
+                //Downside is that we now create a resource stack to create immediately an immutable
+                stacks.set(index, stackFactory.create(resource, amount).mutable());
+            }
+            return this;
+        }
+
+        public Mutable<T> mutable() {
+            return this;
+        }
+
+        public ResourceStorageComponent<T> immutable() {
+            NonNullList<ResourceStack<T>> list = NonNullList.createWithCapacity(stacks.size());
+            for (IResourceStack<T> stack : stacks) {
+                list.add(stack.immutable());
+            }
+            return new ResourceStorageComponent<>(list, stackFactory);
+        }
+
+        @Override
+        public String toString() {
+            return "ResourceStorageAttachment[" + stacks + ']';
+        }
     }
 }

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponentHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -237,7 +237,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
-     * See {@link ResourceStorageHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
+     * See {@link ResourceStorageComponentHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource    The resource to insert. <strong>Must be non-negative</strong>
      * @param amount      The amount of the resource to insert. <strong>Must be non-negative</strong>
@@ -266,7 +266,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, don't just have this call {@link #extract(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
-     * See {@link ResourceStorageHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
+     * See {@link ResourceStorageComponentHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource    The resource to extract.
      * @param amount      The amount of the resource to extract. <strong>Must be non-negative</strong>
