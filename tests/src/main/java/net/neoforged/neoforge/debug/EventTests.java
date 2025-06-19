@@ -59,6 +59,14 @@ public class EventTests {
     static void alwaysFail(GameTestHelper helper) {
         // The line below shall always fail
         helper.fail(Component.literal("For testing... always fail"));
+
+        new Object() {
+            @Override
+            protected void finalize() throws Throwable {
+                System.out.println("hi!");
+                super.finalize();
+            }
+        };
     }
 
     @GameTest
