@@ -106,32 +106,32 @@ public interface IItemContext {
     int getAmount();
 
     /**
-     * Inserts the given amount of the given resource into the context. Priority is given to the main item, with the
-     * remainder being inserted into the outer context.
+     * Inserts the given amount of the given resource into the transaction. Priority is given to the main item, with the
+     * remainder being inserted into the outer transaction.
      *
      * @param resource The resource to insert.
      * @param amount   The amount to insert.
      * @return The amount of the resource that was (or would have been, if simulated) inserted.
      */
-    int insert(ItemResource resource, int amount, TransactionContext context);
+    int insert(ItemResource resource, int amount, TransactionContext transaction);
 
     /**
      * Extracts the given amount of the given resource from the main item. Extraction will not be performed on the outer
-     * context.
+     * transaction.
      *
      * @param resource The resource to extract.
      * @param amount   The amount to extract.
      * @return The amount of the resource that was (or would have been, if simulated) extracted.
      */
-    int extract(ItemResource resource, int amount, TransactionContext context);
+    int extract(ItemResource resource, int amount, TransactionContext transaction);
 
     default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int extracted = extract(getResource(), amount, subTransaction);
-
-            if (insert(resource, extracted, subTransaction) == extracted) {
+            var inserted = insert(resource, extracted, subTransaction);
+            if (inserted == extracted) {
                 subTransaction.commit();
                 return extracted;
             }

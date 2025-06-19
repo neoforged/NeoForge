@@ -40,12 +40,13 @@ public class StaticItemContext implements IItemContext {
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        return ResourceHandlerUtil.isEmpty(resource, amount) ? 0 : amount;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        return amount;
     }
 
     @Override
-    public int extract(ItemResource resource, int amount, TransactionContext context) {
-        if (!resource.equals(this.resource)) return 0;
+    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount) || !resource.equals(this.resource)) return 0;
         return Math.min(this.amount, amount);
     }
 

@@ -10,6 +10,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.legacy.LegacyFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -130,4 +131,13 @@ public interface IFluidHandler {
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     FluidStack drain(int maxDrain, FluidAction action);
+
+    /**
+     * A temporary utility method that wraps an {@link IResourceHandler} as a fluid handler.
+     * This is provided to ease migration, but it is advised be done with it as soon as possible
+     */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    static IFluidHandler of(IResourceHandler<FluidResource> handler) {
+        return new LegacyFluidHandler(handler);
+    }
 }

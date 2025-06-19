@@ -8,8 +8,10 @@ package net.neoforged.neoforge.items;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.legacy.LegacyItemHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -29,13 +31,14 @@ public interface IItemHandler {
      * @return The number of slots available
      * @deprecated This is now {@link IResourceHandler#size()}
      **/
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int getSlots();
 
     /**
      * Returns the ItemStack in a given slot.
-     *
+     * <p>
      * The result's stack size may be greater than the itemstack's max size.
-     *
+     * <p>
      * If the result is empty, then the slot is empty.
      *
      * <p>
@@ -51,6 +54,7 @@ public interface IItemHandler {
      * @return ItemStack in given slot. Empty Itemstack if the slot is empty.
      * @deprecated This is now {@link IResourceHandler#getResource(int)} & {@link IResourceHandler#getAmount(int)}
      **/
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     ItemStack getStackInSlot(int slot);
 
     /**
@@ -68,6 +72,7 @@ public interface IItemHandler {
      *         The returned ItemStack can be safely modified after.
      * @deprecated This is now {@link IResourceHandler#insert(int, IResource, int, TransactionContext)}}
      **/
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
     /**
@@ -91,6 +96,7 @@ public interface IItemHandler {
      *     }
      * </pre>
      **/
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     ItemStack extractItem(int slot, int amount, boolean simulate);
 
     /**
@@ -100,6 +106,7 @@ public interface IItemHandler {
      * @return The maximum stack size allowed in the slot.
      * @deprecated This is now {@link IResourceHandler#getCapacity(int, IResource)}}
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     int getSlotLimit(int slot);
 
     /**
@@ -118,10 +125,19 @@ public interface IItemHandler {
      *
      * @param slot  Slot to query for validity
      * @param stack Stack to test with for validity
-     *
      * @return true if the slot can insert the ItemStack, not considering the current state of the inventory.
      *         false if the slot can never insert the ItemStack in any situation.
      * @deprecated This is now {@link IResourceHandler#isValid(int, IResource)}
      */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     boolean isItemValid(int slot, ItemStack stack);
+
+    /**
+     * A temporary utility method that wraps an {@link IResourceHandler} as an item handler.
+     * This is provided to ease migration, but it is advised be done with it as soon as possible
+     */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    static IItemHandler of(IResourceHandler<ItemResource> handler) {
+        return new LegacyItemHandler(handler);
+    }
 }

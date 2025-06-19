@@ -27,7 +27,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.contexts.StaticItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.StackItemContext;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BlockFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -266,7 +266,7 @@ public final class FluidUtil {
      * @return The fluid contained in the item stack, or empty if no fluid is contained.
      */
     public static FluidStack getFirstFluidStackContained(ItemStack stack) {
-        return getFirstFluidStackContained(new StaticItemContext(stack));
+        return getFirstFluidStackContained(new StackItemContext(stack));
     }
 
     public static <S> S getFirstStackContained(IItemContext context, IStackFactory<FluidResource, S> stackFactory) {

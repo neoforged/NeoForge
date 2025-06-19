@@ -58,7 +58,8 @@ public class FluidUtilTest {
     private static void pickupFluid(ExtendedGameTestHelper helper) {
         var posOfWater = helper.relativePos(new BlockPos(1, 0, 0));
         var player = helper.makeMockPlayer();
-        var endlessWaterSource = new InfiniteResourceHandler<>(Fluids.WATER.getDefaultResource());
+        var waterResource = FluidResource.of(Fluids.WATER);
+        var endlessWaterSource = new InfiniteResourceHandler<>(waterResource);
 
         // test pickup of water and ensure exchange shrinks main stack and puts overflow in inventory
         resetInventory(player, new ItemStack(Items.BUCKET, 2));
@@ -91,7 +92,7 @@ public class FluidUtilTest {
         FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater));
         helper.assertFalse(helper.getBlockState(posOfWater).getFluidState().is(Fluids.WATER), "Should not be water here with slab");
         helper.assertBlockPresent(Blocks.STONE_SLAB, posOfWater);
-        helper.assertTrue(FluidStack.isSameFluid(FluidUtil.getFirstFluidStackContained(new ItemStack(Items.WATER_BUCKET, 1)), new FluidStack(Fluids.WATER, 1000)), "Water is expected to be in the bucket.");
+        helper.assertTrue(FluidStack.isSameFluid(FluidUtil.getFirstFluidStackContained(new ItemStack(Items.WATER_BUCKET, 1)), waterResource.toStack()), "Water is expected to be in the bucket.");
 
         helper.succeed();
     }
