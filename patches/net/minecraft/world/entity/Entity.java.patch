@@ -177,7 +177,7 @@
              }
  
 +            var attachments = p_422475_.child(ATTACHMENTS_NBT_KEY);
-+            serializeAttachments(registryAccess(), attachments);
++            serializeAttachments(attachments);
 +            if (attachments.isEmpty()) p_422475_.discard(ATTACHMENTS_NBT_KEY);
 +            p_422475_.storeNullable("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC, persistentData);
 +
@@ -189,7 +189,7 @@
                  this.hasVisualFire = p_422206_.getBooleanOr("HasVisualFire", false);
                  this.customData = p_422206_.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
 +                p_422206_.read("NeoForgeData", net.minecraft.nbt.CompoundTag.CODEC).ifPresent(neoData -> this.persistentData = neoData);
-+                p_422206_.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(this.registryAccess(), attachments));
++                p_422206_.child(ATTACHMENTS_NBT_KEY).ifPresent(attachments -> this.deserializeAttachments(attachments));
                  this.tags.clear();
                  p_422206_.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
                  this.readAdditionalSaveData(p_422206_);

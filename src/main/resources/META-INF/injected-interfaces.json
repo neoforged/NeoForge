@@ -44,6 +44,9 @@
   "net/minecraft/client/resources/model/ModelBaker": [
     "net/neoforged/neoforge/client/extensions/ModelBakerExtension"
   ],
+  "net/minecraft/client/resources/model/ModelState": [
+    "net/neoforged/neoforge/client/extensions/ModelStateExtension"
+  ],
   "net/minecraft/client/resources/model/QuadCollection$Builder": [
     "net/neoforged/neoforge/client/extensions/QuadCollectionBuilderExtension"
   ],

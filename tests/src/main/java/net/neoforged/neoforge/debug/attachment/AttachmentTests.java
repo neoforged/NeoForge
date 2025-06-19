@@ -11,10 +11,8 @@ import com.mojang.brigadier.Command;
 import com.mojang.serialization.Codec;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
@@ -25,9 +23,11 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.testframework.DynamicTest;
@@ -43,7 +43,7 @@ public class AttachmentTests {
     @EmptyTemplate
     @TestHolder(description = "Ensures that chunk attachments can capture a reference to the containing LevelChunk.")
     static void chunkAttachmentReferenceTest(DynamicTest test, RegistrationHelper reg) {
-        class ChunkMutableInt implements INBTSerializable<CompoundTag> {
+        class ChunkMutableInt implements ValueIOSerializable {
             private final LevelChunk chunk;
             private int value;
 
@@ -62,20 +62,18 @@ public class AttachmentTests {
             }
 
             @Override
-            public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-                var tag = new CompoundTag();
-                tag.putInt("value", value);
-                return tag;
+            public void serialize(ValueOutput output) {
+                output.putInt("value", value);
             }
 
             @Override
-            public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-                this.value = nbt.getIntOr("value", 0);
+            public void deserialize(ValueInput input) {
+                this.value = input.getIntOr("value", 0);
             }
         }
 
         var attachmentType = reg.registrar(NeoForgeRegistries.Keys.ATTACHMENT_TYPES)
-                .register("chunk_mutable_int", () -> AttachmentType.nbtSerializable(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0)).build());
+                .register("chunk_mutable_int", () -> AttachmentType.serializable(chunk -> new ChunkMutableInt((LevelChunk) chunk, 0)).build());
 
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> {
             event.getDispatcher()
@@ -154,7 +152,7 @@ public class AttachmentTests {
             helper.catchException(() -> {
                 var reporter = new ProblemReporter.Collector();
                 var tag = TagValueOutput.createWithContext(reporter, helper.getLevel().registryAccess());
-                player.serializeAttachments(helper.getLevel().registryAccess(), tag); // This will throw if it fails
+                player.serializeAttachments(tag); // This will throw if it fails
                 helper.assertTrue(reporter.isEmpty(), "expected no serialisation problems");
             });
             helper.succeed();

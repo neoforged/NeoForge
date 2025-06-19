@@ -5,23 +5,17 @@
 
 package net.neoforged.neoforge.items;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.common.util.DataComponentUtil;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<CompoundTag>, ValueIOSerializable {
+public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, ValueIOSerializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemStackHandler.class);
 
     protected NonNullList<ItemStack> stacks;
@@ -142,39 +136,6 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
         return true;
-    }
-
-    @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        ListTag nbtTagList = new ListTag();
-        for (int i = 0; i < stacks.size(); i++) {
-            var stack = stacks.get(i);
-            if (!stack.isEmpty()) {
-                CompoundTag itemTag = (CompoundTag) DataComponentUtil.wrapEncodingExceptions(stack, ItemStack.CODEC, provider);
-                itemTag.putInt("Slot", i);
-                nbtTagList.add(itemTag);
-            }
-        }
-        CompoundTag nbt = new CompoundTag();
-        nbt.put("Items", nbtTagList);
-        nbt.putInt("Size", stacks.size());
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        setSize(nbt.getIntOr("Size", stacks.size()));
-        var ops = provider.createSerializationContext(NbtOps.INSTANCE);
-        nbt.getListOrEmpty("Items").compoundStream().forEach(itemTags -> {
-            int slot = itemTags.getIntOr("Slot", -1);
-
-            if (slot >= 0 && slot < stacks.size()) {
-                ItemStack.CODEC.parse(ops, itemTags)
-                        .resultOrPartial(error -> LOGGER.error("Tried to load invalid fluid: '{}'", error))
-                        .ifPresent(stack -> stacks.set(slot, stack));
-            }
-        });
-        onLoad();
     }
 
     @Override

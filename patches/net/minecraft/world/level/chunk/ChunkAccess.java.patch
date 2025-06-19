@@ -81,7 +81,7 @@
 +    public final CompoundTag writeAttachmentsToNBT(HolderLookup.Provider provider) {
 +        ProblemReporter.Collector reporter = new ProblemReporter.Collector();
 +        var tag = net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, provider);
-+        getAttachmentHolder().serializeAttachments(provider, tag);
++        getAttachmentHolder().serializeAttachments(tag);
 +        if (!reporter.isEmpty()) throw new IllegalArgumentException("Attachments failed to serialise: " + reporter.getReport());
 +        return tag.isEmpty() ? null : tag.buildResult();
 +    }

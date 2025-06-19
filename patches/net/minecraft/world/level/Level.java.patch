@@ -178,12 +178,16 @@
  
      public void blockEntityChanged(BlockPos p_151544_) {
          if (this.hasChunkAt(p_151544_)) {
-@@ -952,16 +_,15 @@
+@@ -951,17 +_,20 @@
+ 
      public abstract Scoreboard getScoreboard();
  
++    private static final Direction[] NEIGHBOR_UPDATE_LIST = java.util.stream.Stream.concat(Direction.Plane.HORIZONTAL.stream(), Direction.Plane.VERTICAL.stream()).toArray(Direction[]::new);
++
      public void updateNeighbourForOutputSignal(BlockPos p_46718_, Block p_46719_) {
 -        for (Direction direction : Direction.Plane.HORIZONTAL) {
-+        for(Direction direction : Direction.values()) {
++        // Neo: send update to vertical directions as well, after horizontal ones
++        for (Direction direction : NEIGHBOR_UPDATE_LIST) {
              BlockPos blockpos = p_46718_.relative(direction);
              if (this.hasChunkAt(blockpos)) {
                  BlockState blockstate = this.getBlockState(blockpos);
@@ -195,7 +199,8 @@
                      blockpos = blockpos.relative(direction);
                      blockstate = this.getBlockState(blockpos);
 -                    if (blockstate.is(Blocks.COMPARATOR)) {
-+                    if (blockstate.getWeakChanges(this, blockpos)) {
++                    // Neo: send to any blockstate that wants weak changes, but exclude vanilla comparators from vertical updates
++                    if (blockstate.getWeakChanges(this, blockpos) && (direction.getAxis().isHorizontal() || !blockstate.is(Blocks.COMPARATOR))) {
                          this.neighborChanged(blockstate, blockpos, p_46719_, null, false);
                      }
                  }

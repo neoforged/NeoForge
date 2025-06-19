@@ -1,6 +1,11 @@
 --- a/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -72,7 +_,14 @@
+@@ -69,10 +_,19 @@
+         );
+         Direction direction = calculateFacing(aint);
+         if (p_111607_ == null) {
++            // Neo: Suppress winding re-calculation when the quads may not be axis-aligned due to root transforms
++            if (!p_111606_.mayApplyArbitraryRotation())
              recalculateWinding(aint, direction);
          }
  

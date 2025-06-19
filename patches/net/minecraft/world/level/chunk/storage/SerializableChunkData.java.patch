@@ -71,7 +71,7 @@
                  BlendingData.unpack(this.blendingData)
              );
 +            if (this.auxLightData != null) {
-+                ((LevelChunk) chunkaccess).getAuxLightManager(chunkPos).deserializeNBT(p_360452_.registryAccess(), this.auxLightData);
++                ((LevelChunk) chunkaccess).getAuxLightManager(chunkPos).deserializeNBT(this.auxLightData);
 +            }
          } else {
              ProtoChunkTicks<Block> protochunkticks = ProtoChunkTicks.load(this.packedTicks.blocks());
@@ -100,7 +100,7 @@
 +            }
 +            ListTag auxLightData = null;
 +            if (p_362284_ instanceof LevelChunk levelChunk) {
-+                auxLightData = levelChunk.getAuxLightManager(chunkpos).serializeNBT(p_365319_.registryAccess());
++                auxLightData = levelChunk.getAuxLightManager(chunkpos).serializeNBT();
 +            }
              return new SerializableChunkData(
                  p_365319_.registryAccess().lookupOrThrow(Registries.BIOME),
