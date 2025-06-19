@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +24,6 @@ import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.test.AbstractTest;
 import net.neoforged.testframework.summary.md.Alignment;
 import net.neoforged.testframework.summary.md.Table;
-import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
@@ -92,6 +94,7 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
         writer.println();
         writer.println(builder.build());
 
+        // Generate annotations for failed tests that are annotated methods
         if (!failedTests.isEmpty() && System.getProperty(SOURCE_FILE_ROOTS_PROPERTY) != null) {
             var roots = Arrays.stream(System.getProperty(SOURCE_FILE_ROOTS_PROPERTY).split(",")).map(Path::of).toList();
 
@@ -105,46 +108,70 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
                 if (method == null) continue;
 
                 var declaring = method.getDeclaringClass();
+
                 try (var is = declaring.getClassLoader().getResourceAsStream(declaring.getName().replace(".", "/") + ".class")) {
                     if (is == null) continue;
 
+                    AtomicReference<String> source = new AtomicReference<>();
+                    AtomicInteger firstLine = new AtomicInteger(-1), lastLine = new AtomicInteger();
+
                     var desc = Type.getMethodDescriptor(method);
                     new ClassReader(is).accept(new ClassVisitor(Opcodes.ASM9) {
-                        @Nullable
-                        private String source;
-
                         @Override
-                        public void visitSource(String source, String debug) {
-                            this.source = source;
+                        public void visitSource(String s, String debug) {
+                            source.set(s);
                         }
 
                         @Override
                         public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-                            if (source != null && name.equals(method.getName()) && desc.equals(descriptor)) {
+                            if (source.get() != null && name.equals(method.getName()) && desc.equals(descriptor)) {
                                 return new MethodVisitor(Opcodes.ASM9) {
-                                    private boolean foundLine = false;
+                                    private int lastFoundLine;
 
                                     @Override
                                     public void visitLineNumber(int line, Label start) {
-                                        if (foundLine) return;
-
-                                        foundLine = true;
-
-                                        var relativeClassPath = declaring.getPackageName().replace(".", "/") + "/" + source;
-
-                                        for (Path root : roots) {
-                                            var possibleFile = root.resolve(relativeClassPath);
-                                            if (Files.exists(possibleFile)) {
-                                                locations.add(new TestLocation(possibleFile.toAbsolutePath(), method, testInfo.message(), line));
-                                                break;
-                                            }
+                                        if (firstLine.get() == -1) {
+                                            firstLine.set(line);
                                         }
+                                        lastFoundLine = line;
+                                    }
+
+                                    @Override
+                                    public void visitEnd() {
+                                        lastLine.set(lastFoundLine);
                                     }
                                 };
                             }
                             return super.visitMethod(access, name, descriptor, signature, exceptions);
                         }
                     }, ClassReader.SKIP_FRAMES);
+
+                    if (firstLine.get() == -1) continue;
+
+                    var relativeClassPath = declaring.getPackageName().replace(".", "/") + "/" + source.get();
+
+                    for (Path root : roots) {
+                        var possibleFile = root.resolve(relativeClassPath);
+                        if (Files.exists(possibleFile)) {
+
+                            int line = firstLine.get();
+
+                            var exception = testInfo.status().exception();
+                            if (exception != null) {
+                                // If we have an exception, try to point the annotation at the first line of the exception within the same source file
+                                // otherwise, we point it at the first line of the method test that failed
+                                for (StackTraceElement element : exception.getStackTrace()) {
+                                    if (Objects.equals(element.getFileName(), source.get())) {
+                                        line = element.getLineNumber();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            locations.add(new TestLocation(possibleFile.toAbsolutePath(), method, testInfo.message(), line));
+                            break;
+                        }
+                    }
                 } catch (Exception ex) {
                     logger.error("Failed to read class declaring method {}", method, ex);
                 }
