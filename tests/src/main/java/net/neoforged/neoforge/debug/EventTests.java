@@ -6,6 +6,9 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.function.Consumer;
+
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -47,5 +50,12 @@ public class EventTests {
                         Items.ACACIA_FENCE.getDefaultInstance(),
                         ItemStack::isSameItem))
                 .thenSucceed());
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder
+    static void alwaysFail(GameTestHelper helper) {
+        helper.fail(Component.literal("For testing... always fail"));
     }
 }
