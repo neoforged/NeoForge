@@ -38,6 +38,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      * @see #getAmountAsLong(int)
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     int getAmount(int index);
 
@@ -48,6 +49,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      * @see #getAmount(int)
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     default long getAmountAsLong(int index) {
         return getAmount(index);
@@ -60,6 +62,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the limit from. <strong>Must be non-negative</strong>
      * @return The capacity at the given index. <strong>Must be non-negative</strong>
      * @see #getCapacityAsLong(int)
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     int getCapacity(int index);
 
@@ -70,6 +73,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      * @see #getCapacity(int)
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     default long getCapacityAsLong(int index) {
         return getCapacity(index);
@@ -96,6 +100,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be inserted into; {@code true} otherwise.
      * @see #supportsInsertion()
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     boolean supportsInsertion(int index);
 
@@ -121,6 +126,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to check <strong>Must be non-negative</strong>
      * @return {@code false} if at the given index, the handler can <strong>never</strong> be extracted from; {@code true} otherwise.
      * @see #supportsExtraction()
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     boolean supportsExtraction(int index);
 
@@ -132,6 +138,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was inserted. <strong>Must be non-negative</strong>
      * @see #insert(int, TransactionContext) Inserting into any index in the handler
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     int insert(int index, int amount, TransactionContext transaction);
 
@@ -156,6 +163,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was extracted. <strong>Must be non-negative</strong>
      * @see #extract(int, TransactionContext) Extracting from any index in the handler
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     int extract(int index, int amount, TransactionContext transaction);
 

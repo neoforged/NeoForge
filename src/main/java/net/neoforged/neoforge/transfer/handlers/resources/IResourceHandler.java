@@ -28,12 +28,14 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * @param index The index to get the resource from. <strong>Must be non-negative</strong>
      * @return The resource at the given index.
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     T getResource(int index);
 
     /**
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of the resource at the given index. <strong>Must be non-negative</strong> and should never surpass capacity
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      * @see #getAmountAsLong(int)
      */
     int getAmount(int index);
@@ -41,6 +43,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount as a long of the resource at the given index. <strong>Must be non-negative</strong> and must never surpass capacity
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      * @see #getAmount(int) (int)
      */
     default long getAmountAsLong(int index) {
@@ -59,9 +62,24 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index    The index to get the limit from. <strong>Must be non-negative</strong>
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
      * @return The limit of the resource at the given index. <strong>Must be non-negative</strong>
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     int getCapacity(int index, T resource);
 
+    /**
+     * Gets the maximum capacity that the given index can handle as a long of the given resource.
+     * If an empty resource (an {@link IResource} that returns {@code true} on {@link IResource#isEmpty()}) is provided,
+     * then the theoretical maximum should be returned, regardless of the return of {@link #getResource}.
+     * <p>
+     * While passing in resources that would return {@code false} on {@link #isValid(int, IResource)}, it should be expected to always return 0.
+     * <p>
+     * If the resource returned from {@link #getResource(int)} with the same index does not match, it is expected the capacity would return 0.
+     *
+     * @param index    The index to get the limit from. <strong>Must be non-negative</strong>
+     * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
+     * @return The limit of the resource at the given index. <strong>Must be non-negative</strong>
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
+     */
     default long getCapacityAsLong(int index, T resource) {
         return getCapacity(index, resource);
     }
@@ -72,6 +90,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index    The index to check. <strong>Must be non-negative</strong>
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      */
     boolean isValid(int index, T resource);
 
@@ -96,6 +115,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the handler supports insertion to the specified index regardless of contents, false otherwise.
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      * @see #supportsInsertion()
      */
     boolean supportsInsertion(int index);
@@ -142,6 +162,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the handler supports extraction from the specified index regardless of contents, false otherwise.
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      * @see #supportsExtraction()
      */
     boolean supportsExtraction(int index);
@@ -178,6 +199,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext} transaction to be inserting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount of the resource that was inserted. <strong>Must be non-negative.</strong>
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      * @see #insert(IResource, int, TransactionContext) Inserting into any index in the handler
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
@@ -206,6 +228,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param transaction The {@link TransactionContext} transaction to be extracting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was extracted.
+     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
      * @see #extract(IResource, int, TransactionContext) Extracting from any index in the handler
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);

@@ -16,7 +16,6 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWr
 public class PlayerOffhandInvWrapper extends RangedWrapper {
     public PlayerOffhandInvWrapper(Inventory inv) {
         //hardcoded values for armor and offhand additions. This class is no longer used.
-        super(new InvWrapper(inv), inv.getNonEquipmentItems().size() + 4,
-                inv.getNonEquipmentItems().size() + 4 + 1);
+        super(new InvWrapper(inv), Inventory.SLOT_OFFHAND, Inventory.SLOT_OFFHAND + 1);
     }
 }

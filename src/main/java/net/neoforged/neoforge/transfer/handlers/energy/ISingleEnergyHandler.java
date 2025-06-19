@@ -17,8 +17,6 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public interface ISingleEnergyHandler extends IEnergyHandler {
     /**
-     * <b>PRIMER: Formerly</b> `receiveEnergy(int toReceive, bool simulate)`
-     * <p>
      * Inserts a given amount into the handler. Distribution is up to the handler.
      *
      * @param amount      The amount to insert.
@@ -29,8 +27,6 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     int insert(int amount, TransactionContext transaction);
 
     /**
-     * <b>PRIMER: Formerly</b> `extractEnergy(int toReceive, bool simulate)`
-     * <p>
      * Extracts a given amount from the handler. Distribution is up to the handler.
      *
      * @param amount      The amount of energy to extract.
