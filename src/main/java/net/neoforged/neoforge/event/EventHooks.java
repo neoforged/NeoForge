@@ -697,7 +697,7 @@ public class EventHooks {
      */
     @Deprecated
     public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
-        return loadLootTable(null, name, table);
+        return loadLootTable(RegistryAccess.EMPTY, name, table);
     }
 
     /**

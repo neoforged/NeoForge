@@ -7,6 +7,7 @@ package net.neoforged.neoforge.event;
 
 import java.util.Objects;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -43,20 +44,19 @@ public class LootTableLoadEvent extends Event implements ICancellableEvent {
      */
     @Deprecated
     public LootTableLoadEvent(ResourceLocation name, LootTable table) {
-        this(null, name, table);
+        this(RegistryAccess.EMPTY, name, table);
     }
 
     @ApiStatus.Internal
-    public LootTableLoadEvent(@Nullable HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
+    public LootTableLoadEvent(HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
         this.registries = registries;
         this.name = name;
         this.table = table;
     }
 
     /**
-     * {@return a lookup provider that can be used to access registries, could be null}
+     * {@return a lookup provider that can be used to access registries}
      */
-    @Nullable
     public HolderLookup.Provider getRegistries() {
         return this.registries;
     }
