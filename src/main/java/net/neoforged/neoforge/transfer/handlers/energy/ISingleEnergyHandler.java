@@ -17,37 +17,35 @@ import org.jetbrains.annotations.ApiStatus;
  * With this and the utilities provided, you shouldn't need to interact with the indices yourself should you not want to.
  */
 public interface ISingleEnergyHandler extends IEnergyHandler {
-    /**
-     * Inserts a given amount into the handler. Distribution is up to the handler.
-     *
-     * @param amount      The amount to insert.
-     * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was inserted. This should be non-negative.
-     */
+    @Override
+    int getAmount();
+
+    @Override
+    int getCapacity();
+
     @Override
     int insert(int amount, TransactionContext transaction);
 
-    /**
-     * Extracts a given amount from the handler. Distribution is up to the handler.
-     *
-     * @param amount      The amount of energy to extract.
-     * @param transaction the transaction chain that the extraction is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
-     * @return The amount that was extracted. This should be non-negative.
-     */
     @Override
     int extract(int amount, TransactionContext transaction);
 
-    /**
-     * @return {@code true} if at any point your handler can be inserted into, {@code false} otherwise. This should not be called in your insert method.
-     */
     @Override
     boolean supportsInsertion();
 
-    /**
-     * @return {@code true} if at any point your handler can be extracted from, {@code false} otherwise. This should not be called in your extract method.
-     */
     @Override
     boolean supportsExtraction();
+
+    // This is defaulted but overriding is fine
+    @Override
+    default long getAmountAsLong() {
+        return getAmount();
+    }
+
+    // This is defaulted but overriding is fine
+    @Override
+    default long getCapacityAsLong() {
+        return getCapacity();
+    }
 
     /**
      * @return When implementing {@link ISingleEnergyHandler} the return should always be 1. If you find you need additional indices, please implement {@link IEnergyHandler} instead
@@ -56,6 +54,30 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     @Override
     default int size() {
         return 1;
+    }
+
+    @ApiStatus.NonExtendable
+    @Override
+    default int getAmount(int index) {
+        return getAmount();
+    }
+
+    @ApiStatus.NonExtendable
+    @Override
+    default long getAmountAsLong(int index) {
+        return getAmountAsLong();
+    }
+
+    @ApiStatus.NonExtendable
+    @Override
+    default int getCapacity(int index) {
+        return getCapacity();
+    }
+
+    @ApiStatus.NonExtendable
+    @Override
+    default long getCapacityAsLong(int index) {
+        return getCapacityAsLong();
     }
 
     @ApiStatus.NonExtendable

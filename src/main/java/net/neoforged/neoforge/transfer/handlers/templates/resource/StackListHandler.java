@@ -34,6 +34,7 @@ import org.joml.Math;
  */
 public abstract class StackListHandler<S, R extends IResource> implements IResourceHandler<R>, ValueIOSerializable {
     public final int capacity;
+    public static final String VALUE_IO_KEY = "stacks";
 
     private int size;
     private NonNullList<S> stacks;
@@ -64,12 +65,12 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
     @Override
     public void serialize(ValueOutput output) {
-        output.store("stacks", NonNullList.codecOf(stackCodec()), stacks);
+        output.store(VALUE_IO_KEY, NonNullList.codecOf(stackCodec()), stacks);
     }
 
     @Override
     public void deserialize(ValueInput input) {
-        var optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf("stacks"));
+        var optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf(VALUE_IO_KEY));
         if (optional.isEmpty()) return;
 
         stacks = optional.get();

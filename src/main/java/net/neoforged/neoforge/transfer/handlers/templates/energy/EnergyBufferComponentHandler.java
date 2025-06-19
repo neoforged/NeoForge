@@ -16,7 +16,8 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.NotificationSnapshot;
+import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Variant of {@link EnergyBufferAttachment} for use with data components.
@@ -54,15 +55,16 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
      * @param capacity      The max capacity of the energy being stored
      * @param maxInsert     The max per-transfer power input rate
      * @param maxExtract    The max per-transfer power output rate
+     * @param callback      A callback when the component has been changed.
      */
-    public EnergyBufferComponentHandler(IItemContext itemContext, MutableDataComponentHolder parent, DataComponentType<Integer> componentType, int capacity, int maxInsert, int maxExtract) {
+    public EnergyBufferComponentHandler(IItemContext itemContext, MutableDataComponentHolder parent, DataComponentType<Integer> componentType, int capacity, int maxInsert, int maxExtract, @Nullable Runnable callback) {
         this.itemContext = itemContext;
         this.parent = parent;
         this.componentType = componentType;
         this.capacity = capacity;
         this.maxInsert = maxInsert;
         this.maxExtract = maxExtract;
-        this.snapshot = IndexedIntSnapshot.of(this::set, this::getAmount, NotificationSnapshot.EMPTY);
+        this.snapshot = IndexedIntSnapshot.of(this::set, this::getAmount, SetChangedSnapshot.of(callback));
     }
 
     private int getIndividualAmount() {
@@ -130,9 +132,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     @Override
-    public int getAmount(int index) {
-        Objects.checkIndex(index, size());
-
+    public int getAmount() {
         int rawEnergy = getIndividualAmount();
         int preCalc = Mth.clamp(rawEnergy, 0, this.capacity) * this.itemContext.getAmount();
         if (preCalc < 0) return Integer.MAX_VALUE;
@@ -140,9 +140,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     @Override
-    public int getCapacity(int index) {
-        Objects.checkIndex(index, size());
-
+    public int getCapacity() {
         int stackedAmount = this.capacity * itemContext.getAmount();
         //handle overflow
         if (stackedAmount < 0) return Integer.MAX_VALUE;
@@ -191,10 +189,18 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         private int capacity;
         private int maxInsertRate;
         private int maxExtractRate;
+        @Nullable
+        private Runnable callback;
 
         private Builder(DataComponentType<Integer> componentType) {
             Objects.requireNonNull(componentType, "component type must be set");
             this.componentType = componentType;
+        }
+
+        public Builder onChange(Runnable callback) {
+            Objects.requireNonNull(callback, "callback must be set");
+            this.callback = callback;
+            return this;
         }
 
         /**
@@ -235,7 +241,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
          * Constructs a new {@link EnergyBufferAttachment} to use.
          */
         public EnergyBufferComponentHandler build(MutableDataComponentHolder parent, IItemContext itemContext) {
-            return new EnergyBufferComponentHandler(itemContext, parent, componentType, capacity, maxInsertRate, maxExtractRate);
+            return new EnergyBufferComponentHandler(itemContext, parent, componentType, capacity, maxInsertRate, maxExtractRate, callback);
         }
     }
 }

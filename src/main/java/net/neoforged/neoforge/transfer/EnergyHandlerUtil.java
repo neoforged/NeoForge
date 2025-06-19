@@ -36,67 +36,14 @@ public final class EnergyHandlerUtil {
         return amount == 0;
     }
 
-    /**
-     * @param handler Energy Handler to iterate
-     * @return Total energy stored across all of its sub-buffers. This is a long given the accumulation factor can be several max {@code ints} together.
-     */
-    public static long getAmount(IEnergyHandler handler) {
-        int sum = 0;
-
-        int size = handler.size();
-        for (int i = 0; i < size; i++) {
-            //this can only ever be 1/4billionth max long
-            sum += handler.getAmount(i);
-        }
-        return sum;
-    }
-
     public static boolean isEmpty(IEnergyHandler handler) {
-        int size = handler.size();
-        for (int i = 0; i < size; i++) {
-            if (handler.getAmount(i) > 0) return false;
-        }
-        return true;
+        return checkEnergy(handler.getAmount());
     }
 
     public static boolean canAcceptEnergy(IEnergyHandler handler) {
         try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             return handler.insert(1, transaction) > 0;
         }
-    }
-
-    /**
-     * @param handler Energy Handler to iterate
-     * @return Total capacity across all of its sub-buffers.
-     */
-    public static long getCapacity(IEnergyHandler handler) {
-        int sum = 0;
-        int size = handler.size();
-        for (int i = 0; i < size; i++) {
-            //this can only ever be 1/4billionth max long
-            sum += handler.getCapacity(i);
-        }
-        return sum;
-    }
-
-    public static long getAmountAsLong(IEnergyHandler handler) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int i = 0; i < size; i++) {
-            sum += handler.getAmountAsLong(i);
-            if (sum < 0) return Long.MAX_VALUE;
-        }
-        return sum;
-    }
-
-    public static long getCapacityAsLong(IEnergyHandler handler) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int i = 0; i < size; i++) {
-            sum += handler.getCapacityAsLong(i);
-            if (sum < 0) return Long.MAX_VALUE;
-        }
-        return sum;
     }
 
     /**
@@ -152,8 +99,49 @@ public final class EnergyHandlerUtil {
      */
     @Range(from = Redstone.SIGNAL_NONE, to = Redstone.SIGNAL_MAX)
     public static int getRedstoneSignalStrength(IEnergyHandler handler) {
-        float proportion = (float) getAmountAsLong(handler) / (float) getCapacityAsLong(handler);
+        float proportion = (float) handler.getAmountAsLong() / (float) handler.getCapacityAsLong();
         return Mth.lerpDiscrete(proportion, Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
+    }
+
+    /**
+     * @param handler Energy Handler to iterate
+     * @return Total energy stored across all of its sub-buffers. This is a long given the accumulation factor can be several max {@code ints} together.
+     *         <p>
+     * @deprecated Use {@link IEnergyHandler#getAmount()} or {@link IEnergyHandler#getAmountAsLong()}
+     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
+     */
+    @Deprecated(forRemoval = true, since = "now")
+    public static long getAmount(IEnergyHandler handler) {
+        return handler.getAmount();
+    }
+
+    /**
+     * @param handler Energy Handler to iterate
+     * @return Total capacity across all of its sub-buffers.
+     * @deprecated Use {@link IEnergyHandler#getCapacity()} or {@link IEnergyHandler#getCapacityAsLong()}.
+     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
+     */
+    @Deprecated(forRemoval = true, since = "now")
+    public static long getCapacity(IEnergyHandler handler) {
+        return handler.getCapacity();
+    }
+
+    /**
+     * @deprecated Use {@link IEnergyHandler#getAmountAsLong()}.
+     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
+     */
+    @Deprecated(forRemoval = true, since = "now")
+    public static long getAmountAsLong(IEnergyHandler handler) {
+        return handler.getAmountAsLong();
+    }
+
+    /**
+     * @deprecated Use {@link IEnergyHandler#getCapacityAsLong()}.
+     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
+     */
+    @Deprecated(forRemoval = true, since = "now")
+    public static long getCapacityAsLong(IEnergyHandler handler) {
+        return handler.getCapacityAsLong();
     }
 
     private EnergyHandlerUtil() {}
