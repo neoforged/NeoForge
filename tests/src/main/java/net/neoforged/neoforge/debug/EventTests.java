@@ -60,7 +60,7 @@ public class EventTests {
         // The line below shall always fail
         helper.fail(Component.literal("For testing... always fail"));
 
-        // Check warnings...
+        // Check warnings... 
         new Object() {
             @Override
             protected void finalize() throws Throwable {
