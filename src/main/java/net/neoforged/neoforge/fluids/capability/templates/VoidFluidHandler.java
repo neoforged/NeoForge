@@ -9,14 +9,16 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * @deprecated Use {@link VoidResourceHandler}
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-public class VoidFluidHandler implements IFluidHandler {
+public class VoidFluidHandler implements IFluidHandler, ISingleResourceHandler<FluidResource> {
     /**
      * @deprecated Use {@link VoidResourceHandler#FLUID}
      */
@@ -56,5 +58,50 @@ public class VoidFluidHandler implements IFluidHandler {
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         return FluidStack.EMPTY;
+    }
+
+    @Override
+    public int size() {
+        return VoidResourceHandler.FLUID.size();
+    }
+
+    @Override
+    public FluidResource getResource(int index) {
+        return VoidResourceHandler.FLUID.getResource(index);
+    }
+
+    @Override
+    public int getAmount(int index) {
+        return VoidResourceHandler.FLUID.getAmount(index);
+    }
+
+    @Override
+    public boolean supportsInsertion() {
+        return VoidResourceHandler.FLUID.supportsInsertion();
+    }
+
+    @Override
+    public boolean supportsExtraction() {
+        return VoidResourceHandler.FLUID.supportsExtraction();
+    }
+
+    @Override
+    public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+        return VoidResourceHandler.FLUID.insert(resource, amount, transaction);
+    }
+
+    @Override
+    public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+        return VoidResourceHandler.FLUID.extract(resource, amount, transaction);
+    }
+
+    @Override
+    public int getCapacity(int index, FluidResource resource) {
+        return VoidResourceHandler.FLUID.getCapacity(index, resource);
+    }
+
+    @Override
+    public boolean isValid(int index, FluidResource resource) {
+        return VoidResourceHandler.FLUID.isValid(index, resource);
     }
 }

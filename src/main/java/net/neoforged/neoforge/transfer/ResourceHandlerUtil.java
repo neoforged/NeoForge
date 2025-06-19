@@ -119,10 +119,24 @@ public final class ResourceHandlerUtil {
         return handler.getAmountAsLong(index) == handler.getCapacityAsLong(index, handler.getResource(index));
     }
 
+    /**
+     * @param handler  the {@link IResourceHandler} to check
+     * @param index    the index of the resource to check
+     * @param resource the resource to check
+     * @return {@code true} if the resource & amount at the specified index of the handler matches the resource & amount parameters
+     * @param <T> the type of resource handled by the handler
+     */
     public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
         return resourceMatches(handler, index, resource) && handler.getAmount(index) == amount;
     }
 
+    /**
+     * @param handler  the {@link IResourceHandler} to check
+     * @param index    the index of the resource to check
+     * @param resource the resource to check
+     * @return {@code true} if the resource at the specified index of the handler matches the resource parameter
+     * @param <T> the type of resource handled by the handler
+     */
     public static <T extends IResource> boolean resourceMatches(IResourceHandler<T> handler, int index, T resource) {
         return handler.getResource(index).equals(resource);
     }

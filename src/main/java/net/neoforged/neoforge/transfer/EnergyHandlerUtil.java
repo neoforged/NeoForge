@@ -152,17 +152,7 @@ public final class EnergyHandlerUtil {
      */
     @Range(from = Redstone.SIGNAL_NONE, to = Redstone.SIGNAL_MAX)
     public static int getRedstoneSignalStrength(IEnergyHandler handler) {
-        float proportion = 0.0F;
-        int size = handler.size();
-
-        for (int index = 0; index < size; ++index) {
-            int indexFill = handler.getAmount(index);
-            if (indexFill > 0)
-                proportion += (float) indexFill / handler.getCapacity(index);
-        }
-
-        proportion /= size;
-
+        float proportion = (float) getAmountAsLong(handler) / (float) getCapacityAsLong(handler);
         return Mth.lerpDiscrete(proportion, Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
     }
 

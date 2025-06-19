@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.capabilities;
 
 import java.util.List;
-import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -60,20 +59,21 @@ public class CapabilityHooks {
         event.setProxyable(Capabilities.ItemHandler.BLOCK);
     }
 
-    private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<IResourceHandler<ItemResource>>> CHEST_COMBINED_HANDLER = new DoubleBlockCombiner.Combiner<>() {
+    private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, IResourceHandler<ItemResource>> CHEST_COMBINED_HANDLER = new DoubleBlockCombiner.Combiner<>() {
         @Override
-        public Optional<IResourceHandler<ItemResource>> acceptDouble(ChestBlockEntity chest1, ChestBlockEntity chest2) {
-            return Optional.of(new CombinedResourceHandlerWrapper<>(VanillaContainerWrapper.of(chest1), VanillaContainerWrapper.of(chest2)));
+        public IResourceHandler<ItemResource> acceptDouble(ChestBlockEntity chest1, ChestBlockEntity chest2) {
+            return new CombinedResourceHandlerWrapper<>(VanillaContainerWrapper.of(chest1), VanillaContainerWrapper.of(chest2));
         }
 
         @Override
-        public Optional<IResourceHandler<ItemResource>> acceptSingle(ChestBlockEntity chest) {
-            return Optional.of(VanillaContainerWrapper.of(chest));
+        public IResourceHandler<ItemResource> acceptSingle(ChestBlockEntity chest) {
+            return VanillaContainerWrapper.of(chest);
         }
 
         @Override
-        public Optional<IResourceHandler<ItemResource>> acceptNone() {
-            return Optional.empty();
+        public IResourceHandler<ItemResource> acceptNone() {
+            //noinspection DataFlowIssue
+            return null;
         }
     };
 
@@ -86,7 +86,7 @@ public class CapabilityHooks {
 
         event.registerBlock(
                 Capabilities.ItemHandler.BLOCK,
-                (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINED_HANDLER).orElse(null),
+                (level, pos, state, blockEntity, side) -> ((ChestBlock) state.getBlock()).combine(state, level, pos, true).apply(CHEST_COMBINED_HANDLER),
                 Blocks.CHEST, Blocks.TRAPPED_CHEST);
 
         var sidedVanillaContainers = List.of(
