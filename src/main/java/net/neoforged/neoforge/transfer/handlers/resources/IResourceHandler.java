@@ -33,14 +33,14 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
 
     /**
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
-     * @return The amount of the resource at the given index. <strong>Must be non-negative</strong>
+     * @return The amount of the resource at the given index. <strong>Must be non-negative</strong> and should never surpass capacity
      * @see #getAmountAsLong(int)
      */
     int getAmount(int index);
 
     /**
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
-     * @return The amount as a long of the resource at the given index. <strong>Must be non-negative</strong>
+     * @return The amount as a long of the resource at the given index. <strong>Must be non-negative</strong> and must never surpass capacity
      * @see #getAmount(int) (int)
      */
     default long getAmountAsLong(int index) {
@@ -50,7 +50,11 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * Gets the maximum capacity that the given index can handle of the given resource.
      * If an empty resource (an {@link IResource} that returns {@code true} on {@link IResource#isEmpty()}) is provided,
-     * then the theoretical maximum should be returned, regardless of the return of {@link #getResource} .
+     * then the theoretical maximum should be returned, regardless of the return of {@link #getResource}.
+     * <p>
+     * While passing in resources that would return {@code false} on {@link #isValid(int, IResource)}, it should be expected to always return 0.
+     * <p>
+     * If the resource returned from {@link #getResource(int)} with the same index does not match, it is expected the capacity would return 0.
      *
      * @param index    The index to get the limit from. <strong>Must be non-negative</strong>
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index

@@ -211,7 +211,7 @@ public class VanillaHandlersTests {
         }
 
         //We wanted to ensure we commited nothing to lava
-        var lava = ResourceHandlerUtil.getTotalAmountOf(slotHandler, FluidResource.of(Fluids.LAVA));
+        var lava = ResourceHandlerUtil.getExtractableAmountOf(slotHandler, FluidResource.of(Fluids.LAVA));
         helper.assertValueEqual(lava, 12800, "No extra lava should be stored only what we started with ");
 
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
@@ -220,7 +220,7 @@ public class VanillaHandlersTests {
             // revert taking apples
         }
         //Check to make sure we have 100 apples and not 90
-        var amount = ResourceHandlerUtil.getTotalAmountOf(chestHandler, targetResource);
+        var amount = ResourceHandlerUtil.getExtractableAmountOf(chestHandler, targetResource);
         helper.assertValueEqual(amount, 100, "Chest should have 100 apples");
 
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
