@@ -44,8 +44,8 @@
 +
 +                // Neo: when running in GitHub actions emit actions-specific error annotations to make finding the error message easier
 +                // See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#example-creating-an-annotation-for-an-error
-+                if (Boolean.getBoolean("CI") && Boolean.getBoolean("GITHUB_ACTIONS")) {
-+                    System.out.printf("::error::%s required game tests failed: %s\n", testTracker.getFailedRequiredCount(), testTracker.getFailedRequired().stream().map(info -> info.id().toString()).collect(java.util.stream.Collectors.joining(", ")));
++                if (System.getenv().getOrDefault("CI", "false").equals("true") && System.getenv().getOrDefault("GITHUB_ACTIONS", "false").equals("true")) {
++                    System.out.printf("::error title=GameTest Failure::%s required game tests failed: %s\n", testTracker.getFailedRequiredCount(), testTracker.getFailedRequired().stream().map(info -> info.id().toString()).collect(java.util.stream.Collectors.joining(", ")));
 +                }
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
