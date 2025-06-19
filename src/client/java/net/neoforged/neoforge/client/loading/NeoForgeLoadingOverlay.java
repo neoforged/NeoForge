@@ -25,8 +25,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
@@ -88,8 +86,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
             Minecraft.getInstance().schedule(() -> {
                 Minecraft.getInstance().getTextureManager().release(LOADING_OVERLAY_TEXTURE_ID);
                 this.displayWindow.close();
-                GLFW.glfwMakeContextCurrent(this.minecraft.getWindow().getWindow());
-                GL.createCapabilities();
             });
             this.minecraft.setOverlay(null);
         }
