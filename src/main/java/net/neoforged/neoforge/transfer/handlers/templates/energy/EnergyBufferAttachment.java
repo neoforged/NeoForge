@@ -27,8 +27,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Nullable;
 
-// PRIMER: NBT Serialization was removed in favor of either Codecs in data attachments, or alternate means of writing to nbt.
-
 /**
  * A simple reference implementation of {@link IEnergyHandler}. Use this or implement your own if you need custom logic. This has multiple "slots" or sub-buffers for energy to be inserted or extracted from.
  * It is recommended to make your own implementation of {@link IEnergyHandler}, especially if you need multiple "sub buffers".
@@ -52,7 +50,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
             Codec.INT.fieldOf("max_extraction").forGetter(data -> data.maxExtract),
             Codec.INT_STREAM.fieldOf("energy").xmap(IntStream::toArray, IntStream::of).forGetter(data -> data.energy)).apply(instance, EnergyBufferAttachment::new));
 
-    //untested yet.
+    //todo add to tests
     /**
      * Example for making an attachment builder when registering
      * <p>

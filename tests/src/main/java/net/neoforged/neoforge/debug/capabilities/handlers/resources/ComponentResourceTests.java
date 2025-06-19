@@ -162,8 +162,8 @@ public class ComponentResourceTests {
     @TestHolder(description = "Tests that Codec for resources work along side component storage")
     public static void testCodec(ExtendedGameTestHelper helper) {
         FriendlyByteBufUtil.writeCustomData(buf -> {
-            var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
-            var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
+            var itemContents = ResourceStorageComponent.of(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
+            var fluidContents = ResourceStorageComponent.of(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
 
             var resource = Items.APPLE.getDefaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
             //this should cross ItemResource, FluidResource, & ResourceStack stream codecs

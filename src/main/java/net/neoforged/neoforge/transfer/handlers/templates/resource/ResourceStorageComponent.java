@@ -33,8 +33,8 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
         this.hashCode = IResourceStack.hashCode(stacks);
     }
 
-    public ResourceStorageComponent(int size, T emptyResource) {
-        this(NonNullList.withSize(size, ResourceStack.of(emptyResource, 0)));
+    public static <T extends IResource> ResourceStorageComponent<T> of(int size, T emptyResource) {
+        return new ResourceStorageComponent<>(NonNullList.withSize(size, ResourceStack.of(emptyResource, 0)));
     }
 
     public static <T extends IResource> Codec<ResourceStorageComponent<T>> codec(Codec<T> resourceCodec, IStackFactory<T, ResourceStack<T>> stackFactory) {
@@ -57,7 +57,7 @@ public final class ResourceStorageComponent<T extends IResource> implements IRes
 
     @Override
     public ResourceStorageComponent<T> modify(int index, T resource, int amount) {
-        NonNullList<ResourceStack<T>> list = NonNullList.<ResourceStack<T>>createWithCapacity(stacks.size());
+        NonNullList<ResourceStack<T>> list = NonNullList.createWithCapacity(stacks.size());
         for (IResourceStack<T> stack : stacks) {
             list.add(stack.immutable());
         }

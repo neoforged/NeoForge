@@ -25,7 +25,7 @@ public class FluidStorageComponentHandler extends ResourceStorageHandler<FluidRe
 
     @Override
     public IResourceStorageData<FluidResource> getContents() {
-        return itemContext.getResource().getOrDefault(componentType, new ResourceStorageComponent<>(size, FluidResource.EMPTY));
+        return itemContext.getResource().getOrDefault(componentType, ResourceStorageComponent.of(size, FluidResource.EMPTY));
     }
 
     @Override

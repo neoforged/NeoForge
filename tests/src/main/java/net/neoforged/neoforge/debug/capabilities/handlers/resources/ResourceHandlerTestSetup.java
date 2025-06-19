@@ -25,9 +25,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageComponentHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageComponentHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -67,8 +65,6 @@ public record ResourceHandlerTestSetup() {
         //        Supplier<AttachmentType<ItemStackListHandler2>> ITEM_STORAGE_ATTACHMENT = Registry.ATTACHMENTS.register("item_container",
         //                AttachmentType.builder(holder->)::build);
         Supplier<AttachmentType<TestResourceTemplateAttachment>> TEST_TEMPLATE_ATTACHMENT = Registry.ATTACHMENTS.register("stack_template_attachment", TestResourceTemplateAttachment.BUILDER::build);
-
-        Supplier<AttachmentType<IResourceStorageData<FluidResource>>> FLUID_STORAGE_ATTACHMENT = Registry.ATTACHMENTS.register("fluid_container", AttachmentType.<IResourceStorageData<FluidResource>>builder(() -> ResourceStorageAttachment.of(1, FluidResource.EMPTY))::build);
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
                 "simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()

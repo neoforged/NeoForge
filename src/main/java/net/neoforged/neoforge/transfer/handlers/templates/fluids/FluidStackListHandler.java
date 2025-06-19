@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
@@ -18,6 +19,11 @@ public class FluidStackListHandler extends StackListHandler<FluidStack, FluidRes
 
     public FluidStackListHandler(NonNullList<FluidStack> stacks, int capacity, @Nullable Runnable onChangedCallback) {
         super(stacks, FluidStack.EMPTY, capacity, onChangedCallback);
+    }
+
+    @Override
+    public Codec<FluidStack> stackCodec() {
+        return FluidStack.OPTIONAL_CODEC;
     }
 
     @Override

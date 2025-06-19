@@ -5,11 +5,15 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Objects;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -27,10 +31,10 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * This can be used in an attachment, a block entity field, or other mutable structures.
  */
-public abstract class StackListHandler<S, R extends IResource> implements IResourceHandler<R> {
-    public final int size;
+public abstract class StackListHandler<S, R extends IResource> implements IResourceHandler<R>, ValueIOSerializable {
     public final int capacity;
 
+    private int size;
     private final NonNullList<S> stacks;
     private final ArrayList<StackJournal> snapshotJournals = new ArrayList<>();
     private final SetChangedSnapshot onChangeJournal;
@@ -56,6 +60,22 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
             snapshotJournals.add(new StackJournal(i));
         }
     }
+
+    @Override
+    public void serialize(ValueOutput output) {
+        output.store("stacks", NonNullList.codecOf(stackCodec()), stacks);
+    }
+
+    @Override
+    public void deserialize(ValueInput input) {
+        var optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf("stacks"));
+        if (optional.isEmpty()) return;
+        stacks.clear();
+        stacks.addAll(optional.get());
+        size = stacks.size();
+    }
+
+    public abstract Codec<S> stackCodec();
 
     public abstract R getResourceFrom(S stack);
 

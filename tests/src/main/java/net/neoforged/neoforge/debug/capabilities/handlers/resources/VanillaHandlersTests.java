@@ -191,8 +191,8 @@ public class VanillaHandlersTests {
 
         var firstChestSlot = IndexItemContext.of(chestHandler, 0);
 
-        var itemContents = new ResourceStorageComponent<>(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
-        var fluidContents = new ResourceStorageComponent<>(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
+        var itemContents = ResourceStorageComponent.of(3, ItemResource.EMPTY).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
+        var fluidContents = ResourceStorageComponent.of(3, FluidResource.EMPTY).modify(0, Fluids.LAVA.getDefaultResource(), 200);
 
         var targetResource = Items.APPLE.getDefaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
 

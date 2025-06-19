@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.handlers.templates.items;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.IResourceStorageData;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageAttachment;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -26,7 +25,7 @@ public class ItemStorageComponentHandler extends ResourceStorageHandler<ItemReso
 
     @Override
     public IResourceStorageData<ItemResource> getContents() {
-        return itemContext.getResource().getOrDefault(componentType, ResourceStorageAttachment.of(size, defaultResource));
+        return itemContext.getResource().getOrDefault(componentType, ResourceStorageComponent.of(size, defaultResource));
     }
 
     @Override
