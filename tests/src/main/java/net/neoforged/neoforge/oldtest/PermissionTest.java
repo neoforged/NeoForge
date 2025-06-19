@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod("permissiontest")
 public class PermissionTest {
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final PermissionNode<Boolean> boolPerm = new PermissionNode<>("permissiontest", "test.blob", PermissionTypes.BOOLEAN, (player, playerUUID, context) -> true);

@@ -124,7 +124,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 boolean isGameTestRun = event.getServer() instanceof GameTestServer;
 
                 // Summarise test results
-                var builder = new TestSummary.Builder(id(), isGameTestRun);
+                var builder = new TestSummary.Builder(this, isGameTestRun);
                 tests().all().forEach(test -> {
                     String id = test.id();
                     Test.Status status = tests().getStatus(id);
