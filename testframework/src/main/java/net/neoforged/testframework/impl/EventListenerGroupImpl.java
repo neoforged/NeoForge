@@ -45,10 +45,10 @@ public class EventListenerGroupImpl implements Test.EventListenerGroup {
 
     public void copyFrom(EventListenerGroupImpl other) {
         this.mod.subscribeActions.addAll(other.mod.subscribeActions);
-        this.mod.subscribers.add(other.mod.subscribers);
+        this.mod.subscribers.addAll(other.mod.subscribers);
 
         this.game.subscribeActions.addAll(other.game.subscribeActions);
-        this.game.subscribers.add(other.game.subscribers);
+        this.game.subscribers.addAll(other.game.subscribers);
     }
 
     private static final class EventListenerCollectorImpl implements EventListenerCollector {
