@@ -23,11 +23,11 @@
 +    }
 +
 +    @Override
-+    public void onTransfer(int slot, IODirection ioDirection, net.neoforged.neoforge.transfer.transaction.TransactionContext context) {
-+        super.onTransfer(slot, ioDirection, context);
-+        if(ioDirection == IODirection.EXTRACT) return;
++    public void onTransfer(int slot, boolean isInserting, net.neoforged.neoforge.transfer.transaction.TransactionContext context) {
++        super.onTransfer(slot, isInserting, context);
++        if(!isInserting) return;
 +        journal.updateSnapshots(context);
-+        isInserting = true;
++        this.isInserting = true;
 +    }
 +
      @Override

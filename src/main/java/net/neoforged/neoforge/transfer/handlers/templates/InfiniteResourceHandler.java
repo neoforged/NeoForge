@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -27,11 +28,13 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
 
     @Override
     public int insert(T resource, int amount, TransactionContext context) {
+        ResourceHandlerUtil.isEmpty(resource, amount);
         return 0; // doesn't allow insertions
     }
 
     @Override
     public int extract(T resource, int amount, TransactionContext context) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         return resource.equals(infinite) ? amount : 0;
     }
 

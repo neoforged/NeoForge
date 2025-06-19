@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
-import net.neoforged.neoforge.common.extensions.IContainerExtension;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -220,7 +219,7 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
             int inserted = super.insert(index, resource, amount, transaction);
             if (inserted > 0) {
-                container.onTransfer(this.index, IContainerExtension.IODirection.INSERT, transaction);
+                container.onTransfer(this.index, true, transaction);
             }
             return inserted;
         }
@@ -229,7 +228,7 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         public int extract(int index, ItemResource variant, int maxAmount, TransactionContext transaction) {
             int extracted = super.extract(index, variant, maxAmount, transaction);
             if (extracted > 0) {
-                container.onTransfer(this.index, IContainerExtension.IODirection.EXTRACT, transaction);
+                container.onTransfer(this.index, false, transaction);
             }
             return extracted;
         }

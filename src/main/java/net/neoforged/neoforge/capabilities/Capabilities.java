@@ -7,6 +7,7 @@ package net.neoforged.neoforge.capabilities;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
@@ -24,6 +25,30 @@ public final class Capabilities {
         public static final ItemCapability<IEnergyHandler, IItemContext> ITEM = ItemCapability.create(create("energy_handler"), IEnergyHandler.class, IItemContext.class);
 
         private EnergyHandler() {}
+    }
+
+    /**
+     * @deprecated Use {@link EnergyHandler} capabilities instead
+     */
+    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+    public static final class EnergyStorage {
+        /**
+         * @deprecated Use {@link EnergyHandler#BLOCK} instead
+         */
+        @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+        public static final BlockCapability<IEnergyHandler, @Nullable Direction> BLOCK = EnergyHandler.BLOCK;
+        /**
+         * @deprecated Use {@link EnergyHandler#ENTITY} instead
+         */
+        @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+        public static final EntityCapability<IEnergyHandler, @Nullable Direction> ENTITY = EnergyHandler.ENTITY;
+        /**
+         * @deprecated Use {@link EnergyHandler#ITEM} instead
+         */
+        @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
+        public static final ItemCapability<IEnergyHandler, IItemContext> ITEM = EnergyHandler.ITEM;
+
+        private EnergyStorage() {}
     }
 
     public static final class FluidHandler {

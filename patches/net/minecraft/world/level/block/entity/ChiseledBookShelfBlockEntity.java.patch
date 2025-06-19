@@ -39,7 +39,7 @@
 +    };
 +
 +    @Override
-+    public void onTransfer(int slot, IODirection ioDirection, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
++    public void onTransfer(int slot, boolean isInserting, net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
 +        this.lastInteractedParticipant.updateSnapshots(transaction);
 +        lastInteractedSlot = slot;
 +     }

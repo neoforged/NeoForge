@@ -9,6 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Extension methods for {@link Container}. These methods are used by {@link VanillaContainerWrapper},
@@ -24,6 +25,7 @@ public interface IContainerExtension {
      *
      * <p>If {@code insideTransaction} is {@code false}, changes (e.g. calling {@code setChanged} or making changes to the world) should be deferred until after the insideTransaction.
      */
+    @ApiStatus.OverrideOnly
     default void setItem(int slot, ItemStack stack, boolean insideTransaction) {
         self().setItem(slot, stack);
     }
@@ -34,6 +36,7 @@ public interface IContainerExtension {
      *
      * <p>There is no need to call {@code setChanged}, as it is already called by {@link VanillaContainerWrapper}.
      */
+    @ApiStatus.OverrideOnly
     default void onCommit(int slot, ItemStack originalStack) {}
 
     /**
@@ -41,10 +44,6 @@ public interface IContainerExtension {
      * Any logic performed here should be fully transactional, and support being rolled back.
      * In other words, the transaction is still on going.
      */
-    default void onTransfer(int slot, IODirection ioDirection, TransactionContext context) {}
-
-    enum IODirection {
-        INSERT,
-        EXTRACT
-    }
+    @ApiStatus.OverrideOnly
+    default void onTransfer(int slot, boolean isInserting, TransactionContext context) {}
 }
