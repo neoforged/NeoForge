@@ -59,7 +59,7 @@ public interface IEnergyHandler extends ITransactionHandler {
         int size = size();
         for (int i = 0; i < size; i++) {
             sum += getAmount(i);
-            if (sum > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
         }
         return Ints.saturatedCast(sum);
     }
@@ -122,7 +122,7 @@ public interface IEnergyHandler extends ITransactionHandler {
         int size = size();
         for (int i = 0; i < size; i++) {
             sum += getCapacity(i);
-            if (sum > Integer.MAX_VALUE) return Integer.MAX_VALUE;
+            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
         }
         return Ints.saturatedCast(sum);
     }

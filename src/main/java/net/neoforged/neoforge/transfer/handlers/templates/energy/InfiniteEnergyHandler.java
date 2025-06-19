@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
-import java.util.Objects;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
@@ -21,26 +20,22 @@ public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
     public static final IEnergyHandler INSTANCE = new InfiniteEnergyHandler();
 
     @Override
-    public int getAmount(int index) {
-        Objects.checkIndex(index, size());
+    public int getAmount() {
         return Integer.MAX_VALUE;
     }
 
     @Override
-    public long getAmountAsLong(int index) {
-        Objects.checkIndex(index, size());
+    public long getAmountAsLong() {
         return Long.MAX_VALUE;
     }
 
     @Override
-    public int getCapacity(int index) {
-        Objects.checkIndex(index, size());
+    public int getCapacity() {
         return Integer.MAX_VALUE;
     }
 
     @Override
-    public long getCapacityAsLong(int index) {
-        Objects.checkIndex(index, size());
+    public long getCapacityAsLong() {
         return Long.MAX_VALUE;
     }
 
