@@ -21,8 +21,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+@EventBusSubscriber
 @Mod(FlowerPotTest.MODID)
-@EventBusSubscriber(modid = FlowerPotTest.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class FlowerPotTest {
     static final String MODID = "flower_pot_test";
     static final String BLOCK_ID = "test_flower_pot";
