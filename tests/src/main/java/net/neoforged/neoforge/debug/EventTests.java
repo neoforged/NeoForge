@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.function.Consumer;
-
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
