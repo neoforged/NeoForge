@@ -104,7 +104,7 @@ public final class ItemUtil {
      * @param pos     Position to drop handlers contents at
      * @param handler The {@link IResourceHandler} that has contents to be dropped
      */
-    static void dropContents(Level level, BlockPos pos, IResourceHandler<ItemResource> handler) {
+    public static void dropContents(Level level, BlockPos pos, IResourceHandler<ItemResource> handler) {
         dropContents(level, pos.getX(), pos.getY(), pos.getZ(), handler);
     }
 
@@ -117,7 +117,7 @@ public final class ItemUtil {
      * @param z       The Z position to drop handlers contents at
      * @param handler The {@link IResourceHandler} that has contents to be dropped
      */
-    static void dropContents(Level level, double x, double y, double z, IResourceHandler<ItemResource> handler) {
+    public static void dropContents(Level level, double x, double y, double z, IResourceHandler<ItemResource> handler) {
         var size = handler.size();
 
         for (var index = 0; index < size; index++) {

@@ -24,6 +24,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Math;
 
 /**
  * This is provided as a simple handler to still use a {@link ItemStack} in a List as the backing data structure.
@@ -35,7 +36,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     public final int capacity;
 
     private int size;
-    private final NonNullList<S> stacks;
+    private NonNullList<S> stacks;
     private final ArrayList<StackJournal> snapshotJournals = new ArrayList<>();
     private final SetChangedSnapshot onChangeJournal;
     private final S emptyStack;
@@ -70,8 +71,8 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     public void deserialize(ValueInput input) {
         var optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf("stacks"));
         if (optional.isEmpty()) return;
-        stacks.clear();
-        stacks.addAll(optional.get());
+
+        stacks = optional.get();
         size = stacks.size();
     }
 
