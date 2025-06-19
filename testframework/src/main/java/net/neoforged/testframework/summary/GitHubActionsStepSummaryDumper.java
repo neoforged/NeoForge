@@ -94,7 +94,7 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
         writer.println();
         writer.println(builder.build());
 
-        // Generate annotations for failed tests that are annotated methods
+        // Generate check run annotations for failed tests that are @TestHolder methods
         if (!failedTests.isEmpty() && System.getProperty(SOURCE_FILE_ROOTS_PROPERTY) != null) {
             var roots = Arrays.stream(System.getProperty(SOURCE_FILE_ROOTS_PROPERTY).split(",")).map(Path::of).toList();
 
