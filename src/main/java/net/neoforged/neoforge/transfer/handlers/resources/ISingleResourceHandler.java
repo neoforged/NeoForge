@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
@@ -54,6 +55,7 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     @ApiStatus.NonExtendable
     @Override
     default int insert(int index, T resource, int amount, TransactionContext context) {
+        Objects.checkIndex(index, size());
         // With single resource handlers the index is ignored
         return insert(resource, amount, context);
     }
@@ -61,6 +63,7 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     @ApiStatus.NonExtendable
     @Override
     default int extract(int index, T resource, int amount, TransactionContext context) {
+        Objects.checkIndex(index, size());
         // With single resource handlers the index is ignored
         return extract(resource, amount, context);
     }
@@ -68,6 +71,7 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     @ApiStatus.NonExtendable
     @Override
     default boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         //We effectively flip the root's check so that we check on index-less instead
         return supportsInsertion();
     }
@@ -75,6 +79,7 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     @ApiStatus.NonExtendable
     @Override
     default boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         //We effectively flip the root's check so that we check on index-less instead
         return supportsExtraction();
     }

@@ -44,7 +44,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount as a long of the resource at the given index. <strong>Must be non-negative</strong> and must never surpass capacity
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @see #getAmount(int) (int)
+     * @see #getAmount(int)
      */
     default long getAmountAsLong(int index) {
         return getAmount(index);
@@ -63,6 +63,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
      * @return The limit of the resource at the given index. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
+     * @see #getCapacityAsLong(int, IResource)
      */
     int getCapacity(int index, T resource);
 
@@ -79,39 +80,51 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index
      * @return The limit of the resource at the given index. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
+     * @see #getCapacity(int, IResource)
      */
     default long getCapacityAsLong(int index, T resource) {
         return getCapacity(index, resource);
     }
 
     /**
-     * Checks if the given resource is allowed to be inserted into the handler at the given index. This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)} implementations or general resource querying. However, this is separate from if the resource could currently fit in the handler. This is expected to be true, even if the handler would be full.
+     * Checks if the given resource is allowed to be inserted into the handler at the given index.
+     * This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)}
+     * implementations or general resource querying. However, this is separate from if the resource could
+     * currently fit in the handler. This is expected to be true, even if the handler would be full.
      *
      * @param index    The index to check. <strong>Must be non-negative</strong>
      * @param resource The resource to check.
      * @return True if the resource can be inserted, false otherwise.
-     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
+     * @throws IndexOutOfBoundsException when passing an invalid index.
+     *                                   Negative indices are always invalid.
      */
     boolean isValid(int index, T resource);
 
     /**
-     * Checks if the given index allows insertion of a resource, regardless of the state of the handler. Meaning this value should not be dynamic.
+     * Checks if the given index allows insertion of a resource,
+     * regardless of the state of the handler. Meaning this value should not be dynamic.
      * <p>
-     * Intended use is for something like a pipe graph lookup to be able to reduce the runtime workload on handlers that can never do a specific operation.
+     * Intended use is for something like a pipe graph lookup to be able to reduce
+     * the runtime workload on handlers that can never do a specific operation.
      * <p>
-     * As long as the handler could, under the right conditions, allow a resource to be inserted into the given index,
-     * this should return true. To be clear, this value is assumed to be constant throughout the life-time of the handler and does <b>not</b> control the handler's logic in any way.
+     * As long as the handler could, under the right conditions, allow a resource to
+     * be inserted into the given index, this should return true. To be clear, this value is assumed
+     * to be constant throughout the life-time of the handler and
+     * does <b>not</b> control the handler's logic in any way.
      * <h5>IMPORTANT:</h5>
-     * Returning false, will not inherently prevent something from calling insert or change the result of that call,
-     * so you will still need to handle those scenarios.
-     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
-     * well before actually operating.
+     * Returning false, will not inherently prevent something from calling insert
+     * or change the result of that call, so you will still need to handle those scenarios.
+     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
+     * what it can do with the handler well before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in insert.
+     * It is also advised to not use the result of this call in insert nor calling just before you call insert.
+     * This if for an early lookup spanning multiple ticks.
      * <p>
-     * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be insertable to.
+     * If your handler can change size dynamically, then it may be wise to
+     * return true for this unless you know for certain a particular index would never be insertable to.
      * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.
+     * </b> (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the handler supports insertion to the specified index regardless of contents, false otherwise.
@@ -121,14 +134,19 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     boolean supportsInsertion(int index);
 
     /**
-     * Checks if the handler allows insertion into at least one index, regardless of the state of the handler. Meaning this value should not be dynamic.
-     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling insert or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
-     * before actually operating.
+     * Checks if the handler allows insertion into at least one index, regardless of the state of the handler.
+     * Meaning this value should not be dynamic.
+     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way.
+     * Returning false, will not inherently prevent something from calling insert
+     * or change the result of that call, so you will still need to handle those scenarios.
+     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
+     * what it can do with the handler before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in insert.
+     * It is also advised to not use the result of this call in insert nor calling just before you call insert.
+     * This if for an early lookup spanning multiple ticks.
      * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b>
+     * (hence the note about dynamic size erring on the side of caution)
      *
      * @return True if the handler supports insertion regardless of contents, false otherwise.
      * @see #supportsInsertion(int)
@@ -144,21 +162,27 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     }
 
     /**
-     * Checks if the given index allows extraction of a resource, regardless of the state of the handler. Meaning this value should not be dynamic.
+     * Checks if the given index allows extraction of a resource, regardless of the state of the handler.
+     * Meaning this value should not be dynamic.
      * <p>
-     * As long as the handler could, under the right conditions, allow a resource to be extracted from the given index,
-     * this should return true.
+     * As long as the handler could, under the right conditions, allow a resource to be extracted
+     * from the given index, this should return true.
      * <p>
-     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling extract or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
-     * before actually operating.
+     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way.
+     * Returning false, will not inherently prevent something from calling extract or
+     * change the result of that call, so you will still need to handle those scenarios.
+     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
+     * what it can do with the handler before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in extract.
+     * It is also advised to not use the result of this call in extract nor calling just before you call extract.
+     * This if for an early lookup spanning multiple ticks.
      * <p>
-     * If your handler can change size dynamically, then it may be wise to return true for this unless you know for certain a particular index would never be extractable from.
+     * If your handler can change size dynamically, then it may be wise to return true for
+     * this unless you know for certain a particular index would never be extractable from.
      *
      * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b>
+     * (hence the note about dynamic size erring on the side of caution)
      *
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @return True if the handler supports extraction from the specified index regardless of contents, false otherwise.
@@ -168,14 +192,19 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     boolean supportsExtraction(int index);
 
     /**
-     * Checks if the handler allows extraction from at least one index, regardless of the state of the handler. Meaning this value should not be dynamic.
-     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way. Returning false, will not inherently prevent something from calling extract or change the result of that call,
-     * so you will still need to handle those scenarios. This is to allow things like logistics (pipes, searches, etc.) to be able to infer what it can do with the handler
-     * before actually operating.
+     * Checks if the handler allows extraction from at least one index, regardless of the state of
+     * the handler. Meaning this value should not be dynamic.
+     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way.
+     * Returning false, will not inherently prevent something from calling extract
+     * or change the result of that call, so you will still need to handle those scenarios.
+     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
+     * what it can do with the handler before actually operating.
      * <p>
-     * It is also advised to not use the result of this call in extract.
+     * It is also advised to not use the result of this call in extract nor calling just before you call extract.
+     * This if for an early lookup spanning multiple ticks.
      * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b> (hence the note about dynamic size erring on the side of caution)
+     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b>
+     * (hence the note about dynamic size erring on the side of caution)
      *
      * @return True if the handler supports extraction regardless of contents, false otherwise.
      * @see #supportsExtraction(int)

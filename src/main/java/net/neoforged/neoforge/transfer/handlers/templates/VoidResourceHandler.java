@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -40,26 +41,31 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
 
     @Override
     public T getResource(int index) {
+        Objects.checkIndex(index, size());
         return emptyResource; // The resource type's "None"
     }
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return 0;
     }
 
     @Override
     public int getCapacity(int index, T resource) {
+        Objects.checkIndex(index, size());
         return Integer.MAX_VALUE; // Maximum capacity
     }
 
     @Override
     public long getCapacityAsLong(int index, T resource) {
+        Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
     }
 
     @Override
     public boolean isValid(int index, T resource) {
+        Objects.checkIndex(index, size());
         return true; // What ever resource is queried is always allowed
     }
 

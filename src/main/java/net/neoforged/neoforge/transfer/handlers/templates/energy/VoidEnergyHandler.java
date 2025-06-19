@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
@@ -19,16 +20,19 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return 0;
     }
 
     @Override
     public int getCapacity(int index) {
+        Objects.checkIndex(index, size());
         return Integer.MAX_VALUE;
     }
 
     @Override
     public long getCapacityAsLong(int index) {
+        Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
     }
 

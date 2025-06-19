@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -54,7 +53,7 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
             return handlers[index];
 
         // Probably log something here for the user to know, but we likely shouldn't crash given this is cross mod support.
-        return EmptyResourceHandler.instance();
+        throw new IndexOutOfBoundsException();
     }
 
     protected int getSlotFromIndex(int index, int handlerIndex) {

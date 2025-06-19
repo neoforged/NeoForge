@@ -74,19 +74,15 @@ public class InstancedResourceHandlerTests {
         helper.assertValueEqual(handler.size(), 1, "Size should be");
         helper.assertFalse(handler.supportsExtraction(), "Extraction should be not allowed");
         helper.assertFalse(handler.supportsExtraction(0), "Extraction should be not allowed");
-        helper.assertFalse(handler.supportsExtraction(1337), "Extraction should be not allowed");
 
         helper.assertTrue(handler.supportsInsertion(), "Insertion should be allowed");
         helper.assertTrue(handler.supportsInsertion(0), "Insertion should be allowed");
-        helper.assertTrue(handler.supportsInsertion(1337), "Insertion should be allowed");
 
         helper.assertTrue(ResourceHandlerUtil.isValid(handler, emptyResource), "Every resource should match");
 
         helper.assertValueEqual(handler.getCapacity(0, emptyResource), Integer.MAX_VALUE, "Capacity should match");
-        helper.assertValueEqual(handler.getCapacity(1, emptyResource), Integer.MAX_VALUE, "Capacity should match");
 
         helper.assertValueEqual(handler.getResource(0), emptyResource, "Resource should match");
-        helper.assertValueEqual(handler.getResource(1), emptyResource, "Resource should match");
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(handler.insert(0, emptyResource, Integer.MAX_VALUE, transaction), Integer.MAX_VALUE, "Insertion should match");
             helper.assertValueEqual(handler.insert(emptyResource, Integer.MAX_VALUE, transaction), Integer.MAX_VALUE, "Insertion should match");
@@ -101,11 +97,9 @@ public class InstancedResourceHandlerTests {
         helper.assertValueEqual(handler.size(), 1, "Size should be");
         helper.assertTrue(handler.supportsExtraction(), "Extraction should be allowed");
         helper.assertTrue(handler.supportsExtraction(0), "Extraction should be allowed");
-        helper.assertTrue(handler.supportsExtraction(1337), "Extraction should be allowed");
 
         helper.assertFalse(handler.supportsInsertion(), "Insertion should not be allowed");
         helper.assertFalse(handler.supportsInsertion(0), "Insertion should not be allowed");
-        helper.assertFalse(handler.supportsInsertion(1337), "Insertion should not be allowed");
 
         helper.assertTrue(handler.isValid(0, resource), "Resource should match");
 

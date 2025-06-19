@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -19,27 +20,32 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return 0;
     }
 
     @Override
     public int getCapacity(int index) {
+        Objects.checkIndex(index, size());
         return 0;
     }
 
     @Override
     public boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return false;
     }
 
     @Override
     public boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return false;
     }
 
     @Override
     public int insert(int index, int amount, TransactionContext transaction) {
         EnergyHandlerUtil.checkEnergy(amount);
+        Objects.checkIndex(index, size());
         return 0;
     }
 
@@ -51,6 +57,7 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
 
     @Override
     public int extract(int index, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         return 0;
     }
 

@@ -131,6 +131,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
+
         int rawEnergy = getIndividualAmount();
         int preCalc = Mth.clamp(rawEnergy, 0, this.capacity) * this.itemContext.getAmount();
         if (preCalc < 0) return Integer.MAX_VALUE;
@@ -139,6 +141,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
 
     @Override
     public int getCapacity(int index) {
+        Objects.checkIndex(index, size());
+
         int stackedAmount = this.capacity * itemContext.getAmount();
         //handle overflow
         if (stackedAmount < 0) return Integer.MAX_VALUE;
@@ -161,6 +165,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
      * @param energy The new energy value
      */
     public void set(int index, int energy) {
+        // we don't check index here given this is an overwrite
         int realEnergy = Mth.clamp(energy, 0, this.capacity);
         this.parent.set(this.componentType, realEnergy);
     }

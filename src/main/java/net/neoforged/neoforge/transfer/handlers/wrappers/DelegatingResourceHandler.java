@@ -13,8 +13,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A wrapper that delegates all calls to a handler.
- * <p>
- * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled.
  *
  * @param <T> The type of resource this handler manages.
  */
@@ -36,46 +34,55 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     }
 
     protected int convertIndex(int index) {
+        Objects.checkIndex(index, size());
         return index;
     }
 
     @Override
     public T getResource(int index) {
+        Objects.checkIndex(index, size());
         return getDelegate().getResource(convertIndex(index));
     }
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return getDelegate().getAmount(convertIndex(index));
     }
 
     @Override
     public long getAmountAsLong(int index) {
+        Objects.checkIndex(index, size());
         return getDelegate().getAmountAsLong(convertIndex(index));
     }
 
     @Override
     public int getCapacity(int index, T resource) {
+        Objects.checkIndex(index, size());
         return getDelegate().getCapacity(convertIndex(index), resource);
     }
 
     @Override
     public long getCapacityAsLong(int index, T resource) {
+        Objects.checkIndex(index, size());
         return getDelegate().getCapacityAsLong(convertIndex(index), resource);
     }
 
     @Override
     public boolean isValid(int index, T resource) {
+        Objects.checkIndex(index, size());
         return getDelegate().isValid(convertIndex(index), resource);
     }
 
     @Override
     public boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return getDelegate().supportsInsertion(convertIndex(index));
     }
 
     @Override
     public boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return getDelegate().supportsExtraction(convertIndex(index));
     }
 
@@ -91,6 +98,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         return getDelegate().insert(convertIndex(index), resource, amount, transaction);
     }
 
@@ -101,6 +109,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         return getDelegate().extract(convertIndex(index), resource, amount, transaction);
     }
 

@@ -29,9 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Immutable combination of an {@link Item} and data components.
@@ -141,11 +139,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return innerStack.isItemEnabled(enabledFeatures);
     }
 
-    @Nullable
-    public <T, C extends @Nullable Object> T getCapability(ItemCapability<T, C> capability, C context) {
-        return capability.getCapability(toStack(), context);
-    }
-
     @Override
     public boolean isEmpty() {
         return innerStack.isEmpty();
@@ -219,10 +212,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     public List<ItemStack> toStacks(int count) {
-        ArrayList<ItemStack> stacks = new ArrayList<>();
         var maxStackSize = getMaxStackSize();
         int stackCount = count / maxStackSize;
-        stacks.ensureCapacity(stackCount + 1);
+        List<ItemStack> stacks = new ArrayList<>(stackCount + 1);
         for (int i = 0; i < stackCount; i++) {
             stacks.add(toStack(maxStackSize));
         }

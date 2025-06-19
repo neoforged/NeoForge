@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.energy;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
@@ -60,24 +61,28 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     @ApiStatus.NonExtendable
     @Override
     default boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return supportsInsertion();
     }
 
     @ApiStatus.NonExtendable
     @Override
     default boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return supportsExtraction();
     }
 
     @ApiStatus.NonExtendable
     @Override
     default int insert(int index, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         return insert(amount, transaction);
     }
 
     @ApiStatus.NonExtendable
     @Override
     default int extract(int index, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
         return extract(amount, transaction);
     }
 }

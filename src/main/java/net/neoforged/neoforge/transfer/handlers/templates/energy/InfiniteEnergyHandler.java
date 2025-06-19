@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
@@ -19,48 +20,46 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
     public static final IEnergyHandler INSTANCE = new InfiniteEnergyHandler();
 
-    //Always has Max value available
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return Integer.MAX_VALUE;
     }
 
     @Override
     public long getAmountAsLong(int index) {
+        Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
     }
 
-    //Holds "infinite" energy, thus always has Max value available
     @Override
     public int getCapacity(int index) {
+        Objects.checkIndex(index, size());
         return Integer.MAX_VALUE;
     }
 
     @Override
     public long getCapacityAsLong(int index) {
+        Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
     }
 
-    //Never
     @Override
     public boolean supportsInsertion() {
         return false;
     }
 
-    //Always
     @Override
     public boolean supportsExtraction() {
         return true;
     }
 
-    //Ignores the amount attempted to be inserted
     @Override
     public int insert(int amount, TransactionContext transaction) {
         EnergyHandlerUtil.checkEnergy(amount);
         return 0;
     }
 
-    //Allows extraction to the exact amount specified
     @Override
     public int extract(int amount, TransactionContext transaction) {
         if (EnergyHandlerUtil.checkEnergy(amount)) return 0;

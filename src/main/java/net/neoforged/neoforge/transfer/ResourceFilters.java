@@ -9,11 +9,8 @@ import com.google.common.base.Predicates;
 import java.util.function.Predicate;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.transfer.resources.IRegisteredResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
-import org.jetbrains.annotations.Nullable;
 
 public class ResourceFilters {
     /**
@@ -29,11 +26,6 @@ public class ResourceFilters {
     public static <R extends IRegisteredResource<T>, T> Predicate<R> withTag(TagKey<T> tag) {
         //this is a capturing lambda, but fortunately we can cache the resulting filter
         return resource -> resource.is(tag);
-    }
-
-    public static <T, C extends @Nullable Object> Predicate<ItemResource> hasCapability(ItemCapability<T, C> capToken, C context) {
-        //this is a capturing lambda but not really cacheable due to context being dynamic
-        return resource -> resource.getCapability(capToken, context) != null;
     }
 
     /**

@@ -40,7 +40,7 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
 
     @SafeVarargs
     public static EntityEquipmentItemHandler of(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
-        EntityEquipmentItemHandler wrapper = WRAPPERS.computeIfAbsent(entity, ent -> new EntityEquipmentItemHandler(ent, slotFilter));
+        EntityEquipmentItemHandler wrapper = WRAPPERS.computeIfAbsent(entity, EntityEquipmentItemHandler::new);
         wrapper.resize(slotFilter);
         return wrapper;
     }
@@ -59,8 +59,8 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
 
     private void resize(Predicate<EquipmentSlot>[] slotFilter) {
         //Neo: This may be needed to be redone, but this was to ensure that we have not already assigned this instance
-        //TODO A maintainer likely should validate this method; but it should be correct.
-        if (size > 0) return;
+//        TODO A maintainer likely should validate this method; but it should be correct.
+//        if (size > 0) return; Always resize?
 
         ArrayList<EquipmentSlot> list = new ArrayList<>();
         for (Predicate<EquipmentSlot> equipmentSlotPredicate : slotFilter) {
@@ -81,8 +81,7 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
         }
     }
 
-    @SafeVarargs
-    private EntityEquipmentItemHandler(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {
+    private EntityEquipmentItemHandler(LivingEntity entity) {
         this.entity = entity;
     }
 

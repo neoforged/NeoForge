@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import com.google.common.base.Preconditions;
+import java.util.Objects;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -40,9 +41,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     protected int convertIndex(int index) {
-        if (index < 0 || index >= size()) {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
-        }
+        Objects.checkIndex(index, size());
         return index + start;
     }
 

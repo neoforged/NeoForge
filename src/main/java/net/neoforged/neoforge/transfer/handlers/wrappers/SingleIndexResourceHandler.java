@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -37,9 +38,7 @@ public class SingleIndexResourceHandler<T extends IResource> extends DelegatingR
 
     @Override
     protected int convertIndex(int index) {
-        if (index != 0) {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
-        }
+        Objects.checkIndex(index, size());
         return this.index;
     }
 

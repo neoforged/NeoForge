@@ -51,20 +51,36 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     @Override
     public int getAmount(int index) {
         Objects.checkIndex(index, size());
+        if (isNotBucket()) return 0;
         return getResource(0).isEmpty() ? 0 : FluidType.BUCKET_VOLUME * itemContext.getAmount();
+    }
+
+    private boolean isNotBucket() {
+        var bucket = itemContext.getResource();
+        if (bucket.is(Items.MILK_BUCKET))
+            return !NeoForgeMod.MILK.isBound();
+        return !(bucket.getInstanceValue() instanceof BucketItem) && !bucket.is(Tags.Items.BUCKETS);
     }
 
     @Override
     public int getCapacity(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
+        if (isNotBucket()) return 0;
 
         //Shouldn't be able to overflow given the max stack size is 99, thus the max this can be on a single item should be 99,000.
         // Of course this will differ for other implementations, so care will be needed for those.
+        var fluid = getResource(0);
+        if (!resource.isEmpty() && !fluid.isEmpty() && !resource.equals(fluid)) return 0;
         return Ints.saturatedCast((long) FluidType.BUCKET_VOLUME * (long) itemContext.getAmount());
     }
 
     @Override
     public long getCapacityAsLong(int index, FluidResource resource) {
+        if (isNotBucket()) return 0;
+        Objects.checkIndex(index, size());
+
+        var fluid = getResource(0);
+        if (!resource.isEmpty() && !fluid.isEmpty() && !resource.equals(fluid)) return 0;
         return (long) FluidType.BUCKET_VOLUME * (long) itemContext.getAmount();
     }
 
@@ -81,6 +97,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+        if (isNotBucket()) return 0;
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         if (!itemContext.getResource().is(Tags.Items.BUCKETS_EMPTY)) {
             return 0; // can't fill non-empty buckets
@@ -99,6 +116,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+        if (isNotBucket()) return 0;
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         FluidResource containedFluid = getResource(0);
 
@@ -121,6 +139,8 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
+        Objects.checkIndex(index, size());
+        if (isNotBucket()) return false;
         return !resource.getFilledBucket().isEmpty();
     }
 }

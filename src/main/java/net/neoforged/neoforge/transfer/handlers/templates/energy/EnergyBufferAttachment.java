@@ -245,16 +245,19 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
 
     @Override
     public int getCapacity(int index) {
+        Objects.checkIndex(index, size());
         return capacity;
     }
 
     @Override
     public boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return maxInsert > 0;
     }
 
     @Override
     public boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return maxExtract > 0;
     }
 
