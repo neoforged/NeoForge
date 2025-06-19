@@ -109,10 +109,12 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
 
                 var declaring = method.getDeclaringClass();
 
+                // Try to find the method's class file and read its bytecode to figure out the name of the source file and the line number range of the test method
                 try (var is = declaring.getClassLoader().getResourceAsStream(declaring.getName().replace(".", "/") + ".class")) {
                     if (is == null) continue;
 
                     AtomicReference<String> source = new AtomicReference<>();
+                    // We collect both the first and the last line of the method to be able to find stack track elements included within the method's bounds
                     AtomicInteger firstLine = new AtomicInteger(-1), lastLine = new AtomicInteger();
 
                     var desc = Type.getMethodDescriptor(method);
@@ -146,22 +148,24 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
                         }
                     }, ClassReader.SKIP_FRAMES);
 
+                    // If we cannot find the method within the class file or if it doesn't have line number information we can't emit any annotation
                     if (firstLine.get() == -1) continue;
 
                     var relativeClassPath = declaring.getPackageName().replace(".", "/") + "/" + source.get();
 
                     for (Path root : roots) {
+
+                        // Try to find the first source root folder where a source file with the name found in the bytecode and corresponding package exists
                         var possibleFile = root.resolve(relativeClassPath);
                         if (Files.exists(possibleFile)) {
-
                             int line = firstLine.get();
 
                             var exception = testInfo.status().exception();
                             if (exception != null) {
                                 // If we have an exception, try to point the annotation at the first line of the exception within the same source file
-                                // otherwise, we point it at the first line of the method test that failed
+                                // and within the lines of the method, otherwise, we point it at the first line of the method test that failed
                                 for (StackTraceElement element : exception.getStackTrace()) {
-                                    if (Objects.equals(element.getFileName(), source.get())) {
+                                    if (Objects.equals(element.getFileName(), source.get()) && firstLine.get() <= element.getLineNumber() && element.getLineNumber() <= lastLine.get()) {
                                         line = element.getLineNumber();
                                         break;
                                     }
@@ -178,6 +182,7 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
             }
 
             if (!locations.isEmpty()) {
+                // Finally, emit the annotations but make sure to first relativise all paths to the workspace folder
                 var workspace = Path.of(System.getenv("GITHUB_WORKSPACE")).toAbsolutePath();
                 var errorMessage = locations.stream()
                         .map(loc -> "::error file=" + workspace.relativize(loc.path())
