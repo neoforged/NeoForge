@@ -192,7 +192,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
         if (inserted > 0) {
             snapshotJournals.get(index).updateSnapshots(transaction);
-            set(index, resource, newAmount);
+            setInternal(index, resource, newAmount);
         }
 
         return inserted;
@@ -226,12 +226,17 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         int handledAmount = Math.min(amount, currentAmount);
         if (handledAmount > 0) {
             snapshotJournals.get(index).updateSnapshots(transaction);
-            set(index, resource, currentAmount - handledAmount);
+            setInternal(index, resource, currentAmount - handledAmount);
         }
         return handledAmount;
     }
 
     public void set(int index, R resource, int amount) {
+        setInternal(index, resource, amount);
+        onChangeJournal.runCallback();
+    }
+
+    protected void setInternal(int index, R resource, int amount) {
         stacks.set(index, toStack(resource, amount));
     }
 

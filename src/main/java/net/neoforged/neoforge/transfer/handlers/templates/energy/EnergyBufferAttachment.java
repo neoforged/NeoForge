@@ -137,7 +137,8 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
             if (energy[i] < 0) throw new IllegalArgumentException("Energy at index " + i + " must be non-negative");
             this.energy[i] = Math.max(0, Math.min(capacity, energy[i]));
         }
-        this.snapshots = IndexedIntSnapshot.listOf(this::set, this::getAmount, SetChangedSnapshot.of(this::onSetChanged), size);
+        var onChanged = SetChangedSnapshot.of(this::onSetChanged);
+        this.snapshots = IndexedIntSnapshot.listOf(this::set, this::getAmount, onChanged, size);
     }
 
     //Attachment building methods

@@ -6,8 +6,11 @@
 package net.neoforged.neoforge.transfer;
 
 import java.util.function.Predicate;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
@@ -91,6 +94,36 @@ public final class ItemUtil {
     public static void dropFromPlayer(Player player, ItemResource resource, int amount) {
         for (ItemStack stack : resource.toStacks(amount)) {
             player.drop(stack, false);
+        }
+    }
+
+    /**
+     * Drops the contents of a given {@link IResourceHandler} in world
+     *
+     * @param level   Level to drop the contents in
+     * @param pos     Position to drop handlers contents at
+     * @param handler The {@link IResourceHandler} that has contents to be dropped
+     */
+    static void dropContents(Level level, BlockPos pos, IResourceHandler<ItemResource> handler) {
+        dropContents(level, pos.getX(), pos.getY(), pos.getZ(), handler);
+    }
+
+    /**
+     * Drops the contents of a given {@link IResourceHandler} in world
+     *
+     * @param level   Level to drop the contents in
+     * @param x       The x position to drop handlers contents at
+     * @param y       The Y position to drop handlers contents at
+     * @param z       The Z position to drop handlers contents at
+     * @param handler The {@link IResourceHandler} that has contents to be dropped
+     */
+    static void dropContents(Level level, double x, double y, double z, IResourceHandler<ItemResource> handler) {
+        var size = handler.size();
+
+        for (var index = 0; index < size; index++) {
+            var resource = handler.getResource(index);
+            if (resource.isEmpty()) continue;
+            Containers.dropItemStack(level, x, y, z, resource.toStack(handler.getAmount(index)));
         }
     }
 
