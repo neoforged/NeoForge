@@ -130,7 +130,7 @@ public class GitHubActionsStepSummaryDumper implements FileSummaryDumper {
 
                                         foundLine = true;
 
-                                        var relativeClassPath = declaring.getPackageName().replace(".", "/") + source;
+                                        var relativeClassPath = declaring.getPackageName().replace(".", "/") + "/" + source;
 
                                         for (Path root : roots) {
                                             var possibleFile = root.resolve(relativeClassPath);
