@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.loading;
 
 import com.mojang.blaze3d.opengl.GlDevice;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import java.util.Optional;
@@ -27,6 +26,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
@@ -53,8 +54,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.reload = reloader;
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
-        var logoGpuTexture = (GlTexture) mc.getTextureManager().getTexture(MOJANG_STUDIOS_LOGO_LOCATION).getTexture();
-        displayWindow.addMojangTexture(logoGpuTexture.glId());
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
         this.framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
         Minecraft.getInstance().getTextureManager().register(LOADING_OVERLAY_TEXTURE_ID, new ExternalTexture(framebuffer));
@@ -97,6 +96,8 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
             Minecraft.getInstance().schedule(() -> {
                 Minecraft.getInstance().getTextureManager().release(LOADING_OVERLAY_TEXTURE_ID);
                 this.displayWindow.close();
+                GLFW.glfwMakeContextCurrent(this.minecraft.getWindow().getWindow());
+                GL.createCapabilities();
             });
             this.minecraft.setOverlay(null);
         }
