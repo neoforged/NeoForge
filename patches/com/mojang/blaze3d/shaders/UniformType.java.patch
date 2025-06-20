@@ -1,0 +1,14 @@
+--- a/com/mojang/blaze3d/shaders/UniformType.java
++++ b/com/mojang/blaze3d/shaders/UniformType.java
+@@ -6,7 +_,10 @@
+ @OnlyIn(Dist.CLIENT)
+ public enum UniformType {
+     UNIFORM_BUFFER("ubo"),
+-    TEXEL_BUFFER("utb");
++    TEXEL_BUFFER("utb"),
++    STORAGE_BUFFER("ssbo"),
++    STORAGE_TEXEL_BUFFER("stb"),
++    ;
+ 
+     final String name;
+ 

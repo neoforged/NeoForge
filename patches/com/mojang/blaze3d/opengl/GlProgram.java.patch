@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/opengl/GlProgram.java
++++ b/com/mojang/blaze3d/opengl/GlProgram.java
+@@ -87,6 +_,7 @@
+                         yield new Uniform.Utb(k, l, Objects.requireNonNull(renderpipeline$uniformdescription.textureFormat()));
+                     }
+                 }
++                default -> null;
+             };
+ 
+             Uniform uniform = (Uniform)object;
