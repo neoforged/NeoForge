@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.client;
 
 import com.google.common.reflect.TypeToken;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -32,6 +33,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.RenderTypeHelper;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
@@ -44,6 +46,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+
+import java.util.Map;
 
 @ForEachTest(side = Dist.CLIENT, groups = { "client.event", "event" })
 public class ClientEventTests {
@@ -67,6 +71,24 @@ public class ClientEventTests {
     static void registerRenderBuffersEvent(final DynamicTest test) {
         test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
             event.registerRenderBuffer(RenderType.lightning());
+        });
+        test.framework().modEventBus().addListener((final AddClientReloadListenersEvent event) -> {
+            try {
+                var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+                var field = bufferSource.getClass().getDeclaredField("fixedBuffers");
+
+                field.setAccessible(true);
+
+                var fixedBuffers = (Map<RenderType, BufferBuilder>) field.get(bufferSource);
+
+                if (fixedBuffers != null && fixedBuffers.containsKey(RenderType.lightning())) {
+                    test.pass();
+                } else {
+                    test.fail("The render buffer for the specified render type was not registered");
+                }
+            } catch (Exception e) {
+                test.fail("Failed to access fixed buffers map");
+            }
         });
     }
 
