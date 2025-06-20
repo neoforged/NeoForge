@@ -1,0 +1,12 @@
+--- a/com/mojang/blaze3d/textures/GpuTexture.java
++++ b/com/mojang/blaze3d/textures/GpuTexture.java
+@@ -12,6 +_,9 @@
+     public static final int USAGE_TEXTURE_BINDING = 4;
+     public static final int USAGE_RENDER_ATTACHMENT = 8;
+     public static final int USAGE_CUBEMAP_COMPATIBLE = 16;
++    public static final int USAGE_STORAGE = USAGE_CUBEMAP_COMPATIBLE << 1;
++    // Neo: top 8 bits reserved for implementation specific usages
++    public static final int USAGE_FIRST_IMPLEMENTATION_DEFINED = 1 << 24;
+     private final TextureFormat format;
+     private final int width;
+     private final int height;
