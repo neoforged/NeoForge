@@ -50,9 +50,9 @@
                  p_362234_.push("terrain");
                  ChunkSectionsToRender chunksectionstorender = this.prepareChunkRenders(p_362420_, d0, d1, d2);
                  chunksectionstorender.renderGroup(ChunkSectionLayerGroup.OPAQUE);
-+                Profiler.get().push("neoforge_render_after_solid_blocks");
++                p_362234_.push("neoforge_render_after_solid_blocks");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterSolidBlocks(level, this, null, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
-+                Profiler.get().pop();
++                p_362234_.pop();
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (resourcehandle2 != null) {
                      resourcehandle2.get().copyDepthFrom(this.minecraft.getMainRenderTarget());
