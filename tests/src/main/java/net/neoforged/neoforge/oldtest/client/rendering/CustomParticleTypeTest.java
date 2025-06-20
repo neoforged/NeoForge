@@ -27,7 +27,7 @@ public class CustomParticleTypeTest {
 
     public CustomParticleTypeTest() {}
 
-    @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, value = Dist.CLIENT)
     public static class ClientEvents {
         private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType() {
             @Override

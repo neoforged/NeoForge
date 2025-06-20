@@ -36,7 +36,7 @@ import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
 public class NetworkInitialization {
     @SubscribeEvent
     private static void register(final RegisterPayloadHandlersEvent event) {
