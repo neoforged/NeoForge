@@ -1,0 +1,13 @@
+--- a/com/mojang/blaze3d/platform/SourceFactor.java
++++ b/com/mojang/blaze3d/platform/SourceFactor.java
+@@ -21,5 +_,9 @@
+     SRC_ALPHA,
+     SRC_ALPHA_SATURATE,
+     SRC_COLOR,
+-    ZERO;
++    ZERO,
++    SRC1_COLOR,
++    ONE_MINUS_SRC1_COLOR,
++    SRC1_ALPHA,
++    ONE_MINUS_SRC1_ALPHA,;
+ }

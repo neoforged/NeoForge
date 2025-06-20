@@ -21,6 +21,29 @@
          };
      }
  
+@@ -174,6 +_,11 @@
+             case SRC_ALPHA -> 770;
+             case SRC_COLOR -> 768;
+             case ZERO -> 0;
++            case SRC_ALPHA_SATURATE -> org.lwjgl.opengl.GL11C.GL_SRC_ALPHA_SATURATE;
++            case SRC1_COLOR -> org.lwjgl.opengl.GL33C.GL_SRC1_COLOR;
++            case ONE_MINUS_SRC1_COLOR -> org.lwjgl.opengl.GL33C.GL_ONE_MINUS_SRC1_COLOR;
++            case SRC1_ALPHA -> org.lwjgl.opengl.GL15C.GL_SRC1_ALPHA;
++            case ONE_MINUS_SRC1_ALPHA -> org.lwjgl.opengl.GL33C.GL_ONE_MINUS_SRC1_ALPHA;
+         };
+     }
+ 
+@@ -194,6 +_,10 @@
+             case SRC_ALPHA_SATURATE -> 776;
+             case SRC_COLOR -> 768;
+             case ZERO -> 0;
++            case SRC1_COLOR -> org.lwjgl.opengl.GL33C.GL_SRC1_COLOR;
++            case ONE_MINUS_SRC1_COLOR -> org.lwjgl.opengl.GL33C.GL_ONE_MINUS_SRC1_COLOR;
++            case SRC1_ALPHA -> org.lwjgl.opengl.GL15C.GL_SRC1_ALPHA;
++            case ONE_MINUS_SRC1_ALPHA -> org.lwjgl.opengl.GL33C.GL_ONE_MINUS_SRC1_ALPHA;
+         };
+     }
+ 
 @@ -229,7 +_,9 @@
      public static int toGl(AddressMode p_412266_) {
          return switch (p_412266_) {
