@@ -28,7 +28,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(CustomPlantTypeTest.MODID)
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 public class CustomPlantTypeTest {
     static final String MODID = "custom_plant_type_test";
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";

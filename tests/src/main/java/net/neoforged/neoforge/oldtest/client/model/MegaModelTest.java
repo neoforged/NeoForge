@@ -92,7 +92,7 @@ public class MegaModelTest {
             event.accept(TEST_BLOCK_ITEM);
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onModelBakingCompleted(ModelEvent.ModifyBakingResult event) {

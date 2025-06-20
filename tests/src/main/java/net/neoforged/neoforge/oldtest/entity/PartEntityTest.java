@@ -52,7 +52,7 @@ public class PartEntityTest {
         event.put(TEST_ENTITY.get(), Pig.createAttributes().build());
     }
 
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     private static class ClientEvents {
         @SubscribeEvent
         public static void onRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {

@@ -44,7 +44,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod("entity_renderer_events_test")
-@EventBusSubscriber(modid = "entity_renderer_events_test", bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = "entity_renderer_events_test")
 public class EntityRendererEventsTest {
     private static final ResourceLocation MY_ENTITY = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "test_entity");
 
@@ -62,7 +62,7 @@ public class EntityRendererEventsTest {
         event.put(MY_ENTITY_TYPE.get(), Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1.0D).build());
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT)
     private static class EntityRenderEventsTestClientModStuff {
         private static final ModelLayerLocation MAIN_LAYER = new ModelLayerLocation(MY_ENTITY, "main");
         private static final ModelLayerLocation OUTER_LAYER = new ModelLayerLocation(MY_ENTITY, "main");

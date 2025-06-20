@@ -78,7 +78,7 @@ public class HideNeighborFaceTest {
         }
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onClientSetup(final FMLClientSetupEvent event) {

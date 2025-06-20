@@ -774,7 +774,7 @@ public class ClientHooks {
         return RenderTypeHelper.getEntityRenderType(chunkRenderType, cull);
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge")
     public static class ClientEvents {
         @Nullable
         private static ShaderInstance rendertypeEntityTranslucentUnlitShader;
