@@ -216,6 +216,7 @@ public interface IItemStackExtension {
         self().getItem().onStopUsing(self(), entity, count);
     }
 
+    @SuppressWarnings("removal")
     /**
      * Retrieves the normal 'lifespan' of this item when it is dropped on the ground
      * as a EntityItem. This is in ticks, standard result is 6000, or 5 mins.

@@ -767,7 +767,7 @@ public class ClientHooks {
         }
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge")
     public static class ClientEvents {
         public static final ShaderProgram RENDERTYPE_ENTITY_TRANSLUCENT_UNLIT_SHADER = new ShaderProgram(
                 ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "core/rendertype_entity_unlit_translucent"),
