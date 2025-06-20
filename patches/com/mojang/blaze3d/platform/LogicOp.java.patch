@@ -1,0 +1,25 @@
+--- a/com/mojang/blaze3d/platform/LogicOp.java
++++ b/com/mojang/blaze3d/platform/LogicOp.java
+@@ -7,6 +_,21 @@
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
+ public enum LogicOp {
++    CLEAR,
++    AND,
++    AND_REVERSE,
+     NONE,
+-    OR_REVERSE;
++    AND_INVERTED,
++    NO_OP,
++    XOR,
++    OR,
++    NOR,
++    EQUIVALENT,
++    INVERT,
++    OR_REVERSE,
++    COPY_INVERTED,
++    OR_INVERTED,
++    NAND,
++    SET,
++    ;
+ }

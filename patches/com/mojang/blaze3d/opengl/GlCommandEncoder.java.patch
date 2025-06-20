@@ -65,12 +65,10 @@
                          9728
                      );
                  int k = GlStateManager._getError();
-@@ -935,6 +_,25 @@
-             GlStateManager._scissorBox(p_410853_.getScissorX(), p_410853_.getScissorY(), p_410853_.getScissorWidth(), p_410853_.getScissorHeight());
-         } else {
+@@ -937,6 +_,25 @@
              GlStateManager._disableScissorTest();
-+        }
-+
+         }
+ 
 +        var stencilTest = p_410853_.stencilTest;
 +        if (stencilTest != null) {
 +            GlStateManager._enableStencilTest();
@@ -88,6 +86,45 @@
 +            GlStateManager._stencilMask(stencilTest.writeMask());
 +        } else {
 +            GlStateManager._disableStencilTest();
-         }
- 
++        }
++
          return true;
+     }
+ 
+@@ -979,13 +_,29 @@
+                 GlStateManager._enablePolygonOffset();
+             }
+ 
+-            switch (p_410655_.getColorLogic()) {
+-                case NONE:
+-                    GlStateManager._disableColorLogicOp();
+-                    break;
+-                case OR_REVERSE:
+-                    GlStateManager._enableColorLogicOp();
+-                    GlStateManager._logicOp(5387);
++            final var colorLogicOp = p_410655_.getColorLogic();
++            if (colorLogicOp == com.mojang.blaze3d.platform.LogicOp.NONE){
++                GlStateManager._disableColorLogicOp();
++            } else {
++                GlStateManager._enableColorLogicOp();
++                GlStateManager._logicOp(switch (colorLogicOp) {
++                    case CLEAR -> org.lwjgl.opengl.GL11C.GL_CLEAR;
++                    case AND -> org.lwjgl.opengl.GL11C.GL_AND;
++                    case AND_REVERSE -> org.lwjgl.opengl.GL11C.GL_AND_REVERSE;
++                    case NONE -> org.lwjgl.opengl.GL11C.GL_COPY;
++                    case AND_INVERTED -> org.lwjgl.opengl.GL11C.GL_AND_INVERTED;
++                    case NO_OP -> org.lwjgl.opengl.GL11C.GL_NOOP;
++                    case XOR -> org.lwjgl.opengl.GL11C.GL_XOR;
++                    case OR -> org.lwjgl.opengl.GL11C.GL_OR;
++                    case NOR -> org.lwjgl.opengl.GL11C.GL_NOR;
++                    case EQUIVALENT -> org.lwjgl.opengl.GL11C.GL_EQUIV;
++                    case INVERT -> org.lwjgl.opengl.GL11C.GL_INVERT;
++                    case OR_REVERSE -> org.lwjgl.opengl.GL11C.GL_OR_REVERSE;
++                    case COPY_INVERTED -> org.lwjgl.opengl.GL11C.GL_COPY_INVERTED;
++                    case OR_INVERTED -> org.lwjgl.opengl.GL11C.GL_OR_INVERTED;
++                    case NAND -> org.lwjgl.opengl.GL11C.GL_NAND;
++                    case SET -> org.lwjgl.opengl.GL11C.GL_SET;
++                });
+             }
+         }
+     }
