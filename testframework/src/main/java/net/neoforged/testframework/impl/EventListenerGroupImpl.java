@@ -20,6 +20,7 @@ import net.neoforged.testframework.Test;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
+@SuppressWarnings("removal")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class EventListenerGroupImpl implements Test.EventListenerGroup {

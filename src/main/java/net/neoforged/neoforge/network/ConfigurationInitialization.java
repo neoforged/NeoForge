@@ -28,7 +28,7 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = "neoforge")
 public class ConfigurationInitialization {
     /**
      * Method called to add configuration tasks that should run before all others,
