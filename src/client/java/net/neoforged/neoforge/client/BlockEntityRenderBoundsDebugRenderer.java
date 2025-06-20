@@ -31,8 +31,8 @@ public final class BlockEntityRenderBoundsDebugRenderer {
     private static boolean enabled = false;
 
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (!enabled || event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+    public static void onRenderLevelStage(RenderLevelStageEvent.AfterBlockEntities event) {
+        if (!enabled) {
             return;
         }
 
