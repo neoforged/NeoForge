@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
 import net.minecraft.client.Camera;
@@ -14,9 +12,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -143,7 +139,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired early in {@linkplain LevelRenderer#addMainPass}  after {@code AfterSky} had ran.
+     * Fired early in {@linkplain LevelRenderer#addMainPass} after {@code AfterSky} had ran.
      */
     public static class AfterSolidBlocks extends RenderLevelStageEvent {
         public AfterSolidBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {

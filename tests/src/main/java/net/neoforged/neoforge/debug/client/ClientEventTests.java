@@ -8,6 +8,7 @@ package net.neoforged.neoforge.debug.client;
 import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.math.Axis;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.AbstractHoglinRenderer;
@@ -46,8 +47,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-
-import java.util.Map;
 
 @ForEachTest(side = Dist.CLIENT, groups = { "client.event", "event" })
 public class ClientEventTests {
