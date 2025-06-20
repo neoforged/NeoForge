@@ -235,4 +235,26 @@ public final class ItemUtil {
             @Nullable TransactionContext transaction) {
         return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
+
+    /**
+     * A helper method to construct a {@link ItemStack} based on what resides at a particular index given a handler
+     *
+     * @param handler The fluid handler to query.
+     * @param index   The index that the fluid is at
+     * @return A {@link ItemStack} based on the {@link ItemResource} and {@code amount} at the index
+     */
+    public static ItemStack getItemStackAt(IResourceHandler<ItemResource> handler, int index) {
+        return ResourceHandlerUtil.getStackAt(handler, index, ItemResource::toStack);
+    }
+
+    /**
+     * A helper method to construct a {@link ResourceStack} based on what resides at a particular index given a handler
+     *
+     * @param handler The fluid handler to query.
+     * @param index   The index that the fluid is at
+     * @return A {@link ResourceStack} based on the {@link ItemResource} and {@code amount} at the index
+     */
+    public static ResourceStack<ItemResource> getResourceStackAt(IResourceHandler<ItemResource> handler, int index) {
+        return ResourceHandlerUtil.getStackAt(handler, index, ItemResource::withAmount);
+    }
 }

@@ -565,6 +565,21 @@ public final class ResourceHandlerUtil {
         }
     }
 
+    /**
+     * A helper to construct a stack of type {@code <S>} based on the resource and amount at the specified index.
+     *
+     * @param <R> the type of resource to move.
+     * @param <S> The type of stack returned by the handler.
+     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
+     */
+    public static <R extends IResource, S> S getStackAt(IResourceHandler<R> handler, int index, IStackFactory<R, S> stackFactory) {
+        var resource = handler.getResource(index);
+        var amount = handler.getAmount(index);
+        //Handles the negative checks and throws
+        ResourceHandlerUtil.isEmpty(resource, amount);
+        return stackFactory.create(resource, amount);
+    }
+
     public static <T extends IResource> int getAmount(IResourceHandler<T> handler) {
         long sum = 0L;
         int size = handler.size();

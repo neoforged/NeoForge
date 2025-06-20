@@ -339,5 +339,27 @@ public final class FluidUtil {
         return getFirstFluidResource(handler);
     }
 
+    /**
+     * A helper method to construct a {@link FluidStack} based on what resides at a particular index given a handler
+     *
+     * @param handler The fluid handler to query.
+     * @param index   The index that the fluid is at
+     * @return A {@link FluidStack} based on the {@link FluidResource} and {@code amount} at the index
+     */
+    public static FluidStack getFluidStackAt(IResourceHandler<FluidResource> handler, int index) {
+        return ResourceHandlerUtil.getStackAt(handler, index, FluidResource::toStack);
+    }
+
+    /**
+     * A helper method to construct a {@link ResourceStack} based on what resides at a particular index given a handler
+     *
+     * @param handler The fluid handler to query.
+     * @param index   The index that the fluid is at
+     * @return A {@link ResourceStack} based on the {@link FluidResource} and {@code amount} at the index
+     */
+    public static ResourceStack<FluidResource> getResourceStackAt(IResourceHandler<FluidResource> handler, int index) {
+        return ResourceHandlerUtil.getStackAt(handler, index, FluidResource::withAmount);
+    }
+
     private FluidUtil() {}
 }
