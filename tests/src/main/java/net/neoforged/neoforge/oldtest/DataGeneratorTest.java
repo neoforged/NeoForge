@@ -963,6 +963,7 @@ public class DataGeneratorTest {
 
     private static class Advancements implements AdvancementProvider.AdvancementGenerator {
         @Override
+        @SuppressWarnings("removal")
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
             var obtainDirt = Advancement.Builder.advancement()
                     .display(Items.DIRT,
