@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 public class ClientModLoader extends CommonModLoader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static boolean loading;
-    private static boolean loadingComplete;
+    private static boolean loadingStarted;
     @Nullable
     private static ModLoadingException error;
 
@@ -74,14 +74,18 @@ public class ClientModLoader extends CommonModLoader {
      * It is used as the entrypoint for client mod loading, which starts when {@link Minecraft} triggers the first resource reload.
      */
     public static CompletableFuture<Void> onResourceReload(final PreparableReloadListener.PreparationBarrier stage, final ResourceManager resourceManager, final Executor asyncExecutor, final Executor syncExecutor) {
+        // Don't load again on subsequent reloads
+        if (loadingStarted) {
+            return stage.wait(null);// The barrier must be notified, otherwise the reload will deadlock
+        }
+
+        loadingStarted = true;
         return CompletableFuture.runAsync(() -> startModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor())
                 .thenCompose(stage::wait)
                 .thenRunAsync(() -> finishModLoading(syncExecutor, asyncExecutor), ModWorkManager.parallelExecutor());
     }
 
     private static void catchLoadingException(Runnable r) {
-        // Don't load again on subsequent reloads
-        if (loadingComplete) return;
         // If the mod loading state is invalid, skip further mod initialization
         if (ModLoader.hasErrors()) return;
 
@@ -99,7 +103,6 @@ public class ClientModLoader extends CommonModLoader {
     private static void finishModLoading(Executor syncExecutor, Executor parallelExecutor) {
         catchLoadingException(() -> finish(syncExecutor, parallelExecutor));
         loading = false;
-        loadingComplete = true;
     }
 
     public static VersionChecker.Status checkForUpdates() {
