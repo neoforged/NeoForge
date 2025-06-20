@@ -1,5 +1,17 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
+@@ -147,7 +_,10 @@
+             case EQUAL_DEPTH_TEST -> 514;
+             case LESS_DEPTH_TEST -> 513;
+             case GREATER_DEPTH_TEST -> 516;
+-            default -> 515;
++            case LEQUAL_DEPTH_TEST -> 515;
++            case NOT_EQUAL_DEPTH_TEST -> org.lwjgl.opengl.GL11C.GL_NOTEQUAL;
++            case GEQUAL_DEPTH_TEST -> org.lwjgl.opengl.GL11C.GL_GEQUAL;
++            case NEVER_DEPTH_TEST -> org.lwjgl.opengl.GL11C.GL_NEVER;
+         };
+     }
+ 
 @@ -229,7 +_,9 @@
      public static int toGl(AddressMode p_412266_) {
          return switch (p_412266_) {
