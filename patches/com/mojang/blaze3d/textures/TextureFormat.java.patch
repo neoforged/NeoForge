@@ -147,15 +147,12 @@
 +    public static final TextureFormat DEPTH32 = D32_SFLOAT;
  
      private final int pixelSize;
--
--    private TextureFormat(int p_404990_) {
--        this.pixelSize = p_404990_;
 +    // Neo: some formats (BC1) are less than a single byte per-pixel
 +    private final int pixelSizeNibbles;
-+
-+    private TextureFormat(int pixelSize) {
-+        this.pixelSize = pixelSize;
-+        this.pixelSizeNibbles = pixelSize * 2;
+ 
+     private TextureFormat(int p_404990_) {
+         this.pixelSize = p_404990_;
++        this.pixelSizeNibbles = p_404990_ * 2;
 +    }
 +
 +    private TextureFormat(int pixelSize, int pixelSizeNibbles) {
@@ -173,7 +170,7 @@
 +
      public boolean hasColorAspect() {
 -        return this == RGBA8 || this == RED8;
-+        // Neo: all color formats do not have depth, and there are less depth formats
++        // Neo: all color formats do not have depth and do not have stencil
 +        return !hasDepthAspect() && !hasStencilAspect();
      }
  
