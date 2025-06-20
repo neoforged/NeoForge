@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer;
 
+import com.google.common.primitives.Ints;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.CrashReport;
@@ -124,8 +125,8 @@ public final class ResourceHandlerUtil {
      * @param handler  the {@link IResourceHandler} to check
      * @param index    the index of the resource to check
      * @param resource the resource to check
+     * @param <T>      the type of resource handled by the handler
      * @return {@code true} if the resource & amount at the specified index of the handler matches the resource & amount parameters
-     * @param <T> the type of resource handled by the handler
      */
     public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
         return resourceMatches(handler, index, resource) && handler.getAmount(index) == amount;
@@ -135,8 +136,8 @@ public final class ResourceHandlerUtil {
      * @param handler  the {@link IResourceHandler} to check
      * @param index    the index of the resource to check
      * @param resource the resource to check
+     * @param <T>      the type of resource handled by the handler
      * @return {@code true} if the resource at the specified index of the handler matches the resource parameter
-     * @param <T> the type of resource handled by the handler
      */
     public static <T extends IResource> boolean resourceMatches(IResourceHandler<T> handler, int index, T resource) {
         return handler.getResource(index).equals(resource);
@@ -562,6 +563,47 @@ public final class ResourceHandlerUtil {
                     .setDetail("Transaction", transaction);
             throw new ReportedException(report);
         }
+    }
+
+    public static <T extends IResource> int getAmount(IResourceHandler<T> handler) {
+        long sum = 0L;
+        int size = handler.size();
+        for (int index = 0; index < size; index++) {
+            sum += handler.getAmount(index);
+            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        }
+        return Ints.saturatedCast(sum);
+    }
+
+    public static <T extends IResource> int getAmount(IResourceHandler<T> handler, T resource) {
+        long sum = 0L;
+        int size = handler.size();
+        for (int index = 0; index < size; index++) {
+            if (resource.equals(handler.getResource(index))) continue;
+            sum += handler.getAmount(index);
+            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        }
+        return Ints.saturatedCast(sum);
+    }
+
+    public static <T extends IResource> int getCapacity(IResourceHandler<T> handler) {
+        long sum = 0L;
+        int size = handler.size();
+        for (int index = 0; index < size; index++) {
+            sum += handler.getCapacity(index, handler.getResource(index));
+            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        }
+        return Ints.saturatedCast(sum);
+    }
+
+    public static <T extends IResource> int getCapacity(IResourceHandler<T> handler, T resource) {
+        long sum = 0L;
+        int size = handler.size();
+        for (int index = 0; index < size; index++) {
+            sum += handler.getCapacityAsLong(index, resource);
+            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+        }
+        return Ints.saturatedCast(sum);
     }
 
     public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
