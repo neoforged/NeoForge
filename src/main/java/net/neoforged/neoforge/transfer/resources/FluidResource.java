@@ -117,7 +117,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     /**
-     * @return The fluid of this resource
+     * @return The {@link Fluid} of this resource from the inner {@link FluidStack}
      */
     @Override
     public Fluid getInstanceValue() {

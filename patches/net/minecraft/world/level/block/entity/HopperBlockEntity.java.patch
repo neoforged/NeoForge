@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -82,6 +_,32 @@
+@@ -82,6 +_,33 @@
          p_59316_.limitSize(this.getMaxStackSize(p_59316_));
      }
  
@@ -25,9 +25,10 @@
 +    @Override
 +    public void onTransfer(int slot, boolean isInserting, net.neoforged.neoforge.transfer.transaction.TransactionContext context) {
 +        super.onTransfer(slot, isInserting, context);
-+        if(!isInserting) return;
-+        journal.updateSnapshots(context);
-+        this.isInserting = true;
++        if (isInserting) {
++            journal.updateSnapshots(context);
++            this.isInserting = true;
++        }
 +    }
 +
      @Override

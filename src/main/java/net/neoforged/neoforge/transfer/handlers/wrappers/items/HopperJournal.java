@@ -5,34 +5,26 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.util.function.BooleanSupplier;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 
 public final class HopperJournal extends SnapshotJournal<Boolean> {
-    private final Revert setter;
-    private final Snapshot getter;
+    private final BooleanConsumer setter;
+    private final BooleanSupplier getter;
 
-    public HopperJournal(Revert setter, Snapshot getter) {
+    public HopperJournal(BooleanConsumer setter, BooleanSupplier getter) {
         this.setter = setter;
         this.getter = getter;
     }
 
-    @FunctionalInterface
-    public interface Revert {
-        void set(boolean value);
-    }
-
-    @FunctionalInterface
-    public interface Snapshot {
-        boolean get();
-    }
-
     @Override
     protected Boolean createSnapshot() {
-        return getter.get();
+        return getter.getAsBoolean();
     }
 
     @Override
     protected void revertToSnapshot(Boolean snapshot) {
-        setter.set(snapshot);
+        setter.accept(snapshot.booleanValue());
     }
 }

@@ -1,29 +1,9 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -54,6 +_,16 @@
+@@ -164,6 +_,45 @@
          }
      }
  
-+    public ItemContainerContents with(int index, ItemStack stack) {
-+        var stacks = new ArrayList<>(this.items);
-+        stacks.set(index, stack);
-+        return fromItems(stacks);
-+    }
-+
-+    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
-+        return with(index, resource.toStack(amount));
-+    }
-+
-     private static ItemContainerContents fromSlots(List<ItemContainerContents.Slot> p_331424_) {
-         OptionalInt optionalint = p_331424_.stream().mapToInt(ItemContainerContents.Slot::index).max();
-         if (optionalint.isEmpty()) {
-@@ -161,6 +_,35 @@
- 
-         if (j - i > 0) {
-             p_399797_.accept(Component.translatable("item.container.more_items", j - i).withStyle(ChatFormatting.ITALIC));
-+        }
-+    }
-+
 +    /**
 +     * Neo:
 +     * {@return the number of slots in this container}
@@ -50,6 +30,19 @@
 +    private void validateSlotIndex(int slot) {
 +        if (slot < 0 || slot >= getSlots()) {
 +            throw new UnsupportedOperationException("Slot " + slot + " not in valid range - [0," + getSlots() + ")");
-         }
-     }
- 
++        }
++    }
++
++    public ItemContainerContents with(int index, ItemStack stack) {
++        var stacks = new ArrayList<>(this.items);
++        stacks.set(index, stack);
++        return fromItems(stacks);
++    }
++
++    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
++        return with(index, resource.toStack(amount));
++    }
++
+     record Slot(int index, ItemStack item) {
+         public static final Codec<ItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(
+             p_331695_ -> p_331695_.group(
