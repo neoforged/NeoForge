@@ -1,0 +1,12 @@
+--- a/com/mojang/blaze3d/textures/AddressMode.java
++++ b/com/mojang/blaze3d/textures/AddressMode.java
+@@ -8,5 +_,8 @@
+ @DontObfuscate
+ public enum AddressMode {
+     REPEAT,
+-    CLAMP_TO_EDGE;
++    MIRRORED_REPEAT,
++    CLAMP_TO_EDGE,
++    CLAMP_TO_BORDER,
++    ;
+ }
