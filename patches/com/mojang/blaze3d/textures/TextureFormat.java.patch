@@ -8,9 +8,7 @@
 -    RED8(1),
 -    RED8I(1),
 -    DEPTH32(4);
-+    DEPTH32(4),
-+
-+    // Neo: add missing formats, these follow VK_FORMAT naming
++    // Neo: add missing formats, these follow VkFormat naming
 +    // comments are internalformat/format/type, referencing glTexImage's parameters of the same name
 +
 +    // pack8
@@ -171,6 +169,8 @@
 +    public static final TextureFormat RED8 = R8_UNORM;
 +    public static final TextureFormat RED8I = R8_SINT;
 +    public static final TextureFormat RGBA8 = R8G8B8A8_UNORM;
++    // this is corrected from the not required GL_DEPTH_COMPONENT32 to the required by spec GL_DEPTH_COMPONENT32F format
++    public static final TextureFormat DEPTH32 = D32_SFLOAT;
  
      private final int pixelSize;
 -
@@ -206,7 +206,7 @@
      public boolean hasDepthAspect() {
 -        return this == DEPTH32;
 +        return switch (this) {
-+            case DEPTH32, D16_UNORM, X8_D24_UNORM_PACK32, D32_SFLOAT, D16_UNORM_S8_UINT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
++            case D16_UNORM, X8_D24_UNORM_PACK32, D32_SFLOAT, D16_UNORM_S8_UINT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
 +            default -> false;
 +        };
 +    }

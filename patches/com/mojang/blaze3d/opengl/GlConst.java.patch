@@ -54,7 +54,7 @@
          };
      }
  
-@@ -247,35 +_,333 @@
+@@ -247,35 +_,327 @@
  
      public static int toGlInternalId(TextureFormat p_412409_) {
          return switch (p_412409_) {
@@ -62,8 +62,6 @@
 -            case RED8 -> 33321;
 -            case RED8I -> 33329;
 -            case DEPTH32 -> 33191;
-+            case DEPTH32 -> GL_DEPTH_COMPONENT32;
-+
 +            case R4G4_UNORM_PACK8 -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
 +            case R4G4B4A4_UNORM_PACK16, A4B4G4R4_UNORM_PACK16, B4G4R4A4_UNORM_PACK16, A4R4G4B4_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA4;
@@ -190,8 +188,6 @@
 -            case RED8 -> 6403;
 -            case RED8I -> 6403;
 -            case DEPTH32 -> 6402;
-+            case DEPTH32 -> GL_DEPTH_COMPONENT;
-+
 +            case R4G4_UNORM_PACK8 -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
 +            case R4G4B4A4_UNORM_PACK16, A4B4G4R4_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA;
@@ -262,8 +258,6 @@
 -            case RED8 -> 5121;
 -            case RED8I -> 5121;
 -            case DEPTH32 -> 5126;
-+            case DEPTH32 -> GL_FLOAT;
-+
 +            case R4G4_UNORM_PACK8 -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
 +            case R4G4B4A4_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_4_4_4_4;
