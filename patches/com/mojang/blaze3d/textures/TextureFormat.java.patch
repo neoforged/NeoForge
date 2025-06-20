@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/textures/TextureFormat.java
 +++ b/com/mojang/blaze3d/textures/TextureFormat.java
-@@ -7,26 +_,208 @@
+@@ -7,26 +_,182 @@
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
  public enum TextureFormat {
@@ -30,17 +30,9 @@
 +    // pack32
 +    // 10 10 10 2
 +    A2R10G10B10_UNORM_PACK32(4), // GL_RGB10_A2/GL_BGRA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2R10G10B10_SNORM_PACK32(4), // Unsupported by OpenGL
-+    A2R10G10B10_USCALED_PACK32(4), // GL_RGB10_A2UI/GL_BGRA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2R10G10B10_SSCALED_PACK32(4), // Unsupported by OpenGL
 +    A2R10G10B10_UINT_PACK32(4), // GL_RGB10_A2UI/GL_BGRA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2R10G10B10_SINT_PACK32(4), // Unsupported by OpenGL
 +    A2B10G10R10_UNORM_PACK32(4), // GL_RGB10_A2/GL_RGBA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2B10G10R10_SNORM_PACK32(4), // Unsupported by OpenGL
-+    A2B10G10R10_USCALED_PACK32(4), // GL_RGB10_A2UI/GL_RGBA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2B10G10R10_SSCALED_PACK32(4), // Unsupported by OpenGL
 +    A2B10G10R10_UINT_PACK32(4), // GL_RGB10_A2UI/GL_RGBA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2B10G10R10_SINT_PACK32(4), // Unsupported by OpenGL
 +    // 9 9 9 e5
 +    E5B9G9R9_UFLOAT_PACK32(4), // GL_RGB9_E5/GL_RGB/GL_UNSIGNED_INT_5_9_9_9_REV
 +
@@ -123,23 +115,6 @@
 +    R32G32B32A32_SINT(16), // GL_RGBA32I/GL_RGBA/GL_SIGNED_INT
 +    R32G32B32A32_SFLOAT(16), // GL_RGBA32F/GL_RGBA/GL_FLOAT
 +
-+    // R64
-+    R64_UINT(8), // Unsupported by OpenGL
-+    R64_SINT(8), // Unsupported by OpenGL
-+    R64_SFLOAT(8), // Unsupported by OpenGL
-+    // RG64
-+    R64G64_UINT(16), // Unsupported by OpenGL
-+    R64G64_SINT(16), // Unsupported by OpenGL
-+    R64G64_SFLOAT(16), // Unsupported by OpenGL
-+    // RGB64
-+    R64G64B64_UINT(24), // Unsupported by OpenGL
-+    R64G64B64_SINT(24), // Unsupported by OpenGL
-+    R64G64B64_SFLOAT(24), // Unsupported by OpenGL
-+    // RGBA64
-+    R64G64B64A64_UINT(32), // Unsupported by OpenGL
-+    R64G64B64A64_SINT(32), // Unsupported by OpenGL
-+    R64G64B64A64_SFLOAT(32), // Unsupported by OpenGL
-+
 +    // Depth
 +    D16_UNORM(2), // GL_DEPTH_COMPONENT16/GL_DEPTH_COMPONENT/GL_UNSIGNED_SHORT
 +    X8_D24_UNORM_PACK32(4), // GL_DEPTH_COMPONENT24/GL_DEPTH_COMPONENT/GL_UNSIGNED_INT_24_8
@@ -149,7 +124,6 @@
 +    S8_UINT(1), // GL_STENCIL_INDEX8/GL_STENCIL_INDEX/GL_UNSIGNED_BYTE
 +
 +    // Depth/Stencil
-+    D16_UNORM_S8_UINT(3), // Unsupported by OpenGL
 +    D24_UNORM_S8_UINT(4), // GL_DEPTH24_STENCIL8/GL_DEPTH_STENCIL/GL_UNSIGNED_INT_24_8
 +    D32_SFLOAT_S8_UINT(8), // GL_DEPTH32F_STENCIL8/GL_DEPTH_STENCIL/GL_FLOAT_32_UNSIGNED_INT_24_8_REV
 +
@@ -206,14 +180,14 @@
      public boolean hasDepthAspect() {
 -        return this == DEPTH32;
 +        return switch (this) {
-+            case D16_UNORM, X8_D24_UNORM_PACK32, D32_SFLOAT, D16_UNORM_S8_UINT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
++            case D16_UNORM, X8_D24_UNORM_PACK32, D32_SFLOAT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
 +            default -> false;
 +        };
 +    }
 +
 +    public boolean hasStencilAspect() {
 +        return switch (this) {
-+            case S8_UINT, D16_UNORM_S8_UINT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
++            case S8_UINT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
 +            default -> false;
 +        };
      }
