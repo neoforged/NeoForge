@@ -1,0 +1,18 @@
+--- a/com/mojang/blaze3d/shaders/ShaderType.java
++++ b/com/mojang/blaze3d/shaders/ShaderType.java
+@@ -11,7 +_,14 @@
+ @DontObfuscate
+ public enum ShaderType {
+     VERTEX("vertex", ".vsh"),
+-    FRAGMENT("fragment", ".fsh");
++    TESSELLATION_CONTROL("tessellation_control", ".hsh"),
++    TESSELLATION_EVALUATION("tessellation_evaluation", ".dsh"),
++    GEOMETRY("geometry", ".gsh"),
++    FRAGMENT("fragment", ".fsh"),
++    COMPUTE("compute", ".csh"),
++    TASK("task", ".tsh"),
++    MESH("mesh", ".msh"),
++    ;
+ 
+     private static final ShaderType[] TYPES = values();
+     private final String name;

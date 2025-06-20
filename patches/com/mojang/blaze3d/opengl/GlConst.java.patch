@@ -10,7 +10,7 @@
          };
      }
  
-@@ -247,28 +_,360 @@
+@@ -247,35 +_,373 @@
  
      public static int toGlInternalId(TextureFormat p_412409_) {
          return switch (p_412409_) {
@@ -380,6 +380,19 @@
 +
 +            // these are supported by OpenGL, but the type isn't used
 +            case BC1_RGB_UNORM_BLOCK, BC1_RGB_SRGB_BLOCK, BC1_RGBA_UNORM_BLOCK, BC1_RGBA_SRGB_BLOCK, BC2_UNORM_BLOCK, BC2_SRGB_BLOCK, BC3_UNORM_BLOCK, BC3_SRGB_BLOCK -> org.lwjgl.opengl.GL11C.GL_NONE;
+         };
+     }
+ 
+     public static int toGl(ShaderType p_412490_) {
+         return switch (p_412490_) {
+             case VERTEX -> 35633;
++            case TESSELLATION_CONTROL -> org.lwjgl.opengl.GL40C.GL_TESS_CONTROL_SHADER;
++            case TESSELLATION_EVALUATION -> org.lwjgl.opengl.GL40C.GL_TESS_EVALUATION_SHADER;
++            case GEOMETRY -> org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER;
+             case FRAGMENT -> 35632;
++            case COMPUTE -> org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER;
++            case TASK -> org.lwjgl.opengl.NVMeshShader.GL_TASK_SHADER_NV;
++            case MESH -> org.lwjgl.opengl.NVMeshShader.GL_MESH_SHADER_NV;
          };
      }
  
