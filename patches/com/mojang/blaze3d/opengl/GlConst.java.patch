@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
-@@ -147,7 +_,10 @@
+@@ -147,14 +_,18 @@
              case EQUAL_DEPTH_TEST -> 514;
              case LESS_DEPTH_TEST -> 513;
              case GREATER_DEPTH_TEST -> 516;
@@ -9,6 +9,15 @@
 +            case NOT_EQUAL_DEPTH_TEST -> org.lwjgl.opengl.GL11C.GL_NOTEQUAL;
 +            case GEQUAL_DEPTH_TEST -> org.lwjgl.opengl.GL11C.GL_GEQUAL;
 +            case NEVER_DEPTH_TEST -> org.lwjgl.opengl.GL11C.GL_NEVER;
+         };
+     }
+ 
+     public static int toGl(PolygonMode p_412150_) {
+         return switch (p_412150_) {
+             case WIREFRAME -> 6913;
+-            default -> 6914;
++            case FILL -> 6914;
++            case POINT -> org.lwjgl.opengl.GL11C.GL_POINT;
          };
      }
  

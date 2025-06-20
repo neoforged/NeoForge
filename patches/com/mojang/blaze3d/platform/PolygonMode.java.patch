@@ -1,0 +1,11 @@
+--- a/com/mojang/blaze3d/platform/PolygonMode.java
++++ b/com/mojang/blaze3d/platform/PolygonMode.java
+@@ -8,5 +_,7 @@
+ @DontObfuscate
+ public enum PolygonMode {
+     FILL,
+-    WIREFRAME;
++    WIREFRAME,
++    POINT,
++    ;
+ }
