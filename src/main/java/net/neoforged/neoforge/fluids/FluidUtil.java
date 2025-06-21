@@ -418,7 +418,7 @@ public final class FluidUtil {
     /**
      * Helper method to get the fluid contained in an itemStack
      * 
-     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#getFluidFromContext(IItemContext)}We no longer have enough context of what part of the stack we are referring. We can now look at a single instance in the stack or the full stack with {@link IItemContext}
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#getFirstFluidResource(IItemContext)}We no longer have enough context of what part of the stack we are referring. We can now look at a single instance in the stack or the full stack with {@link IItemContext}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static Optional<FluidStack> getFluidContained(ItemStack container) {

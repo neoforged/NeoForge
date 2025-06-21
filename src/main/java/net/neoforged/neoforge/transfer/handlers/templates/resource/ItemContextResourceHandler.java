@@ -105,6 +105,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
 
         int containerFill = getSingleItemAmount();
         int spaceLeft = singleItemLimit - containerFill;
+        if (spaceLeft == 0) return 0;
         if (amount < spaceLeft)
             return setPartial(resource, amount + containerFill, singleItemLimit, transaction) == 1 ? amount : 0;
         return setFull(resource, amount / spaceLeft, singleItemLimit, transaction) * spaceLeft;
@@ -114,6 +115,8 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     public int extract(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount) || isEmpty() || !getResource(0).equals(resource)) return 0;
         int containerFill = getSingleItemAmount();
+        if (containerFill == 0) return 0;
+
         if (amount < containerFill) {
             int singleItemLimit = getSingleItemLimit();
 

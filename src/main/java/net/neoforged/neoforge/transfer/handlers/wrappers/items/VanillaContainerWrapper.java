@@ -169,7 +169,7 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
 
     @Override
     public String toString() {
-        return "AlternateVanillaContainerWrapper{%s}".formatted(container);
+        return "VanillaContainerWrapper{%s}".formatted(container);
     }
 
     public void set(int index, ItemResource resource, int amount) {

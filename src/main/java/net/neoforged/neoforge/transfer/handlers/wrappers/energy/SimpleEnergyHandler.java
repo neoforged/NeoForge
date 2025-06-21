@@ -24,7 +24,7 @@ public final class SimpleEnergyHandler {
 
     private final IEnergyHandler handler;
 
-    public SimpleEnergyHandler(IEnergyHandler handler) {
+    private SimpleEnergyHandler(IEnergyHandler handler) {
         this.handler = handler;
     }
 
@@ -65,7 +65,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int insert(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int inserted = handler.insert(index, amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -73,7 +73,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int insert(int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int inserted = handler.insert(amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -89,7 +89,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int extract(int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int extracted = handler.extract(amount, transaction);
             actionType.commit(transaction);
             return extracted;

@@ -67,7 +67,10 @@ public interface IResourceStack<T extends IResource> {
      * @param factory       Constructor of IResourceStack implementation
      * @param <R>           The resource type
      * @return Codec for the specified IResourceStack implementer
+     * @deprecated Use {@link #codec(Codec, IStackFactory)} instead. This sadly can't be used safely with the map when dealing with "empty" resources
      */
+    //TODO currently doesn't handle empty resources. Due to how the id is missing with . We may want to have the id be "id": "empty" when not present.
+    @Deprecated(forRemoval = true, since = "now")
     static <R extends IResource, S extends IResourceStack<R>> Codec<S> flatCodec(Codec<R> resourceCodec, IStackFactory<R, S> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 MapCodec.assumeMapUnsafe(resourceCodec).forGetter(IResourceStack<R>::resource),

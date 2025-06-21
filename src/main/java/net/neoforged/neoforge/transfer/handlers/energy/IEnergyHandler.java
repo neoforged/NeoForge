@@ -227,7 +227,7 @@ public interface IEnergyHandler extends ITransactionHandler {
      * When implementing, it is advised to not make this call {@link IEnergyHandler#insert(int, int, TransactionContext)} for each index directly,
      * but rather reuse the logic already checked. See {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment#insert(int, TransactionContext) EnergyBuffer.insertCommon} for a reference of an implementation.
      *
-     * @param amount      The amount to insert.
+     * @param amount      The amount to insert. <strong>Must be non-negative</strong>
      * @param transaction the transaction chain that the insertion is part of. The developer is expected to handle snapshotting as necessary to handle rollbacks when the transaction is not committed.
      * @return The amount that was inserted. <strong>Must be non-negative</strong>
      * @see #insert(int, int, TransactionContext) Inserting by index

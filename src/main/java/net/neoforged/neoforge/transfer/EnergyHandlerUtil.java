@@ -144,5 +144,17 @@ public final class EnergyHandlerUtil {
         return handler.getCapacityAsLong();
     }
 
+    /**
+     * The result is expected to not be committed.
+     *
+     * @param handler the energy handler to calculate
+     * @return The max value that energy handler could receive
+     */
+    public static int getMaxInsertableValue(IEnergyHandler handler) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            return handler.insert(Integer.MAX_VALUE, transaction);
+        }
+    }
+
     private EnergyHandlerUtil() {}
 }

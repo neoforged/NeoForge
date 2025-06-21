@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public class TestResourceTemplateAttachment {
     public static final MapCodec<TestResourceTemplateAttachment> MAP_CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             NonNullList.codecOf(ItemStack.OPTIONAL_CODEC).fieldOf("items").forGetter(data -> data.itemHandler.copyToList()),
-            NonNullList.codecOf(IResourceStack.flatCodec(ItemResource.OPTIONAL_CODEC, ItemResource::withMutableAmount)).fieldOf("item_resources").forGetter(data -> data.itemResourceHandler.copyToList()),
+            NonNullList.codecOf(IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withMutableAmount)).fieldOf("item_resources").forGetter(data -> data.itemResourceHandler.copyToList()),
             NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("fluids").forGetter(data -> data.fluidHandler.copyToList())).apply(builder, TestResourceTemplateAttachment::new));
 
     public static final AttachmentType.Builder<TestResourceTemplateAttachment> BUILDER = AttachmentType.builder(TestResourceTemplateAttachment::new)

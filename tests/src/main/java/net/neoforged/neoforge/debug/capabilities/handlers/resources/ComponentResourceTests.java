@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -17,6 +18,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.StackItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -41,18 +43,18 @@ public class ComponentResourceTests {
         IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
         int capacity = 2 * FluidType.BUCKET_VOLUME;
 
-        var fluidContext = new ItemContextFluidHandler.Consumable(context, ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT.get(), capacity);
+        var handler = new ItemContextFluidHandler.Consumable(context, ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT.get(), capacity);
 
-        if (fluidContext.size() != 1)
+        if (handler.size() != 1)
             helper.fail("Expected a single tank");
 
-        if (fluidContext.getCapacity(0, FluidResource.EMPTY) != capacity)
+        if (handler.getCapacity(0, FluidResource.EMPTY) != capacity)
             helper.fail("Expected tank capacity of " + capacity);
 
-        if (fluidContext.getAmount(0) != 0)
+        if (handler.getAmount(0) != 0)
             helper.fail("Expected empty tank");
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-            var inserted = fluidContext.insert(0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME, tx);
+            var inserted = handler.insert(0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME, tx);
             if (inserted != FluidType.BUCKET_VOLUME)
                 helper.fail("Expected to be able to fill a bucket of water");
             tx.commit();
@@ -61,17 +63,17 @@ public class ComponentResourceTests {
         if (!player.getMainHandItem().has(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT))
             helper.fail("Expected fluid stack component");
 
-        if (!ResourceHandlerUtil.resourceAndCountMatches(fluidContext, 0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME))
+        if (!ResourceHandlerUtil.resourceAndCountMatches(handler, 0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME))
             helper.fail("Expected a bucket of water");
 
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
-            var extracted = fluidContext.extract(0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME, tx);
+            var extracted = handler.extract(0, Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME, tx);
             if (extracted != FluidType.BUCKET_VOLUME)
                 helper.fail("Expected to drain a bucket of water");
             tx.commit();
         }
 
-        if (!ResourceHandlerUtil.isIndexEmpty(fluidContext, 0))
+        if (!ResourceHandlerUtil.isIndexEmpty(handler, 0))
             helper.fail("Expected empty tank");
 
         if (player.getMainHandItem().has(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT))
@@ -119,6 +121,8 @@ public class ComponentResourceTests {
             helper.fail("Storage Capability was missing on item");
             return;
         }
+        var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
+        var blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
 
         try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
             //Because of the way the context filling works, it is attempting to fill or group similar actions together.
@@ -129,8 +133,6 @@ public class ComponentResourceTests {
             helper.assertValueEqual(amount, 12800, "diamond");
 
             //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-            var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
-            var blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
             var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
             blockHandler.insert(applesWithContents, 2, tx);
         }
@@ -146,12 +148,37 @@ public class ComponentResourceTests {
             helper.assertValueEqual(amount, 12800, "diamond");
 
             //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-            var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
-            var blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
             var applesWithContents = ItemResource.of(player.getInventory().getItem(1));
             blockHandler.insert(applesWithContents, 2, tx);
             tx.commit();
         }
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests that ItemStorage Components work and don't create accidental duplications")
+    public static void testComponent(ExtendedGameTestHelper helper) {
+        var itemStack = new ItemStack(Items.APPLE);
+        var context = new StackItemContext(itemStack);
+        helper.assertTrue(itemStack.isComponentsPatchEmpty(), "there should be no changes");
+        var appleHandler = new ItemContextFluidHandler.SwapEmpty(
+                context,
+                ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT.get(),
+                10, Items.APPLE.getDefaultResource());
+
+        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
+            appleHandler.insert(Fluids.LAVA.getDefaultResource(), 10, tx);
+            try (var subTx = TransactionManager.open(tx)) {
+                appleHandler.extract(Fluids.LAVA.getDefaultResource(), 5, subTx);
+            }
+
+            helper.assertValueEqual(appleHandler.getAmount(0), 10, "the sub transaction should have reverted");
+            tx.commit();
+        }
+
+        helper.assertFalse(itemStack.isComponentsPatchEmpty(), "there should be changes");
 
         helper.succeed();
     }

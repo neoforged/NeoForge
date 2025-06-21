@@ -333,8 +333,17 @@ public final class FluidUtil {
     /**
      * Gets the first fluid found in the fluid handler of the item context.
      */
-    public static FluidResource getFluidFromContext(IItemContext context) {
+    public static FluidResource getFirstFluidResource(IItemContext context) {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
+        if (handler == null) return FluidResource.EMPTY;
+        return getFirstFluidResource(handler);
+    }
+
+    /**
+     * Gets the first fluid found in the fluid handler of the item stack.
+     */
+    public static FluidResource getFirstFluidResource(ItemStack stack) {
+        IResourceHandler<FluidResource> handler = new StackItemContext(stack).getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return FluidResource.EMPTY;
         return getFirstFluidResource(handler);
     }

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponentHandler;
@@ -19,10 +20,18 @@ import net.neoforged.neoforge.transfer.transaction.TransactionManager;
  * <p>
  * <p>
  * This is intended for use in simple cases where you do not need the full power of the transaction system. It is important to remember, that this is not an IResourceHandler itself.
- *
- * @param <T> The type of resource this handler manages.
  */
-public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> handler) {
+public final class SimpleResourceHandler<T extends IResource> {
+    public static <T extends IResource> SimpleResourceHandler<T> of(IResourceHandler<T> handler) {
+        return new SimpleResourceHandler<>(handler);
+    }
+
+    private final IResourceHandler<T> handler;
+
+    private SimpleResourceHandler(IResourceHandler<T> handler) {
+        this.handler = handler;
+    }
+
     /**
      * An index in synonymous with "slot", "tank", "buffer", etc.
      *
@@ -164,7 +173,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @return The amount of the resource that was (or would have been, if simulated) inserted. <strong>Must be Non-Negative</strong>
      */
     public int insert(int index, T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int inserted = handler.insert(index, resource, amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -183,7 +192,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) inserted.
      */
     public int insert(T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int inserted = handler.insert(resource, amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -200,7 +209,7 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @return The amount (<strong>Must be Non-Negative</strong>) of the resource that was (or would have been, if simulated) extracted.
      */
     public int extract(int index, T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
 
             int extracted = handler.extract(index, resource, amount, transaction);
             actionType.commit(transaction);
@@ -220,10 +229,33 @@ public record SimpleResourceHandler<T extends IResource>(IResourceHandler<T> han
      * @return The amount (<strong>Must be Non-Negative</strong>) of the resource that was (or would have been, if simulated) extracted.
      */
     public int extract(T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
             int extracted = handler.extract(resource, amount, transaction);
             actionType.commit(transaction);
             return extracted;
         }
+    }
+
+    public IResourceHandler<T> handler() {
+        return handler;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (SimpleResourceHandler) obj;
+        return Objects.equals(this.handler, that.handler);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(handler);
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleResourceHandler[" +
+                "handler=" + handler + ']';
     }
 }

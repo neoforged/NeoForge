@@ -64,7 +64,7 @@ public abstract class ResourceStackListHandler<R extends IResource> extends Stac
 
         @Override
         public Codec<MutableResourceStack<ItemResource>> stackCodec() {
-            return IResourceStack.flatCodec(ItemResource.OPTIONAL_CODEC, ItemResource::withMutableAmount);
+            return IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withMutableAmount);
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class ResourceStackListHandler<R extends IResource> extends Stac
 
         @Override
         public Codec<MutableResourceStack<FluidResource>> stackCodec() {
-            return IResourceStack.flatCodec(FluidResource.OPTIONAL_CODEC, FluidResource::withMutableAmount);
+            return IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withMutableAmount);
         }
     }
 }

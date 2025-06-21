@@ -88,6 +88,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
 
         int containerFill = getIndividualAmount();
         int spaceLeft = getIndividualLimit() - containerFill;
+        if (spaceLeft == 0) return 0;
+
         snapshot.updateSnapshots(transaction);
         if (amount < spaceLeft) {
             return setPartial(amount + containerFill, transaction) == 1 ? amount : 0;
@@ -107,6 +109,8 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         if (clampedValue <= 0) return 0;
 
         int containerFill = getIndividualAmount();
+        if (containerFill == 0) return 0;
+
         snapshot.updateSnapshots(transaction);
         if (clampedValue < containerFill) {
             return setPartial(containerFill - clampedValue, transaction) == 1 ? clampedValue : 0;

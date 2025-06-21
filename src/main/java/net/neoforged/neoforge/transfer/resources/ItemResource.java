@@ -45,14 +45,14 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
-    public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(ItemResource::fromOptional, ItemResource::asOptional);
+    public static final Codec<ItemResource> OPTIONAL_CODEC = Codec.lazyInitialized(() -> ExtraCodecs.optionalEmptyMap(CODEC).xmap(ItemResource::fromOptional, ItemResource::asOptional));
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static ItemResource fromOptional(Optional<ItemResource> optional) {
+    public static ItemResource fromOptional(Optional<ItemResource> optional) {
         return optional.orElse(ItemResource.EMPTY);
     }
 
-    private Optional<ItemResource> asOptional() {
+    public Optional<ItemResource> asOptional() {
         return isEmpty() ? Optional.empty() : Optional.of(this);
     }
 
@@ -103,6 +103,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
         if (item.value() == Items.AIR) return EMPTY;
+        if (patch.isEmpty()) return item.value().getDefaultResource();
         return item.value().getDefaultResource().withPatch(patch);
     }
 
