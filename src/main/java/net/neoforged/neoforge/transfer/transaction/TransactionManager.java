@@ -38,14 +38,14 @@ public final class TransactionManager {
      * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
     public static Transaction open(@Nullable TransactionContext parent) {
-        return MANAGERS.get().internalOpen(parent, STACK_WALKER.getCallerClass());
+        return getManagerForThread().internalOpen(parent, STACK_WALKER.getCallerClass());
     }
 
     /**
      * @return The current lifecycle of the transaction stack on this thread.
      */
     public static Transaction.Lifecycle getLifecycle() {
-        return MANAGERS.get().internalGetLifecycle();
+        return getManagerForThread().internalGetLifecycle();
     }
 
     /**
@@ -66,31 +66,32 @@ public final class TransactionManager {
     final List<TransactionContext.RootCloseCallback> rootCloseCallbacks = new ArrayList<>();
     @ApiStatus.Internal
     int currentDepth = -1;
+    @ApiStatus.Internal
+    final Int2ObjectMap<Class<?>> debugMap = new Int2ObjectOpenHashMap<>();
 
+    @ApiStatus.Internal
     boolean isOpen() {
         return currentDepth > -1;
     }
 
+    /**
+     * @return The manager for the current thread.
+     */
+    @ApiStatus.Internal
+    static TransactionManager getManagerForThread() {
+        return MANAGERS.get();
+    }
+
+    @ApiStatus.Internal
     Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
-        if (parent == null) {
-            if (isOpen()) {
-                throw new IllegalStateException("A root transaction is already active on this thread " + thread);
-            }
-        } else {
+        if (parent != TransactionContext.ROOT) {
             Transaction parentImpl = (Transaction) parent;
             parentImpl.validateCurrentTransaction();
             parentImpl.validateOpen();
+        } else if (isOpen()) {
+            throw new IllegalStateException("A root transaction is already active on this thread " + thread);
         }
 
-        return internalOpen(callerClass);
-    }
-
-    final Int2ObjectMap<Class<?>> debugMap = new Int2ObjectOpenHashMap<>();
-
-    /**
-     * Opens a new transaction, root or nested, without performing any state check.
-     */
-    private Transaction internalOpen(Class<?> callerClass) {
         Transaction current;
         if (stack.size() == ++currentDepth) {
             current = new Transaction(this, currentDepth);
@@ -103,6 +104,7 @@ public final class TransactionManager {
         return current;
     }
 
+    @ApiStatus.Internal
     Transaction.Lifecycle internalGetLifecycle() {
         return currentDepth == -1 ? TransactionContext.Lifecycle.NONE : stack.get(currentDepth).lifecycle;
     }
