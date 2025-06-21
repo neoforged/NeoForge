@@ -74,7 +74,7 @@ public final class FluidUtil {
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
 
-        IItemContext itemContext = PlayerItemContext.ofHand(player, hand);
+        IItemContext itemContext = PlayerItemContext.ofHand(player, hand).oneByOne();
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
@@ -204,7 +204,7 @@ public final class FluidUtil {
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
     public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
-        IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).oneByOne().getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos);
     }
 
@@ -219,7 +219,7 @@ public final class FluidUtil {
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
     public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
-        IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).getCapability(Capabilities.FluidHandler.ITEM);
+        IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).oneByOne().getCapability(Capabilities.FluidHandler.ITEM);
         return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos);
     }
 
