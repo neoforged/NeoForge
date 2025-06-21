@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/buffers/GpuBuffer.java
 +++ b/com/mojang/blaze3d/buffers/GpuBuffer.java
-@@ -17,6 +_,12 @@
+@@ -17,6 +_,19 @@
      public static final int USAGE_INDEX = 64;
      public static final int USAGE_UNIFORM = 128;
      public static final int USAGE_UNIFORM_TEXEL_BUFFER = 256;
@@ -8,6 +8,13 @@
 +    public static final int USAGE_STORAGE_BUFFER = USAGE_STORAGE_TEXEL_BUFFER << 1;
 +    public static final int USAGE_INDIRECT = USAGE_STORAGE_BUFFER << 1;
 +    public static final int USAGE_TRANSFORM_FEEDBACK = USAGE_INDIRECT << 1;
++    // Neo: requires that this buffer be uploaded to before being used for a given frame
++    //      use of this buffer without prior upload on a given frame may crash
++    public static final int USAGE_PERF_FRAME_TRANSIENT = USAGE_TRANSFORM_FEEDBACK << 1;
++    // Neo: hints that the contents of this buffer will be used once after upload
++    //      requires use of USAGE_PERF_FRAME_TRANSIENT
++    //      repeated use of the data is valid, this is a performance hint
++    public static final int USAGE_HINT_ONE_TIME_USE = USAGE_PERF_FRAME_TRANSIENT << 1 | USAGE_PERF_FRAME_TRANSIENT;
 +    // Neo: top 8 bits reserved for implementation specific usages
 +    public static final int USAGE_FIRST_IMPLEMENTATION_DEFINED = 1 << 24;
      private final int usage;
