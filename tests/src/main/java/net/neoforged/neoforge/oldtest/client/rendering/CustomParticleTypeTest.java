@@ -26,7 +26,7 @@ public class CustomParticleTypeTest {
 
     public CustomParticleTypeTest() {}
 
-    @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = CustomParticleTypeTest.MOD_ID, value = Dist.CLIENT)
     public static class ClientEvents {
         private static final ParticleRenderType CUSTOM_TYPE = new ParticleRenderType("CUSTOM_TYPE", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));
         private static final ParticleRenderType CUSTOM_TYPE_TWO = new ParticleRenderType("CUSTOM_TYPE_TWO", RenderType.translucentParticle(TextureAtlas.LOCATION_BLOCKS));

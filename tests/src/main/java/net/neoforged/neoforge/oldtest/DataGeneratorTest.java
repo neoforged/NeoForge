@@ -82,7 +82,6 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
@@ -104,7 +103,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(DataGeneratorTest.MODID)
-@EventBusSubscriber(bus = Bus.MOD)
+@EventBusSubscriber
 public class DataGeneratorTest {
     static final String MODID = "data_gen_test";
 
@@ -522,6 +521,7 @@ public class DataGeneratorTest {
 
     private static class Advancements implements AdvancementSubProvider {
         @Override
+        @SuppressWarnings("removal")
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             var obtainDirt = Advancement.Builder.advancement()
                     .display(Items.DIRT,
