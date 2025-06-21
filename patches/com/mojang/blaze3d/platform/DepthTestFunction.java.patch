@@ -1,11 +1,12 @@
 --- a/com/mojang/blaze3d/platform/DepthTestFunction.java
 +++ b/com/mojang/blaze3d/platform/DepthTestFunction.java
-@@ -11,5 +_,9 @@
+@@ -11,5 +_,10 @@
      EQUAL_DEPTH_TEST,
      LEQUAL_DEPTH_TEST,
      LESS_DEPTH_TEST,
 -    GREATER_DEPTH_TEST;
 +    GREATER_DEPTH_TEST,
++    // Neo: Extended depth test
 +    NOT_EQUAL_DEPTH_TEST,
 +    GEQUAL_DEPTH_TEST,
 +    NEVER_DEPTH_TEST,

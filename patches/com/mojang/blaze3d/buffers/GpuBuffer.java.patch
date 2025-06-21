@@ -1,21 +1,25 @@
 --- a/com/mojang/blaze3d/buffers/GpuBuffer.java
 +++ b/com/mojang/blaze3d/buffers/GpuBuffer.java
-@@ -17,6 +_,19 @@
+@@ -17,6 +_,23 @@
      public static final int USAGE_INDEX = 64;
      public static final int USAGE_UNIFORM = 128;
      public static final int USAGE_UNIFORM_TEXEL_BUFFER = 256;
-+    public static final int USAGE_STORAGE_TEXEL_BUFFER = USAGE_UNIFORM_TEXEL_BUFFER << 1;
++    // Neo: Extended buffer usage, some may not always be supported, check backend capabilities before use
++    public static final int USAGE_TRANSFORM_FEEDBACK = USAGE_UNIFORM_TEXEL_BUFFER << 1;
++    // Neo: Requires OpenGL 4.2, ARB_shader_image_load_store, or equivalent
++    public static final int USAGE_STORAGE_TEXEL_BUFFER = USAGE_TRANSFORM_FEEDBACK << 1;
++    // Neo: Requires OpenGL 4.3, ARB_shader_storage_buffer_object, or equivalent
 +    public static final int USAGE_STORAGE_BUFFER = USAGE_STORAGE_TEXEL_BUFFER << 1;
++    // Neo: Requires OpenGL 4.3, ARB_multi_draw_indirect, or equivalent
 +    public static final int USAGE_INDIRECT = USAGE_STORAGE_BUFFER << 1;
-+    public static final int USAGE_TRANSFORM_FEEDBACK = USAGE_INDIRECT << 1;
-+    // Neo: requires that this buffer be uploaded to before being used for a given frame
++    // Neo: Requires that this buffer be uploaded to before being used for a given frame
 +    //      use of this buffer without prior upload on a given frame may crash
-+    public static final int USAGE_PERF_FRAME_TRANSIENT = USAGE_TRANSFORM_FEEDBACK << 1;
-+    // Neo: hints that the contents of this buffer will be used once after upload
++    public static final int USAGE_PERF_FRAME_TRANSIENT = USAGE_INDIRECT << 1;
++    // Neo: Hints that the contents of this buffer will be used once after upload
 +    //      requires use of USAGE_PERF_FRAME_TRANSIENT
 +    //      repeated use of the data is valid, this is a performance hint
 +    public static final int USAGE_HINT_ONE_TIME_USE = USAGE_PERF_FRAME_TRANSIENT << 1 | USAGE_PERF_FRAME_TRANSIENT;
-+    // Neo: top 8 bits reserved for implementation specific usages
++    // Neo: Top 8 bits reserved for implementation specific usages
 +    public static final int USAGE_FIRST_IMPLEMENTATION_DEFINED = 1 << 24;
      private final int usage;
      public int size;

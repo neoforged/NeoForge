@@ -1,11 +1,12 @@
 --- a/com/mojang/blaze3d/shaders/UniformType.java
 +++ b/com/mojang/blaze3d/shaders/UniformType.java
-@@ -6,7 +_,10 @@
+@@ -6,7 +_,11 @@
  @OnlyIn(Dist.CLIENT)
  public enum UniformType {
      UNIFORM_BUFFER("ubo"),
 -    TEXEL_BUFFER("utb");
 +    TEXEL_BUFFER("utb"),
++    // Neo: Extended uniform types, may not always be supported, check backend capabilities before use
 +    STORAGE_BUFFER("ssbo"),
 +    STORAGE_TEXEL_BUFFER("stb"),
 +    ;

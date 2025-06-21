@@ -1,11 +1,12 @@
 --- a/com/mojang/blaze3d/platform/DestFactor.java
 +++ b/com/mojang/blaze3d/platform/DestFactor.java
-@@ -20,5 +_,11 @@
+@@ -20,5 +_,12 @@
      ONE_MINUS_SRC_COLOR,
      SRC_ALPHA,
      SRC_COLOR,
 -    ZERO;
 +    ZERO,
++    // Neo: Extended destination factors
 +    SRC_ALPHA_SATURATE,
 +    SRC1_COLOR,
 +    ONE_MINUS_SRC1_COLOR,
