@@ -28,6 +28,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 public class ModDatapackTest {
     public static final String GROUP = "resources";
 
+    @SuppressWarnings("removal")
     @TestHolder(description = "Tests that mod datapacks are loaded properly on initial load and reload", enabledByDefault = true)
     static void modDatapack(final DynamicTest test) {
         final ResourceLocation testAdvancement = ResourceLocation.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");

@@ -106,6 +106,7 @@ public interface Test extends Groupable {
     /**
      * A group of collectors by {@link EventBusSubscriber.Bus bus}.
      */
+    @SuppressWarnings("removal")
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
     interface EventListenerGroup {
@@ -114,7 +115,10 @@ public interface Test extends Groupable {
          *
          * @param bus the bus to get the collector for
          * @return the collector associated with the bus
+         *
+         * @deprecated Use {@link #mod()} or {@link #forge()}
          */
+        @Deprecated(since = "1.21.1", forRemoval = true)
         EventListenerCollector getFor(EventBusSubscriber.Bus bus);
 
         default EventListenerCollector mod() {

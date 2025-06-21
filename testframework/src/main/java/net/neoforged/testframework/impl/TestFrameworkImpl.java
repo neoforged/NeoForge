@@ -71,6 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApiStatus.Internal
+@SuppressWarnings("removal")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class TestFrameworkImpl implements MutableTestFramework {
