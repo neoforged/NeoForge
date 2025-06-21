@@ -50,8 +50,9 @@ public class StaticItemContext implements IItemContext {
         return Math.min(this.amount, amount);
     }
 
-    @Override
-    public int exchange(ItemResource resource, int amount, TransactionContext context) {
-        return amount;
-    }
+    //TODO validating this works as expected without overriding. This currently is making something like buckets when in creative full fill the tank.
+//    @Override
+//    public int exchange(ItemResource resource, int amount, TransactionContext context) {
+//        return amount;
+//    }
 }

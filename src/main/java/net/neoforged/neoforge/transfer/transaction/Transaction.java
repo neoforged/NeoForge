@@ -7,6 +7,8 @@ package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 
 /**
  * A global operation where participants guarantee atomicity: either the whole operation succeeds,
@@ -171,8 +173,19 @@ public final class Transaction implements AutoCloseable, TransactionContext {
             if (manager.stack.get(manager.currentDepth) == this) return;
         }
 
-        throw new IllegalStateException("Transaction function was called on a transaction with depth %d, but the current transaction has depth %d."
-                .formatted(nestingDepth, manager.currentDepth));
+        //TODO validate this is handling the use case of showing a dev which transactions are being opened / closed (on top of the stacktrace)
+        var self = manager.debugMap.get(nestingDepth);
+        var actual = manager.debugMap.get(manager.currentDepth);
+
+        CrashReport report = CrashReport.forThrowable(new IllegalStateException("Transaction function was called on a transaction with depth %d, but the current transaction has depth %d."
+                .formatted(nestingDepth, manager.currentDepth)), "Transacting");
+        report.addCategory("Transaction Opening")
+                .setDetail("Existing Transaction", actual)
+                .setDetail("Current Depth", manager.currentDepth)
+                .setDetail("Attempted Transaction", self)
+                .setDetail("Nesting Depth", nestingDepth);
+
+        throw new ReportedException(report);
     }
 
     // Validate that this transaction is open.

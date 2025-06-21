@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
  * @see Transaction
  */
 public final class TransactionManager {
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+
     /**
      * Opens a new transaction with a specified parent. The example below, we open the outermost layer or the `root`.
      * <p>
@@ -34,7 +38,7 @@ public final class TransactionManager {
      * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
     public static Transaction open(@Nullable TransactionContext parent) {
-        return MANAGERS.get().internalOpen(parent);
+        return MANAGERS.get().internalOpen(parent, STACK_WALKER.getCallerClass());
     }
 
     /**
@@ -67,7 +71,7 @@ public final class TransactionManager {
         return currentDepth > -1;
     }
 
-    Transaction internalOpen(@Nullable TransactionContext parent) {
+    Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
         if (parent == null) {
             if (isOpen()) {
                 throw new IllegalStateException("A root transaction is already active on this thread " + thread);
@@ -78,13 +82,15 @@ public final class TransactionManager {
             parentImpl.validateOpen();
         }
 
-        return internalOpen();
+        return internalOpen(callerClass);
     }
+
+    final Int2ObjectMap<Class<?>> debugMap = new Int2ObjectOpenHashMap<>();
 
     /**
      * Opens a new transaction, root or nested, without performing any state check.
      */
-    private Transaction internalOpen() {
+    private Transaction internalOpen(Class<?> callerClass) {
         Transaction current;
         if (stack.size() == ++currentDepth) {
             current = new Transaction(this, currentDepth);
@@ -92,6 +98,7 @@ public final class TransactionManager {
         } else {
             current = stack.get(currentDepth);
         }
+        debugMap.put(currentDepth, callerClass);
         current.lifecycle = TransactionContext.Lifecycle.OPEN;
         return current;
     }
