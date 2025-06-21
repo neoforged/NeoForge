@@ -1,77 +1,52 @@
 --- a/com/mojang/blaze3d/textures/TextureFormat.java
 +++ b/com/mojang/blaze3d/textures/TextureFormat.java
-@@ -7,26 +_,182 @@
- @OnlyIn(Dist.CLIENT)
- @DontObfuscate
- public enum TextureFormat {
--    RGBA8(4),
--    RED8(1),
--    RED8I(1),
+@@ -10,23 +_,152 @@
+     RGBA8(4),
+     RED8(1),
+     RED8I(1),
 -    DEPTH32(4);
-+    // Neo: add missing formats, these follow VkFormat naming
++    DEPTH32(4),
++    // Neo: Difference notes on the above formats
++    //      Vanilla RED8I uses GL_UNSIGNED_BYTE for type, Neo corrects this to GL_BYTE
++    //      Vanilla DEPTH32 uses the not-required by GL32C GL_DEPTH_COMPONENT32 type, Neo corrects to the required by GL32C GL_DEPTH_COMPONENT32F type
++
++    // Neo: Extended texture formats, these follow VkFormat naming
 +    // comments are internalformat/format/type, referencing glTexImage's parameters of the same name
++    // some may not always be supported or have limitations on specific usages, check backend capabilities before use
 +
 +    // pack8
 +    R4G4_UNORM_PACK8(1), // Unsupported by OpenGL
 +    // pack16
 +    // 4 4 4 4
++    // Requires OpenGL 4.2, or equivalent
 +    R4G4B4A4_UNORM_PACK16(2), // GL_RGBA4/GL_RGBA/GL_UNSIGNED_SHORT_4_4_4_4
-+    A4B4G4R4_UNORM_PACK16(2), // GL_RGBA4/GL_RGBA/GL_UNSIGNED_SHORT_4_4_4_4_REV
-+    B4G4R4A4_UNORM_PACK16(2), // GL_RGBA4/GL_BGRA/GL_UNSIGNED_SHORT_4_4_4_4
-+    A4R4G4B4_UNORM_PACK16(2), // GL_RGBA4/GL_BGRA/GL_UNSIGNED_SHORT_4_4_4_4_REV
 +    // 5 6 5
++    // Requires OpenGL 4.2, or equivalent
 +    R5G6B5_UNORM_PACK16(2), // GL_RGB565/GL_RGB/GL_UNSIGNED_SHORT_5_6_5
-+    B5G6R5_UNORM_PACK16(2), // GL_RGB565/GL_RGB/GL_UNSIGNED_SHORT_5_6_5_REV
 +    // 5 5 5 1
++    // Requires OpenGL 4.1, GL_ARB_ES2_compatibility, or equivalent
 +    R5G5B5A1_UNORM_PACK16(2), // GL_RGB5_A1/GL_RGBA/GL_UNSIGNED_SHORT_5_5_5_1
-+    A1B5G5R5_UNORM_PACK16(2), // GL_RGB5_A1/GL_RGBA/GL_UNSIGNED_SHORT_1_5_5_5_REV
-+    B5G5R5A1_UNORM_PACK16(2), // GL_RGB5_A1/GL_BGRA/GL_UNSIGNED_SHORT_5_5_5_1
-+    A1R5G5B5_UNORM_PACK16(2), // GL_RGB5_A1/GL_BGRA/GL_UNSIGNED_SHORT_1_5_5_5_REV
 +    // pack32
 +    // 10 10 10 2
-+    A2R10G10B10_UNORM_PACK32(4), // GL_RGB10_A2/GL_BGRA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2R10G10B10_UINT_PACK32(4), // GL_RGB10_A2UI/GL_BGRA/GL_UNSIGNED_INT_2_10_10_10_REV
 +    A2B10G10R10_UNORM_PACK32(4), // GL_RGB10_A2/GL_RGBA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    A2B10G10R10_UINT_PACK32(4), // GL_RGB10_A2UI/GL_RGBA/GL_UNSIGNED_INT_2_10_10_10_REV
 +    // 9 9 9 e5
 +    E5B9G9R9_UFLOAT_PACK32(4), // GL_RGB9_E5/GL_RGB/GL_UNSIGNED_INT_5_9_9_9_REV
 +
 +    // R8
-+    R8_UNORM(1), // GL_R8/GL_RED/GL_UNSIGNED_BYTE
++    // RED8 is R8_UNORM(1), // GL_R8/GL_RED/GL_UNSIGNED_BYTE
 +    R8_SNORM(1), // GL_R8_SNORM/GL_RED/GL_BYTE
-+    R8_UINT(1), // GL_R8I/GL_RED/GL_UNSIGNED_BYTE
-+    R8_SINT(1), // GL_R8UI/GL_RED/GL_BYTE
-+    R8_SRGB(1), // Unsupported by OpenGL
++    R8_UINT(1), // GL_R8UI/GL_RED/GL_UNSIGNED_BYTE
++    // RED8I is R8_SINT(1), // GL_R8I/GL_RED/GL_BYTE
 +    // RG8
 +    R8G8_UNORM(2), // GL_RG8/GL_RG/GL_UNSIGNED_BYTE
 +    R8G8_SNORM(2), // GL_RG8_SNORM/GL_RG/GL_BYTE
-+    R8G8_UINT(2), // GL_RG8I/GL_RG/GL_UNSIGNED_BYTE
-+    R8G8_SINT(2), // GL_RG8UI/GL_RG/GL_BYTE
-+    R8G8_SRGB(2), // Unsupported by OpenGL
-+    // RGB8
-+    R8G8B8_UNORM(3), // GL_RGB8/GL_RGB/GL_UNSIGNED_BYTE
-+    R8G8B8_SNORM(3), // GL_RGB8_SNORM/GL_RGB/GL_BYTE
-+    R8G8B8_UINT(3), // GL_RGB8UI/GL_RGB/GL_UNSIGNED_BYTE
-+    R8G8B8_SINT(3), // GL_RGB8SI/GL_RGB/GL_BYTE
-+    R8G8B8_SRGB(3), // GL_SRGB8/GL_RGB/GL_UNSIGNED_BYTE
-+    // BGR8
-+    B8G8R8_UNORM(3), // GL_RGB8/GL_BGR/GL_UNSIGNED_BYTE
-+    B8G8R8_SNORM(3), // GL_RGB8_SNORM/GL_BGR/GL_BYTE
-+    B8G8R8_UINT(3), // GL_RGB8UI/GL_BGR/GL_UNSIGNED_BYTE
-+    B8G8R8_SINT(3), // GL_RGB8SI/GL_BGR/GL_BYTE
-+    B8G8R8_SRGB(3), // GL_SRGB8/GL_BGR/GL_UNSIGNED_BYTE
++    R8G8_UINT(2), // GL_RG8UI/GL_RG/GL_UNSIGNED_BYTE
++    R8G8_SINT(2), // GL_RG8I/GL_RG/GL_BYTE
 +    // RGBA8
-+    R8G8B8A8_UNORM(4), // GL_RGBA8/GL_RGBA/GL_UNSIGNED_BYTE
++    // RGBA8 is R8G8B8A8_UNORM(4), // GL_RGBA8/GL_RGBA/GL_UNSIGNED_BYTE
 +    R8G8B8A8_SNORM(4), // GL_RGBA8_SNORM/GL_RGBA/GL_BYTE
 +    R8G8B8A8_UINT(4), // GL_RGBA8UI/GL_RGBA/GL_UNSIGNED_BYTE
 +    R8G8B8A8_SINT(4), // GL_RGBA8I/GL_RGBA/GL_BYTE
-+    R8G8B8A8_SRGB(4), // GL_SRGB8_ALPHA8/GL_RGBA/GL_UNSIGNED_BYTE
-+    // BGRA8
-+    B8G8R8A8_UNORM(4), // GL_RGBA8/GL_BGRA/GL_UNSIGNED_BYTE
-+    B8G8R8A8_SNORM(4), // GL_RGBA8_SNORM/GL_BGRA/GL_BYTE
-+    B8G8R8A8_UINT(4), // GL_RGBA8UI/GL_BGRA/GL_UNSIGNED_BYTE
-+    B8G8R8A8_SINT(4), // GL_RGBA8I/GL_BGRA/GL_BYTE
-+    B8G8R8A8_SRGB(4), // GL_SRGB8_ALPHA8/GL_BGRA/GL_UNSIGNED_BYTE
 +
 +    // R16
 +    R16_UNORM(2), // GL_R16/GL_RED/GL_UNSIGNED_SHORT
@@ -85,12 +60,6 @@
 +    R16G16_UINT(4), // GL_RG16UI/GL_RG/GL_UNSIGNED_SHORT
 +    R16G16_SINT(4), // GL_RG16I/GL_RG/GL_SHORT
 +    R16G16_SFLOAT(4), //GL_RG16F/GL_RG/GL_HALF_FLOAT
-+    // RGB16
-+    R16G16B16_UNORM(6), // GL_RGB16/GL_RGB/GL_UNSIGNED_SHORT
-+    R16G16B16_SNORM(6), // GL_RGB16_SNORM/GL_RGB/GL_SHORT
-+    R16G16B16_UINT(6), // GL_RGB16UI/GL_RGB/GL_UNSIGNED_SHORT
-+    R16G16B16_SINT(6), // GL_RGB16I/GL_RGB/GL_SHORT
-+    R16G16B16_SFLOAT(6), //GL_RGB16F/GL_RGB/GL_HALF_FLOAT
 +    // RGBA16
 +    R16G16B16A16_UNORM(8), // GL_RGBA16/GL_RGBA/GL_UNSIGNED_SHORT
 +    R16G16B16A16_SNORM(8), // GL_RGBA16_SNORM/GL_RGBA/GL_SHORT
@@ -106,10 +75,6 @@
 +    R32G32_UINT(8), // GL_RG32UI/GL_RG/GL_UNSIGNED_INT
 +    R32G32_SINT(8), // GL_RG32I/GL_RG/GL_SIGNED_INT
 +    R32G32_SFLOAT(8), // GL_RG32F/GL_RG/GL_FLOAT
-+    // RGB32
-+    R32G32B32_UINT(12), // GL_RGB32UI/GL_RGB/GL_UNSIGNED_INT
-+    R32G32B32_SINT(12), // GL_RGB32I/GL_RGB/GL_SIGNED_INT
-+    R32G32B32_SFLOAT(12), // GL_RGB32F/GL_RGB/GL_FLOAT
 +    // RGBA32
 +    R32G32B32A32_UINT(16), // GL_RGBA32UI/GL_RGBA/GL_UNSIGNED_INT
 +    R32G32B32A32_SINT(16), // GL_RGBA32I/GL_RGBA/GL_SIGNED_INT
@@ -118,9 +83,11 @@
 +    // Depth
 +    D16_UNORM(2), // GL_DEPTH_COMPONENT16/GL_DEPTH_COMPONENT/GL_UNSIGNED_SHORT
 +    X8_D24_UNORM_PACK32(4), // GL_DEPTH_COMPONENT24/GL_DEPTH_COMPONENT/GL_UNSIGNED_INT_24_8
-+    D32_SFLOAT(4), // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
++    // DEPTH32 is D32_SFLOAT(4), // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
 +
 +    // Stencil
++    // Requires OpenGL 4.3, GL_ARB_ES3_compatibility, or equivalent (render buffer)
++    // Requires OpenGL 4.4, GL_ARB_texture_stencil8, or equivalent (texture)
 +    S8_UINT(1), // GL_STENCIL_INDEX8/GL_STENCIL_INDEX/GL_UNSIGNED_BYTE
 +
 +    // Depth/Stencil
@@ -129,6 +96,7 @@
 +
 +    // Compressed
 +    // internal and external format are identical for these, and there is no type
++    // Requires GL_EXT_texture_compression_s3tc, or equivalent
 +    BC1_RGB_UNORM_BLOCK(0, 1), // GL_COMPRESSED_RGB_S3TC_DXT1_EXT
 +    BC1_RGB_SRGB_BLOCK(0, 1), // GL_COMPRESSED_SRGB_S3TC_DXT1_EXT
 +    BC1_RGBA_UNORM_BLOCK(0, 1), // GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
@@ -139,12 +107,11 @@
 +    BC3_SRGB_BLOCK(1), // GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT
 +    ;
 +
-+    // Vanilla name alias
-+    public static final TextureFormat RED8 = R8_UNORM;
-+    public static final TextureFormat RED8I = R8_SINT;
-+    public static final TextureFormat RGBA8 = R8G8B8A8_UNORM;
-+    // this is corrected from the not required GL_DEPTH_COMPONENT32 to the required by spec GL_DEPTH_COMPONENT32F format
-+    public static final TextureFormat DEPTH32 = D32_SFLOAT;
++    // VkFormat based name alias for Vanilla defined enums
++    public static final TextureFormat R8_UNORM = RED8; // GL_R8/GL_RED/GL_UNSIGNED_BYTE
++    public static final TextureFormat R8_SINT = RED8I; // GL_R8I/GL_RED/GL_BYTE
++    public static final TextureFormat R8G8B8A8_UNORM = RGBA8; // GL_RGBA8/GL_RGBA/GL_UNSIGNED_BYTE
++    public static final TextureFormat D32_SFLOAT = DEPTH32; // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
  
      private final int pixelSize;
 +    // Neo: some formats (BC1) are less than a single byte per-pixel
@@ -177,7 +144,7 @@
      public boolean hasDepthAspect() {
 -        return this == DEPTH32;
 +        return switch (this) {
-+            case D16_UNORM, X8_D24_UNORM_PACK32, D32_SFLOAT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
++            case D16_UNORM, X8_D24_UNORM_PACK32, DEPTH32, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
 +            default -> false;
 +        };
 +    }

@@ -54,7 +54,7 @@
          };
      }
  
-@@ -247,35 +_,294 @@
+@@ -247,35 +_,197 @@
  
      public static int toGlInternalId(TextureFormat p_412409_) {
          return switch (p_412409_) {
@@ -64,52 +64,26 @@
 -            case DEPTH32 -> 33191;
 +            case R4G4_UNORM_PACK8 -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
-+            case R4G4B4A4_UNORM_PACK16, A4B4G4R4_UNORM_PACK16, B4G4R4A4_UNORM_PACK16, A4R4G4B4_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA4;
-+            case R5G6B5_UNORM_PACK16, B5G6R5_UNORM_PACK16 -> org.lwjgl.opengl.GL41C.GL_RGB565;
-+            case R5G5B5A1_UNORM_PACK16, A1B5G5R5_UNORM_PACK16, B5G5R5A1_UNORM_PACK16, A1R5G5B5_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGB5_A1;
-+
-+            case A2R10G10B10_UNORM_PACK32 -> org.lwjgl.opengl.GL11C.GL_RGB10_A2;
-+            case A2R10G10B10_UINT_PACK32 -> org.lwjgl.opengl.GL33C.GL_RGB10_A2UI;
++            case R4G4B4A4_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA4;
++            case R5G6B5_UNORM_PACK16 -> org.lwjgl.opengl.GL41C.GL_RGB565;
++            case R5G5B5A1_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGB5_A1;
 +            case A2B10G10R10_UNORM_PACK32 -> org.lwjgl.opengl.GL11C.GL_RGB10_A2;
-+            case A2B10G10R10_UINT_PACK32 -> org.lwjgl.opengl.GL33C.GL_RGB10_A2UI;
-+
 +            case E5B9G9R9_UFLOAT_PACK32 -> org.lwjgl.opengl.GL30C.GL_RGB9_E5;
 +
-+            case R8_UNORM -> org.lwjgl.opengl.GL30C.GL_R8;
++            case RED8 -> org.lwjgl.opengl.GL30C.GL_R8;
 +            case R8_SNORM -> org.lwjgl.opengl.GL31C.GL_R8_SNORM;
 +            case R8_UINT -> org.lwjgl.opengl.GL30C.GL_R8UI;
-+            case R8_SINT -> org.lwjgl.opengl.GL30C.GL_R8I;
-+            case R8_SRGB -> org.lwjgl.opengl.GL11C.GL_NONE;
++            case RED8I -> org.lwjgl.opengl.GL30C.GL_R8I;
 +
 +            case R8G8_UNORM -> org.lwjgl.opengl.GL30C.GL_RG8;
 +            case R8G8_SNORM -> org.lwjgl.opengl.GL31C.GL_RG8_SNORM;
 +            case R8G8_UINT -> org.lwjgl.opengl.GL30C.GL_RG8UI;
 +            case R8G8_SINT -> org.lwjgl.opengl.GL30C.GL_RG8I;
-+            case R8G8_SRGB -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
-+            case R8G8B8_UNORM -> org.lwjgl.opengl.GL30C.GL_RGB8;
-+            case R8G8B8_SNORM -> org.lwjgl.opengl.GL31C.GL_RGB8_SNORM;
-+            case R8G8B8_UINT -> org.lwjgl.opengl.GL30C.GL_RGB8UI;
-+            case R8G8B8_SINT -> org.lwjgl.opengl.GL30C.GL_RGB8I;
-+            case R8G8B8_SRGB -> org.lwjgl.opengl.GL21C.GL_SRGB8;
-+
-+            case B8G8R8_UNORM -> org.lwjgl.opengl.GL30C.GL_RGB8;
-+            case B8G8R8_SNORM -> org.lwjgl.opengl.GL31C.GL_RGB8_SNORM;
-+            case B8G8R8_UINT -> org.lwjgl.opengl.GL30C.GL_RGB8UI;
-+            case B8G8R8_SINT -> org.lwjgl.opengl.GL30C.GL_RGB8I;
-+            case B8G8R8_SRGB -> org.lwjgl.opengl.GL21C.GL_SRGB8;
-+
-+            case R8G8B8A8_UNORM -> org.lwjgl.opengl.GL30C.GL_RGBA8;
++            case RGBA8 -> org.lwjgl.opengl.GL30C.GL_RGBA8;
 +            case R8G8B8A8_SNORM -> org.lwjgl.opengl.GL31C.GL_RGBA8_SNORM;
 +            case R8G8B8A8_UINT -> org.lwjgl.opengl.GL30C.GL_RGBA8UI;
 +            case R8G8B8A8_SINT -> org.lwjgl.opengl.GL30C.GL_RGBA8I;
-+            case R8G8B8A8_SRGB -> org.lwjgl.opengl.GL21C.GL_SRGB8_ALPHA8;
-+
-+            case B8G8R8A8_UNORM -> org.lwjgl.opengl.GL30C.GL_RGBA8;
-+            case B8G8R8A8_SNORM -> org.lwjgl.opengl.GL31C.GL_RGBA8_SNORM;
-+            case B8G8R8A8_UINT -> org.lwjgl.opengl.GL30C.GL_RGBA8UI;
-+            case B8G8R8A8_SINT -> org.lwjgl.opengl.GL30C.GL_RGBA8I;
-+            case B8G8R8A8_SRGB -> org.lwjgl.opengl.GL21C.GL_SRGB8_ALPHA8;
 +
 +            case R16_UNORM -> org.lwjgl.opengl.GL30C.GL_R16;
 +            case R16_SNORM -> org.lwjgl.opengl.GL31C.GL_R16_SNORM;
@@ -122,12 +96,6 @@
 +            case R16G16_UINT -> org.lwjgl.opengl.GL30C.GL_RG16UI;
 +            case R16G16_SINT -> org.lwjgl.opengl.GL30C.GL_RG16I;
 +            case R16G16_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RG16F;
-+
-+            case R16G16B16_UNORM -> org.lwjgl.opengl.GL30C.GL_RGB16;
-+            case R16G16B16_SNORM -> org.lwjgl.opengl.GL31C.GL_RGB16_SNORM;
-+            case R16G16B16_UINT -> org.lwjgl.opengl.GL30C.GL_RGB16UI;
-+            case R16G16B16_SINT -> org.lwjgl.opengl.GL30C.GL_RGB16I;
-+            case R16G16B16_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RGB16F;
 +
 +            case R16G16B16A16_UNORM -> org.lwjgl.opengl.GL30C.GL_RGBA16;
 +            case R16G16B16A16_SNORM -> org.lwjgl.opengl.GL31C.GL_RGBA16_SNORM;
@@ -143,17 +111,13 @@
 +            case R32G32_SINT -> org.lwjgl.opengl.GL30C.GL_RG32I;
 +            case R32G32_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RG32F;
 +
-+            case R32G32B32_UINT -> org.lwjgl.opengl.GL30C.GL_RGB32UI;
-+            case R32G32B32_SINT -> org.lwjgl.opengl.GL30C.GL_RGB32I;
-+            case R32G32B32_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RGB32F;
-+
 +            case R32G32B32A32_UINT -> org.lwjgl.opengl.GL30C.GL_RGBA32UI;
 +            case R32G32B32A32_SINT -> org.lwjgl.opengl.GL30C.GL_RGBA32I;
 +            case R32G32B32A32_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RGBA32F;
 +
 +            case D16_UNORM -> org.lwjgl.opengl.GL30C.GL_DEPTH_COMPONENT16;
 +            case X8_D24_UNORM_PACK32 -> org.lwjgl.opengl.GL30C.GL_DEPTH_COMPONENT24;
-+            case D32_SFLOAT -> org.lwjgl.opengl.GL30C.GL_DEPTH_COMPONENT32F;
++            case DEPTH32 -> org.lwjgl.opengl.GL30C.GL_DEPTH_COMPONENT32F;
 +
 +            case S8_UINT -> org.lwjgl.opengl.GL41C.GL_STENCIL_INDEX8;
 +
@@ -179,41 +143,26 @@
 -            case DEPTH32 -> 6402;
 +            case R4G4_UNORM_PACK8 -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
-+            case R4G4B4A4_UNORM_PACK16, A4B4G4R4_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA;
-+            case B4G4R4A4_UNORM_PACK16, A4R4G4B4_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_BGRA;
++            case R4G4B4A4_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA;
 +
-+            case R5G6B5_UNORM_PACK16, B5G6R5_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGB;
-+
-+            case R5G5B5A1_UNORM_PACK16, A1B5G5R5_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA;
-+            case B5G5R5A1_UNORM_PACK16, A1R5G5B5_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_BGRA;
-+
-+            case A2R10G10B10_UNORM_PACK32 -> org.lwjgl.opengl.GL12C.GL_BGRA;
-+            case A2R10G10B10_UINT_PACK32 -> org.lwjgl.opengl.GL12C.GL_BGRA;
++            case R5G6B5_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGB;
++            case R5G5B5A1_UNORM_PACK16 -> org.lwjgl.opengl.GL11C.GL_RGBA;
 +            case A2B10G10R10_UNORM_PACK32 -> org.lwjgl.opengl.GL11C.GL_RGBA;
-+            case A2B10G10R10_UINT_PACK32 -> org.lwjgl.opengl.GL11C.GL_RGBA;
-+
 +            case E5B9G9R9_UFLOAT_PACK32 -> org.lwjgl.opengl.GL11C.GL_RGB;
 +
-+            case R8_UNORM, R8_SNORM, R8_UINT, R8_SINT -> org.lwjgl.opengl.GL11C.GL_RED;
-+            case R8_SRGB -> org.lwjgl.opengl.GL11C.GL_NONE;
++            case RED8, R8_SNORM, R8_UINT, RED8I -> org.lwjgl.opengl.GL11C.GL_RED;
 +            case R8G8_UNORM, R8G8_SNORM, R8G8_UINT, R8G8_SINT -> org.lwjgl.opengl.GL30C.GL_RG;
-+            case R8G8_SRGB -> org.lwjgl.opengl.GL11C.GL_NONE;
-+            case R8G8B8_UNORM, R8G8B8_SNORM, R8G8B8_UINT, R8G8B8_SINT, R8G8B8_SRGB -> org.lwjgl.opengl.GL11C.GL_RGB;
-+            case B8G8R8_UNORM, B8G8R8_SNORM, B8G8R8_UINT, B8G8R8_SINT, B8G8R8_SRGB -> org.lwjgl.opengl.GL12C.GL_BGR;
-+            case R8G8B8A8_UNORM, R8G8B8A8_SNORM, R8G8B8A8_UINT, R8G8B8A8_SINT, R8G8B8A8_SRGB -> org.lwjgl.opengl.GL11C.GL_RGBA;
-+            case B8G8R8A8_UNORM, B8G8R8A8_SNORM, B8G8R8A8_UINT, B8G8R8A8_SINT, B8G8R8A8_SRGB -> org.lwjgl.opengl.GL12C.GL_BGRA;
++            case RGBA8, R8G8B8A8_SNORM, R8G8B8A8_UINT, R8G8B8A8_SINT -> org.lwjgl.opengl.GL11C.GL_RGBA;
 +
 +            case R16_UNORM, R16_SNORM, R16_UINT, R16_SINT, R16_SFLOAT -> org.lwjgl.opengl.GL11C.GL_RED;
 +            case R16G16_UNORM, R16G16_SNORM, R16G16_UINT, R16G16_SINT, R16G16_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RG;
-+            case R16G16B16_UNORM, R16G16B16_SNORM, R16G16B16_UINT, R16G16B16_SINT, R16G16B16_SFLOAT -> org.lwjgl.opengl.GL11C.GL_RGB;
 +            case R16G16B16A16_UNORM, R16G16B16A16_SNORM, R16G16B16A16_UINT, R16G16B16A16_SINT, R16G16B16A16_SFLOAT -> org.lwjgl.opengl.GL11C.GL_RGBA;
 +
 +            case R32_UINT, R32_SINT, R32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_RED;
 +            case R32G32_UINT, R32G32_SINT, R32G32_SFLOAT -> org.lwjgl.opengl.GL30C.GL_RG;
-+            case R32G32B32_UINT, R32G32B32_SINT, R32G32B32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_RGB;
 +            case R32G32B32A32_UINT, R32G32B32A32_SINT, R32G32B32A32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_RGBA;
 +
-+            case D16_UNORM, X8_D24_UNORM_PACK32, D32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_DEPTH_COMPONENT;
++            case D16_UNORM, X8_D24_UNORM_PACK32, DEPTH32 -> org.lwjgl.opengl.GL11C.GL_DEPTH_COMPONENT;
 +
 +            case S8_UINT -> org.lwjgl.opengl.GL11C.GL_STENCIL_INDEX;
 +
@@ -237,62 +186,26 @@
 -            case RED8I -> 5121;
 -            case DEPTH32 -> 5126;
 +            case R4G4_UNORM_PACK8 -> org.lwjgl.opengl.GL11C.GL_NONE;
-+
 +            case R4G4B4A4_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_4_4_4_4;
-+            case A4B4G4R4_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_4_4_4_4_REV;
-+            case B4G4R4A4_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_4_4_4_4;
-+            case A4R4G4B4_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_4_4_4_4_REV;
-+
 +            case R5G6B5_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_5_6_5;
-+            case B5G6R5_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_5_6_5_REV;
-+
 +            case R5G5B5A1_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_5_5_5_1;
-+            case A1B5G5R5_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_1_5_5_5_REV;
-+            case B5G5R5A1_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_5_5_5_1;
-+            case A1R5G5B5_UNORM_PACK16 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_SHORT_1_5_5_5_REV;
-+
-+            case A2R10G10B10_UNORM_PACK32 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_INT_2_10_10_10_REV;
-+            case A2R10G10B10_UINT_PACK32 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_INT_2_10_10_10_REV;
 +            case A2B10G10R10_UNORM_PACK32 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_INT_2_10_10_10_REV;
-+            case A2B10G10R10_UINT_PACK32 -> org.lwjgl.opengl.GL12C.GL_UNSIGNED_INT_2_10_10_10_REV;
-+
 +            case E5B9G9R9_UFLOAT_PACK32 -> org.lwjgl.opengl.GL30C.GL_UNSIGNED_INT_5_9_9_9_REV;
 +
-+            case R8_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
++            case RED8 -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +            case R8_SNORM -> org.lwjgl.opengl.GL11C.GL_BYTE;
 +            case R8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case R8_SINT -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case R8_SRGB -> org.lwjgl.opengl.GL11C.GL_NONE;
++            case RED8I -> org.lwjgl.opengl.GL11C.GL_BYTE;
 +
 +            case R8G8_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +            case R8G8_SNORM -> org.lwjgl.opengl.GL11C.GL_BYTE;
 +            case R8G8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +            case R8G8_SINT -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case R8G8_SRGB -> org.lwjgl.opengl.GL11C.GL_NONE;
 +
-+            case R8G8B8_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case R8G8B8_SNORM -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case R8G8B8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case R8G8B8_SINT -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case R8G8B8_SRGB -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+
-+            case B8G8R8_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case B8G8R8_SNORM -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case B8G8R8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case B8G8R8_SINT -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case B8G8R8_SRGB -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+
-+            case R8G8B8A8_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
++            case RGBA8 -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +            case R8G8B8A8_SNORM -> org.lwjgl.opengl.GL11C.GL_BYTE;
 +            case R8G8B8A8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +            case R8G8B8A8_SINT -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case R8G8B8A8_SRGB -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+
-+            case B8G8R8A8_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case B8G8R8A8_SNORM -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case B8G8R8A8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
-+            case B8G8R8A8_SINT -> org.lwjgl.opengl.GL11C.GL_BYTE;
-+            case B8G8R8A8_SRGB -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +
 +            case R16_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_SHORT;
 +            case R16_SNORM -> org.lwjgl.opengl.GL11C.GL_SHORT;
@@ -305,12 +218,6 @@
 +            case R16G16_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_SHORT;
 +            case R16G16_SINT -> org.lwjgl.opengl.GL11C.GL_SHORT;
 +            case R16G16_SFLOAT -> org.lwjgl.opengl.GL30C.GL_HALF_FLOAT;
-+
-+            case R16G16B16_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_SHORT;
-+            case R16G16B16_SNORM -> org.lwjgl.opengl.GL11C.GL_SHORT;
-+            case R16G16B16_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_SHORT;
-+            case R16G16B16_SINT -> org.lwjgl.opengl.GL11C.GL_SHORT;
-+            case R16G16B16_SFLOAT -> org.lwjgl.opengl.GL30C.GL_HALF_FLOAT;
 +
 +            case R16G16B16A16_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_SHORT;
 +            case R16G16B16A16_SNORM -> org.lwjgl.opengl.GL11C.GL_SHORT;
@@ -326,19 +233,15 @@
 +            case R32G32_SINT -> org.lwjgl.opengl.GL11C.GL_INT;
 +            case R32G32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_FLOAT;
 +
-+            case R32G32B32_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_INT;
-+            case R32G32B32_SINT -> org.lwjgl.opengl.GL11C.GL_INT;
-+            case R32G32B32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_FLOAT;
-+
 +            case R32G32B32A32_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_INT;
 +            case R32G32B32A32_SINT -> org.lwjgl.opengl.GL11C.GL_INT;
 +            case R32G32B32A32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_FLOAT;
 +
 +            case D16_UNORM -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_SHORT;
 +            case X8_D24_UNORM_PACK32 -> org.lwjgl.opengl.GL30C.GL_UNSIGNED_INT_24_8;
-+            case D32_SFLOAT -> org.lwjgl.opengl.GL11C.GL_FLOAT;
++            case DEPTH32 -> org.lwjgl.opengl.GL11C.GL_FLOAT;
 +
-+            case S8_UINT ->  GL_UNSIGNED_BYTE;
++            case S8_UINT -> org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
 +
 +            case D24_UNORM_S8_UINT -> org.lwjgl.opengl.GL30C.GL_UNSIGNED_INT_24_8;
 +            case D32_SFLOAT_S8_UINT -> org.lwjgl.opengl.GL30C.GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
