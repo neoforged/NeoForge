@@ -6,12 +6,10 @@
 package net.neoforged.neoforge.client.loading;
 
 import com.mojang.blaze3d.opengl.GlDevice;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,6 +34,7 @@ import net.neoforged.fml.loading.progress.StartupNotificationManager;
  * <p>
  * It is somewhat a copy of the superclass render method.
  */
+@SuppressWarnings("UnstableApiUsage")
 public class NeoForgeLoadingOverlay extends LoadingOverlay {
     public static final ResourceLocation LOADING_OVERLAY_TEXTURE_ID = ResourceLocation.parse("neoforge:loading_overlay");
     private final Minecraft minecraft;
@@ -43,7 +42,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
     private final Consumer<Optional<Throwable>> onFinish;
     private final DisplayWindow displayWindow;
     private final ProgressMeter progressMeter;
-    private final GpuTexture framebuffer;
     private float currentProgress;
     private long fadeOutStart = -1L;
 
@@ -53,15 +51,9 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.reload = reloader;
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
-        var logoGpuTexture = (GlTexture) mc.getTextureManager().getTexture(MOJANG_STUDIOS_LOGO_LOCATION).getTexture();
-        displayWindow.addMojangTexture(logoGpuTexture.glId());
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
-        this.framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
+        var framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
         Minecraft.getInstance().getTextureManager().register(LOADING_OVERLAY_TEXTURE_ID, new ExternalTexture(framebuffer));
-    }
-
-    public static Supplier<LoadingOverlay> newInstance(Supplier<Minecraft> mc, Supplier<ReloadInstance> ri, Consumer<Optional<Throwable>> handler, DisplayWindow window) {
-        return () -> new NeoForgeLoadingOverlay(mc.get(), ri.get(), handler, window);
     }
 
     @Override
@@ -70,9 +62,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         float fadeouttimer = this.fadeOutStart > -1L ? (float) (millis - this.fadeOutStart) / 1000.0F : -1.0F;
         this.currentProgress = Mth.clamp(this.currentProgress * 0.95F + this.reload.getActualProgress() * 0.05F, 0.0F, 1.0F);
         progressMeter.setAbsolute(Mth.ceil(this.currentProgress * 1000));
-
-        // TODO porting: check whether this is still needed
-        //graphics.flush(); // Ensure no draws are queued before we go and render externally
 
         // This updates the EarlyDisplay screen in the off-screen framebuffer
         displayWindow.renderToFramebuffer();

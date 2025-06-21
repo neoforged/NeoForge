@@ -67,9 +67,6 @@ public abstract class ViewportEvent extends Event {
     /**
      * Fired for <b>rendering</b> custom fog. The plane distances are based on the player's render distance.
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}. <br/>
-     * The event must be cancelled for any changes to the plane distances to take effect.</p>
-     *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */

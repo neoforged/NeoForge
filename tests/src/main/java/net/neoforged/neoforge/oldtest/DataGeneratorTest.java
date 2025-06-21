@@ -83,7 +83,6 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
 import net.neoforged.neoforge.common.conditions.NeoForgeConditions;
@@ -104,8 +103,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+@EventBusSubscriber
 @Mod(DataGeneratorTest.MODID)
-@EventBusSubscriber(bus = Bus.MOD)
 public class DataGeneratorTest {
     static final String MODID = "data_gen_test";
 

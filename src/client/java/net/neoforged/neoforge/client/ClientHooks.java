@@ -441,7 +441,7 @@ public class ClientHooks {
         if (camera.getPosition().y < (double) ((float) camera.getBlockPosition().getY() + state.getHeight(camera.getEntity().level(), camera.getBlockPosition())))
             IClientFluidTypeExtensions.of(state).modifyFogRender(camera, environment, renderDistance, partialTick, fogData);
 
-        new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData);
+        NeoForge.EVENT_BUS.post(new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData));
     }
 
     public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
