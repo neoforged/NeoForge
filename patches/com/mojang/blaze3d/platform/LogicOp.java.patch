@@ -1,16 +1,15 @@
 --- a/com/mojang/blaze3d/platform/LogicOp.java
 +++ b/com/mojang/blaze3d/platform/LogicOp.java
-@@ -7,6 +_,22 @@
- @OnlyIn(Dist.CLIENT)
+@@ -8,5 +_,21 @@
  @DontObfuscate
  public enum LogicOp {
-+    CLEAR,
-+    OR_REVERSE,
-+    // Neo: Extended logic ops
-+    AND,
-+    AND_REVERSE,
      NONE,
 -    OR_REVERSE;
++    OR_REVERSE,
++    // Neo: Extended logic ops
++    CLEAR,
++    AND,
++    AND_REVERSE,
 +    AND_INVERTED,
 +    NO_OP,
 +    XOR,
