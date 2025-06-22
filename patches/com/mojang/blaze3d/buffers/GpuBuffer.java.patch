@@ -6,11 +6,11 @@
      public static final int USAGE_UNIFORM_TEXEL_BUFFER = 256;
 +    // Neo: Extended buffer usage, some may not always be supported, check backend capabilities before use
 +    public static final int USAGE_TRANSFORM_FEEDBACK = USAGE_UNIFORM_TEXEL_BUFFER << 1;
-+    // Neo: Requires OpenGL 4.2, ARB_shader_image_load_store, or equivalent
++    // Neo: Requires OpenGL 4.2, GL_ARB_shader_image_load_store, or equivalent
 +    public static final int USAGE_STORAGE_TEXEL_BUFFER = USAGE_TRANSFORM_FEEDBACK << 1;
-+    // Neo: Requires OpenGL 4.3, ARB_shader_storage_buffer_object, or equivalent
++    // Neo: Requires OpenGL 4.3, GL_ARB_shader_storage_buffer_object, or equivalent
 +    public static final int USAGE_STORAGE_BUFFER = USAGE_STORAGE_TEXEL_BUFFER << 1;
-+    // Neo: Requires OpenGL 4.3, ARB_multi_draw_indirect, or equivalent
++    // Neo: Requires OpenGL 4.0, GL_ARB_draw_indirect, or equivalent
 +    public static final int USAGE_INDIRECT = USAGE_STORAGE_BUFFER << 1;
 +    // Neo: Requires that this buffer be uploaded to before being used for a given frame
 +    //      use of this buffer without prior upload on a given frame may crash
