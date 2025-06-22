@@ -16,6 +16,9 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Slider widget implementation which allows inputting values in a certain range with optional step size.
+ *
+ * @implNote Note that {@link ExtendedSlider#value} is the fractional progress of the slider from 0 to 1,
+ *           whereas {@link ExtendedSlider#getValue()} is the actual value from {@code minValue} to {@code maxValue}.
  */
 public class ExtendedSlider extends AbstractSliderButton {
     protected Component prefix;
@@ -108,8 +111,7 @@ public class ExtendedSlider extends AbstractSliderButton {
      * @param value The new slider value
      */
     public void setValue(double value) {
-        this.value = this.snapToNearest((value - this.minValue) / (this.maxValue - this.minValue));
-        this.updateMessage();
+        setFractionalValue((value - this.minValue) / (this.maxValue - this.minValue));
     }
 
     public String getValueString() {
@@ -135,7 +137,7 @@ public class ExtendedSlider extends AbstractSliderButton {
                 flag = !flag;
             float f = flag ? -1F : 1F;
             if (stepSize <= 0D)
-                this.setSliderValue(this.value + (f / (this.width - 8)));
+                this.setFractionalValue(this.value + (f / (this.width - 8)));
             else
                 this.setValue(this.getValue() + f * this.stepSize);
         }
@@ -144,15 +146,15 @@ public class ExtendedSlider extends AbstractSliderButton {
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.setSliderValue((mouseX - (this.getX() + 4)) / (this.width - 8));
+        this.setFractionalValue((mouseX - (this.getX() + 4)) / (this.width - 8));
     }
 
     /**
-     * @param value Percentage of slider range
+     * @param fractionalValue fractional progress between 0 and 1
      */
-    private void setSliderValue(double value) {
+    private void setFractionalValue(double fractionalValue) {
         double oldValue = this.value;
-        this.value = this.snapToNearest(value);
+        this.value = this.snapToNearest(fractionalValue);
         if (!Mth.equal(oldValue, this.value))
             this.applyValue();
 
@@ -162,6 +164,9 @@ public class ExtendedSlider extends AbstractSliderButton {
     /**
      * Snaps the value, so that the displayed value is the nearest multiple of {@code stepSize}.
      * If {@code stepSize} is 0, no snapping occurs.
+     *
+     * @param value fractional progress between 0 and 1
+     * @return fractional progress between 0 and 1, snapped to the nearest allowed value
      */
     private double snapToNearest(double value) {
         if (stepSize <= 0D)
