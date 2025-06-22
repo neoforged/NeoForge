@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
++++ b/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
+@@ -142,4 +_,8 @@
+     protected abstract void renderToTexture(T p_415826_, PoseStack p_415928_);
+ 
+     protected abstract String getTextureLabel();
++
++    public boolean canBeReusedFor(T state, int textureWidth, int textureHeight) {
++        return texture == null || (texture.getWidth(0) == textureWidth && texture.getHeight(0) == textureHeight);
++    }
+ }

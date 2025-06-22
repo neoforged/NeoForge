@@ -188,6 +188,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
+import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
@@ -1138,11 +1139,10 @@ public class ClientHooks {
         return Collections.unmodifiableSet(DEFAULT_METADATA_SECTION_TYPES);
     }
 
-    public static List<PictureInPictureRenderer<?>> gatherPictureInPictureRenderers(
-            MultiBufferSource.BufferSource bufferSource,
-            List<PictureInPictureRenderer<?>> vanillaRenderers) {
+    public static List<PictureInPictureRendererRegistration<?>> gatherPictureInPictureRenderers(
+            List<PictureInPictureRendererRegistration<?>> vanillaRenderers) {
         vanillaRenderers = new ArrayList<>(vanillaRenderers);
-        ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers, bufferSource));
+        ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers));
         return List.copyOf(vanillaRenderers);
     }
 }
