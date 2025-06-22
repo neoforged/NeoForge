@@ -26,7 +26,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -348,11 +347,9 @@ public class ModListScreen extends Screen {
 
         var sm = SignRenderer.createSignModel(this.minecraft.getEntityModels(), WoodType.DARK_OAK, false);
         guiGraphics.submitSignRenderState(
-                sm, 62.500004F, WoodType.DARK_OAK, 0, 0, 66, 168
-        );
+                sm, 62.500004F, WoodType.DARK_OAK, 0, 0, 66, 168);
         guiGraphics.submitSignRenderState(
-                sm, 62.500004F, WoodType.ACACIA, 55, 55, 155, 268
-        );
+                sm, 62.500004F, WoodType.ACACIA, 55, 55, 155, 268);
     }
 
     public Minecraft getMinecraftInstance() {

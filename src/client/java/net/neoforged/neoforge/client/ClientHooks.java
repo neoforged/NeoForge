@@ -47,7 +47,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Overlay;

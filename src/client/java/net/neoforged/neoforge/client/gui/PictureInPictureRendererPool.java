@@ -1,13 +1,21 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.gui;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.MultiBufferSource;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-
+@ApiStatus.Internal
 public class PictureInPictureRendererPool<T extends PictureInPictureRenderState> implements AutoCloseable {
     private final PictureInPictureRendererFactory<T> factory;
     private final MultiBufferSource.BufferSource buffers;
@@ -15,7 +23,7 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
     private Map<T, PictureInPictureRenderer<T>> renderersThisFrame = new HashMap<>();
 
     public PictureInPictureRendererPool(PictureInPictureRendererFactory<T> factory,
-                                        MultiBufferSource.BufferSource buffers) {
+            MultiBufferSource.BufferSource buffers) {
         this.factory = factory;
         this.buffers = buffers;
     }
@@ -65,5 +73,21 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
     public void close() {
         renderersThisFrame.values().forEach(PictureInPictureRenderer::close);
         renderersLastFrame.values().forEach(PictureInPictureRenderer::close);
+    }
+
+    public static Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> createPools(MultiBufferSource.BufferSource bufferSource, List<PictureInPictureRendererFactory<?>> pipRendererFactories) {
+        ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> builder = ImmutableMap.builder();
+
+        for (var factory : pipRendererFactories) {
+            // Create a dummy to get the state class it's for
+            Class<? extends PictureInPictureRenderState> stateClass;
+            try (var dummy = factory.create(bufferSource)) {
+                stateClass = dummy.getRenderStateClass();
+            }
+
+            builder.put(stateClass, new PictureInPictureRendererPool<>(factory, bufferSource));
+        }
+
+        return builder.buildOrThrow();
     }
 }
