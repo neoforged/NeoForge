@@ -50,8 +50,9 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
             var renderer = renderersLastFrame.remove(state);
             if (renderer != null && renderer.canBeReusedFor(state, width, height)) {
                 renderersThisFrame.put(state, renderer);
+                return renderer;
             }
-            return renderer;
+            return null;
         }
 
         // On the second pass, we try to find a renderer of matching texture size
