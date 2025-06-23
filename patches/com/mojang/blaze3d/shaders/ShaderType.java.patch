@@ -1,17 +1,26 @@
 --- a/com/mojang/blaze3d/shaders/ShaderType.java
 +++ b/com/mojang/blaze3d/shaders/ShaderType.java
-@@ -11,7 +_,15 @@
+@@ -11,7 +_,24 @@
  @DontObfuscate
  public enum ShaderType {
      VERTEX("vertex", ".vsh"),
 -    FRAGMENT("fragment", ".fsh");
 +    FRAGMENT("fragment", ".fsh"),
-+    // Neo: Extended shader types, some may not always be supported, check backend capabilities before use
-+    TESSELLATION_CONTROL("tessellation_control", ".hsh"),
-+    TESSELLATION_EVALUATION("tessellation_evaluation", ".dsh"),
-+    GEOMETRY("geometry", ".gsh"),
++    /**
++     * Neo: <a href="https://www.khronos.org/opengl/wiki/Compute_Shader">Compute Shaders</a> require OpenGL 4.3, GL_ARB_compute_shader, or equivalent
++     * <br>
++     * Compute shaders are currently unsupported
++     */
 +    COMPUTE("compute", ".csh"),
++    /**
++     * Neo: <a href="https://registry.khronos.org/OpenGL/extensions/NV/NV_mesh_shader.txt">Mesh Shades</a> require GL_NV_mesh_shader, or equivalent
++     * <br>
++     * Mesh shaders are not supported by NeoForge and require a 3rd party backend
++     */
 +    TASK("task", ".tsh"),
++    /**
++     * @see ShaderType#MESH
++     */
 +    MESH("mesh", ".msh"),
 +    ;
  
