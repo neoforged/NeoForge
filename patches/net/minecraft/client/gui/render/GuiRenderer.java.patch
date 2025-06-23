@@ -15,7 +15,7 @@
      private BufferBuilder bufferBuilder = null;
  
 -    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<PictureInPictureRenderer<?>> p_415849_) {
-+    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<net.neoforged.neoforge.client.gui.PictureInPictureRendererFactory<?>> pipRendererFactories) {
++    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories) {
          this.renderState = p_416418_;
          this.bufferSource = p_415673_;
 -        Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = ImmutableMap.builder();

@@ -17,12 +17,12 @@ import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public class PictureInPictureRendererPool<T extends PictureInPictureRenderState> implements AutoCloseable {
-    private final PictureInPictureRendererFactory<T> factory;
+    private final PictureInPictureRendererRegistration<T> factory;
     private final MultiBufferSource.BufferSource buffers;
     private Map<T, PictureInPictureRenderer<T>> renderersLastFrame = new HashMap<>();
     private Map<T, PictureInPictureRenderer<T>> renderersThisFrame = new HashMap<>();
 
-    public PictureInPictureRendererPool(PictureInPictureRendererFactory<T> factory,
+    public PictureInPictureRendererPool(PictureInPictureRendererRegistration<T> factory,
             MultiBufferSource.BufferSource buffers) {
         this.factory = factory;
         this.buffers = buffers;
@@ -54,7 +54,7 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
         }
 
         // Nothing else helped, create a new one
-        var renderer = factory.create(buffers);
+        var renderer = factory.factory().apply(buffers);
         renderersThisFrame.put(state, renderer);
         return renderer;
     }
@@ -75,17 +75,11 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
         renderersLastFrame.values().forEach(PictureInPictureRenderer::close);
     }
 
-    public static Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> createPools(MultiBufferSource.BufferSource bufferSource, List<PictureInPictureRendererFactory<?>> pipRendererFactories) {
+    public static Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> createPools(MultiBufferSource.BufferSource bufferSource, List<PictureInPictureRendererRegistration<?>> pipRendererFactories) {
         ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRendererPool<?>> builder = ImmutableMap.builder();
 
         for (var factory : pipRendererFactories) {
-            // Create a dummy to get the state class it's for
-            Class<? extends PictureInPictureRenderState> stateClass;
-            try (var dummy = factory.create(bufferSource)) {
-                stateClass = dummy.getRenderStateClass();
-            }
-
-            builder.put(stateClass, new PictureInPictureRendererPool<>(factory, bufferSource));
+            builder.put(factory.stateClass(), new PictureInPictureRendererPool<>(factory, bufferSource));
         }
 
         return builder.buildOrThrow();
