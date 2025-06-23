@@ -136,7 +136,7 @@ public final class ItemUtil {
      * @param transaction The transaction context for a given insertion.
      *                    Passing in {@code null} will essentially be the same as doing `execute`,
      *                    whereas passing in a closeable context allows you to choose if it should be committed.
-     * @return the amount of the stack that was (or would have been, if simulated) inserted
+     * @return the amount of the stack that was inserted
      * @see ResourceHandlerUtil#insertStacking(IResourceHandler, IResource, int, TransactionContext) ResourceHandlerUtil when already working with ItemResources
      */
     public static int insertStacking(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {

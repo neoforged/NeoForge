@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
+import java.util.Objects;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -43,16 +45,21 @@ public class IndexItemContext implements IItemContext {
 
     @Override
     public ItemResource getResource() {
-        return index < handler.size() ? handler.getResource(index) : ItemResource.EMPTY;
+        Objects.checkIndex(index, handler.size());
+        return handler.getResource(index);
     }
 
     @Override
     public int getAmount() {
-        return index < handler.size() ? handler.getAmount(index) : 0;
+        Objects.checkIndex(index, handler.size());
+        return handler.getAmount(index);
     }
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, handler.size());
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+
         int inserted = handler.insert(index, resource, amount, transaction);
         if (allowsOverflow && inserted < amount) {
             inserted += handler.insert(resource, amount - inserted, transaction);
@@ -61,7 +68,10 @@ public class IndexItemContext implements IItemContext {
     }
 
     @Override
-    public int extract(ItemResource itemVariant, int amount, TransactionContext transaction) {
-        return handler.extract(index, itemVariant, amount, transaction);
+    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, handler.size());
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+
+        return handler.extract(index, resource, amount, transaction);
     }
 }

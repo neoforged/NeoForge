@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.contexts;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
@@ -26,15 +27,27 @@ public class PlayerItemContext implements IItemContext {
             ItemStack itemInHand = player.getItemInHand(hand);
             return new CreativePlayerItemContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
         }
-        return new PlayerItemContext(player, hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : player.getInventory().getContainerSize() - 1);
+        var index = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
+        return new PlayerItemContext(player, index);
     }
 
+    /**
+     * Returns an Item context of a given equipmentslot.
+     * <strong>Note:</strong> Due to the way {@link EquipmentSlot#getIndex(int)} works,
+     * {@link EquipmentSlot#OFFHAND} will not return proper results in this.
+     * Instead, use {@link #ofHand(Player, InteractionHand)} for {@link EquipmentSlot#MAINHAND} or {@link EquipmentSlot#OFFHAND}
+     *
+     * @param player The player, creative or not to provide the context from.
+     * @param slot   The equipment slot that is desired.
+     * @return Either a {@link PlayerItemContext} or {@link CreativePlayerItemContext} based on the player state, given a particular equipment slot.
+     */
     public static IItemContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
         if (player.getAbilities().instabuild) {
             ItemStack itemInSlot = player.getItemBySlot(slot);
             return new CreativePlayerItemContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
         }
-        return new PlayerItemContext(player, player.getInventory().getContainerSize() + slot.getIndex());
+        var index = Inventory.INVENTORY_SIZE + slot.getIndex();
+        return new PlayerItemContext(player, index);
     }
 
     public PlayerItemContext(Player player, int index) {
@@ -60,6 +73,8 @@ public class PlayerItemContext implements IItemContext {
         if (amount > inserted) {
             handler.placeItemBackInInventory(resource, amount - inserted, transaction);
         }
+        //Returns the amount passed in rather than `inserted`.
+        //The items placed into inventory will drop on the ground when full
         return amount;
     }
 

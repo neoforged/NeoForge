@@ -95,6 +95,7 @@ public final class CauldronFluidContent {
 
     private static final Map<Block, CauldronFluidContent> BLOCK_TO_CAULDRON = new IdentityHashMap<>();
     private static final Map<Fluid, CauldronFluidContent> FLUID_TO_CAULDRON = new IdentityHashMap<>();
+    private static int largestValue = FluidType.BUCKET_VOLUME;
 
     /**
      * Get the cauldron fluid content for a cauldron block, or {@code null} if none was registered (yet).
@@ -102,6 +103,10 @@ public final class CauldronFluidContent {
     @Nullable
     public static CauldronFluidContent getForBlock(Block block) {
         return BLOCK_TO_CAULDRON.get(block);
+    }
+
+    public static int getLargestValue() {
+        return largestValue;
     }
 
     /**
@@ -164,6 +169,7 @@ public final class CauldronFluidContent {
 
         BLOCK_TO_CAULDRON.put(block, data);
         FLUID_TO_CAULDRON.put(fluid, data);
+        largestValue = org.joml.Math.max(totalAmount, largestValue);
     }
 
     @ApiStatus.Internal

@@ -82,6 +82,14 @@ public final class TransactionManager {
         return MANAGERS.get();
     }
 
+    /**
+     * Changing what is printed here will affect all places we debug
+     */
+    static String debugNameFrom(@Nullable Class<?> callerClass) {
+        if (callerClass == null) return "null";
+        return callerClass.toString();
+    }
+
     @ApiStatus.Internal
     Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
         if (parent != TransactionContext.ROOT) {
@@ -89,7 +97,7 @@ public final class TransactionManager {
             parentImpl.validateCurrentTransaction();
             parentImpl.validateOpen();
         } else if (isOpen()) {
-            throw new IllegalStateException("A root transaction is already active on this thread " + thread);
+            throw new IllegalStateException("A root transaction is already active on this thread " + thread + " when `" + debugNameFrom(callerClass) + "` tried to open.");
         }
 
         Transaction current;

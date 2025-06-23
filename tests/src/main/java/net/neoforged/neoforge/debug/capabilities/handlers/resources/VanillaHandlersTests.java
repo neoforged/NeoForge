@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.material.Fluids;
@@ -81,6 +82,61 @@ public class VanillaHandlersTests {
             helper.fail("Should have invalidated a second time");
         if (capCache.getCapability() != null)
             helper.fail("Expected no capability", composterPos);
+
+        helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Tests composter capabilities insert/extract")
+    public static void testComposterOperations(ExtendedGameTestHelper helper) {
+        var composterPos = new BlockPos(1, 1, 1);
+        helper.setBlock(composterPos, Blocks.COMPOSTER.defaultBlockState());
+
+        var topCache = BlockCapabilityCache.create(
+                Capabilities.ItemHandler.BLOCK,
+                helper.getLevel(),
+                helper.absolutePos(composterPos),
+                Direction.UP);
+
+        var bottomCache = BlockCapabilityCache.create(
+                Capabilities.ItemHandler.BLOCK,
+                helper.getLevel(),
+                helper.absolutePos(composterPos),
+                Direction.DOWN);
+        var topHandler = helper.requireNotNull(topCache.getCapability(), "Capability must not be null");
+        var bottomHandler = helper.requireNotNull(bottomCache.getCapability(), "Capability must not be null");
+
+        int inserted;
+        //Fill composter and commit until it has no longer accepts more.
+        while (true) {
+            try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+                inserted = topHandler.insert(ItemResource.of(Items.SPRUCE_SAPLING), 1000, transaction);
+                if (inserted == 0) break;
+                transaction.commit();
+            }
+        }
+        //We should be full
+        helper.assertBlockState(composterPos, Blocks.COMPOSTER.defaultBlockState().setValue(ComposterBlock.LEVEL, 8));
+
+        //Extract a bonemeal from the filled composter but don't commit
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            var extracted = bottomHandler.extract(ItemResource.of(Items.BONE_MEAL), 1000, transaction);
+            helper.assertValueEqual(extracted, 1, "Composter only should have 1 bonemeal available");
+        }
+
+        //Nothing should have changed
+        helper.assertBlockState(composterPos, Blocks.COMPOSTER.defaultBlockState().setValue(ComposterBlock.LEVEL, 8));
+
+        //Extract a bonemeal from the filled composter, then commit
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            var extracted = bottomHandler.extract(ItemResource.of(Items.BONE_MEAL), 1000, transaction);
+            helper.assertValueEqual(extracted, 1, "Composter only should have 1 bonemeal available");
+            transaction.commit();
+        }
+
+        //It should now be empty
+        helper.assertBlockState(composterPos, Blocks.COMPOSTER.defaultBlockState().setValue(ComposterBlock.LEVEL, 0));
 
         helper.succeed();
     }

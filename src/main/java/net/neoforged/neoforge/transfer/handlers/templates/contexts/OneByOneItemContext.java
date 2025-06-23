@@ -38,6 +38,6 @@ public final class OneByOneItemContext implements IItemContext {
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        return itemContext.extract(resource, Math.min(1, amount), transaction);
+        return itemContext.extract(resource, 1, transaction);
     }
 }

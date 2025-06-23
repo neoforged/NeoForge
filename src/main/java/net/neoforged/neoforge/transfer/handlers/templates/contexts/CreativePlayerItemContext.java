@@ -11,6 +11,10 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWr
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+/**
+ * A special context for creative players to only allow one of an item to be inserted if they don't already have it,
+ * otherwise it is ignored.
+ */
 public class CreativePlayerItemContext extends StaticItemContext {
     protected final PlayerInventoryWrapper handler;
 

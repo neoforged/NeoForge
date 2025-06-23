@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.energy;
 
 import com.google.common.primitives.Ints;
-import net.minecraft.ReportedException;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -29,7 +28,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @return The number of indices this handler manages. You shouldn't return 0 where avoidable, but this is allowed in cases there are no buffers such as the {@link net.neoforged.neoforge.transfer.handlers.templates.energy.EmptyEnergyHandler Empty handler}.
      *         <p>
      *         <strong>Must be non-negative</strong>
-     * @throws NegativeArraySizeException when size is less than 0
      */
     int size();
 
@@ -39,7 +37,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @throws ReportedException         returning a negative value.
      * @see #getAmountAsLong(int)
      */
     int getAmount(int index);
@@ -50,7 +47,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * It should be expected that {@code getAmount() <= getCapacity()}.
      *
      * @return The amount of energy stored in the handler across all indices. <strong>Must be non-negative</strong>
-     * @throws ReportedException returning a negative value.
      * @see #getAmountAsLong(int)
      */
     default int getAmount() {
@@ -71,7 +67,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the amount from. <strong>Must be non-negative</strong>
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @throws ReportedException         returning a negative value.
      * @see #getAmount(int)
      */
     default long getAmountAsLong(int index) {
@@ -83,7 +78,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * This is only needed to be overridden should you store more than an int.
      *
      * @return The amount of energy stored at the given index. <strong>Must be non-negative</strong>
-     * @throws ReportedException returning a negative value.
      * @see #getAmount(int)
      */
     default long getAmountAsLong() {
@@ -103,7 +97,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @param index The index to get the limit from. <strong>Must be non-negative</strong>
      * @return The capacity at the given index. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @throws ReportedException         returning a negative value.
      * @see #getCapacityAsLong(int)
      */
     int getCapacity(int index);
@@ -113,7 +106,6 @@ public interface IEnergyHandler extends ITransactionHandler {
      *
      * @return The capacity of the handler across all indices. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @throws ReportedException         returning a negative value.
      * @see #getCapacityAsLong(int)
      */
     default int getCapacity() {

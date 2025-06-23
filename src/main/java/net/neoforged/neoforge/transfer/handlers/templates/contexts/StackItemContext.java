@@ -13,6 +13,9 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerW
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+/**
+ * Creates an {@link IItemContext} from a specific stack.
+ */
 public final class StackItemContext implements IItemContext {
     private final VanillaContainerWrapper container;
 

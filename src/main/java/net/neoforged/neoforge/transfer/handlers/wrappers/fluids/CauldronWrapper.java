@@ -20,11 +20,13 @@ import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A handler for cauldrons. This handler is used to interact with the fluid content of a cauldron.
  */
-public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
+@ApiStatus.Internal
+public final class CauldronWrapper extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
     // Weak values to make sure wrappers are cleaned up after use, thread-safe.
     private static final Map<WrapperLocation, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
     private final WrapperLocation location;
@@ -62,12 +64,15 @@ public class CauldronWrapper extends SnapshotJournal<BlockState> implements ISin
 
     @Override
     public int getCapacity(int index, FluidResource resource) {
+        Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return CauldronFluidContent.getLargestValue();
         CauldronFluidContent fluidContent = CauldronFluidContent.getForFluid(resource.getInstanceValue());
         return fluidContent == null ? 0 : fluidContent.totalAmount;
     }
 
     @Override
     public boolean isValid(int index, FluidResource resource) {
+        Objects.checkIndex(index, size());
         return CauldronFluidContent.getForFluid(resource.getInstanceValue()) != null;
     }
 

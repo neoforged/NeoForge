@@ -59,24 +59,28 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     @ApiStatus.NonExtendable
     @Override
     default int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return getAmount();
     }
 
     @ApiStatus.NonExtendable
     @Override
     default long getAmountAsLong(int index) {
+        Objects.checkIndex(index, size());
         return getAmountAsLong();
     }
 
     @ApiStatus.NonExtendable
     @Override
     default int getCapacity(int index) {
+        Objects.checkIndex(index, size());
         return getCapacity();
     }
 
     @ApiStatus.NonExtendable
     @Override
     default long getCapacityAsLong(int index) {
+        Objects.checkIndex(index, size());
         return getCapacityAsLong();
     }
 

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import com.google.common.collect.MapMaker;
 import java.util.Map;
 import java.util.Objects;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Items;
@@ -25,8 +26,10 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 public class ComposterWrapper extends SnapshotJournal<Float> {
-    private static final float NO_OP = 0f;
-    private static final float EXTRACT = -1f;
+    //Floats to avoid boxing and unboxing when taking a snapshot or assigning;
+    //Also allows us to make use of the Float.equals
+    private static final Float NO_OP = 0f;
+    private static final Float EXTRACT = -1f;
 
     private final WrapperLocation location;
     // -1 if bonemeal was extracted, otherwise the composter increase probability of the (pending) inserted item.
@@ -63,18 +66,18 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
 
     @Override
     protected void onCommit(Float originalState) {
+        if (probability.equals(NO_OP)) return;
+
         // Apply pending action
-        //Neo: some concern about floating point equals. It SHOULD be fine, but may want to be fully sure before we ship
-        //todo validate the floating point comparison.
-        if (probability == EXTRACT) {
+        if (probability.equals(EXTRACT)) {
             // Mimic ComposterBlock#empty logic.
-            BlockState newState = location.getBlockState().setValue(ComposterBlock.LEVEL, 0);
+            BlockState newState = location.blockstate().setValue(ComposterBlock.LEVEL, ComposterBlock.MIN_LEVEL);
             location.level.setBlockAndUpdate(location.pos, newState);
             location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
-        } else if (probability > 0) {
-            BlockState state = location.getBlockState();
+        } else {
+            BlockState state = location.blockstate();
             // Always increment on first insert (like vanilla).
-            boolean increaseSuccessful = state.getValue(ComposterBlock.LEVEL) == 0 || location.level.getRandom().nextDouble() < probability;
+            boolean increaseSuccessful = state.getValue(ComposterBlock.LEVEL) == ComposterBlock.MIN_LEVEL || location.level.getRandom().nextDouble() < probability;
 
             if (increaseSuccessful) {
                 // Mimic ComposterBlock#addItem logic.
@@ -83,8 +86,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
                 location.level.setBlockAndUpdate(location.pos, newState);
                 location.level.gameEvent(GameEvent.BLOCK_CHANGE, location.pos, GameEvent.Context.of(null, newState));
 
-                if (newLevel == 7) {
-                    location.level.scheduleTick(location.pos, state.getBlock(), 20);
+                if (newLevel == ComposterBlock.MAX_LEVEL) {
+                    location.level.scheduleTick(location.pos, state.getBlock(), SharedConstants.TICKS_PER_SECOND);
                 }
             }
 
@@ -101,16 +104,17 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
             if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
             // Check that no action is scheduled.
-            if (probability != NO_OP) return 0;
+            if (!probability.equals(NO_OP)) return 0;
             // Check that the composter can accept items.
-            if (location.getBlockState().getValue(ComposterBlock.LEVEL) >= 7) return 0;
+            if (location.blockstate().getValue(ComposterBlock.LEVEL) >= ComposterBlock.READY) return 0;
+
             // Check that the item is compostable.
             float insertedIncreaseProbability = ComposterBlock.getValue(resource.toStack());
             if (insertedIncreaseProbability <= 0) return 0;
 
             // Schedule insertion.
             updateSnapshots(transaction);
-            probability = insertedIncreaseProbability;
+            probability += insertedIncreaseProbability;
             return 1;
         }
 
@@ -161,8 +165,12 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         private static final ItemResource BONE_MEAL = ItemResource.of(Items.BONE_MEAL);
 
         private boolean hasBoneMeal() {
-            // We only have bone meal if the level is 8 and no action was scheduled.
-            return probability == NO_OP && location.getBlockState().getValue(ComposterBlock.LEVEL) == 8;
+            // We only have bone meal if the level is READY and no action was scheduled.
+            return probability.equals(NO_OP) && location.blockstate().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY;
+        }
+
+        private boolean isBonemeal(ItemResource resource) {
+            return resource.equals(BONE_MEAL);
         }
 
         @Override
@@ -174,10 +182,9 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         public int extract(ItemResource resource, int amount, TransactionContext transaction) {
             if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-            // Check amount.
-            if (amount < 1) return 0;
             // Check that the resource is bone meal.
-            if (!BONE_MEAL.equals(resource)) return 0;
+            if (!isBonemeal(resource)) return 0;
+
             // Check that there is bone meal to extract.
             if (!hasBoneMeal()) return 0;
 
@@ -189,24 +196,25 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public ItemResource getResource(int index) {
             Objects.checkIndex(index, size());
-            return BONE_MEAL;
+            return hasBoneMeal() ? BONE_MEAL : ItemResource.EMPTY;
         }
 
         @Override
         public int getAmount(int index) {
             Objects.checkIndex(index, size());
-            return hasBoneMeal() ? 0 : 1;
+            return hasBoneMeal() ? 1 : 0;
         }
 
         @Override
         public int getCapacity(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return BONE_MEAL.equals(resource) ? 1 : 0;
+            return resource.isEmpty() || isBonemeal(resource) ? 1 : 0;
         }
 
         @Override
         public boolean isValid(int index, ItemResource resource) {
-            return false;
+            Objects.checkIndex(index, size());
+            return isBonemeal(resource);
         }
 
         @Override
@@ -231,7 +239,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
      * {@code (Level, BlockPos) -> Wrapper}
      */
     private record WrapperLocation(Level level, BlockPos pos) {
-        public BlockState getBlockState() {
+        public BlockState blockstate() {
             return level.getBlockState(pos);
         }
     }

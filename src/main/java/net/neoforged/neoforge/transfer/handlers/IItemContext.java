@@ -111,7 +111,7 @@ public interface IItemContext {
      *
      * @param resource The resource to insert.
      * @param amount   The amount to insert.
-     * @return The amount of the resource that was (or would have been, if simulated) inserted.
+     * @return The amount of the resource that was inserted.
      */
     int insert(ItemResource resource, int amount, TransactionContext transaction);
 
@@ -121,7 +121,7 @@ public interface IItemContext {
      *
      * @param resource The resource to extract.
      * @param amount   The amount to extract.
-     * @return The amount of the resource that was (or would have been, if simulated) extracted.
+     * @return The amount of the resource that was extracted.
      */
     int extract(ItemResource resource, int amount, TransactionContext transaction);
 

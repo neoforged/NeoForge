@@ -57,7 +57,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * <p>
      * While passing in resources that would return {@code false} on {@link #isValid(int, IResource)}, it should be expected to always return 0.
      * <p>
-     * If the resource returned from {@link #getResource(int)} with the same index does not match, it is expected the capacity would return 0.
+     * If the resource returned from {@link #getResource(int)} with the same index does not match and is not empty, it is expected the capacity would return 0.
      *
      * @param index    The index to get the limit from. <strong>Must be non-negative</strong>
      * @param resource The resource to get the limit for. If empty, this should return the theoretical limit of that index

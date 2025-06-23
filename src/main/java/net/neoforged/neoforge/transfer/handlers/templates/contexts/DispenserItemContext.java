@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.BlockSource;
@@ -50,23 +51,19 @@ public class DispenserItemContext implements IItemContext {
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        //        if (action.isSimulating()) return amount;
-        //snapshot is handled by the handler itself
         int inserted = 0;
         if (getResource().isEmpty()) {
             inserted = Math.min(amount, resource.getMaxStackSize());
-            //            if (action.isExecuting()) {
             this.resource = resource;
             this.amount = inserted;
-            //            }
         } else if (getResource().equals(resource)) {
             inserted = Math.min(amount, resource.getMaxStackSize() - getAmount());
-            //            if (action.isExecuting()) {
             this.amount += inserted;
-            //            }
         }
-        //        if (action.isExecuting())
-        resources.put(resource, resources.getInt(resource) + amount - inserted);
+        int remainder = amount - inserted;
+        if (remainder > 0) {
+            resources.mergeInt(resource, remainder, Integer::sum);
+        }
         return amount;
     }
 
@@ -82,36 +79,27 @@ public class DispenserItemContext implements IItemContext {
         return extracted;
     }
 
-    //    @Override
-    //    public int exchange(ItemResource resource, int amount, TransactionContext transaction) {
-    //        if (amount >= getAmount()) {
-    //            if (action.isExecuting()) {
-    //                this.resource = resource;
-    //            }
-    //            return getAmount();
-    //        }
-    //        int extracted = extract(getResource(), amount, action);
-    //        if (extracted > 0) {
-    //            insert(resource, extracted, action);
-    //        }
-    //        return extracted;
-    //    }
-
     public ItemStack finalizeResult(BlockSource source) {
         ItemStack res = resource.toStack(amount);
         List<ItemStack> overflow = new ArrayList<>();
-        resources.forEach((resource, amount) -> resource.toStacks(amount).forEach(stack -> {
-            ItemStack notInserted = source.blockEntity().insertItem(stack);
-            if (!notInserted.isEmpty()) {
-                overflow.add(notInserted);
-            }
-        }));
+        for (Map.Entry<ItemResource, Integer> entry : resources.object2IntEntrySet()) {
+            ItemResource key = entry.getKey();
+            Integer value = entry.getValue();
+            key.toStacks(value).forEach(stack -> {
+                ItemStack notInserted = source.blockEntity().insertItem(stack);
+                if (!notInserted.isEmpty()) {
+                    overflow.add(notInserted);
+                }
+            });
+        }
         if (!overflow.isEmpty()) {
             Direction direction = source.state().getValue(DispenserBlock.FACING);
             DefaultDispenseItemBehavior.playDefaultSound(source);
             DefaultDispenseItemBehavior.playDefaultAnimation(source, direction);
             Position position = DispenserBlock.getDispensePosition(source);
-            overflow.forEach(stack -> DefaultDispenseItemBehavior.spawnItem(source.level(), stack, 6, direction, position));
+            for (ItemStack stack : overflow) {
+                DefaultDispenseItemBehavior.spawnItem(source.level(), stack, 6, direction, position);
+            }
         }
         resources.clear();
         return res;

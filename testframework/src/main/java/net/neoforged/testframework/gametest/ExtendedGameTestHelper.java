@@ -9,6 +9,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiPredicate;
@@ -357,6 +358,11 @@ public class ExtendedGameTestHelper extends GameTestHelper {
 
     public void assertNotNull(@Nullable Object var, String message) {
         this.assertTrue(var != null, message);
+    }
+
+    public <T> T requireNotNull(@Nullable T value, String message) {
+        this.assertTrue(value != null, message);
+        return Objects.requireNonNull(value);
     }
 
     public void fail(String message) {

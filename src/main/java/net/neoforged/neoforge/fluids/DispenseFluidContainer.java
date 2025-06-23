@@ -29,8 +29,6 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
     private DispenseFluidContainer() {}
 
-    private final DefaultDispenseItemBehavior dispenseBehavior = new DefaultDispenseItemBehavior();
-
     @Override
     public ItemStack execute(BlockSource source, ItemStack stack) {
         if (FluidUtil.getFirstFluidStackContained(stack).isEmpty()) {
