@@ -15,11 +15,23 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Pools {@link PictureInPictureRenderer} for a single type of {@link PictureInPictureRenderState} and tries
+ * to reuse renderers on subsequent frames.
+ * <p>Vanilla only ever uses one PIP renderer per PIP state type. This can lead to crashes or
+ * visual artifacts, since the backing render target textures are stored within the renderer,
+ * and if two or more of the same type of state are submitted in one frame, the states will
+ * begin interfering with each other.
+ * <p>We solve this by using one renderer per distinct {@link PictureInPictureRenderState} state per frame,
+ * and use this class to pool them for reuse in subsequent frames.
+ */
 @ApiStatus.Internal
 public class PictureInPictureRendererPool<T extends PictureInPictureRenderState> implements AutoCloseable {
     private final PictureInPictureRendererRegistration<T> factory;
     private final MultiBufferSource.BufferSource buffers;
+    // The renderers from last frame, which we will try to reuse this frame
     private Map<T, PictureInPictureRenderer<T>> renderersLastFrame = new HashMap<>();
+    // The renderers we already used in this frame, which we will try to reuse next frame
     private Map<T, PictureInPictureRenderer<T>> renderersThisFrame = new HashMap<>();
 
     public PictureInPictureRendererPool(PictureInPictureRendererRegistration<T> factory,
