@@ -12,6 +12,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
@@ -44,8 +45,8 @@ public sealed class LegacyFluidHandler implements IFluidHandler permits LegacyFl
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        try (var transaction = TransactionManager.open(null)) {
-            var inserted = handler.insert(FluidResource.of(resource), resource.getAmount(), transaction);
+        try (Transaction transaction = TransactionManager.open(null)) {
+            int inserted = handler.insert(FluidResource.of(resource), resource.getAmount(), transaction);
             if (action.execute()) {
                 transaction.commit();
             }
@@ -55,8 +56,8 @@ public sealed class LegacyFluidHandler implements IFluidHandler permits LegacyFl
 
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        try (var transaction = TransactionManager.open(null)) {
-            var extracted = handler.extract(FluidResource.of(resource), resource.getAmount(), transaction);
+        try (Transaction transaction = TransactionManager.open(null)) {
+            int extracted = handler.extract(FluidResource.of(resource), resource.getAmount(), transaction);
             if (action.execute()) {
                 transaction.commit();
             }
@@ -66,8 +67,8 @@ public sealed class LegacyFluidHandler implements IFluidHandler permits LegacyFl
 
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
-        try (var transaction = TransactionManager.open(null)) {
-            var extracted = ResourceHandlerUtil.extractFiltered(handler, ResourceFilters.any(), maxDrain, FluidResource.EMPTY, transaction, FluidResource::toStack);
+        try (Transaction transaction = TransactionManager.open(null)) {
+            FluidStack extracted = ResourceHandlerUtil.extractFiltered(handler, ResourceFilters.any(), maxDrain, FluidResource.EMPTY, transaction, FluidResource::toStack);
             if (action.execute()) {
                 transaction.commit();
             }

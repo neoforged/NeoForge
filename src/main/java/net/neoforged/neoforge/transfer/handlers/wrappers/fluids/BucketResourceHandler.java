@@ -56,7 +56,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     }
 
     private boolean isNotBucket() {
-        var bucket = itemContext.getResource();
+        ItemResource bucket = itemContext.getResource();
         if (bucket.is(Items.MILK_BUCKET))
             return !NeoForgeMod.MILK.isBound();
         return !(bucket.getInstanceValue() instanceof BucketItem) && !bucket.is(Tags.Items.BUCKETS);
@@ -72,7 +72,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
         //Shouldn't be able to overflow given the max stack size is 99, thus the max this can be on a single item should be 99,000.
         // Of course this will differ for other implementations, so care will be needed for those.
-        var fluid = getResource(0);
+        FluidResource fluid = getResource(0);
         if (!fluid.isEmpty() && !resource.equals(fluid)) return 0;
         return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
     }
@@ -82,7 +82,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         if (isNotBucket()) return 0;
         Objects.checkIndex(index, size());
 
-        var fluid = getResource(0);
+        FluidResource fluid = getResource(0);
         if (!resource.isEmpty() && !fluid.isEmpty() && !resource.equals(fluid)) return 0;
         return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
     }

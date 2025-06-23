@@ -15,6 +15,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 public class ResourceHandlerSlot extends Slot {
@@ -69,7 +70,7 @@ public class ResourceHandlerSlot extends Slot {
     @Override
     public ItemStack remove(int amount) {
         ItemResource resource = handler.getResource(getSlotIndex());
-        try (var transaction = TransactionManager.open(null)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int extracted = handler.extract(resource, amount, transaction);
             transaction.commit();
             return extracted > 0 ? resource.toStack(extracted) : ItemStack.EMPTY;

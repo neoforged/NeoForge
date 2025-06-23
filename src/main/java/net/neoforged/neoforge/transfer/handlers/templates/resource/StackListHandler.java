@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.resource;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -74,7 +75,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
     @Override
     public void deserialize(ValueInput input) {
-        var optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf(VALUE_IO_KEY));
+        Optional<NonNullList<S>> optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf(VALUE_IO_KEY));
         if (optional.isEmpty()) return;
 
         stacks = optional.get();

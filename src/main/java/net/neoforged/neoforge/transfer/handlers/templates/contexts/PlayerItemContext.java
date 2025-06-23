@@ -27,7 +27,7 @@ public class PlayerItemContext implements IItemContext {
             ItemStack itemInHand = player.getItemInHand(hand);
             return new CreativePlayerItemContext(ItemResource.of(itemInHand), itemInHand.getCount(), player);
         }
-        var index = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
+        int index = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
         return new PlayerItemContext(player, index);
     }
 
@@ -42,12 +42,18 @@ public class PlayerItemContext implements IItemContext {
      * @return Either a {@link PlayerItemContext} or {@link CreativePlayerItemContext} based on the player state, given a particular equipment slot.
      */
     public static IItemContext ofEquipmentSlot(Player player, EquipmentSlot slot) {
+        if (slot.getType() == EquipmentSlot.Type.HAND)
+            return ofHand(player, slot == EquipmentSlot.MAINHAND ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+
         if (player.getAbilities().instabuild) {
             ItemStack itemInSlot = player.getItemBySlot(slot);
             return new CreativePlayerItemContext(ItemResource.of(itemInSlot), itemInSlot.getCount(), player);
         }
-        var index = Inventory.INVENTORY_SIZE + slot.getIndex();
-        return new PlayerItemContext(player, index);
+
+        if (slot == EquipmentSlot.SADDLE || slot == EquipmentSlot.BODY)
+            throw new IllegalArgumentException("Players don't have an index for " + slot);
+
+        return new PlayerItemContext(player, slot.getIndex(Inventory.INVENTORY_SIZE));
     }
 
     public PlayerItemContext(Player player, int index) {

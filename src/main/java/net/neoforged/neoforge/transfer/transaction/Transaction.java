@@ -174,8 +174,8 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         }
 
         //TODO validate this is handling the use case of showing a dev which transactions are being opened / closed (on top of the stacktrace)
-        var self = TransactionManager.debugNameFrom(manager.debugMap.get(nestingDepth));
-        var actual = TransactionManager.debugNameFrom(manager.debugMap.get(manager.currentDepth));
+        String self = TransactionManager.debugNameFrom(manager.debugMap.get(nestingDepth));
+        String actual = TransactionManager.debugNameFrom(manager.debugMap.get(manager.currentDepth));
 
         CrashReport report = CrashReport.forThrowable(new IllegalStateException("Transaction function was called on a transaction with depth %d, but the current transaction has depth %d."
                 .formatted(nestingDepth, manager.currentDepth)), "Transacting");

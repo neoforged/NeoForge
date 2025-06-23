@@ -28,7 +28,7 @@ public final class UnsafeTransactionManager {
     @Nullable
     @ApiStatus.Internal
     public static TransactionContext getCurrentOpenedTransaction() {
-        var manager = TransactionManager.getManagerForThread();
+        TransactionManager manager = TransactionManager.getManagerForThread();
         if (manager.currentDepth == -1) return null;
         return manager.stack.get(manager.currentDepth);
     }

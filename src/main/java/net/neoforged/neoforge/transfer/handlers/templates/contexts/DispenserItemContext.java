@@ -83,7 +83,7 @@ public class DispenserItemContext implements IItemContext {
         List<ItemStack> overflow = new ArrayList<>();
         for (Object2IntMap.Entry<ItemResource> entry : resources.object2IntEntrySet()) {
             ItemResource key = entry.getKey();
-            var value = entry.getIntValue();
+            int value = entry.getIntValue();
             for (ItemStack stack : key.toStacks(value)) {
                 ItemStack notInserted = source.blockEntity().insertItem(stack);
                 if (!notInserted.isEmpty()) {

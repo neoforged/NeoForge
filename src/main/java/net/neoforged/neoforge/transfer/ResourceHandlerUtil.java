@@ -587,8 +587,8 @@ public final class ResourceHandlerUtil {
      * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
      */
     public static <R extends IResource, S> S getStackAt(IResourceHandler<R> handler, int index, IStackFactory<R, S> stackFactory) {
-        var resource = handler.getResource(index);
-        var amount = handler.getAmount(index);
+        R resource = handler.getResource(index);
+        int amount = handler.getAmount(index);
         //Handles the negative checks and throws
         ResourceHandlerUtil.isEmpty(resource, amount);
         return stackFactory.create(resource, amount);
@@ -695,9 +695,9 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, Predicate<T> filter) {
         try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
             //Simulated: we don't commit
-            var size = handler.size();
+            int size = handler.size();
             for (int index = 0; index < size; index++) {
-                var resource = handler.getResource(index);
+                T resource = handler.getResource(index);
                 if (!doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0)
                     return true;
             }
@@ -717,7 +717,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
         try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
             //Simulated: we don't commit
-            var resource = handler.getResource(index);
+            T resource = handler.getResource(index);
             return !doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0;
         }
     }

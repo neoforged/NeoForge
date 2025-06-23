@@ -153,7 +153,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @see #supportsInsertion(int)
      */
     default boolean supportsInsertion() {
-        var size = size();
+        int size = size();
         for (int i = 0; i < size; i++) {
             if (supportsInsertion(i)) {
                 return true;
@@ -211,7 +211,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @see #supportsExtraction(int)
      */
     default boolean supportsExtraction() {
-        var size = size();
+        int size = size();
         for (int i = 0; i < size; i++) {
             if (supportsExtraction(i)) {
                 return true;
@@ -250,7 +250,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     default int insert(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int handled = 0;
-        var size = size();
+        int size = size();
         for (int index = 0; index < size; index++) {
             handled += insert(index, resource, amount - handled, transaction);
             if (handled == amount) break;
@@ -288,7 +288,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     default int extract(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int handled = 0;
-        var size = size();
+        int size = size();
         for (int index = 0; index < size; index++) {
             handled += extract(index, resource, amount - handled, transaction);
             if (handled == amount) break;

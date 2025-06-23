@@ -11,11 +11,13 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -45,6 +47,7 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.IndexItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.StackItemContext;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStackListHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -409,10 +412,11 @@ public final class FluidUtil {
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static Optional<IFluidHandlerItem> getFluidHandler(ItemStack itemStack) {
-        var stackContext = new StackItemContext(itemStack);
-        var handler = stackContext.getCapability(Capabilities.FluidHandler.ITEM);
+        var container = new ItemStackListHandler(NonNullList.of(ItemStack.EMPTY, itemStack), Item.DEFAULT_MAX_STACK_SIZE, null);
+        var context = IndexItemContext.of(container, 0);
+        var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return Optional.empty();
-        return Optional.of(IFluidHandlerItem.of(handler, stackContext));
+        return Optional.of(IFluidHandlerItem.of(handler, context));
     }
 
     /**

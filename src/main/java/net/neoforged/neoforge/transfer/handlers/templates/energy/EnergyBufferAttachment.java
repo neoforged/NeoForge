@@ -136,7 +136,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
             if (energy[i] < 0) throw new IllegalArgumentException("Energy at index " + i + " must be non-negative");
             this.energy[i] = Math.max(0, Math.min(capacity, energy[i]));
         }
-        var onChanged = GroupedSnapshotJournal.commitWith(this::onSetChanged);
+        GroupedSnapshotJournal onChanged = GroupedSnapshotJournal.commitWith(this::onSetChanged);
         this.snapshots = IndexedIntSnapshot.listOf(size, this::set, this::getAmount, onChanged);
     }
 
@@ -363,7 +363,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
             @Override
             public T read(IAttachmentHolder holder, ValueInput input) {
                 final Optional<T> parsingResult = input.read(codec);
-                var value = parsingResult.orElseThrow(() -> buildException("read"));
+                T value = parsingResult.orElseThrow(() -> buildException("read"));
                 setter.accept(value, holder);
                 return value;
             }

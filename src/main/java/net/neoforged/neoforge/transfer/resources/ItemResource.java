@@ -216,7 +216,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     public List<ItemStack> toStacks(int count) {
-        var maxStackSize = getMaxStackSize();
+        int maxStackSize = getMaxStackSize();
         int stackCount = count / maxStackSize;
         List<ItemStack> stacks = new ArrayList<>(stackCount + 1);
         for (int i = 0; i < stackCount; i++) {

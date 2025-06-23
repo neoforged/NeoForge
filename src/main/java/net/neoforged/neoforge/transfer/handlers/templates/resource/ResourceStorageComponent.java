@@ -86,9 +86,9 @@ public final class ResourceStorageComponent<T extends IResource> {
         if (!(otherObj instanceof ResourceStorageComponent<?> otherData) || otherData.size() != size())
             return false;
 
-        for (var i = 0; i < otherData.size(); i++) {
-            var current = get(i);
-            var other = otherData.get(i);
+        for (int i = 0; i < otherData.size(); i++) {
+            ResourceStack<T> current = get(i);
+            ResourceStack<?> other = otherData.get(i);
             if (!current.resource().equals(other.resource())) return false;
             if (current.amount() != other.amount()) return false;
         }

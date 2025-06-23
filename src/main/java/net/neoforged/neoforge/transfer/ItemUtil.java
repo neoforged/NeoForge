@@ -118,10 +118,10 @@ public final class ItemUtil {
      * @param handler The {@link IResourceHandler} that has contents to be dropped
      */
     public static void dropContents(Level level, double x, double y, double z, IResourceHandler<ItemResource> handler) {
-        var size = handler.size();
+        int size = handler.size();
 
-        for (var index = 0; index < size; index++) {
-            var resource = handler.getResource(index);
+        for (int index = 0; index < size; index++) {
+            ItemResource resource = handler.getResource(index);
             if (resource.isEmpty()) continue;
             Containers.dropItemStack(level, x, y, z, resource.toStack(handler.getAmount(index)));
         }

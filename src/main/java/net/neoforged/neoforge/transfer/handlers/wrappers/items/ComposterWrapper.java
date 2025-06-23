@@ -47,8 +47,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     public static IResourceHandler<ItemResource> get(Level level, BlockPos pos, @Nullable Direction direction) {
         if (direction == null || !direction.getAxis().isVertical()) return null;
 
-        var location = new WrapperLocation(level, pos.immutable());
-        var wrapper = wrappers.computeIfAbsent(location, ComposterWrapper::new);
+        WrapperLocation location = new WrapperLocation(level, pos.immutable());
+        ComposterWrapper wrapper = wrappers.computeIfAbsent(location, ComposterWrapper::new);
         return direction == Direction.UP ? wrapper.topHandler : wrapper.bottomHandler;
     }
 

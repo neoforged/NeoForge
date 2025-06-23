@@ -158,8 +158,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @see #supportsInsertion(int)
      */
     default boolean supportsInsertion() {
-        var indices = size();
-        for (var index = 0; index < indices; index++) {
+        int indices = size();
+        for (int index = 0; index < indices; index++) {
             if (supportsInsertion(index)) return true;
         }
         return false;
@@ -184,8 +184,8 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @see #supportsExtraction(int)
      */
     default boolean supportsExtraction() {
-        var indices = size();
-        for (var index = 0; index < indices; index++) {
+        int indices = size();
+        for (int index = 0; index < indices; index++) {
             if (supportsExtraction(index)) return true;
         }
         return false;
@@ -228,7 +228,7 @@ public interface IEnergyHandler extends ITransactionHandler {
     default int insert(int amount, TransactionContext transaction) {
         if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         int handled = 0;
-        var size = size();
+        int size = size();
         for (int index = 0; index < size; index++) {
             handled += insert(index, amount - handled, transaction);
             if (handled == amount) break;
@@ -262,7 +262,7 @@ public interface IEnergyHandler extends ITransactionHandler {
     default int extract(int amount, TransactionContext transaction) {
         if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         int handled = 0;
-        var size = size();
+        int size = size();
         for (int index = 0; index < size; index++) {
             handled += extract(index, amount - handled, transaction);
             if (handled == amount) break;

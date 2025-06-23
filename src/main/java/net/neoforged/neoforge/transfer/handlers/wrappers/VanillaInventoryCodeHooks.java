@@ -34,7 +34,7 @@ public class VanillaInventoryCodeHooks {
      */
     public static boolean extractHook(Hopper dest, IResourceHandler<ItemResource> handler) {
         int size = handler.size();
-        var containerSize = dest.getContainerSize();
+        int containerSize = dest.getContainerSize();
 
         for (int i = 0; i < size; i++) {
             ItemStack extractedItemStack;
@@ -62,9 +62,9 @@ public class VanillaInventoryCodeHooks {
                     return true;
                 }
 
-                var destCount = destStack.getCount();
-                var canStackHoldMore = destCount < destStack.getMaxStackSize();
-                var canSlotHoldMore = destCount < dest.getMaxStackSize();
+                int destCount = destStack.getCount();
+                boolean canStackHoldMore = destCount < destStack.getMaxStackSize();
+                boolean canSlotHoldMore = destCount < dest.getMaxStackSize();
 
                 if (canStackHoldMore && canSlotHoldMore && ItemStack.isSameItemSameComponents(extractedItemStack, destStack)) {
                     extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, null);
@@ -89,9 +89,9 @@ public class VanillaInventoryCodeHooks {
         if (ResourceHandlerUtil.isFull(handler))
             return false;
 
-        var size = hopper.getContainerSize();
+        int size = hopper.getContainerSize();
         for (int i = 0; i < size; ++i) {
-            var item = hopper.getItem(i);
+            ItemStack item = hopper.getItem(i);
             if (item.isEmpty())
                 continue;
 

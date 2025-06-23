@@ -11,6 +11,7 @@ import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
@@ -38,8 +39,8 @@ public final class LegacyItemHandler implements IItemHandler {
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        try (var transaction = TransactionManager.open(null)) {
-            var inserted = handler.insert(slot, ItemResource.of(stack), stack.getCount(), transaction);
+        try (Transaction transaction = TransactionManager.open(null)) {
+            int inserted = handler.insert(slot, ItemResource.of(stack), stack.getCount(), transaction);
             if (!simulate)
                 transaction.commit();
             if (stack.getCount() == inserted) return ItemStack.EMPTY;
@@ -51,11 +52,11 @@ public final class LegacyItemHandler implements IItemHandler {
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (ResourceHandlerUtil.isZero(amount)) return ItemStack.EMPTY;
 
-        try (var transaction = TransactionManager.open(null)) {
-            var resource = handler.getResource(slot);
+        try (Transaction transaction = TransactionManager.open(null)) {
+            ItemResource resource = handler.getResource(slot);
 
             if (resource.isEmpty()) return ItemStack.EMPTY;
-            var extracted = handler.extract(slot, resource, amount, transaction);
+            int extracted = handler.extract(slot, resource, amount, transaction);
             if (!simulate) transaction.commit();
             return resource.toStack(extracted);
         }
