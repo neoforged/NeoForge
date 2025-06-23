@@ -28,8 +28,6 @@ public final class NeoForgeClientConfig {
 
     public final ModConfigSpec.BooleanValue logUntranslatedConfigurationWarnings;
 
-    public final ModConfigSpec.BooleanValue reducedDepthStencilFormat;
-
     public final ModConfigSpec.BooleanValue handleAmbientOcclusionPerPart;
     boolean perPartAoActive;
 
@@ -48,11 +46,6 @@ public final class NeoForgeClientConfig {
                 .comment("A config option mainly for developers. Logs out configuration values that do not have translations when running a client in a development environment.")
                 .translation("neoforge.configgui.logUntranslatedConfigurationWarnings")
                 .define("logUntranslatedConfigurationWarnings", true);
-
-        reducedDepthStencilFormat = builder
-                .comment("Configures how many bits are used for the depth buffer when stenciling has been enabled by a mod. Set to true for 24+8 bits and to false for 32+8 bits. Setting to true will slightly reduce VRAM usage, but risks introducing visual artifacts.")
-                .translation("neoforge.configgui.reducedDepthStencilFormat")
-                .define("reducedDepthStencilFormat", false);
 
         handleAmbientOcclusionPerPart = builder
                 .comment("When enabled, AO will be handled per BlockModelPart instead of using the first part's AO setting")
