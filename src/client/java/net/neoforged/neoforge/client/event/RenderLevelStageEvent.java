@@ -175,7 +175,7 @@ public abstract class RenderLevelStageEvent extends Event {
     }
 
     /**
-     * Fired near the end of {@linkplain LevelRenderer#addSkyPass} after {@code AfterTranslucentBlocks} had ran.
+     * Fired near the end of {@linkplain LevelRenderer#addMainPass} after {@code AfterTranslucentBlocks} had ran.
      */
     public static class AfterTripwireBlocks extends RenderLevelStageEvent {
         public AfterTripwireBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
