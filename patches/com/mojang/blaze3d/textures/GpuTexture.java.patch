@@ -1,13 +1,20 @@
 --- a/com/mojang/blaze3d/textures/GpuTexture.java
 +++ b/com/mojang/blaze3d/textures/GpuTexture.java
-@@ -12,6 +_,11 @@
+@@ -12,6 +_,18 @@
      public static final int USAGE_TEXTURE_BINDING = 4;
      public static final int USAGE_RENDER_ATTACHMENT = 8;
      public static final int USAGE_CUBEMAP_COMPATIBLE = 16;
-+    // Neo: Extended texture usage, some may not always be supported, check backend capabilities before use
-+    // Neo: Requires OpenGL 4.2, ARB_shader_image_load_store, or equivalent
++    /**
++     * Neo: USAGE_STORAGE specifies that the texture is suitable for using for binding as a Storage Image with {@link NOT_YET_IMPLEMENTED}
++     *      <p>
++     *      See OpenGL wiki for details on what this feature is: <a href="https://www.khronos.org/opengl/wiki/Image_Load_Store">Image Load Store</a>
++     *      <br>
++     *      Requires OpenGL 4.2, GL_ARB_shader_image_load_store, or equivalent
++     */
 +    public static final int USAGE_STORAGE = USAGE_CUBEMAP_COMPATIBLE << 1;
-+    // Neo: Top 8 bits reserved for implementation specific usages
++    /**
++     * Neo: Reserve top 8 bits for implementation specific uses
++     */
 +    public static final int USAGE_FIRST_IMPLEMENTATION_DEFINED = 1 << 24;
      private final TextureFormat format;
      private final int width;
