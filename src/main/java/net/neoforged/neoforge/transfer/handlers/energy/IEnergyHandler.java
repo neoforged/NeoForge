@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.energy;
 
 import com.google.common.primitives.Ints;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -224,7 +225,16 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @return The amount that was inserted. <strong>Must be non-negative</strong>
      * @see #insert(int, int, TransactionContext) Inserting by index
      */
-    int insert(int amount, TransactionContext transaction);
+    default int insert(int amount, TransactionContext transaction) {
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        int handled = 0;
+        var size = size();
+        for (int index = 0; index < size; index++) {
+            handled += insert(index, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+        return handled;
+    }
 
     /**
      * Extracts a given amount of energy from the handler at the given index. If the intent is to arbitrarily extract power from the handler, consider using {@link IEnergyHandler#extract(int, TransactionContext)} instead.
@@ -249,5 +259,16 @@ public interface IEnergyHandler extends ITransactionHandler {
      * @return The amount that was extracted. <strong>Must be non-negative</strong>
      * @see #extract(int, int, TransactionContext) Extracting by index
      */
-    int extract(int amount, TransactionContext transaction);
+    default int extract(int amount, TransactionContext transaction) {
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        int handled = 0;
+        var size = size();
+        for (int index = 0; index < size; index++) {
+            handled += extract(index, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+        return handled;
+    }
+
+    ;
 }

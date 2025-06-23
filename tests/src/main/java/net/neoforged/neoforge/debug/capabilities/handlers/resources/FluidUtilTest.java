@@ -26,7 +26,6 @@ import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -44,8 +43,8 @@ import org.jetbrains.annotations.Nullable;
 public class FluidUtilTest {
     private static void setFluid(ExtendedGameTestHelper helper, BlockPos blockPos, ResourceStack<FluidResource> resourceStack) {
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, blockPos, null);
-        ResourceHandlerUtil.move(handler, VoidResourceHandler.FLUID, ResourceFilters.any(), Integer.MAX_VALUE, TransactionContext.ROOT);
-        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(resourceStack.resource()), handler, ResourceFilters.any(), resourceStack.amount(), TransactionContext.ROOT);
+        ResourceHandlerUtil.move(handler, VoidResourceHandler.FLUID, ResourceFilters.any(), Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(resourceStack.resource()), handler, ResourceFilters.any(), resourceStack.amount(), null);
 
 //        if (handler instanceof ResourceContainerToHandlerAdapter<FluidResource> modifiable) {
 //            modifiable.set(0, resourceStack.resource(), resourceStack.amount());
@@ -119,19 +118,19 @@ public class FluidUtilTest {
         resetInventory(player, new ItemStack(Items.BUCKET, 1));
 
         int startingAmount;
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(null)) {
             startingAmount = ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction);
         }
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
 
         helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
         helper.succeed();

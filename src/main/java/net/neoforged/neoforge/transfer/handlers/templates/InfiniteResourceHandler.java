@@ -71,7 +71,7 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
     @Override
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
-        return resource.equals(infinite); // If the resource matches the current infinite
+        return false;
     }
 
     @Override

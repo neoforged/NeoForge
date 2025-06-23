@@ -13,7 +13,6 @@ import net.neoforged.neoforge.capabilities.Capabilities.EnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -46,7 +45,7 @@ public class EnergyItemTests {
         var oneTenthMaxCapacity = Mth.ceil(EnergyTestsSetup.MAX_CAPACITY * 0.01f);
 
         //Reversion handling
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(energy.extract(EnergyTestsSetup.MAX_CAPACITY, transaction), EnergyTestsSetup.MAX_CAPACITY, "Extracted energy should be equal to the target value.");
             helper.assertValueEqual(energy.getAmount(), 0, "Post-extraction energy stored should be zero.");
 
@@ -59,7 +58,7 @@ public class EnergyItemTests {
         helper.assertValueEqual(energy.getAmount(), storedMax, "Reverted energy stored should be max");
 
         //Committing
-        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(energy.extract(EnergyTestsSetup.MAX_CAPACITY, transaction), EnergyTestsSetup.MAX_CAPACITY, "Extracted energy should be equal to the target value.");
             helper.assertValueEqual(energy.getAmount(), 0, "Post-extraction energy stored should be zero.");
 

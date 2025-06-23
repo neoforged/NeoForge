@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponentHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -236,7 +237,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      * <p>
-     * Implementation advice, don't just have this call {@link #insert(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
+     * Implementation advice, there are some performance gains that can be achieved by handling the indexable and non-indexed versions of this call more carefully.
      * See {@link ResourceStorageComponentHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
      *
      * @param resource    The resource to insert. <strong>Must be non-negative</strong>
@@ -246,7 +247,16 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @return The amount (Must be non-negative) of the resource that was inserted.
      * @see #insert(int, IResource, int, TransactionContext) Inserting by index
      */
-    int insert(T resource, int amount, TransactionContext transaction);
+    default int insert(T resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        int handled = 0;
+        var size = size();
+        for (int index = 0; index < size; index++) {
+            handled += insert(index, resource, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+        return handled;
+    }
 
     /**
      * Extracts a given amount of the resource from the handler at the given index.
@@ -265,7 +275,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
     /**
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      * <p>
-     * Implementation advice, don't just have this call {@link #extract(int, IResource, int, TransactionContext)}, as you may needlessly re-check validations.
+     * Implementation advice, there are some performance gains that can be achieved by handling the indexable and non-indexed versions of this call more carefully.
      * See {@link ResourceStorageComponentHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
      *
      * @param resource    The resource to extract.
@@ -275,7 +285,16 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @return The amount (Must be non-negative) of the resource that was extracted.
      * @see #extract(int, IResource, int, TransactionContext) Extracting by index
      */
-    int extract(T resource, int amount, TransactionContext transaction);
+    default int extract(T resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        int handled = 0;
+        var size = size();
+        for (int index = 0; index < size; index++) {
+            handled += extract(index, resource, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+        return handled;
+    }
 
     /**
      * <p>

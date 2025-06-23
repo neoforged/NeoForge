@@ -33,7 +33,7 @@ import net.minecraft.ReportedException;
  * <p>This is illustrated in the following example.
  *
  * <pre>{@code
- * try (Transaction outerTransaction = TransactionManager.open(TransactionContext.ROOT)) {
+ * try (Transaction outerTransaction = TransactionManager.open(null)) {
  *     // (A) some transaction operations
  *     try (Transaction nestedTransaction = TransactionManager.open(outerTransaction)) {
  *         // (B) more operations

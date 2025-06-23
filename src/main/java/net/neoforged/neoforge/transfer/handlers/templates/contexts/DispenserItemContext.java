@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.BlockSource;
@@ -82,15 +81,15 @@ public class DispenserItemContext implements IItemContext {
     public ItemStack finalizeResult(BlockSource source) {
         ItemStack res = resource.toStack(amount);
         List<ItemStack> overflow = new ArrayList<>();
-        for (Map.Entry<ItemResource, Integer> entry : resources.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<ItemResource> entry : resources.object2IntEntrySet()) {
             ItemResource key = entry.getKey();
-            Integer value = entry.getValue();
-            key.toStacks(value).forEach(stack -> {
+            var value = entry.getIntValue();
+            for (ItemStack stack : key.toStacks(value)) {
                 ItemStack notInserted = source.blockEntity().insertItem(stack);
                 if (!notInserted.isEmpty()) {
                     overflow.add(notInserted);
                 }
-            });
+            }
         }
         if (!overflow.isEmpty()) {
             Direction direction = source.state().getValue(DispenserBlock.FACING);

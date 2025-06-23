@@ -102,6 +102,7 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     @Override
     default int insert(int index, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         return insert(amount, transaction);
     }
 
@@ -109,6 +110,7 @@ public interface ISingleEnergyHandler extends IEnergyHandler {
     @Override
     default int extract(int index, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
+        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
         return extract(amount, transaction);
     }
 }

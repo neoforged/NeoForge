@@ -122,7 +122,7 @@ public final class FluidUtil {
      * Common logic for filling and draining the container context.
      */
     private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, TransferAction transferAction) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
             transferAction.commit(transaction);
             if (player == null) return stack;
@@ -147,7 +147,7 @@ public final class FluidUtil {
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
@@ -300,7 +300,7 @@ public final class FluidUtil {
      * @return the fluidStack that was transferred from the from to the to. null on failure.
      */
     public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, TransferAction action) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             FluidResource resource = FluidResource.of(fluidStack);
             int amount = ResourceHandlerUtil.move(from, to, resource::equals, fluidStack.getAmount(), transaction);
 

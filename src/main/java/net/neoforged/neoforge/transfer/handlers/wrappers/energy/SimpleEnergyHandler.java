@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.energy;
 import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
@@ -65,7 +64,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int insert(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int inserted = handler.insert(index, amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -73,7 +72,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int insert(int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int inserted = handler.insert(amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -81,7 +80,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int extract(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int extracted = handler.extract(index, amount, transaction);
             actionType.commit(transaction);
             return extracted;
@@ -89,7 +88,7 @@ public final class SimpleEnergyHandler {
     }
 
     public int extract(int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int extracted = handler.extract(amount, transaction);
             actionType.commit(transaction);
             return extracted;

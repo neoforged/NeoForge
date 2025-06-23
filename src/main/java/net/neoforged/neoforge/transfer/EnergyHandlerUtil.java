@@ -15,6 +15,7 @@ import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
@@ -38,12 +39,6 @@ public final class EnergyHandlerUtil {
 
     public static boolean isEmpty(IEnergyHandler handler) {
         return checkEnergy(handler.getAmount());
-    }
-
-    public static boolean canAcceptEnergy(IEnergyHandler handler) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
-            return handler.insert(1, transaction) > 0;
-        }
     }
 
     /**
@@ -104,54 +99,35 @@ public final class EnergyHandlerUtil {
     }
 
     /**
-     * @param handler Energy Handler to iterate
-     * @return Total energy stored across all of its sub-buffers. This is a long given the accumulation factor can be several max {@code ints} together.
-     *         <p>
-     * @deprecated Use {@link IEnergyHandler#getAmount()} or {@link IEnergyHandler#getAmountAsLong()}
-     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
-     */
-    @Deprecated(forRemoval = true, since = "now")
-    public static long getAmount(IEnergyHandler handler) {
-        return handler.getAmount();
-    }
-
-    /**
-     * @param handler Energy Handler to iterate
-     * @return Total capacity across all of its sub-buffers.
-     * @deprecated Use {@link IEnergyHandler#getCapacity()} or {@link IEnergyHandler#getCapacityAsLong()}.
-     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
-     */
-    @Deprecated(forRemoval = true, since = "now")
-    public static long getCapacity(IEnergyHandler handler) {
-        return handler.getCapacity();
-    }
-
-    /**
-     * @deprecated Use {@link IEnergyHandler#getAmountAsLong()}.
-     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
-     */
-    @Deprecated(forRemoval = true, since = "now")
-    public static long getAmountAsLong(IEnergyHandler handler) {
-        return handler.getAmountAsLong();
-    }
-
-    /**
-     * @deprecated Use {@link IEnergyHandler#getCapacityAsLong()}.
-     *             Deprecation for PR will be removed before final merge. We abuse 'since' to help find these (though there should only be the ones here)
-     */
-    @Deprecated(forRemoval = true, since = "now")
-    public static long getCapacityAsLong(IEnergyHandler handler) {
-        return handler.getCapacityAsLong();
-    }
-
-    /**
-     * The result is expected to not be committed.
+     * Returns if the specified {@code IEnergyHandler} could accept energy. The transaction used is not committed.
      *
-     * @param handler the energy handler to calculate
+     * @param handler The energy handler to check
+     * @return {@code true} if any energy could be accepted by the handler, otherwise {@code false}.
+     */
+    public static boolean canAcceptEnergy(IEnergyHandler handler) {
+        return getInsertableValue(handler) > 0;
+    }
+
+    /**
+     * Returns the maximum value the specified {@code IEnergyHandler} could accept. The transaction used is not committed.
+     *
+     * @param handler the energy handler to check
      * @return The max value that energy handler could receive
      */
-    public static int getMaxInsertableValue(IEnergyHandler handler) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+    public static int getInsertableValue(IEnergyHandler handler) {
+        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+            return handler.insert(Integer.MAX_VALUE, transaction);
+        }
+    }
+
+    /**
+     * Returns the maximum value the specified {@code IEnergyHandler} could provide. The transaction used is not committed.
+     *
+     * @param handler the energy handler to check
+     * @return The max value that energy handler could provide
+     */
+    public static int getExtractableValue(IEnergyHandler handler) {
+        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             return handler.insert(Integer.MAX_VALUE, transaction);
         }
     }

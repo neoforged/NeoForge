@@ -14,12 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface TransactionContext {
     /**
-     * An optional variable to use instead of null when opening unparented transactions.
-     * This is helpful when debugging as trying to find all instances of `null` is rather difficult
-     */
-    TransactionContext ROOT = null;
-
-    /**
      * @return The nesting depth of this transaction: 0 if it has no parent,
      *         1 if its parent has no parent, and so on...
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.

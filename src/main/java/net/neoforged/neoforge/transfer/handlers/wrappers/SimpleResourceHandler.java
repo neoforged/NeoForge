@@ -173,7 +173,7 @@ public final class SimpleResourceHandler<T extends IResource> {
      * @return The amount of the resource that was (or would have been, if simulated) inserted. <strong>Must be Non-Negative</strong>
      */
     public int insert(int index, T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int inserted = handler.insert(index, resource, amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -192,7 +192,7 @@ public final class SimpleResourceHandler<T extends IResource> {
      * @return The amount (A range from {@code 0} to {@code 2,147,483,647}) of the resource that was (or would have been, if simulated) inserted.
      */
     public int insert(T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int inserted = handler.insert(resource, amount, transaction);
             actionType.commit(transaction);
             return inserted;
@@ -209,7 +209,7 @@ public final class SimpleResourceHandler<T extends IResource> {
      * @return The amount (<strong>Must be Non-Negative</strong>) of the resource that was (or would have been, if simulated) extracted.
      */
     public int extract(int index, T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
 
             int extracted = handler.extract(index, resource, amount, transaction);
             actionType.commit(transaction);
@@ -229,7 +229,7 @@ public final class SimpleResourceHandler<T extends IResource> {
      * @return The amount (<strong>Must be Non-Negative</strong>) of the resource that was (or would have been, if simulated) extracted.
      */
     public int extract(T resource, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int extracted = handler.extract(resource, amount, transaction);
             actionType.commit(transaction);
             return extracted;

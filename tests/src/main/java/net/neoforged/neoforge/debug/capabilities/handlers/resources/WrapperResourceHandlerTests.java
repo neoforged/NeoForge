@@ -12,7 +12,6 @@ import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -32,17 +31,17 @@ public class WrapperResourceHandlerTests {
         helper.assertFalse(cap == null, "Player capability should be present");
         assert cap != null : "Player capability should be present"; // Mostly just makes the compiler understand the previous method
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.getDefaultResource(), 400, TransactionContext.ROOT), 400, "apples");
+        helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.getDefaultResource(), 400, null), 400, "apples");
         var chestInserted = 0;
         var chest2Inserted = 0;
-        try (var tx = TransactionManager.open(TransactionContext.ROOT)) {
+        try (var tx = TransactionManager.open(null)) {
             chestInserted = cap.insert(38, Items.DIAMOND_CHESTPLATE.getDefaultResource().with(DataComponents.DAMAGE, 20), 2, tx);
             chest2Inserted = cap.insert(39, Items.DIAMOND_CHESTPLATE.getDefaultResource(), 2, tx);
             tx.commit();
         }
         helper.assertValueEqual(chestInserted, 1, "armor insert");
         helper.assertValueEqual(chest2Inserted, 0, "armor insert");
-        var amount = ItemUtil.extractResourceStackFiltered(cap, item -> item.is(Items.DIAMOND_CHESTPLATE), 2, TransactionContext.ROOT);
+        var amount = ItemUtil.extractResourceStackFiltered(cap, item -> item.is(Items.DIAMOND_CHESTPLATE), 2, null);
         helper.assertValueEqual(amount.amount(), 1, "armor extract");
 //        if (cap instanceof PlayerInventoryHandler wrapper) {
 //            ResourceHandlerUtil.insertIndexForced(wrapper.armorHandler, Items.DIAMOND_BOOTS.defaultResource(), 1300, TransferAction.EXECUTE, TransactionContext.EMPTY);

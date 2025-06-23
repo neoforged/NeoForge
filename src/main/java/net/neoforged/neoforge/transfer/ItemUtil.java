@@ -47,7 +47,7 @@ public final class ItemUtil {
         IResourceHandler<ItemResource> cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         if (cap == null) return;
 
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             int inserted = cap.insert(resource, amount, transaction);
             if (inserted == amount) transaction.commit();
         }
@@ -78,7 +78,7 @@ public final class ItemUtil {
         if (resource.isEmpty()) return;
 
         PlayerItemContext context = new PlayerItemContext(player, preferredSlot);
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = TransactionManager.open(null)) {
             if (amount == context.insert(resource, amount, transaction))
                 transaction.commit();
         }

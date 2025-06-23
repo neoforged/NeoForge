@@ -39,6 +39,12 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     @Override
     boolean isValid(int index, T resource);
 
+    @Override
+    int insert(T resource, int amount, TransactionContext transaction);
+
+    @Override
+    int extract(T resource, int amount, TransactionContext transaction);
+
     /**
      * If you require more than 1 slot, please make sure to create your own implementation of {@link IResourceHandler} instead.
      * This interface is intended as a helper interface and should not mutate the defaulted values. Java doesn't allow {@code final} on interface defaults

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -29,52 +30,56 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
+        //No-op
+        ResourceHandlerUtil.isEmpty(resource, amount);
         return 0;
     }
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
+        //No-op
+        ResourceHandlerUtil.isEmpty(resource, amount);
         return 0;
     }
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public T getResource(int index) {
-        throw new IllegalArgumentException("Invalid slot index: " + index + ". This storage is empty and has no slots.");
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public int getAmount(int index) {
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public int getCapacity(int index, T resource) {
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public boolean isValid(int index, T resource) {
-        return false;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public boolean supportsInsertion(int index) {
-        return false;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override
     public boolean supportsExtraction(int index) {
-        return false;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override

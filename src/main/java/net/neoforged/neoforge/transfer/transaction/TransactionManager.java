@@ -22,12 +22,10 @@ public final class TransactionManager {
 
     /**
      * Opens a new transaction with a specified parent. The example below, we open the outermost layer or the `root`.
-     * <p>
-     * {@link TransactionContext#ROOT} is {@code null} so they are interchangeable
      *
      * <pre>
      * {@code
-     * try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+     * try (var transaction = TransactionManager.open(null)) {
      *     // do exchanges
      * }
      * }</pre>
@@ -92,7 +90,7 @@ public final class TransactionManager {
 
     @ApiStatus.Internal
     Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
-        if (parent != TransactionContext.ROOT) {
+        if (parent != null) {
             Transaction parentImpl = (Transaction) parent;
             parentImpl.validateCurrentTransaction();
             parentImpl.validateOpen();

@@ -20,6 +20,7 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 public final class ResourceHandlerUtil {
@@ -299,9 +300,22 @@ public final class ResourceHandlerUtil {
      * @return The total extractable amount of a resource in a given handler without committing
      */
     public static <T extends IResource> int getExtractableAmountOf(IResourceHandler<T> handler, T resource) {
-        try (Transaction transaction = TransactionManager.open(TransactionContext.ROOT)) {
+        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             //We don't commit allow us to just inquiry the amount
             return handler.extract(resource, Integer.MAX_VALUE, transaction);
+        }
+    }
+
+    /**
+     * @param <T>      the type of resource handled by the handler
+     * @param handler  the {@link IResourceHandler} to insert the resource to
+     * @param resource the resource to insert
+     * @return The total insertable amount of a resource in a given handler without committing
+     */
+    public static <T extends IResource> int getInsertableAmountOf(IResourceHandler<T> handler, T resource) {
+        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+            //We don't commit allow us to just inquiry the amount
+            return handler.insert(resource, Integer.MAX_VALUE, transaction);
         }
     }
 
@@ -404,7 +418,7 @@ public final class ResourceHandlerUtil {
      * Predicate<FluidResource> filter = resource -> resource.is(Fluids.WATER);
      *
      * // Move exactly one bucket in total, only of water:
-     * try (Transaction transaction = Transaction.open(TransactionContext.ROOT)) {
+     * try (Transaction transaction = Transaction.open(null)) {
      *     int waterMoved = ResourceHandlerUtil.move(source, target, filter, FluidType.BUCKET_VOLUME, transaction);
      *     if (waterMoved == FluidType.BUCKET_VOLUME) {
      *         // Only commit if exactly one bucket was moved.
@@ -679,8 +693,8 @@ public final class ResourceHandlerUtil {
     }
 
     public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, Predicate<T> filter) {
-        try (Transaction temp = TransactionManager.open(null)) {
-            //Simulated, we don't commit on an inquiry
+        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
+            //Simulated: we don't commit
             var size = handler.size();
             for (int index = 0; index < size; index++) {
                 var resource = handler.getResource(index);
@@ -701,7 +715,7 @@ public final class ResourceHandlerUtil {
     }
 
     public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
-        try (Transaction temp = TransactionManager.open(null)) {
+        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
             //Simulated: we don't commit
             var resource = handler.getResource(index);
             return !doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0;
@@ -709,8 +723,8 @@ public final class ResourceHandlerUtil {
     }
 
     public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, T resource) {
-        try (Transaction temp = TransactionManager.open(null)) {
-            //Simulated, we don't commit on an inquiry
+        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
+            //Simulated: we don't commit
             return handler.extract(resource, 1, temp) > 0;
         }
     }

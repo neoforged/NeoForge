@@ -3,32 +3,33 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.debug.capabilities.handlers.resources;
+package net.neoforged.neoforge.unittest.transfer;
 
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.VoidEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
-import net.neoforged.testframework.annotation.ForEachTest;
-import net.neoforged.testframework.annotation.TestHolder;
-import net.neoforged.testframework.gametest.EmptyTemplate;
-import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-import net.neoforged.testframework.gametest.GameTest;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@ForEachTest(groups = ResourceHandlerTestSetup.GROUP_ID, idPrefix = "resource.handler.transaction.")
-
-public class TransactionTests {
-    @GameTest
-    @EmptyTemplate
-    @TestHolder(description = "Unsafe manager tests")
-    private static void unsafe(ExtendedGameTestHelper helper) {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class UnsafeTransactionManagerTest {
+    @Test
+    void unsafe() {
         //Providing a way we can open transactions while inside a method that may not have the context available
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+            Assertions.assertThat(transaction).isNotNull();
+            Assertions.assertThat(TransactionManager.isActive()).isTrue();
+
             someMethodThatStopsProvidingParams();
         }
+        Assertions.assertThat(UnsafeTransactionManager.getCurrentOpenedTransaction()).isNull();
+        Assertions.assertThat(TransactionManager.isActive()).isFalse();
 
         //It didn't throw, so this means we succeeded. \o/
-        helper.succeed();
     }
 
     //We want a method that simulates an api boundary where a transactionContext is not provided
