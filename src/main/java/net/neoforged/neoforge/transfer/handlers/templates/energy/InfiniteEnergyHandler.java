@@ -57,12 +57,9 @@ public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        EnergyHandlerUtil.checkEnergy(amount);
         return amount;
     }
 
-    /**
-     * Any custom implementations are expected to make their own full implementation rather than extend {@link InfiniteEnergyHandler}
-     */
     private InfiniteEnergyHandler() {}
 }

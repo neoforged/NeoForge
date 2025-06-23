@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import com.google.common.math.IntMath;
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
@@ -15,12 +16,12 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class SteppedItemContextResourceHandler<T extends IResource> extends ItemContextResourceHandler<T> {
-    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultStep) {
-        super(itemContext, componentType, defaultStep);
+    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem) {
+        super(itemContext, componentType, defaultStep, capacityOfOneItem);
     }
 
-    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultStep, Predicate<T> validator) {
-        super(itemContext, componentType, defaultStep, validator);
+    public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem, Predicate<T> validator) {
+        super(itemContext, componentType, defaultStep, capacityOfOneItem, validator);
     }
 
     @Override
@@ -29,10 +30,10 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
 
         if (!isValid(0, resource) || !isEmpty()) return 0;
 
-        int singleItemLimit = getSingleItemAmount();
-        if (amount < singleItemLimit) return 0;
+        int capacityOfOneItem = getSingleItemAmount();
+        if (amount < capacityOfOneItem) return 0;
 
-        return fill(resource, amount / singleItemLimit, transaction, singleItemLimit) * singleItemLimit;
+        return IntMath.saturatedMultiply(fill(resource, amount / capacityOfOneItem, transaction, capacityOfOneItem), capacityOfOneItem);
     }
 
     @Override
@@ -41,17 +42,17 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
 
         if (isEmpty() || !getResource(0).equals(resource)) return 0;
 
-        int singleItemLimit = getSingleItemAmount();
+        int capacityOfOneItem = getSingleItemAmount();
 
-        if (amount <= singleItemLimit) return 0;
+        if (amount <= capacityOfOneItem) return 0;
 
-        int extractedCount = amount / singleItemLimit;
+        int extractedCount = amount / capacityOfOneItem;
         int exchanged = empty(extractedCount, transaction);
-        return exchanged * singleItemLimit;
+        return IntMath.saturatedMultiply(exchanged, capacityOfOneItem);
     }
 
-    protected int fill(T resource, int count, TransactionContext transaction, int singleItemLimit) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(ResourceStack.of(resource, singleItemLimit), singleItemLimit));
+    protected int fill(T resource, int count, TransactionContext transaction, int capacityOfOneItem) {
+        ItemResource filledContainer = itemContext.getResource().with(componentType, ResourceStack.of(resource, capacityOfOneItem));
         return itemContext.exchange(filledContainer, count, transaction);
     }
 }

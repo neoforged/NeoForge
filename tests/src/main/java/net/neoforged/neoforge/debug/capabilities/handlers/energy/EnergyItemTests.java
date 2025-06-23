@@ -10,7 +10,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities.EnergyHandler;
-import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.energy.EnergyBufferAttachment;
@@ -36,24 +35,41 @@ public class EnergyItemTests {
         helper.assertNotNull(energy, "Capability must be present");
 
         assert energy != null;
-        var current = EnergyHandlerUtil.getAmount(energy);
+        var current = energy.getAmount();
 
         EnergyBufferAttachment.builder(0, 1000).build();
 
-        long storedMax = EnergyTestsSetup.MAX_CAPACITY;
+        int storedMax = EnergyTestsSetup.MAX_CAPACITY;
         helper.assertValueEqual(current, storedMax, "Default stored energy should be equal to the max capacity.");
 
+        //This value is how much we have it set to insert, but extraction is the full capacity.
+        var oneTenthMaxCapacity = Mth.ceil(EnergyTestsSetup.MAX_CAPACITY * 0.01f);
+
+        //Reversion handling
         try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
             helper.assertValueEqual(energy.extract(EnergyTestsSetup.MAX_CAPACITY, transaction), EnergyTestsSetup.MAX_CAPACITY, "Extracted energy should be equal to the target value.");
-            helper.assertValueEqual(EnergyHandlerUtil.getAmount(energy), 0L, "Post-extraction energy stored should be zero.");
+            helper.assertValueEqual(energy.getAmount(), 0, "Post-extraction energy stored should be zero.");
 
             //The default builder is 1% of the max capacity, this is trivially set by `builder.maxInsertRate(targetValue)`
-            helper.assertValueEqual(energy.insert(EnergyTestsSetup.MAX_CAPACITY, transaction), Mth.ceil(EnergyTestsSetup.MAX_CAPACITY * 0.01f), "Received energy should be equal to the target value.");
-            helper.assertValueEqual(EnergyHandlerUtil.getAmount(energy), (long) Mth.ceil(EnergyTestsSetup.MAX_CAPACITY * 0.01f), "Post-insertion energy stored should be max insert.");
+            helper.assertValueEqual(energy.insert(EnergyTestsSetup.MAX_CAPACITY, transaction), oneTenthMaxCapacity, "Received energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getAmount(), oneTenthMaxCapacity, "Post-insertion energy stored should be max insert.");
             //we skip committing to test the value reverts to full again
         }
 
-        helper.assertValueEqual(EnergyHandlerUtil.getAmount(energy), storedMax, "Reverted energy stored should be max");
+        helper.assertValueEqual(energy.getAmount(), storedMax, "Reverted energy stored should be max");
+
+        //Committing
+        try (var transaction = TransactionManager.open(TransactionContext.ROOT)) {
+            helper.assertValueEqual(energy.extract(EnergyTestsSetup.MAX_CAPACITY, transaction), EnergyTestsSetup.MAX_CAPACITY, "Extracted energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getAmount(), 0, "Post-extraction energy stored should be zero.");
+
+            //The default builder is 1% of the max capacity, this is trivially set by `builder.maxInsertRate(targetValue)`
+            helper.assertValueEqual(energy.insert(EnergyTestsSetup.MAX_CAPACITY, transaction), oneTenthMaxCapacity, "Received energy should be equal to the target value.");
+            helper.assertValueEqual(energy.getAmount(), oneTenthMaxCapacity, "Post-insertion energy stored should be max insert.");
+            //we skip committing to test the value reverts to full again
+            transaction.commit();
+        }
+        helper.assertValueEqual(energy.getAmount(), oneTenthMaxCapacity, "Reverted energy stored should be max");
 
         helper.succeed();
     }

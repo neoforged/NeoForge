@@ -25,7 +25,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageComponentHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageComponentHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
@@ -62,14 +61,12 @@ public record ResourceHandlerTestSetup() {
                 "resource_container",
                 () -> new BlockEntityType<>(ResourceBlockExample.Entity::new, RESOURCE_BLOCK.get()));
 
-        //        Supplier<AttachmentType<ItemStackListHandler2>> ITEM_STORAGE_ATTACHMENT = Registry.ATTACHMENTS.register("item_container",
-        //                AttachmentType.builder(holder->)::build);
         Supplier<AttachmentType<TestResourceTemplateAttachment>> TEST_TEMPLATE_ATTACHMENT = Registry.ATTACHMENTS.register("stack_template_attachment", TestResourceTemplateAttachment.BUILDER::build);
 
-        DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
-                "simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
-                        .persistent(ItemContextResourceHandler.Component.codec(IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount)))
-                        .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)))
+        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
+                "simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
+                        .persistent(IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount))
+                        .networkSynchronized(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount))
                         .build());
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<ItemResource>>> SINGLE_ITEM_CONTENT = Registry.COMPONENTS.register(

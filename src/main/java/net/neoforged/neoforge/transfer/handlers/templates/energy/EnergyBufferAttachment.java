@@ -24,7 +24,7 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
+import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -95,7 +95,6 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
      */
     private final int maxExtract;
 
-    //Some holder (usually a blockentity) that will be set on being serialized
     @Nullable
     private IAttachmentHolder holder;
 
@@ -137,8 +136,8 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
             if (energy[i] < 0) throw new IllegalArgumentException("Energy at index " + i + " must be non-negative");
             this.energy[i] = Math.max(0, Math.min(capacity, energy[i]));
         }
-        var onChanged = SetChangedSnapshot.of(this::onSetChanged);
-        this.snapshots = IndexedIntSnapshot.listOf(this::set, this::getAmount, onChanged, size);
+        var onChanged = GroupedSnapshotJournal.commitWith(this::onSetChanged);
+        this.snapshots = IndexedIntSnapshot.listOf(size, this::set, this::getAmount, onChanged);
     }
 
     //Attachment building methods

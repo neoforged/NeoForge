@@ -26,6 +26,8 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 public class ComposterWrapper extends SnapshotJournal<Float> {
+    private static final ItemResource BONE_MEAL = ItemResource.of(Items.BONE_MEAL);
+
     //Floats to avoid boxing and unboxing when taking a snapshot or assigning;
     //Also allows us to make use of the Float.equals
     private static final Float NO_OP = 0f;
@@ -98,6 +100,19 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         probability = NO_OP;
     }
 
+    private boolean isBoneMeal(ItemResource resource) {
+        return resource.equals(BONE_MEAL);
+    }
+
+    private boolean hasBoneMeal() {
+        // We only have bone meal if the level is READY and no action was scheduled.
+        return probability.equals(NO_OP) && location.blockstate().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY;
+    }
+
+    private float getValueFrom(ItemResource resource) {
+        return ComposterBlock.getValue(resource.toStack());
+    }
+
     private class Top implements ISingleResourceHandler<ItemResource> {
         @Override
         public int insert(ItemResource resource, int amount, TransactionContext transaction) {
@@ -109,7 +124,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
             if (location.blockstate().getValue(ComposterBlock.LEVEL) >= ComposterBlock.READY) return 0;
 
             // Check that the item is compostable.
-            float insertedIncreaseProbability = ComposterBlock.getValue(resource.toStack());
+            float insertedIncreaseProbability = getValueFrom(resource);
             if (insertedIncreaseProbability <= 0) return 0;
 
             // Schedule insertion.
@@ -146,13 +161,13 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public int getCapacity(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return ComposterBlock.getValue(resource.toStack()) <= 0 ? 0 : 1;
+            return resource.isEmpty() || getValueFrom(resource) > 0 ? 1 : 0;
         }
 
         @Override
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return ComposterBlock.getValue(resource.toStack()) > 0;
+            return getValueFrom(resource) > 0;
         }
 
         @Override
@@ -162,17 +177,6 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
     }
 
     private class Bottom implements ISingleResourceHandler<ItemResource> {
-        private static final ItemResource BONE_MEAL = ItemResource.of(Items.BONE_MEAL);
-
-        private boolean hasBoneMeal() {
-            // We only have bone meal if the level is READY and no action was scheduled.
-            return probability.equals(NO_OP) && location.blockstate().getValue(ComposterBlock.LEVEL) == ComposterBlock.READY;
-        }
-
-        private boolean isBonemeal(ItemResource resource) {
-            return resource.equals(BONE_MEAL);
-        }
-
         @Override
         public int insert(ItemResource resource, int amount, TransactionContext transaction) {
             return 0;
@@ -182,11 +186,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         public int extract(ItemResource resource, int amount, TransactionContext transaction) {
             if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
-            // Check that the resource is bone meal.
-            if (!isBonemeal(resource)) return 0;
-
-            // Check that there is bone meal to extract.
-            if (!hasBoneMeal()) return 0;
+            // Check that the resource is bone meal & there is bone meal to extract.
+            if (!isBoneMeal(resource) || !hasBoneMeal()) return 0;
 
             updateSnapshots(transaction);
             probability = EXTRACT;
@@ -208,13 +209,13 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public int getCapacity(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return resource.isEmpty() || isBonemeal(resource) ? 1 : 0;
+            return resource.isEmpty() || isBoneMeal(resource) ? 1 : 0;
         }
 
         @Override
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return isBonemeal(resource);
+            return false;
         }
 
         @Override

@@ -45,14 +45,21 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
     //Accepts as much as is inserted
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        EnergyHandlerUtil.checkEnergy(amount);
         return amount;
     }
 
     //Never has anything to extract so we return 0
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        EnergyHandlerUtil.checkEnergy(amount);
+        return 0;
+    }
+
+    // Overriding this from ISingleEnergyHandler is not advised given it is intended to be of size 1,
+    //  however, this makes the implementation of this class simpler
+    @Override
+    public int size() {
         return 0;
     }
 

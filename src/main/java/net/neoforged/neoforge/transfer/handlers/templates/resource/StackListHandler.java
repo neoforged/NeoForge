@@ -15,13 +15,15 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
+import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
@@ -39,7 +41,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     private int size;
     private NonNullList<S> stacks;
     private final ArrayList<StackJournal> snapshotJournals = new ArrayList<>();
-    private final SetChangedSnapshot onChangeJournal;
+    private final GroupedSnapshotJournal onChangeJournal;
     private final S emptyStack;
 
     /**
@@ -56,7 +58,9 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         this.stacks = stacks;
         this.size = stacks.size();
         this.snapshotJournals.ensureCapacity(size);
-        this.onChangeJournal = SetChangedSnapshot.of(onChangedCallback);
+        //Creates a change journal in charge of notifying the handler has been changed.
+        // The callback is usually something like someInstance::setChanged
+        this.onChangeJournal = GroupedSnapshotJournal.commitWith(onChangedCallback);
         this.emptyStack = emptyStack;
         for (int i = 0; i < size; i++) {
             snapshotJournals.add(new StackJournal(i));
@@ -233,6 +237,13 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         return handledAmount;
     }
 
+    /**
+     * Exposed set to be used for {@link ResourceHandlerSlot} as an {@link IIndexModifier}
+     *
+     * @param index    index that the resource is at
+     * @param resource resource intended to overwrite the current value
+     * @param amount   the amount of the resource desired to be at the specified index
+     */
     public void set(int index, R resource, int amount) {
         setInternal(index, resource, amount);
         onChangeJournal.runCallback();

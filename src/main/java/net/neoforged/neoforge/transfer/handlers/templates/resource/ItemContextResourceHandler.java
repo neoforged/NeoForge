@@ -5,14 +5,10 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
-import com.google.common.primitives.Ints;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.google.common.math.IntMath;
+import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
@@ -23,51 +19,62 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
     protected final IItemContext itemContext;
-    protected final DataComponentType<Component<T>> componentType;
-    protected final Component<T> defaultComponent;
+    protected final DataComponentType<ResourceStack<T>> componentType;
+    protected final ResourceStack<T> defaultStack;
+    protected final int capacityOfOneItem;
     protected final Predicate<T> validator;
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultComponent) {
-        this(itemContext, componentType, defaultComponent, r -> true);
+    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStack, int capacityOfOneItem) {
+        this(itemContext, componentType, defaultStack, capacityOfOneItem, r -> true);
     }
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<Component<T>> componentType, Component<T> defaultComponent, Predicate<T> validator) {
+    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStack, int capacityOfOneItem, Predicate<T> validator) {
         this.itemContext = itemContext;
         this.componentType = componentType;
-        this.defaultComponent = defaultComponent;
+        this.defaultStack = defaultStack;
+        this.capacityOfOneItem = capacityOfOneItem;
         this.validator = validator;
     }
 
-    private Component<T> getComponent() {
-        return itemContext.getResource().getOrDefault(componentType, defaultComponent);
+    private ResourceStack<T> getStoredResourceStack() {
+        return itemContext.getResource().getOrDefault(componentType, defaultStack);
+    }
+
+    protected int getSingleItemAmount() {
+        return getStoredResourceStack().amount();
     }
 
     @Override
     public T getResource(int index) {
-        return getComponent().resourceStack().resource();
+        Objects.checkIndex(index, size());
+        return getStoredResourceStack().resource();
     }
 
     @Override
     public int getAmount(int index) {
-        return getSingleItemAmount() * itemContext.getAmount();
+        Objects.checkIndex(index, size());
+        return IntMath.saturatedMultiply(getSingleItemAmount(), itemContext.getAmount());
     }
 
-    protected int getSingleItemAmount() {
-        return getComponent().resourceStack().amount();
+    @Override
+    public long getAmountAsLong(int index) {
+        Objects.checkIndex(index, size());
+        return (long) getSingleItemAmount() * itemContext.getAmount();
     }
 
     @Override
     public int getCapacity(int index, T resource) {
-        return Ints.saturatedCast((long) getSingleItemLimit() * (long) itemContext.getAmount());
+        Objects.checkIndex(index, size());
+        if (!resource.isEmpty() && !getResource(0).equals(resource)) return 0;
+        return IntMath.saturatedMultiply(capacityOfOneItem, itemContext.getAmount());
     }
 
     @Override
     public long getCapacityAsLong(int index, T resource) {
-        return (long) getSingleItemLimit() * (long) itemContext.getAmount();
-    }
+        Objects.checkIndex(index, size());
 
-    private int getSingleItemLimit() {
-        return getComponent().singleItemLimit();
+        if (!resource.isEmpty() && !getStoredResourceStack().resource().equals(resource)) return 0;
+        return (long) capacityOfOneItem * itemContext.getAmount();
     }
 
     @Override
@@ -93,22 +100,21 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     public int insert(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount) || !isValid(0, resource)) return 0;
         T presentResource = getResource(0);
-        int singleItemLimit = getSingleItemLimit();
 
         if (presentResource.isEmpty()) {
-            if (amount < singleItemLimit)
-                return setPartial(resource, amount, singleItemLimit, transaction) == 1 ? amount : 0;
-            return setFull(resource, amount / singleItemLimit, singleItemLimit, transaction) * singleItemLimit;
+            if (amount < capacityOfOneItem)
+                return setPartial(resource, amount, transaction) == 1 ? amount : 0;
+            return IntMath.saturatedMultiply(setFull(resource, amount / capacityOfOneItem, capacityOfOneItem, transaction), capacityOfOneItem);
         }
 
         if (!presentResource.equals(resource)) return 0;
 
         int containerFill = getSingleItemAmount();
-        int spaceLeft = singleItemLimit - containerFill;
+        int spaceLeft = capacityOfOneItem - containerFill;
         if (spaceLeft == 0) return 0;
         if (amount < spaceLeft)
-            return setPartial(resource, amount + containerFill, singleItemLimit, transaction) == 1 ? amount : 0;
-        return setFull(resource, amount / spaceLeft, singleItemLimit, transaction) * spaceLeft;
+            return setPartial(resource, amount + containerFill, transaction) == 1 ? amount : 0;
+        return IntMath.saturatedMultiply(setFull(resource, amount / spaceLeft, capacityOfOneItem, transaction), spaceLeft);
     }
 
     @Override
@@ -118,14 +124,12 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         if (containerFill == 0) return 0;
 
         if (amount < containerFill) {
-            int singleItemLimit = getSingleItemLimit();
-
-            int exchanged = setPartial(resource, containerFill - amount, singleItemLimit, transaction);
+            int exchanged = setPartial(resource, containerFill - amount, transaction);
             return exchanged == 1 ? amount : 0;
         } else {
             int extractedCount = amount / containerFill;
             int exchanged = empty(extractedCount, transaction);
-            return exchanged * containerFill;
+            return IntMath.saturatedMultiply(exchanged, containerFill);
         }
     }
 
@@ -134,28 +138,13 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         return itemContext.exchange(emptiedContainer, count, transaction);
     }
 
-    protected int setFull(T resource, int count, int singleItemLimit, TransactionContext transaction) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(ResourceStack.of(resource, singleItemLimit), singleItemLimit));
+    protected int setFull(T resource, int count, int capacity, TransactionContext transaction) {
+        ItemResource filledContainer = itemContext.getResource().with(componentType, ResourceStack.of(resource, capacity));
         return itemContext.exchange(filledContainer, count, transaction);
     }
 
-    protected int setPartial(T resource, int amount, int singleItemLimit, TransactionContext transaction) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, new Component<>(ResourceStack.of(resource, amount), singleItemLimit));
+    protected int setPartial(T resource, int amount, TransactionContext transaction) {
+        ItemResource filledContainer = itemContext.getResource().with(componentType, ResourceStack.of(resource, amount));
         return itemContext.exchange(filledContainer, 1, transaction);
-    }
-
-    public record Component<T extends IResource>(ResourceStack<T> resourceStack, int singleItemLimit) {
-        public static <T extends IResource> Codec<Component<T>> codec(Codec<ResourceStack<T>> codec) {
-            return RecordCodecBuilder.create(instance -> instance.group(
-                    codec.fieldOf("resource_stack").forGetter(Component::resourceStack),
-                    Codec.INT.fieldOf("single_item_limit").forGetter(Component::singleItemLimit)).apply(instance, Component::new));
-        }
-
-        public static <T extends IResource> StreamCodec<RegistryFriendlyByteBuf, Component<T>> streamCodec(StreamCodec<RegistryFriendlyByteBuf, ResourceStack<T>> streamCodec) {
-            return StreamCodec.composite(
-                    streamCodec, Component::resourceStack,
-                    ByteBufCodecs.INT, Component::singleItemLimit,
-                    Component::new);
-        }
     }
 }

@@ -76,7 +76,6 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
      *
      * @param originalState state of this participant before the transactional operation.
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
-     * @see net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot SetChangedSnapShot
      */
     protected void onCommit(T originalState) {}
 

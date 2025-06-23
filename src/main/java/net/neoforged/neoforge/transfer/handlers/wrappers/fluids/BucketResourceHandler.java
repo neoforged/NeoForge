@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers.fluids;
 
-import com.google.common.primitives.Ints;
+import com.google.common.math.IntMath;
 import java.util.Objects;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Items;
@@ -67,11 +67,14 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         Objects.checkIndex(index, size());
         if (isNotBucket()) return 0;
 
+        if (!resource.isEmpty())
+            return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
+
         //Shouldn't be able to overflow given the max stack size is 99, thus the max this can be on a single item should be 99,000.
         // Of course this will differ for other implementations, so care will be needed for those.
         var fluid = getResource(0);
-        if (!resource.isEmpty() && !fluid.isEmpty() && !resource.equals(fluid)) return 0;
-        return Ints.saturatedCast((long) FluidType.BUCKET_VOLUME * (long) itemContext.getAmount());
+        if (!fluid.isEmpty() && !resource.equals(fluid)) return 0;
+        return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
     }
 
     @Override
@@ -81,7 +84,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
         var fluid = getResource(0);
         if (!resource.isEmpty() && !fluid.isEmpty() && !resource.equals(fluid)) return 0;
-        return (long) FluidType.BUCKET_VOLUME * (long) itemContext.getAmount();
+        return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
     }
 
     //These are hints to consumers, but given these are on items, the hints are less valuable to be fully stateless
@@ -111,7 +114,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         int bucketsToFill = amount / FluidType.BUCKET_VOLUME;
         if (bucketsToFill == 0) return 0;
         int handled = itemContext.exchange(filledBucket, bucketsToFill, transaction);
-        return handled * FluidType.BUCKET_VOLUME;
+        return IntMath.saturatedMultiply(handled, FluidType.BUCKET_VOLUME);
     }
 
     @Override
@@ -133,7 +136,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int bucketsEmptied = itemContext.exchange(ItemResource.of(Items.BUCKET), bucketsToEmpty, subTransaction);
             subTransaction.commit();
-            return bucketsEmptied * FluidType.BUCKET_VOLUME;
+            return IntMath.saturatedMultiply(bucketsEmptied, FluidType.BUCKET_VOLUME);
         }
     }
 

@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.resources;
 
 import java.util.Objects;
 import java.util.function.UnaryOperator;
-import net.minecraft.core.NonNullList;
 
 /**
  * Represents an immutable {@link IResource} and a <b>mutable</b> amount.
@@ -107,23 +106,11 @@ public final class MutableResourceStack<T extends IResource> implements IResourc
 
     @Override
     public int hashCode() {
-        return Objects.hash(resource, amount);
+        return resource.hashCode();
     }
 
     @Override
     public String toString() {
         return "%s(%d)".formatted(resource, amount);
-    }
-
-    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, MutableResourceStack<R> resourceStack) {
-        return NonNullList.withSize(count, resourceStack);
-    }
-
-    public static <R extends IResource> NonNullList<MutableResourceStack<R>> nonNullListOfSize(int count, R emptyResource) {
-        return NonNullList.withSize(count, MutableResourceStack.of(emptyResource, 0));
-    }
-
-    public NonNullList<MutableResourceStack<T>> nonNullListOfSize(int count) {
-        return nonNullListOfSize(count, this);
     }
 }

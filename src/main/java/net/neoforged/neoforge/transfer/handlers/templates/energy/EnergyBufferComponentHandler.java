@@ -5,18 +5,18 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import com.google.common.math.IntMath;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -38,41 +38,33 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class EnergyBufferComponentHandler implements ISingleEnergyHandler {
     private final IItemContext itemContext;
-    private final MutableDataComponentHolder parent;
     private final DataComponentType<Integer> componentType;
+
     // These are not handled by the component and are constant upon the handler creation.
     // If you'd like to make this controlled by ComponentData, then a different implementation would be required.
-    private final int capacity;
+    private final int capacityOfOneItem;
     private final int maxInsert;
     private final int maxExtract;
-    private final IndexedIntSnapshot snapshot;
 
     /**
      * Creates a new ComponentEnergyStorage with a data component as the backing store for the energy value.
      *
-     * @param parent        The parent component holder, such as an {@link ItemStack}
-     * @param componentType The data component referencing the stored energy of the item stack
-     * @param capacity      The max capacity of the energy being stored
-     * @param maxInsert     The max per-transfer power input rate
-     * @param maxExtract    The max per-transfer power output rate
-     * @param callback      A callback when the component has been changed.
+     * @param itemContext       The context controlling how the handler should be used such as {@link PlayerItemContext}
+     * @param componentType     The data component referencing the stored energy of the item stack
+     * @param capacityOfOneItem The max capacity of the energy being stored
+     * @param maxInsert         The max per-transfer power input rate
+     * @param maxExtract        The max per-transfer power output rate
      */
-    public EnergyBufferComponentHandler(IItemContext itemContext, MutableDataComponentHolder parent, DataComponentType<Integer> componentType, int capacity, int maxInsert, int maxExtract, @Nullable Runnable callback) {
+    public EnergyBufferComponentHandler(IItemContext itemContext, DataComponentType<Integer> componentType, int capacityOfOneItem, int maxInsert, int maxExtract) {
         this.itemContext = itemContext;
-        this.parent = parent;
         this.componentType = componentType;
-        this.capacity = capacity;
+        this.capacityOfOneItem = capacityOfOneItem;
         this.maxInsert = maxInsert;
         this.maxExtract = maxExtract;
-        this.snapshot = IndexedIntSnapshot.of(this::set, this::getAmount, SetChangedSnapshot.of(callback));
     }
 
     private int getIndividualAmount() {
         return this.itemContext.getResource().getOrDefault(componentType, 0);
-    }
-
-    private int getIndividualLimit() {
-        return this.capacity;
     }
 
     @Override
@@ -87,14 +79,13 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         amount = Mth.clamp(amount, 0, stackedAmount);
 
         int containerFill = getIndividualAmount();
-        int spaceLeft = getIndividualLimit() - containerFill;
+        int spaceLeft = this.capacityOfOneItem - containerFill;
         if (spaceLeft == 0) return 0;
 
-        snapshot.updateSnapshots(transaction);
         if (amount < spaceLeft) {
             return setPartial(amount + containerFill, transaction) == 1 ? amount : 0;
         }
-        return setFull(amount / spaceLeft, transaction) * spaceLeft;
+        return IntMath.saturatedMultiply(setFull(amount / spaceLeft, transaction), spaceLeft);
     }
 
     @Override
@@ -111,13 +102,12 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         int containerFill = getIndividualAmount();
         if (containerFill == 0) return 0;
 
-        snapshot.updateSnapshots(transaction);
         if (clampedValue < containerFill) {
             return setPartial(containerFill - clampedValue, transaction) == 1 ? clampedValue : 0;
         }
 
         //check to see if this can overflow
-        return empty(clampedValue / containerFill, transaction) * containerFill;
+        return IntMath.saturatedMultiply(empty(clampedValue / containerFill, transaction), containerFill);
     }
 
     private int empty(int count, TransactionContext context) {
@@ -126,7 +116,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     private int setFull(int count, TransactionContext context) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, getIndividualLimit());
+        ItemResource filledContainer = itemContext.getResource().with(componentType, this.capacityOfOneItem);
         return itemContext.exchange(filledContainer, count, context);
     }
 
@@ -138,17 +128,12 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     @Override
     public int getAmount() {
         int rawEnergy = getIndividualAmount();
-        int preCalc = Mth.clamp(rawEnergy, 0, this.capacity) * this.itemContext.getAmount();
-        if (preCalc < 0) return Integer.MAX_VALUE;
-        return preCalc;
+        return IntMath.saturatedMultiply(Mth.clamp(rawEnergy, 0, this.capacityOfOneItem), this.itemContext.getAmount());
     }
 
     @Override
     public int getCapacity() {
-        int stackedAmount = this.capacity * itemContext.getAmount();
-        //handle overflow
-        if (stackedAmount < 0) return Integer.MAX_VALUE;
-        return stackedAmount;
+        return IntMath.saturatedMultiply(capacityOfOneItem, itemContext.getAmount());
     }
 
     @Override
@@ -162,26 +147,15 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     /**
-     * Writes a new energy value to the data component. Clamps to [0, capacity]
-     *
-     * @param energy The new energy value
-     */
-    public void set(int index, int energy) {
-        // we don't check index here given this is an overwrite
-        int realEnergy = Mth.clamp(energy, 0, this.capacity);
-        this.parent.set(this.componentType, realEnergy);
-    }
-
-    /**
-     * Creates a builder of a specified size, and capacity. This is the advised way to make an {@link EnergyBufferComponentHandler}.
+     * Creates a builder of a specified capacity. This is the advised way to make an {@link EnergyBufferComponentHandler}.
      * An important note, is by default the transfer rate is 1% of the capacity (but never less than 1).
      * This it to help make a simple feeling of something charging
      *
-     * @param capacity How much energy the sub-buffers are set to be able to hold individually. If you desire separate capacities per buffer, then you will need to implement your own variant.
+     * @param capacityOfOneItem How much energy the buffer is set to be able to hold for a single item.
      * @return Chainable builder to allow creation of a new {@link EnergyBufferComponentHandler}
      */
-    public static Builder builder(int capacity, Supplier<DataComponentType<Integer>> energyComponentSupplier) {
-        return builder(capacity, energyComponentSupplier.get());
+    public static Builder builder(int capacityOfOneItem, Supplier<DataComponentType<Integer>> energyComponentSupplier) {
+        return builder(capacityOfOneItem, energyComponentSupplier.get());
     }
 
     public static Builder builder(int capacity, DataComponentType<Integer> energyComponent) {
@@ -193,18 +167,10 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         private int capacity;
         private int maxInsertRate;
         private int maxExtractRate;
-        @Nullable
-        private Runnable callback;
 
         private Builder(DataComponentType<Integer> componentType) {
             Objects.requireNonNull(componentType, "component type must be set");
             this.componentType = componentType;
-        }
-
-        public Builder onChange(Runnable callback) {
-            Objects.requireNonNull(callback, "callback must be set");
-            this.callback = callback;
-            return this;
         }
 
         /**
@@ -243,9 +209,14 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
 
         /**
          * Constructs a new {@link EnergyBufferAttachment} to use.
+         *
+         * @param ignored     The ItemStack that is usually provided with the capability, but in this case it is ignored for easier construction.
+         * @param itemContext The context that handles exchanging the component data upon mutation.
          */
-        public EnergyBufferComponentHandler build(MutableDataComponentHolder parent, IItemContext itemContext) {
-            return new EnergyBufferComponentHandler(itemContext, parent, componentType, capacity, maxInsertRate, maxExtractRate, callback);
+        public EnergyBufferComponentHandler build(MutableDataComponentHolder ignored, @Nullable IItemContext itemContext) {
+            //the holder is ignored to allow calling builder as a reference
+            //itemContext is nullable to alleviate the ide warning the user using it as a reference. The IItemContext should never be null.
+            return new EnergyBufferComponentHandler(Objects.requireNonNull(itemContext), componentType, capacity, maxInsertRate, maxExtractRate);
         }
     }
 }

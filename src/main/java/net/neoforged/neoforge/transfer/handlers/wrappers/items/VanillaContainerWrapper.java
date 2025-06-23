@@ -24,8 +24,9 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.SetChangedSnapshot;
+import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
 
 public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     /**
@@ -55,11 +56,11 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     private final Container container;
     private int size;
     private final ArrayList<SlotItemStackResourceHandlerJournal> snapshots = new ArrayList<>();
-    private final SetChangedSnapshot setChangedParticipant;
+    private final SnapshotJournal<?> setChangeJournal;
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
-        setChangedParticipant = SetChangedSnapshot.of(container::setChanged);
+        this.setChangeJournal = GroupedSnapshotJournal.commitWith(container::setChanged);
     }
 
     protected Container getContainer() {
@@ -236,16 +237,18 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         // We override updateSnapshots to also schedule a setChanged call for the backing container.
         @Override
         public void updateSnapshots(TransactionContext transaction) {
-            setChangedParticipant.updateSnapshots(transaction);
+            setChangeJournal.updateSnapshots(transaction);
             super.updateSnapshots(transaction);
 
-            // For chests: also schedule a setChanged call for the other half
-            if (container instanceof ChestBlockEntity chest && chest.getBlockState().getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
-                BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
-                Level level = chest.getLevel();
-                if (level != null && level.getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
-                    VanillaContainerWrapper.of(otherChest).setChangedParticipant.updateSnapshots(transaction);
-                }
+            if (!(container instanceof ChestBlockEntity chest) || chest.getBlockState().getValue(ChestBlock.TYPE) == ChestType.SINGLE) {
+                return;
+            }
+
+            BlockPos otherChestPos = chest.getBlockPos().relative(ChestBlock.getConnectedDirection(chest.getBlockState()));
+            Level level = chest.getLevel();
+            if (level != null && level.getBlockEntity(otherChestPos) instanceof ChestBlockEntity otherChest) {
+                // For chests: also schedule a setChanged call for the other half
+                VanillaContainerWrapper.of(otherChest).setChangeJournal.updateSnapshots(transaction);
             }
         }
 
@@ -256,20 +259,18 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
 
             container.onCommit(index, original);
 
-            if (!original.isEmpty() && original.getItem() == currentStack.getItem()) {
-                //                if (!ItemStack.matches(currentStack, original)) {
-                // Components have changed, we need to copy the stack.
-                //                    set(currentStack.copy());
-                ((PatchedDataComponentMap) original.getComponents()).restorePatch(currentStack.getComponentsPatch());
-                //                } else {
-                // None is empty and the items and components match: just update the amount, and reuse the original stack.
-                original.setCount(currentStack.getCount());
-                set(original);
-                //                }
-            } else {
-                // Otherwise assume everything was taken from original so empty it.
+            //Was the original empty or not matching?
+            if (original.isEmpty() || original.getItem() != currentStack.getItem()) {
+                // Assume everything was taken from original so empty it.
                 original.setCount(0);
+                return;
             }
+
+            // Components have changed, we need to copy the stack.
+            ((PatchedDataComponentMap) original.getComponents()).restorePatch(currentStack.getComponentsPatch());
+            // None is empty and the items and components match: just update the amount, and reuse the original stack.
+            original.setCount(currentStack.getCount());
+            set(original);
         }
     }
 }

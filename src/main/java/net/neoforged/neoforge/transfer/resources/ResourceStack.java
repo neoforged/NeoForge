@@ -81,9 +81,10 @@ public final class ResourceStack<T extends IResource> implements IResourceStack<
         return Objects.equals(resource, that.resource()) && amount == that.amount();
     }
 
+    //TODO verify if we should hash without amount. This was to match FluidStack and ItemStack implementations
     @Override
     public int hashCode() {
-        return Objects.hash(resource, amount);
+        return resource.hashCode();
     }
 
     /**

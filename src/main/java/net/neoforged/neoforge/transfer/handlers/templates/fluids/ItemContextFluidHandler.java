@@ -11,23 +11,24 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class ItemContextFluidHandler extends ItemContextResourceHandler<FluidResource> {
-    public ItemContextFluidHandler(IItemContext itemContext, DataComponentType<Component<FluidResource>> componentType, int singleItemLimit) {
-        super(itemContext, componentType, new Component<>(FluidResource.EMPTY_STACK, singleItemLimit));
+    public ItemContextFluidHandler(IItemContext itemContext, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit) {
+        super(itemContext, componentType, FluidResource.EMPTY_STACK, singleItemLimit);
     }
 
-    public ItemContextFluidHandler(IItemContext itemContext, DataComponentType<Component<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
-        super(itemContext, componentType, new Component<>(FluidResource.EMPTY_STACK, singleItemLimit), validator);
+    public ItemContextFluidHandler(IItemContext itemContext, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
+        super(itemContext, componentType, FluidResource.EMPTY_STACK, singleItemLimit, validator);
     }
 
     public static class Consumable extends ItemContextFluidHandler {
-        public Consumable(IItemContext itemContext, DataComponentType<Component<FluidResource>> componentType, int singleItemLimit) {
+        public Consumable(IItemContext itemContext, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit) {
             super(itemContext, componentType, singleItemLimit);
         }
 
-        public Consumable(IItemContext itemContext, DataComponentType<Component<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
+        public Consumable(IItemContext itemContext, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator) {
             super(itemContext, componentType, singleItemLimit, validator);
         }
 
@@ -40,12 +41,12 @@ public abstract class ItemContextFluidHandler extends ItemContextResourceHandler
     public static class SwapEmpty extends ItemContextFluidHandler {
         protected final ItemResource emptyContainer;
 
-        public SwapEmpty(IItemContext context, DataComponentType<Component<FluidResource>> componentType, int singleItemLimit, ItemResource emptyContainer) {
+        public SwapEmpty(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, ItemResource emptyContainer) {
             super(context, componentType, singleItemLimit);
             this.emptyContainer = emptyContainer;
         }
 
-        public SwapEmpty(IItemContext context, DataComponentType<Component<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator, ItemResource emptyContainer) {
+        public SwapEmpty(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit, Predicate<FluidResource> validator, ItemResource emptyContainer) {
             super(context, componentType, singleItemLimit, validator);
             this.emptyContainer = emptyContainer;
         }

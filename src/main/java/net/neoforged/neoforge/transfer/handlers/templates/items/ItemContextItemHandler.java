@@ -17,21 +17,21 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * A template that stores a single {@link ItemResource} in the form of a {@link ResourceStack} on a component.
  */
 public class ItemContextItemHandler extends ItemContextResourceHandler<ItemResource> {
-    public ItemContextItemHandler(IItemContext itemContext, DataComponentType<Component<ItemResource>> componentType, int singleItemLimit) {
-        super(itemContext, componentType, new Component<>(ItemResource.EMPTY_STACK, singleItemLimit));
+    public ItemContextItemHandler(IItemContext itemContext, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem) {
+        super(itemContext, componentType, ItemResource.EMPTY_STACK, capacityOfOneItem);
     }
 
-    public ItemContextItemHandler(IItemContext itemContext, DataComponentType<Component<ItemResource>> componentType, int singleItemLimit, Predicate<ItemResource> validator) {
-        super(itemContext, componentType, new Component<>(ItemResource.EMPTY_STACK, singleItemLimit), validator);
+    public ItemContextItemHandler(IItemContext itemContext, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem, Predicate<ItemResource> validator) {
+        super(itemContext, componentType, ItemResource.EMPTY_STACK, capacityOfOneItem, validator);
     }
 
     public static class Consumable extends ItemContextItemHandler {
-        public Consumable(IItemContext context, DataComponentType<Component<ItemResource>> componentType, int singleItemLimit) {
-            super(context, componentType, singleItemLimit);
+        public Consumable(IItemContext context, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem) {
+            super(context, componentType, capacityOfOneItem);
         }
 
-        public Consumable(IItemContext context, DataComponentType<Component<ItemResource>> componentType, int singleItemLimit, Predicate<ItemResource> validator) {
-            super(context, componentType, singleItemLimit, validator);
+        public Consumable(IItemContext context, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem, Predicate<ItemResource> validator) {
+            super(context, componentType, capacityOfOneItem, validator);
         }
 
         @Override
@@ -43,13 +43,13 @@ public class ItemContextItemHandler extends ItemContextResourceHandler<ItemResou
     public static class SwapEmpty extends ItemContextItemHandler {
         protected final ItemResource emptyContainer;
 
-        public SwapEmpty(IItemContext context, DataComponentType<Component<ItemResource>> componentType, int singleItemLimit, ItemResource emptyContainer) {
-            super(context, componentType, singleItemLimit);
+        public SwapEmpty(IItemContext context, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem, ItemResource emptyContainer) {
+            super(context, componentType, capacityOfOneItem);
             this.emptyContainer = emptyContainer;
         }
 
-        public SwapEmpty(IItemContext context, DataComponentType<Component<ItemResource>> componentType, int singleItemLimit, Predicate<ItemResource> validator, ItemResource emptyContainer) {
-            super(context, componentType, singleItemLimit, validator);
+        public SwapEmpty(IItemContext context, DataComponentType<ResourceStack<ItemResource>> componentType, int capacityOfOneItem, Predicate<ItemResource> validator, ItemResource emptyContainer) {
+            super(context, componentType, capacityOfOneItem, validator);
             this.emptyContainer = emptyContainer;
         }
 

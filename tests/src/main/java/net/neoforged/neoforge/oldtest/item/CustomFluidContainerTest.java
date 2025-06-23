@@ -31,9 +31,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemContextFluidHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 @Mod(CustomFluidContainerTest.MOD_ID)
 public class CustomFluidContainerTest {
@@ -44,9 +44,9 @@ public class CustomFluidContainerTest {
     public static final boolean ENABLED = true;
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContextResourceHandler.Component<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ItemContextResourceHandler.Component<FluidResource>>builder()
-            .persistent(ItemContextResourceHandler.Component.codec(IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount)))
-            .networkSynchronized(ItemContextResourceHandler.Component.streamCodec(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount))).build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
+            .persistent(IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount))
+            .networkSynchronized(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)).build());
 
     public CustomFluidContainerTest(IEventBus modEventBus) {
         if (ENABLED) {
