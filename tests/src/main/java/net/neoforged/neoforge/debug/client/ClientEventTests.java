@@ -66,7 +66,7 @@ public class ClientEventTests {
         test.requestConfirmation(Minecraft.getInstance().player, Component.literal("Did you just change your game mode from " + event.getCurrentGameType() + " to " + event.getNewGameType() + "?"));
     }
 
-    @TestHolder(description = { "Tests if the RegisterRenderBuffersEvent event is fired" }, enabledByDefault = true)
+    @TestHolder(description = { "Tests if the RegisterRenderBuffersEvent event is fired and whether the registered render buffer is represented within a fixed render buffer map" }, enabledByDefault = true)
     static void registerRenderBuffersEvent(final DynamicTest test) {
         test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
             event.registerRenderBuffer(RenderType.lightning());
@@ -204,7 +204,7 @@ public class ClientEventTests {
         test.whenEnabled(listeners -> {
             listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
-                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent.AfterSolidBlocks event) -> {
+                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent.AfterOpaqueBlocks event) -> {
                         var randomSource = new SingleThreadedRandomSource(0);
                         var state = Blocks.GOLD_BLOCK.defaultBlockState();
                         var stack = event.getPoseStack();

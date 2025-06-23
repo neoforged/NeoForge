@@ -31,7 +31,7 @@ import org.joml.Matrix4f;
  *
  * <p>The current order that the sub-events fire in are:
  * {@code AfterSky},
- * {@code AfterSolidBlocks},
+ * {@code AfterOpaqueBlocks},
  * {@code AfterEntities},
  * {@code AfterBlockEntities},
  * {@code AfterTranslucentBlocks},
@@ -141,14 +141,14 @@ public abstract class RenderLevelStageEvent extends Event {
     /**
      * Fired early in {@linkplain LevelRenderer#addMainPass} after {@code AfterSky} had ran.
      */
-    public static class AfterSolidBlocks extends RenderLevelStageEvent {
-        public AfterSolidBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
+    public static class AfterOpaqueBlocks extends RenderLevelStageEvent {
+        public AfterOpaqueBlocks(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
             super(level, levelRenderer, poseStack, modelViewMatrix, renderTick, partialTick, camera, frustum, renderableSections);
         }
     }
 
     /**
-     * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterSolidBlocks} had ran.
+     * Fired within {@linkplain LevelRenderer#addMainPass} after {@code AfterOpaqueBlocks} had ran.
      */
     public static class AfterEntities extends RenderLevelStageEvent {
         public AfterEntities(Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, DeltaTracker partialTick, Camera camera, Frustum frustum, Iterable<? extends IRenderableSection> renderableSections) {
