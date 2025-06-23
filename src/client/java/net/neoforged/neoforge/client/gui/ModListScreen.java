@@ -27,7 +27,6 @@ import net.minecraft.client.gui.components.LogoRenderer;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.locale.Language;
@@ -40,7 +39,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.VersionChecker;
@@ -344,12 +342,6 @@ public class ModListScreen extends Screen {
         Component text = Component.translatable("fml.menu.mods.search");
         int x = modList.getX() + ((modList.getRight() - modList.getX()) / 2) - (getFontRenderer().width(text) / 2);
         guiGraphics.drawString(getFontRenderer(), text.getVisualOrderText(), x, search.getY() - getFontRenderer().lineHeight, 0xFFFFFFFF, false);
-
-        var sm = SignRenderer.createSignModel(this.minecraft.getEntityModels(), WoodType.DARK_OAK, false);
-        guiGraphics.submitSignRenderState(
-                sm, 62.500004F, WoodType.DARK_OAK, 0, 0, 66, 168);
-        guiGraphics.submitSignRenderState(
-                sm, 62.500004F, WoodType.ACACIA, 55, 55, 155, 268);
     }
 
     public Minecraft getMinecraftInstance() {

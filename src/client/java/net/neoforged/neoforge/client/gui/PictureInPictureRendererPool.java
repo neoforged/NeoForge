@@ -6,7 +6,8 @@
 package net.neoforged.neoforge.client.gui;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
@@ -30,9 +31,9 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
     private final PictureInPictureRendererRegistration<T> factory;
     private final MultiBufferSource.BufferSource buffers;
     // The renderers from last frame, which we will try to reuse this frame
-    private Map<T, PictureInPictureRenderer<T>> renderersLastFrame = new HashMap<>();
+    private Object2ObjectMap<T, PictureInPictureRenderer<T>> renderersLastFrame = new Object2ObjectOpenHashMap<>();
     // The renderers we already used in this frame, which we will try to reuse next frame
-    private Map<T, PictureInPictureRenderer<T>> renderersThisFrame = new HashMap<>();
+    private Object2ObjectMap<T, PictureInPictureRenderer<T>> renderersThisFrame = new Object2ObjectOpenHashMap<>();
 
     public PictureInPictureRendererPool(PictureInPictureRendererRegistration<T> factory,
             MultiBufferSource.BufferSource buffers) {
@@ -47,8 +48,9 @@ public class PictureInPictureRendererPool<T extends PictureInPictureRenderState>
 
         // On the first pass just try to reuse existing renderers by state equality
         if (firstPass) {
-            var renderer = renderersLastFrame.remove(state);
+            var renderer = renderersLastFrame.get(state);
             if (renderer != null && renderer.canBeReusedFor(state, width, height)) {
+                renderersLastFrame.remove(state);
                 renderersThisFrame.put(state, renderer);
                 return renderer;
             }
