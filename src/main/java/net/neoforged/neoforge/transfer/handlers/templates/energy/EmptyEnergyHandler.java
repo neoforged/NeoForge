@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
-import java.util.Objects;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -20,33 +19,32 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
 
     @Override
     public int getAmount(int index) {
-        Objects.checkIndex(index, size());
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty energy handlers are of size 0.");
     }
 
     @Override
     public int getCapacity(int index) {
-        Objects.checkIndex(index, size());
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty energy handlers are of size 0.");
     }
 
     @Override
     public boolean supportsInsertion(int index) {
-        Objects.checkIndex(index, size());
-        return false;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty energy handlers are of size 0.");
     }
 
     @Override
     public boolean supportsExtraction(int index) {
-        Objects.checkIndex(index, size());
-        return false;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty energy handlers are of size 0.");
     }
 
     @Override
     public int insert(int index, int amount, TransactionContext transaction) {
-        EnergyHandlerUtil.checkEnergy(amount);
-        Objects.checkIndex(index, size());
-        return 0;
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty energy handlers are of size 0.");
+    }
+
+    @Override
+    public int extract(int index, int amount, TransactionContext transaction) {
+        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty energy handlers are of size 0.");
     }
 
     @Override
@@ -56,13 +54,8 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
     }
 
     @Override
-    public int extract(int index, int amount, TransactionContext transaction) {
-        Objects.checkIndex(index, size());
-        return 0;
-    }
-
-    @Override
     public int extract(int amount, TransactionContext transaction) {
+        EnergyHandlerUtil.checkEnergy(amount);
         return 0;
     }
 }
