@@ -1115,12 +1115,6 @@ public class ClientHooks {
     }
 
     @ApiStatus.Internal
-    public static TextureFormat getStencilFormat() {
-        var reducedPrecision = NeoForgeClientConfig.INSTANCE.reducedDepthStencilFormat.getAsBoolean();
-        return reducedPrecision ? TextureFormat.D24_UNORM_S8_UINT : TextureFormat.D32_SFLOAT_S8_UINT;
-    }
-
-    @ApiStatus.Internal
     public static Overlay createLoadingOverlay(Minecraft minecraft, ReloadInstance reloadInstance, Consumer<Optional<Throwable>> errorHandler, boolean fadeIn) {
         // If our own early loading screen is in use, we use a loading overlay that draws on top of that cooperatively
         if (EarlyLoadingScreenController.current() instanceof DisplayWindow displayWindow) {

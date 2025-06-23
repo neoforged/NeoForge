@@ -1,102 +1,290 @@
 --- a/com/mojang/blaze3d/textures/TextureFormat.java
 +++ b/com/mojang/blaze3d/textures/TextureFormat.java
-@@ -10,23 +_,152 @@
-     RGBA8(4),
+@@ -4,13 +_,281 @@
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
++/**
++ * Neo: Extended texture formats follow VkFormat naming
++ *      <br>
++ *      Listed GL enums are internalformat/format/type, referencing glTexImage's parameters of the same name
++ *      <br>
++ *      Some formats may not always be supported or may have limitations on specific usages, check backend capabilities before use.
++ *      <p>
++ *      See Vulkan specification for table on how these are laid out in memory.
++ *      <a href="https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html#texel-block-size">Representation and Texel Block Size</a>
++ */
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
+ public enum TextureFormat {
+-    RGBA8(4),
++
++    /**
++     * R8_UNORM specifies a one-component, 8-bit unsigned normalized format that has a single 8-bit R component.
++     * <br>
++     * GL_R8/GL_RED/GL_UNSIGNED_BYTE
++     * <p>
++     * Neo: For compatibility reasons, the Vanilla name of RED8 is kept. An alias constant {@link TextureFormat#R8_UNORM} is added for naming consistency.
++     */
      RED8(1),
++    /**
++     * R8_SNORM specifies a one-component, 8-bit signed normalized format that has a single 8-bit R component.
++     * <br>
++     * GL_R8_SNORM/GL_RED/GL_BYTE
++     */
++    R8_SNORM(1),
++    /**
++     * R8_UINT specifies a one-component, 8-bit unsigned integer format that has a single 8-bit R component.
++     * <br>
++     * GL_R8UI/GL_RED/GL_UNSIGNED_BYTE
++     */
++    R8_UINT(1),
++    /**
++     * R8_SINT specifies a one-component, 8-bit signed integer format that has a single 8-bit R component.
++     * <br>
++     * GL_R8I/GL_RED/GL_BYTE
++     * <p>
++     * For compatibility reasons, the Vanilla name of RED8I is kept. An alias constant {@link TextureFormat#R8_SINT} is added for naming consistency.
++     * <p>
++     * Neo: Vanilla RED8I uses GL_UNSIGNED_BYTE for type, Neo corrects this to GL_BYTE
++     */
      RED8I(1),
 -    DEPTH32(4);
++    /**
++     * R8G8_UNORM specifies a two-component, 16-bit unsigned normalized format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
++     * <br>
++     * GL_RG8/GL_RG/GL_UNSIGNED_BYTE
++     */
++    R8G8_UNORM(2),
++    /**
++     * R8G8_SNORM specifies a two-component, 16-bit signed normalized format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
++     * <br>
++     * GL_RG8_SNORM/GL_RG/GL_BYTE
++     */
++    R8G8_SNORM(2),
++    /**
++     * R8G8_UINT specifies a two-component, 16-bit unsigned integer format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
++     * <br>
++     * GL_RG8UI/GL_RG/GL_UNSIGNED_BYTE
++     */
++    R8G8_UINT(2),
++    /**
++     * R8G8_SINT specifies a two-component, 16-bit signed integer format that has an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
++     * <br>
++     * GL_RG8I/GL_RG/GL_BYTE
++     */
++    R8G8_SINT(2),
++    /**
++     * R8G8B8A8_UNORM specifies a four-component, 32-bit unsigned normalized format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
++     * <br>
++     * GL_RGBA8/GL_RGBA/GL_UNSIGNED_BYTE
++     * <p>
++     * Neo: For compatibility reasons, the Vanilla name of RGBA8 is kept. An alias constant {@link TextureFormat#R8G8B8A8_UNORM} is added for naming consistency.
++     */
++    RGBA8(4),
++    /**
++     * R8G8B8A8_SNORM specifies a four-component, 32-bit signed normalized format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
++     * <br>
++     * GL_RGBA8_SNORM/GL_RGBA/GL_BYTE
++     */
++    R8G8B8A8_SNORM(4),
++    /**
++     * R8G8B8A8_UINT specifies a four-component, 32-bit unsigned integer format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
++     * <br>
++     * GL_RGBA8UI/GL_RGBA/GL_UNSIGNED_BYTE
++     */
++    R8G8B8A8_UINT(4),
++    /**
++     * R8G8B8A8_SINT specifies a four-component, 32-bit signed integer format that has an 8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component in byte 2, and an 8-bit A component in byte 3.
++     * <br>
++     * GL_RGBA8I/GL_RGBA/GL_BYTE
++     */
++    R8G8B8A8_SINT(4),
++
++    /**
++     * R16_UNORM specifies a one-component, 16-bit unsigned normalized format that has a single 16-bit R component.
++     * <br>
++     * GL_R16/GL_RED/GL_UNSIGNED_SHORT
++     */
++    R16_UNORM(2),
++    /**
++     * R16_SNORM specifies a one-component, 16-bit signed normalized format that has a single 16-bit R component.
++     * <br>
++     * GL_R16_SNORM/GL_RED/GL_SHORT
++     */
++    R16_SNORM(2),
++    /**
++     * R16_UINT specifies a one-component, 16-bit unsigned integer format that has a single 16-bit R component.
++     * <br>
++     * GL_R16UI/GL_RED/GL_UNSIGNED_SHORT
++     */
++    R16_UINT(2),
++    /**
++     * R16_SINT specifies a one-component, 16-bit signed integer format that has a single 16-bit R component.
++     * <br>
++     * GL_R16I/GL_RED/GL_SHORT
++     */
++    R16_SINT(2),
++    /**
++     * R16_SFLOAT specifies a one-component, 16-bit signed floating-point format that has a single 16-bit R component.
++     * <br>
++     * GL_R16F/GL_RED/GL_HALF_FLOAT
++     */
++    R16_SFLOAT(2),
++    /**
++     * R16G16_UNORM specifies a two-component, 32-bit unsigned normalized format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
++     * <br>
++     * GL_RG16/GL_RG/GL_UNSIGNED_SHORT
++     */
++    R16G16_UNORM(4),
++    /**
++     * R16G16_SNORM specifies a two-component, 32-bit signed normalized format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
++     * <br>
++     * GL_RG16_SNORM/GL_RG/GL_SHORT
++     */
++    R16G16_SNORM(4),
++    /**
++     * R16G16_UINT specifies a two-component, 32-bit unsigned integer format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
++     * <br>
++     * GL_RG16UI/GL_RG/GL_UNSIGNED_SHORT
++     */
++    R16G16_UINT(4),
++    /**
++     * R16G16_SINT specifies a two-component, 32-bit signed integer format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
++     * <br>
++     * GL_RG16I/GL_RG/GL_SHORT
++     */
++    R16G16_SINT(4),
++    /**
++     * R16G16_SFLOAT specifies a two-component, 32-bit signed floating-point format that has a 16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
++     * <br>
++     * GL_RG16F/GL_RG/GL_HALF_FLOAT
++     */
++    R16G16_SFLOAT(4),
++    /**
++     * R16G16B16A16_UNORM specifies a four-component, 64-bit unsigned normalized format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
++     * <br>
++     * GL_RGBA16/GL_RGBA/GL_UNSIGNED_SHORT
++     */
++    R16G16B16A16_UNORM(8),
++    /**
++     * R16G16B16A16_SNORM specifies a four-component, 64-bit signed normalized format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
++     * <br>
++     * GL_RGBA16_SNORM/GL_RGBA/GL_SHORT
++     */
++    R16G16B16A16_SNORM(8),
++    /**
++     * R16G16B16A16_UINT specifies a four-component, 64-bit unsigned integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
++     * <br>
++     * GL_RGBA16UI/GL_RGBA/GL_UNSIGNED_SHORT
++     */
++    R16G16B16A16_UINT(8),
++    /**
++     * R16G16B16A16_SINT specifies a four-component, 64-bit signed integer format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
++     * <br>
++     * GL_RGBA16I/GL_RGBA/GL_SHORT
++     */
++    R16G16B16A16_SINT(8),
++    /**
++     * R16G16B16A16_SFLOAT specifies a four-component, 64-bit signed floating-point format that has a 16-bit R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component in bytes 4..5, and a 16-bit A component in bytes 6..7.
++     * <br>
++     * GL_RGBA16F/GL_RGBA/GL_HALF_FLOAT
++     */
++    R16G16B16A16_SFLOAT(8),
++
++    /**
++     * R32_UINT specifies a one-component, 32-bit unsigned integer format that has a single 32-bit R component.
++     * <br>
++     * GL_R32UI/GL_RED/GL_UNSIGNED_INT
++     */
++    R32_UINT(4),
++    /**
++     * R32_SINT specifies a one-component, 32-bit signed integer format that has a single 32-bit R component.
++     * <br>
++     * GL_R32I/GL_RED/GL_SIGNED_INT
++     */
++    R32_SINT(4),
++    /**
++     * R32_SFLOAT specifies a one-component, 32-bit signed floating-point format that has a single 32-bit R component.
++     * <br>
++     * GL_R32F/GL_RED/GL_FLOAT
++     */
++    R32_SFLOAT(4),
++    /**
++     * R32G32_UINT specifies a two-component, 64-bit unsigned integer format that has a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
++     * <br>
++     * GL_RG32UI/GL_RG/GL_UNSIGNED_INT
++     */
++    R32G32_UINT(8),
++    /**
++     * R32G32_SINT specifies a two-component, 64-bit signed integer format that has a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
++     * <br>
++     * GL_RG32I/GL_RG/GL_SIGNED_INT
++     */
++    R32G32_SINT(8),
++    /**
++     * R32G32_SFLOAT specifies a two-component, 64-bit signed floating-point format that has a 32-bit R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
++     * <br>
++     * GL_RG32F/GL_RG/GL_FLOAT
++     */
++    R32G32_SFLOAT(8),
++    /**
++     * R32G32B32A32_UINT specifies a four-component, 128-bit unsigned integer format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11, and a 32-bit A component in bytes 12..15.
++     * <br>
++     * GL_RGBA32UI/GL_RGBA/GL_UNSIGNED_INT
++     */
++    R32G32B32A32_UINT(16),
++    /**
++     * R32G32B32A32_SINT specifies a four-component, 128-bit signed integer format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11, and a 32-bit A component in bytes 12..15.
++     * <br>
++     * GL_RGBA32I/GL_RGBA/GL_SIGNED_INT
++     */
++    R32G32B32A32_SINT(16),
++    /**
++     * R32G32B32A32_SFLOAT specifies a four-component, 128-bit signed floating-point format that has a 32-bit R component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11, and a 32-bit A component in bytes 12..15.
++     * <br>
++     * GL_RGBA32F/GL_RGBA/GL_FLOAT
++     */
++    R32G32B32A32_SFLOAT(16),
++
++    /**
++     * D32_SFLOAT specifies a one-component, 32-bit signed floating-point format that has 32 bits in the depth component.
++     * <br>
++     * GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
++     * <p>
++     * Neo: For compatibility reasons, the Vanilla name of DEPTH32 is kept. An alias constant {@link TextureFormat#D32_SFLOAT} is added for naming consistency.
++     * <p>
++     * Neo: Vanilla DEPTH32 uses the not-required by GL32C GL_DEPTH_COMPONENT32 internal format, Neo corrects to the required by GL32C GL_DEPTH_COMPONENT32F internal format.
++     */
 +    DEPTH32(4),
-+    // Neo: Difference notes on the above formats
-+    //      Vanilla RED8I uses GL_UNSIGNED_BYTE for type, Neo corrects this to GL_BYTE
-+    //      Vanilla DEPTH32 uses the not-required by GL32C GL_DEPTH_COMPONENT32 type, Neo corrects to the required by GL32C GL_DEPTH_COMPONENT32F type
-+
-+    // Neo: Extended texture formats, these follow VkFormat naming
-+    // comments are internalformat/format/type, referencing glTexImage's parameters of the same name
-+    // some may not always be supported or have limitations on specific usages, check backend capabilities before use
-+
-+    // pack16
-+    // 4 4 4 4
-+    // Requires OpenGL 4.2, or equivalent
-+    R4G4B4A4_UNORM_PACK16(2), // GL_RGBA4/GL_RGBA/GL_UNSIGNED_SHORT_4_4_4_4
-+    // 5 6 5
-+    // Requires OpenGL 4.2, or equivalent
-+    R5G6B5_UNORM_PACK16(2), // GL_RGB565/GL_RGB/GL_UNSIGNED_SHORT_5_6_5
-+    // 5 5 5 1
-+    // Requires OpenGL 4.1, GL_ARB_ES2_compatibility, or equivalent
-+    R5G5B5A1_UNORM_PACK16(2), // GL_RGB5_A1/GL_RGBA/GL_UNSIGNED_SHORT_5_5_5_1
-+    // pack32
-+    // 10 10 10 2
-+    A2B10G10R10_UNORM_PACK32(4), // GL_RGB10_A2/GL_RGBA/GL_UNSIGNED_INT_2_10_10_10_REV
-+    // 9 9 9 e5
-+    E5B9G9R9_UFLOAT_PACK32(4), // GL_RGB9_E5/GL_RGB/GL_UNSIGNED_INT_5_9_9_9_REV
-+
-+    // R8
-+    // RED8 is R8_UNORM(1), // GL_R8/GL_RED/GL_UNSIGNED_BYTE
-+    R8_SNORM(1), // GL_R8_SNORM/GL_RED/GL_BYTE
-+    R8_UINT(1), // GL_R8UI/GL_RED/GL_UNSIGNED_BYTE
-+    // RED8I is R8_SINT(1), // GL_R8I/GL_RED/GL_BYTE
-+    // RG8
-+    R8G8_UNORM(2), // GL_RG8/GL_RG/GL_UNSIGNED_BYTE
-+    R8G8_SNORM(2), // GL_RG8_SNORM/GL_RG/GL_BYTE
-+    R8G8_UINT(2), // GL_RG8UI/GL_RG/GL_UNSIGNED_BYTE
-+    R8G8_SINT(2), // GL_RG8I/GL_RG/GL_BYTE
-+    // RGBA8
-+    // RGBA8 is R8G8B8A8_UNORM(4), // GL_RGBA8/GL_RGBA/GL_UNSIGNED_BYTE
-+    R8G8B8A8_SNORM(4), // GL_RGBA8_SNORM/GL_RGBA/GL_BYTE
-+    R8G8B8A8_UINT(4), // GL_RGBA8UI/GL_RGBA/GL_UNSIGNED_BYTE
-+    R8G8B8A8_SINT(4), // GL_RGBA8I/GL_RGBA/GL_BYTE
-+
-+    // R16
-+    R16_UNORM(2), // GL_R16/GL_RED/GL_UNSIGNED_SHORT
-+    R16_SNORM(2), // GL_R16_SNORM/GL_RED/GL_SHORT
-+    R16_UINT(2), // GL_R16UI/GL_RED/GL_UNSIGNED_SHORT
-+    R16_SINT(2), // GL_R16I/GL_RED/GL_SHORT
-+    R16_SFLOAT(2), //GL_R16F/GL_RED/GL_HALF_FLOAT
-+    // RG16
-+    R16G16_UNORM(4), // GL_RG16/GL_RG/GL_UNSIGNED_SHORT
-+    R16G16_SNORM(4), // GL_RG16_SNORM/GL_RG/GL_SHORT
-+    R16G16_UINT(4), // GL_RG16UI/GL_RG/GL_UNSIGNED_SHORT
-+    R16G16_SINT(4), // GL_RG16I/GL_RG/GL_SHORT
-+    R16G16_SFLOAT(4), //GL_RG16F/GL_RG/GL_HALF_FLOAT
-+    // RGBA16
-+    R16G16B16A16_UNORM(8), // GL_RGBA16/GL_RGBA/GL_UNSIGNED_SHORT
-+    R16G16B16A16_SNORM(8), // GL_RGBA16_SNORM/GL_RGBA/GL_SHORT
-+    R16G16B16A16_UINT(8), // GL_RGBA16UI/GL_RGBA/GL_UNSIGNED_SHORT
-+    R16G16B16A16_SINT(8), // GL_RGBA16I/GL_RGBA/GL_SHORT
-+    R16G16B16A16_SFLOAT(8), //GL_RGBA16F/GL_RGBA/GL_HALF_FLOAT
-+
-+    // R32
-+    R32_UINT(4), // GL_R32UI/GL_RED/GL_UNSIGNED_INT
-+    R32_SINT(4), // GL_R32I/GL_RED/GL_SIGNED_INT
-+    R32_SFLOAT(4), // GL_R32F/GL_RED/GL_FLOAT
-+    // RG32
-+    R32G32_UINT(8), // GL_RG32UI/GL_RG/GL_UNSIGNED_INT
-+    R32G32_SINT(8), // GL_RG32I/GL_RG/GL_SIGNED_INT
-+    R32G32_SFLOAT(8), // GL_RG32F/GL_RG/GL_FLOAT
-+    // RGBA32
-+    R32G32B32A32_UINT(16), // GL_RGBA32UI/GL_RGBA/GL_UNSIGNED_INT
-+    R32G32B32A32_SINT(16), // GL_RGBA32I/GL_RGBA/GL_SIGNED_INT
-+    R32G32B32A32_SFLOAT(16), // GL_RGBA32F/GL_RGBA/GL_FLOAT
-+
-+    // Depth
-+    D16_UNORM(2), // GL_DEPTH_COMPONENT16/GL_DEPTH_COMPONENT/GL_UNSIGNED_SHORT
-+    X8_D24_UNORM_PACK32(4), // GL_DEPTH_COMPONENT24/GL_DEPTH_COMPONENT/GL_UNSIGNED_INT_24_8
-+    // DEPTH32 is D32_SFLOAT(4), // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
-+
-+    // Depth/Stencil
-+    D24_UNORM_S8_UINT(4), // GL_DEPTH24_STENCIL8/GL_DEPTH_STENCIL/GL_UNSIGNED_INT_24_8
-+    D32_SFLOAT_S8_UINT(8), // GL_DEPTH32F_STENCIL8/GL_DEPTH_STENCIL/GL_FLOAT_32_UNSIGNED_INT_24_8_REV
++    /**
++     * D32_SFLOAT_S8_UINT specifies a two-component format that has 32 signed float bits in the depth component and 8 unsigned integer bits in the stencil component.
++     * <br>
++     * GL_DEPTH32F_STENCIL8/GL_DEPTH_STENCIL/GL_FLOAT_32_UNSIGNED_INT_24_8_REV
++     */
++    D32_SFLOAT_S8_UINT(8),
 +    ;
 +
-+    // VkFormat based name alias for Vanilla defined enums
-+    public static final TextureFormat R8_UNORM = RED8; // GL_R8/GL_RED/GL_UNSIGNED_BYTE
-+    public static final TextureFormat R8_SINT = RED8I; // GL_R8I/GL_RED/GL_BYTE
-+    public static final TextureFormat R8G8B8A8_UNORM = RGBA8; // GL_RGBA8/GL_RGBA/GL_UNSIGNED_BYTE
-+    public static final TextureFormat D32_SFLOAT = DEPTH32; // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
++    /**
++     * @see TextureFormat#RED8
++     */
++    public static final TextureFormat R8_UNORM = RED8;
++    /**
++     * @see TextureFormat#RED8I
++     */
++    public static final TextureFormat R8_SINT = RED8I;
++    /**
++     * @see TextureFormat#RGBA8
++     */
++    public static final TextureFormat R8G8B8A8_UNORM = RGBA8;
++    /**
++     * @see TextureFormat#DEPTH32
++     */
++    public static final TextureFormat D32_SFLOAT = DEPTH32;
  
      private final int pixelSize;
  
-@@ -23,10 +_,21 @@
+@@ -23,10 +_,18 @@
      }
  
      public boolean hasColorAspect() {
@@ -108,15 +296,12 @@
      public boolean hasDepthAspect() {
 -        return this == DEPTH32;
 +        return switch (this) {
-+            case D16_UNORM, X8_D24_UNORM_PACK32, DEPTH32, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
++            case DEPTH32, D32_SFLOAT_S8_UINT -> true;
 +            default -> false;
 +        };
 +    }
 +
 +    public boolean hasStencilAspect() {
-+        return switch (this) {
-+            case D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
-+            default -> false;
-+        };
++        return this == D32_SFLOAT_S8_UINT;
      }
  }

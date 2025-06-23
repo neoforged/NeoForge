@@ -30,7 +30,7 @@
              this.height = p_83952_;
              if (this.useDepth) {
 -                this.depthTexture = gpudevice.createTexture(() -> this.label + " / Depth", 15, TextureFormat.DEPTH32, p_83951_, p_83952_, 1, 1);
-+                var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : TextureFormat.DEPTH32;
++                var format = this.useStencil ? TextureFormat.D32_SFLOAT_S8_UINT : TextureFormat.DEPTH32;
 +                this.depthTexture = gpudevice.createTexture(() -> this.label + " / Depth", 15, format, p_83951_, p_83952_, 1, 1);
                  this.depthTextureView = gpudevice.createTextureView(this.depthTexture);
                  this.depthTexture.setTextureFilter(FilterMode.NEAREST, false);
