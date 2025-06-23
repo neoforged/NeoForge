@@ -14,8 +14,6 @@
 +    // comments are internalformat/format/type, referencing glTexImage's parameters of the same name
 +    // some may not always be supported or have limitations on specific usages, check backend capabilities before use
 +
-+    // pack8
-+    R4G4_UNORM_PACK8(1), // Unsupported by OpenGL
 +    // pack16
 +    // 4 4 4 4
 +    // Requires OpenGL 4.2, or equivalent
@@ -85,26 +83,9 @@
 +    X8_D24_UNORM_PACK32(4), // GL_DEPTH_COMPONENT24/GL_DEPTH_COMPONENT/GL_UNSIGNED_INT_24_8
 +    // DEPTH32 is D32_SFLOAT(4), // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
 +
-+    // Stencil
-+    // Requires OpenGL 4.3, GL_ARB_ES3_compatibility, or equivalent (render buffer)
-+    // Requires OpenGL 4.4, GL_ARB_texture_stencil8, or equivalent (texture)
-+    S8_UINT(1), // GL_STENCIL_INDEX8/GL_STENCIL_INDEX/GL_UNSIGNED_BYTE
-+
 +    // Depth/Stencil
 +    D24_UNORM_S8_UINT(4), // GL_DEPTH24_STENCIL8/GL_DEPTH_STENCIL/GL_UNSIGNED_INT_24_8
 +    D32_SFLOAT_S8_UINT(8), // GL_DEPTH32F_STENCIL8/GL_DEPTH_STENCIL/GL_FLOAT_32_UNSIGNED_INT_24_8_REV
-+
-+    // Compressed
-+    // internal and external format are identical for these, and there is no type
-+    // Requires GL_EXT_texture_compression_s3tc, or equivalent
-+    BC1_RGB_UNORM_BLOCK(0, 1), // GL_COMPRESSED_RGB_S3TC_DXT1_EXT
-+    BC1_RGB_SRGB_BLOCK(0, 1), // GL_COMPRESSED_SRGB_S3TC_DXT1_EXT
-+    BC1_RGBA_UNORM_BLOCK(0, 1), // GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
-+    BC1_RGBA_SRGB_BLOCK(0, 1), // GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT
-+    BC2_UNORM_BLOCK(1), // GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
-+    BC2_SRGB_BLOCK(1), // GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT
-+    BC3_UNORM_BLOCK(1), // GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
-+    BC3_SRGB_BLOCK(1), // GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT
 +    ;
 +
 +    // VkFormat based name alias for Vanilla defined enums
@@ -114,31 +95,14 @@
 +    public static final TextureFormat D32_SFLOAT = DEPTH32; // GL_DEPTH_COMPONENT32F/GL_DEPTH_COMPONENT/GL_FLOAT
  
      private final int pixelSize;
-+    // Neo: some formats (BC1) are less than a single byte per-pixel
-+    private final int pixelSizeNibbles;
  
-     private TextureFormat(int p_404990_) {
-         this.pixelSize = p_404990_;
-+        this.pixelSizeNibbles = p_404990_ * 2;
-+    }
-+
-+    private TextureFormat(int pixelSize, int pixelSizeNibbles) {
-+        this.pixelSize = pixelSize;
-+        this.pixelSizeNibbles = (pixelSize * 2) + pixelSizeNibbles;
+@@ -23,10 +_,21 @@
      }
  
-     public int pixelSize() {
-         return this.pixelSize;
-     }
- 
-+    public int pixelSizeNibbles() {
-+        return this.pixelSizeNibbles;
-+    }
-+
      public boolean hasColorAspect() {
 -        return this == RGBA8 || this == RED8;
-+        // Neo: all color formats do not have depth and do not have stencil
-+        return !hasDepthAspect() && !hasStencilAspect();
++        // Neo: all color formats do not have depth
++        return !hasDepthAspect();
      }
  
      public boolean hasDepthAspect() {
@@ -151,7 +115,7 @@
 +
 +    public boolean hasStencilAspect() {
 +        return switch (this) {
-+            case S8_UINT, D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
++            case D24_UNORM_S8_UINT, D32_SFLOAT_S8_UINT -> true;
 +            default -> false;
 +        };
      }
