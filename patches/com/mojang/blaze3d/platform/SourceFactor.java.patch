@@ -1,15 +1,26 @@
 --- a/com/mojang/blaze3d/platform/SourceFactor.java
 +++ b/com/mojang/blaze3d/platform/SourceFactor.java
-@@ -21,5 +_,11 @@
+@@ -21,5 +_,22 @@
      SRC_ALPHA,
      SRC_ALPHA_SATURATE,
      SRC_COLOR,
 -    ZERO;
 +    ZERO,
-+    // Neo: Extended source factors
++    /**
++     * Neo: <a href="https://www.khronos.org/opengl/wiki/Blending#Dual_Source_Blending">Dual Source Blending</a> requires OpenGL 3.3, GL_ARB_blend_func_extended, or equivalent.
++     */
 +    SRC1_COLOR,
++    /**
++     * @see SourceFactor#SRC1_COLOR
++     */
 +    ONE_MINUS_SRC1_COLOR,
++    /**
++     * @see SourceFactor#SRC1_COLOR
++     */
 +    SRC1_ALPHA,
++    /**
++     * @see SourceFactor#SRC1_COLOR
++     */
 +    ONE_MINUS_SRC1_ALPHA,
 +    ;
  }

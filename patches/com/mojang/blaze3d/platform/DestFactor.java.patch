@@ -1,16 +1,30 @@
 --- a/com/mojang/blaze3d/platform/DestFactor.java
 +++ b/com/mojang/blaze3d/platform/DestFactor.java
-@@ -20,5 +_,12 @@
+@@ -20,5 +_,26 @@
      ONE_MINUS_SRC_COLOR,
      SRC_ALPHA,
      SRC_COLOR,
 -    ZERO;
 +    ZERO,
-+    // Neo: Extended destination factors
++    /**
++     * Neo: Extended destination factor
++     */
 +    SRC_ALPHA_SATURATE,
++    /**
++     * Neo: <a href="https://www.khronos.org/opengl/wiki/Blending#Dual_Source_Blending">Dual Source Blending</a> requires OpenGL 3.3, GL_ARB_blend_func_extended, or equivalent.
++     */
 +    SRC1_COLOR,
++    /**
++     * @see DestFactor#SRC1_COLOR
++     */
 +    ONE_MINUS_SRC1_COLOR,
++    /**
++     * @see DestFactor#SRC1_COLOR
++     */
 +    SRC1_ALPHA,
++    /**
++     * @see DestFactor#SRC1_COLOR
++     */
 +    ONE_MINUS_SRC1_ALPHA,
 +    ;
  }
