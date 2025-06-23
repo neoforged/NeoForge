@@ -53,7 +53,7 @@
          };
      }
  
-@@ -247,35 +_,137 @@
+@@ -247,28 +_,124 @@
  
      public static int toGlInternalId(TextureFormat p_412409_) {
          return switch (p_412409_) {
@@ -190,12 +190,9 @@
          };
      }
  
-     public static int toGl(ShaderType p_412490_) {
+@@ -276,6 +_,9 @@
          return switch (p_412490_) {
              case VERTEX -> 35633;
-+            case TESSELLATION_CONTROL -> org.lwjgl.opengl.GL40C.GL_TESS_CONTROL_SHADER;
-+            case TESSELLATION_EVALUATION -> org.lwjgl.opengl.GL40C.GL_TESS_EVALUATION_SHADER;
-+            case GEOMETRY -> org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER;
              case FRAGMENT -> 35632;
 +            case COMPUTE -> org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER;
 +            case TASK -> org.lwjgl.opengl.NVMeshShader.GL_TASK_SHADER_NV;
