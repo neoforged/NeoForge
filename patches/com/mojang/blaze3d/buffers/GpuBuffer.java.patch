@@ -1,25 +1,56 @@
 --- a/com/mojang/blaze3d/buffers/GpuBuffer.java
 +++ b/com/mojang/blaze3d/buffers/GpuBuffer.java
-@@ -17,6 +_,23 @@
+@@ -17,6 +_,54 @@
      public static final int USAGE_INDEX = 64;
      public static final int USAGE_UNIFORM = 128;
      public static final int USAGE_UNIFORM_TEXEL_BUFFER = 256;
-+    // Neo: Extended buffer usage, some may not always be supported, check backend capabilities before use
++    /**
++     * Neo: USAGE_TRANSFORM_FEEDBACK specifies that the buffer is suitable for using for binding as a transform feedback buffer with {@link NOT_YET_IMPLEMENTED}
++     *      <p>
++     *      See OpenGL wiki for details on what this feature is: <a href="https://www.khronos.org/opengl/wiki/Transform_Feedback">Transform Feedback</a>
++     */
 +    public static final int USAGE_TRANSFORM_FEEDBACK = USAGE_UNIFORM_TEXEL_BUFFER << 1;
-+    // Neo: Requires OpenGL 4.2, GL_ARB_shader_image_load_store, or equivalent
++    /**
++     * Neo: USAGE_STORAGE_TEXEL_BUFFER specifies that the buffer is suitable for using for binding as a {@link com.mojang.blaze3d.shaders.UniformType#STORAGE_TEXEL_BUFFER storage texel buffer}
++     *      <p>
++     *      See OpenGL wiki for details on what this feature is: <a href="https://www.khronos.org/opengl/wiki/Image_Load_Store">Image Load Store</a>
++     *      <br>
++     *      Requires OpenGL 4.2, GL_ARB_shader_image_load_store, or equivalent
++     */
 +    public static final int USAGE_STORAGE_TEXEL_BUFFER = USAGE_TRANSFORM_FEEDBACK << 1;
-+    // Neo: Requires OpenGL 4.3, GL_ARB_shader_storage_buffer_object, or equivalent
++    /**
++     * Neo: USAGE_STORAGE_TEXEL_BUFFER specifies that the buffer is suitable for using for binding as a {@link com.mojang.blaze3d.shaders.UniformType#STORAGE_BUFFER shader storage buffer object}
++     *      <p>
++     *      See OpenGL wiki for details on what this feature is: <a href="https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object">Shader Storage Buffer Object</a>
++     *      <br>
++     *      Requires OpenGL 4.3, GL_ARB_shader_storage_buffer_object, or equivalent
++     */
 +    public static final int USAGE_STORAGE_BUFFER = USAGE_STORAGE_TEXEL_BUFFER << 1;
-+    // Neo: Requires OpenGL 4.0, GL_ARB_draw_indirect, or equivalent
++    /**
++     * Neo: USAGE_INDIRECT specifies that the buffer is suitable for passing as the buffer parameter to {@link NOT_YET_IMPLEMENTED}
++     *      <p>
++     *      See OpenGL wiki for details on what this feature is: <a href="https://www.khronos.org/opengl/wiki/Vertex_Rendering#Indirect_rendering">Indirect Rendering</a>
++     *      <br>
++     *      Requires OpenGL 4.0, GL_ARB_draw_indirect, or equivalent
++     */
 +    public static final int USAGE_INDIRECT = USAGE_STORAGE_BUFFER << 1;
-+    // Neo: Requires that this buffer be uploaded to before being used for a given frame
-+    //      use of this buffer without prior upload on a given frame may crash
++    /**
++     * Neo: Requires that this buffer be uploaded to before being used for a given frame
++     *      <br>
++     *      Use of this buffer without prior upload on a given frame may crash
++     */
 +    public static final int USAGE_PERF_FRAME_TRANSIENT = USAGE_INDIRECT << 1;
-+    // Neo: Hints that the contents of this buffer will be used once after upload
-+    //      requires use of USAGE_PERF_FRAME_TRANSIENT
-+    //      repeated use of the data is valid, this is a performance hint
-+    public static final int USAGE_HINT_ONE_TIME_USE = USAGE_PERF_FRAME_TRANSIENT << 1 | USAGE_PERF_FRAME_TRANSIENT;
-+    // Neo: Top 8 bits reserved for implementation specific usages
++    /**
++     * Neo: Hints that the contents of this buffer will be used once after upload
++     *      <br>
++     *      Requires use of USAGE_PERF_FRAME_TRANSIENT
++     *      <br>
++     *      Repeated use of the data is valid, this is a performance hint
++     */
++    public static final int USAGE_HINT_ONE_TIME_USE = USAGE_PERF_FRAME_TRANSIENT << 1;
++    /**
++     * Neo: Reserve top 8 bits for implementation specific uses
++     */
 +    public static final int USAGE_FIRST_IMPLEMENTATION_DEFINED = 1 << 24;
      private final int usage;
      public int size;
