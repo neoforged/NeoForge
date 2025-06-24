@@ -66,8 +66,8 @@
          GpuBufferSlice gpubufferslice = this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD);
          profilerfiller.popPush("level");
          this.minecraft.levelRenderer.renderLevel(this.resourcePool, p_348589_, flag, camera, matrix4f1, matrix4f, gpubufferslice, vector4f, !flag1);
-+        profilerfiller.popPush("neoforge_render_last");
-+        net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL, this.minecraft.level, this.minecraft.levelRenderer, null, matrix4f1, this.minecraft.levelRenderer.getTicks(), camera, this.minecraft.levelRenderer.getFrustum());
++        profilerfiller.popPush("neoforge_render_after_level");
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel(this.minecraft.level, this.minecraft.levelRenderer, null, matrix4f1, this.minecraft.levelRenderer.getTicks(), this.minecraft.getDeltaTracker(), camera, this.minecraft.levelRenderer.getFrustum(), this.minecraft.levelRenderer.getRenderableSections()));
          profilerfiller.popPush("hand");
          boolean flag2 = this.minecraft.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.minecraft.getCameraEntity()).isSleeping();
          RenderSystem.setProjectionMatrix(
