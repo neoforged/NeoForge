@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "harness",
+  "key": {
+    "#": "minecraft:cyan_wool",
+    "G": {
+      "neoforge:ingredient_type": "neoforge:intersection",
+      "children": [
+        "#c:glass_blocks/cheap",
+        "#c:glass_blocks/colorless"
+      ]
+    },
+    "L": "#c:leathers"
+  },
+  "pattern": [
+    "LLL",
+    "G#G"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:cyan_harness"
+  }
+}
