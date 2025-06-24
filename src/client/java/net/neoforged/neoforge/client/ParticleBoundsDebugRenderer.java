@@ -25,8 +25,8 @@ public final class ParticleBoundsDebugRenderer {
     private static boolean enabled = false;
 
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (!enabled || event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+    public static void onRenderLevelStage(RenderLevelStageEvent.AfterParticles event) {
+        if (!enabled) {
             return;
         }
 

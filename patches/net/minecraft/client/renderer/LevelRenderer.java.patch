@@ -46,27 +46,31 @@
          if (postchain != null) {
              postchain.addToFrame(framegraphbuilder, i, j, this.targets);
          }
-@@ -564,6 +_,7 @@
+@@ -564,6 +_,9 @@
                  p_362234_.push("terrain");
                  ChunkSectionsToRender chunksectionstorender = this.prepareChunkRenders(p_362420_, d0, d1, d2);
                  chunksectionstorender.renderGroup(ChunkSectionLayerGroup.OPAQUE);
-+                net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(ChunkSectionLayerGroup.OPAQUE, level, this, p_362420_, this.ticks, p_363453_, p_366590_);
++                p_362234_.push("neoforge_render_after_opaque_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterOpaqueBlocks(level, this, null, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
++                p_362234_.pop();
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (resourcehandle2 != null) {
                      resourcehandle2.get().copyDepthFrom(this.minecraft.getMainRenderTarget());
-@@ -583,6 +_,7 @@
+@@ -583,6 +_,8 @@
                  this.visibleEntities.sort(ENTITY_COMPARATOR);
                  this.renderEntities(posestack, multibuffersource$buffersource, p_363453_, p_360931_, this.visibleEntities);
                  multibuffersource$buffersource.endLastBatch();
-+                net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES, level, this, posestack, p_362420_, this.ticks, p_363453_, p_366590_);
++                p_362234_.popPush("neoforge_render_after_entities");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterEntities(level, this, posestack, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
                  this.checkPoseStack(posestack);
                  p_362234_.popPush("blockentities");
                  this.renderBlockEntities(posestack, multibuffersource$buffersource, multibuffersource$buffersource1, p_363453_, f);
-@@ -599,6 +_,7 @@
+@@ -599,6 +_,8 @@
                  multibuffersource$buffersource.endBatch(Sheets.hangingSignSheet());
                  multibuffersource$buffersource.endBatch(Sheets.chestSheet());
                  this.renderBuffers.outlineBufferSource().endOutlineBatch();
-+                net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES, level, this, posestack, p_362420_, this.ticks, p_363453_, p_366590_);
++                p_362234_.popPush("neoforge_render_after_block_entities");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterBlockEntities(level, this, posestack, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
                  if (p_363964_) {
                      this.renderBlockOutline(p_363453_, multibuffersource$buffersource, posestack, false);
                  }
@@ -82,14 +86,16 @@
                  multibuffersource$buffersource.endBatch();
                  if (resourcehandle1 != null) {
                      resourcehandle1.get().copyDepthFrom(resourcehandle.get());
-@@ -626,8 +_,10 @@
+@@ -626,8 +_,12 @@
  
                  p_362234_.popPush("translucent");
                  chunksectionstorender.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT);
-+                net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(ChunkSectionLayerGroup.TRANSLUCENT, level, this, p_362420_, this.ticks, p_363453_, p_366590_);
++                p_362234_.popPush("neoforge_render_after_translucent_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTranslucentBlocks(level, this, null, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
                  p_362234_.popPush("string");
                  chunksectionstorender.renderGroup(ChunkSectionLayerGroup.TRIPWIRE);
-+                net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(ChunkSectionLayerGroup.TRIPWIRE, level, this, p_362420_, this.ticks, p_363453_, p_366590_);
++                p_362234_.popPush("neoforge_render_after_tripwire_blocks");
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterTripwireBlocks(level, this, null, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
                  if (p_363964_) {
                      this.renderBlockOutline(p_363453_, multibuffersource$buffersource, posestack, true);
                  }
@@ -109,13 +115,15 @@
          FramePass framepass = p_363357_.addPass("particles");
          if (this.targets.particles != null) {
              this.targets.particles = framepass.readsAndWrites(this.targets.particles);
-@@ -655,11 +_,20 @@
+@@ -655,11 +_,22 @@
                  resourcehandle1.get().copyDepthFrom(resourcehandle.get());
              }
  
 -            this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource());
 +            this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource(), frustum, resourcehandle1 == null ? type -> type.translucent() : type -> true); // Neo: only render translucent particles here in Fast/Fancy
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES, level, this, null, modelViewMatrix, this.ticks, p_365299_, getFrustum());
++            Profiler.get().push("neoforge_render_after_particles");
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterParticles(level, this, null, modelViewMatrix, this.ticks, this.minecraft.getDeltaTracker(), p_365299_, getFrustum(), this.getRenderableSections()));
++            Profiler.get().pop();
          });
      }
  
@@ -155,11 +163,13 @@
          int i = this.minecraft.options.getEffectiveRenderDistance() * 16;
          float f = this.minecraft.gameRenderer.getDepthFar();
          FramePass framepass = p_364025_.addPass("weather");
-@@ -684,6 +_,7 @@
+@@ -684,6 +_,9 @@
              RenderSystem.setShaderFog(p_418104_);
              MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
              this.weatherEffectRenderer.render(this.minecraft.level, multibuffersource$buffersource, this.ticks, p_362434_, p_360771_);
-+            net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_WEATHER, level, this, null, modelViewMatrix, this.ticks, camera, getFrustum());
++            Profiler.get().push("neoforge_render_after_weather");
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterWeather(level, this, null, modelViewMatrix, this.ticks, this.minecraft.getDeltaTracker(), camera, getFrustum(), this.getRenderableSections()));
++            Profiler.get().pop();
              this.worldBorderRenderer.render(this.level.getWorldBorder(), p_360771_, i, f);
              multibuffersource$buffersource.endBatch();
          });
@@ -235,12 +245,14 @@
                      RenderSystem.setShaderFog(p_418294_);
                      if (dimensionspecialeffects$skytype == DimensionSpecialEffects.SkyType.END) {
                          this.skyRenderer.renderEndSky();
-@@ -1077,6 +_,8 @@
+@@ -1077,6 +_,10 @@
                              this.skyRenderer.renderDarkDisc();
                          }
                      }
 +                    }
-+                    net.neoforged.neoforge.client.ClientHooks.dispatchRenderStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY, level, this, null, modelViewMatrix, this.ticks, p_362177_, getFrustum());
++                    Profiler.get().push("neoforge_render_after_sky");
++                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterSky(level, this, null, modelViewMatrix, this.ticks, this.minecraft.getDeltaTracker(), p_362177_, getFrustum(), this.getRenderableSections()));
++                    Profiler.get().pop();
                  });
              }
          }
