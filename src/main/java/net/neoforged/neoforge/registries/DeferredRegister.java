@@ -309,6 +309,19 @@ public class DeferredRegister<T> {
     }
 
     /**
+     * Adds an alias that maps from <code>alias</code> to <code>registeredName</code>'s ResourceLocation.
+     * <p>
+     * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
+     * unless an object with <code>alias</code> is present in the registry
+     *
+     * @param alias          The original name of the registry object
+     * @param registeredName The holder to extract the new name of the registry object from
+     */
+    public void addAlias(ResourceLocation alias, Holder<T> registeredName) {
+        this.addAlias(alias, Objects.requireNonNull(registeredName.getKey()).location());
+    }
+
+    /**
      * Adds our event handler to the specified event bus, this MUST be called in order for this class to function. See {@link DeferredRegister the example usage}.
      *
      * @param bus The Mod Specific event bus.
