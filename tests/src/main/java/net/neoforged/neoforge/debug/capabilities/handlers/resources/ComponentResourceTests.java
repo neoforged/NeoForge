@@ -16,7 +16,9 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferAction;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.StackItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
@@ -75,8 +77,10 @@ public class ComponentResourceTests {
         if (!ResourceHandlerUtil.isIndexEmpty(handler, 0))
             helper.fail("Expected empty tank");
 
-        if (player.getMainHandItem().has(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT))
-            helper.fail("Expected no fluid stack component");
+        var component = player.getMainHandItem().get(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT);
+
+        if (component == null || !component.isEmpty())
+            helper.fail("Fluid stack component not found, or was empty");
 
         helper.succeed();
     }
@@ -106,6 +110,41 @@ public class ComponentResourceTests {
         }
 
         helper.succeed();
+    }
+
+    @GameTest
+    @EmptyTemplate
+    @TestHolder(description = "Shulker Test")
+    public static void shulkerTest(ExtendedGameTestHelper helper) {
+        Player player = helper.makeMockPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, Items.SHULKER_BOX.getDefaultInstance());
+        IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
+
+        var shulkerHandler = helper.requireNotNull(context.getCapability(Capabilities.ItemHandler.ITEM), "Shulker boxes should have an item cap");
+
+        transactionOnShulker(helper, shulkerHandler, TransferAction.SIMULATE, Items.DIAMOND.getDefaultResource());
+        transactionOnShulker(helper, shulkerHandler, TransferAction.EXECUTE, Items.DIAMOND.getDefaultResource());
+        transactionOnShulker(helper, shulkerHandler, TransferAction.EXECUTE, Items.APPLE.getDefaultResource());
+
+        helper.succeed();
+    }
+
+    private static void transactionOnShulker(ExtendedGameTestHelper helper, IResourceHandler<ItemResource> shulkerHandler, TransferAction action, ItemResource resource) {
+        // ensure this is even since the test splits it into 2 to validate inserting to existing stacks works
+        var insertedConst = 100;
+        var extractedConst = 20;
+        var remaining = insertedConst - extractedConst;
+        try (var tx = TransactionManager.open(null)) {
+            var inserted = shulkerHandler.insert(resource, insertedConst, tx);
+            helper.assertValueEqual(inserted / 2, insertedConst / 2, "Inserted should match");
+            helper.assertValueEqual(inserted / 2, insertedConst / 2, "Inserted should match");
+            helper.assertValueEqual(ResourceHandlerUtil.getAmount(shulkerHandler, resource), insertedConst, "Current Amount should match");
+            var extracted = shulkerHandler.extract(resource, extractedConst, tx);
+            helper.assertValueEqual(extracted, extractedConst, "Extracted should match");
+            helper.assertValueEqual(ResourceHandlerUtil.getAmount(shulkerHandler, resource), remaining, "Current Amount should match");
+            action.commit(tx);
+        }
+        helper.assertValueEqual(ResourceHandlerUtil.getAmount(shulkerHandler, resource), action.isExecuting() ? remaining : 0, "Current Amount should match");
     }
 
     @GameTest

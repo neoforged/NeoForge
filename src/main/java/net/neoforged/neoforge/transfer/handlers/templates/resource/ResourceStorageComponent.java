@@ -22,7 +22,6 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
 public final class ResourceStorageComponent<T extends IResource> {
     public final IStackFactory<T, ResourceStack<T>> stackFactory;
     private final NonNullList<ResourceStack<T>> stacks;
-    private final int size;
     private final int hashCode;
 
     /**
@@ -30,8 +29,7 @@ public final class ResourceStorageComponent<T extends IResource> {
      */
     public ResourceStorageComponent(NonNullList<ResourceStack<T>> stacks, IStackFactory<T, ResourceStack<T>> stackFactory) {
         this.stacks = stacks;
-        this.size = stacks.size();
-        this.hashCode = IResourceStack.hashCode(stacks);
+        this.hashCode = IResourceStack.hashTypes(stacks);
         this.stackFactory = stackFactory;
     }
 
@@ -47,10 +45,6 @@ public final class ResourceStorageComponent<T extends IResource> {
         return resourceCodec.apply(ByteBufCodecs.collection(NonNullList::<ResourceStack<T>>createWithCapacity))
                 .map(resourceStacks -> new ResourceStorageComponent<>(resourceStacks, stackFactory),
                         component -> component.stacks);
-    }
-
-    public int size() {
-        return size;
     }
 
     public ResourceStack<T> get(int index) {
@@ -71,7 +65,7 @@ public final class ResourceStorageComponent<T extends IResource> {
     }
 
     public Mutable<T> mutable() {
-        NonNullList<MutableResourceStack<T>> list = NonNullList.<MutableResourceStack<T>>createWithCapacity(stacks.size());
+        NonNullList<MutableResourceStack<T>> list = NonNullList.createWithCapacity(stacks.size());
         for (ResourceStack<T> stack : stacks) {
             list.add(stack.mutable());
         }
@@ -80,20 +74,9 @@ public final class ResourceStorageComponent<T extends IResource> {
 
     @Override
     public boolean equals(Object otherObj) {
-        if (this == otherObj)
-            return true;
-
-        if (!(otherObj instanceof ResourceStorageComponent<?> otherData) || otherData.size() != size())
-            return false;
-
-        for (int i = 0; i < otherData.size(); i++) {
-            ResourceStack<T> current = get(i);
-            ResourceStack<?> other = otherData.get(i);
-            if (!current.resource().equals(other.resource())) return false;
-            if (current.amount() != other.amount()) return false;
-        }
-
-        return true;
+        return this == otherObj
+                || otherObj instanceof ResourceStorageComponent<?> otherData
+                        && stacks.equals(otherData.stacks);
     }
 
     @Override
@@ -112,19 +95,13 @@ public final class ResourceStorageComponent<T extends IResource> {
     public static final class Mutable<T extends IResource> {
         public final IStackFactory<T, ResourceStack<T>> stackFactory;
         private final NonNullList<MutableResourceStack<T>> stacks;
-        private final int size;
 
         /**
          * @param stacks a list of MutableResourceStacks. The stacks are expected to have their amount mutated internally never externally.
          */
         private Mutable(NonNullList<MutableResourceStack<T>> stacks, IStackFactory<T, ResourceStack<T>> stackFactory) {
             this.stacks = stacks;
-            this.size = stacks.size();
             this.stackFactory = stackFactory;
-        }
-
-        public int size() {
-            return size;
         }
 
         public MutableResourceStack<T> get(int index) {
@@ -137,7 +114,8 @@ public final class ResourceStorageComponent<T extends IResource> {
                 current.withAmount(amount);
             else {
                 //We do .mutable() to get the advantage of not creating new empty instances with our stackFactory.
-                //Downside is that we now create a resource stack to create immediately an immutable
+                //The downside to this is that we are creating an immutable resource stack that is immediately disposed
+                // of when converting it to a mutable stack.
                 stacks.set(index, stackFactory.create(resource, amount).mutable());
             }
             return this;

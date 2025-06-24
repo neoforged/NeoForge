@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,10 +63,11 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
 //        TODO A maintainer likely should validate this method; but it should be correct.
 //        if (size > 0) return; Always resize?
 
-        ArrayList<EquipmentSlot> list = new ArrayList<>();
+        List<EquipmentSlot> list = new ArrayList<>();
         for (Predicate<EquipmentSlot> equipmentSlotPredicate : slotFilter) {
             list.addAll(Arrays.stream(EquipmentSlot.values()).filter(equipmentSlotPredicate).toList());
         }
+        slots.clear();
         this.slots.addAll(list);
 
         size = list.size();
@@ -76,6 +78,7 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
 
         int handlerSize = slots.size();
         snapshots.ensureCapacity(handlerSize);
+        snapshots.clear();
         for (int i = 0; i < handlerSize; i++) {
             snapshots.add(new EquipmentSlotSnapshotJournal(snapshots.size()));
         }
@@ -83,6 +86,126 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
 
     private EntityEquipmentItemHandler(LivingEntity entity) {
         this.entity = entity;
+    }
+
+    public void set(int index, ItemResource resource, int amount) {
+        internalStacks.set(index, resource.toStack(amount));
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    protected ItemStack getStackInSlot(int slot) {
+        Objects.checkIndex(slot, size());
+        return entity.getItemBySlot(slots.get(slot));
+    }
+
+    @Override
+    public ItemResource getResource(int index) {
+        Objects.checkIndex(index, size());
+        return ItemResource.of(getStackInSlot(index));
+    }
+
+    @Override
+    public int getAmount(int index) {
+        Objects.checkIndex(index, size());
+        return getStackInSlot(index).getCount();
+    }
+
+    @Override
+    public int getCapacity(int index, ItemResource resource) {
+        Objects.checkIndex(index, size());
+        return slots.get(index).countLimit;
+    }
+
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        Objects.checkIndex(index, size());
+        return resource.canEquip(slots.get(index), entity);
+    }
+
+    @Override
+    public boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
+        return true;
+    }
+
+    @Override
+    public boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
+        return true;
+    }
+
+    @Override
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        return insertBehaviour(index, resource, amount, transaction);
+    }
+
+    @Override
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        int handled = 0;
+        int size = size();
+        for (int index = 0; index < size; index++) {
+            handled += insertBehaviour(index, resource, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+
+        return handled;
+    }
+
+    private int insertBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        if (!isValid(index, resource)) return 0;
+
+        ItemStack stack = getStackInSlot(index);
+        if (!stack.isEmpty() && !resource.is(stack)) return 0;
+
+        amount = Math.min(amount, getCapacity(index, resource) - stack.getCount());
+        if (amount > 0) {
+            snapshots.get(index).updateSnapshots(transaction);
+            set(index, resource, stack.getCount() + amount);
+        }
+        return amount;
+    }
+
+    @Override
+    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        return extractBehaviour(index, resource, amount, transaction);
+    }
+
+    @Override
+    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        int handled = 0;
+        int size = size();
+        for (int index = 0; index < size; index++) {
+            handled += extractBehaviour(index, resource, amount - handled, transaction);
+            if (handled == amount) break;
+        }
+
+        return handled;
+    }
+
+    private int extractBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        ItemStack stack = getStackInSlot(index);
+        EquipmentSlot equipmentSlot = slots.get(index);
+
+        if (stack.isEmpty() || !resource.is(stack)) return 0;
+        if (equipmentSlot.isArmor() && !resource.canUnequip()) return 0;
+
+        int extracted = Math.min(amount, stack.getCount());
+        if (extracted > 0) {
+            snapshots.get(index).updateSnapshots(transaction);
+            int newValue = stack.getCount() - extracted;
+            set(index, newValue == 0 ? ItemResource.EMPTY : resource, newValue);
+        }
+        return extracted;
     }
 
     private class EquipmentSlotSnapshotJournal extends SnapshotJournal<ItemStack> {
@@ -106,132 +229,7 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
         protected void onCommit(ItemStack originalState) {
             ItemStack itemStack = internalStacks.get(index);
             set(index, ItemResource.of(itemStack), originalState.getCount());
-            entity.setItemSlot(validateSlotIndex(index), itemStack);
+            entity.setItemSlot(slots.get(index), itemStack);
         }
-    }
-
-    protected EquipmentSlot validateSlotIndex(final int slot) {
-        if (slot < 0 || slot >= slots.size())
-            throw new IllegalArgumentException("Slot " + slot + " not in valid range - [0," + slots.size() + ")");
-
-        return slots.get(slot);
-    }
-
-    public void set(int index, ItemResource resource, int amount) {
-        internalStacks.set(index, resource.toStack(amount));
-    }
-
-    @Override
-    public int size() {
-        return slots.size();
-    }
-
-    protected ItemStack getStackInSlot(int slot) {
-        return entity.getItemBySlot(validateSlotIndex(slot));
-    }
-
-    @Override
-    public ItemResource getResource(int index) {
-        return ItemResource.of(getStackInSlot(index));
-    }
-
-    @Override
-    public int getAmount(int index) {
-        return getStackInSlot(index).getCount();
-    }
-
-    @Override
-    public int getCapacity(int index, ItemResource resource) {
-        return validateSlotIndex(index).countLimit;
-    }
-
-    @Override
-    public boolean isValid(int index, ItemResource resource) {
-        return resource.canEquip(validateSlotIndex(index), entity);
-    }
-
-    @Override
-    public boolean supportsInsertion(int index) {
-        return true;
-    }
-
-    @Override
-    public boolean supportsExtraction(int index) {
-        return true;
-    }
-
-    @Override
-    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-
-        return insertBehaviour(index, resource, amount, transaction);
-    }
-
-    @Override
-    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        int size = size();
-        for (int index = 0; index < size; index++) {
-            handled += insertBehaviour(index, resource, amount - handled, transaction);
-        }
-
-        return handled;
-    }
-
-    private int insertBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        ItemStack stack = getStackInSlot(index);
-        if (!isValid(index, resource)) return 0;
-
-        if (stack.isEmpty()) {
-            amount = Math.min(amount, getCapacity(index, resource));
-            snapshots.get(index).updateSnapshots(transaction);
-            set(index, resource, amount);
-            return amount;
-        }
-
-        if (!resource.is(stack)) return 0;
-
-        amount = Math.min(amount, getCapacity(index, resource) - stack.getCount());
-        if (amount > 0) {
-            snapshots.get(index).updateSnapshots(transaction);
-            set(index, resource, stack.getCount() + amount);
-        }
-        return amount;
-    }
-
-    @Override
-    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        return extractBehaviour(index, resource, amount, transaction);
-    }
-
-    @Override
-    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
-        int size = size();
-        for (int index = 0; index < size; index++) {
-            handled += extractBehaviour(index, resource, amount - handled, transaction);
-        }
-
-        return handled;
-    }
-
-    private int extractBehaviour(int index, ItemResource resource, int amount, TransactionContext transaction) {
-        ItemStack stack = getStackInSlot(index);
-        EquipmentSlot equipmentSlot = validateSlotIndex(index);
-
-        if (stack.isEmpty() || !resource.is(stack) || (resource.canUnequip() && equipmentSlot.isArmor())) {
-            return 0;
-        }
-
-        int extracted = Math.min(amount, stack.getCount());
-        if (extracted > 0) {
-            snapshots.get(index).updateSnapshots(transaction);
-            int newValue = stack.getCount() - extracted;
-            set(index, newValue == 0 ? ItemResource.EMPTY : resource, newValue);
-        }
-        return extracted;
     }
 }

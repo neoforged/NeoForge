@@ -125,6 +125,16 @@ public interface IItemContext {
      */
     int extract(ItemResource resource, int amount, TransactionContext transaction);
 
+    /**
+     * Try to exchange as many items as possible of {@linkplain #getAmount the current item} with another.
+     * <p>
+     * In other words, {@link #extract} the given amount of the current item, and via a transactional, {@link #insert} the same amount of the given resource instead.
+     *
+     * @param resource    The resource of the items after the conversion. Must not be empty.
+     * @param amount      The amount of items to convert. Must not be negative.
+     * @param transaction The transaction chain this operation is part of.
+     * @return A non-negative value not greater than {@code amount} (the amount that was transformed).
+     */
     default int exchange(ItemResource resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 

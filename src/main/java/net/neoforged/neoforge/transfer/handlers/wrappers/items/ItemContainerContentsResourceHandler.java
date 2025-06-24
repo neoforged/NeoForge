@@ -15,32 +15,46 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 
 /**
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
  */
-// A very verbose name, but likely the most accurate
 public class ItemContainerContentsResourceHandler implements IResourceHandler<ItemResource> {
+    /**
+     * Size the component is expected to be able to grow to.
+     */
     protected final int size;
     protected final DataComponentType<ItemContainerContents> componentType;
     protected final IItemContext itemContext;
 
     public ItemContainerContentsResourceHandler(IItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
+        if (size > 256)
+            throw new IllegalArgumentException("Got %d items, but maximum is 256".formatted(size));
+
         this.componentType = componentType;
         this.itemContext = itemContext;
         this.size = size;
     }
 
     public ItemContainerContents getContents() {
-        return itemContext.getResource().getOrDefault(componentType, ItemContainerContents.fromItems(NonNullList.withSize(size(), ItemStack.EMPTY)));
+        if (itemContext.getAmount() == 0) return ItemContainerContents.EMPTY;
+
+        var resource = itemContext.getResource();
+        return resource.getOrDefault(componentType, ItemContainerContents.EMPTY);
     }
 
-    public int setAndValidate(ItemContainerContents contents, int changedAmount, TransactionContext context) {
-        return itemContext.exchange(itemContext.getResource().with(componentType, contents), 1, context) == 1 ? changedAmount : 0;
+    public int set(ItemContainerContents contents, int changedAmount, TransactionContext context, int index, ItemStack stack) {
+        var contextResource = itemContext.getResource();
+
+        // Use the max of the content's size and the handler size to avoid truncating
+        NonNullList<ItemStack> list = NonNullList.withSize(Math.max(contents.getSlots(), size()), ItemStack.EMPTY);
+        contents.copyInto(list);
+        list.set(index, stack);
+        var newStack = contextResource.toStack();
+        newStack.set(componentType, ItemContainerContents.fromItems(list));
+        var exchangedCount = itemContext.exchange(ItemResource.of(newStack), 1, context);
+        return exchangedCount == 1 ? changedAmount : 0;
     }
 
     @Override
@@ -50,14 +64,16 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
 
     @Override
     public ItemResource getResource(int index) {
-        // You may need to still add what you had before. Depends on if this really resulted in much better
-        //return getContents().getImmutableStackInSlot(index).resource();
-        return ItemResource.of(getContents().getStackInSlot(index));
+        Objects.checkIndex(index, size());
+        var contents = getContents();
+        return ItemResource.of(getStackInSlot(contents, index));
     }
 
     @Override
     public int getAmount(int index) {
-        return getContents().getStackInSlot(index).getCount();
+        Objects.checkIndex(index, size());
+        var contents = getContents();
+        return getStackInSlot(contents, index).getCount();
     }
 
     @Override
@@ -69,101 +85,58 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        ItemResource current = getResource(index);
-        return current.isEmpty() || current.equals(resource);
+        Objects.checkIndex(index, size());
+        return resource.getInstanceValue().canFitInsideContainerItems();
     }
 
     @Override
     public boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return true;
     }
 
     @Override
     public boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return true;
     }
 
-    //TODO the resource should be in theory ignored here, but I want to be sure.
-    public void set(int index, ItemResource resource, int amount) {
-        ItemContainerContents contents = getContents();
-        contents.getStackInSlot(index).setCount(amount);
-        try (Transaction tx = TransactionManager.open(null)) {
-            setAndValidate(contents, amount, tx);
-            tx.commit();
-        }
+    private ItemStack getStackInSlot(ItemContainerContents contents, int index) {
+        return contents.getSlots() <= index ? ItemStack.EMPTY : contents.getStackInSlot(index);
     }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext context) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount) || !isValid(index, resource)) return 0;
+
         ItemContainerContents contents = getContents();
-        ItemStack stack = contents.getStackInSlot(index);
+        ItemStack stack = getStackInSlot(contents, index);
+
         if (stack.isEmpty()) {
-            amount = Math.min(amount, resource.getMaxStackSize());
+            var inserted = Math.min(amount, resource.getMaxStackSize());
+            return set(contents, inserted, context, index, resource.toStack(inserted));
+        }
 
-            return setAndValidate(contents.with(index, resource, amount), amount, context);
-        } else if (resource.is(stack) && stack.getCount() < resource.getMaxStackSize()) {
-            int newAmount = Math.min(stack.getCount() + amount, resource.getMaxStackSize());
-            amount = newAmount - stack.getCount();
-//            if (action.isExecuting())
-            stack.grow(amount);
-            return setAndValidate(contents, amount, context);
-        }
-        return 0;
-    }
+        if (!resource.is(stack) || stack.getCount() >= resource.getMaxStackSize()) return 0;
 
-    @Override
-    public int insert(ItemResource resource, int amount, TransactionContext context) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        ItemContainerContents contents = getContents();
-        int remaining = amount;
-        for (int i = 0; i < size; i++) {
-            ResourceStack<ItemResource> stack = contents.getStackInSlot(i).immutable();
-            if (stack.isEmpty() || !stack.resource().equals(resource) || stack.amount() >= resource.getMaxStackSize()) continue;
-            int toInsert = Math.min(remaining, resource.getMaxStackSize() - stack.amount());
-            contents = contents.with(i, resource, stack.amount() + toInsert);
-            remaining -= toInsert;
-        }
-        for (int i = 0; i < size; i++) {
-            ResourceStack<ItemResource> stack = contents.getStackInSlot(i).immutable();
-            if (!stack.isEmpty()) continue;
-            int toInsert = Math.min(remaining, resource.getMaxStackSize());
-            contents = contents.with(i, resource, toInsert);
-            remaining -= toInsert;
-            if (remaining <= 0) {
-                break;
-            }
-        }
-        return setAndValidate(contents, amount - remaining, context);
+        int inserted = Math.min(amount, getCapacity(index, resource) - stack.getCount());
+        stack.grow(inserted);
+        return set(contents, inserted, context, index, stack);
     }
 
     @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext context) {
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        ItemContainerContents contents = getContents();
-        ResourceStack<ItemResource> stack = contents.getStackInSlot(index).immutable();
-        if (stack.isEmpty() || !stack.resource().equals(resource)) return 0;
-        int extracted = Math.min(stack.amount(), amount);
-        int newAmount = stack.amount() - extracted;
-        contents = contents.with(index, newAmount == 0 ? ItemResource.EMPTY : stack.resource(), newAmount);
-        return setAndValidate(contents, extracted, context);
-    }
 
-    @Override
-    public int extract(ItemResource resource, int amount, TransactionContext context) {
-        int remaining = amount;
         ItemContainerContents contents = getContents();
-        for (int slot = 0; slot < size; slot++) {
-            ResourceStack<ItemResource> stack = contents.getStackInSlot(slot).immutable();
-            if (stack.isEmpty() || !stack.resource().equals(resource)) continue;
-            int extracted = Math.min(remaining, stack.amount());
-            int newAmount = stack.amount() - extracted;
-            contents = contents.with(slot, newAmount == 0 ? ItemResource.EMPTY : resource, newAmount);
-            remaining -= extracted;
-            if (remaining <= 0) {
-                break;
-            }
-        }
-        return setAndValidate(contents, amount - remaining, context);
+        ItemStack stack = getStackInSlot(contents, index);
+
+        if (stack.isEmpty() || !resource.is(stack)) return 0;
+
+        int extracted = Math.min(stack.getCount(), amount);
+        stack.shrink(extracted);
+        return set(contents, amount, context, index, stack);
     }
 }

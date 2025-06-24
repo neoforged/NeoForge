@@ -69,7 +69,7 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
 
     @Override
     public boolean isValid(int index, T resource) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        throw new IndexOutOfBoundsException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
     }
 
     @Override

@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.NonNullList;
@@ -25,13 +26,14 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
 /**
- * This is provided as a simple handler to still use a {@link ItemStack} in a List as the backing data structure.
- * It is advised to use a {@link ItemResource} or similar form of {@link IResourceStack}.
+ * This is provided as a simple handler to still use an {@link ItemStack} in a List as the backing data structure.
+ * It is advised to use an {@link ItemResource} or similar form of {@link IResourceStack}.
  * <p>
  * This can be used in an attachment, a block entity field, or other mutable structures.
  */
@@ -41,9 +43,10 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
     private int size;
     private NonNullList<S> stacks;
-    private final ArrayList<StackJournal> snapshotJournals = new ArrayList<>();
+    private final List<StackJournal> snapshotJournals;
     private final GroupedSnapshotJournal onChangeJournal;
     private final S emptyStack;
+    private final Codec<NonNullList<S>> codec = NonNullList.codecOf(stackCodec());
 
     /**
      * @param size              How large this list will be.
@@ -54,11 +57,17 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         this(NonNullList.withSize(size, emptyStack), emptyStack, capacity, onChangedCallback);
     }
 
+    /**
+     * @param stacks            A non-null list of stacks stored in this handler. This will make a mutable copy of the passed in list.
+     * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
+     * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
+     */
     public StackListHandler(NonNullList<S> stacks, S emptyStack, int capacity, @Nullable Runnable onChangedCallback) {
         this.capacity = capacity;
-        this.stacks = stacks;
+
+        this.stacks = mutableCopyOf(stacks);
         this.size = stacks.size();
-        this.snapshotJournals.ensureCapacity(size);
+        this.snapshotJournals = new ArrayList<>(size);
         //Creates a change journal in charge of notifying the handler has been changed.
         // The callback is usually something like someInstance::setChanged
         this.onChangeJournal = GroupedSnapshotJournal.commitWith(onChangedCallback);
@@ -68,37 +77,53 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         }
     }
 
+    private static <T> NonNullList<T> mutableCopyOf(NonNullList<T> list) {
+        var size = list.size();
+        var temp = NonNullList.<T>createWithCapacity(size);
+        temp.addAll(list);
+        return temp;
+    }
+
     @Override
     public void serialize(ValueOutput output) {
-        output.store(VALUE_IO_KEY, NonNullList.codecOf(stackCodec()), stacks);
+        output.store(VALUE_IO_KEY, codec, stacks);
     }
 
     @Override
     public void deserialize(ValueInput input) {
-        Optional<NonNullList<S>> optional = input.read(NonNullList.codecOf(stackCodec()).fieldOf(VALUE_IO_KEY));
+        Optional<NonNullList<S>> optional = input.read(codec.fieldOf(VALUE_IO_KEY));
         if (optional.isEmpty()) return;
 
-        stacks = optional.get();
+        //Safety precaution in case the deserialized list was or ever becomes immutable.
+        stacks = mutableCopyOf(optional.get());
         size = stacks.size();
     }
 
-    public abstract Codec<S> stackCodec();
+    @ApiStatus.OverrideOnly
+    protected abstract Codec<S> stackCodec();
 
-    public abstract R getResourceFrom(S stack);
+    @ApiStatus.OverrideOnly
+    protected abstract R getResourceFrom(S stack);
 
-    public abstract int getAmountFrom(S stack);
+    @ApiStatus.OverrideOnly
+    protected abstract int getAmountFrom(S stack);
 
-    public int getCapacityFrom(R stack) {
+    @ApiStatus.OverrideOnly
+    protected int getCapacityFrom(R stack) {
         return Integer.MAX_VALUE;
     }
 
-    public abstract boolean isStackEmpty(S stack);
+    @ApiStatus.OverrideOnly
+    protected abstract boolean isStackEmpty(S stack);
 
-    public abstract boolean matches(R resource, S stack);
+    @ApiStatus.OverrideOnly
+    protected abstract boolean matches(R resource, S stack);
 
-    public abstract S toStack(R resource, int amount);
+    @ApiStatus.OverrideOnly
+    protected abstract S toStack(R resource, int amount);
 
-    public abstract S copyOf(S stack);
+    @ApiStatus.OverrideOnly
+    protected abstract S copyOf(S stack);
 
     /**
      * Copies all the contents of this handler to a non-null list of the same size.
@@ -250,6 +275,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         onChangeJournal.runCallback();
     }
 
+    @ApiStatus.OverrideOnly
     protected void setInternal(int index, R resource, int amount) {
         stacks.set(index, toStack(resource, amount));
     }

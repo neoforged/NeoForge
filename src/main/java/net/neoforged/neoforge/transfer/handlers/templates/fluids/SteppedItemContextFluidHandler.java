@@ -39,8 +39,7 @@ public abstract class SteppedItemContextFluidHandler extends SteppedItemContextR
             super(context, componentType, capacityOfOneItem, validator);
         }
 
-        @Override
-        protected int empty(int count, TransactionContext context) {
+        protected int setEmpty(int count, TransactionContext context) {
             return itemContext.extract(itemContext.getResource(), count, context);
         }
     }
@@ -58,8 +57,7 @@ public abstract class SteppedItemContextFluidHandler extends SteppedItemContextR
             this.emptyContainer = emptyContainer;
         }
 
-        @Override
-        protected int empty(int count, TransactionContext context) {
+        protected int setEmpty(int count, TransactionContext context) {
             return itemContext.exchange(emptyContainer, count, context);
         }
     }

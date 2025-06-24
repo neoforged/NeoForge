@@ -58,6 +58,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         BlockState state = location.getBlockState();
         return getContent(state).getMillibuckets(state);
     }

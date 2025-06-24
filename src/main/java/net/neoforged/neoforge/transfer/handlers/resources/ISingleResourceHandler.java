@@ -17,6 +17,8 @@ import org.jetbrains.annotations.ApiStatus;
  * @param <T> The type of resource this handler manages.
  */
 public interface ISingleResourceHandler<T extends IResource> extends IResourceHandler<T> {
+    int SINGLE_INDEX = 0;
+
     //Neo: It may be a gut reaction to try to make a proxy method like getResource() or getAmount() that don't take
     //     an index, but that in practice can get rather messy given interfaces cannot have `final` set on the default methods.
     //     If this one day changes in a future java version, then this should be revisited.

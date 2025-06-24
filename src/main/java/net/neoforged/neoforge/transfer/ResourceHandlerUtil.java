@@ -608,7 +608,7 @@ public final class ResourceHandlerUtil {
         long sum = 0L;
         int size = handler.size();
         for (int index = 0; index < size; index++) {
-            if (resource.equals(handler.getResource(index))) continue;
+            if (!resource.equals(handler.getResource(index))) continue;
             sum += handler.getAmount(index);
             if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
         }
@@ -649,7 +649,7 @@ public final class ResourceHandlerUtil {
         long sum = 0L;
         int size = handler.size();
         for (int index = 0; index < size; index++) {
-            if (resource.equals(handler.getResource(index))) continue;
+            if (!resource.equals(handler.getResource(index))) continue;
             sum += handler.getAmountAsLong(index);
             if (sum < 0) return Long.MAX_VALUE;
         }

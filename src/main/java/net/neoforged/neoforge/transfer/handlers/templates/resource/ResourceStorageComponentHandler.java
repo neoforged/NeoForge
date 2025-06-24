@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import com.google.common.math.IntMath;
 import java.util.Objects;
-import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
@@ -34,7 +33,7 @@ public abstract class ResourceStorageComponentHandler<T extends IResource> imple
 
     private final IStackFactory<T, ResourceStack<T>> stackFactory;
 
-    public ResourceStorageComponentHandler(IItemContext context, DataComponentType<ResourceStorageComponent<T>> componentType, int size, int capacity, T defaultResource, IStackFactory<T, ResourceStack<T>> stackFactory) {
+    protected ResourceStorageComponentHandler(IItemContext context, DataComponentType<ResourceStorageComponent<T>> componentType, int size, int capacity, T defaultResource, IStackFactory<T, ResourceStack<T>> stackFactory) {
         this.itemContext = context;
         this.componentType = componentType;
         this.size = size;
@@ -43,15 +42,11 @@ public abstract class ResourceStorageComponentHandler<T extends IResource> imple
         this.stackFactory = stackFactory;
     }
 
-    /**
-     * @return a default storage component to be used in the {@link ItemResource#getOrDefault(Supplier, Object)} call used in {@link #getContents()}
-     */
-    public ResourceStorageComponent<T> instantiateContents() {
-        return ResourceStorageComponent.of(size, defaultResource, stackFactory);
-    }
-
     protected ResourceStorageComponent<T> getContents() {
-        return itemContext.getResource().getOrDefault(componentType, instantiateContents());
+        var resource = itemContext.getResource();
+        var component = resource.get(componentType);
+        if (component != null) return component;
+        return ResourceStorageComponent.of(size, defaultResource, stackFactory);
     }
 
     public int modifyContents(ResourceStorageComponent<T> contents, int requestedAmount, int changedAmount, TransactionContext transaction) {
@@ -65,7 +60,7 @@ public abstract class ResourceStorageComponentHandler<T extends IResource> imple
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext context) {
-        Objects.checkIndex(index, size()); // We want to short circuit if someone tries to insert in a different index. This will throw
+        Objects.checkIndex(index, size());
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
 
         ResourceStorageComponent.Mutable<T> contents = getContents().mutable();
@@ -155,31 +150,37 @@ public abstract class ResourceStorageComponentHandler<T extends IResource> imple
 
     @Override
     public T getResource(int index) {
+        Objects.checkIndex(index, size());
         return getContents().get(index).resource();
     }
 
     @Override
     public int getAmount(int index) {
+        Objects.checkIndex(index, size());
         return getContents().get(index).amount();
     }
 
     @Override
     public int getCapacity(int index, T resource) {
+        Objects.checkIndex(index, size());
         return capacity;
     }
 
     @Override
     public boolean isValid(int index, T resource) {
+        Objects.checkIndex(index, size());
         return true;
     }
 
     @Override
     public boolean supportsInsertion(int index) {
+        Objects.checkIndex(index, size());
         return true;
     }
 
     @Override
     public boolean supportsExtraction(int index) {
+        Objects.checkIndex(index, size());
         return true;
     }
 }

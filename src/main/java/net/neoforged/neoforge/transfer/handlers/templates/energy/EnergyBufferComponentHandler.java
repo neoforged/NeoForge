@@ -81,9 +81,11 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
         if (spaceLeft == 0) return 0;
 
         if (amount < spaceLeft) {
-            return setPartial(amount + currentOfOne, transaction) == 1 ? amount : 0;
+            var insertedCount = setPartial(amount + currentOfOne, transaction);
+            return insertedCount == 1 ? amount : 0;
         }
-        return IntMath.saturatedMultiply(setFull(amount / spaceLeft, transaction), spaceLeft);
+        var filledCount = setFull(amount / spaceLeft, transaction);
+        return IntMath.saturatedMultiply(filledCount, spaceLeft);
     }
 
     @Override
@@ -99,14 +101,16 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
         if (currentOfOne == 0) return 0;
 
         if (amount < currentOfOne) {
-            return setPartial(currentOfOne - amount, transaction) == 1 ? amount : 0;
+            var extractedCount = setPartial(currentOfOne - amount, transaction);
+            return extractedCount == 1 ? amount : 0;
         }
 
         //check to see if this can overflow
-        return IntMath.saturatedMultiply(empty(amount / currentOfOne, transaction), currentOfOne);
+        var emptiedCount = setEmpty(amount / currentOfOne, transaction);
+        return IntMath.saturatedMultiply(emptiedCount, currentOfOne);
     }
 
-    private int empty(int count, TransactionContext context) {
+    private int setEmpty(int count, TransactionContext context) {
         ItemResource emptiedContainer = itemContext.getResource().without(componentType);
         return itemContext.exchange(emptiedContainer, count, context);
     }

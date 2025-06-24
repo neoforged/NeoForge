@@ -153,7 +153,7 @@ public interface IResourceStack<T extends IResource> {
     /**
      * Creates a hashcode derived from a resource stack list. This is similar to how vanilla handles ItemStack lists.
      */
-    static <T extends IResourceStack<?>> int hashCode(Iterable<T> stacks) {
+    static <T extends IResourceStack<?>> int hashTypes(Iterable<T> stacks) {
         int i = 0;
         //Like vanilla, the count is omitted in the hash comparison
         for (IResourceStack<?> resourceStack : stacks) {

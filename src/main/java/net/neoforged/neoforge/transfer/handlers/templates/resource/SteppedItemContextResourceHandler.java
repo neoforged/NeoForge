@@ -11,7 +11,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -27,32 +26,32 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-
-        if (!isValid(0, resource) || !isEmpty()) return 0;
-
-        int capacityOfOneItem = getSingleItemAmount();
+        //We don't do partial stepped insertions. It is all or nothing.
         if (amount < capacityOfOneItem) return 0;
 
-        return IntMath.saturatedMultiply(fill(resource, amount / capacityOfOneItem, transaction, capacityOfOneItem), capacityOfOneItem);
+        var resourceStack = getStoredResourceStack();
+        if (!resourceStack.isEmpty() && !resourceStack.resource().equals(resource)) return 0;
+
+        //we only want to fill when we have a valid resource and no existing amount of the resource already
+        //"Stepped" in this case means no values between 0 to capacity.
+        if (!isValid(SINGLE_INDEX, resource) || resourceStack.amount() != 0) return 0;
+
+        var filledStack = ResourceStack.of(resource, this.capacityOfOneItem);
+        var filledCount = set(amount / capacityOfOneItem, filledStack, transaction);
+        return IntMath.saturatedMultiply(filledCount, capacityOfOneItem);
     }
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        //Must have at least 1 item worth of the resource to extract
+        if (amount < capacityOfOneItem) return 0;
 
-        if (isEmpty() || !getResource(0).equals(resource)) return 0;
-
-        int capacityOfOneItem = getSingleItemAmount();
-
-        if (amount <= capacityOfOneItem) return 0;
+        var resourceStack = getStoredResourceStack();
+        if (resourceStack.isEmpty() || !resourceStack.resource().equals(resource)) return 0;
 
         int extractedCount = amount / capacityOfOneItem;
-        int exchanged = empty(extractedCount, transaction);
+        int exchanged = set(extractedCount, defaultStack, transaction);
         return IntMath.saturatedMultiply(exchanged, capacityOfOneItem);
-    }
-
-    protected int fill(T resource, int count, TransactionContext transaction, int capacityOfOneItem) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, ResourceStack.of(resource, capacityOfOneItem));
-        return itemContext.exchange(filledContainer, count, transaction);
     }
 }

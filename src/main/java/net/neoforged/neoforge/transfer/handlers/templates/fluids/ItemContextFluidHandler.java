@@ -32,8 +32,7 @@ public abstract class ItemContextFluidHandler extends ItemContextResourceHandler
             super(itemContext, componentType, singleItemLimit, validator);
         }
 
-        @Override
-        protected int empty(int count, TransactionContext context) {
+        protected int setEmpty(int count, TransactionContext context) {
             return itemContext.extract(itemContext.getResource(), count, context);
         }
     }
@@ -51,8 +50,7 @@ public abstract class ItemContextFluidHandler extends ItemContextResourceHandler
             this.emptyContainer = emptyContainer;
         }
 
-        @Override
-        protected int empty(int count, TransactionContext context) {
+        protected int setEmpty(int count, TransactionContext context) {
             return itemContext.exchange(emptyContainer, count, context);
         }
     }
