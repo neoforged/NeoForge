@@ -115,7 +115,6 @@ public class ResourceContainerContents<T extends IResource> implements TooltipPr
 
     private static <T extends IResource> int findLastNonEmptySlot(List<ResourceStack<T>> list) {
         return IntStream.iterate(list.size() - 1, i -> i >= 0, i -> i - 1).filter(i -> !list.get(i).isEmpty()).findFirst().orElse(NO_SLOT);
-
     }
 
     public List<Index<T>> asSlots() {
