@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -164,6 +_,45 @@
+@@ -164,6 +_,46 @@
          }
      }
  
@@ -33,14 +33,15 @@
 +        }
 +    }
 +
-+    public ItemContainerContents with(int index, ItemStack stack) {
-+        var stacks = new ArrayList<>(this.items);
-+        stacks.set(index, stack);
-+        return fromItems(stacks);
++    public ItemContainerContents with(int size, int index, ItemStack stack) {
++        NonNullList<ItemStack> list = NonNullList.withSize(size, ItemStack.EMPTY);
++        copyInto(list);
++        list.set(index, stack);
++        return fromItems(list);
 +    }
 +
-+    public ItemContainerContents with(int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
-+        return with(index, resource.toStack(amount));
++    public ItemContainerContents with(int size, int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
++        return with(size, index, resource.toStack(amount));
 +    }
 +
      record Slot(int index, ItemStack item) {

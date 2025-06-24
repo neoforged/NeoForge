@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.Objects;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +15,7 @@ import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
@@ -38,23 +38,10 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
     }
 
     public ItemContainerContents getContents() {
+        //If we don't have a container, we should return empty.
         if (itemContext.getAmount() == 0) return ItemContainerContents.EMPTY;
-
-        var resource = itemContext.getResource();
+        ItemResource resource = itemContext.getResource();
         return resource.getOrDefault(componentType, ItemContainerContents.EMPTY);
-    }
-
-    public int set(ItemContainerContents contents, int changedAmount, TransactionContext context, int index, ItemStack stack) {
-        var contextResource = itemContext.getResource();
-
-        // Use the max of the content's size and the handler size to avoid truncating
-        NonNullList<ItemStack> list = NonNullList.withSize(Math.max(contents.getSlots(), size()), ItemStack.EMPTY);
-        contents.copyInto(list);
-        list.set(index, stack);
-        var newStack = contextResource.toStack();
-        newStack.set(componentType, ItemContainerContents.fromItems(list));
-        var exchangedCount = itemContext.exchange(ItemResource.of(newStack), 1, context);
-        return exchangedCount == 1 ? changedAmount : 0;
     }
 
     @Override
@@ -65,14 +52,14 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
     @Override
     public ItemResource getResource(int index) {
         Objects.checkIndex(index, size());
-        var contents = getContents();
+        ItemContainerContents contents = getContents();
         return ItemResource.of(getStackInSlot(contents, index));
     }
 
     @Override
     public int getAmount(int index) {
         Objects.checkIndex(index, size());
-        var contents = getContents();
+        ItemContainerContents contents = getContents();
         return getStackInSlot(contents, index).getCount();
     }
 
@@ -102,6 +89,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
     }
 
     private ItemStack getStackInSlot(ItemContainerContents contents, int index) {
+        //Index bounds has already been checked by this point
         return contents.getSlots() <= index ? ItemStack.EMPTY : contents.getStackInSlot(index);
     }
 
@@ -114,7 +102,7 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
         ItemStack stack = getStackInSlot(contents, index);
 
         if (stack.isEmpty()) {
-            var inserted = Math.min(amount, resource.getMaxStackSize());
+            int inserted = Math.min(amount, resource.getMaxStackSize());
             return set(contents, inserted, context, index, resource.toStack(inserted));
         }
 
@@ -138,5 +126,21 @@ public class ItemContainerContentsResourceHandler implements IResourceHandler<It
         int extracted = Math.min(stack.getCount(), amount);
         stack.shrink(extracted);
         return set(contents, amount, context, index, stack);
+    }
+
+    /**
+     * Handles changing the component out on the context container
+     */
+    @ApiStatus.OverrideOnly
+    protected int set(ItemContainerContents contents, int changedAmount, TransactionContext context, int index, ItemStack stack) {
+        ItemResource contextResource = itemContext.getResource();
+        ItemStack newStack = contextResource.toStack();
+        // Use the max of the content's size and the handler size to avoid truncating
+        int contentSize = Math.max(contents.getSlots(), size());
+        newStack.set(componentType, contents.with(contentSize, index, stack));
+        //using the context, trade out our current container, for the new one.
+        //While it is valid to try to do more than one at a time, we are going to handle just 1 exchange for now.
+        int exchangedCount = itemContext.exchange(ItemResource.of(newStack), 1, context);
+        return exchangedCount == 1 ? changedAmount : 0;
     }
 }

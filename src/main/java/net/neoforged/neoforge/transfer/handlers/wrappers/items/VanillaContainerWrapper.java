@@ -218,6 +218,7 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
 
         @Override
         public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
             int inserted = super.insert(index, resource, amount, transaction);
             if (inserted > 0) {
                 container.onTransfer(this.index, true, transaction);
@@ -226,8 +227,9 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
         }
 
         @Override
-        public int extract(int index, ItemResource variant, int maxAmount, TransactionContext transaction) {
-            int extracted = super.extract(index, variant, maxAmount, transaction);
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+            int extracted = super.extract(index, resource, amount, transaction);
             if (extracted > 0) {
                 container.onTransfer(this.index, false, transaction);
             }

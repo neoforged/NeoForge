@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -65,12 +66,13 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
 
     @Override
     public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         ItemStack currentStack = get();
 
-        if ((!resource.is(currentStack) && !currentStack.isEmpty()) || !canInsert(resource)) return 0;
+        if ((!currentStack.isEmpty() && !resource.is(currentStack)) || !canInsert(resource)) return 0;
 
         int insertedAmount = Math.min(amount, getCapacity(resource) - currentStack.getCount());
-        if (insertedAmount <= 0) return 0;
+        if (insertedAmount == 0) return 0;
 
         updateSnapshots(transaction);
         currentStack = get();
@@ -88,12 +90,13 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
 
     @Override
     public int extract(ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         ItemStack currentStack = get();
 
         if (!resource.is(currentStack) || !canExtract(resource)) return 0;
 
         int extracted = Math.min(currentStack.getCount(), amount);
-        if (extracted <= 0) return 0;
+        if (extracted == 0) return 0;
 
         this.updateSnapshots(transaction);
         currentStack = get();
