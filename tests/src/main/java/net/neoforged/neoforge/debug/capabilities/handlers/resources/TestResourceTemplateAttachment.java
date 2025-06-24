@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.capabilities.handlers.resources;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +33,25 @@ public class TestResourceTemplateAttachment {
             NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("fluids").forGetter(data -> data.fluidHandler.copyToList())).apply(builder, TestResourceTemplateAttachment::new));
 
     public static final AttachmentType.Builder<TestResourceTemplateAttachment> BUILDER = AttachmentType.builder(TestResourceTemplateAttachment::new)
-            .serialize(holderWith(TestResourceTemplateAttachment.MAP_CODEC, TestResourceTemplateAttachment::setHolder));
+            .serialize(new IAttachmentSerializer<>() {
+                @Override
+                public TestResourceTemplateAttachment read(IAttachmentHolder holder, ValueInput input) {
+                    final Optional<TestResourceTemplateAttachment> parsingResult = input.read(TestResourceTemplateAttachment.MAP_CODEC);
+                    TestResourceTemplateAttachment value = parsingResult.orElseThrow(this::buildException);
+                    value.setHolder(holder);
+                    return value;
+                }
+
+                @Override
+                public boolean write(TestResourceTemplateAttachment attachment, ValueOutput output) {
+                    output.store(TestResourceTemplateAttachment.MAP_CODEC, attachment);
+                    return true;
+                }
+
+                private RuntimeException buildException() {
+                    return new IllegalStateException("Unable to read attachment due to an internal codec error.");
+                }
+            });
 
     public ItemStackListHandler itemHandler;
     public ResourceStackListHandler<ItemResource> itemResourceHandler;
@@ -69,27 +86,5 @@ public class TestResourceTemplateAttachment {
         if (holder instanceof BlockEntity be) {
             blockEntity = be;
         }
-    }
-
-    public static <T> IAttachmentSerializer<T> holderWith(MapCodec<T> codec, BiConsumer<T, IAttachmentHolder> setter) {
-        return new IAttachmentSerializer<>() {
-            @Override
-            public T read(IAttachmentHolder holder, ValueInput input) {
-                final Optional<T> parsingResult = input.read(codec);
-                var value = parsingResult.orElseThrow(() -> buildException("read"));
-                setter.accept(value, holder);
-                return value;
-            }
-
-            @Override
-            public boolean write(T attachment, ValueOutput output) {
-                output.store(codec, attachment);
-                return true;
-            }
-
-            private RuntimeException buildException(final String operation) {
-                return new IllegalStateException("Unable to " + operation + " attachment due to an internal codec error.");
-            }
-        };
     }
 }

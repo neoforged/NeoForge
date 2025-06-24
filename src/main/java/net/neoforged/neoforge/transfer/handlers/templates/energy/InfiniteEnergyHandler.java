@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -16,7 +15,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * <b>Note</b> This does not auto eject by just having this as your capability, this is just a buffer.
  */
-public final class InfiniteEnergyHandler implements ISingleEnergyHandler {
+public final class InfiniteEnergyHandler implements IEnergyHandler {
     public static final IEnergyHandler INSTANCE = new InfiniteEnergyHandler();
 
     @Override

@@ -169,7 +169,7 @@ public final class CauldronFluidContent {
 
         BLOCK_TO_CAULDRON.put(block, data);
         FLUID_TO_CAULDRON.put(fluid, data);
-        largestValue = org.joml.Math.max(totalAmount, largestValue);
+        largestValue = Math.max(totalAmount, largestValue);
     }
 
     @ApiStatus.Internal

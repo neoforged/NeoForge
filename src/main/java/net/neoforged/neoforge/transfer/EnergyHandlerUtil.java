@@ -30,7 +30,7 @@ public final class EnergyHandlerUtil {
     public static boolean checkEnergy(int amount) {
         if (amount < 0) {
             CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Energy amount was negative");
-            report.addCategory("EnergyHandlerUtil#isEmpty")
+            report.addCategory("EnergyHandler")
                     .setDetail("Amount", amount);
             throw new ReportedException(report);
         }

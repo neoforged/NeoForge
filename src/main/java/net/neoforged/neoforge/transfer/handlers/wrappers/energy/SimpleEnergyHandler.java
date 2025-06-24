@@ -27,48 +27,28 @@ public final class SimpleEnergyHandler {
         this.handler = handler;
     }
 
-    public int size() {
-        return handler.size();
+    public int getAmount() {
+        return handler.getAmount();
     }
 
-    public int getAmount(int index) {
-        return handler.getAmount(index);
+    public long getAmountAsLong() {
+        return handler.getAmountAsLong();
     }
 
-    public long getAmountAsLong(int index) {
-        return handler.getAmountAsLong(index);
+    public int getCapacity() {
+        return handler.getCapacity();
     }
 
-    public int getCapacity(int index) {
-        return handler.getCapacity(index);
-    }
-
-    public long getCapacityAsLong(int index) {
-        return handler.getCapacityAsLong(index);
-    }
-
-    public boolean supportsInsertion(int index) {
-        return handler.supportsInsertion(index);
+    public long getCapacityAsLong() {
+        return handler.getCapacityAsLong();
     }
 
     public boolean supportsInsertion() {
         return handler.supportsInsertion();
     }
 
-    public boolean supportsExtraction(int index) {
-        return handler.supportsExtraction(index);
-    }
-
     public boolean supportsExtraction() {
         return handler.supportsExtraction();
-    }
-
-    public int insert(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
-            int inserted = handler.insert(index, amount, transaction);
-            actionType.commit(transaction);
-            return inserted;
-        }
     }
 
     public int insert(int amount, TransferAction actionType) {
@@ -76,14 +56,6 @@ public final class SimpleEnergyHandler {
             int inserted = handler.insert(amount, transaction);
             actionType.commit(transaction);
             return inserted;
-        }
-    }
-
-    public int extract(int index, int amount, TransferAction actionType) {
-        try (Transaction transaction = TransactionManager.open(null)) {
-            int extracted = handler.extract(index, amount, transaction);
-            actionType.commit(transaction);
-            return extracted;
         }
     }
 

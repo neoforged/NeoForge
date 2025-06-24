@@ -84,7 +84,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
 
         FluidResource fluid = getResource(0);
         if (!resource.isEmpty() && !fluid.isEmpty() && !resource.equals(fluid)) return 0;
-        return IntMath.saturatedMultiply(FluidType.BUCKET_VOLUME, itemContext.getAmount());
+        return (long) FluidType.BUCKET_VOLUME * itemContext.getAmount();
     }
 
     //These are hints to consumers, but given these are on items, the hints are less valuable to be fully stateless

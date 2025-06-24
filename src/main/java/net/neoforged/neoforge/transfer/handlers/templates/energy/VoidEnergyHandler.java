@@ -7,14 +7,13 @@ package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
-import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A buffer of energy that accepts any and all energy inserted into it, but never has an extractable amount.
  * If you need custom behaviour, then a new implementation is required rather than extending {@link VoidEnergyHandler}
  */
-public final class VoidEnergyHandler implements ISingleEnergyHandler {
+public final class VoidEnergyHandler implements IEnergyHandler {
     public static final IEnergyHandler INSTANCE = new VoidEnergyHandler();
 
     @Override
@@ -53,13 +52,6 @@ public final class VoidEnergyHandler implements ISingleEnergyHandler {
     @Override
     public int extract(int amount, TransactionContext transaction) {
         EnergyHandlerUtil.checkEnergy(amount);
-        return 0;
-    }
-
-    // Overriding this from ISingleEnergyHandler is not advised given it is intended to be of size 1,
-    //  however, this makes the implementation of this class simpler
-    @Override
-    public int size() {
         return 0;
     }
 

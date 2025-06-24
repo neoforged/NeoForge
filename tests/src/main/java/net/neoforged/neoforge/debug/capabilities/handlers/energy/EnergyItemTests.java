@@ -36,7 +36,7 @@ public class EnergyItemTests {
         assert energy != null;
         var current = energy.getAmount();
 
-        EnergyBufferAttachment.builder(0, 1000).build();
+        EnergyBufferAttachment.builder(1000).build();
 
         int storedMax = EnergyTestsSetup.MAX_CAPACITY;
         helper.assertValueEqual(current, storedMax, "Default stored energy should be equal to the max capacity.");

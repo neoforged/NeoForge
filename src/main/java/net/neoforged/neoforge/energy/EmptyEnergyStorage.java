@@ -61,29 +61,20 @@ public final class EmptyEnergyStorage implements IEnergyStorage, IEnergyHandler 
         return false;
     }
 
+    //EnergyHandler temporary implementation
     @Override
-    public int size() {
-        return EmptyEnergyHandler.INSTANCE.size();
+    public int getAmount() {
+        return EmptyEnergyHandler.INSTANCE.getAmount();
     }
 
     @Override
-    public int getAmount(int index) {
-        return EmptyEnergyHandler.INSTANCE.getAmount(index);
-    }
-
-    @Override
-    public int getCapacity(int index) {
-        return EmptyEnergyHandler.INSTANCE.getCapacity(index);
+    public int getCapacity() {
+        return EmptyEnergyHandler.INSTANCE.getCapacity();
     }
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
         return EmptyEnergyHandler.INSTANCE.insert(amount, transaction);
-    }
-
-    @Override
-    public int extract(int index, int amount, TransactionContext transaction) {
-        return EmptyEnergyHandler.INSTANCE.extract(index, amount, transaction);
     }
 
     @Override
@@ -97,22 +88,7 @@ public final class EmptyEnergyStorage implements IEnergyStorage, IEnergyHandler 
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
-        return EmptyEnergyHandler.INSTANCE.supportsInsertion(index);
-    }
-
-    @Override
     public boolean supportsExtraction() {
         return EmptyEnergyHandler.INSTANCE.supportsExtraction();
-    }
-
-    @Override
-    public boolean supportsExtraction(int index) {
-        return EmptyEnergyHandler.INSTANCE.supportsExtraction(index);
-    }
-
-    @Override
-    public int insert(int index, int amount, TransactionContext transaction) {
-        return EmptyEnergyHandler.INSTANCE.insert(index, amount, transaction);
     }
 }

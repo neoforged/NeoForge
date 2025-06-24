@@ -13,7 +13,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.energy.ISingleEnergyHandler;
+import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * }
  * </pre>
  */
-public final class EnergyBufferComponentHandler implements ISingleEnergyHandler {
+public final class EnergyBufferComponentHandler implements IEnergyHandler {
     private final IItemContext itemContext;
     private final DataComponentType<Integer> componentType;
 
@@ -64,50 +64,46 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     private int getIndividualAmount() {
-        return this.itemContext.getResource().getOrDefault(componentType, 0);
+        return itemContext.getResource().getOrDefault(componentType, 0);
     }
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        if (maxInsert == 0) return 0;
         if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        if (maxInsert == 0) return 0;
+        if (itemContext.getAmount() == 0) return 0;
 
-        int stackedAmount = maxInsert * itemContext.getAmount();
-        //handle overflow
-        if (stackedAmount < 0) stackedAmount = Integer.MAX_VALUE;
+        int stackedAmount = IntMath.saturatedMultiply(maxInsert, itemContext.getAmount());
+        amount = Math.min(amount, stackedAmount);
 
-        amount = Mth.clamp(amount, 0, stackedAmount);
-
-        int containerFill = getIndividualAmount();
-        int spaceLeft = this.capacityOfOneItem - containerFill;
+        int currentOfOne = getIndividualAmount();
+        int spaceLeft = capacityOfOneItem - currentOfOne;
         if (spaceLeft == 0) return 0;
 
         if (amount < spaceLeft) {
-            return setPartial(amount + containerFill, transaction) == 1 ? amount : 0;
+            return setPartial(amount + currentOfOne, transaction) == 1 ? amount : 0;
         }
         return IntMath.saturatedMultiply(setFull(amount / spaceLeft, transaction), spaceLeft);
     }
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (maxExtract == 0) return 0;
         if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        if (maxExtract == 0) return 0;
+        if (itemContext.getAmount() == 0) return 0;
 
-        int rawStackExtract = this.maxExtract * this.itemContext.getAmount();
-        if (rawStackExtract < 0) rawStackExtract = Integer.MAX_VALUE;
+        int stackedAmount = IntMath.saturatedMultiply(maxExtract, itemContext.getAmount());
+        amount = Math.min(amount, stackedAmount);
 
-        int clampedValue = Mth.clamp(amount, 0, rawStackExtract);
-        if (clampedValue <= 0) return 0;
+        int currentOfOne = getIndividualAmount();
+        if (currentOfOne == 0) return 0;
 
-        int containerFill = getIndividualAmount();
-        if (containerFill == 0) return 0;
-
-        if (clampedValue < containerFill) {
-            return setPartial(containerFill - clampedValue, transaction) == 1 ? clampedValue : 0;
+        if (amount < currentOfOne) {
+            return setPartial(currentOfOne - amount, transaction) == 1 ? amount : 0;
         }
 
         //check to see if this can overflow
-        return IntMath.saturatedMultiply(empty(clampedValue / containerFill, transaction), containerFill);
+        return IntMath.saturatedMultiply(empty(amount / currentOfOne, transaction), currentOfOne);
     }
 
     private int empty(int count, TransactionContext context) {
@@ -116,7 +112,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     private int setFull(int count, TransactionContext context) {
-        ItemResource filledContainer = itemContext.getResource().with(componentType, this.capacityOfOneItem);
+        ItemResource filledContainer = itemContext.getResource().with(componentType, capacityOfOneItem);
         return itemContext.exchange(filledContainer, count, context);
     }
 
@@ -128,7 +124,13 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     @Override
     public int getAmount() {
         int rawEnergy = getIndividualAmount();
-        return IntMath.saturatedMultiply(Mth.clamp(rawEnergy, 0, this.capacityOfOneItem), this.itemContext.getAmount());
+        return IntMath.saturatedMultiply(Math.min(rawEnergy, capacityOfOneItem), itemContext.getAmount());
+    }
+
+    @Override
+    public long getAmountAsLong() {
+        int currentOfOne = getIndividualAmount();
+        return (long) Math.min(currentOfOne, capacityOfOneItem) * itemContext.getAmount();
     }
 
     @Override
@@ -137,13 +139,18 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
     }
 
     @Override
+    public long getCapacityAsLong() {
+        return (long) capacityOfOneItem * itemContext.getAmount();
+    }
+
+    @Override
     public boolean supportsInsertion() {
-        return this.maxInsert > 0;
+        return maxInsert > 0;
     }
 
     @Override
     public boolean supportsExtraction() {
-        return this.maxExtract > 0;
+        return maxExtract > 0;
     }
 
     /**
@@ -174,16 +181,16 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         }
 
         /**
-         * @param capacity How much energy each sub-buffer can hold.
+         * @param capacity How much energy the buffer can hold.
          */
-        public Builder capacity(int capacity) {
+        private Builder capacity(int capacity) {
             if (capacity < 0) throw new IllegalArgumentException("capacity must be non-negative");
             this.capacity = capacity;
             return this;
         }
 
         /**
-         * @param rate How much energy the buffer can insert in a single call.
+         * @param rate How much energy can be inserted in a single call.
          */
         public Builder maxInsertRate(int rate) {
             if (maxInsertRate < 0) throw new IllegalArgumentException("maxInsertRate must be non-negative");
@@ -192,7 +199,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         }
 
         /**
-         * @param rate How much energy the buffer can extract in a single call.
+         * @param rate How much energy can be extracted in a single call.
          */
         public Builder maxExtractRate(int rate) {
             if (maxExtractRate < 0) throw new IllegalArgumentException("maxExtractRate must be non-negative");
@@ -201,7 +208,7 @@ public final class EnergyBufferComponentHandler implements ISingleEnergyHandler 
         }
 
         /**
-         * @param rate How much energy the buffer can insert or extract in a single call.
+         * @param rate How much energy can be inserted or extracted in a single call.
          */
         public Builder maxTransferRate(int rate) {
             return maxExtractRate(rate).maxInsertRate(rate);
