@@ -6,8 +6,6 @@
 package net.neoforged.neoforge.registries;
 
 import java.util.Map;
-import java.util.Objects;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
