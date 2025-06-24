@@ -293,18 +293,19 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * Adds an alias that maps from the name specified by <code>from</code> to the name specified by <code>to</code>.
+     * Adds an alias that maps from <code>alias</code> to <code>registeredName</code>.
      * <p>
-     * Any registry lookups that target the first name will resolve as the second name, if the first name is not present.
+     * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
+     * unless an object with <code>alias</code> is present in the registry
      *
-     * @param from The source registry name to alias from.
-     * @param to   The target registry name to alias to.
+     * @param alias          The original name of the registry object
+     * @param registeredName The new name of the registry object
      */
-    public void addAlias(ResourceLocation from, ResourceLocation to) {
+    public void addAlias(ResourceLocation alias, ResourceLocation registeredName) {
         if (seenRegisterEvent)
             throw new IllegalStateException("Cannot add aliases to DeferredRegister after RegisterEvent has been fired.");
 
-        this.aliases.put(from, to);
+        this.aliases.put(alias, registeredName);
     }
 
     /**
