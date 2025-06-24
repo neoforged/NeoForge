@@ -135,15 +135,16 @@ public class NetworkRegistry {
     /**
      * Registers a new payload.
      * 
-     * @param <T>       The class of the payload.
-     * @param <B>       The class of the ByteBuf. Only {@link ConnectionProtocol#PLAY play} payloads may use {@link RegistryFriendlyByteBuf}.
-     * @param type      The type of the payload.
-     * @param codec     The codec for the payload.
-     * @param handler   The handler for the payload. This handler should expect to receive the payload on all declared protocols and flows. It will be executed on the network thread.
-     * @param protocols The protocols this payload supports being sent over. Only {@link ConnectionProtocol#CONFIGURATION configuration} and {@link ConnectionProtocol#PLAY play} are supported.
-     * @param flow      The flow of this payload. Specify {@link Optional#empty()} to support sending in both directions.
-     * @param version   The version of the payload. Increase the payload version if the codec logic or handler logic changes. Neo-Neo connections with mismatched versions are denied.
-     * @param optional  If the payload is optional. Any connection with missing non-optional payloads is denied.
+     * @param <T>           The class of the payload.
+     * @param <B>           The class of the ByteBuf. Only {@link ConnectionProtocol#PLAY play} payloads may use {@link RegistryFriendlyByteBuf}.
+     * @param type          The type of the payload.
+     * @param codec         The codec for the payload.
+     * @param serverHandler The server-side handler for the payload. This handler will be executed on the network thread.
+     * @param clientHandler The client-side handler for the payload. This handler will be executed on the network thread.
+     * @param protocols     The protocols this payload supports being sent over. Only {@link ConnectionProtocol#CONFIGURATION configuration} and {@link ConnectionProtocol#PLAY play} are supported.
+     * @param flow          The flow of this payload. Specify {@link Optional#empty()} to support sending in both directions.
+     * @param version       The version of the payload. Increase the payload version if the codec logic or handler logic changes. Neo-Neo connections with mismatched versions are denied.
+     * @param optional      If the payload is optional. Any connection with missing non-optional payloads is denied.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T extends CustomPacketPayload, B extends FriendlyByteBuf> void register(
@@ -335,9 +336,8 @@ public class NetworkRegistry {
      * <p>
      * Invoked on the network thread.
      *
-     * @param listener      The listener which completed the negotiation.
-     * @param configuration The configuration channels that the client has available.
-     * @param play          The play channels that the client has available.
+     * @param listener       The listener which completed the negotiation.
+     * @param clientChannels The network channels that the client has available.
      */
     public static void initializeNeoForgeConnection(ServerConfigurationPacketListener listener, Map<ConnectionProtocol, Set<ModdedNetworkQueryComponent>> clientChannels) {
         ChannelAttributes.setPayloadSetup(listener.getConnection(), NetworkPayloadSetup.empty());
@@ -680,7 +680,7 @@ public class NetworkRegistry {
      * <p>
      * Updates the ad-hoc channels to prepare for the game phase by removing the initial channels and building a new list based on the connection type.
      * 
-     * @param listener
+     * @param listener The packet listener finishing the configuration phase
      */
     public static void onConfigurationFinished(ICommonPacketListener listener) {
         NetworkPayloadSetup setup = ChannelAttributes.getPayloadSetup(listener.getConnection());

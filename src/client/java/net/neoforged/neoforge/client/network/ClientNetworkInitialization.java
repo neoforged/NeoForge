@@ -26,7 +26,7 @@ import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
 public final class ClientNetworkInitialization {
     private ClientNetworkInitialization() {}
 
