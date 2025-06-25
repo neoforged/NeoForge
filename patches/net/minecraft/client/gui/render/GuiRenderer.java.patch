@@ -1,0 +1,85 @@
+--- a/net/minecraft/client/gui/render/GuiRenderer.java
++++ b/net/minecraft/client/gui/render/GuiRenderer.java
+@@ -105,7 +_,8 @@
+     private final CachedOrthoProjectionMatrixBuffer guiProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("gui", 1000.0F, 11000.0F, true);
+     private final CachedOrthoProjectionMatrixBuffer itemsProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("items", -1000.0F, 1000.0F, true);
+     private final MultiBufferSource.BufferSource bufferSource;
+-    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
++    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
++    private final List<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new ArrayList<>();
+     @Nullable
+     private GpuTexture itemsAtlas;
+     @Nullable
+@@ -127,16 +_,10 @@
+     @Nullable
+     private BufferBuilder bufferBuilder = null;
+ 
+-    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<PictureInPictureRenderer<?>> p_415849_) {
++    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories) {
+         this.renderState = p_416418_;
+         this.bufferSource = p_415673_;
+-        Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = ImmutableMap.builder();
+-
+-        for (PictureInPictureRenderer<?> pictureinpicturerenderer : p_415849_) {
+-            builder.put((Class<? extends PictureInPictureRenderState>)pictureinpicturerenderer.getRenderStateClass(), pictureinpicturerenderer);
+-        }
+-
+-        this.pictureInPictureRenderers = builder.buildOrThrow();
++        this.pictureInPictureRendererPools = net.neoforged.neoforge.client.gui.PictureInPictureRendererPool.createPools(p_415673_, pipRendererFactories);
+     }
+ 
+     public void incrementFrameNumber() {
+@@ -156,6 +_,7 @@
+         this.renderState.reset();
+         this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
+         this.clearUnusedOversizedItemRenderers();
++        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::clearUnusedRenderers);
+     }
+ 
+     private void clearUnusedOversizedItemRenderers() {
+@@ -413,14 +_,33 @@
+ 
+     private void preparePictureInPicture() {
+         int i = Minecraft.getInstance().getWindow().getGuiScale();
+-        this.renderState.forEachPictureInPicture(p_417621_ -> this.preparePictureInPictureState(p_417621_, i));
++        pictureInPictureRenderStatesScratch.clear();
++        this.renderState.forEachPictureInPicture(pictureInPictureRenderStatesScratch::add);
++        for (int k = 0; k < pictureInPictureRenderStatesScratch.size(); k++) {
++            var state = pictureInPictureRenderStatesScratch.get(k);
++            if (preparePictureInPictureState(state, i,false)) {
++                pictureInPictureRenderStatesScratch.set(k, null); // Mark as done
++            }
++        }
++        for (var state : pictureInPictureRenderStatesScratch) {
++            if (state != null) {
++                preparePictureInPictureState(state, i, true);
++            }
++        }
++        pictureInPictureRenderStatesScratch.clear();
+     }
+ 
+-    private <T extends PictureInPictureRenderState> void preparePictureInPictureState(T p_415554_, int p_415565_) {
+-        PictureInPictureRenderer<T> pictureinpicturerenderer = (PictureInPictureRenderer<T>)this.pictureInPictureRenderers.get(p_415554_.getClass());
++    private <T extends PictureInPictureRenderState> boolean preparePictureInPictureState(T p_415554_, int p_415565_, boolean firstPass) {
++        var pool = (net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<T>)this.pictureInPictureRendererPools.get(p_415554_.getClass());
++        if (pool == null) {
++            return false;
++        }
++        PictureInPictureRenderer<T> pictureinpicturerenderer = pool.get(p_415554_, p_415565_, firstPass);
+         if (pictureinpicturerenderer != null) {
+             pictureinpicturerenderer.prepare(p_415554_, this.renderState, p_415565_);
++            return true;
+         }
++        return false;
+     }
+ 
+     private void renderItemToAtlas(ItemStackRenderState p_416159_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
+@@ -691,7 +_,7 @@
+             this.itemsAtlasDepthView.close();
+         }
+ 
+-        this.pictureInPictureRenderers.values().forEach(PictureInPictureRenderer::close);
++        this.pictureInPictureRendererPools.values().forEach(net.neoforged.neoforge.client.gui.PictureInPictureRendererPool::close);
+         this.guiProjectionMatrixBuffer.close();
+         this.itemsProjectionMatrixBuffer.close();
+ 
