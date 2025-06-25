@@ -6,7 +6,7 @@
      private final MultiBufferSource.BufferSource bufferSource;
 -    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
 +    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
-+    private final List<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new ArrayList<>();
++    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
      @Nullable
      private GpuTexture itemsAtlas;
      @Nullable
@@ -37,25 +37,23 @@
      }
  
      private void clearUnusedOversizedItemRenderers() {
-@@ -413,14 +_,33 @@
+@@ -413,14 +_,31 @@
  
      private void preparePictureInPicture() {
          int i = Minecraft.getInstance().getWindow().getGuiScale();
 -        this.renderState.forEachPictureInPicture(p_417621_ -> this.preparePictureInPictureState(p_417621_, i));
-+        pictureInPictureRenderStatesScratch.clear();
-+        this.renderState.forEachPictureInPicture(pictureInPictureRenderStatesScratch::add);
-+        for (int k = 0; k < pictureInPictureRenderStatesScratch.size(); k++) {
-+            var state = pictureInPictureRenderStatesScratch.get(k);
-+            if (preparePictureInPictureState(state, i,false)) {
-+                pictureInPictureRenderStatesScratch.set(k, null); // Mark as done
++        this.pictureInPictureRenderStatesScratch.clear();
++        this.renderState.forEachPictureInPicture(state -> {
++            if (this.preparePictureInPictureState(state, i, true)) {
++                this.pictureInPictureRenderStatesScratch.add(state);
 +            }
-+        }
-+        for (var state : pictureInPictureRenderStatesScratch) {
-+            if (state != null) {
-+                preparePictureInPictureState(state, i, true);
++        });
++        this.renderState.forEachPictureInPicture(state -> {
++            if (this.pictureInPictureRenderStatesScratch.add(state)) {
++                this.preparePictureInPictureState(state, i, false);
 +            }
-+        }
-+        pictureInPictureRenderStatesScratch.clear();
++        });
++        this.pictureInPictureRenderStatesScratch.clear();
      }
  
 -    private <T extends PictureInPictureRenderState> void preparePictureInPictureState(T p_415554_, int p_415565_) {
