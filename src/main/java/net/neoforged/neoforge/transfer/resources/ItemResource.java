@@ -69,7 +69,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
-    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.of(EMPTY, 0);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -241,7 +241,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     public ResourceStack<ItemResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK;
-        return ResourceStack.of(this, amount);
+        return ResourceStack.of(this, amount, ItemResource.EMPTY_STACK);
     }
 
     @Override

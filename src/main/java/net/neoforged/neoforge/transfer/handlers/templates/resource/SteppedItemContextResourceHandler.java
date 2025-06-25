@@ -20,7 +20,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
     }
 
     public SteppedItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStep, int capacityOfOneItem, Predicate<T> validator) {
-        super(itemContext, componentType, defaultStep, capacityOfOneItem, validator);
+        super(itemContext, componentType, defaultStep, capacityOfOneItem);
     }
 
     @Override
@@ -36,7 +36,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
         //"Stepped" in this case means no values between 0 to capacity.
         if (!isValid(SINGLE_INDEX, resource) || resourceStack.amount() != 0) return 0;
 
-        var filledStack = ResourceStack.of(resource, this.capacityOfOneItem);
+        var filledStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
         var filledCount = set(amount / capacityOfOneItem, filledStack, transaction);
         return IntMath.saturatedMultiply(filledCount, capacityOfOneItem);
     }
@@ -51,7 +51,7 @@ public abstract class SteppedItemContextResourceHandler<T extends IResource> ext
         if (resourceStack.isEmpty() || !resourceStack.resource().equals(resource)) return 0;
 
         int extractedCount = amount / capacityOfOneItem;
-        int exchanged = set(extractedCount, defaultStack, transaction);
+        int exchanged = set(extractedCount, emptyStack, transaction);
         return IntMath.saturatedMultiply(exchanged, capacityOfOneItem);
     }
 }

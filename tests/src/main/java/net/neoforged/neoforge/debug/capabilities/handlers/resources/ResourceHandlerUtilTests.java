@@ -16,7 +16,6 @@ import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandle
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -39,7 +38,7 @@ public class ResourceHandlerUtilTests {
         var inputHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.NORTH); //[0,10)
         var outputHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, dst, Direction.SOUTH);//[11,20)
 
-        var workingStack = ResourceStack.of(ItemResource.of(Blocks.COBBLESTONE), 5000);
+        var workingStack = ItemResource.of(Blocks.COBBLESTONE).withAmount(5000);
         helper.assertTrue(ResourceHandlerUtil.isEmpty(srcHandler), "The inv was not empty");
         helper.assertFalse(ResourceHandlerUtil.isFull(srcHandler), "The inv should be empty");
         try (var transaction = TransactionManager.open(null)) {

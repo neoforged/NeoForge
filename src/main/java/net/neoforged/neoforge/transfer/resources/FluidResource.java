@@ -65,7 +65,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
-    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.of(FluidResource.EMPTY, 0);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.constructEmptyReference(FluidResource.EMPTY);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -251,7 +251,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     public ResourceStack<FluidResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
-        return ResourceStack.of(this, amount);
+        return ResourceStack.of(this, amount, FluidResource.EMPTY_STACK);
     }
 
     @Override

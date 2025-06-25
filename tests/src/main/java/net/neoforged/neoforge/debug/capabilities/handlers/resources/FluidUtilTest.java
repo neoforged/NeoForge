@@ -102,7 +102,7 @@ public class FluidUtilTest {
     private static void handlerInteractionWithItem(ExtendedGameTestHelper helper) {
         var pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
         var player = helper.makeMockPlayer();
-        var waterOf1BucketAmount = ResourceStack.of(Fluids.WATER.getDefaultResource(), FluidType.BUCKET_VOLUME);
+        var waterOf1BucketAmount = FluidResource.of(Fluids.WATER).withAmount(FluidType.BUCKET_VOLUME);
 
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, pos, null);
 

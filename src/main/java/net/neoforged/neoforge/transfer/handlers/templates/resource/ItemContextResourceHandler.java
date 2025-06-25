@@ -20,24 +20,24 @@ import org.jetbrains.annotations.ApiStatus;
 public abstract class ItemContextResourceHandler<T extends IResource> implements ISingleResourceHandler<T> {
     protected final IItemContext itemContext;
     protected final DataComponentType<ResourceStack<T>> componentType;
-    protected final ResourceStack<T> defaultStack;
+    protected final ResourceStack<T> emptyStack;
     protected final int capacityOfOneItem;
     protected final Predicate<T> validator;
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStack, int capacityOfOneItem) {
-        this(itemContext, componentType, defaultStack, capacityOfOneItem, r -> true);
+    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> emptyStack, int capacityOfOneItem) {
+        this(itemContext, componentType, emptyStack, capacityOfOneItem, r -> true);
     }
 
-    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> defaultStack, int capacityOfOneItem, Predicate<T> validator) {
+    public ItemContextResourceHandler(IItemContext itemContext, DataComponentType<ResourceStack<T>> componentType, ResourceStack<T> emptyStack, int capacityOfOneItem, Predicate<T> validator) {
         this.itemContext = itemContext;
         this.componentType = componentType;
-        this.defaultStack = defaultStack;
+        this.emptyStack = emptyStack;
         this.capacityOfOneItem = capacityOfOneItem;
         this.validator = validator;
     }
 
     protected final ResourceStack<T> getStoredResourceStack() {
-        return itemContext.getResource().getOrDefault(componentType, defaultStack);
+        return itemContext.getResource().getOrDefault(componentType, emptyStack);
     }
 
     /**
@@ -107,11 +107,11 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
 
         if (resourceStack.isEmpty()) {
             if (amount < capacityOfOneItem) {
-                var partiallyFilledStack = ResourceStack.of(resource, amount);
+                var partiallyFilledStack = ResourceStack.of(resource, amount, emptyStack);
                 int insertedCount = set(1, partiallyFilledStack, transaction);
                 return insertedCount == 1 ? amount : 0;
             }
-            var filledStack = ResourceStack.of(resource, capacityOfOneItem);
+            var filledStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
             int filledCount = set(amount / capacityOfOneItem, filledStack, transaction);
             return IntMath.saturatedMultiply(filledCount, capacityOfOneItem);
         }
@@ -123,12 +123,12 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         if (spaceLeft == 0) return 0;
 
         if (amount < spaceLeft) {
-            var partiallyFilledStack = ResourceStack.of(resource, amount + containerFill);
+            var partiallyFilledStack = ResourceStack.of(resource, amount + containerFill, emptyStack);
             int insertedCount = set(1, partiallyFilledStack, transaction);
             return insertedCount == 1 ? amount : 0;
         }
 
-        var filledStack = ResourceStack.of(resource, capacityOfOneItem);
+        var filledStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
         int filledCount = set(amount / spaceLeft, filledStack, transaction);
         return IntMath.saturatedMultiply(filledCount, spaceLeft);
     }
@@ -143,13 +143,13 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
             return 0;
 
         if (amount < resourceStack.amount()) {
-            var resultStack = ResourceStack.of(resource, resourceStack.amount() - amount);
+            var resultStack = ResourceStack.of(resource, resourceStack.amount() - amount, emptyStack);
             int extractedCount = set(1, resultStack, transaction);
             return extractedCount == 1 ? amount : 0;
         }
 
         int extractedCount = amount / resourceStack.amount();
-        int exchanged = set(extractedCount, defaultStack, transaction);
+        int exchanged = set(extractedCount, emptyStack, transaction);
         return IntMath.saturatedMultiply(exchanged, resourceStack.amount());
     }
 

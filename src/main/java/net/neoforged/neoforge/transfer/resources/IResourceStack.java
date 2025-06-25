@@ -43,26 +43,28 @@ public interface IResourceStack<T extends IResource> {
      * @param <R>           the resource type
      * @return a codec for a resource stack
      */
-    static <R extends IResource, S extends IResourceStack<R>> Codec<S> codec(Codec<R> resourceCodec, IStackFactory<R, S> factory) {
+    static <R extends IResource> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec, IStackFactory<R, ResourceStack<R>> factory) {
         return RecordCodecBuilder.create(instance -> instance.group(
-                resourceCodec.fieldOf("resource").forGetter(IResourceStack<R>::resource),
-                NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1)
-                        .forGetter(IResourceStack<R>::amount))
+                resourceCodec.fieldOf("resource").forGetter(ResourceStack<R>::resource),
+                NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1).forGetter(ResourceStack<R>::amount))
                 .apply(instance, factory));
     }
 
     /**
      * Creates a standard stream codec for a IResourceStack implementer of the specified resource type.
      */
-    static <B extends FriendlyByteBuf, R extends IResource, S extends IResourceStack<R>> StreamCodec<B, S> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, S> factory) {
+    static <B extends FriendlyByteBuf, R extends IResource, S extends ResourceStack<R>> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, ResourceStack<R>> factory) {
         return StreamCodec.composite(
-                resourceCodec, IResourceStack::resource,
-                ByteBufCodecs.VAR_INT, IResourceStack::amount,
+                resourceCodec, ResourceStack::resource,
+                ByteBufCodecs.VAR_INT, ResourceStack::amount,
                 factory);
     }
 
     /**
      * Ensures the resource is not null and the amount is non-negative, throws otherwise.
+     *
+     * @throws NullPointerException     When resource is null
+     * @throws IllegalArgumentException When amount is negative
      */
     static void validate(IResource resource, int amount) {
         Objects.requireNonNull(resource, "Resource must not be null");
@@ -93,10 +95,21 @@ public interface IResourceStack<T extends IResource> {
         return !(resource() instanceof IRegisteredResource<?> reg) || reg.isEnabled(enabledFeatures);
     }
 
+    /**
+     * {@return a new resource stack with the specified amount.} It is recommended that if you were to pass 0,
+     * This will not return the EMPTY instance since the resource stack has no way to grab that information
+     */
     IResourceStack<T> withAmount(int newAmount);
 
+    /**
+     * {@return a new resource stack with the specified amount removed from the current stack.}
+     * you use the respective EMPTY instance instead of the result this would have returned;
+     */
     IResourceStack<T> shrink(int amount);
 
+    /**
+     * {@return a new resource stack with the specified amount added to the current stack.}
+     */
     IResourceStack<T> grow(int amount);
 
     IResourceStack<T> with(UnaryOperator<T> operator);

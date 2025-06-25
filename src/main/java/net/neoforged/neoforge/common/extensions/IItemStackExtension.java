@@ -401,7 +401,7 @@ public interface IItemStackExtension {
      * @return An immutable {@link ResourceStack} with the current count.
      */
     default ResourceStack<ItemResource> immutable() {
-        return ResourceStack.of(ItemResource.of(self()).withAmount(self().getCount()));
+        return ItemResource.of(self()).withAmount(self().getCount());
     }
 
     /**

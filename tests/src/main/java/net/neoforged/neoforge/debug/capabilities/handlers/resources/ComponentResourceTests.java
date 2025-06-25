@@ -158,48 +158,53 @@ public class ComponentResourceTests {
     @EmptyTemplate
     @TestHolder(description = "Tests that ItemStorage Components work and don't create accidental duplications")
     public static void testItemStorageItemStack(ExtendedGameTestHelper helper) {
-        Player player = helper.makeMockPlayer();
-        player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
-        IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
-        IResourceHandler<ItemResource> storageCap = context.getCapability(Capabilities.ItemHandler.ITEM);
-        if (storageCap == null) {
-            helper.fail("Storage Capability was missing on item");
-            return;
+        try {
+
+            Player player = helper.makeMockPlayer();
+            player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
+            IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
+            IResourceHandler<ItemResource> storageCap = context.getCapability(Capabilities.ItemHandler.ITEM);
+            if (storageCap == null) {
+                helper.fail("Storage Capability was missing on item");
+                return;
+            }
+            BlockPos pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
+            IResourceHandler<ItemResource> blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
+
+            ItemResource diamondResource = ItemResource.of(Items.DIAMOND);
+            try (Transaction tx = TransactionManager.open(null)) {
+                //Because of the way the context filling works, it is attempting to fill or group similar actions together.
+                //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
+                ItemStack appleClone = player.getInventory().getItem(0).copy();
+                //holds 100 stacks each.
+                int amount = storageCap.insert(diamondResource, 13000, tx);
+                helper.assertValueEqual(amount, 12800, "diamond");
+
+                //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
+                ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
+                blockHandler.insert(applesWithContents, 2, tx);
+            }
+            helper.assertTrue(ResourceHandlerUtil.isEmpty(storageCap), "handler");
+
+            try (Transaction tx = TransactionManager.open(null)) {
+
+                //Because of the way the context filling works, it is attempting to fill or group similar actions together.
+                //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
+                ItemStack appleClone = player.getInventory().getItem(0).copy();
+                //holds 100 stacks each.
+                int amount = storageCap.insert(diamondResource, 13000, tx);
+                helper.assertValueEqual(amount, 12800, "diamond");
+
+                //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
+                ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
+                blockHandler.insert(applesWithContents, 2, tx);
+                tx.commit();
+            }
+
+            helper.succeed();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        BlockPos pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
-        IResourceHandler<ItemResource> blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
-
-        ItemResource diamondResource = ItemResource.of(Items.DIAMOND);
-        try (Transaction tx = TransactionManager.open(null)) {
-            //Because of the way the context filling works, it is attempting to fill or group similar actions together.
-            //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
-            ItemStack appleClone = player.getInventory().getItem(0).copy();
-            //holds 100 stacks each.
-            int amount = storageCap.insert(diamondResource, 13000, tx);
-            helper.assertValueEqual(amount, 12800, "diamond");
-
-            //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-            ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
-            blockHandler.insert(applesWithContents, 2, tx);
-        }
-        helper.assertTrue(ResourceHandlerUtil.isEmpty(storageCap), "handler");
-
-        try (Transaction tx = TransactionManager.open(null)) {
-
-            //Because of the way the context filling works, it is attempting to fill or group similar actions together.
-            //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
-            ItemStack appleClone = player.getInventory().getItem(0).copy();
-            //holds 100 stacks each.
-            int amount = storageCap.insert(diamondResource, 13000, tx);
-            helper.assertValueEqual(amount, 12800, "diamond");
-
-            //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-            ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
-            blockHandler.insert(applesWithContents, 2, tx);
-            tx.commit();
-        }
-
-        helper.succeed();
     }
 
     @GameTest

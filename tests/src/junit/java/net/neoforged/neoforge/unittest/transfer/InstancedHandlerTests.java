@@ -110,6 +110,6 @@ public class InstancedHandlerTests {
     }
 
     private static void emptyHandlerThrow(ThrowableAssert.ThrowingCallable callable) {
-        Assertions.assertThatThrownBy(callable).withFailMessage("Empty handlers should throw when using index methods").isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(callable).withFailMessage("Empty handlers should throw when using index methods").isInstanceOf(IndexOutOfBoundsException.class);
     }
 }
