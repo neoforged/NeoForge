@@ -10,7 +10,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ItemUtil;
-import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
@@ -54,11 +53,11 @@ public class ResourceHandlerUtilTests {
             helper.assertValueEqual(srcHandler.insert(10, workingStack.resource(), workingStack.amount(), transaction), workingStack.amount(), "Amount set should be the same at " + workingStack.amount());
         }
 
-        var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), workingStack.amount(), null);
+        var amountMoved = ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, resource -> true, workingStack.amount(), null);
         helper.assertTrue(workingStack.amount() == amountMoved, "Did not move everything. Should have moved all 5000 cobble to it (to void), moved " + amountMoved);
 
-        var infiniteStackHandler = new InfiniteResourceHandler<>(workingStack.resource());
-        var amountTest = ResourceHandlerUtil.move(infiniteStackHandler, srcHandler, ResourceFilters.any(), workingStack.amount() * 10, null);
+        var infiniteStackHandler = new InfiniteResourceHandler<>(workingStack);
+        var amountTest = ResourceHandlerUtil.move(infiniteStackHandler, srcHandler, resource -> true, workingStack.amount() * 10, null);
         helper.assertValueEqual(amountTest, 10 * workingStack.amount(), "the destination to hold 10 stacks of 5000. That evaluates");
 
         //Reset
@@ -77,12 +76,12 @@ public class ResourceHandlerUtilTests {
         helper.assertFalse(ResourceHandlerUtil.hasExtractableResource(srcHandler, ItemResource.of(Items.STICK)), "The dst handler should have no sticks");
 
         //reset (empty)
-        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, resource -> true, Integer.MAX_VALUE, null);
 
         helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(outputHandler, ItemResource.of(Items.APPLE), 123, null), 123, "apples inserted");
         //reset (empty+fill)
-        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, null);
-        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(ItemResource.of(Items.APPLE)), outputHandler, ResourceFilters.any(), Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, resource -> true, Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(ItemResource.of(Items.APPLE)), outputHandler, resource -> true, Integer.MAX_VALUE, null);
         //        for (var i = 0; i < outputHandler.size(); i++) {
         //            outputHandler.set(i, Items.APPLE.defaultResource(), 99);
         //        }
@@ -90,10 +89,10 @@ public class ResourceHandlerUtilTests {
         var full = ResourceHandlerUtil.isFull(outputHandler);
         helper.assertTrue(full, "Dst handler should be full");
 
-        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(outputHandler, ResourceFilters.any(), 400, null), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
+        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(outputHandler, resource -> true, 400, null), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
         helper.assertFalse(ResourceHandlerUtil.isFull(outputHandler), "Dst handler should not be full");
 
-        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, resource -> true, Integer.MAX_VALUE, null);
         //        for (var i = 0; i < outputHandler.size(); i++) {
         //            outputHandler.set(i, ItemResource.EMPTY, 0);
         //        }

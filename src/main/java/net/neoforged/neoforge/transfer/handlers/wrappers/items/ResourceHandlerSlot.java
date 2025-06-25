@@ -10,7 +10,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
@@ -68,7 +67,7 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public boolean mayPickup(Player player) {
-        return ResourceHandlerUtil.hasExtractableResourceAtIndex(handler, ResourceFilters.any(), getSlotIndex());
+        return ResourceHandlerUtil.hasExtractableResourceAtIndex(handler, resource -> true, getSlotIndex());
     }
 
     @Override

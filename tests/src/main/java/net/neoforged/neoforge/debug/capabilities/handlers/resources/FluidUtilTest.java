@@ -19,7 +19,6 @@ import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
-import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
@@ -43,8 +42,8 @@ import org.jetbrains.annotations.Nullable;
 public class FluidUtilTest {
     private static void setFluid(ExtendedGameTestHelper helper, BlockPos blockPos, ResourceStack<FluidResource> resourceStack) {
         var handler = helper.requireCapability(Capabilities.FluidHandler.BLOCK, blockPos, null);
-        ResourceHandlerUtil.move(handler, VoidResourceHandler.FLUID, ResourceFilters.any(), Integer.MAX_VALUE, null);
-        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(resourceStack.resource()), handler, ResourceFilters.any(), resourceStack.amount(), null);
+        ResourceHandlerUtil.move(handler, VoidResourceHandler.FLUID, resource -> true, Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(resourceStack), handler, resource -> true, resourceStack.amount(), null);
 
 //        if (handler instanceof ResourceContainerToHandlerAdapter<FluidResource> modifiable) {
 //            modifiable.set(0, resourceStack.resource(), resourceStack.amount());

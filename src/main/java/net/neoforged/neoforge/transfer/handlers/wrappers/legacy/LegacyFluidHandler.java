@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.legacy;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
@@ -68,7 +67,7 @@ public sealed class LegacyFluidHandler implements IFluidHandler permits LegacyFl
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-            FluidStack extracted = ResourceHandlerUtil.extractFiltered(handler, ResourceFilters.any(), maxDrain, FluidResource.EMPTY, transaction, FluidResource::toStack);
+            FluidStack extracted = ResourceHandlerUtil.extractFiltered(handler, t -> true, maxDrain, FluidResource.EMPTY, transaction, FluidResource::toStack);
             if (action.execute()) {
                 transaction.commit();
             }

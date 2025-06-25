@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ItemUtil;
-import net.neoforged.neoforge.transfer.ResourceFilters;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ContainerOrHandler;
@@ -40,7 +39,7 @@ public class VanillaInventoryCodeHooks {
             ItemStack extractedItemStack;
             //Simulates the extraction
             try (Transaction simulate = UnsafeTransactionManager.openUnsafe()) {
-                extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, ResourceFilters.any(), i, 1, simulate);
+                extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, resource -> true, i, 1, simulate);
                 if (extractedItemStack.isEmpty()) continue; // Next index in the handler
             }
 
@@ -55,7 +54,7 @@ public class VanillaInventoryCodeHooks {
                 //Change logic based on if there is something there or not.
                 //All simulations are done, we now just need to follow the path based on what is there.
                 if (destStack.isEmpty()) {
-                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, null);
+                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, resource -> true, 1, null);
                     if (extractedItemStack.isEmpty()) continue;//Should be unneeded
                     dest.setItem(j, extractedItemStack);
                     dest.setChanged();
@@ -67,7 +66,7 @@ public class VanillaInventoryCodeHooks {
                 boolean canSlotHoldMore = destCount < dest.getMaxStackSize();
 
                 if (canStackHoldMore && canSlotHoldMore && ItemStack.isSameItemSameComponents(extractedItemStack, destStack)) {
-                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, ResourceFilters.any(), 1, null);
+                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, resource -> true, 1, null);
                     if (extractedItemStack.isEmpty()) continue;//Should be unneeded
                     destStack.grow(1);
                     dest.setItem(j, destStack);

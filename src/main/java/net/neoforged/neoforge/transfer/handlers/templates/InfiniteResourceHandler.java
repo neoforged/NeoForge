@@ -9,6 +9,7 @@ import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -24,6 +25,10 @@ public class InfiniteResourceHandler<T extends IResource> implements ISingleReso
 
     public InfiniteResourceHandler(T resource) {
         this.infinite = resource;
+    }
+
+    public InfiniteResourceHandler(ResourceStack<T> resourceStack) {
+        this(resourceStack.resource());
     }
 
     @Override

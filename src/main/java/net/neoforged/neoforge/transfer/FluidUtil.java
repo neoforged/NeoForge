@@ -123,7 +123,7 @@ public final class FluidUtil {
      * Common logic for filling and draining the container context.
      */
     private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
-        FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
+        FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, resource -> true, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
         if (player == null) return stack;
 
         SoundEvent soundevent = stack.getFluidType().getSound(stack, SoundActions.BUCKET_FILL);
