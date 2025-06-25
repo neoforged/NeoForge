@@ -28,7 +28,6 @@ import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +64,7 @@ public class ResourceContainerContents<T extends IResource> implements TooltipPr
 
         this.resourceStacks = stackList;
         this.emptyResource = emptyResource;
-        this.hashCode = IResourceStack.hashTypes(stackList);
+        this.hashCode = ResourceStack.hashTypes(stackList);
         this.stackFactory = stackFactory;
         this.hoverNameGetter = hoverNameGetter;
     }
@@ -225,7 +224,7 @@ public class ResourceContainerContents<T extends IResource> implements TooltipPr
             return RecordCodecBuilder.create(
                     p_331695_ -> p_331695_.group(
                             Codec.intRange(0, 255).fieldOf("index").forGetter(Index::index),
-                            IResourceStack.codec(stackCodec, stackFactory).fieldOf("item").forGetter(Index::resourceStack)).apply(p_331695_, (index, stack) -> new Index<>(index, stack, emptyResource, stackFactory)));
+                            ResourceStack.codec(stackCodec, stackFactory).fieldOf("resource").forGetter(Index::resourceStack)).apply(p_331695_, (index, stack) -> new Index<>(index, stack, emptyResource, stackFactory)));
         }
     }
 }

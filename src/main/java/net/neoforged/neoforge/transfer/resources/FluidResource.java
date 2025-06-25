@@ -31,26 +31,22 @@ import org.jetbrains.annotations.Nullable;
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
 public final class FluidResource implements IDataComponentHolderResource<Fluid> {
+    public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.constructEmptyReference(FluidResource.EMPTY);
+
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<FluidResource> CODEC = FluidStack.fixedAmountCodec(1).xmap(FluidResource::of, FluidResource::toStack); // The bucket amount here may cause oddness, but we should effectively be able to ignore it
+    public static final Codec<FluidResource> CODEC = Codec.lazyInitialized(() -> FluidStack.fixedAmountCodec(1000).xmap(FluidResource::of, FluidResource::toStack));
 
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
-    public static final Codec<FluidResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(FluidResource::fromOptional, FluidResource::asOptional);
+    public static final Codec<FluidResource> OPTIONAL_CODEC = Codec.lazyInitialized(() -> ExtraCodecs.optionalEmptyMap(CODEC).xmap(FluidResource::fromOptional, FluidResource::asOptional));
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static FluidResource fromOptional(Optional<FluidResource> optional) {
-        return optional.orElse(FluidResource.EMPTY);
-    }
-
-    private Optional<FluidResource> asOptional() {
-        return isEmpty() ? Optional.empty() : Optional.of(this);
-    }
+    public static final Codec<ResourceStack<FluidResource>> OPTIONAL_RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, FluidResource::withAmount));
 
     /**
      * Stream codec for an item resource. Accepts empty resources.
@@ -60,12 +56,26 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
             DataComponentPatch.STREAM_CODEC, FluidResource::getComponentsPatch,
             FluidResource::of);
 
-    public static FluidStack fluidStackOf(IResourceStack<FluidResource> stack) {
-        return stack.resource().toStack(stack.amount());
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public static FluidResource fromOptional(Optional<FluidResource> optional) {
+        return optional.orElse(FluidResource.EMPTY);
     }
 
-    public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
-    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.constructEmptyReference(FluidResource.EMPTY);
+    public Optional<FluidResource> asOptional() {
+        return isEmpty() ? Optional.empty() : Optional.of(this);
+    }
+
+    /**
+     * A helper method to quickly construct a {@link FluidStack} from a ResourceStack
+     * 
+     * @param resourceStack The resource resourceStack with the fluid resource and amount
+     * @return A new fluid stack with the same size as the resourceStack.
+     */
+    public static FluidStack fluidStackOf(ResourceStack<FluidResource> resourceStack) {
+        return resourceStack.resource().toStack(resourceStack.amount());
+    }
 
     /**
      * This is used only for registry, you should not use this method!

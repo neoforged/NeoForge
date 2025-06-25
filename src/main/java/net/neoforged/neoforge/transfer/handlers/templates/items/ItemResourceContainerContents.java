@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
@@ -26,7 +25,7 @@ public class ItemResourceContainerContents {
             .sizeLimitedListOf(256)
             .xmap(ItemResourceContainerContents::fromSlots, ResourceContainerContents::asSlots);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceContainerContents<ItemResource>> STREAM_CODEC = IResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount)
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceContainerContents<ItemResource>> STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount)
             //Limit matches vanilla's container contents
             .apply(ByteBufCodecs.list(256))
             .map(ItemResourceContainerContents::fromItems, ResourceContainerContents::getCopyOfList);

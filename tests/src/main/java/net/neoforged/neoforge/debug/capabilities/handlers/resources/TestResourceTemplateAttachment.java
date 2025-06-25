@@ -21,7 +21,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStackListHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class TestResourceTemplateAttachment {
     public static final MapCodec<TestResourceTemplateAttachment> MAP_CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             NonNullList.codecOf(ItemStack.OPTIONAL_CODEC).fieldOf("items").forGetter(data -> data.itemHandler.copyToList()),
-            NonNullList.codecOf(IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount)).fieldOf("item_resources").forGetter(data -> data.itemResourceHandler.copyToList()),
+            NonNullList.codecOf(ItemResource.RESOURCE_STACK_CODEC).fieldOf("item_resources").forGetter(data -> data.itemResourceHandler.copyToList()),
             NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("fluids").forGetter(data -> data.fluidHandler.copyToList())).apply(builder, TestResourceTemplateAttachment::new));
 
     public static final AttachmentType.Builder<TestResourceTemplateAttachment> BUILDER = AttachmentType.builder(TestResourceTemplateAttachment::new)

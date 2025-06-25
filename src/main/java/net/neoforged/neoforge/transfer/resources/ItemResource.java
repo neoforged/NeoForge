@@ -36,16 +36,38 @@ import org.jetbrains.annotations.ApiStatus;
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
 public final class ItemResource implements IDataComponentHolderResource<Item> {
+    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
+
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
      * Does <b>not</b> accept empty resources.
      */
     public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(() -> ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack));
+
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
     public static final Codec<ItemResource> OPTIONAL_CODEC = Codec.lazyInitialized(() -> ExtraCodecs.optionalEmptyMap(CODEC).xmap(ItemResource::fromOptional, ItemResource::asOptional));
+
+    /**
+     * A codec for a {@code ResourceStack<ItemResource>} serializing the resource and the amount. Can accept empty resources.
+     */
+    public static final Codec<ResourceStack<ItemResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, ItemResource::withAmount));
+
+    /**
+     * Stream codec for an item resource. Accepts empty resources.
+     */
+    public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getHolder,
+            DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
+            ItemResource::of);
+
+    /**
+     * Stream codec for a resource stack backed by an ItemResource. Accepts empty resources.
+     */
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static ItemResource fromOptional(Optional<ItemResource> optional) {
@@ -57,19 +79,14 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
-     * Stream codec for an item resource. Accepts empty resources.
+     * A helper method to quickly construct an {@link ItemStack} from a ResourceStack
+     *
+     * @param resourceStack The resource stack with the fluid resource and amount
+     * @return A new item stack with the same size as the resourceStack.
      */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getHolder,
-            DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
-            ItemResource::of);
-
-    public static ItemStack itemStackOf(IResourceStack<ItemResource> resourceStack) {
+    public static ItemStack itemStackOf(ResourceStack<ItemResource> resourceStack) {
         return resourceStack.resource().toStack(resourceStack.amount());
     }
-
-    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
-    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
 
     /**
      * This is used only for registry, you should not use this method!

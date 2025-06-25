@@ -13,7 +13,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 
@@ -25,7 +24,7 @@ public class FluidResourceContainerContents {
             .sizeLimitedListOf(256)
             .xmap(FluidResourceContainerContents::fromIndices, ResourceContainerContents::asSlots);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceContainerContents<FluidResource>> STREAM_CODEC = IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceContainerContents<FluidResource>> STREAM_CODEC = FluidResource.RESOURCE_STACK_STREAM_CODEC
             .apply(ByteBufCodecs.list(256))
             .map(FluidResourceContainerContents::fromResourceStacks, ResourceContainerContents::getCopyOfList);
 

@@ -88,8 +88,7 @@ public final class TransactionManager {
         return callerClass.toString();
     }
 
-    @ApiStatus.Internal
-    Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
+    private Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
         if (parent != null) {
             Transaction parentImpl = (Transaction) parent;
             parentImpl.validateCurrentTransaction();
@@ -110,8 +109,7 @@ public final class TransactionManager {
         return current;
     }
 
-    @ApiStatus.Internal
-    Transaction.Lifecycle internalGetLifecycle() {
+    private Transaction.Lifecycle internalGetLifecycle() {
         return currentDepth == -1 ? TransactionContext.Lifecycle.NONE : stack.get(currentDepth).lifecycle;
     }
 

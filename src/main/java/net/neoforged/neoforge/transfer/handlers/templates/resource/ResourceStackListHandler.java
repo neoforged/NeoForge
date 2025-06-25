@@ -10,7 +10,6 @@ import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +55,7 @@ public abstract class ResourceStackListHandler<R extends IResource> extends Stac
 
         @Override
         public Codec<ResourceStack<ItemResource>> stackCodec() {
-            return IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount);
+            return ItemResource.RESOURCE_STACK_CODEC;
         }
     }
 
@@ -71,7 +70,7 @@ public abstract class ResourceStackListHandler<R extends IResource> extends Stac
 
         @Override
         public Codec<ResourceStack<FluidResource>> stackCodec() {
-            return IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount);
+            return FluidResource.OPTIONAL_RESOURCE_STACK_CODEC;
         }
     }
 }

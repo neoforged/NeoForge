@@ -32,7 +32,6 @@ import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.SteppedItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 @Mod(CustomFluidContainerTest.MOD_ID)
@@ -45,8 +44,8 @@ public class CustomFluidContainerTest {
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
-            .persistent(IResourceStack.codec(FluidResource.OPTIONAL_CODEC, FluidResource::withAmount))
-            .networkSynchronized(IResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount)).build());
+            .persistent(FluidResource.OPTIONAL_RESOURCE_STACK_CODEC)
+            .networkSynchronized(FluidResource.RESOURCE_STACK_STREAM_CODEC).build());
 
     public CustomFluidContainerTest(IEventBus modEventBus) {
         if (ENABLED) {
