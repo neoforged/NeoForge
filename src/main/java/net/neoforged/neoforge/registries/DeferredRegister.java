@@ -293,32 +293,32 @@ public class DeferredRegister<T> {
     }
 
     /**
-     * Adds an alias that maps from <code>alias</code> to <code>registeredName</code>.
+     * Adds an alias that maps from <code>aliasName</code> to <code>registeredName</code>.
      * <p>
-     * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
-     * unless an object with <code>alias</code> is present in the registry
+     * Any registry lookups for <code>aliasName</code> will be redirected to <code>registeredName</code>,
+     * unless an object with <code>aliasName</code> is present in the registry
      *
-     * @param alias          The original name of the registry object
+     * @param aliasName      The original name of the registry object
      * @param registeredName The new name of the registry object
      */
-    public void addAlias(ResourceLocation alias, ResourceLocation registeredName) {
+    public void addAlias(ResourceLocation aliasName, ResourceLocation registeredName) {
         if (seenRegisterEvent)
             throw new IllegalStateException("Cannot add aliases to DeferredRegister after RegisterEvent has been fired.");
 
-        this.aliases.put(alias, registeredName);
+        this.aliases.put(aliasName, registeredName);
     }
 
     /**
-     * Adds an alias that maps from <code>alias</code> to <code>registeredName</code>'s ResourceLocation.
+     * Adds an alias that maps from <code>aliasName</code> to <code>registeredHolder</code>'s ResourceLocation.
      * <p>
-     * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
-     * unless an object with <code>alias</code> is present in the registry
+     * Any registry lookups for <code>aliasName</code> will be redirected to <code>registeredHolder</code>'s ResourceLocation,
+     * unless an object with <code>aliasName</code> is present in the registry
      *
-     * @param alias          The original name of the registry object
-     * @param registeredName The holder to extract the new name of the registry object from
+     * @param aliasName        The original name of the registry object
+     * @param registeredHolder The holder to extract the new name of the registry object from
      */
-    public void addAlias(ResourceLocation alias, Holder<T> registeredName) {
-        this.addAlias(alias, Objects.requireNonNull(registeredName.getKey()).location());
+    public void addAlias(ResourceLocation aliasName, Holder<T> registeredHolder) {
+        this.addAlias(aliasName, Objects.requireNonNull(registeredHolder.getKey()).location());
     }
 
     /**

@@ -63,22 +63,22 @@ public abstract class BaseMappedRegistry<T> implements Registry<T> {
     }
 
     @Override
-    public void addAlias(ResourceLocation alias, ResourceLocation registeredName) {
-        if (alias.equals(registeredName))
+    public void addAlias(ResourceLocation aliasName, ResourceLocation registeredName) {
+        if (aliasName.equals(registeredName))
             return;
-        if (this.aliases.containsKey(alias)) {
-            ResourceLocation old = this.aliases.get(alias);
+        if (this.aliases.containsKey(aliasName)) {
+            ResourceLocation old = this.aliases.get(aliasName);
             if (!old.equals(registeredName))
-                throw new IllegalStateException("Duplicate alias with key \"" + alias + "\" attempting to map to \"" + registeredName + "\", found existing mapping \"" + old + "\"");
+                throw new IllegalStateException("Duplicate alias with key \"" + aliasName + "\" attempting to map to \"" + registeredName + "\", found existing mapping \"" + old + "\"");
         }
-        if (resolve(alias).equals(registeredName))
-            throw new IllegalStateException("Infinite alias loop detected: from " + alias + " to " + registeredName);
-        this.aliases.put(alias, registeredName);
+        if (resolve(aliasName).equals(registeredName))
+            throw new IllegalStateException("Infinite alias loop detected: from " + aliasName + " to " + registeredName);
+        this.aliases.put(aliasName, registeredName);
     }
 
     @Override
-    public void addAlias(ResourceLocation alias, Holder<T> registeredName) {
-        this.addAlias(alias, Objects.requireNonNull(registeredName.getKey()).location());
+    public void addAlias(ResourceLocation aliasName, Holder<T> registeredHolder) {
+        this.addAlias(aliasName, Objects.requireNonNull(registeredHolder.getKey()).location());
     }
 
     @Override

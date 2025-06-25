@@ -66,26 +66,26 @@ public interface IRegistryExtension<T> {
     }
 
     /**
-     * Adds an alias that maps from <code>alias</code> to <code>registeredName</code>.
+     * Adds an alias that maps from <code>aliasName</code> to <code>registeredName</code>.
      * <p>
-     * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
-     * unless an object with <code>alias</code> is present in the registry.
+     * Any registry lookups for <code>aliasName</code> will be redirected to <code>registeredName</code>,
+     * unless an object with <code>aliasName</code> is present in the registry.
      *
-     * @param alias          The original name of the registry object
+     * @param aliasName      The original name of the registry object
      * @param registeredName The new name of the registry object
      */
-    void addAlias(ResourceLocation alias, ResourceLocation registeredName);
+    void addAlias(ResourceLocation aliasName, ResourceLocation registeredName);
 
     /**
-     * Adds an alias that maps from <code>alias</code> to <code>registeredName</code>'s ResourceLocation.
+     * Adds an alias that maps from <code>aliasName</code> to <code>registeredName</code>'s ResourceLocation.
      * <p>
-     * Any registry lookups for <code>alias</code>'s ResourceLocation will be redirected to <code>registeredName</code>'s ResourceLocation,
-     * unless an object with <code>alias</code> is present in the registry
+     * Any registry lookups for <code>aliasName</code> will be redirected to <code>registeredHolder</code>'s ResourceLocation,
+     * unless an object with <code>aliasName</code> is present in the registry
      *
-     * @param alias          The original name of the registry object
-     * @param registeredName The holder to extract the new name of the registry object from
+     * @param aliasName        The original name of the registry object
+     * @param registeredHolder The holder to extract the new name of the registry object from
      */
-    void addAlias(ResourceLocation alias, Holder<T> registeredName);
+    void addAlias(ResourceLocation aliasName, Holder<T> registeredHolder);
 
     /**
      * Resolves a registry name of a potential object in this registry.
