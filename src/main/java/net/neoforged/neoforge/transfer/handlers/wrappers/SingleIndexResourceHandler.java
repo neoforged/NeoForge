@@ -19,9 +19,14 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * @param <T> The type of resource this handler manages.
  */
 public class SingleIndexResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
-    int index;
+    private final int index;
 
     public SingleIndexResourceHandler(IResourceHandler<T> delegate, int index) {
+        super(delegate);
+        this.index = index;
+    }
+
+    public SingleIndexResourceHandler(Supplier<IResourceHandler<T>> delegate, int index) {
         super(delegate);
         this.index = index;
     }
@@ -29,11 +34,6 @@ public class SingleIndexResourceHandler<T extends IResource> extends DelegatingR
     @Override
     public int size() {
         return 1;
-    }
-
-    public SingleIndexResourceHandler(Supplier<IResourceHandler<T>> delegate, int index) {
-        super(delegate);
-        this.index = index;
     }
 
     @Override

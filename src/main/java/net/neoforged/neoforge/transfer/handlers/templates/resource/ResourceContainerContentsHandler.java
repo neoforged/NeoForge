@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.resource.temp;
+package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
+import com.google.common.math.IntMath;
 import java.util.Objects;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
@@ -31,13 +32,15 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
     private final ResourceContainerContents<T> emptyContents;
     private final IStackFactory<T, ResourceStack<T>> stackFactory;
     private final T emptyResource;
+    private final int capacity;
 
     //Docs will come in next batch of commits or so.
-    public ResourceContainerContentsHandler(IItemContext itemContext, DataComponentType<ResourceContainerContents<T>> componentType, int size, T emptyResource, IStackFactory<T, ResourceStack<T>> stackFactory, ResourceContainerContents<T> emptyContents) {
+    public ResourceContainerContentsHandler(IItemContext itemContext, DataComponentType<ResourceContainerContents<T>> componentType, int size, int capacity, T emptyResource, IStackFactory<T, ResourceStack<T>> stackFactory, ResourceContainerContents<T> emptyContents) {
         if (size > 256)
             throw new IllegalArgumentException("Got %d items, but maximum is 256".formatted(size));
 
         this.size = size;
+        this.capacity = capacity;
         this.itemContext = itemContext;
         this.componentType = componentType;
 
@@ -75,9 +78,8 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
     @Override
     public int getCapacity(int index, T resource) {
         Objects.checkIndex(index, size());
-        //todo assign a capacity
         //items for example need an overridden version of this to respect stack sizes.
-        return Integer.MAX_VALUE;
+        return capacity;
     }
 
     @Override
@@ -118,14 +120,14 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
         int capacity = getCapacity(index, resource);
         if (stack.isEmpty()) {
             int inserted = Math.min(amount, capacity);
-            return set(contents, inserted, context, index, stackFactory.create(resource, inserted));
+            return set(contents, index, inserted, amount, context, stackFactory.create(resource, inserted));
         }
 
         if (!resource.equals(stack.resource()) || stack.amount() >= capacity) return 0;
 
         int inserted = Math.min(amount, capacity - stack.amount());
         stack.grow(inserted);
-        return set(contents, inserted, context, index, stack);
+        return set(contents, index, inserted, amount, context, stack);
     }
 
     @Override
@@ -140,19 +142,21 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
 
         int extracted = Math.min(stack.amount(), amount);
         stack.shrink(extracted);
-        return set(contents, amount, context, index, stack);
+        return set(contents, index, extracted, amount, context, stack);
     }
 
     @ApiStatus.OverrideOnly
-    protected int set(ResourceContainerContents<T> contents, int changedAmount, TransactionContext context, int index, ResourceStack<T> stack) {
+    protected int set(ResourceContainerContents<T> contents, int index, int changedAmount, int originalAmountRequest, TransactionContext context, ResourceStack<T> stack) {
         ItemResource contextResource = itemContext.getResource();
         ItemStack newStack = contextResource.toStack();
         // Use the max of the content's size and the handler size to avoid truncating
         int contentSize = Math.max(contents.getSlots(), size());
         newStack.set(componentType, contents.with(contentSize, index, stack));
         //using the context, trade out our current container, for the new one.
+        int exchangeCount = originalAmountRequest / changedAmount;
+
         //While it is valid to try to do more than one at a time, we are going to handle just 1 exchange for now.
-        int exchangedCount = itemContext.exchange(ItemResource.of(newStack), 1, context);
-        return exchangedCount == 1 ? changedAmount : 0;
+        int exchangedCount = itemContext.exchange(ItemResource.of(newStack), exchangeCount, context);
+        return IntMath.saturatedMultiply(exchangedCount, changedAmount);
     }
 }

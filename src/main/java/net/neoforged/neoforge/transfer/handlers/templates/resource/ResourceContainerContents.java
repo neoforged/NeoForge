@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.resource.temp;
+package net.neoforged.neoforge.transfer.handlers.templates.resource;
 
 import com.google.common.collect.Iterables;
 import com.mojang.serialization.Codec;
@@ -25,6 +25,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.component.TooltipProvider;
 import net.neoforged.neoforge.transfer.IStackFactory;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -107,7 +109,7 @@ public class ResourceContainerContents<T extends IResource> implements TooltipPr
         ResourceContainerContents<T> contents = new ResourceContainerContents<>(i + 1, emptyResource, stackFactory, hoverNameGetter, emptyContents);
 
         for (int j = 0; j <= i; j++) {
-            contents.resourceStacks.set(j, resourceStackList.get(j).copy());
+            contents.resourceStacks.set(j, resourceStackList.get(j));
         }
 
         return contents;
@@ -133,36 +135,32 @@ public class ResourceContainerContents<T extends IResource> implements TooltipPr
     public void copyInto(NonNullList<ResourceStack<T>> list) {
         for (int i = 0; i < list.size(); i++) {
             ResourceStack<T> resourceStack = i < this.resourceStacks.size() ? this.resourceStacks.get(i) : stackFactory.create(emptyResource, 0);
-            list.set(i, resourceStack.copy());
+            //We don't need to copy since the resource stack is immutable
+            list.set(i, resourceStack);
         }
     }
 
     public ResourceStack<T> copyOne() {
-        return this.resourceStacks.isEmpty() ? stackFactory.create(emptyResource, 0) : this.resourceStacks.getFirst().copy();
+        return this.resourceStacks.isEmpty() ? stackFactory.create(emptyResource, 0) : this.resourceStacks.getFirst();
     }
 
     public Stream<ResourceStack<T>> stream() {
-        return this.resourceStacks.stream().map(ResourceStack::copy);
+        return this.resourceStacks.stream();
     }
 
     public Stream<ResourceStack<T>> nonEmptyStream() {
-        return this.resourceStacks.stream().filter(p_331322_ -> !p_331322_.isEmpty()).map(ResourceStack::copy);
+        return this.resourceStacks.stream().filter(p_331322_ -> !p_331322_.isEmpty());
     }
 
     public Iterable<ResourceStack<T>> nonEmptyResourceStacks() {
         return Iterables.filter(this.resourceStacks, p_331420_ -> !p_331420_.isEmpty());
     }
 
-    public Iterable<ResourceStack<T>> nonEmptyResourceStacksCopy() {
-        return Iterables.transform(this.nonEmptyResourceStacks(), ResourceStack::copy);
-    }
-
     @Override
     public boolean equals(Object p_331711_) {
-        //noinspection rawtypes
         return this == p_331711_
-                || p_331711_ instanceof ResourceContainerContents itemcontainercontents
-                        && this.resourceStacks.equals(itemcontainercontents.resourceStacks);
+                || p_331711_ instanceof ResourceContainerContents<?> containerContents
+                        && this.resourceStacks.equals(containerContents.resourceStacks);
     }
 
     @Override
@@ -207,7 +205,7 @@ public class ResourceContainerContents<T extends IResource> implements TooltipPr
      */
     public ResourceStack<T> getStackInSlot(int index) {
         Objects.checkIndex(index, this.getSlots());
-        return this.resourceStacks.get(index).copy();
+        return this.resourceStacks.get(index);
     }
 
     public ResourceContainerContents<T> with(int size, int index, T resource, int amount) {

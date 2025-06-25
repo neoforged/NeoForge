@@ -23,7 +23,7 @@ public interface IRegisteredResource<T> extends IResource {
     /**
      * @return The backing instance of the resource.
      * @see ItemResource#getInstanceValue() returns an Item
-     * @see FluidResource#getInstanceValue() returns an Fluid
+     * @see FluidResource#getInstanceValue() returns a Fluid
      */
     T getInstanceValue();
 

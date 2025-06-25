@@ -31,12 +31,12 @@ public class WrapperResourceHandlerTests {
         helper.assertFalse(cap == null, "Player capability should be present");
         assert cap != null : "Player capability should be present"; // Mostly just makes the compiler understand the previous method
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, Items.APPLE.getDefaultResource(), 400, null), 400, "apples");
+        helper.assertValueEqual(ResourceHandlerUtil.insertStacking(cap, ItemResource.of(Items.APPLE), 400, null), 400, "apples");
         var chestInserted = 0;
         var chest2Inserted = 0;
         try (var tx = TransactionManager.open(null)) {
-            chestInserted = cap.insert(38, Items.DIAMOND_CHESTPLATE.getDefaultResource().with(DataComponents.DAMAGE, 20), 2, tx);
-            chest2Inserted = cap.insert(39, Items.DIAMOND_CHESTPLATE.getDefaultResource(), 2, tx);
+            chestInserted = cap.insert(38, ItemResource.of(Items.DIAMOND_CHESTPLATE).with(DataComponents.DAMAGE, 20), 2, tx);
+            chest2Inserted = cap.insert(39, ItemResource.of(Items.DIAMOND_CHESTPLATE), 2, tx);
             tx.commit();
         }
         helper.assertValueEqual(chestInserted, 1, "armor insert");

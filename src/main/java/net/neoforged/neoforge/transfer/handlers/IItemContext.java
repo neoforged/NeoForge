@@ -128,7 +128,7 @@ public interface IItemContext {
     /**
      * Try to exchange as many items as possible of {@linkplain #getAmount the current item} with another.
      * <p>
-     * In other words, {@link #extract} the given amount of the current item, and via a transactional, {@link #insert} the same amount of the given resource instead.
+     * In other words, {@link #extract} the given amount of the current item, and via a transaction chain, {@link #insert} the same amount of the given resource instead.
      *
      * @param resource    The resource of the items after the conversion. Must not be empty.
      * @param amount      The amount of items to convert. Must not be negative.

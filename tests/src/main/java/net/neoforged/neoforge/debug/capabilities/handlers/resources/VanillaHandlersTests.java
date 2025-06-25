@@ -20,7 +20,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.IndexItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionManager;
@@ -167,8 +168,8 @@ public class VanillaHandlersTests {
 
         helper.assertTrue(wrapper.size() == 1, "Got %d tanks".formatted(wrapper.size()));
 
-        var waterResource = Fluids.WATER.getDefaultResource();
-        var lavaResource = Fluids.LAVA.getDefaultResource();
+        var waterResource = FluidResource.of(Fluids.WATER);
+        var lavaResource = FluidResource.of(Fluids.LAVA);
 
         try (var transaction = TransactionManager.open(null)) {
             // Simulate filling with water, and it should only accept 1 bucket
@@ -246,10 +247,10 @@ public class VanillaHandlersTests {
 
         var firstChestSlot = IndexItemContext.of(chestHandler, 0);
 
-        var itemContents = ResourceStorageComponent.of(3, ItemResource.EMPTY, ItemResource::withAmount).modify(0, Items.APPLE.getDefaultResource().with(DataComponents.DAMAGE, 20), 3);
-        var fluidContents = ResourceStorageComponent.of(3, FluidResource.EMPTY, FluidResource::withAmount).modify(0, Fluids.LAVA.getDefaultResource(), 200);
+        var itemContents = ItemResourceContainerContents.EMPTY.with(1, 0, ItemResource.of(Items.APPLE).with(DataComponents.DAMAGE, 20), 3);
+        var fluidContents = FluidResourceContainerContents.EMPTY.with(1, 0, FluidResource.of(Fluids.LAVA), 200);
 
-        var targetResource = Items.APPLE.getDefaultResource().with(ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
+        var targetResource = ItemResource.of(Items.APPLE).with(ResourceHandlerTestSetup.Content.ITEM_RESOURCE_CONTAINER_CONTENTS, itemContents).with(ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT, fluidContents);
 
         try (var transaction = TransactionManager.open(null)) {
             var inserted = chestHandler.insert(targetResource, 100, transaction);

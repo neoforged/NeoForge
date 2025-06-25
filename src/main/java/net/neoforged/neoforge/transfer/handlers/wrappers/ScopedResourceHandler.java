@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -26,6 +27,11 @@ public class ScopedResourceHandler<T extends IResource> extends DelegatingResour
         int[] indices = IntStream.range(0, handler.size())
                 .filter(i -> Arrays.stream(exclusions).noneMatch(excluded -> excluded == i))
                 .toArray();
+
+        var size = handler.size();
+        for (var i = 0; i < size; i++) {
+
+        }
         return new ScopedResourceHandler<>(handler, indices);
     }
 
@@ -47,11 +53,12 @@ public class ScopedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int inserted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index : indices) {
             inserted += handler.insert(index, resource, amount - inserted, transaction);
-            if (inserted >= amount)
+            if (inserted == amount)
                 break;
         }
         return inserted;
@@ -59,11 +66,12 @@ public class ScopedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int extracted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index : indices) {
             extracted += handler.extract(index, resource, amount - extracted, transaction);
-            if (extracted >= amount)
+            if (extracted == amount)
                 break;
         }
         return extracted;

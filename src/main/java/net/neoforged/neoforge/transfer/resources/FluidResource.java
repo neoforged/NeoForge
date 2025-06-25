@@ -66,7 +66,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
     public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.of(FluidResource.EMPTY, 0);
-    public static final MutableResourceStack<FluidResource> EMPTY_MUTABLE_STACK = MutableResourceStack.of(EMPTY, 0);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -83,21 +82,30 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         if (fluidStack.isComponentsPatchEmpty())
             return fluidStack.getFluid().getDefaultResource();
 
-        return fluidStack.isEmpty() ? EMPTY : new FluidResource(fluidStack.copyWithAmount(1));
+        return new FluidResource(fluidStack.copyWithAmount(1));
     }
 
+    /**
+     * <strong>Note:</strong> This cannot be called before your fluid is registered
+     */
     public static FluidResource of(Fluid fluid) {
         if (fluid == Fluids.EMPTY) return EMPTY;
         return fluid.getDefaultResource();
     }
 
+    /**
+     * <strong>Note:</strong> This cannot be called before your fluid is registered
+     */
     public static FluidResource of(Holder<Fluid> fluid) {
-        if (fluid.value() == Fluids.EMPTY) return EMPTY;
-        return fluid.value().getDefaultResource();
+        return of(fluid.value());
     }
 
+    /**
+     * <strong>Note:</strong> This cannot be called before your fluid is registered
+     */
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
         if (fluid.value() == Fluids.EMPTY) return EMPTY;
+        if (patch.isEmpty()) return fluid.value().getDefaultResource();
         return new FluidResource(new FluidStack(fluid, 1, patch));
     }
 
@@ -244,11 +252,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     public ResourceStack<FluidResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
         return ResourceStack.of(this, amount);
-    }
-
-    public MutableResourceStack<FluidResource> withMutableAmount(int amount) {
-        if (amount == 0 || isEmpty()) return FluidResource.EMPTY_MUTABLE_STACK;
-        return MutableResourceStack.of(this, amount);
     }
 
     @Override

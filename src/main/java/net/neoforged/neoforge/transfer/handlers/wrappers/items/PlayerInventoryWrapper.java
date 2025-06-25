@@ -85,11 +85,11 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     public IResourceHandler<ItemResource> getArmorSlotForEquipment(EquipmentSlot slot) {
-        return getSlot(slot.getIndex(36));
+        return getSlot(slot.getIndex(Inventory.INVENTORY_SIZE));
     }
 
     public IResourceHandler<ItemResource> getArmor() {
-        return new RangedResourceHandler<>(this, EquipmentSlot.FEET.getIndex(36), EquipmentSlot.HEAD.getIndex(36));
+        return new RangedResourceHandler<>(this, EquipmentSlot.FEET.getIndex(Inventory.INVENTORY_SIZE), EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE));
     }
 
     /**
@@ -152,6 +152,11 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         }
 
         @Override
+        protected void releaseSnapshot(Integer snapshot) {
+            entries.clear();
+        }
+
+        @Override
         protected void onCommit(Integer originalState) {
             // actually drop the stacks
             for (Entry entry : entries) {
@@ -163,8 +168,6 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
                     remainder -= dropped;
                 }
             }
-
-            entries.clear();
         }
 
         private record Entry(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName) {}

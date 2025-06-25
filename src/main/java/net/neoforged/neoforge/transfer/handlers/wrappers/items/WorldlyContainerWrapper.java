@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
@@ -27,14 +28,14 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
 
     private int convertSlot(int slot) {
         if (slot < 0) {
-            throw new IllegalArgumentException("Cannot access storage with negative slot index: " + slot);
+            throw new IndexOutOfBoundsException("Cannot access storage with negative slot index: " + slot);
         }
         if (side == null) {
             return slot;
         }
         int[] slots = worldlyContainer.getSlotsForFace(side);
         if (slot >= slots.length) {
-            throw new IllegalArgumentException("Cannot access worldly container on side " + side + " : out of bounds slot index " + slot + " with size " + slots.length);
+            throw new IndexOutOfBoundsException("Cannot access worldly container on side " + side + " : out of bounds slot index " + slot + " with size " + slots.length);
         }
         return slots[slot];
     }
@@ -76,6 +77,7 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int convertedIndex = convertSlot(index);
         if (!worldlyContainer.canPlaceItemThroughFace(convertedIndex, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
@@ -84,37 +86,12 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
     }
 
     @Override
-    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
-        int size = size();
-        int handled = 0;
-        for (int index = 0; index < size; index++) {
-            handled += insert(index, resource, amount - handled, transaction);
-            if (handled == amount) break;
-        }
-        return handled;
-    }
-
-    @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int convertedSlot = convertSlot(index);
         if (side != null && !worldlyContainer.canTakeItemThroughFace(convertedSlot, UnsafeResourceUtils.innerStackOf(resource), side)) {
             return 0;
         }
         return wrappedContainer.extract(convertedSlot, resource, amount, transaction);
-    }
-
-    @Override
-    public int extract(ItemResource resource, int amount, TransactionContext transaction) {
-        int size = size();
-        int handled = 0;
-        for (int index = 0; index < size; index++) {
-            handled += extract(index, resource, amount - handled, transaction);
-            if (handled == amount) break;
-        }
-        return handled;
-    }
-
-    public void set(int index, ItemResource resource, int amount) {
-        worldlyContainer.setItem(index, resource.toStack(amount), true);
     }
 }

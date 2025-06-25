@@ -31,7 +31,7 @@ public interface TransactionContext {
 
     /**
      * Register a callback that will be invoked when this transaction is closed.
-     * Registered callbacks are invoked last-to-first: the last callback to be registered will be the first to be invoked, and so on...
+     * Registered callbacks are invoked last in first out (LIFO): the last callback to be registered will be the first to be invoked, and so on...
      *
      * <p>Updates that may change the state of other participants should be deferred until after the outermost transaction is closed
      * using {@link #addRootCloseCallback}.

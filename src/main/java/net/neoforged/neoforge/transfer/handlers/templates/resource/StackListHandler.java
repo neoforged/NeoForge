@@ -11,18 +11,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
+import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.IResourceStack;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
@@ -32,20 +30,21 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
 /**
- * This is provided as a simple handler to still use an {@link ItemStack} in a List as the backing data structure.
- * It is advised to use an {@link ItemResource} or similar form of {@link IResourceStack}.
+ * This is provided as a simple handler to still use a stack of type {@code S} in a List as the backing data structure.
  * <p>
  * This can be used in an attachment, a block entity field, or other mutable structures.
  */
 public abstract class StackListHandler<S, R extends IResource> implements IResourceHandler<R>, ValueIOSerializable {
-    public final int capacity;
     public static final String VALUE_IO_KEY = "stacks";
 
+    public final int capacity;
+    protected NonNullList<S> stacks;
+    protected final S emptyStack;
+
     private int size;
-    private NonNullList<S> stacks;
+    private final IStackFactory<R, S> stackFactory;
     private final List<StackJournal> snapshotJournals;
     private final GroupedSnapshotJournal onChangeJournal;
-    private final S emptyStack;
     private final Codec<NonNullList<S>> codec = NonNullList.codecOf(stackCodec());
 
     /**
@@ -53,8 +52,8 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
      * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
      * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
      */
-    public StackListHandler(int size, S emptyStack, int capacity, @Nullable Runnable onChangedCallback) {
-        this(NonNullList.withSize(size, emptyStack), emptyStack, capacity, onChangedCallback);
+    public StackListHandler(int size, S emptyStack, int capacity, IStackFactory<R, S> stackFactory, @Nullable Runnable onChangedCallback) {
+        this(NonNullList.withSize(size, emptyStack), emptyStack, capacity, stackFactory, onChangedCallback);
     }
 
     /**
@@ -62,11 +61,12 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
      * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
      * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
      */
-    public StackListHandler(NonNullList<S> stacks, S emptyStack, int capacity, @Nullable Runnable onChangedCallback) {
+    public StackListHandler(NonNullList<S> stacks, S emptyStack, int capacity, IStackFactory<R, S> stackFactory, @Nullable Runnable onChangedCallback) {
         this.capacity = capacity;
 
         this.stacks = mutableCopyOf(stacks);
         this.size = stacks.size();
+        this.stackFactory = stackFactory;
         this.snapshotJournals = new ArrayList<>(size);
         //Creates a change journal in charge of notifying the handler has been changed.
         // The callback is usually something like someInstance::setChanged
@@ -114,16 +114,10 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     }
 
     @ApiStatus.OverrideOnly
-    protected abstract boolean isStackEmpty(S stack);
-
-    @ApiStatus.OverrideOnly
     protected abstract boolean matches(R resource, S stack);
 
     @ApiStatus.OverrideOnly
-    protected abstract S toStack(R resource, int amount);
-
-    @ApiStatus.OverrideOnly
-    protected abstract S copyOf(S stack);
+    protected abstract S snapshotOf(S stack);
 
     /**
      * Copies all the contents of this handler to a non-null list of the same size.
@@ -206,27 +200,15 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         if (!isValid(index, resource)) return 0;
 
         S currentStack = stacks.get(index);
+        int currentAmount = getAmountFrom(currentStack);
+
         int capacity = getCapacity(index, resource);
-
-        int inserted, newAmount;
-        if (isStackEmpty(currentStack)) {
-            //the specified index is empty
-            inserted = Math.min(capacity, amount);
-            newAmount = inserted;
-        } else {
-            //is there an item in the specified index already?
-            if (!matches(resource, currentStack)) return 0;
-
-            int currentStackAmount = getAmountFrom(currentStack);
-            inserted = Math.min(capacity - currentStackAmount, amount);
-            newAmount = currentStackAmount + inserted;
-        }
-
+        if (currentAmount >= capacity || (currentAmount > 0 && !matches(resource, currentStack))) return 0;
+        int inserted = Math.min(amount, capacity - currentAmount);
         if (inserted > 0) {
             snapshotJournals.get(index).updateSnapshots(transaction);
-            setInternal(index, resource, newAmount);
+            setInternal(index, resource, inserted + currentAmount);
         }
-
         return inserted;
     }
 
@@ -277,7 +259,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
     @ApiStatus.OverrideOnly
     protected void setInternal(int index, R resource, int amount) {
-        stacks.set(index, toStack(resource, amount));
+        stacks.set(index, stackFactory.create(resource, amount));
     }
 
     private class StackJournal extends SnapshotJournal<S> {
@@ -296,7 +278,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         @Override
         protected S createSnapshot() {
             S original = stacks.get(index);
-            return copyOf(original);
+            return snapshotOf(original);
         }
 
         @Override

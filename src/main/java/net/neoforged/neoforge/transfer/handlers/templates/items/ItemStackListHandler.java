@@ -14,11 +14,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class ItemStackListHandler extends StackListHandler<ItemStack, ItemResource> {
     public ItemStackListHandler(int size, int capacity, @Nullable Runnable onChangedCallback) {
-        super(size, ItemStack.EMPTY, capacity, onChangedCallback);
+        super(size, ItemStack.EMPTY, capacity, ItemResource::toStack, onChangedCallback);
     }
 
     public ItemStackListHandler(NonNullList<ItemStack> stacks, int capacity, @Nullable Runnable onChangedCallback) {
-        super(stacks, ItemStack.EMPTY, capacity, onChangedCallback);
+        super(stacks, ItemStack.EMPTY, capacity, ItemResource::toStack, onChangedCallback);
     }
 
     @Override
@@ -42,22 +42,12 @@ public class ItemStackListHandler extends StackListHandler<ItemStack, ItemResour
     }
 
     @Override
-    public boolean isStackEmpty(ItemStack stack) {
-        return stack.isEmpty();
-    }
-
-    @Override
     public boolean matches(ItemResource resource, ItemStack stack) {
         return resource.is(stack);
     }
 
     @Override
-    public ItemStack toStack(ItemResource resource, int amount) {
-        return resource.toStack(amount);
-    }
-
-    @Override
-    public ItemStack copyOf(ItemStack stack) {
+    public ItemStack snapshotOf(ItemStack stack) {
         return stack.copy();
     }
 }

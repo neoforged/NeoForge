@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates;
 
+import java.util.Objects;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -22,6 +23,9 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
         //noinspection unchecked
         return (EmptyResourceHandler<T>) INSTANCE;
     }
+    // size, insert, and extract are all valid calls. Everything else is expected to throw due to index bounds.
+    // The secondary throws are never expected to be hit but are there as a safety precaution
+    // instead of returning a dummy value.
 
     @Override
     public int size() {
@@ -36,11 +40,6 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
-    public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
-    }
-
-    @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
         //No-op
         ResourceHandlerUtil.isEmpty(resource, amount);
@@ -48,38 +47,53 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
+    public int insert(int index, T resource, int amount, TransactionContext transaction) {
+        Objects.checkIndex(index, size());
+        ResourceHandlerUtil.isEmpty(resource, amount);
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0");
+    }
+
+    @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        ResourceHandlerUtil.isEmpty(resource, amount);
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0");
     }
 
     @Override
     public T getResource(int index) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0 and therefore have no resource");
     }
 
     @Override
     public int getAmount(int index) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0 and therefore have no amount");
     }
 
     @Override
     public int getCapacity(int index, T resource) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0 and therefore has no capacity");
     }
 
     @Override
     public boolean isValid(int index, T resource) {
-        throw new IndexOutOfBoundsException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0 and therefore is never valid");
     }
 
     @Override
     public boolean supportsInsertion(int index) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0 and therefore has does not support insertion");
     }
 
     @Override
     public boolean supportsExtraction(int index) {
-        throw new IllegalArgumentException("Invalid index: `" + index + "`Empty resource handlers are of size 0.");
+        Objects.checkIndex(index, size());
+        throw new IndexOutOfBoundsException("Empty resource handlers are of size 0 and therefore has does not support extraction");
     }
 
     @Override

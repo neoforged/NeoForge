@@ -13,12 +13,13 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageComponentHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
 
 /**
- * @deprecated For components use {@link FluidStorageComponentHandler} or for attachments use either {@link ResourceStackListHandler.Fluid} or {@link FluidStackListHandler}
+ * @deprecated For components use {@link ResourceContainerContents} with helpers from {@link FluidResourceContainerContents} to build it, or for attachments use either {@link ResourceStackListHandler.Fluid} or {@link FluidStackListHandler}
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public class FluidTank implements IFluidHandler, IFluidTank, ValueIOSerializable {

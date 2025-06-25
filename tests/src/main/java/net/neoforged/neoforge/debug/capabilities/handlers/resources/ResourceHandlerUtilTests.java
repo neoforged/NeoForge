@@ -39,7 +39,7 @@ public class ResourceHandlerUtilTests {
         var inputHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, src, Direction.NORTH); //[0,10)
         var outputHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, dst, Direction.SOUTH);//[11,20)
 
-        var workingStack = ResourceStack.of(Blocks.COBBLESTONE.asItem().getDefaultResource(), 5000);
+        var workingStack = ResourceStack.of(ItemResource.of(Blocks.COBBLESTONE), 5000);
         helper.assertTrue(ResourceHandlerUtil.isEmpty(srcHandler), "The inv was not empty");
         helper.assertFalse(ResourceHandlerUtil.isFull(srcHandler), "The inv should be empty");
         try (var transaction = TransactionManager.open(null)) {
@@ -75,15 +75,15 @@ public class ResourceHandlerUtilTests {
             helper.assertValueEqual(ResourceHandlerUtil.move(srcHandler, VoidResourceHandler.ITEM, itemResource -> itemResource.is(Blocks.COBBLESTONE), 100, transaction), 100, "amount to move");
         }
         helper.assertTrue(ResourceHandlerUtil.hasExtractableResource(srcHandler, workingStack.resource()), "The dst handler should have cobble");
-        helper.assertFalse(ResourceHandlerUtil.hasExtractableResource(srcHandler, Items.STICK.getDefaultResource()), "The dst handler should have no sticks");
+        helper.assertFalse(ResourceHandlerUtil.hasExtractableResource(srcHandler, ItemResource.of(Items.STICK)), "The dst handler should have no sticks");
 
         //reset (empty)
         ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, null);
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(outputHandler, Items.APPLE.getDefaultResource(), 123, null), 123, "apples inserted");
+        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(outputHandler, ItemResource.of(Items.APPLE), 123, null), 123, "apples inserted");
         //reset (empty+fill)
         ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, ResourceFilters.any(), Integer.MAX_VALUE, null);
-        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(Items.APPLE.getDefaultResource()), outputHandler, ResourceFilters.any(), Integer.MAX_VALUE, null);
+        ResourceHandlerUtil.move(new InfiniteResourceHandler<>(ItemResource.of(Items.APPLE)), outputHandler, ResourceFilters.any(), Integer.MAX_VALUE, null);
         //        for (var i = 0; i < outputHandler.size(); i++) {
         //            outputHandler.set(i, Items.APPLE.defaultResource(), 99);
         //        }
@@ -102,7 +102,7 @@ public class ResourceHandlerUtilTests {
         //            outputHandler.set(i, ItemResource.EMPTY, 0);
         //        }
 
-        ResourceHandlerUtil.insertStacking(outputHandler, Items.APPLE.getDefaultResource(), 400, null);
+        ResourceHandlerUtil.insertStacking(outputHandler, ItemResource.of(Items.APPLE), 400, null);
 
         helper.succeed();
     }

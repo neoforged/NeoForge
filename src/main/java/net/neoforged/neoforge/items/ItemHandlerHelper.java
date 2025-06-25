@@ -93,7 +93,7 @@ public class ItemHandlerHelper {
     /**
      * giveItemToPlayer without preferred slot
      *
-     * @deprecated Use {@link ItemUtil#giveItemToPlayer(Player, ItemStack)} instead
+     * @deprecated Use {@link ItemUtil#giveItemToPlayer(Player, ItemStack, TransactionContext)} instead
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static void giveItemToPlayer(Player player, ItemStack stack) {
@@ -106,7 +106,7 @@ public class ItemHandlerHelper {
      *
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
-     * @deprecated Use {@link ItemUtil#giveItemToPlayer(Player, ItemStack, int)} instead
+     * @deprecated Use {@link ItemUtil#giveItemToPlayer(Player, ItemStack, int, TransactionContext)} instead
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {

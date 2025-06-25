@@ -94,7 +94,7 @@ public final class FluidUtil {
      * @param hand    The player's hand that is holding an item that should interact with the fluid handler.
      * @param handler The fluid handler.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
-     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#interactWithFluidHandler(Player, InteractionHand, IResourceHandler)}
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#interactWithFluidHandler(Player, InteractionHand, IResourceHandler, TransactionContext)}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, IFluidHandler handler) {
@@ -134,7 +134,7 @@ public final class FluidUtil {
      * @param player      The player to make the filling noise. Pass null for no noise.
      * @param doFill      true if the container should actually be filled, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the filled container if successful.
-     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#fillContainer(IItemContext, IResourceHandler, int, Player, TransferAction)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
+     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#fillContainer(IItemContext, IResourceHandler, int, Player, TransactionContext)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
      *             Typically, player context will be what you'd like, but in theory {@link IndexItemContext} can be used to not mess with other "slots" in your inventory or {@link StackItemContext} to mutate a specific stack.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
@@ -179,7 +179,7 @@ public final class FluidUtil {
      * @param doDrain          true if the container should actually be drained, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the empty container if the fluid handler was filled.
      *         NOTE If the container is consumable, the empty container will be null on success.
-     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#emptyContainer(IItemContext, IResourceHandler, int, Player, TransferAction)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
+     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#emptyContainer(IItemContext, IResourceHandler, int, Player, TransactionContext)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
      *             Typically, player context will be what you'd like, but in theory IndexItemContext can be used to not mess with other "slots" in your inventory.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
@@ -226,7 +226,7 @@ public final class FluidUtil {
      *                    Can be null, only used if the inventory cannot take the filled stack.
      * @param doFill      true if the container should actually be filled, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the result and the resulting container. The resulting container is empty on failure.
-     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#fillContainer(IItemContext, IResourceHandler, int, Player, TransferAction)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
+     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#fillContainer(IItemContext, IResourceHandler, int, Player, TransactionContext)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
      *             Typically, player context will be what you'd like, but in theory IndexItemContext can be used to not mess with other "slots" in your inventory.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
@@ -285,7 +285,7 @@ public final class FluidUtil {
      * @param player           The player that gets the items the inventory can't take. Can be null, only used if the inventory cannot take the filled stack.
      * @param doDrain          true if the container should actually be drained, false if it should be simulated.
      * @return a {@link FluidActionResult} holding the result and the resulting container. The resulting container is empty on failure.
-     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#emptyContainer(IItemContext, IResourceHandler, int, Player, TransferAction)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
+     * @deprecated See {@link net.neoforged.neoforge.transfer.FluidUtil#emptyContainer(IItemContext, IResourceHandler, int, Player, TransactionContext)} for a possible migration path. You will need to provide a new item context to choose if you want it to stow or not.
      *             Typically, player context will be what you'd like, but in theory IndexItemContext can be used to not mess with other "slots" in your inventory.
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)

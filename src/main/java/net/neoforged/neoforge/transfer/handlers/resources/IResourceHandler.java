@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponentHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -230,6 +230,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount of the resource that was inserted. <strong>Must be non-negative.</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
+     * @throws IllegalArgumentException  if the amount is negative.
      * @see #insert(IResource, int, TransactionContext) Inserting into any index in the handler
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
@@ -238,13 +239,14 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * Inserts a given amount of the resource into the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, there are some performance gains that can be achieved by handling the indexable and non-indexed versions of this call more carefully.
-     * See {@link ResourceStorageComponentHandler#insert(IResource, int, TransactionContext) ResourceStorage.insertBehaviour} for an example.
+     * See {@link StackListHandler#insert(IResource, int, TransactionContext) StackListHandler.insertBehaviour} for an example.
      *
      * @param resource    The resource to insert. <strong>Must be non-negative</strong>
      * @param amount      The amount of the resource to insert. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be inserting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was inserted.
+     * @throws IllegalArgumentException if the amount is negative.
      * @see #insert(int, IResource, int, TransactionContext) Inserting by index
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
@@ -268,6 +270,7 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was extracted.
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
+     * @throws IllegalArgumentException  if the amount is negative.
      * @see #extract(IResource, int, TransactionContext) Extracting from any index in the handler
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
@@ -276,13 +279,14 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * Extracts a given amount of the resource from the handler. Distribution of the resource is up to the handler.
      * <p>
      * Implementation advice, there are some performance gains that can be achieved by handling the indexable and non-indexed versions of this call more carefully.
-     * See {@link ResourceStorageComponentHandler#extract(IResource, int, TransactionContext) ResourceStorage.extractBehaviour} for an example.
+     * See {@link StackListHandler#extract(IResource, int, TransactionContext) StackListHandler.extractBehaviour} for an example.
      *
      * @param resource    The resource to extract.
      * @param amount      The amount of the resource to extract. <strong>Must be non-negative</strong>
      * @param transaction The {@link TransactionContext } transaction to be extracting with.
      *                    It is expected that the handler properly supports rollbacks/reversions with a {@link SnapshotJournal}
      * @return The amount (Must be non-negative) of the resource that was extracted.
+     * @throws IllegalArgumentException if the amount is negative.
      * @see #extract(int, IResource, int, TransactionContext) Extracting by index
      */
     default int extract(T resource, int amount, TransactionContext transaction) {

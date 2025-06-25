@@ -65,30 +65,30 @@ public class FluidUtilTest {
         resetWater(helper, posOfWater);
 
         helper.assertBlockPresent(Blocks.WATER, posOfWater);
-        helper.assertTrue(FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater)), "Fluid should be picked up");
+        helper.assertTrue(FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater), null), "Fluid should be picked up");
         helper.assertBlockNotPresent(Blocks.WATER, posOfWater);
         checkInventory(helper, player, Items.BUCKET, 1, Items.WATER_BUCKET, 1);
 
-        helper.assertFalse(FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater)), "No fluid to pick up");
+        helper.assertFalse(FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater), null), "No fluid to pick up");
         resetWater(helper, posOfWater);
-        helper.assertTrue(FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater)), "Fluid should be picked up");
+        helper.assertTrue(FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater), null), "Fluid should be picked up");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 2);
 
         resetInventory(player, new ItemStack(Items.BUCKET, 5));
         var capability = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND).getCapability(Capabilities.FluidHandler.ITEM);
         assert capability != null;
-        FluidUtil.moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, capability, Integer.MAX_VALUE);
+        FluidUtil.moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, endlessWaterSource, capability, Integer.MAX_VALUE, null);
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 5);
 
         helper.setBlock(posOfWater, Blocks.AIR);
-        FluidUtil.tryPlaceFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater));
+        FluidUtil.tryPlaceFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater), null);
         helper.assertTrue(helper.getBlockState(posOfWater).getFluidState().is(Fluids.WATER), "Should be water here");
 
         resetInventory(player, new ItemStack(Items.WATER_BUCKET, 1));
         helper.setBlock(posOfWater, Blocks.STONE_SLAB);
-        FluidUtil.tryPlaceFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater));
+        FluidUtil.tryPlaceFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater), null);
         helper.assertTrue(helper.getBlockState(posOfWater).getFluidState().is(Fluids.WATER), "Should be water here with slab");
-        FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater));
+        FluidUtil.tryPickupFluidAsPlayer(player, InteractionHand.MAIN_HAND, helper.getLevel(), helper.absolutePos(posOfWater), null);
         helper.assertFalse(helper.getBlockState(posOfWater).getFluidState().is(Fluids.WATER), "Should not be water here with slab");
         helper.assertBlockPresent(Blocks.STONE_SLAB, posOfWater);
         helper.assertTrue(FluidStack.isSameFluid(FluidUtil.getFirstFluidStackContained(new ItemStack(Items.WATER_BUCKET, 1)), waterResource.toStack()), "Water is expected to be in the bucket.");
@@ -122,13 +122,13 @@ public class FluidUtilTest {
             startingAmount = ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction);
         }
 
-        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should pick up fluid");
+        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler, null), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
         try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
 
-        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler), "Should dispense of fluid");
+        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler, null), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
         try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");

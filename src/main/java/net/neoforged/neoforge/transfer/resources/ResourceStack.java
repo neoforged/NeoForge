@@ -47,6 +47,7 @@ public final class ResourceStack<T extends IResource> implements IResourceStack<
      */
     @Override
     public ResourceStack<T> withAmount(int newAmount) {
+        if (newAmount == amount) return this;
         return ResourceStack.of(resource, newAmount);
     }
 
@@ -84,28 +85,7 @@ public final class ResourceStack<T extends IResource> implements IResourceStack<
     //TODO verify if we should hash without amount. This was to match FluidStack and ItemStack implementations
     @Override
     public int hashCode() {
-        return resource.hashCode();
-    }
-
-    /**
-     * @return a copy of this instance as a mutable resource stack.
-     */
-    @Override
-    public MutableResourceStack<T> mutable() {
-        return MutableResourceStack.of(this);
-    }
-
-    /**
-     * @return this instance.
-     */
-    @Override
-    public ResourceStack<T> immutable() {
-        return this;
-    }
-
-    @Override
-    public ResourceStack<T> copy() {
-        return ResourceStack.of(resource, amount);
+        return 31 * (31 + resource.hashCode()) + Integer.hashCode(amount);
     }
 
     @Override

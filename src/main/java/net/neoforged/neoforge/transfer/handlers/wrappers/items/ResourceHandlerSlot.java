@@ -16,7 +16,7 @@ import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 
 public class ResourceHandlerSlot extends Slot {
     private static final Container EMPTY = new SimpleContainer(0);
@@ -34,6 +34,11 @@ public class ResourceHandlerSlot extends Slot {
         if (stack.isEmpty())
             return false;
         return handler.isValid(getSlotIndex(), ItemResource.of(stack));
+    }
+
+    @Override
+    public boolean hasItem() {
+        return !handler.getResource(getSlotIndex()).isEmpty();
     }
 
     @Override
@@ -56,7 +61,6 @@ public class ResourceHandlerSlot extends Slot {
         return handler.getCapacity(getSlotIndex(), ItemResource.EMPTY);
     }
 
-    //This is now deferred to the handler rather than making the calculation here as it used to since the handler can have "getCapacity" for a specific resource
     @Override
     public int getMaxStackSize(ItemStack stack) {
         return handler.getCapacity(getSlotIndex(), ItemResource.of(stack));
@@ -69,11 +73,15 @@ public class ResourceHandlerSlot extends Slot {
 
     @Override
     public ItemStack remove(int amount) {
-        ItemResource resource = handler.getResource(getSlotIndex());
-        try (Transaction transaction = TransactionManager.open(null)) {
-            int extracted = handler.extract(resource, amount, transaction);
+        var slotIndex = getSlotIndex();
+        ItemResource resource = handler.getResource(slotIndex);
+        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+            int extracted = handler.extract(slotIndex, resource, amount, transaction);
+
+            if (extracted > 0) return ItemStack.EMPTY;
+
             transaction.commit();
-            return extracted > 0 ? resource.toStack(extracted) : ItemStack.EMPTY;
+            return ItemStack.EMPTY;
         }
     }
 

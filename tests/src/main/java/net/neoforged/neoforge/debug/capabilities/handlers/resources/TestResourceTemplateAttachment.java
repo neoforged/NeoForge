@@ -23,13 +23,13 @@ import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStackListHan
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.MutableResourceStack;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 public class TestResourceTemplateAttachment {
     public static final MapCodec<TestResourceTemplateAttachment> MAP_CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             NonNullList.codecOf(ItemStack.OPTIONAL_CODEC).fieldOf("items").forGetter(data -> data.itemHandler.copyToList()),
-            NonNullList.codecOf(IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withMutableAmount)).fieldOf("item_resources").forGetter(data -> data.itemResourceHandler.copyToList()),
+            NonNullList.codecOf(IResourceStack.codec(ItemResource.OPTIONAL_CODEC, ItemResource::withAmount)).fieldOf("item_resources").forGetter(data -> data.itemResourceHandler.copyToList()),
             NonNullList.codecOf(FluidStack.OPTIONAL_CODEC).fieldOf("fluids").forGetter(data -> data.fluidHandler.copyToList())).apply(builder, TestResourceTemplateAttachment::new));
 
     public static final AttachmentType.Builder<TestResourceTemplateAttachment> BUILDER = AttachmentType.builder(TestResourceTemplateAttachment::new)
@@ -63,13 +63,13 @@ public class TestResourceTemplateAttachment {
     public TestResourceTemplateAttachment(IAttachmentHolder holder) {
         this(
                 NonNullList.withSize(20, ItemStack.EMPTY), // how many item indices (slots) there are
-                NonNullList.withSize(20, ItemResource.EMPTY_MUTABLE_STACK), // how many item indices (slots) there are
+                NonNullList.withSize(20, ItemResource.EMPTY_STACK), // how many item indices (slots) there are
                 NonNullList.withSize(1, FluidStack.EMPTY)// how many fluid indices (tanks) there are
         );
         setHolder(holder); // Sets the block entity for our callback in the handler
     }
 
-    public TestResourceTemplateAttachment(NonNullList<ItemStack> items, NonNullList<MutableResourceStack<ItemResource>> itemResources, NonNullList<FluidStack> fluids) {
+    public TestResourceTemplateAttachment(NonNullList<ItemStack> items, NonNullList<ResourceStack<ItemResource>> itemResources, NonNullList<FluidStack> fluids) {
         //the callback passed in allows us, in this case, to inform the block entity of being changed without making the container block entity specific
         //When wanting to handle ItemStacks of size greater than 99 a different codec is needed so it may be simpler to work with ResourceStacks
         itemHandler = new ItemStackListHandler(items, Item.DEFAULT_MAX_STACK_SIZE, this::markBlockEntityAsDirty);

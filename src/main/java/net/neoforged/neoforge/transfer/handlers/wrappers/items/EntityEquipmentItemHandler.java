@@ -29,7 +29,7 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
      * However, the access to implementations can happen on multiple threads concurrently, which is why we use a thread-safe wrapper map.
      *
      * <p>A note on GC: weak keys alone are not suitable as the {@link EntityEquipmentItemHandler} strongly references the Entity.
-     * Weak values are suitable, but we have to ensure that the {@link EntityEquipmentItemHandler} remains strongly reachable as int as
+     * Weak values are suitable, but we have to ensure that the {@link EntityEquipmentItemHandler} remains strongly reachable as long as
      * one of the index wrappers refers to it, which is true thanks to the parent reference of {@link EquipmentSlotSnapshotJournal}.
      *
      * @see WorldlyContainerWrapper

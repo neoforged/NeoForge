@@ -22,7 +22,7 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ContainerOrHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.TransactionManager;
+import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 public class VanillaInventoryCodeHooks {
@@ -39,7 +39,7 @@ public class VanillaInventoryCodeHooks {
         for (int i = 0; i < size; i++) {
             ItemStack extractedItemStack;
             //Simulates the extraction
-            try (Transaction simulate = TransactionManager.open(null)) {
+            try (Transaction simulate = UnsafeTransactionManager.openUnsafe()) {
                 extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, ResourceFilters.any(), i, 1, simulate);
                 if (extractedItemStack.isEmpty()) continue; // Next index in the handler
             }

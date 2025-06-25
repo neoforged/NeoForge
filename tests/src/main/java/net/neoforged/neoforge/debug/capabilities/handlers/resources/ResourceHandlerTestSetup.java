@@ -23,9 +23,11 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStorageComponentHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStorageComponentHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStorageComponent;
+import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.items.ItemResourceContainerContentsHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
@@ -75,16 +77,16 @@ public record ResourceHandlerTestSetup() {
                         .networkSynchronized(IResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount))
                         .build());
 
-        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<FluidResource>>> FLUID_STORAGE_COMPONENT = Registry.COMPONENTS.register(
-                "fluid_storage", () -> DataComponentType.<ResourceStorageComponent<FluidResource>>builder()
-                        .persistent(FluidStorageComponentHandler.COMPONENT_CODEC)
-                        .networkSynchronized(FluidStorageComponentHandler.COMPONENT_STREAM_CODEC)
+        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceContainerContents<FluidResource>>> FLUID_STORAGE_COMPONENT = Registry.COMPONENTS.register(
+                "fluid_storage", () -> DataComponentType.<ResourceContainerContents<FluidResource>>builder()
+                        .persistent(FluidResourceContainerContents.CODEC)
+                        .networkSynchronized(FluidResourceContainerContents.STREAM_CODEC)
                         .build());
 
-        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStorageComponent<ItemResource>>> ITEM_STORAGE_COMPONENT = Registry.COMPONENTS.register(
-                "item_storage", () -> DataComponentType.<ResourceStorageComponent<ItemResource>>builder()
-                        .persistent(ItemStorageComponentHandler.COMPONENT_CODEC)
-                        .networkSynchronized(ItemStorageComponentHandler.COMPONENT_STREAM_CODEC)
+        DeferredHolder<DataComponentType<?>, DataComponentType<ResourceContainerContents<ItemResource>>> ITEM_RESOURCE_CONTAINER_CONTENTS = Registry.COMPONENTS.register(
+                "item_resource_container", () -> DataComponentType.<ResourceContainerContents<ItemResource>>builder()
+                        .persistent(ItemResourceContainerContents.CODEC)
+                        .networkSynchronized(ItemResourceContainerContents.STREAM_CODEC)
                         .build());
     }
 
@@ -113,11 +115,18 @@ public record ResourceHandlerTestSetup() {
                 Capabilities.FluidHandler.BLOCK, Content.RESOURCE_BLOCK_ENTITY.value(), (blockEntity, context) -> blockEntity.getData(Content.TEST_TEMPLATE_ATTACHMENT).fluidHandler));
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
-                Capabilities.FluidHandler.ITEM, (object, context) -> new FluidStorageComponentHandler(context, ResourceHandlerTestSetup.Content.FLUID_STORAGE_COMPONENT.get(), TANK_COUNT, TANK_CAPACITY),
+                Capabilities.FluidHandler.ITEM, (object, context) -> new ResourceContainerContentsHandler<>(
+                        context,
+                        Content.FLUID_STORAGE_COMPONENT.get(),
+                        TANK_COUNT,
+                        TANK_CAPACITY,
+                        FluidResource.EMPTY,
+                        FluidResource::withAmount,
+                        FluidResourceContainerContents.EMPTY),
                 Items.APPLE));
 
         bus.<RegisterCapabilitiesEvent>addListener(e -> e.registerItem(
-                Capabilities.ItemHandler.ITEM, (object, context) -> new ItemStorageComponentHandler(context, ResourceHandlerTestSetup.Content.ITEM_STORAGE_COMPONENT.get(), 100, Item.DEFAULT_MAX_STACK_SIZE),
+                Capabilities.ItemHandler.ITEM, (object, context) -> new ItemResourceContainerContentsHandler(context, ResourceHandlerTestSetup.Content.ITEM_RESOURCE_CONTAINER_CONTENTS.get(), 50, Item.DEFAULT_MAX_STACK_SIZE),
                 Items.APPLE));
     }
 

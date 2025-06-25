@@ -55,7 +55,7 @@ public final class FluidUtil {
         Preconditions.checkNotNull(pos);
 
         IResourceHandler<FluidResource> blockHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, side);
-        return blockHandler != null && interactWithFluidHandler(player, hand, blockHandler);
+        return blockHandler != null && interactWithFluidHandler(player, hand, blockHandler, null);
     }
 
     /**
@@ -64,12 +64,13 @@ public final class FluidUtil {
      * if that action fails then it tries to drain the item into the handler.
      * Automatically updates the item in the player's hand and stashes any extra items created.
      *
-     * @param player  The player doing the interaction between the item and fluid handler.
-     * @param hand    The player's hand that is holding an item that should interact with the fluid handler.
-     * @param handler The fluid handler.
+     * @param player      The player doing the interaction between the item and fluid handler.
+     * @param hand        The player's hand that is holding an item that should interact with the fluid handler.
+     * @param handler     The fluid handler.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
      */
-    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, IResourceHandler<FluidResource> handler) {
+    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, IResourceHandler<FluidResource> handler, @Nullable TransactionContext transaction) {
         Preconditions.checkNotNull(player);
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
@@ -78,61 +79,58 @@ public final class FluidUtil {
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
-        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE);
+        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE, transaction);
         if (!tryInsert.isEmpty()) return true;
 
-        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE);
+        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE, transaction);
         return !tryExtract.isEmpty();
     }
 
     /**
      * Fill a container from the given fluidSource.
      *
-     * @param context        The container (Or the item context for the container) to be filled. Won't be mutated unless executed.
-     * @param from           The fluid handler to be drained.
-     * @param amount         The largest amount of fluid that should be transferred.
-     * @param player         The player to make the filling noise. Pass null for no noise.
-     * @param transferAction Indicating whether it should be simulating or executing.
+     * @param context     The container (Or the item context for the container) to be filled. Won't be mutated unless executed.
+     * @param from        The fluid handler to be drained.
+     * @param amount      The largest amount of fluid that should be transferred.
+     * @param player      The player to make the filling noise. Pass null for no noise.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return a {@link FluidStack} holding the filled container if successful.
      */
     //formerly tryFillContainer
-    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, TransferAction transferAction) {
+    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
-        return handleContainer(from, itemCapability, amount, player, transferAction);
+        return handleContainer(from, itemCapability, amount, player, transaction);
     }
 
     /**
      * Empty a container from the given fluidSource.
      *
-     * @param context        The container (Or the item context for the container) to be drained.
-     * @param to             The fluid handler to be filled.
-     * @param amount         The largest amount of fluid that should be transferred.
-     * @param player         The player to make the filling noise. Pass null for no noise.
-     * @param transferAction Indicating whether it should be simulating or executing.
+     * @param context     The container (Or the item context for the container) to be drained.
+     * @param to          The fluid handler to be filled.
+     * @param amount      The largest amount of fluid that should be transferred.
+     * @param player      The player to make the filling noise. Pass null for no noise.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return a {@link FluidStack} holding the filled container if successful.
      */
-    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, TransferAction transferAction) {
+    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
-        return handleContainer(itemCapability, to, amount, player, transferAction);
+        return handleContainer(itemCapability, to, amount, player, transaction);
     }
 
     /**
      * Common logic for filling and draining the container context.
      */
-    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, TransferAction transferAction) {
-        try (Transaction transaction = TransactionManager.open(null)) {
-            FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
-            transferAction.commit(transaction);
-            if (player == null) return stack;
+    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
+        FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, ResourceFilters.any(), amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
+        if (player == null) return stack;
 
-            SoundEvent soundevent = stack.getFluidType().getSound(stack, SoundActions.BUCKET_FILL);
-            if (soundevent != null) {
-                player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
-            }
-            return stack;
+        SoundEvent soundevent = stack.getFluidType().getSound(stack, SoundActions.BUCKET_FILL);
+        if (soundevent != null) {
+            player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
+        return stack;
     }
 
     /**
@@ -144,11 +142,12 @@ public final class FluidUtil {
      * @param from        The fluid handler to move fluid from.
      * @param to          The fluid handler to move fluid to.
      * @param amount      The amount of fluid to move.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
-    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount) {
-        try (Transaction transaction = TransactionManager.open(null)) {
-            ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
+    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable TransactionContext transaction) {
+        try (Transaction internalTransaction = TransactionManager.open(transaction)) {
+            ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, internalTransaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
             SoundEvent soundevent = moved.resource().getSound(soundAction);
@@ -156,7 +155,7 @@ public final class FluidUtil {
                 level.playSound(null, pos.x(), pos.y() + 0.5, pos.z(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
 
-            transaction.commit();
+            internalTransaction.commit();
             return moved;
         }
     }
@@ -165,15 +164,16 @@ public final class FluidUtil {
      * Attempts to pick up the fluid placed in world at the given location in the given level and insert it into the provided handler.
      * If pickup is successful, the fluid is moved to the given fluid handler and a sound is played at the given position.
      *
-     * @param handler  The fluid handler to move the fluid to.
-     * @param soundPos The position to play the sound at.
-     * @param level    The level where the fluid is placed.
-     * @param pos      The position of the fluid in the level.
+     * @param handler     The fluid handler to move the fluid to.
+     * @param soundPos    The position to play the sound at.
+     * @param level       The level where the fluid is placed.
+     * @param pos         The position of the fluid in the level.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return true if the fluid was picked up and moved to the handler, false otherwise.
      */
-    public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
+    public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME);
+        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME, transaction);
         return !pickedUp.isEmpty();
     }
 
@@ -181,15 +181,16 @@ public final class FluidUtil {
      * Attempts to place the fluid held in the fluid handler at the given position in the given level. If placement is successful, the
      * fluid is extracted from the given fluid handler and a sound is played at the given position.
      *
-     * @param handler  The fluid handler to move the fluid from.
-     * @param soundPos The position to play the sound at.
-     * @param level    The level where the fluid is placed.
-     * @param pos      The position to place the fluid in the level.
+     * @param handler     The fluid handler to move the fluid from.
+     * @param soundPos    The position to play the sound at.
+     * @param level       The level where the fluid is placed.
+     * @param pos         The position to place the fluid in the level.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return true if the fluid was placed and moved from the handler, false otherwise.
      */
-    public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos) {
+    public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME);
+        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME, transaction);
         return !placed.isEmpty();
     }
 
@@ -197,30 +198,32 @@ public final class FluidUtil {
      * Attempts to pick up the fluid placed in world at the given location in the given level and insert it into a handler
      * that is attached to the item in the player's hand. If pickup is successful, the fluid is inserted into the item's fluid handler.
      *
-     * @param player The player picking up the fluid.
-     * @param hand   The hand holding the item that should pick up the fluid.
-     * @param level  The level where the fluid is placed.
-     * @param pos    The position of the fluid in the level.
+     * @param player      The player picking up the fluid.
+     * @param hand        The hand holding the item that should pick up the fluid.
+     * @param level       The level where the fluid is placed.
+     * @param pos         The position of the fluid in the level.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
-    public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
+    public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).oneByOne().getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos);
+        return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos, transaction);
     }
 
     /**
      * Attempts to place the fluid held in the fluid handler found in the given player's hand at the given position in the
      * given level. If placement is successful, the fluid is extracted from the item's fluid handler.
      *
-     * @param player The player placing the fluid.
-     * @param hand   The hand holding the item that should place the fluid.
-     * @param level  The level where the fluid is placed.
-     * @param pos    The position to place the fluid in the level.
+     * @param player      The player placing the fluid.
+     * @param hand        The hand holding the item that should place the fluid.
+     * @param level       The level where the fluid is placed.
+     * @param pos         The position to place the fluid in the level.
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
-    public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos) {
+    public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).oneByOne().getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos);
+        return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos, transaction);
     }
 
     /**
@@ -293,23 +296,29 @@ public final class FluidUtil {
     /**
      * Move fluids between two handlers, from and to another given some fluidstack and a decision on if it is simulating or executing.
      *
-     * @param from       The fluid handler to be filled.
-     * @param to         The fluid handler to be drained.
-     * @param fluidStack The fluid that should be transferred. Amount represents the maximum amount to transfer.
-     * @param action     Decides if the move should commit its interactions in the end
+     * @param from        The fluid handler to be inserted into.
+     * @param to          The fluid handler to be extracted from.
+     * @param fluidStack  The fluid that should be transferred. Amount represents the maximum amount to transfer.
+     * @param transaction The transaction chain this is a part of. {@code null} if starting a root transaction.
      * @return the fluidStack that was transferred from the from to the to. null on failure.
      */
-    public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, TransferAction action) {
-        try (Transaction transaction = TransactionManager.open(null)) {
-            FluidResource resource = FluidResource.of(fluidStack);
-            int amount = ResourceHandlerUtil.move(from, to, resource::equals, fluidStack.getAmount(), transaction);
+    public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, @Nullable TransactionContext transaction) {
+        FluidResource resource = FluidResource.of(fluidStack);
+        int amount = ResourceHandlerUtil.move(from, to, resource::equals, fluidStack.getAmount(), transaction);
 
-            //Commit if we are executing
-            action.commit(transaction);
-            return resource.toStack(amount);
-        }
+        //Commit if we are executing
+        return resource.toStack(amount);
     }
 
+    /**
+     * Extracts the first fluid that matches the filter and its total amount (the amount is the total in the handler up to the amount specified, not just the first instance found).
+     *
+     * @param handler     The fluid handler to be extracted from.
+     * @param filter      The filter to match the resources with.
+     * @param amount      The amount that is desired to extract
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @return Returns a FluidStack with the first fluid resource and the total amount extracted, but no more than what was requested.
+     */
     public static FluidStack extractFluidStackFiltered(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
@@ -318,6 +327,15 @@ public final class FluidUtil {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
     }
 
+    /**
+     * Extracts the first fluid that matches the filter and its total amount (the amount is the total in the handler up to the amount specified, not just the first instance found).
+     *
+     * @param handler     The fluid handler to be extracted from.
+     * @param filter      The filter to match the resources with.
+     * @param amount      The amount that is desired to extract
+     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @return Returns a ResourceStack with the first fluid resource and the total amount extracted, but no more than what was requested.
+     */
     public static ResourceStack<FluidResource> extractResourceStackFiltered(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
@@ -326,6 +344,12 @@ public final class FluidUtil {
         return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
     }
 
+    /**
+     * Finds the first Fluid Resource in the specified handler
+     * 
+     * @param handler The handler to iterate over.
+     * @return First non-empty Fluid Resource found. Otherwise, {@code Empty} is returned.
+     */
     public static FluidResource getFirstFluidResource(IResourceHandler<FluidResource> handler) {
         return ResourceHandlerUtil.getFirstResourceOrDefault(handler, FluidResource.EMPTY);
     }

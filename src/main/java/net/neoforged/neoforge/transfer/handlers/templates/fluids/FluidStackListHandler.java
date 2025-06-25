@@ -14,11 +14,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class FluidStackListHandler extends StackListHandler<FluidStack, FluidResource> {
     public FluidStackListHandler(int size, int capacity, @Nullable Runnable onChangedCallback) {
-        super(size, FluidStack.EMPTY, capacity, onChangedCallback);
+        super(size, FluidStack.EMPTY, capacity, FluidResource::toStack, onChangedCallback);
     }
 
     public FluidStackListHandler(NonNullList<FluidStack> stacks, int capacity, @Nullable Runnable onChangedCallback) {
-        super(stacks, FluidStack.EMPTY, capacity, onChangedCallback);
+        super(stacks, FluidStack.EMPTY, capacity, FluidResource::toStack, onChangedCallback);
     }
 
     @Override
@@ -37,22 +37,12 @@ public class FluidStackListHandler extends StackListHandler<FluidStack, FluidRes
     }
 
     @Override
-    public boolean isStackEmpty(FluidStack stack) {
-        return stack.isEmpty();
-    }
-
-    @Override
     public boolean matches(FluidResource resource, FluidStack stack) {
         return resource.is(stack);
     }
 
     @Override
-    public FluidStack toStack(FluidResource resource, int amount) {
-        return resource.toStack(amount);
-    }
-
-    @Override
-    public FluidStack copyOf(FluidStack stack) {
+    public FluidStack snapshotOf(FluidStack stack) {
         return stack.copy();
     }
 }

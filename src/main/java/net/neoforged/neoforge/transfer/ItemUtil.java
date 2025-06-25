@@ -30,8 +30,8 @@ public final class ItemUtil {
      * @param player The player to give the item to
      * @param stack  The {@link ItemStack} to insert
      */
-    public static void giveItemToPlayer(Player player, ItemStack stack) {
-        giveItemToPlayer(player, ItemResource.of(stack), stack.getCount());
+    public static void giveItemToPlayer(Player player, ItemStack stack, @Nullable TransactionContext transaction) {
+        giveItemToPlayer(player, ItemResource.of(stack), stack.getCount(), transaction);
     }
 
     /**
@@ -42,14 +42,14 @@ public final class ItemUtil {
      * @param resource The {@link ItemResource} to give
      * @param amount   The amount of the resource to give
      */
-    public static void giveItemToPlayer(Player player, ItemResource resource, int amount) {
+    public static void giveItemToPlayer(Player player, ItemResource resource, int amount, @Nullable TransactionContext transaction) {
         if (resource.isEmpty()) return;
         IResourceHandler<ItemResource> cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         if (cap == null) return;
 
-        try (Transaction transaction = TransactionManager.open(null)) {
-            int inserted = cap.insert(resource, amount, transaction);
-            if (inserted == amount) transaction.commit();
+        try (Transaction internalTransaction = TransactionManager.open(transaction)) {
+            int inserted = cap.insert(resource, amount, internalTransaction);
+            if (inserted == amount) internalTransaction.commit();
         }
     }
 
@@ -61,8 +61,8 @@ public final class ItemUtil {
      * @param stack         The {@link ItemStack} to insert
      * @param preferredSlot slot to start on
      */
-    public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot) {
-        giveItemToPlayer(player, ItemResource.of(stack), stack.getCount(), preferredSlot);
+    public static void giveItemToPlayer(Player player, ItemStack stack, int preferredSlot, @Nullable TransactionContext transaction) {
+        giveItemToPlayer(player, ItemResource.of(stack), stack.getCount(), preferredSlot, transaction);
     }
 
     /**
@@ -74,13 +74,13 @@ public final class ItemUtil {
      * @param amount        The amount of the resource to give
      * @param preferredSlot slot to start on
      */
-    public static void giveItemToPlayer(Player player, ItemResource resource, int amount, int preferredSlot) {
+    public static void giveItemToPlayer(Player player, ItemResource resource, int amount, int preferredSlot, @Nullable TransactionContext transaction) {
         if (resource.isEmpty()) return;
 
         PlayerItemContext context = new PlayerItemContext(player, preferredSlot);
-        try (Transaction transaction = TransactionManager.open(null)) {
-            if (amount == context.insert(resource, amount, transaction))
-                transaction.commit();
+        try (Transaction internalTransaction = TransactionManager.open(transaction)) {
+            if (amount == context.insert(resource, amount, internalTransaction))
+                internalTransaction.commit();
         }
     }
 

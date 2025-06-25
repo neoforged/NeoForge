@@ -70,7 +70,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
     public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.of(EMPTY, 0);
-    public static final MutableResourceStack<ItemResource> EMPTY_MUTABLE_STACK = MutableResourceStack.of(EMPTY, 0);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -111,8 +110,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * <strong>Note:</strong> This cannot be called before your item is registered
      */
     public static ItemResource of(Holder<Item> item) {
-        if (item.value() == Items.AIR) return EMPTY;
-        return item.value().getDefaultResource();
+        return of(item.value());
     }
 
     /**
@@ -244,11 +242,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     public ResourceStack<ItemResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK;
         return ResourceStack.of(this, amount);
-    }
-
-    public MutableResourceStack<ItemResource> withMutableAmount(int amount) {
-        if (amount == 0 || isEmpty()) return ItemResource.EMPTY_MUTABLE_STACK;
-        return MutableResourceStack.of(this, amount);
     }
 
     @Override

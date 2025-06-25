@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.resource.temp;
+package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
@@ -11,9 +11,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResourceStack;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
+import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 
 // Not quite ready for review, but you are welcome to look over it if you wish. Missing docs but that will be coming next.
 public class FluidResourceContainerContents {
@@ -36,6 +38,6 @@ public class FluidResourceContainerContents {
     }
 
     private static Component getHoverName(ResourceStack<FluidResource> resource) {
-        return FluidResource.fluidStackOf(resource).getHoverName();
+        return UnsafeResourceUtils.innerStackOf(resource.resource()).getHoverName();
     }
 }

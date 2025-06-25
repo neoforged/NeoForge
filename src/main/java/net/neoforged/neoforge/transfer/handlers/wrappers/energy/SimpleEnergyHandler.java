@@ -17,6 +17,8 @@ import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
  * This is intended for use in simple cases where you do not need the full power of the transaction system. It is important to remember, that this is not an IEnergyHandler itself.
  */
 public final class SimpleEnergyHandler {
+    //todo copy all docs over from the existing handler interface before final reviews.
+    // During review process we may change the documentation of IEnergyHandler, so it is simpler to do it all in the end.
     public static SimpleEnergyHandler of(IEnergyHandler handler) {
         return new SimpleEnergyHandler(handler);
     }
