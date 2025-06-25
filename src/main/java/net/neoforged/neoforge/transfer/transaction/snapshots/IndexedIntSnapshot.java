@@ -10,12 +10,12 @@ import java.util.List;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A snapshot journal that can keep track of {@code int} values in an indexable structure. Also takes in a SnapshotJournal
  * that can be updated when an index gets written to. An example is using a {@link GroupedSnapshotJournal} to handle
  * the scenario of doing a single commit for something like {@link BlockEntity#setChanged()}.
- * If no additional snapshot is needed, you can pass in {@link GroupedSnapshotJournal#EMPTY}
  */
 public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     /**
@@ -39,6 +39,7 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     private final Revert setter;
     private final Snapshot getter;
     //One shared setChanged journal shared across all indices
+    @Nullable
     private final SnapshotJournal<?> onChangedSnapshot;
 
     /**
@@ -51,7 +52,7 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
      *                 scenarios where it may be doing an expensive call; rather than also doing this once per index change.
      * @return {@link SnapshotJournal} for handling integer value snapshotting at an index
      */
-    public static IndexedIntSnapshot of(Revert setter, Snapshot getter, SnapshotJournal<?> onChange) {
+    public static IndexedIntSnapshot of(Revert setter, Snapshot getter, @Nullable SnapshotJournal<?> onChange) {
         return new IndexedIntSnapshot(0, setter, getter, onChange);
     }
 
@@ -74,7 +75,7 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
         return snapshots;
     }
 
-    private IndexedIntSnapshot(int index, Revert setter, Snapshot getter, SnapshotJournal<?> onChange) {
+    private IndexedIntSnapshot(int index, Revert setter, Snapshot getter, @Nullable SnapshotJournal<?> onChange) {
         this.index = index;
         this.setter = setter;
         this.getter = getter;
@@ -93,7 +94,8 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
 
     @Override
     public void updateSnapshots(TransactionContext transaction) {
-        onChangedSnapshot.updateSnapshots(transaction);
+        if (onChangedSnapshot != null)
+            onChangedSnapshot.updateSnapshots(transaction);
         super.updateSnapshots(transaction);
     }
 }

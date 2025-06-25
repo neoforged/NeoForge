@@ -35,43 +35,48 @@ public class VanillaInventoryCodeHooks {
         int size = handler.size();
         int containerSize = dest.getContainerSize();
 
+        //We can't use the index-less extract since we need to match the item in hopper's slots.
+        // Instead, we iterate over the indices of the handler and try to extract anything from its index.
+        // Then, with a non-empty item stack we attempt to put that item stack into the hopper in each of its slots,
+        // until it either fits, or we exhaust the size of the hopper. Repeat if not successful with the next index of the
+        // handler
         for (int i = 0; i < size; i++) {
             ItemStack extractedItemStack;
-            //Simulates the extraction
-            try (Transaction simulate = UnsafeTransactionManager.openUnsafe()) {
-                extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, resource -> true, i, 1, simulate);
-                if (extractedItemStack.isEmpty()) continue; // Next index in the handler
-            }
+            try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+                extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, resource -> true, i, 1, transaction);
+                // If our item stack is empty we revert the extraction (by not committing),
+                // and move on to the next index in the handler
+                if (extractedItemStack.isEmpty()) continue;
 
-            //Item found, now to iterate the hopper indices
-            for (int j = 0; j < containerSize; j++) {
-                //Item currently in the hopper slot.
-                ItemStack destStack = dest.getItem(j);
+                //Item found, now to iterate the hopper indices
+                for (int j = 0; j < containerSize; j++) {
+                    //Item currently in the hopper slot.
+                    ItemStack destStack = dest.getItem(j);
 
-                // If the item can't be placed in, skip. This is slightly different from normal vanilla behaviour.
-                if (!dest.canPlaceItem(j, extractedItemStack)) continue;
+                    // If the item can't be placed in, skip. This is slightly different from normal vanilla behaviour.
+                    if (!dest.canPlaceItem(j, extractedItemStack)) continue;
 
-                //Change logic based on if there is something there or not.
-                //All simulations are done, we now just need to follow the path based on what is there.
-                if (destStack.isEmpty()) {
-                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, resource -> true, 1, null);
-                    if (extractedItemStack.isEmpty()) continue;//Should be unneeded
-                    dest.setItem(j, extractedItemStack);
-                    dest.setChanged();
-                    return true;
-                }
+                    //Change logic based on if there is something there or not.
+                    //All simulations are done, we now just need to follow the path based on what is there.
+                    if (destStack.isEmpty()) {
+                        transaction.commit();
+                        dest.setItem(j, extractedItemStack);
+                        dest.setChanged();
+                        return true;
+                    }
 
-                int destCount = destStack.getCount();
-                boolean canStackHoldMore = destCount < destStack.getMaxStackSize();
-                boolean canSlotHoldMore = destCount < dest.getMaxStackSize();
+                    int destCount = destStack.getCount();
+                    boolean canStackHoldMore = destCount < destStack.getMaxStackSize();
+                    boolean canSlotHoldMore = destCount < dest.getMaxStackSize();
 
-                if (canStackHoldMore && canSlotHoldMore && ItemStack.isSameItemSameComponents(extractedItemStack, destStack)) {
-                    extractedItemStack = ItemUtil.extractItemStackFiltered(handler, resource -> true, 1, null);
-                    if (extractedItemStack.isEmpty()) continue;//Should be unneeded
-                    destStack.grow(1);
-                    dest.setItem(j, destStack);
-                    dest.setChanged();
-                    return true;
+                    if (canStackHoldMore && canSlotHoldMore && ItemStack.isSameItemSameComponents(extractedItemStack, destStack)) {
+                        //Commit our earlier extraction
+                        transaction.commit();
+                        destStack.grow(1);
+                        dest.setItem(j, destStack);
+                        dest.setChanged();
+                        return true;
+                    }
                 }
             }
         }
@@ -94,14 +99,14 @@ public class VanillaInventoryCodeHooks {
             if (item.isEmpty())
                 continue;
 
-            ItemStack originalSlotContents = item.copy();
-            int accepted = ItemUtil.insertIndexForced(handler, hopper.removeItem(i, 1), null);
-            if (accepted > 0)
-                return true;
-
-            hopper.setItem(i, originalSlotContents);
+            try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+                int accepted = ItemUtil.insertIndexForced(handler, hopper.removeItem(i, 1), transaction);
+                if (accepted > 0) {
+                    transaction.commit();
+                    return true;
+                }
+            }
         }
-
         return false;
     }
 

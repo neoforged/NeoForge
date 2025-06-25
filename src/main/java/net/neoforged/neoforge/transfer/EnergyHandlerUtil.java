@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Range;
 public final class EnergyHandlerUtil {
     /**
      * @return True if the specified amount is 0 and should skip being processed.
-     * @throws ReportedException when amount is negative.
+     * @throws IllegalArgumentException when amount is negative.
      */
     public static boolean checkEnergy(int amount) {
         if (amount < 0) {

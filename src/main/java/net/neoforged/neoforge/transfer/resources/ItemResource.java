@@ -94,7 +94,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     @ApiStatus.Internal
     public static ItemResource invalidateDefault(ItemLike item) {
         if (item.asItem() == Items.AIR) return EMPTY;
-        return new ItemResource(item.asItem().getDefaultInstance().copyWithCount(1));
+        return new ItemResource(new ItemStack(item));
     }
 
     public static ItemResource of(ItemStack itemStack) {

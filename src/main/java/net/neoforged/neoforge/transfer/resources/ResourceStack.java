@@ -153,8 +153,7 @@ public final class ResourceStack<T extends IResource> {
      *         If the newAmount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
      */
     public ResourceStack<T> withAmount(int newAmount) {
-        if (resource.isEmpty()) return this;
-        if (newAmount == 0) return emptyInstance;
+        if (resource.isEmpty() || newAmount == 0) return emptyInstance;
         if (newAmount == amount) return this;
         return ResourceStack.of(resource, newAmount, emptyInstance);
     }

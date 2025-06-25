@@ -254,7 +254,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
      */
     public void set(int index, R resource, int amount) {
         setInternal(index, resource, amount);
-        onChangeJournal.runCallback();
+        onChangeJournal.runCommitCallback();
     }
 
     @ApiStatus.OverrideOnly
@@ -288,7 +288,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
         @Override
         protected void onCommit(S originalState) {
-            onChangeJournal.runCallback();
+            onChangeJournal.runCommitCallback();
         }
     }
 }

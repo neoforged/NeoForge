@@ -13,7 +13,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * An {@link IResourceHandler} that represents a handler that rejects all operations.
- * Note, if somehow it manages to get to {@link #getResource(int)} it will throw an error. We say "somehow" as the size is 0, so there should not be a valid path to get to that method when used correctly.
  * Use the {@link #instance()} method to safely cast to the resource type you are expecting. This should work for all resources.
  */
 public final class EmptyResourceHandler<T extends IResource> implements IResourceHandler<T> {

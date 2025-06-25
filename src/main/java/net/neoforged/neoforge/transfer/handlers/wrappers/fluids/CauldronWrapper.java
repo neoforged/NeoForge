@@ -28,7 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public final class CauldronWrapper extends SnapshotJournal<BlockState> implements ISingleResourceHandler<FluidResource> {
     // Weak values to make sure wrappers are cleaned up after use, thread-safe.
-    private static final Map<WrapperLocation, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakValues().makeMap();
+    private static final Map<WrapperLocation, CauldronWrapper> wrappers = new MapMaker().concurrencyLevel(1).weakKeys().weakValues().makeMap();
     private final WrapperLocation location;
 
     public static CauldronWrapper get(Level level, BlockPos pos) {

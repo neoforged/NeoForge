@@ -37,7 +37,7 @@ public class EntityEquipmentItemHandler implements IResourceHandler<ItemResource
      */
     // TODO: look into promoting the weak reference to a soft reference if building the wrappers becomes a performance bottleneck.
     // TODO: should have identity semantics?
-    private static final Map<LivingEntity, EntityEquipmentItemHandler> WRAPPERS = new MapMaker().weakValues().makeMap();
+    private static final Map<LivingEntity, EntityEquipmentItemHandler> WRAPPERS = new MapMaker().weakKeys().weakValues().makeMap();
 
     @SafeVarargs
     public static EntityEquipmentItemHandler of(LivingEntity entity, Predicate<EquipmentSlot>... slotFilter) {

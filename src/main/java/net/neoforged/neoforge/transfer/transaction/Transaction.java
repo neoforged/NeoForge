@@ -53,15 +53,15 @@ import net.minecraft.ReportedException;
  *
  * <p>Participants are responsible for upholding this contract themselves, by using {@link #addCloseCallback}
  * to react to transaction close events and properly validate or revert changes.
- * Any action that modifies state outside the transaction, such as calls to {@code markDirty()} or neighbor updates,
+ * Any action that modifies the state outside the transaction, such as calls to {@code markDirty()} or neighbor updates,
  * should be deferred until {@linkplain #addRootCloseCallback after the outer transaction is closed}
  * to give every participant a chance to react to transaction close events.
  *
  * <p>This is very low-level for most applications, and most participants should subclass {@link SnapshotJournal}
  * that will take care of properly maintaining their state.
  *
- * <p>Participants should generally be passed a {@link TransactionContext} parameter instead of the full {@code Transaction},
- * to make sure they don't call {@link #commit} or {@link #close} mistakenly.
+ * <p>Journals should generally be passed a {@link TransactionContext} parameter instead of the full {@code Transaction},
+ * to make sure they don't accidentally call {@link #commit} or {@link #close}.
  *
  * <p>Every transaction is only valid on the thread it was opened on,
  * and attempts to use it on another thread will throw an exception.
@@ -69,16 +69,15 @@ import net.minecraft.ReportedException;
  */
 public final class Transaction implements AutoCloseable, TransactionContext {
     /**
-     * Close the current transaction, committing all the changes that happened during this transaction and its <b>committed</b> children transactions.
+     * Close the current transaction, committing all the changes that happened during this transaction and its <b>committed</b> child transactions.
      * If this transaction was opened with a {@code null} parent, all changes are applied.
      * If this transaction was opened with a non-{@code null} parent, all changes will be applied when and if the changes of
      * the parent transactions are applied.
      * <p>
      * This would be familiar to using `execute` in the old simulated handlers
      *
-     * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
-     * @throws IllegalStateException If this transaction is not the current transaction.
-     * @throws IllegalStateException If this transaction was closed.
+     * @throws IllegalStateException If this function is not called on the thread this transaction was opened in,
+     *                               this transaction is not the current transaction, or this transaction was closed.
      */
     public void commit() {
         close(Result.COMMITTED);
@@ -107,9 +106,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
 
         if (nestingDepth < 0) {
             throw new IndexOutOfBoundsException("Nesting depth may not be negative.");
-        }
-
-        if (nestingDepth > manager.currentDepth) {
+        } else if (nestingDepth > manager.currentDepth) {
             throw new IndexOutOfBoundsException("There is no open transaction for nesting depth " + nestingDepth);
         }
 
@@ -169,16 +166,15 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     void validateCurrentTransaction() {
         validateCurrentThread();
 
-        if (manager.currentDepth != -1) {
-            if (manager.stack.get(manager.currentDepth) == this) return;
-        }
+        if (manager.currentDepth != -1 && manager.stack.get(manager.currentDepth) == this)
+            return;
 
         //TODO validate this is handling the use case of showing a dev which transactions are being opened / closed (on top of the stacktrace)
         String self = TransactionManager.debugNameFrom(manager.debugMap.get(nestingDepth));
         String actual = TransactionManager.debugNameFrom(manager.debugMap.get(manager.currentDepth));
 
         CrashReport report = CrashReport.forThrowable(new IllegalStateException("Transaction function was called on a transaction with depth %d, but the current transaction has depth %d."
-                .formatted(nestingDepth, manager.currentDepth)), "Transacting");
+                .formatted(nestingDepth, manager.currentDepth)), "Transaction Operation");
         report.addCategory("Transaction Opening")
                 .setDetail("Existing Transaction", actual)
                 .setDetail("Current Depth", manager.currentDepth)
@@ -195,14 +191,14 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         }
     }
 
-    void close(Result result) {
+    private void close(Result result) {
         validateCurrentTransaction();
         validateOpen();
         // Block transaction operations
         lifecycle = Lifecycle.CLOSING;
 
         // Note: it is important that we don't let exceptions corrupt the global state of the transaction manager.
-        // That is why any callback has to run inside a try block.
+        // That is why every callback has to run inside their own try-with-resources block.
         RuntimeException closeException = null;
 
         // Invoke callbacks in reverse order

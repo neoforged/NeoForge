@@ -129,11 +129,11 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     }
 
     private class DroppedItems extends SnapshotJournal<Integer> {
-        final List<Entry> entries = new ArrayList<>();
+        final List<DropInfo> entries = new ArrayList<>();
 
         void addDrop(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName, TransactionContext transaction) {
             updateSnapshots(transaction);
-            entries.add(new Entry(resource, amount, dropAround, includeThrowerName));
+            entries.add(new DropInfo(resource, amount, dropAround, includeThrowerName));
         }
 
         @Override
@@ -159,17 +159,18 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
         @Override
         protected void onCommit(Integer originalState) {
             // actually drop the stacks
-            for (Entry entry : entries) {
-                int remainder = entry.amount;
+            for (DropInfo dropInfo : entries) {
+                int remainder = dropInfo.amount;
 
+                var maxStackSize = dropInfo.resource.getMaxStackSize();
                 while (remainder > 0) {
-                    int dropped = Math.min(entry.resource.getMaxStackSize(), remainder);
-                    inventory.player.drop(entry.resource.toStack(dropped), entry.dropAround, entry.includeThrowerName);
+                    int dropped = Math.min(maxStackSize, remainder);
+                    inventory.player.drop(dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName);
                     remainder -= dropped;
                 }
             }
         }
 
-        private record Entry(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName) {}
+        private record DropInfo(ItemResource resource, int amount, boolean dropAround, boolean includeThrowerName) {}
     }
 }

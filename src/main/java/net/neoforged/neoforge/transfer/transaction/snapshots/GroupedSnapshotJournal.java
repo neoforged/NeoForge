@@ -20,8 +20,6 @@ import org.jetbrains.annotations.Nullable;
  * When the transaction is committed, {@link #commitCallback} will run; and when the transaction is reverted {@link #revertCallback} will instead. Only one per transaction chain will be called and only once.
  */
 public final class GroupedSnapshotJournal extends SnapshotJournal<GroupedSnapshotJournal.IgnoredValue> {
-    public static final SnapshotJournal<?> EMPTY = GroupedSnapshotJournal.of(null, null);
-
     @Nullable
     private final Runnable commitCallback;
     @Nullable
@@ -75,13 +73,13 @@ public final class GroupedSnapshotJournal extends SnapshotJournal<GroupedSnapsho
 
     @Override
     protected void onCommit(IgnoredValue originalState) {
-        runCallback();
+        runCommitCallback();
     }
 
     /**
      * A way to force running the callback if desired, instead of caching it elsewhere as well.
      */
-    public void runCallback() {
+    public void runCommitCallback() {
         if (commitCallback != null)
             commitCallback.run();
     }

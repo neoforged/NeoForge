@@ -15,6 +15,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -28,7 +29,8 @@ public final class ResourceHandlerUtil {
      * <p>
      * Typically used in handler insert or extract implementations to determine if the operation is valid before proceeding.
      *
-     * @see ResourceStorageComponentHandler#insert(IResource, int, TransactionContext) ResourceStorageHandler.insert(IResource, int, TransactionContext)
+     * @throws IllegalArgumentException When the amount is negative
+     * @see ResourceContainerContentsHandler#insert(int, IResource, int, TransactionContext)
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
         if (amount < 0) {
@@ -392,14 +394,14 @@ public final class ResourceHandlerUtil {
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
         if (isZero(amount)) return stackFactory.create(defaultResource, 0);
-
+        R resource = handler.getResource(index);
+        if (doesNotMatch(filter, resource))
+            return stackFactory.create(defaultResource, 0);
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
-            R resource = handler.getResource(index);
-            if (doesNotMatch(filter, resource))
-                return stackFactory.create(defaultResource, 0);
             int extract = handler.extract(resource, amount, subTransaction);
+            if (extract == 0)
+                return stackFactory.create(defaultResource, 0);
             subTransaction.commit();
-            if (extract == 0) return stackFactory.create(defaultResource, 0);
             return stackFactory.create(resource, extract);
         }
     }
