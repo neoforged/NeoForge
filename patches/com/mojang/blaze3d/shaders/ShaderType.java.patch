@@ -19,7 +19,7 @@
 +     */
 +    TASK("task", ".tsh"),
 +    /**
-+     * @see ShaderType#MESH
++     * @see ShaderType#TASK
 +     */
 +    MESH("mesh", ".msh"),
 +    ;
