@@ -7,7 +7,6 @@ package net.neoforged.neoforge.internal;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -38,10 +37,6 @@ public class NeoForgeProxy {
             }
             case DEDICATED_SERVER -> new NeoForgeProxy();
         };
-    }
-
-    public void sendToServer(CustomPacketPayload payload, CustomPacketPayload... payloads) {
-        throw new UnsupportedOperationException("Cannot send serverbound payloads on the server");
     }
 
     public BlockableEventLoop<Runnable> getClientExecutor() {

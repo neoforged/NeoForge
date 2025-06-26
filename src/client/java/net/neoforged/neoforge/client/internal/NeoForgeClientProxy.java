@@ -9,22 +9,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.internal.NeoForgeProxy;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
 public class NeoForgeClientProxy extends NeoForgeProxy {
-    @Override
-    public void sendToServer(CustomPacketPayload payload, CustomPacketPayload... payloads) {
-        ClientPacketDistributor.sendToServer(payload, payloads);
-    }
-
     @Override
     public BlockableEventLoop<Runnable> getClientExecutor() {
         return Minecraft.getInstance();

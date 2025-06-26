@@ -19,25 +19,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Means to distribute packets in various ways
+ * <p>
+ * Serverbound payloads must be sent via {@code ClientPacketDistributor#sendToServer()}
  */
 public final class PacketDistributor {
     private PacketDistributor() {}
-
-    /**
-     * Send the given payload(s) to the server
-     * 
-     * @deprecated Use {@code ClientPacketDistributor#sendToServer()} instead
-     */
-    @Deprecated
-    public static void sendToServer(CustomPacketPayload payload, CustomPacketPayload... payloads) {
-        NeoForgeProxy.INSTANCE.sendToServer(payload, payloads);
-    }
 
     /**
      * Send the given payload(s) to the given player
