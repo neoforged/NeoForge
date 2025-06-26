@@ -77,6 +77,8 @@ public class PayloadRegistrar {
 
     /**
      * Registers a bidirectional payload for the play phase.
+     * <p>
+     * If the provided {@linkplain IPayloadHandler client handler} is null, it must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
     public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
         register(type, codec, serverHandler, clientHandler, List.of(ConnectionProtocol.PLAY), Optional.empty(), version, optional);
@@ -121,6 +123,8 @@ public class PayloadRegistrar {
 
     /**
      * Registers a bidirectional payload for the configuration phase.
+     * <p>
+     * If the provided {@linkplain IPayloadHandler client handler} is null, it must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
     public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
         register(type, codec, serverHandler, clientHandler, List.of(ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
@@ -165,6 +169,8 @@ public class PayloadRegistrar {
 
     /**
      * Registers a bidirectional payload for all phases.
+     * <p>
+     * If the provided {@linkplain IPayloadHandler client handler} is null, it must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
     public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
         register(type, codec, serverHandler, clientHandler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);

@@ -62,7 +62,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
             throw new IllegalStateException("ClientNetworkRegistry cannot be set up before main NetworkRegistry");
         }
         if (setupClient) {
-            throw new IllegalStateException("The client network registry can only be setup once.");
+            throw new IllegalStateException("The client network registry can only be set up once.");
         }
 
         ModLoader.postEvent(new RegisterClientPayloadHandlersEvent());
@@ -122,7 +122,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
             registerHandler(CLIENTBOUND_HANDLERS, protocol, PacketFlow.CLIENTBOUND, type, handler);
         }
         if (!found) {
-            throw new IllegalArgumentException("No known payload registration for type: " + type);
+            throw new IllegalArgumentException("Cannot register client handler for unknown payload type " + type);
         }
     }
 

@@ -35,7 +35,9 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
-public class NetworkInitialization {
+final class NetworkInitialization {
+    private NetworkInitialization() {}
+
     @SubscribeEvent
     private static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1") // Update this version if the payload semantics change.

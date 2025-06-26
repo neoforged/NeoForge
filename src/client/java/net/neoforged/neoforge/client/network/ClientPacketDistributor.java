@@ -11,7 +11,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
- * Means to distribute packets in various ways
+ * Means to distribute serverbound packets
  */
 public final class ClientPacketDistributor {
     private ClientPacketDistributor() {}

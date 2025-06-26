@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.registration.HandlerThread;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Event fired when the {@link ClientNetworkRegistry} is being set up.
+ * Event fired when on the mod event bus the {@link ClientNetworkRegistry} is being set up.
  * <p>
  * This event is used to assign payload handlers to clientbound payload types.
  */
@@ -23,7 +23,7 @@ public class RegisterClientPayloadHandlersEvent extends Event implements IModBus
     public RegisterClientPayloadHandlersEvent() {}
 
     /**
-     * Registers the provided {@link IPayloadHandler} as the client handler to be called on the main thread
+     * Registers the provided {@link IPayloadHandler} as the client handler to be invoked on the main thread
      * for the provided {@link CustomPacketPayload.Type}
      *
      * @param type    The payload type to register the handler for
@@ -34,11 +34,11 @@ public class RegisterClientPayloadHandlersEvent extends Event implements IModBus
     }
 
     /**
-     * Registers the provided {@link IPayloadHandler} as the client handler to be called on the specified thread
+     * Registers the provided {@link IPayloadHandler} as the client handler to be invoked on the specified thread
      * for the provided {@link CustomPacketPayload.Type}
      *
      * @param type    The payload type to register the handler for
-     * @param thread  The thread the handler should be called on
+     * @param thread  The thread the handler should be invoked on
      * @param handler The client-side payload handler to register
      */
     public <T extends CustomPacketPayload> void register(CustomPacketPayload.Type<T> type, HandlerThread thread, IPayloadHandler<T> handler) {
