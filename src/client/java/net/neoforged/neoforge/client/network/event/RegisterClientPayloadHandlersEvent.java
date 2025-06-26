@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.registration.HandlerThread;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Event fired when on the mod event bus the {@link ClientNetworkRegistry} is being set up.
+ * Event fired on the mod event bus when the {@link ClientNetworkRegistry} is being set up.
  * <p>
  * This event is used to assign payload handlers to clientbound payload types.
  */
