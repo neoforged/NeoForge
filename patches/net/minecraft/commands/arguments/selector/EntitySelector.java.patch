@@ -9,7 +9,7 @@
              throw EntityArgument.ERROR_SELECTORS_NOT_ALLOWED.create();
          }
      }
-@@ -150,8 +_,9 @@
+@@ -149,8 +_,9 @@
              } else {
                  Predicate<Entity> predicate = this.getPredicate(vec3, aabb, p_121161_.enabledFeatures());
                  List<Entity> list = new ObjectArrayList<>();
@@ -20,7 +20,7 @@
                  } else {
                      for (ServerLevel serverlevel : p_121161_.getServer().getAllLevels()) {
                          this.addEntities(list, serverlevel, aabb, predicate);
-@@ -163,13 +_,21 @@
+@@ -162,13 +_,22 @@
          }
      }
  
@@ -32,14 +32,15 @@
                  p_121156_.getEntities(this.type, p_352947_, p_121158_, p_121155_, i);
              } else {
 -                p_121156_.getEntities(this.type, p_121158_, p_121155_, i);
++                // TODO: remove this horrible mess
 +                if (p_121156_ instanceof ServerLevel serverLevel) {
 +                    serverLevel.getEntities(this.type, p_121158_, p_121155_, i);
 +                } else {
-+                    ((net.minecraft.client.multiplayer.ClientLevel) p_121156_).entitiesForRendering().forEach(entity -> {
-+                        if (p_121158_.test(entity) && p_121155_.size() < i) {
-+                            p_121155_.add(entity);
-+                        }
-+                    });
++//                    ((net.minecraft.client.multiplayer.ClientLevel) p_121156_).entitiesForRendering().forEach(entity -> {
++//                        if (p_121158_.test(entity) && p_121155_.size() < i) {
++//                            p_121155_.add(entity);
++//                        }
++//                    });
 +                }
              }
          }
