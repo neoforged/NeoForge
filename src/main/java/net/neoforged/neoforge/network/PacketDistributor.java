@@ -23,9 +23,9 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Means to distribute packets in various ways
+ * Means to distribute packets in various ways.
  * <p>
- * Serverbound payloads must be sent via {@code ClientPacketDistributor#sendToServer()}
+ * Serverbound payloads can be sent via {@code ClientPacketDistributor#sendToServer()}.
  */
 public final class PacketDistributor {
     private PacketDistributor() {}
