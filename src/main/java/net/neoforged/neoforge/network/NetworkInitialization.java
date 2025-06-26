@@ -55,8 +55,7 @@ final class NetworkInitialization {
                 .configurationBidirectional(
                         FrozenRegistrySyncCompletedPayload.TYPE,
                         FrozenRegistrySyncCompletedPayload.STREAM_CODEC,
-                        ServerPayloadHandler::handle,
-                        null)
+                        ServerPayloadHandler::handle)
                 .configurationToClient(
                         KnownRegistryDataMapsPayload.TYPE,
                         KnownRegistryDataMapsPayload.STREAM_CODEC)

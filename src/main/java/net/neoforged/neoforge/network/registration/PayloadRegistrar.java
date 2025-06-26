@@ -13,7 +13,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.handling.MainThreadPayloadHandler;
 import org.jetbrains.annotations.Nullable;
@@ -66,13 +65,10 @@ public class PayloadRegistrar {
     /**
      * Registers a bidirectional payload for the play phase.
      * <p>
-     * Consider using {@link DirectionalPayloadHandler} to wrap client and server handlers.
-     *
-     * @deprecated Use {@link #playBidirectional(CustomPacketPayload.Type, StreamCodec, IPayloadHandler, IPayloadHandler)} instead
+     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
-    @Deprecated
-    public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, IPayloadHandler<T> handler) {
-        return this.playBidirectional(type, codec, handler, handler);
+    public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
+        return this.playBidirectional(type, codec, serverHandler, null);
     }
 
     /**
@@ -112,13 +108,10 @@ public class PayloadRegistrar {
     /**
      * Registers a bidirectional payload for the configuration phase.
      * <p>
-     * Consider using {@link DirectionalPayloadHandler} to wrap client and server handlers.
-     *
-     * @deprecated Use {@link #configurationBidirectional(CustomPacketPayload.Type, StreamCodec, IPayloadHandler, IPayloadHandler)} instead
+     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
-    @Deprecated
-    public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> handler) {
-        return this.configurationBidirectional(type, codec, handler, handler);
+    public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
+        return this.configurationBidirectional(type, codec, serverHandler, null);
     }
 
     /**
@@ -158,13 +151,10 @@ public class PayloadRegistrar {
     /**
      * Registers a bidirectional payload for all phases.
      * <p>
-     * Consider using {@link DirectionalPayloadHandler} to wrap client and server handlers.
-     *
-     * @deprecated Use {@link #commonBidirectional(CustomPacketPayload.Type, StreamCodec, IPayloadHandler, IPayloadHandler)} instead
+     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
-    @Deprecated
-    public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> handler) {
-        return this.commonBidirectional(type, codec, handler, handler);
+    public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
+        return this.commonBidirectional(type, codec, serverHandler, null);
     }
 
     /**
