@@ -8,4 +8,4 @@
 +                        net.neoforged.neoforge.network.DualStackUtils.logInitialPreferences();
                          p_251955_.execute(
                              () -> p_251955_.setScreen(
-                                     new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.connectFailedTitle, ConnectScreen.UNKNOWN_HOST_MESSAGE)
+                                 new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.connectFailedTitle, ConnectScreen.UNKNOWN_HOST_MESSAGE)

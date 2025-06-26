@@ -9,8 +9,6 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,6 +22,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -34,6 +34,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
 @ForEachTest(groups = EntityDataSerializerTest.GROUP)
@@ -54,8 +55,8 @@ public class EntityDataSerializerTest {
     @EmptyTemplate(floor = true)
     @TestHolder(description = "Tests if custom EntityDataSerializers are properly handled")
     static void customEntityDataSerializer(final DynamicTest test, final RegistrationHelper reg) {
-        var testEntity = reg.entityTypes().registerType("serializer_test_entity", () -> EntityType.Builder.of(TestEntity::new, MobCategory.CREATURE)
-                .sized(1, 1)).withRenderer(() -> TestEntityRenderer::new);
+        var testEntity = reg.entityTypes().registerEntityType("serializer_test_entity", TestEntity::new, MobCategory.CREATURE, builder -> builder.sized(1, 1))
+                .withRenderer(() -> TestEntityRenderer::new);
 
         test.onGameTest(helper -> {
             var entity = helper.spawn(testEntity.get(), 1, 2, 1);
@@ -93,10 +94,10 @@ public class EntityDataSerializerTest {
         }
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput tag) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput tag) {}
 
         @Override
         public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {

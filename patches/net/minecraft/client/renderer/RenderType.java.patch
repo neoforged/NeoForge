@@ -1,19 +1,12 @@
 --- a/net/minecraft/client/renderer/RenderType.java
 +++ b/net/minecraft/client/renderer/RenderType.java
-@@ -1847,4 +_,16 @@
-             return this.name;
-         }
-     }
-+
-+    // Neo: Assign internal IDs for RenderType to be used in rendering
-+    private int chunkLayerId = -1;
-+    /** {@return the unique ID of this {@link RenderType} for chunk rendering purposes, or {@literal -1} if this is not a chunk {@link RenderType}} */
-+    public final int getChunkLayerId() {
-+        return chunkLayerId;
-+    }
-+    static {
-+        int i = 0;
-+        for (var layer : chunkBufferLayers())
-+            layer.chunkLayerId = i++;
-+    }
- }
+@@ -1049,6 +_,9 @@
+                     if (scissorstate.enabled()) {
+                         renderpass.enableScissor(scissorstate.x(), scissorstate.y(), scissorstate.width(), scissorstate.height());
+                     }
++                    if (RenderSystem.STENCIL_TEST != null) {
++                        renderpass.enableStencilTest(RenderSystem.STENCIL_TEST);
++                    }
+ 
+                     RenderSystem.bindDefaultUniforms(renderpass);
+                     renderpass.setUniform("DynamicTransforms", gpubufferslice);

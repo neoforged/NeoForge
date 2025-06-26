@@ -10,7 +10,7 @@ import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.material.Fluids;
@@ -21,6 +21,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+import net.neoforged.testframework.gametest.GameTest;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 @ForEachTest(groups = "capabilities.vanillahandlers")
@@ -98,7 +99,7 @@ public class VanillaHandlersTests {
         // Should invalidate once when setting the block
         helper.setBlock(cauldronPos, Blocks.CAULDRON);
         var wrapper = capCache.getCapability();
-        helper.assertTrue(wrapper != null, "Expected fluid handler");
+        helper.assertNotNull(wrapper, "Expected fluid handler");
         helper.assertTrue(invalidationCount.intValue() == 1, "Expected 1 invalidation only");
 
         helper.assertTrue(wrapper.getTanks() == 1, "Got %d tanks".formatted(wrapper.getTanks()));
@@ -113,7 +114,7 @@ public class VanillaHandlersTests {
         // Action!
         fillResult = wrapper.fill(new FluidStack(Fluids.WATER, 2000), EXECUTE);
         helper.assertTrue(fillResult == 1000, "Filled " + fillResult);
-        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, () -> "Expected level 3 cauldron");
+        helper.assertBlockState(cauldronPos, state -> state.is(Blocks.WATER_CAULDRON) && state.getValue(LayeredCauldronBlock.LEVEL) == 3, $ -> Component.literal("Expected level 3 cauldron"));
 
         helper.assertTrue(FluidStack.matches(wrapper.getFluidInTank(0), new FluidStack(Fluids.WATER, 1000)), "Expected 1000 water");
 

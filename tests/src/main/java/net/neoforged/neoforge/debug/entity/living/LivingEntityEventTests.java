@@ -6,7 +6,9 @@
 package net.neoforged.neoforge.debug.entity.living;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -14,7 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -61,6 +62,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
@@ -239,12 +241,12 @@ public class LivingEntityEventTests {
         test.eventListeners().forge().addListener((MobSplitEvent event) -> {
             CompoundTag nbt = event.getParent().getPersistentData();
 
-            if (nbt.getBoolean("test.no_split_slime")) {
+            if (nbt.getBooleanOr("test.no_split_slime", false)) {
                 event.setCanceled(true);
                 return;
             }
 
-            for (String key : nbt.getAllKeys()) {
+            for (String key : nbt.keySet()) {
                 event.getChildren().forEach(slime -> slime.getPersistentData().put(key, nbt.get(key)));
             }
 
@@ -256,9 +258,9 @@ public class LivingEntityEventTests {
         AtomicBoolean throwIfSlimeSpawns = new AtomicBoolean(false);
 
         test.eventListeners().forge().addListener((EntityJoinLevelEvent event) -> {
-            if (event.getEntity() instanceof Slime slime) {
+            if (event.getEntity() instanceof Slime) {
                 if (throwIfSlimeSpawns.get()) {
-                    throw new GameTestAssertException("Slime should not have been spawned.");
+                    throw new GameTestAssertException(Component.translatable("Slime should not have been spawned."), -1);
                 }
             }
         });
@@ -274,7 +276,8 @@ public class LivingEntityEventTests {
 
             helper.assertTrue(!childSlimes.isEmpty(), "No child slimes received by event");
             for (Mob s : childSlimes) {
-                helper.assertTrue(s.getPersistentData().getString("test.something").equals("whatever"), "NBT Data not copied");
+                helper.assertValueEqual("whatever", s.getPersistentData().getString("test.something").orElse(null), "NBT Data not copied");
+                s.kill(helper.getLevel());
             }
 
             Slime childlessSlime = helper.spawnWithNoFreeWill(EntityType.SLIME, 1, 1, 1);
@@ -346,21 +349,25 @@ public class LivingEntityEventTests {
                 .thenExecute(player -> {
                     player.setCustomName(NAME);
                     player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 11000));
-                    player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 11000));
+                    player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 11000));
                     player.setItemSlot(EquipmentSlot.CHEST, Items.IRON_CHESTPLATE.getDefaultInstance());
                     ItemEnchantments.Mutable enchants = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
                     enchants.set(helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.PROTECTION), 4);
                     EnchantmentHelper.setEnchantments(player.getItemBySlot(EquipmentSlot.CHEST), enchants.toImmutable());
                     player.getFoodData().setFoodLevel(1);
                 })
-                /* ServerPlayers have spawn invulnerability.  This waits out that period.*/
-                .thenIdle(2001)
-                /* The player is damaged with a single point of damage which will be modified in the event listeners*/
-                .thenExecute(player -> player.hurtServer(helper.getLevel(), new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK)), 1))
+                .thenIdle(5)
+                .thenExecute(player -> {
+                    // remove spawn invulnerability
+                    player.setClientLoaded(true);
+                    helper.assertTrue(player.getHealth() == player.getMaxHealth(), "Expected player to be at max health: " + player.getHealth() + " / " + player.getMaxHealth() + " - " + player.getLastDamageSource());
+                    /* The player is damaged with a single point of damage which will be modified in the event listeners*/
+                    player.hurtServer(helper.getLevel(), new DamageSource(helper.getLevel().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.MOB_ATTACK)), 1);
+                })
                 /* The player's health and all the stored values from the events are checked to ensure they match the
                  * expected values from our reduction functions and changes to the damage value.*/
                 .thenWaitUntil(player -> {
-                    DecimalFormat formatter = new DecimalFormat("#.###");
+                    DecimalFormat formatter = new DecimalFormat("#.###", new DecimalFormatSymbols(Locale.ROOT));
                     String playerHealth = formatter.format(player.getHealth());
                     helper.assertTrue(playerHealth.equals("11"), "player health expected 11, actually " + playerHealth);
 

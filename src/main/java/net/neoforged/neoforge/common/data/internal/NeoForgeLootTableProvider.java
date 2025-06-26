@@ -144,6 +144,8 @@ public final class NeoForgeLootTableProvider extends LootTableProvider {
                 } else {
                     found |= replaceCondition(invLootCondition, consumer);
                 }
+            } else if (lootCondition instanceof CompositeLootItemCondition composite) {
+                found |= findAndReplaceInComposite(composite, poolBuilder::when);
             } else {
                 found |= replaceCondition(lootCondition, poolBuilder::when);
             }

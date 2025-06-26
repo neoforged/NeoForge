@@ -1,0 +1,37 @@
+--- a/com/mojang/blaze3d/opengl/GlTexture.java
++++ b/com/mojang/blaze3d/opengl/GlTexture.java
+@@ -17,15 +_,21 @@
+     protected boolean closed;
+     protected boolean modesDirty = true;
+     private int views;
++    protected final boolean external; // If true, the raw OpenGL texture is not managed by this GpuTexture
+ 
+     protected GlTexture(int p_409690_, String p_410238_, TextureFormat p_410416_, int p_409866_, int p_410468_, int p_409791_, int p_419794_, int p_423590_) {
++        this(p_409690_, p_410238_, p_410416_, p_409866_, p_410468_, p_409791_, p_419794_, p_423590_, false);
++    }
++
++    protected GlTexture(int p_409690_, String p_410238_, TextureFormat p_410416_, int p_409866_, int p_410468_, int p_409791_, int p_419794_, int p_423590_, boolean external) {
+         super(p_409690_, p_410238_, p_410416_, p_409866_, p_410468_, p_409791_, p_419794_);
+         this.id = p_423590_;
++        this.external = external;
+     }
+ 
+     @Override
+     public void close() {
+-        if (!this.closed) {
++        if (!this.closed && !this.external) {
+             this.closed = true;
+             if (this.views == 0) {
+                 this.destroyImmediately();
+@@ -48,9 +_,10 @@
+ 
+     public int getFbo(DirectStateAccess p_412345_, @Nullable GpuTexture p_410364_) {
+         int i = p_410364_ == null ? 0 : ((GlTexture)p_410364_).id;
++        var useStencil = p_410364_ != null && p_410364_.getFormat().hasStencilAspect();
+         return this.fboCache.computeIfAbsent(i, p_411998_ -> {
+             int j = p_412345_.createFrameBufferObject();
+-            p_412345_.bindFrameBufferTextures(j, this.id, i, 0, 0);
++            p_412345_.bindFrameBufferTextures(j, this.id, i, 0, 0, useStencil);
+             return j;
+         });
+     }

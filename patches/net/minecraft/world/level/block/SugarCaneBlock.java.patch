@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SugarCaneBlock.java
 +++ b/net/minecraft/world/level/block/SugarCaneBlock.java
-@@ -58,12 +_,15 @@
+@@ -57,12 +_,15 @@
  
              if (i < 3) {
                  int j = p_222548_.getValue(AGE);
@@ -8,19 +8,19 @@
                  if (j == 15) {
                      p_222549_.setBlockAndUpdate(p_222550_.above(), this.defaultBlockState());
 +                    net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_222549_, p_222550_.above(), this.defaultBlockState());
-                     p_222549_.setBlock(p_222550_, p_222548_.setValue(AGE, Integer.valueOf(0)), 4);
+                     p_222549_.setBlock(p_222550_, p_222548_.setValue(AGE, 0), 260);
                  } else {
-                     p_222549_.setBlock(p_222550_, p_222548_.setValue(AGE, Integer.valueOf(j + 1)), 4);
+                     p_222549_.setBlock(p_222550_, p_222548_.setValue(AGE, j + 1), 260);
                  }
 +                }
              }
          }
      }
-@@ -92,13 +_,15 @@
+@@ -91,13 +_,15 @@
          if (blockstate.is(this)) {
              return true;
          } else {
-+            net.neoforged.neoforge.common.util.TriState soilDecision = blockstate.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, p_57175_);
++            var soilDecision = blockstate.canSustainPlant(p_57176_, p_57177_.below(), Direction.UP, p_57175_);
 +            if (!soilDecision.isDefault()) return soilDecision.isTrue();
              if (blockstate.is(BlockTags.DIRT) || blockstate.is(BlockTags.SAND)) {
                  BlockPos blockpos = p_57177_.below();

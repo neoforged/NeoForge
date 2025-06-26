@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "neotests_piston_event:block/shift_on_piston_move"
+  }
+}

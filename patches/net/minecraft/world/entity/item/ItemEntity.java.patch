@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -49,6 +_,10 @@
+@@ -53,6 +_,10 @@
      @Nullable
      private UUID target;
      public final float bobOffs;
@@ -11,7 +11,7 @@
  
      public ItemEntity(EntityType<? extends ItemEntity> p_31991_, Level p_31992_) {
          super(p_31991_, p_31992_);
-@@ -67,6 +_,7 @@
+@@ -71,6 +_,7 @@
          this.setPos(p_149664_, p_149665_, p_149666_);
          this.setDeltaMovement(p_149668_, p_149669_, p_149670_);
          this.setItem(p_149667_);
@@ -19,7 +19,7 @@
      }
  
      private ItemEntity(ItemEntity p_31994_) {
-@@ -75,6 +_,7 @@
+@@ -79,6 +_,7 @@
          this.copyPosition(p_31994_);
          this.age = p_31994_.age;
          this.bobOffs = p_31994_.bobOffs;
@@ -27,7 +27,7 @@
      }
  
      @Override
-@@ -120,6 +_,7 @@
+@@ -117,6 +_,7 @@
  
      @Override
      public void tick() {
@@ -35,7 +35,7 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -132,6 +_,9 @@
+@@ -129,6 +_,9 @@
              this.yo = this.getY();
              this.zo = this.getZ();
              Vec3 vec3 = this.getDeltaMovement();
@@ -45,7 +45,7 @@
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();
              } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
-@@ -154,7 +_,8 @@
+@@ -151,7 +_,8 @@
                  this.applyEffectsFromBlocks();
                  float f = 0.98F;
                  if (this.onGround()) {
@@ -54,8 +54,8 @@
 +                    f = this.level().getBlockState(groundPos).getFriction(level(), groundPos, this) * 0.98F;
                  }
  
-                 this.setDeltaMovement(this.getDeltaMovement().multiply((double)f, 0.98, (double)f));
-@@ -186,7 +_,15 @@
+                 this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
+@@ -183,7 +_,15 @@
                  }
              }
  
@@ -72,8 +72,8 @@
                  this.discard();
              }
          }
-@@ -294,7 +_,7 @@
-             this.health = (int)((float)this.health - p_376562_);
+@@ -291,7 +_,7 @@
+             this.health = (int)(this.health - p_376562_);
              this.gameEvent(GameEvent.ENTITY_DAMAGE, p_376452_.getEntity());
              if (this.health <= 0) {
 -                this.getItem().onDestroyed(this);
@@ -81,25 +81,23 @@
                  this.discard();
              }
  
-@@ -312,6 +_,7 @@
-         p_32050_.putShort("Health", (short)this.health);
-         p_32050_.putShort("Age", (short)this.age);
-         p_32050_.putShort("PickupDelay", (short)this.pickupDelay);
-+        p_32050_.putInt("Lifespan", this.lifespan);
-         if (this.thrower != null) {
-             p_32050_.putUUID("Thrower", this.thrower);
-         }
-@@ -332,6 +_,9 @@
-         if (p_32034_.contains("PickupDelay")) {
-             this.pickupDelay = p_32034_.getShort("PickupDelay");
-         }
-+        if (p_32034_.contains("Lifespan")) {
-+            this.lifespan = p_32034_.getInt("Lifespan");
-+        }
- 
-         if (p_32034_.hasUUID("Owner")) {
-             this.target = p_32034_.getUUID("Owner");
-@@ -360,7 +_,22 @@
+@@ -309,6 +_,7 @@
+         p_421930_.putShort("Health", (short)this.health);
+         p_421930_.putShort("Age", (short)this.age);
+         p_421930_.putShort("PickupDelay", (short)this.pickupDelay);
++        p_421930_.putInt("Lifespan", this.lifespan);
+         EntityReference.store(this.thrower, p_421930_, "Thrower");
+         p_421930_.storeNullable("Owner", UUIDUtil.CODEC, this.target);
+         if (!this.getItem().isEmpty()) {
+@@ -321,6 +_,7 @@
+         this.health = p_421942_.getShortOr("Health", (short)5);
+         this.age = p_421942_.getShortOr("Age", (short)0);
+         this.pickupDelay = p_421942_.getShortOr("PickupDelay", (short)0);
++        this.lifespan = p_421942_.getIntOr("Lifespan", ItemEntity.LIFETIME);
+         this.target = p_421942_.read("Owner", UUIDUtil.CODEC).orElse(null);
+         this.thrower = EntityReference.read(p_421942_, "Thrower");
+         this.setItem(p_421942_.read("Item", ItemStack.CODEC).orElse(ItemStack.EMPTY));
+@@ -335,7 +_,22 @@
              ItemStack itemstack = this.getItem();
              Item item = itemstack.getItem();
              int i = itemstack.getCount();
@@ -123,7 +121,7 @@
                  p_32040_.take(this, i);
                  if (itemstack.isEmpty()) {
                      this.discard();
-@@ -415,6 +_,15 @@
+@@ -390,6 +_,15 @@
          this.target = p_266724_;
      }
  
@@ -137,9 +135,9 @@
 +    }
 +
      public void setThrower(Entity p_306324_) {
-         this.thrower = p_306324_.getUUID();
-         this.cachedThrower = p_306324_;
-@@ -454,7 +_,7 @@
+         this.thrower = new EntityReference<>(p_306324_);
+     }
+@@ -428,7 +_,7 @@
  
      public void makeFakeItem() {
          this.setNeverPickUp();

@@ -1,11 +1,16 @@
 --- a/net/minecraft/client/renderer/block/model/FaceBakery.java
 +++ b/net/minecraft/client/renderer/block/model/FaceBakery.java
-@@ -58,7 +_,14 @@
+@@ -69,10 +_,19 @@
+         );
+         Direction direction = calculateFacing(aint);
+         if (p_111607_ == null) {
++            // Neo: Suppress winding re-calculation when the quads may not be axis-aligned due to root transforms
++            if (!p_111606_.mayApplyArbitraryRotation())
              recalculateWinding(aint, direction);
          }
  
 -        return new BakedQuad(aint, p_111603_.tintIndex(), direction, p_111604_, p_111608_, p_364857_);
-+        net.neoforged.neoforge.client.ClientHooks.fillNormal(aint, direction);
++        net.neoforged.neoforge.client.ClientHooks.fillNormal(aint);
 +        var data = p_111603_.faceData();
 +        var quad = new BakedQuad(aint, p_111603_.tintIndex(), direction, p_111604_, p_111608_, p_364857_, data.ambientOcclusion());
 +        if (!net.neoforged.neoforge.client.model.ExtraFaceData.DEFAULT.equals(data)) {
@@ -15,4 +20,4 @@
 +        return quad;
      }
  
-     public static BlockFaceUV recomputeUVs(BlockFaceUV p_111582_, Direction p_111583_, Transformation p_111584_) {
+     private static BlockElementFace.UVs shrinkUVs(TextureAtlasSprite p_404992_, BlockElementFace.UVs p_405227_) {

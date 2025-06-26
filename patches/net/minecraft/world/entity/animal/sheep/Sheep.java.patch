@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/sheep/Sheep.java
++++ b/net/minecraft/world/entity/animal/sheep/Sheep.java
+@@ -137,7 +_,7 @@
+     @Override
+     public InteractionResult mobInteract(Player p_404982_, InteractionHand p_404782_) {
+         ItemStack itemstack = p_404982_.getItemInHand(p_404782_);
+-        if (itemstack.is(Items.SHEARS)) {
++        if (false && itemstack.is(Items.SHEARS)) { // Neo: Shear logic is handled by IShearable
+             if (this.level() instanceof ServerLevel serverlevel && this.readyForShearing()) {
+                 this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
+                 this.gameEvent(GameEvent.SHEAR, p_404982_);

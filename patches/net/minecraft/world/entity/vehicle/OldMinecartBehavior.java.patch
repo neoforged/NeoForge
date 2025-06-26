@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/vehicle/OldMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/OldMinecartBehavior.java
-@@ -97,7 +_,7 @@
+@@ -62,7 +_,7 @@
              this.minecart.setOnRails($$4);
              if ($$4) {
                  this.moveAlongTrack(serverlevel);
@@ -9,8 +9,8 @@
                      this.minecart.activateMinecart(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockstate.getValue(PoweredRailBlock.POWERED));
                  }
              } else {
-@@ -148,7 +_,7 @@
-         d1 = (double)blockpos.getY();
+@@ -112,7 +_,7 @@
+         d1 = blockpos.getY();
          boolean flag = false;
          boolean flag1 = false;
 -        if (blockstate.is(Blocks.POWERED_RAIL)) {
@@ -18,7 +18,7 @@
              flag = blockstate.getValue(PoweredRailBlock.POWERED);
              flag1 = !flag;
          }
-@@ -159,7 +_,7 @@
+@@ -123,7 +_,7 @@
          }
  
          Vec3 vec31 = this.getDeltaMovement();
@@ -27,7 +27,7 @@
          switch (railshape) {
              case ASCENDING_EAST:
                  this.setDeltaMovement(vec31.add(-d3, 0.0, 0.0));
-@@ -317,9 +_,10 @@
+@@ -281,9 +_,10 @@
              j--;
          }
  
@@ -37,10 +37,10 @@
          if (BaseRailBlock.isRail(blockstate)) {
 -            RailShape railshape = blockstate.getValue(((BaseRailBlock)blockstate.getBlock()).getShapeProperty());
 +            RailShape railshape = ((BaseRailBlock)blockstate.getBlock()).getRailDirection(blockstate, this.level(), railPos, this.minecart);
-             p_363435_ = (double)j;
+             p_363435_ = j;
              if (railshape.isSlope()) {
-                 p_363435_ = (double)(j + 1);
-@@ -356,9 +_,10 @@
+                 p_363435_ = j + 1;
+@@ -320,9 +_,10 @@
              j--;
          }
  

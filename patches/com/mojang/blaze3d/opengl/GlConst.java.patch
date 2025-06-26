@@ -1,0 +1,63 @@
+--- a/com/mojang/blaze3d/opengl/GlConst.java
++++ b/com/mojang/blaze3d/opengl/GlConst.java
+@@ -251,6 +_,8 @@
+             case RED8 -> 33321;
+             case RED8I -> 33329;
+             case DEPTH32 -> 33191;
++            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH24_STENCIL8;
++            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH32F_STENCIL8;
+         };
+     }
+ 
+@@ -260,6 +_,10 @@
+             case RED8 -> 6403;
+             case RED8I -> 6403;
+             case DEPTH32 -> 6402;
++            // As long as null data will be passed to texImage2D, the external format does not matter as long as it matches the internalFormat.
++            // So the usage, for depth, of unsigned int in one case and float in the other case, is not a problem.
++            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL;
++            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL;
+         };
+     }
+ 
+@@ -269,6 +_,8 @@
+             case RED8 -> 5121;
+             case RED8I -> 5121;
+             case DEPTH32 -> 5126;
++            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8;
++            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+         };
+     }
+ 
+@@ -309,5 +_,31 @@
+         } else {
+             return 35044;
+         }
++    }
++
++    public static int toGl(net.neoforged.neoforge.client.stencil.StencilFunction func) {
++        return switch (func) {
++            case NEVER -> org.lwjgl.opengl.GL32.GL_NEVER;
++            case ALWAYS -> org.lwjgl.opengl.GL32.GL_ALWAYS;
++            case LESS -> org.lwjgl.opengl.GL32.GL_LESS;
++            case LEQUAL -> org.lwjgl.opengl.GL32.GL_LEQUAL;
++            case EQUAL -> org.lwjgl.opengl.GL32.GL_EQUAL;
++            case GEQUAL -> org.lwjgl.opengl.GL32.GL_GEQUAL;
++            case GREATER -> org.lwjgl.opengl.GL32.GL_GREATER;
++            case NOTEQUAL -> org.lwjgl.opengl.GL32.GL_NOTEQUAL;
++        };
++    }
++
++    public static int toGl(net.neoforged.neoforge.client.stencil.StencilOperation op) {
++        return switch (op) {
++            case KEEP -> org.lwjgl.opengl.GL32.GL_KEEP;
++            case ZERO -> org.lwjgl.opengl.GL32.GL_ZERO;
++            case REPLACE -> org.lwjgl.opengl.GL32.GL_REPLACE;
++            case INCR -> org.lwjgl.opengl.GL32.GL_INCR;
++            case DECR -> org.lwjgl.opengl.GL32.GL_DECR;
++            case INVERT -> org.lwjgl.opengl.GL32.GL_INVERT;
++            case INCR_WRAP -> org.lwjgl.opengl.GL32.GL_INCR_WRAP;
++            case DECR_WRAP -> org.lwjgl.opengl.GL32.GL_DECR_WRAP;
++        };
+     }
+ }

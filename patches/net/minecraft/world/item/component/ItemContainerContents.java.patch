@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -146,6 +_,35 @@
-         return this.hashCode;
+@@ -164,6 +_,35 @@
+         }
      }
  
 +    /**
@@ -33,6 +33,6 @@
 +        }
 +    }
 +
-     static record Slot(int index, ItemStack item) {
+     record Slot(int index, ItemStack item) {
          public static final Codec<ItemContainerContents.Slot> CODEC = RecordCodecBuilder.create(
              p_331695_ -> p_331695_.group(

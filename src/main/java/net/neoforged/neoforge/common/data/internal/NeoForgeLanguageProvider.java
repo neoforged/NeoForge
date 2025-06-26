@@ -52,8 +52,11 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.FENCE_GATES, "Fence Gates");
         add(Tags.Blocks.FENCE_GATES_WOODEN, "Wooden Fence Gates");
         add(Tags.Blocks.FENCES, "Fences");
-        add(Tags.Blocks.FENCES_NETHER_BRICK, "Fences Nether Brick");
+        add(Tags.Blocks.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Blocks.FENCES_WOODEN, "Wooden Fences");
+        add(Tags.Blocks.FLOWERS_SMALL, "Small Flowers");
+        add(Tags.Blocks.FLOWERS_TALL, "Tall Flowers");
+        add(Tags.Blocks.FLOWERS, "Flowers");
         add(Tags.Blocks.GLASS_BLOCKS, "Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_COLORLESS, "Colorless Glass Blocks");
         add(Tags.Blocks.GLASS_BLOCKS_CHEAP, "Silica Glass Blocks");
@@ -93,6 +96,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
         add(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Blocks.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
+        add(Tags.Blocks.PUMPKINS, "Pumpkins");
+        add(Tags.Blocks.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Blocks.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Blocks.PUMPKINS_JACK_O_LANTERNS, "Jack o'Lanterns");
         add(Tags.Blocks.RELOCATION_NOT_SUPPORTED, "Relocation Not Supported");
         add(Tags.Blocks.ROPES, "Ropes");
         add(Tags.Blocks.SANDS, "Sands");
@@ -123,6 +130,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
+        add(Tags.Blocks.STORAGE_BLOCKS_RESIN, "Resin Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Blocks.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Blocks.STRIPPED_LOGS, "Stripped Logs");
@@ -138,6 +146,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.BRICKS, "Bricks");
         add(Tags.Items.BRICKS_NORMAL, "Normal Bricks");
         add(Tags.Items.BRICKS_NETHER, "Nether Bricks");
+        add(Tags.Items.BRICKS_RESIN, "Resin Bricks");
         add(Tags.Items.BUCKETS, "Buckets");
         add(Tags.Items.BUCKETS_EMPTY, "Empty Buckets");
         add(Tags.Items.BUCKETS_WATER, "Water Buckets");
@@ -153,6 +162,8 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CHESTS_TRAPPED, "Trapped Chests");
         add(Tags.Items.CHESTS_WOODEN, "Wooden Chests");
         add(Tags.Items.CLUSTERS, "Clusters");
+        add(Tags.Items.CLUMPS, "Clumps");
+        add(Tags.Items.CLUMPS_RESIN, "Resin Clumps");
         add(Tags.Items.COBBLESTONES, "Cobblestones");
         add(Tags.Items.COBBLESTONES_NORMAL, "Normal Cobblestones");
         add(Tags.Items.COBBLESTONES_INFESTED, "Infested Cobblestones");
@@ -171,6 +182,16 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.CROPS_PUMPKIN, "Pumpkin Crops");
         add(Tags.Items.CROPS_SUGAR_CANE, "Sugar Cane Crops");
         add(Tags.Items.CROPS_WHEAT, "Wheat Crops");
+        add(Tags.Items.DRINKS, "Drinks");
+        add(Tags.Items.DRINKS_WATER, "Water");
+        add(Tags.Items.DRINKS_WATERY, "Watery Drinks");
+        add(Tags.Items.DRINKS_MILK, "Milk");
+        add(Tags.Items.DRINKS_HONEY, "Honey");
+        add(Tags.Items.DRINKS_MAGIC, "Magical Drinks");
+        add(Tags.Items.DRINKS_OMINOUS, "Ominous Drinks");
+        add(Tags.Items.DRINKS_JUICE, "Juice");
+        add(Tags.Items.DRINK_CONTAINING_BUCKET, "Drink Containing Buckets");
+        add(Tags.Items.DRINK_CONTAINING_BOTTLE, "Drink Containing Bottles");
         add(Tags.Items.DUSTS, "Dusts");
         add(Tags.Items.DUSTS_GLOWSTONE, "Glowstone Dusts");
         add(Tags.Items.DUSTS_REDSTONE, "Redstone Dusts");
@@ -204,6 +225,9 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.FENCES_NETHER_BRICK, "Nether Brick Fences");
         add(Tags.Items.FENCES_WOODEN, "Wooden Fences");
         add(Tags.Items.FERTILIZERS, "Fertilizers");
+        add(Tags.Items.FLOWERS_SMALL, "Small Flowers");
+        add(Tags.Items.FLOWERS_TALL, "Tall Flowers");
+        add(Tags.Items.FLOWERS, "Flowers");
         add(Tags.Items.FOODS, "Foods");
         add(Tags.Items.FOODS_BERRY, "Berries");
         add(Tags.Items.FOODS_BREAD, "Breads");
@@ -274,8 +298,16 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.ORES_IN_GROUND_DEEPSLATE, "Deepslate Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_NETHERRACK, "Netherrack Ores In Ground");
         add(Tags.Items.ORES_IN_GROUND_STONE, "Stone Ores In Ground");
+        add(Tags.Items.PIGLIN_USABLE_CROSSBOWS, "Piglin Usable Crossbows");
+        add(Tags.Items.PILLAGER_USABLE_CROSSBOWS, "Pillager Usable Crossbows");
         add(Tags.Items.PLAYER_WORKSTATIONS_CRAFTING_TABLES, "Crafting Tables");
         add(Tags.Items.PLAYER_WORKSTATIONS_FURNACES, "Furnaces");
+        add(Tags.Items.POTIONS, "Potions");
+        add(Tags.Items.POTIONS_BOTTLE, "Bottled Potions");
+        add(Tags.Items.PUMPKINS, "Pumpkins");
+        add(Tags.Items.PUMPKINS_NORMAL, "Normal Pumpkins");
+        add(Tags.Items.PUMPKINS_CARVED, "Carved Pumpkins");
+        add(Tags.Items.PUMPKINS_JACK_O_LANTERNS, "Jack o'Lanterns");
         add(Tags.Items.RAW_MATERIALS, "Raw Materials");
         add(Tags.Items.RAW_MATERIALS_COPPER, "Copper Raw Materials");
         add(Tags.Items.RAW_MATERIALS_GOLD, "Gold Raw Materials");
@@ -301,7 +333,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.SEEDS_BEETROOT, "Beetroot Seeds");
         add(Tags.Items.SEEDS_MELON, "Melon Seeds");
         add(Tags.Items.SEEDS_PUMPKIN, "Pumpkin Seeds");
+        add(Tags.Items.SEEDS_TORCHFLOWER, "Torchflower Seeds");
+        add(Tags.Items.SEEDS_PITCHER_PLANT, "Pitcher Plant Seeds");
         add(Tags.Items.SEEDS_WHEAT, "Wheat Seeds");
+        add(Tags.Items.SKELETON_USABLE_BOWS, "Skeleton Usable Bows");
         add(Tags.Items.SHULKER_BOXES, "Shulker Boxes");
         add(Tags.Items.SLIME_BALLS, "Slimeballs");
         add(Tags.Items.STONES, "Stones");
@@ -320,6 +355,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.STORAGE_BLOCKS_RAW_GOLD, "Raw Gold Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_RAW_IRON, "Raw Iron Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_REDSTONE, "Redstone Storage Blocks");
+        add(Tags.Items.STORAGE_BLOCKS_RESIN, "Resin Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_SLIME, "Slime Storage Blocks");
         add(Tags.Items.STORAGE_BLOCKS_WHEAT, "Wheat Storage Blocks");
         add(Tags.Items.STRINGS, "Strings");
@@ -335,6 +371,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Items.TOOLS_MACE, "Maces");
         add(Tags.Items.TOOLS_SPEAR, "Spears");
         add(Tags.Items.TOOLS_IGNITER, "Igniters");
+        add(Tags.Items.TOOLS_WRENCH, "Wrenches");
         add(Tags.Items.MELEE_WEAPON_TOOLS, "Melee Weapons");
         add(Tags.Items.RANGED_WEAPON_TOOLS, "Ranged Weapons");
         add(Tags.Items.MINING_TOOL_TOOLS, "Mining Tools");
@@ -388,6 +425,10 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_COLD_OVERWORLD, "Cold Overworld");
         add(Tags.Biomes.IS_COLD_NETHER, "Cold Nether");
         add(Tags.Biomes.IS_COLD_END, "Cold End");
+        add(Tags.Biomes.IS_TEMPERATE, "Temperate");
+        add(Tags.Biomes.IS_TEMPERATE_OVERWORLD, "Temperate Overworld");
+        add(Tags.Biomes.IS_TEMPERATE_NETHER, "Temperate Nether");
+        add(Tags.Biomes.IS_TEMPERATE_END, "Temperate End");
         add(Tags.Biomes.IS_SPARSE_VEGETATION, "Sparse Vegetation");
         add(Tags.Biomes.IS_SPARSE_VEGETATION_OVERWORLD, "Sparse Overworld Vegetation");
         add(Tags.Biomes.IS_SPARSE_VEGETATION_NETHER, "Sparse Nether Vegetation");
@@ -404,6 +445,20 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_DRY_OVERWORLD, "Dry Overworld");
         add(Tags.Biomes.IS_DRY_NETHER, "Dry Nether");
         add(Tags.Biomes.IS_DRY_END, "Dry End");
+
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE, "Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_OAK, "Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_BIRCH, "Birch Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_SPRUCE, "Spruce Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE, "Jungle Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA, "Acacia Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK, "Dark Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE, "Mangrove Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY, "Cherry Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK, "Pale Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_BAMBOO, "Bamboo Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_CRIMSON, "Crimson Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_WARPED, "Warped Primary Wood Type");
 
         add(Tags.Biomes.IS_CONIFEROUS_TREE, "Coniferous Trees");
         add(Tags.Biomes.IS_SAVANNA_TREE, "Savanna Trees");
@@ -440,8 +495,7 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_MUSHROOM, "Mushrooms");
         add(Tags.Biomes.IS_MAGICAL, "Magical");
         add(Tags.Biomes.IS_RARE, "Rare");
-        add(Tags.Biomes.IS_PLATEAU, "Plateaus");
-        add(Tags.Biomes.IS_MODIFIED, "Modified");
+        add(Tags.Biomes.IS_PLATEAU, "Plateau");
         add(Tags.Biomes.IS_OLD_GROWTH, "Old Growth");
 
         add(Tags.Biomes.IS_AQUATIC, "Aquatic");

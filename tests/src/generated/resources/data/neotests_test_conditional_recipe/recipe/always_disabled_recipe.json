@@ -1,7 +1,7 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:false"
+      "type": "neoforge:never"
     }
   ],
   "type": "minecraft:crafting_shapeless",

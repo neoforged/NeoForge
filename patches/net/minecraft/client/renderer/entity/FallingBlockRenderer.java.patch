@@ -1,27 +1,20 @@
 --- a/net/minecraft/client/renderer/entity/FallingBlockRenderer.java
 +++ b/net/minecraft/client/renderer/entity/FallingBlockRenderer.java
-@@ -36,6 +_,8 @@
-         if (blockstate.getRenderShape() == RenderShape.MODEL) {
-             p_114637_.pushPose();
+@@ -40,7 +_,7 @@
              p_114637_.translate(-0.5, 0.0, -0.5);
-+            var model = this.dispatcher.getBlockModel(blockstate);
-+            for (var renderType : model.getRenderTypes(blockstate, RandomSource.create(blockstate.getSeed(p_361300_.startBlockPos)), net.neoforged.neoforge.client.model.data.ModelData.EMPTY))
+             List<BlockModelPart> list = this.dispatcher
+                 .getBlockModel(blockstate)
+-                .collectParts(RandomSource.create(blockstate.getSeed(p_361300_.startBlockPos)));
++                .collectParts(p_361300_.level, p_361300_.blockPos, blockstate, RandomSource.create(blockstate.getSeed(p_361300_.startBlockPos)));
              this.dispatcher
                  .getModelRenderer()
                  .tesselateBlock(
-@@ -44,11 +_,13 @@
+@@ -49,7 +_,7 @@
                      blockstate,
                      p_361300_.blockPos,
                      p_114637_,
 -                    p_114638_.getBuffer(ItemBlockRenderTypes.getMovingBlockRenderType(blockstate)),
-+                    p_114638_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType)),
++                    renderType -> p_114638_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType)),
                      false,
-                     RandomSource.create(),
-                     blockstate.getSeed(p_361300_.startBlockPos),
--                    OverlayTexture.NO_OVERLAY
-+                    OverlayTexture.NO_OVERLAY,
-+                    net.neoforged.neoforge.client.model.data.ModelData.EMPTY,
-+                    renderType
+                     OverlayTexture.NO_OVERLAY
                  );
-             p_114637_.popPose();
-             super.render(p_361300_, p_114637_, p_114638_, p_114639_);

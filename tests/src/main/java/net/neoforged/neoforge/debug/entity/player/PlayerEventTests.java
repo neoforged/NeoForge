@@ -10,9 +10,10 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
@@ -47,6 +48,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.gametest.GameTestPlayer;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
@@ -285,7 +287,11 @@ public class PlayerEventTests {
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
                 .thenExecute(player -> player.setCustomName(Component.literal("respawn-position-test")))
-                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 0)), 0, false, true))
+                .thenExecute(player -> {
+                    ServerPlayer.RespawnConfig oldConfig = player.getRespawnConfig();
+                    ResourceKey<Level> dimension = oldConfig != null ? oldConfig.dimension() : Level.OVERWORLD;
+                    player.setRespawnPosition(new ServerPlayer.RespawnConfig(dimension, helper.absolutePos(new BlockPos(0, 1, 0)), 0, false), true);
+                })
                 .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityPresent(EntityType.PLAYER, new BlockPos(0, 1, 1)))
                 .thenSucceed());
@@ -300,7 +306,11 @@ public class PlayerEventTests {
         });
 
         test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
-                .thenExecute(player -> player.setRespawnPosition(player.getRespawnDimension(), helper.absolutePos(new BlockPos(0, 1, 1)), 0, true, true))
+                .thenExecute(player -> {
+                    ServerPlayer.RespawnConfig oldConfig = player.getRespawnConfig();
+                    ResourceKey<Level> dimension = oldConfig != null ? oldConfig.dimension() : Level.OVERWORLD;
+                    player.setRespawnPosition(new ServerPlayer.RespawnConfig(dimension, helper.absolutePos(new BlockPos(0, 1, 1)), 0, true), true);
+                })
                 .thenExecute(player -> Objects.requireNonNull(player.getServer()).getPlayerList().respawn(player, false, Entity.RemovalReason.KILLED))
                 .thenExecute(() -> helper.assertEntityIsHolding(new BlockPos(0, 1, 1), EntityType.PLAYER, Items.APPLE))
                 .thenSucceed());

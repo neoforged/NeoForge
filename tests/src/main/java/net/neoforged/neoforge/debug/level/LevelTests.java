@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.debug.level;
 
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -14,6 +13,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = LevelTests.GROUP)
 public class LevelTests {
@@ -67,14 +67,14 @@ public class LevelTests {
             final var oldInt = intRule.get();
 
             helper.startSequence()
-                    .thenExecute(() -> boolRule.set(true, player.server))
-                    .thenExecute(() -> intRule.set(12, player.server))
+                    .thenExecute(() -> boolRule.set(true, player.getServer()))
+                    .thenExecute(() -> intRule.set(12, player.getServer()))
 
                     .thenIdle(1)
                     .thenExecute(() -> helper.assertEntityProperty(player, ServerPlayer::getHealth, "player health", 8f))
 
-                    .thenExecute(() -> boolRule.set(oldBool, player.server))
-                    .thenExecute(() -> intRule.set(oldInt, player.server))
+                    .thenExecute(() -> boolRule.set(oldBool, player.getServer()))
+                    .thenExecute(() -> intRule.set(oldInt, player.getServer()))
                     .thenSucceed();
         });
     }

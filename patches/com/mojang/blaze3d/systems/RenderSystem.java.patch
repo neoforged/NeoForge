@@ -1,17 +1,68 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -818,4 +_,14 @@
-             void accept(it.unimi.dsi.fastutil.ints.IntConsumer p_157488_, int p_157489_);
-         }
+@@ -101,6 +_,9 @@
+     @Nullable
+     private static DynamicUniforms dynamicUniforms;
+     private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
++    @Nullable
++    public static net.neoforged.neoforge.client.stencil.StencilTest STENCIL_TEST = null;
++    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
+ 
+     public static void initRenderThread() {
+         if (renderThread != null) {
+@@ -199,6 +_,14 @@
+         return scissorStateForRenderTypeDraws;
      }
-+
-+    public static void backupGlState(net.neoforged.neoforge.client.GlStateBackup state) {
-+        assertOnRenderThread();
-+        GlStateManager._backupGlState(state);
+ 
++    public static void enableStencil(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
++        STENCIL_TEST = stencilTest;
 +    }
 +
-+    public static void restoreGlState(net.neoforged.neoforge.client.GlStateBackup state) {
-+        assertOnRenderThread();
-+        GlStateManager._restoreGlState(state);
++    public static void disableStencil() {
++        STENCIL_TEST = null;
 +    }
- }
++
+     public static String getBackendDescription() {
+         return String.format(Locale.ROOT, "LWJGL version %s", GLX._getLWJGLVersion());
+     }
+@@ -423,6 +_,40 @@
+         if (gpubufferslice2 != null) {
+             p_418212_.setUniform("Lighting", gpubufferslice2);
+         }
++    }
++
++    /**
++     * Neo: Push the provided {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} to be applied to subsequent rendering.
++     * <p>
++     * Must be paired with a corresponding {@link #popPipelineModifier()} call after flushing the used buffers
++     */
++    public static void pushPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier) {
++        PIPELINE_MODIFIERS.push(modifier);
++    }
++
++    /**
++     * Neo: Pop the last {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} off the modifier stack
++     */
++    public static void popPipelineModifier() {
++        PIPELINE_MODIFIERS.pop();
++    }
++
++    /**
++     * Neo: Run the provided {@link Runnable} with the provided {@link net.neoforged.neoforge.client.pipeline.PipelineModifier PipelineModifier} applied
++     * to the pipelines used by the rendering done in the {@link Runnable}
++     */
++    public static void renderWithPipelineModifier(net.minecraft.resources.ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> modifier, Runnable renderTask) {
++        PIPELINE_MODIFIERS.renderWithModifier(modifier, renderTask);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static com.mojang.blaze3d.pipeline.RenderPipeline applyPipelineModifiers(com.mojang.blaze3d.pipeline.RenderPipeline pipeline) {
++        return PIPELINE_MODIFIERS.apply(pipeline);
++    }
++
++    @org.jetbrains.annotations.ApiStatus.Internal
++    public static void ensurePipelineModifiersEmpty() {
++        PIPELINE_MODIFIERS.ensureEmpty();
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

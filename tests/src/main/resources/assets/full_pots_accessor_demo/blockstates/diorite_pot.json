@@ -1,5 +1,8 @@
 {
     "variants": {
-        "": { "model": "full_pots_accessor_demo:block/diorite_pot" }
+        "": {
+            "type": "full_pots_accessor_demo:diorite_pot",
+            "model": "full_pots_accessor_demo:block/diorite_pot"
+        }
     }
 }

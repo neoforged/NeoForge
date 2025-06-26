@@ -235,8 +235,6 @@ modId="data_pack_registries_test"
 [[mods]]
 modId="creative_mode_tab_test"
 [[mods]]
-modId="render_level_stages_test"
-[[mods]]
 modId="trade_with_villager_event_test"
 [[mods]]
 modId="chunk_event_load_new_chunk_test"
@@ -253,5 +251,7 @@ modId="client_information_updated_test"
 [[mods]]
 modId="custom_feature_flags_pack_test"
 featureFlags="game_test_feature_flags.json"
+[[mods]]
+modId="recipe_sync_test"
 
 # ADD ABOVE THIS LINE

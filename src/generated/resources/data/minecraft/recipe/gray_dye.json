@@ -1,6 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
+  "group": "gray_dye",
   "ingredients": [
     "#c:dyes/black",
     "#c:dyes/white"

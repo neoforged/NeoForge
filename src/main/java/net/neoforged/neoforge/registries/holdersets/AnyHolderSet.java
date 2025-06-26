@@ -80,12 +80,13 @@ public record AnyHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup) imp
 
     @Override
     public boolean contains(Holder<T> holder) {
-        return holder.unwrapKey().map(key -> this.registryLookup.listElementIds().anyMatch(key::equals)).orElse(false);
+        ResourceKey<T> key = holder.getKey();
+        return key != null && this.registryLookup().get(key).isPresent();
     }
 
     @Override
     public boolean canSerializeIn(HolderOwner<T> holderOwner) {
-        return this.registryLookup.canSerializeIn(holderOwner);
+        return true;
     }
 
     @Override

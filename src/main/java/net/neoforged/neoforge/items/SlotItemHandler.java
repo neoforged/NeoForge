@@ -12,12 +12,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class SlotItemHandler extends Slot {
-    private static Container emptyInventory = new SimpleContainer(0);
+    private static final Container EMPTY_INVENTORY = new SimpleContainer(0);
     private final IItemHandler itemHandler;
     protected final int index;
 
     public SlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-        super(emptyInventory, index, xPosition, yPosition);
+        super(EMPTY_INVENTORY, index, xPosition, yPosition);
         this.itemHandler = itemHandler;
         this.index = index;
     }
@@ -58,29 +58,7 @@ public class SlotItemHandler extends Slot {
 
     @Override
     public int getMaxStackSize(ItemStack stack) {
-        ItemStack maxAdd = stack.copy();
-        int maxInput = stack.getMaxStackSize();
-        maxAdd.setCount(maxInput);
-
-        IItemHandler handler = this.getItemHandler();
-        ItemStack currentStack = handler.getStackInSlot(index);
-        if (handler instanceof IItemHandlerModifiable) {
-            IItemHandlerModifiable handlerModifiable = (IItemHandlerModifiable) handler;
-
-            handlerModifiable.setStackInSlot(index, ItemStack.EMPTY);
-
-            ItemStack remainder = handlerModifiable.insertItem(index, maxAdd, true);
-
-            handlerModifiable.setStackInSlot(index, currentStack);
-
-            return maxInput - remainder.getCount();
-        } else {
-            ItemStack remainder = handler.insertItem(index, maxAdd, true);
-
-            int current = currentStack.getCount();
-            int added = maxInput - remainder.getCount();
-            return current + added;
-        }
+        return Math.min(stack.getMaxStackSize(), this.itemHandler.getSlotLimit(this.index));
     }
 
     @Override
@@ -96,10 +74,9 @@ public class SlotItemHandler extends Slot {
     public IItemHandler getItemHandler() {
         return itemHandler;
     }
-/* TODO Slot patches
-@Override
-public boolean isSameInventory(Slot other)
-{
-return other instanceof SlotItemHandler && ((SlotItemHandler) other).getItemHandler() == this.itemHandler;
-}*/
+
+    @Override
+    public boolean isSameInventory(Slot other) {
+        return other instanceof SlotItemHandler sih && sih.itemHandler == this.itemHandler;
+    }
 }

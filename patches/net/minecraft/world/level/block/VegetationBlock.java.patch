@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/level/block/VegetationBlock.java
++++ b/net/minecraft/world/level/block/VegetationBlock.java
+@@ -21,7 +_,7 @@
+     protected abstract MapCodec<? extends VegetationBlock> codec();
+ 
+     protected boolean mayPlaceOn(BlockState p_401274_, BlockGetter p_401010_, BlockPos p_401365_) {
+-        return p_401274_.is(BlockTags.DIRT) || p_401274_.is(Blocks.FARMLAND);
++        return p_401274_.is(BlockTags.DIRT) || p_401274_.getBlock() instanceof net.minecraft.world.level.block.FarmBlock;
+     }
+ 
+     @Override
+@@ -43,7 +_,10 @@
+     @Override
+     protected boolean canSurvive(BlockState p_401395_, LevelReader p_401031_, BlockPos p_401248_) {
+         BlockPos blockpos = p_401248_.below();
+-        return this.mayPlaceOn(p_401031_.getBlockState(blockpos), p_401031_, blockpos);
++        BlockState belowBlockState = p_401031_.getBlockState(blockpos);
++        var soilDecision = belowBlockState.canSustainPlant(p_401031_, blockpos, Direction.UP, p_401395_);
++        if (!soilDecision.isDefault()) return soilDecision.isTrue();
++        return this.mayPlaceOn(belowBlockState, p_401031_, blockpos);
+     }
+ 
+     @Override

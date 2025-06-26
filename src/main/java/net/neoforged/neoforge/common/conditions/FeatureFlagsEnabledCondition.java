@@ -18,7 +18,7 @@ import net.minecraft.world.flag.FeatureFlags;
  */
 public record FeatureFlagsEnabledCondition(FeatureFlagSet flags) implements ICondition {
     public static final MapCodec<FeatureFlagsEnabledCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            FeatureFlags.CODEC.fieldOf("flags").forGetter(condition -> condition.flags)).apply(instance, FeatureFlagsEnabledCondition::new));
+            FeatureFlags.CODEC.fieldOf("flags").forGetter(FeatureFlagsEnabledCondition::flags)).apply(instance, FeatureFlagsEnabledCondition::new));
 
     public FeatureFlagsEnabledCondition {
         if (flags.isEmpty()) {

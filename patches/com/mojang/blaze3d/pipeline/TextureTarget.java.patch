@@ -1,0 +1,14 @@
+--- a/com/mojang/blaze3d/pipeline/TextureTarget.java
++++ b/com/mojang/blaze3d/pipeline/TextureTarget.java
+@@ -8,7 +_,10 @@
+ @OnlyIn(Dist.CLIENT)
+ public class TextureTarget extends RenderTarget {
+     public TextureTarget(@Nullable String p_405118_, int p_166213_, int p_166214_, boolean p_166215_) {
+-        super(p_405118_, p_166215_);
++        this(p_405118_, p_166213_, p_166214_, p_166215_, false);
++    }
++    public TextureTarget(@Nullable String p_405118_, int p_166213_, int p_166214_, boolean p_166215_, boolean enableStencil) {
++        super(p_405118_, p_166215_, enableStencil);
+         RenderSystem.assertOnRenderThread();
+         this.resize(p_166213_, p_166214_);
+     }

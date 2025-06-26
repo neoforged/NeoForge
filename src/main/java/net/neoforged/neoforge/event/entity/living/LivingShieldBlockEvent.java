@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.ICancellableEvent;
+import net.minecraft.world.item.component.BlocksAttacks;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
 /**
@@ -23,20 +23,21 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
  * 
  * @see DamageContainer for more information on the damage sequence
  */
-public class LivingShieldBlockEvent extends LivingEvent implements ICancellableEvent {
+public class LivingShieldBlockEvent extends LivingEvent {
     private final DamageContainer container;
     private float dmgBlocked;
-    private float shieldDamage = -1;
+    private final float originalDmgBlocked;
+    private int shieldDamage = -1;
     private final boolean originalBlocked;
     private boolean newBlocked;
 
-    public LivingShieldBlockEvent(LivingEntity blocker, DamageContainer container, boolean originalBlockedState) {
+    public LivingShieldBlockEvent(LivingEntity blocker, DamageContainer container, float blockedDamage, boolean originalBlockedState) {
         super(blocker);
         this.container = container;
-        this.dmgBlocked = container.getNewDamage();
+        this.dmgBlocked = blockedDamage;
+        this.originalDmgBlocked = dmgBlocked;
         this.originalBlocked = originalBlockedState;
         this.newBlocked = originalBlockedState;
-        this.shieldDamage = container.getNewDamage();
     }
 
     public DamageContainer getDamageContainer() {
@@ -51,11 +52,10 @@ public class LivingShieldBlockEvent extends LivingEvent implements ICancellableE
     }
 
     /**
-     * @return The original amount of damage blocked, which is the same as the original
-     *         incoming damage value.
+     * @return The original amount of damage blocked.
      */
     public float getOriginalBlockedDamage() {
-        return this.getDamageContainer().getNewDamage();
+        return originalDmgBlocked;
     }
 
     /**
@@ -71,26 +71,27 @@ public class LivingShieldBlockEvent extends LivingEvent implements ICancellableE
      * 
      * @return The amount of shield durability damage to take.
      */
-    public float shieldDamage() {
+    public int shieldDamage() {
         if (newBlocked)
-            return shieldDamage >= 0 ? shieldDamage : getBlockedDamage();
+            return shieldDamage;
         return 0;
     }
 
     /**
      * Set how much damage is blocked by this action.<br>
-     * Note that initially the blocked amount is the entire attack.<br>
+     * Note that initially the blocked amount depends on the {@link BlocksAttacks#damageReductions()}.
      */
     public void setBlockedDamage(float blocked) {
-        this.dmgBlocked = Mth.clamp(blocked, 0, this.getOriginalBlockedDamage());
+        this.dmgBlocked = Mth.clamp(blocked, 0, container.getNewDamage());
     }
 
     /**
      * Set how much durability the shield will lose if {@link #getBlocked()} is true.
+     * Setting this to a value lower than {@code 0} will apply the vanilla {@link BlocksAttacks#itemDamage()}.
      *
      * @param damage the new durability value taken from the shield on successful block
      */
-    public void setShieldDamage(float damage) {
+    public void setShieldDamage(int damage) {
         this.shieldDamage = damage;
     }
 

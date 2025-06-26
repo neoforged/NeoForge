@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
++++ b/net/minecraft/client/renderer/block/model/SimpleModelWrapper.java
+@@ -13,18 +_,35 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) implements BlockModelPart {
++public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon, @Nullable net.minecraft.client.renderer.chunk.ChunkSectionLayer renderType) implements BlockModelPart {
++    @Deprecated // Neo: Use render type aware version
++    public SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) {
++        this(quads, useAmbientOcclusion, particleIcon, null);
++    }
++
+     public static SimpleModelWrapper bake(ModelBaker p_405335_, ResourceLocation p_405098_, ModelState p_405869_) {
+         ResolvedModel resolvedmodel = p_405335_.getModel(p_405098_);
++        return bake(p_405335_, resolvedmodel, p_405869_);
++    }
++
++    // Neo: split off to allow baking an existing ResolvedModel into a BlockModelPart
++    public static SimpleModelWrapper bake(ModelBaker p_405335_, ResolvedModel resolvedmodel, ModelState p_405869_) {
+         TextureSlots textureslots = resolvedmodel.getTopTextureSlots();
+         boolean flag = resolvedmodel.getTopAmbientOcclusion();
+         TextureAtlasSprite textureatlassprite = resolvedmodel.resolveParticleSprite(textureslots, p_405335_);
+         QuadCollection quadcollection = resolvedmodel.bakeTopGeometry(textureslots, p_405335_, p_405869_);
+-        return new SimpleModelWrapper(quadcollection, flag, textureatlassprite);
++        var renderTypeGroup = resolvedmodel.getTopAdditionalProperties().getOptional(net.neoforged.neoforge.client.model.NeoForgeModelProperties.RENDER_TYPE);
++        var renderTypes = renderTypeGroup == null || renderTypeGroup.isEmpty() ? null : renderTypeGroup.block();
++        return new SimpleModelWrapper(quadcollection, flag, textureatlassprite, renderTypes);
+     }
+ 
+     @Override
+     public List<BakedQuad> getQuads(@Nullable Direction p_405263_) {
+         return this.quads.getQuads(p_405263_);
++    }
++
++    @Override
++    public net.minecraft.client.renderer.chunk.ChunkSectionLayer getRenderType(net.minecraft.world.level.block.state.BlockState state) {
++        return this.renderType != null ? this.renderType : BlockModelPart.super.getRenderType(state);
+     }
+ }

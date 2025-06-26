@@ -30,14 +30,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AnimalArmorItem;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -57,7 +53,6 @@ import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-// TODO systemic review of all extension functions. lots of unused -C
 public interface IItemExtension {
     private Item self() {
         return (Item) this;
@@ -66,7 +61,7 @@ public interface IItemExtension {
     /**
      * ItemStack sensitive version of getDefaultAttributeModifiers. Used when a stack has no {@link DataComponents#ATTRIBUTE_MODIFIERS} component.
      * 
-     * @see {@link IItemStackExtension#getAttributeModifiers()} for querying effective attribute modifiers.
+     * @see IItemStackExtension#getAttributeModifiers() IItemStackExtension#getAttributeModifiers() for querying effective attribute modifiers.
      */
     @SuppressWarnings("deprecation")
     default ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
@@ -129,11 +124,11 @@ public interface IItemExtension {
     }
 
     /**
-     * Called by CraftingManager to determine if an item is reparable.
+     * Determines if an item is repairable by combining, used by Repair recipes and Grindstone.
      *
-     * @return True if reparable
+     * @return True if repairable by combining
      */
-    boolean isRepairable(ItemStack stack);
+    boolean isCombineRepairable(ItemStack stack);
 
     /**
      * Determines the amount of durability the mending enchantment
@@ -266,7 +261,7 @@ public interface IItemExtension {
      * @return True if the given ItemStack can be inserted in the slot
      */
     default boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
-        return entity.getEquipmentSlotForItem(stack) == armorType;
+        return entity.isEquippableInSlot(stack, armorType);
     }
 
     /**
@@ -282,17 +277,6 @@ public interface IItemExtension {
     @Nullable
     default EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return null;
-    }
-
-    /**
-     * Allow or forbid the specific book/item combination as an anvil enchant
-     *
-     * @param stack The item
-     * @param book  The book
-     * @return if the enchantment is allowed
-     */
-    default boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return true;
     }
 
     /**
@@ -358,6 +342,9 @@ public interface IItemExtension {
      * @return True if the stack can perform the action
      */
     default boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+        if (itemAbility == ItemAbilities.SWORD_SWEEP) {
+            return stack.is(ItemTags.SWORDS);
+        }
         return false;
     }
 
@@ -461,7 +448,7 @@ public interface IItemExtension {
      * @return True to play the item change animation
      */
     default boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return !oldStack.equals(newStack); // !ItemStack.areItemStacksEqual(oldStack, newStack);
+        return oldStack != newStack;
     }
 
     /**
@@ -536,19 +523,6 @@ public interface IItemExtension {
     }
 
     /**
-     * Can this Item disable a shield
-     *
-     * @param stack    The ItemStack
-     * @param shield   The shield in question
-     * @param entity   The LivingEntity holding the shield
-     * @param attacker The LivingEntity holding the ItemStack
-     * @return True if this ItemStack can disable the shield in question.
-     */
-    default boolean canDisableShield(ItemStack stack, ItemStack shield, LivingEntity entity, LivingEntity attacker) {
-        return this instanceof AxeItem;
-    }
-
-    /**
      * @return the fuel burn time for this item stack in a furnace. Return 0 to make it not act as a fuel.
      * @apiNote This method takes precedence over the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#FURNACE_FUELS data map}.
      *          However, you should use the data map unless necessary (i.e. NBT-based burn times) so that users can configure burn times.
@@ -560,8 +534,6 @@ public interface IItemExtension {
 
     /**
      * Called every tick when this item is equipped {@linkplain DataComponents#EQUIPPABLE as an armor item} by an animal.
-     * <p>
-     * In vanilla, only {@linkplain Horse horses} and {@linkplain Wolf wolves} can wear armor, and they can only equip items that extend {@link AnimalArmorItem}.
      *
      * @param stack The armor stack
      * @param level The level the horse is in
@@ -685,7 +657,7 @@ public interface IItemExtension {
         }
 
         for (EnchantmentInstance inst : enchantments) {
-            stack.enchant(inst.enchantment, inst.level);
+            stack.enchant(inst.enchantment(), inst.level());
         }
 
         return stack;

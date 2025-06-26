@@ -6,18 +6,21 @@
 package net.neoforged.neoforge.oldtest.client.model;
 
 import com.mojang.math.Transformation;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
+import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -25,15 +28,14 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
+import net.neoforged.neoforge.client.model.DelegateBlockStateModel;
+import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.QuadTransformers;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.util.TransformationHelper;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -49,68 +51,55 @@ public class TRSRTransformerTest {
 
     public TRSRTransformerTest(IEventBus modEventBus) {
         if (FMLEnvironment.dist.isClient()) {
-            modEventBus.addListener(this::onModelBake);
+            modEventBus.addListener(TRSRTransformerTest::onModelBake);
         }
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        modEventBus.addListener(this::addCreative);
+        modEventBus.addListener(TRSRTransformerTest::addCreative);
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+    private static void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
             event.accept(TEST_ITEM);
     }
 
-    public void onModelBake(ModelEvent.ModifyBakingResult e) {
-        Map<ModelResourceLocation, BakedModel> models = e.getBakingResult().blockStateModels();
-        for (ModelResourceLocation id : models.keySet()) {
-            if (MODID.equals(id.id().getNamespace()) && "test".equals(id.id().getPath())) {
-                models.put(id, new MyBakedModel(models.get(id)));
+    private static void onModelBake(ModelEvent.ModifyBakingResult e) {
+        Map<BlockState, BlockStateModel> models = e.getBakingResult().blockStateModels();
+        for (BlockState state : models.keySet()) {
+            if (state.is(TEST_BLOCK)) {
+                models.put(state, new MyBakedModel(models.get(state)));
             }
         }
     }
 
-    public class MyBakedModel implements IDynamicBakedModel {
-        private final BakedModel base;
-
-        public MyBakedModel(BakedModel base) {
-            this.base = base;
-        }
-
-        @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData data, @Nullable RenderType renderType) {
+    private static class MyBakedModel extends DelegateBlockStateModel {
+        private static final Direction[] DIRECTIONS = Arrays.copyOfRange(Direction.values(), 0, 7);
+        private static final IQuadTransformer TRANSFORMER = QuadTransformers.applying(Util.make(() -> {
             Quaternionf rot = TransformationHelper.quatFromXYZ(new Vector3f(0, 45, 0), true);
             Vector3f translation = new Vector3f(0, 0.33f, 0);
+            return new Transformation(translation, rot, null, null).blockCenterToCorner();
+        }));
 
-            Transformation trans = new Transformation(translation, rot, null, null).blockCenterToCorner();
-            var transformer = QuadTransformers.applying(trans);
-
-            return transformer.process(base.getQuads(state, side, rand, data, renderType));
+        public MyBakedModel(BlockStateModel base) {
+            super(base);
         }
 
         @Override
-        public boolean useAmbientOcclusion() {
-            return base.useAmbientOcclusion();
-        }
-
-        @Override
-        public boolean isGui3d() {
-            return base.isGui3d();
-        }
-
-        @Override
-        public boolean usesBlockLight() {
-            return base.usesBlockLight();
-        }
-
-        @Override
-        public TextureAtlasSprite getParticleIcon() {
-            return base.getParticleIcon();
-        }
-
-        @Override
-        public ItemTransforms getTransforms() {
-            return base.getTransforms();
+        public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockModelPart> parts) {
+            for (BlockModelPart part : delegate.collectParts(level, pos, state, random)) {
+                QuadCollection.Builder builder = new QuadCollection.Builder();
+                for (Direction side : DIRECTIONS) {
+                    for (BakedQuad quad : part.getQuads(side)) {
+                        quad = TRANSFORMER.process(quad);
+                        if (side == null) {
+                            builder.addUnculledFace(quad);
+                        } else {
+                            builder.addCulledFace(side, quad);
+                        }
+                    }
+                }
+                parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleIcon(), part.getRenderType(state)));
+            }
         }
     }
 }

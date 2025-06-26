@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -59,20 +_,57 @@
-             || p_43080_.is(BlockTags.WOOL);
+@@ -58,20 +_,57 @@
+         }
      }
  
 +    /**

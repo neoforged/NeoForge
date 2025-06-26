@@ -13,8 +13,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentExactPredicate;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -37,16 +37,16 @@ public class DataComponentIngredient implements ICustomIngredient {
             builder -> builder
                     .group(
                             HolderSetCodec.create(Registries.ITEM, BuiltInRegistries.ITEM.holderByNameCodec(), false).fieldOf("items").forGetter(DataComponentIngredient::itemSet),
-                            DataComponentPredicate.CODEC.fieldOf("components").forGetter(DataComponentIngredient::components),
+                            DataComponentExactPredicate.CODEC.fieldOf("components").forGetter(DataComponentIngredient::components),
                             Codec.BOOL.optionalFieldOf("strict", false).forGetter(DataComponentIngredient::isStrict))
                     .apply(builder, DataComponentIngredient::new));
 
     private final HolderSet<Item> items;
-    private final DataComponentPredicate components;
+    private final DataComponentExactPredicate components;
     private final boolean strict;
     private final ItemStack[] stacks;
 
-    public DataComponentIngredient(HolderSet<Item> items, DataComponentPredicate components, boolean strict) {
+    public DataComponentIngredient(HolderSet<Item> items, DataComponentExactPredicate components, boolean strict) {
         this.items = items;
         this.components = components;
         this.strict = strict;
@@ -102,7 +102,7 @@ public class DataComponentIngredient implements ICustomIngredient {
         return items;
     }
 
-    public DataComponentPredicate components() {
+    public DataComponentExactPredicate components() {
         return components;
     }
 
@@ -121,7 +121,7 @@ public class DataComponentIngredient implements ICustomIngredient {
      * Creates a new ingredient matching any item from the list, containing the given components
      */
     public static <T> Ingredient of(boolean strict, DataComponentType<? super T> type, T value, ItemLike... items) {
-        return of(strict, DataComponentPredicate.builder().expect(type, value).build(), items);
+        return of(strict, DataComponentExactPredicate.builder().expect(type, value).build(), items);
     }
 
     /**
@@ -135,7 +135,7 @@ public class DataComponentIngredient implements ICustomIngredient {
      * Creates a new ingredient matching any item from the list, containing the given components
      */
     public static Ingredient of(boolean strict, DataComponentMap map, ItemLike... items) {
-        return of(strict, DataComponentPredicate.allOf(map), items);
+        return of(strict, DataComponentExactPredicate.allOf(map), items);
     }
 
     /**
@@ -143,35 +143,35 @@ public class DataComponentIngredient implements ICustomIngredient {
      */
     @SafeVarargs
     public static Ingredient of(boolean strict, DataComponentMap map, Holder<Item>... items) {
-        return of(strict, DataComponentPredicate.allOf(map), items);
+        return of(strict, DataComponentExactPredicate.allOf(map), items);
     }
 
     /**
      * Creates a new ingredient matching any item from the list, containing the given components
      */
     public static Ingredient of(boolean strict, DataComponentMap map, HolderSet<Item> items) {
-        return of(strict, DataComponentPredicate.allOf(map), items);
+        return of(strict, DataComponentExactPredicate.allOf(map), items);
     }
 
     /**
      * Creates a new ingredient matching any item from the list, containing the given components
      */
     @SafeVarargs
-    public static Ingredient of(boolean strict, DataComponentPredicate predicate, Holder<Item>... items) {
+    public static Ingredient of(boolean strict, DataComponentExactPredicate predicate, Holder<Item>... items) {
         return of(strict, predicate, HolderSet.direct(items));
     }
 
     /**
      * Creates a new ingredient matching any item from the list, containing the given components
      */
-    public static Ingredient of(boolean strict, DataComponentPredicate predicate, ItemLike... items) {
+    public static Ingredient of(boolean strict, DataComponentExactPredicate predicate, ItemLike... items) {
         return of(strict, predicate, HolderSet.direct(Arrays.stream(items).map(ItemLike::asItem).map(Item::builtInRegistryHolder).toList()));
     }
 
     /**
      * Creates a new ingredient matching any item from the list, containing the given components
      */
-    public static Ingredient of(boolean strict, DataComponentPredicate predicate, HolderSet<Item> items) {
+    public static Ingredient of(boolean strict, DataComponentExactPredicate predicate, HolderSet<Item> items) {
         return new DataComponentIngredient(items, predicate, strict).toVanilla();
     }
 }

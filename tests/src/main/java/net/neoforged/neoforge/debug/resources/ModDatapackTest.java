@@ -13,11 +13,12 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
@@ -32,15 +33,15 @@ public class ModDatapackTest {
         final ResourceLocation testAdvancement = ResourceLocation.fromNamespaceAndPath(test.createModId(), "recipes/misc/test_advancement");
 
         test.registrationHelper().addClientProvider(event -> {
-            List<AdvancementProvider.AdvancementGenerator> generators = List.of((registries, saver, existingFileHelper) -> Advancement.Builder.recipeAdvancement()
+            List<AdvancementSubProvider> generators = List.of((registries, saver) -> Advancement.Builder.recipeAdvancement()
                     .parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
                     .addCriterion("has_scute", CriteriaTriggers.INVENTORY_CHANGED.createCriterion(
                             new InventoryChangeTrigger.TriggerInstance(
                                     Optional.empty(), InventoryChangeTrigger.TriggerInstance.Slots.ANY, List.of(
                                             ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), Items.TURTLE_SCUTE).build()))))
                     .rewards(AdvancementRewards.Builder.recipe(ResourceKey.create(Registries.RECIPE, ResourceLocation.fromNamespaceAndPath("minecraft", "turtle_helmet"))))
-                    .save(saver, testAdvancement, existingFileHelper));
-            return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper(), generators);
+                    .save(saver, testAdvancement));
+            return new AdvancementProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), generators);
         });
 
         test.eventListeners().forge().addListener((OnDatapackSyncEvent event) -> {

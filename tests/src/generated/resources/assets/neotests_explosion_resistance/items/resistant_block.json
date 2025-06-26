@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "neotests_explosion_resistance:block/resistant_block"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "flip_v": true,
+  "loader": "neoforge:obj",
+  "model": "new_model_loader_test:models/item/sugar_glider_same_part_names.obj",
+  "textures": {
+    "bottom": "new_model_loader_test:block/obj_block_same_part_names_bottom",
+    "front": "new_model_loader_test:block/obj_block_same_part_names_front",
+    "qr": "minecraft:block/oak_planks",
+    "side": "new_model_loader_test:block/obj_block_same_part_names_side",
+    "top": "new_model_loader_test:block/obj_block_same_part_names_top"
+  }
+}

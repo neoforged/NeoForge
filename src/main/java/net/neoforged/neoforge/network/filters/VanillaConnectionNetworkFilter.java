@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.network.filters;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.brigadier.tree.RootCommandNode;
 import com.mojang.logging.LogUtils;
 import io.netty.channel.ChannelHandler;
 import java.util.Collections;
@@ -16,14 +15,11 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.gametest.framework.TestClassNameArgument;
-import net.minecraft.gametest.framework.TestFunctionArgument;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
@@ -85,16 +81,13 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      */
     private static ClientboundCommandsPacket filterCommandList(ClientboundCommandsPacket packet) {
         CommandBuildContext commandBuildContext = Commands.createValidationContext(VanillaRegistries.createLookup());
-        RootCommandNode<SharedSuggestionProvider> root = packet.getRoot(commandBuildContext);
-        RootCommandNode<SharedSuggestionProvider> newRoot = CommandTreeCleaner.cleanArgumentTypes(root, argType -> {
-            if (argType instanceof TestFunctionArgument || argType instanceof TestClassNameArgument)
-                return false; // Vanilla connections should not have gametest on, so we should filter these out always
-
+        var root = packet.getRoot(commandBuildContext, CommandTreeCleaner.COMMAND_NODE_BUILDER);
+        var newRoot = CommandTreeCleaner.cleanArgumentTypes(root, argType -> {
             ArgumentTypeInfo<?, ?> info = ArgumentTypeInfos.byClass(argType);
             ResourceLocation id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(info);
             return id != null && (id.getNamespace().equals("minecraft") || id.getNamespace().equals("brigadier"));
         });
-        return new ClientboundCommandsPacket(newRoot);
+        return new ClientboundCommandsPacket(newRoot, CommandTreeCleaner.COMMAND_NODE_INSPECTOR);
     }
 
     /**

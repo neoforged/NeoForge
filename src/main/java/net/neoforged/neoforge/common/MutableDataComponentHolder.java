@@ -8,6 +8,7 @@ package net.neoforged.neoforge.common;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -19,14 +20,28 @@ public interface MutableDataComponentHolder extends DataComponentHolder {
      * Sets a data component.
      */
     @Nullable
-    <T> T set(DataComponentType<? super T> componentType, @Nullable T value);
+    <T> T set(DataComponentType<T> componentType, @Nullable T value);
 
     /**
      * Sets a data component.
      */
     @Nullable
-    default <T> T set(Supplier<? extends DataComponentType<? super T>> componentType, @Nullable T value) {
+    default <T> T set(Supplier<? extends DataComponentType<T>> componentType, @Nullable T value) {
         return set(componentType.get(), value);
+    }
+
+    /**
+     * Copies a data component from a component getter.
+     */
+    default <T> void copyFrom(DataComponentType<T> type, DataComponentGetter getter) {
+        this.set(type, getter.get(type));
+    }
+
+    /**
+     * Copies a data component from a component getter.
+     */
+    default <T> void copyFrom(Supplier<? extends DataComponentType<T>> type, DataComponentGetter getter) {
+        this.copyFrom(type.get(), getter);
     }
 
     /**

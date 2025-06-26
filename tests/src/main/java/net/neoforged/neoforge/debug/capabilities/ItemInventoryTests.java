@@ -7,7 +7,6 @@ package net.neoforged.neoforge.debug.capabilities;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,6 +22,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.DeferredItems;
 import net.neoforged.testframework.registration.RegistrationHelper;
 
@@ -67,19 +67,19 @@ public class ItemInventoryTests {
             ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
 
             ItemStack remainder = items.insertItem(STICK_SLOT, toInsert, false);
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, remainder), "Inserting an item where it does not fit should return the original item.");
+            helper.assertTrue(ItemStack.matches(toInsert, remainder), "Inserting an item where it does not fit should return the original item.");
             // Check identity equality to assert that the component object was not updated at all, even to an equivalent form.
             helper.assertTrue(contents == stack.get(DataComponents.CONTAINER), "Inserting an item where it does not fit should not change the component.");
 
             remainder = items.insertItem(0, toInsert, false);
             helper.assertTrue(remainder.isEmpty(), "Successfully inserting the entire item should return an empty stack.");
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, items.getStackInSlot(0)), "Successfully inserting an item should be visible via getStackInSlot");
+            helper.assertTrue(ItemStack.matches(toInsert, items.getStackInSlot(0)), "Successfully inserting an item should be visible via getStackInSlot");
 
             ItemContainerContents newContents = stack.get(DataComponents.CONTAINER);
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
+            helper.assertTrue(ItemStack.matches(toInsert, newContents.getStackInSlot(0)), "Successfully inserting an item should trigger a write-back to the component");
 
             ItemStack extractedApple = items.extractItem(0, 64, false);
-            helper.assertTrue(ItemStack.isSameItemSameComponents(toInsert, extractedApple), "Extracting the entire inserted item should produce the same item.");
+            helper.assertTrue(ItemStack.matches(toInsert, extractedApple), "Extracting the entire inserted item should produce the same item.");
 
             ItemStack extractedStick = items.extractItem(STICK_SLOT, 64, false);
             helper.assertTrue(extractedStick.getItem() == Items.STICK && extractedStick.getCount() == 64, "The extracted item from the stick slot should be a 64-count stick.");

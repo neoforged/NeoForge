@@ -28,7 +28,7 @@ import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-@EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = "neoforge")
 public class ConfigurationInitialization {
     /**
      * Method called to add configuration tasks that should run before all others,
@@ -37,7 +37,8 @@ public class ConfigurationInitialization {
     public static void configureEarlyTasks(ServerConfigurationPacketListener listener, Consumer<ConfigurationTask> tasks) {
         if (listener.hasChannel(FrozenRegistrySyncStartPayload.TYPE) &&
                 listener.hasChannel(FrozenRegistryPayload.TYPE) &&
-                listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE)) {
+                listener.hasChannel(FrozenRegistrySyncCompletedPayload.TYPE) &&
+                !listener.getConnection().isMemoryConnection()) {
             tasks.accept(new SyncRegistries());
         }
     }

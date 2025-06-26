@@ -9,6 +9,6 @@
 +                                    objectlist.add(new Beardifier.Rigid(pieceBeardifierModifier.getBeardifierBox(), pieceBeardifierModifier.getTerrainAdjustment(), pieceBeardifierModifier.getGroundLevelDelta()));
 +                                }
 +                            } else
-                             if (structurepiece instanceof PoolElementStructurePiece) {
-                                 PoolElementStructurePiece poolelementstructurepiece = (PoolElementStructurePiece)structurepiece;
+                             if (structurepiece instanceof PoolElementStructurePiece poolelementstructurepiece) {
                                  StructureTemplatePool.Projection structuretemplatepool$projection = poolelementstructurepiece.getElement().getProjection();
+                                 if (structuretemplatepool$projection == StructureTemplatePool.Projection.RIGID) {

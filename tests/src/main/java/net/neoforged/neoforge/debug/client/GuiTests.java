@@ -10,7 +10,6 @@ import java.util.Random;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -22,6 +21,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
@@ -57,7 +57,7 @@ public class GuiTests {
         } else {
             event.setCompact(false); // Force classic mode for 4 or more active effects
         }
-        if (player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
+        if (player.hasEffect(MobEffects.SLOWNESS)) {
             event.addHorizontalOffset(20); // Move the effect rendering to the right when slowness is enabled
         }
 
@@ -136,7 +136,7 @@ public class GuiTests {
         });
     }
 
-    private static LayeredDraw.Layer makeRightOverlay(DynamicTest test, int height, int color) {
+    private static GuiLayer makeRightOverlay(DynamicTest test, int height, int color) {
         return (guiGraphics, partialTick) -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;
@@ -152,7 +152,7 @@ public class GuiTests {
         };
     }
 
-    private static LayeredDraw.Layer makeLeftOverlay(DynamicTest test, int height, int color) {
+    private static GuiLayer makeLeftOverlay(DynamicTest test, int height, int color) {
         return (guiGraphics, partialTick) -> {
             if (!test.framework().tests().isEnabled(test.id())) {
                 return;

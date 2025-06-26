@@ -11,18 +11,18 @@
 +
 +    private void hurtEntities(List<BlockPos> blocks) {
          float f = this.radius * 2.0F;
-         int i = Mth.floor(this.center.x - (double)f - 1.0);
-         int j = Mth.floor(this.center.x + (double)f + 1.0);
+         int i = Mth.floor(this.center.x - f - 1.0);
+         int j = Mth.floor(this.center.x + f + 1.0);
 @@ -174,7 +_,9 @@
-         int i1 = Mth.floor(this.center.z - (double)f - 1.0);
-         int j1 = Mth.floor(this.center.z + (double)f + 1.0);
+         int i1 = Mth.floor(this.center.z - f - 1.0);
+         int j1 = Mth.floor(this.center.z + f + 1.0);
  
--        for (Entity entity : this.level.getEntities(this.source, new AABB((double)i, (double)k, (double)i1, (double)j, (double)l, (double)j1))) {
-+        List<Entity> list = this.level.getEntities(this.source, new AABB((double)i, (double)k, (double)i1, (double)j, (double)l, (double)j1));
+-        for (Entity entity : this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1))) {
++        List<Entity> list = this.level.getEntities(this.source, new AABB(i, k, i1, j, l, j1));
 +        net.neoforged.neoforge.event.EventHooks.onExplosionDetonate(this.level, this, list, blocks);
 +        for (Entity entity : list) {
              if (!entity.ignoreExplosion(this)) {
-                 double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / (double)f;
+                 double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / f;
                  if (d0 <= 1.0) {
 @@ -205,6 +_,7 @@
                          d2 *= d6;
@@ -30,9 +30,9 @@
                          Vec3 vec3 = new Vec3(d1, d2, d3);
 +                        vec3 = net.neoforged.neoforge.event.EventHooks.getExplosionKnockback(this.level, this, entity, vec3, blocks);
                          entity.push(vec3);
-                         if (entity instanceof Player) {
-                             Player player = (Player)entity;
-@@ -246,7 +_,7 @@
+                         if (entity instanceof Player player && !player.isSpectator() && (!player.isCreative() || !player.getAbilities().flying)) {
+                             this.hitPlayers.put(player, vec3);
+@@ -243,7 +_,7 @@
      public void explode() {
          this.level.gameEvent(this.source, GameEvent.EXPLODE, this.center);
          List<BlockPos> list = this.calculateExplodedPositions();

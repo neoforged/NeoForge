@@ -1,0 +1,33 @@
+--- a/net/minecraft/client/data/models/model/ModelTemplate.java
++++ b/net/minecraft/client/data/models/model/ModelTemplate.java
+@@ -52,6 +_,13 @@
+     public ResourceLocation create(ResourceLocation p_388380_, TextureMapping p_387099_, BiConsumer<ResourceLocation, ModelInstance> p_387748_) {
+         Map<TextureSlot, ResourceLocation> map = this.createMap(p_387099_);
+         p_387748_.accept(p_388380_, () -> {
++            return createBaseTemplate(p_388380_, map);
++        });
++        return p_388380_;
++    }
++
++    // Neo: Reintroduced to allow subclasses to customize the serialization logic, many implementations just delegating
++    public JsonObject createBaseTemplate(ResourceLocation p_388380_, Map<TextureSlot, ResourceLocation> map) {
+             JsonObject jsonobject = new JsonObject();
+             this.model.ifPresent(p_388657_ -> jsonobject.addProperty("parent", p_388657_.toString()));
+             if (!map.isEmpty()) {
+@@ -61,11 +_,14 @@
+             }
+ 
+             return jsonobject;
+-        });
+-        return p_388380_;
+     }
+ 
+     private Map<TextureSlot, ResourceLocation> createMap(TextureMapping p_387972_) {
+         return Streams.concat(this.requiredSlots.stream(), p_387972_.getForced()).collect(ImmutableMap.toImmutableMap(Function.identity(), p_387972_::get));
++    }
++
++    // Neo: Allows modders to modify this template by adding new elements, custom loader, render types and other modifiers
++    public net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder extend() {
++        return net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder.of(this);
+     }
+ }

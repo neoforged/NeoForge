@@ -165,16 +165,13 @@
          }
      }
  
-@@ -99,7 +_,7 @@
-         if (this == p_248691_) {
-             return true;
-         } else {
--            if (p_248691_ instanceof FeatureFlagSet featureflagset && this.universe == featureflagset.universe && this.mask == featureflagset.mask) {
-+            if (p_248691_ instanceof FeatureFlagSet featureflagset && this.universe == featureflagset.universe && this.mask == featureflagset.mask && Arrays.equals(this.extendedMask, featureflagset.extendedMask)) {
-                 return true;
-             }
- 
-@@ -109,6 +_,10 @@
+@@ -98,11 +_,15 @@
+     public boolean equals(Object p_248691_) {
+         return this == p_248691_
+             ? true
+-            : p_248691_ instanceof FeatureFlagSet featureflagset && this.universe == featureflagset.universe && this.mask == featureflagset.mask;
++            : p_248691_ instanceof FeatureFlagSet featureflagset && this.universe == featureflagset.universe && this.mask == featureflagset.mask && Arrays.equals(this.extendedMask, featureflagset.extendedMask);
+     }
  
      @Override
      public int hashCode() {

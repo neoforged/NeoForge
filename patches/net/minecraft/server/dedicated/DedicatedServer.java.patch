@@ -5,7 +5,7 @@
      private DebugSampleSubscriptionTracker debugSampleSubscriptionTracker;
      private final ServerLinks serverLinks;
 +    @Nullable
-+    private net.minecraft.client.server.LanServerPinger dediLanPinger;
++    private net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger dediLanPinger;
  
      public DedicatedServer(
          Thread p_214789_,
@@ -25,7 +25,7 @@
              LOGGER.info("Preparing level \"{}\"", this.getLevelIdName());
              this.loadLevel();
              long j = Util.getNanos() - i;
-             String s = String.format(Locale.ROOT, "%.3fs", (double)j / 1.0E9);
+             String s = String.format(Locale.ROOT, "%.3fs", j / 1.0E9);
              LOGGER.info("Done ({})! For help, type \"help\"", s);
 +            this.nextTickTimeNanos = Util.getNanos(); // Neo: Update server time to prevent watchdog/spaming during long load.
              if (dedicatedserverproperties.announcePlayerAchievements != null) {
@@ -35,8 +35,8 @@
                  LOGGER.info("JMX monitoring enabled");
              }
  
-+            if (net.neoforged.neoforge.common.NeoForgeConfig.SERVER.advertiseDedicatedServerToLan.get()) {
-+                this.dediLanPinger = new net.minecraft.client.server.LanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
++            if (net.neoforged.neoforge.common.config.NeoForgeServerConfig.INSTANCE.advertiseDedicatedServerToLan.get()) {
++                this.dediLanPinger = new net.neoforged.neoforge.server.dedicated.DedicatedLanServerPinger(this.getMotd(), String.valueOf(this.getServerPort()));
 +                this.dediLanPinger.start();
 +            }
 +

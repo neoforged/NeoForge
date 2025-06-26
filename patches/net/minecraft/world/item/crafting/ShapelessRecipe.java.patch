@@ -29,11 +29,11 @@
              return p_346123_.size() == 1 && this.ingredients.size() == 1
                  ? this.ingredients.getFirst().test(p_346123_.getItem(0))
 @@ -87,7 +_,7 @@
-                         Codec.STRING.optionalFieldOf("group", "").forGetter(p_301127_ -> p_301127_.group),
-                         CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_301133_ -> p_301133_.category),
-                         ItemStack.STRICT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
--                        Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
-+                        Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
-                     )
-                     .apply(p_360072_, ShapelessRecipe::new)
+                     Codec.STRING.optionalFieldOf("group", "").forGetter(p_301127_ -> p_301127_.group),
+                     CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_301133_ -> p_301133_.category),
+                     ItemStack.STRICT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
+-                    Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
++                    Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
+                 )
+                 .apply(p_360072_, ShapelessRecipe::new)
          );

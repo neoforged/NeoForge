@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -89,9 +91,9 @@ public class CustomTooltipTest {
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> components, TooltipFlag flag) {
-            super.appendHoverText(stack, context, components, flag);
-            components.add(Component.literal("This is a very very very very very very long hover text that should really really be split across multiple lines.").withStyle(ChatFormatting.YELLOW));
+        public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> components, TooltipFlag flag) {
+            super.appendHoverText(stack, context, tooltipDisplay, components, flag);
+            components.accept(Component.literal("This is a very very very very very very long hover text that should really really be split across multiple lines.").withStyle(ChatFormatting.YELLOW));
         }
 
         @Override
@@ -210,65 +212,65 @@ public class CustomTooltipTest {
         }
 
         private void test1(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, this.testStack, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, this.testStack, mouseX, mouseY);
         }
 
         // renderTooltip with List<Component> and all combinations of ItemStack/Font
         private void test2(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(false)), Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), Optional.empty(), mouseX, mouseY);
         }
 
         private void test3(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(this.testFont)), Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), Optional.empty(), mouseX, mouseY);
         }
 
         private void test4(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(this.testFont)), Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), Optional.empty(), mouseX, mouseY);
         }
 
         private void test5(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(false)), Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), Optional.empty(), mouseX, mouseY);
         }
 
         // renderTooltip with just Component
         private void test6(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, this.getTestComponent(false), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, this.getTestComponent(false), mouseX, mouseY);
         }
 
         // renderComponentTooltip with all combinations of ItemStack/Font
         private void test7(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderComponentTooltip(this.font, List.of(this.getTestComponent(false)), mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), mouseX, mouseY);
         }
 
         private void test8(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderComponentTooltip(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
         }
 
         private void test9(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderComponentTooltip(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
         }
 
         private void test10(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderComponentTooltip(this.font, List.of(this.getTestComponent(false)), mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(false)), mouseX, mouseY);
         }
 
         // renderTooltip with list of FormattedCharSequence
         private void test11(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(false).getVisualOrderText()), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(false).getVisualOrderText()), mouseX, mouseY);
         }
 
         // renderTooltip with list of FormattedCharSequence and Font
         private void test12(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(this.testFont).getVisualOrderText()), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont).getVisualOrderText()), mouseX, mouseY);
         }
 
         // legacy ToolTip methods
         private void test13(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderTooltip(this.font, List.of(this.getTestComponent(this.testFont).getVisualOrderText()), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont).getVisualOrderText()), mouseX, mouseY);
         }
 
         private void test14(GuiGraphics graphics, int mouseX, int mouseY) {
-            graphics.renderComponentTooltip(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, List.of(this.getTestComponent(this.testFont)), mouseX, mouseY);
         }
     }
 

@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -25,12 +26,11 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+@EventBusSubscriber
 @Mod(CustomPlantTypeTest.MODID)
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class CustomPlantTypeTest {
     static final String MODID = "custom_plant_type_test";
     private static final String CUSTOM_SOIL_BLOCK = "test_custom_block";

@@ -9,11 +9,10 @@ import com.mojang.logging.LogUtils;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -84,12 +83,13 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
     }
 
     @Override
-    public <T> Optional<T> getExistingData(AttachmentType<T> type) {
+    @Nullable
+    public <T> T getExistingDataOrNull(AttachmentType<T> type) {
         validateAttachmentType(type);
         if (attachments == null) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.ofNullable((T) this.attachments.get(type));
+        return (T) this.attachments.get(type);
     }
 
     @Override
@@ -116,33 +116,31 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     /**
      * Writes the serializable attachments to a tag.
-     * Returns {@code null} if there are no serializable attachments.
      */
-    @Nullable
-    public final CompoundTag serializeAttachments(HolderLookup.Provider provider) {
-        if (attachments == null) {
-            return null;
-        }
-        CompoundTag tag = null;
+    public final void serializeAttachments(ValueOutput tag) {
+        if (attachments == null) return;
         for (var entry : attachments.entrySet()) {
             var type = entry.getKey();
+            var key = NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type);
             if (type.serializer != null) {
-                Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
-                if (serialized != null) {
-                    if (tag == null)
-                        tag = new CompoundTag();
-                    tag.put(NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type).toString(), serialized);
+                try {
+                    var serialized = tag.child(key.toString());
+                    boolean doSerialise = ((IAttachmentSerializer) type.serializer).write(entry.getValue(), serialized);
+                    if (!doSerialise) {
+                        tag.discard(key.toString());
+                    }
+                } catch (Exception exception) {
+                    LOGGER.error("Failed to serialize data attachment {}. Skipping.", key, exception);
                 }
             }
         }
-        return tag;
     }
 
     /**
-     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider)}.
+     * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(ValueOutput)}.
      */
-    protected final void deserializeAttachments(HolderLookup.Provider provider, CompoundTag tag) {
-        for (var key : tag.getAllKeys()) {
+    protected final void deserializeAttachments(ValueInput input) {
+        for (var key : input.keySet()) {
             // Use tryParse to not discard valid attachment type keys, even if there is a malformed key.
             ResourceLocation keyLocation = ResourceLocation.tryParse(key);
             if (keyLocation == null) {
@@ -157,7 +155,7 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             }
 
             try {
-                getAttachmentMap().put(type, ((IAttachmentSerializer<Tag, ?>) type.serializer).read(getExposedHolder(), tag.get(key), provider));
+                getAttachmentMap().put(type, type.serializer.read(getExposedHolder(), input.childOrEmpty(key)));
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
             }
@@ -181,8 +179,8 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
             return exposedHolder;
         }
 
-        public void deserializeInternal(HolderLookup.Provider provider, CompoundTag tag) {
-            deserializeAttachments(provider, tag);
+        public void deserializeInternal(HolderLookup.Provider provider, ValueInput tag) {
+            deserializeAttachments(tag);
         }
 
         @Override

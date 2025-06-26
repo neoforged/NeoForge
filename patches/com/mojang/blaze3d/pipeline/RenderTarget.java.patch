@@ -1,0 +1,37 @@
+--- a/com/mojang/blaze3d/pipeline/RenderTarget.java
++++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
+@@ -25,6 +_,7 @@
+     public int viewHeight;
+     protected final String label;
+     public final boolean useDepth;
++    public final boolean useStencil;
+     @Nullable
+     protected GpuTexture colorTexture;
+     @Nullable
+@@ -36,8 +_,16 @@
+     public FilterMode filterMode;
+ 
+     public RenderTarget(@Nullable String p_405387_, boolean p_166199_) {
++        this(p_405387_, p_166199_, false);
++    }
++
++    public RenderTarget(@Nullable String p_405387_, boolean p_166199_, boolean useStencil) {
++        if (useStencil && !p_166199_) {
++            throw new IllegalArgumentException("Stencil can only be enabled if depth is enabled.");
++        }
+         this.label = p_405387_ == null ? "FBO " + UNNAMED_RENDER_TARGETS++ : p_405387_;
+         this.useDepth = p_166199_;
++        this.useStencil = useStencil;
+     }
+ 
+     public void resize(int p_83942_, int p_83943_) {
+@@ -92,7 +_,8 @@
+             this.width = p_83951_;
+             this.height = p_83952_;
+             if (this.useDepth) {
+-                this.depthTexture = gpudevice.createTexture(() -> this.label + " / Depth", 15, TextureFormat.DEPTH32, p_83951_, p_83952_, 1, 1);
++                var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : TextureFormat.DEPTH32;
++                this.depthTexture = gpudevice.createTexture(() -> this.label + " / Depth", 15, format, p_83951_, p_83952_, 1, 1);
+                 this.depthTextureView = gpudevice.createTextureView(this.depthTexture);
+                 this.depthTexture.setTextureFilter(FilterMode.NEAREST, false);
+                 this.depthTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);

@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,6 +78,36 @@ public class RegisterCapabilitiesEvent extends Event implements IModBusEvent {
     public boolean isBlockRegistered(BlockCapability<?, ?> capability, Block block) {
         Objects.requireNonNull(block);
         return capability.providers.containsKey(block);
+    }
+
+    /**
+     * Makes a block capability proxyable,
+     * indicating that it is always safe to forward a request for this capability to another block.
+     * (e.g. for "remote access" blocks)
+     *
+     * <p>This method should only be called by the mod that defines the capability,
+     * in the {@link EventPriority#HIGH} or {@link EventPriority#HIGHEST} phase.
+     *
+     * @throws IllegalStateException if the capability was already marked as non-proxyable
+     * @see BlockCapability#isProxyable()
+     */
+    public void setProxyable(BlockCapability<?, ?> capability) {
+        capability.setProxyable(true);
+    }
+
+    /**
+     * Makes a block capability non-proxyable.
+     * This should typically be called when unexpectedly proxying the capability (e.g. to a different block position)
+     * would cause crashes, for example because the returned capability is tied to the query position.
+     *
+     * <p>This method should only be called by the mod that defines the capability,
+     * in the {@link EventPriority#HIGH} or {@link EventPriority#HIGHEST} phase.
+     *
+     * @throws IllegalStateException if the capability was already marked as proxyable
+     * @see BlockCapability#isProxyable()
+     */
+    public void setNonProxyable(BlockCapability<?, ?> capability) {
+        capability.setProxyable(false);
     }
 
     // ENTITIES

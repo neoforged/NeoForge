@@ -7,26 +7,26 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.FluidTagsProvider;
-import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags.Fluids;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
-    public NeoForgeFluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, "neoforge", existingFileHelper);
+    public NeoForgeFluidTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, "neoforge");
     }
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider) {
         tag(Fluids.WATER).add(net.minecraft.world.level.material.Fluids.WATER).add(net.minecraft.world.level.material.Fluids.FLOWING_WATER);
         tag(Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.LAVA).add(net.minecraft.world.level.material.Fluids.FLOWING_LAVA);
-        tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.getId()).addOptional(NeoForgeMod.FLOWING_MILK.getId());
+        tag(Fluids.MILK).addOptional(NeoForgeMod.MILK.get()).addOptional(NeoForgeMod.FLOWING_MILK.get());
         tag(Fluids.GASEOUS);
         tag(Fluids.HONEY);
         tag(Fluids.EXPERIENCE);
@@ -49,9 +49,9 @@ public final class NeoForgeFluidTagsProvider extends FluidTagsProvider {
         tagWithOptionalLegacy(Fluids.BEETROOT_SOUP);
     }
 
-    private IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
-        IntrinsicHolderTagsProvider.IntrinsicTagAppender<Fluid> tagAppender = tag(tag);
-        tagAppender.addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath()));
+    private TagAppender<Fluid, Fluid> tagWithOptionalLegacy(TagKey<Fluid> tag) {
+        TagAppender<Fluid, Fluid> tagAppender = tag(tag);
+        tagAppender.addOptionalTag(TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath("forge", tag.location().getPath())));
         return tagAppender;
     }
 }

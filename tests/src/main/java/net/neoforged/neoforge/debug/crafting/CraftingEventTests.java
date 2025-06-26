@@ -8,7 +8,6 @@ package net.neoforged.neoforge.debug.crafting;
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -20,6 +19,7 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
+import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = "crafting.event")
 public class CraftingEventTests {
@@ -40,7 +40,7 @@ public class CraftingEventTests {
         test.onGameTest(helper -> {
             helper.setBlock(BlockPos.ZERO, Blocks.FURNACE);
             var be = helper.getBlockEntity(BlockPos.ZERO, FurnaceBlockEntity.class);
-            helper.assertFalse(be == null, "FurnaceBlockEntity was not found for furnace position");
+            helper.assertNotNull(be, "FurnaceBlockEntity was not found for furnace position");
             // Slot 2 is the result slot
             be.setItem(2, new ItemStack(Items.IRON_INGOT, 64));
             var player = helper.makeTickingMockServerPlayerInLevel(GameType.CREATIVE);

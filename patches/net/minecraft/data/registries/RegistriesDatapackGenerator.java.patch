@@ -41,7 +41,7 @@
                              .flatMap(
                                  p_256552_ -> this.dumpRegistryCap(p_255785_, p_326736_, dynamicops, (RegistryDataLoader.RegistryData<?>)p_256552_).stream()
                              )
-@@ -48,19 +_,21 @@
+@@ -48,15 +_,17 @@
          CachedOutput p_256502_, HolderLookup.Provider p_256492_, DynamicOps<JsonElement> p_256000_, RegistryDataLoader.RegistryData<T> p_256449_
      ) {
          ResourceKey<? extends Registry<T>> resourcekey = p_256449_.key();
@@ -55,17 +55,12 @@
 +                            .filter(holder -> this.namespacePredicate.test(holder.key().location().getNamespace()))
                              .map(
                                  p_256105_ -> dumpValue(
-                                         packoutput$pathprovider.json(p_256105_.key().location()),
-                                         p_256502_,
-                                         p_256000_,
--                                        p_256449_.elementCodec(),
--                                        p_256105_.value()
-+                                        conditionalCodec,
-+                                        Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_256105_.key(), java.util.List.of()), p_256105_.value()))
-                                     )
+-                                    packoutput$pathprovider.json(p_256105_.key().location()), p_256502_, p_256000_, p_256449_.elementCodec(), p_256105_.value()
++                                    packoutput$pathprovider.json(p_256105_.key().location()), p_256502_, p_256000_, conditionalCodec, Optional.of(new net.neoforged.neoforge.common.conditions.WithConditions<>(conditions.getOrDefault(p_256105_.key(), java.util.List.of()), p_256105_.value()))
+                                 )
                              )
                              .toArray(CompletableFuture[]::new)
-@@ -70,7 +_,7 @@
+@@ -66,7 +_,7 @@
      }
  
      private static <E> CompletableFuture<?> dumpValue(

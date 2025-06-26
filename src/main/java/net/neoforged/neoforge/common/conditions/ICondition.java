@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
@@ -75,7 +76,7 @@ public interface ICondition {
 
     MapCodec<? extends ICondition> codec();
 
-    interface IContext { // TODO 1.21.2: potentially remove since all the info is available via RegistryOps
+    interface IContext {
         IContext EMPTY = new IContext() {
             @Override
             public <T> boolean isTagLoaded(TagKey<T> key) {
@@ -94,6 +95,10 @@ public interface ICondition {
          * Returns {@code true} if the requested tag is available.
          */
         <T> boolean isTagLoaded(TagKey<T> key);
+
+        default RegistryAccess registryAccess() {
+            return RegistryAccess.EMPTY;
+        }
 
         default FeatureFlagSet enabledFeatures() {
             // returning the vanilla set causes reports false positives for flags outside of vanilla

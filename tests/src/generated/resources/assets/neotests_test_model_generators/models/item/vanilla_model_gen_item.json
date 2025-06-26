@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "layer0": "neotests_test_model_generators:item/vanilla_model_gen_item"
+  }
+}

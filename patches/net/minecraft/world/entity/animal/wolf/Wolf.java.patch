@@ -1,0 +1,24 @@
+--- a/net/minecraft/world/entity/animal/wolf/Wolf.java
++++ b/net/minecraft/world/entity/animal/wolf/Wolf.java
+@@ -459,10 +_,11 @@
+         Item item = itemstack.getItem();
+         if (this.isTame()) {
+             if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
+-                this.usePlayerItem(p_406380_, p_406261_, itemstack);
+                 FoodProperties foodproperties = itemstack.get(DataComponents.FOOD);
+                 float f = foodproperties != null ? foodproperties.nutrition() : 1.0F;
+                 this.heal(2.0F * f);
++                this.usePlayerItem(p_406380_, p_406261_, itemstack);
++                this.gameEvent(GameEvent.EAT); // Neo: add EAT game event
+                 return InteractionResult.SUCCESS;
+             }
+ 
+@@ -514,7 +_,7 @@
+     }
+ 
+     private void tryToTame(Player p_406358_) {
+-        if (this.random.nextInt(3) == 0) {
++        if (this.random.nextInt(3) == 0  && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_406358_)) {
+             this.tame(p_406358_);
+             this.navigation.stop();
+             this.setTarget(null);

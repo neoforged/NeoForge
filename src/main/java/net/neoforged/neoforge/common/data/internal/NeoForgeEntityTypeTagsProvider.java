@@ -7,17 +7,18 @@ package net.neoforged.neoforge.common.data.internal;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
-    public NeoForgeEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, "neoforge", existingFileHelper);
+    public NeoForgeEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, "neoforge");
     }
 
     @Override
@@ -32,6 +33,7 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
                         EntityType.JUNGLE_CHEST_BOAT,
                         EntityType.ACACIA_CHEST_BOAT,
                         EntityType.CHERRY_CHEST_BOAT,
+                        EntityType.PALE_OAK_CHEST_BOAT,
                         EntityType.DARK_OAK_CHEST_BOAT,
                         EntityType.MANGROVE_CHEST_BOAT,
                         EntityType.BAMBOO_CHEST_RAFT);
@@ -40,8 +42,12 @@ public class NeoForgeEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
         // Backwards compat with pre-1.21 tags. Done after so optional tag is last for better readability.
         // TODO: Remove backwards compat tag entries in 1.22
-        tag(Tags.EntityTypes.BOSSES).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "bosses"));
-        tag(Tags.EntityTypes.MINECARTS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "minecarts"));
-        tag(Tags.EntityTypes.BOATS).addOptionalTag(ResourceLocation.fromNamespaceAndPath("forge", "boats"));
+        tag(Tags.EntityTypes.BOSSES).addOptionalTag(forge("bosses"));
+        tag(Tags.EntityTypes.MINECARTS).addOptionalTag(forge("minecarts"));
+        tag(Tags.EntityTypes.BOATS).addOptionalTag(forge("boats"));
+    }
+
+    private TagKey<EntityType<?>> forge(String id) {
+        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("forge", id));
     }
 }

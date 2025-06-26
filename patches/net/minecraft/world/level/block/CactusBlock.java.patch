@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -41,6 +_,7 @@
+@@ -45,6 +_,7 @@
  
      @Override
      protected void tick(BlockState p_220908_, ServerLevel p_220909_, BlockPos p_220910_, RandomSource p_220911_) {
@@ -8,28 +8,28 @@
          if (!p_220908_.canSurvive(p_220909_, p_220910_)) {
              p_220909_.destroyBlock(p_220910_, true);
          }
-@@ -58,6 +_,7 @@
+@@ -57,6 +_,7 @@
+             int i = 1;
+             int j = p_220913_.getValue(AGE);
  
-             if (i < 3) {
-                 int j = p_220913_.getValue(AGE);
-+                if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_220914_, blockpos, p_220913_, true)) {
-                 if (j == 15) {
-                     p_220914_.setBlockAndUpdate(blockpos, this.defaultBlockState());
-                     BlockState blockstate = p_220913_.setValue(AGE, Integer.valueOf(0));
-@@ -66,6 +_,8 @@
-                 } else {
-                     p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, Integer.valueOf(j + 1)), 4);
-                 }
-+                net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_220914_, p_220915_, p_220913_);
-+                }
++            if(net.neoforged.neoforge.common.CommonHooks.canCropGrow(p_220914_, blockpos, p_220913_, true)) {
+             while (p_220914_.getBlockState(p_220915_.below(i)).is(this)) {
+                 if (++i == 3 && j == 15) {
+                     return;
+@@ -78,6 +_,8 @@
+             if (j < 15) {
+                 p_220914_.setBlock(p_220915_, p_220913_.setValue(AGE, j + 1), 260);
              }
++            net.neoforged.neoforge.common.CommonHooks.fireCropGrowPost(p_220914_, p_220915_, p_220913_);
++            }
          }
      }
-@@ -108,6 +_,8 @@
+ 
+@@ -119,6 +_,8 @@
          }
  
          BlockState blockstate1 = p_51154_.getBlockState(p_51155_.below());
-+        net.neoforged.neoforge.common.util.TriState soilDecision = blockstate1.canSustainPlant(p_51154_, p_51155_.below(), Direction.UP, p_51153_);
++        var soilDecision = blockstate1.canSustainPlant(p_51154_, p_51155_.below(), Direction.UP, p_51153_);
 +        if (!soilDecision.isDefault()) return soilDecision.isTrue();
          return (blockstate1.is(Blocks.CACTUS) || blockstate1.is(BlockTags.SAND)) && !p_51154_.getBlockState(p_51155_.above()).liquid();
      }

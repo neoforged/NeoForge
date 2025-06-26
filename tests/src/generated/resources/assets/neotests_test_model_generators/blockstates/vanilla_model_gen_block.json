@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "neotests_test_model_generators:block/vanilla_model_gen_block"
+    }
+  }
+}

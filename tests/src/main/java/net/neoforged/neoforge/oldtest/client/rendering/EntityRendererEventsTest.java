@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.Collections;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -45,8 +44,8 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+@EventBusSubscriber
 @Mod("entity_renderer_events_test")
-@EventBusSubscriber(modid = "entity_renderer_events_test", bus = EventBusSubscriber.Bus.MOD)
 public class EntityRendererEventsTest {
     private static final ResourceLocation MY_ENTITY = ResourceLocation.fromNamespaceAndPath("entity_renderer_events_test", "test_entity");
 
@@ -64,7 +63,7 @@ public class EntityRendererEventsTest {
         event.put(MY_ENTITY_TYPE.get(), Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 1.0D).build());
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "entity_renderer_events_test")
     private static class EntityRenderEventsTestClientModStuff {
         private static final ModelLayerLocation MAIN_LAYER = new ModelLayerLocation(MY_ENTITY, "main");
         private static final ModelLayerLocation OUTER_LAYER = new ModelLayerLocation(MY_ENTITY, "main");
@@ -149,11 +148,6 @@ public class EntityRendererEventsTest {
     private static class MyEntity extends LivingEntity {
         protected MyEntity(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
             super(p_20966_, p_20967_);
-        }
-
-        @Override
-        public Iterable<ItemStack> getArmorSlots() {
-            return Collections.emptyList();
         }
 
         @Override

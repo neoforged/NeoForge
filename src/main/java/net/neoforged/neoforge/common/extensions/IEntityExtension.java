@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
@@ -26,43 +25,15 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.SoundAction;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import org.jetbrains.annotations.Nullable;
 
-public interface IEntityExtension extends INBTSerializable<CompoundTag> {
+public interface IEntityExtension {
     private Entity self() {
         return (Entity) this;
-    }
-
-    /**
-     * Deserialize from a compound tag.
-     * 
-     * @deprecated Use a data component/attachment to store info, or {@link Entity#load(CompoundTag)} as a replacement.
-     */
-    @Override
-    @Deprecated(forRemoval = true, since = "21.0")
-    default void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        self().load(nbt);
-    }
-
-    /**
-     * Serialize metadata into a compound tag.
-     * 
-     * @deprecated Use a data component/attachment to store info. ({@link Entity#setData(AttachmentType, Object)})
-     */
-    @Override
-    @Deprecated(forRemoval = true, since = "21.0")
-    default CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag ret = new CompoundTag();
-        String id = self().getEncodeId();
-        if (id != null) {
-            ret.putString("id", self().getEncodeId());
-        }
-        return self().saveWithoutId(ret);
     }
 
     @Nullable
@@ -73,14 +44,14 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
     /**
      * Returns a NBTTagCompound that can be used to store custom data for this entity.
      * It will be written, and read from disc, so it persists over world saves.
-     * 
+     *
      * @return A NBTTagCompound
      */
     CompoundTag getPersistentData();
 
     /**
      * Used in model rendering to determine if the entity riding this entity should be in the 'sitting' position.
-     * 
+     *
      * @return false to prevent an entity that is mounted to this entity from displaying the 'sitting' animation.
      */
     default boolean shouldRiderSit() {
@@ -116,11 +87,11 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * @param fallDistance The fall distance
      * @return {@code true} if this entity can trample, {@code false} otherwise
      */
-    boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, float fallDistance);
+    boolean canTrample(ServerLevel level, BlockState state, BlockPos pos, double fallDistance);
 
     /**
      * Returns The classification of this entity
-     * 
+     *
      * @param forSpawnCount If this is being invoked to check spawn count caps.
      * @return If the creature is of the type provided
      */
@@ -158,7 +129,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * This is used to specify that your entity has multiple individual parts, such as the Vanilla Ender Dragon.
      *
      * See {@link EnderDragon} for an example implementation.
-     * 
+     *
      * @return true if this is a multipart entity.
      */
     default boolean isMultipartEntity() {
@@ -175,7 +146,7 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
      * Only used if {@link #isMultipartEntity()} returns true.
      *
      * See {@link EnderDragon} for an example implementation.
-     * 
+     *
      * @return The child parts of this entity. The value to be returned here should be cached.
      */
     @Nullable

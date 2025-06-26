@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -25,9 +24,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -38,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.common.util.DataComponentUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -56,16 +51,21 @@ public final class FluidStack implements MutableDataComponentHolder {
         }) : DataResult.success(holder);
     });
     /**
-     * A standard codec for fluid stacks that does not accept empty stacks.
+     * A standard map codec for fluid stacks that does not accept empty stacks.
      */
-    public static final Codec<FluidStack> CODEC = Codec.lazyInitialized(
-            () -> RecordCodecBuilder.create(
+    public static final MapCodec<FluidStack> MAP_CODEC = MapCodec.recursive(
+            "FluidStack",
+            c -> RecordCodecBuilder.mapCodec(
                     instance -> instance.group(
                             FLUID_NON_EMPTY_CODEC.fieldOf("id").forGetter(FluidStack::getFluidHolder),
                             ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(FluidStack::getAmount), // note: no .orElse(1) compared to ItemStack
                             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
                                     .forGetter(stack -> stack.components.asPatch()))
                             .apply(instance, FluidStack::new)));
+    /**
+     * A standard codec for fluid stacks that does not accept empty stacks.
+     */
+    public static final Codec<FluidStack> CODEC = Codec.lazyInitialized(MAP_CODEC::codec);
 
     /**
      * A standard codec for fluid stacks that always deserializes with a fixed amount,
@@ -155,6 +155,10 @@ public final class FluidStack implements MutableDataComponentHolder {
         return !this.isEmpty() ? this.components.asPatch() : DataComponentPatch.EMPTY;
     }
 
+    public DataComponentMap immutableComponents() {
+        return !this.isEmpty() ? this.components.toImmutableMap() : DataComponentMap.EMPTY;
+    }
+
     public boolean isComponentsPatchEmpty() {
         return !this.isEmpty() ? this.components.isPatchEmpty() : true;
     }
@@ -180,21 +184,6 @@ public final class FluidStack implements MutableDataComponentHolder {
     private FluidStack(@Nullable Void unused) {
         this.fluid = null;
         this.components = new PatchedDataComponentMap(DataComponentMap.EMPTY);
-    }
-
-    /**
-     * Tries to parse a fluid stack. Empty stacks cannot be parsed with this method.
-     */
-    public static Optional<FluidStack> parse(HolderLookup.Provider lookupProvider, Tag tag) {
-        return CODEC.parse(lookupProvider.createSerializationContext(NbtOps.INSTANCE), tag)
-                .resultOrPartial(error -> LOGGER.error("Tried to load invalid fluid: '{}'", error));
-    }
-
-    /**
-     * Tries to parse a fluid stack, defaulting to {@link #EMPTY} on parsing failure.
-     */
-    public static FluidStack parseOptional(HolderLookup.Provider lookupProvider, CompoundTag tag) {
-        return tag.isEmpty() ? EMPTY : parse(lookupProvider, tag).orElse(EMPTY);
     }
 
     /**
@@ -263,39 +252,6 @@ public final class FluidStack implements MutableDataComponentHolder {
     }
 
     /**
-     * Saves this stack to a tag, directly writing the keys into the passed tag.
-     *
-     * @throws IllegalStateException if this stack is empty
-     */
-    public Tag save(HolderLookup.Provider lookupProvider, Tag prefix) {
-        if (this.isEmpty()) {
-            throw new IllegalStateException("Cannot encode empty FluidStack");
-        } else {
-            return DataComponentUtil.wrapEncodingExceptions(this, CODEC, lookupProvider, prefix);
-        }
-    }
-
-    /**
-     * Saves this stack to a new tag.
-     *
-     * @throws IllegalStateException if this stack is empty
-     */
-    public Tag save(HolderLookup.Provider lookupProvider) {
-        if (this.isEmpty()) {
-            throw new IllegalStateException("Cannot encode empty FluidStack");
-        } else {
-            return DataComponentUtil.wrapEncodingExceptions(this, CODEC, lookupProvider);
-        }
-    }
-
-    /**
-     * Saves this stack to a new tag. Empty stacks are supported and will be saved as an empty tag.
-     */
-    public Tag saveOptional(HolderLookup.Provider lookupProvider) {
-        return this.isEmpty() ? new CompoundTag() : this.save(lookupProvider, new CompoundTag());
-    }
-
-    /**
      * Creates a copy of this fluid stack.
      */
     public FluidStack copy() {
@@ -354,7 +310,7 @@ public final class FluidStack implements MutableDataComponentHolder {
         }
     }
 
-    public static MapCodec<FluidStack> lenientOtionalFieldOf(String fieldName) {
+    public static MapCodec<FluidStack> lenientOptionalFieldOf(String fieldName) {
         return CODEC.lenientOptionalFieldOf(fieldName)
                 .xmap(optional -> optional.orElse(EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
     }
@@ -388,7 +344,7 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     @Nullable
     @Override
-    public <T> T set(DataComponentType<? super T> type, @Nullable T component) {
+    public <T> T set(DataComponentType<T> type, @Nullable T component) {
         return this.components.set(type, component);
     }
 
@@ -475,69 +431,5 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public boolean is(FluidType fluidType) {
         return getFluidType() == fluidType;
-    }
-
-    // Deprecated pre-1.20.5 methods that are kept around for a while to allow for a transition go below
-
-    /**
-     * @deprecated Use {@link #getHoverName} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public Component getDisplayName() {
-        return getHoverName();
-    }
-
-    /**
-     * @deprecated Prefer {@link #getHoverName()}.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public String getTranslationKey() {
-        return getFluidType().getDescriptionId(this);
-    }
-
-    /**
-     * Determines if the fluid and the components are equal. This does not check amounts.
-     * 
-     * @deprecated Use {@link #isSameFluidSameComponents} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean isFluidEqual(FluidStack other) {
-        return isSameFluidSameComponents(this, other);
-    }
-
-    /**
-     * Determines if components are equal.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public static boolean areFluidStackTagsEqual(FluidStack first, FluidStack second) {
-        return Objects.equals(first.components, second.components);
-    }
-
-    /**
-     * Determines if Fluids are equal and this stack is larger.
-     *
-     * @return true if this FluidStack contains the other FluidStack (same fluid, same components and >= amount)
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean containsFluid(FluidStack other) {
-        return isFluidEqual(other) && amount >= other.amount;
-    }
-
-    /**
-     * Determines if Fluids, Amounts, and components are all equal.
-     * 
-     * @deprecated Use {@link #matches} instead.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean isFluidStackIdentical(FluidStack other) {
-        return matches(this, other);
-    }
-
-    /**
-     * Determines if the FluidIDs and components are equal compared to a container item stack. This does not check amounts.
-     */
-    @Deprecated(forRemoval = true, since = "1.20.5")
-    public boolean isFluidEqual(ItemStack other) {
-        return FluidUtil.getFluidContained(other).map(this::isFluidEqual).orElse(false);
     }
 }

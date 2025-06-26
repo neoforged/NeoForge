@@ -1,0 +1,61 @@
+--- a/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
++++ b/net/minecraft/client/renderer/block/model/multipart/MultiPartModel.java
+@@ -37,8 +_,9 @@
+         return this.shared.particleIcon;
+     }
+ 
++    // Neo: Implement our overloads (here and below) so child models can have custom logic
+     @Override
+-    public void collectParts(RandomSource p_410101_, List<BlockModelPart> p_410550_) {
++    public void collectParts(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource p_410101_, List<BlockModelPart> p_410550_) {
+         if (this.models == null) {
+             this.models = this.shared.selectModels(this.blockState);
+         }
+@@ -47,9 +_,36 @@
+ 
+         for (BlockStateModel blockstatemodel : this.models) {
+             p_410101_.setSeed(i);
+-            blockstatemodel.collectParts(p_410101_, p_410550_);
+-        }
+-    }
++            blockstatemodel.collectParts(level, pos, state, p_410101_, p_410550_);
++        }
++    }
++
++    @Override
++    @Nullable
++    public Object createGeometryKey(net.minecraft.world.level.BlockAndTintGetter level, net.minecraft.core.BlockPos pos, BlockState state, RandomSource random) {
++        if (this.models == null) {
++            this.models = this.shared.selectModels(this.blockState);
++        }
++
++        long seed = random.nextLong();
++
++        if (this.models.size() == 1) {
++            random.setSeed(seed);
++            return this.models.getFirst().createGeometryKey(level, pos, state, random);
++        } else {
++            List<Object> subKeys = new java.util.ArrayList<>(models.size());
++            for (var model : this.models) {
++                random.setSeed(seed);
++                var subKey = model.createGeometryKey(level, pos, state, random);
++                if (subKey == null) {
++                    return null;
++                }
++                subKeys.add(subKey);
++            }
++            return new GeometryKey(subKeys, this);
++        }
++    }
++    private record GeometryKey(List<Object> subKeys, MultiPartModel multiPart) {}
+ 
+     @OnlyIn(Dist.CLIENT)
+     public record Selector<T>(Predicate<BlockState> condition, T model) {
+@@ -86,7 +_,6 @@
+                     bitset.set(i);
+                 }
+             }
+-
+             return this.subsets.computeIfAbsent(bitset, p_409792_ -> {
+                 Builder<BlockStateModel> builder = ImmutableList.builder();
+ 
