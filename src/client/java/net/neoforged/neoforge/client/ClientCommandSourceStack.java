@@ -116,11 +116,6 @@ public class ClientCommandSourceStack extends CommandSourceStack {
         return connection().enabledFeatures();
     }
 
-    @Override
-    public FeatureFlagSet enabledFeatures() {
-        return Minecraft.getInstance().getConnection().enabledFeatures();
-    }
-
     /**
      * {@return the scoreboard from the client side}
      */

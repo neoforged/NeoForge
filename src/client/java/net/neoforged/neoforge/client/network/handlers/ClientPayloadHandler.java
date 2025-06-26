@@ -77,6 +77,7 @@ public final class ClientPayloadHandler {
             case KnownRegistryDataMapsPayload knownRegistryDataMapsPayload -> ClientRegistryManager.handleKnownDataMaps(knownRegistryDataMapsPayload, context);
             case RecipeContentPayload recipeContentPayload -> handle(recipeContentPayload, context);
             case RegistryDataMapSyncPayload<?> registryDataMapSyncPayload -> ClientRegistryManager.handleDataMapSync(registryDataMapSyncPayload, context);
+            case SyncAttachmentsPayload syncAttachmentsPayload -> handle(syncAttachmentsPayload, context);
         }
     }
 
@@ -191,7 +192,7 @@ public final class ClientPayloadHandler {
         NeoForge.EVENT_BUS.post(new RecipesReceivedEvent(payload.recipeTypes(), recipeMap));
     }
 
-    public static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
+    private static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
         switch (payload.target()) {
             case SyncAttachmentsPayload.BlockEntityTarget target -> {
                 var blockEntity = context.player().level().getBlockEntity(target.pos());

@@ -23,4 +23,5 @@ public sealed interface ClientDispatchPayload extends CustomPacketPayload
         FrozenRegistrySyncStartPayload,
         KnownRegistryDataMapsPayload,
         RecipeContentPayload,
-        RegistryDataMapSyncPayload {}
+        RegistryDataMapSyncPayload,
+        SyncAttachmentsPayload {}
