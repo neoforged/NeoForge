@@ -17,11 +17,12 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * @deprecated Use {@link IResourceHandler} bound by type {@link ItemResource} instead
  *
- *             <pre>{@code
+ * <pre>{@code
  *  IResourceHandler<ItemResource>
  * }</pre>
+ * 
+ * @deprecated Use {@link IResourceHandler} bound by type {@link ItemResource} instead
  */
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
 public interface IItemHandler {

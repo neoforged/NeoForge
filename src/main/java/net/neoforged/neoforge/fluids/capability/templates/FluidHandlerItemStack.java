@@ -10,7 +10,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
@@ -69,7 +68,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public int fill(FluidStack resource, IFluidHandler.FluidAction doFill) {
+    public int fill(FluidStack resource, FluidAction doFill) {
         if (container.getCount() != 1 || resource.isEmpty() || !canFillFluidType(resource)) {
             return 0;
         }
@@ -100,7 +99,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public FluidStack drain(FluidStack resource, IFluidHandler.FluidAction action) {
+    public FluidStack drain(FluidStack resource, FluidAction action) {
         if (container.getCount() != 1 || resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, getFluid())) {
             return FluidStack.EMPTY;
         }
@@ -108,7 +107,7 @@ public class FluidHandlerItemStack implements IFluidHandlerItem {
     }
 
     @Override
-    public FluidStack drain(int maxDrain, IFluidHandler.FluidAction action) {
+    public FluidStack drain(int maxDrain, FluidAction action) {
         if (container.getCount() != 1 || maxDrain <= 0) {
             return FluidStack.EMPTY;
         }

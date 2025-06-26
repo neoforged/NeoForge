@@ -41,7 +41,7 @@ import net.neoforged.testframework.gametest.GameTest;
 public class ComponentResourceTests {
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that FluidHandlerItemStack works")
+    @TestHolder(description = "Tests queries on a consumable handler and then insertion/extractions with transactions")
     public static void testFluidHandlerItemStack(ExtendedGameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance());
@@ -83,15 +83,15 @@ public class ComponentResourceTests {
 
         ResourceStack<FluidResource> component = player.getMainHandItem().get(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT);
 
-        if (component == null || !component.isEmpty())
-            helper.fail("Fluid stack component not found, or was empty");
+        if (component != null && !component.isEmpty())
+            helper.fail("Fluid stack component was found. The item was supposed to be consumed");
 
         helper.succeed();
     }
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that FluidHandlerItemStack works")
+    @TestHolder(description = "Tests that fluids can be inserted into and extracted from")
     public static void testFluidStorageItemStack(ExtendedGameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
@@ -110,6 +110,14 @@ public class ComponentResourceTests {
             helper.assertValueEqual(fluidHandler.extract(FluidResource.of(Fluids.LAVA), 3000, tx), 3000, "lava");
 
             helper.assertValueEqual(fluidHandler.insert(FluidResource.of(Fluids.LAVA), 100, tx), 0, "lava");
+        }
+
+        try (Transaction tx = TransactionManager.open(null)) {
+            int amount = fluidHandler.insert(FluidResource.of(Fluids.LAVA), 80000, tx);
+            helper.assertValueEqual(amount, ResourceHandlerTestSetup.TANK_CAPACITY * ResourceHandlerTestSetup.TANK_COUNT * 4, "lava");
+            helper.assertValueEqual(fluidHandler.extract(FluidResource.of(Fluids.LAVA), 3000, tx), 3000, "lava");
+
+            helper.assertValueEqual(fluidHandler.insert(FluidResource.of(Fluids.LAVA), 100, tx), 0, "lava");
             tx.commit();
         }
 
@@ -118,7 +126,7 @@ public class ComponentResourceTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Shulker Test")
+    @TestHolder(description = "Shulker insertion & extraction with transactions in item form")
     public static void shulkerTest(ExtendedGameTestHelper helper) {
         Player player = helper.makeMockPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, Items.SHULKER_BOX.getDefaultInstance());
@@ -143,12 +151,12 @@ public class ComponentResourceTests {
         int remaining = insertedConst - extractedConst;
         try (Transaction tx = TransactionManager.open(null)) {
             int inserted = shulkerHandler.insert(resource, insertedConst, tx);
-            helper.assertValueEqual(inserted / 2, insertedConst / 2, "Inserted should match");
-            helper.assertValueEqual(inserted / 2, insertedConst / 2, "Inserted should match");
-            helper.assertValueEqual(ResourceHandlerUtil.getAmount(shulkerHandler, resource), insertedConst, "Current Amount should match");
+            helper.assertValueEqual(insertedConst / 2, inserted / 2, "Inserted should match");
+            helper.assertValueEqual(insertedConst / 2, inserted / 2, "Inserted should match");
+            helper.assertValueEqual(insertedConst, ResourceHandlerUtil.getAmount(shulkerHandler, resource), "Current Amount should match");
             int extracted = shulkerHandler.extract(resource, extractedConst, tx);
             helper.assertValueEqual(extracted, extractedConst, "Extracted should match");
-            helper.assertValueEqual(ResourceHandlerUtil.getAmount(shulkerHandler, resource), remaining, "Current Amount should match");
+            helper.assertValueEqual(remaining, ResourceHandlerUtil.getAmount(shulkerHandler, resource), "Current Amount should match");
             action.commit(tx);
         }
         helper.assertValueEqual(ResourceHandlerUtil.getAmount(shulkerHandler, resource), action.isExecuting() ? remaining : 0, "Current Amount should match");
@@ -158,53 +166,43 @@ public class ComponentResourceTests {
     @EmptyTemplate
     @TestHolder(description = "Tests that ItemStorage Components work and don't create accidental duplications")
     public static void testItemStorageItemStack(ExtendedGameTestHelper helper) {
-        try {
-
-            Player player = helper.makeMockPlayer();
-            player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
-            IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
-            IResourceHandler<ItemResource> storageCap = context.getCapability(Capabilities.ItemHandler.ITEM);
-            if (storageCap == null) {
-                helper.fail("Storage Capability was missing on item");
-                return;
-            }
-            BlockPos pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
-            IResourceHandler<ItemResource> blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
-
-            ItemResource diamondResource = ItemResource.of(Items.DIAMOND);
-            try (Transaction tx = TransactionManager.open(null)) {
-                //Because of the way the context filling works, it is attempting to fill or group similar actions together.
-                //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
-                ItemStack appleClone = player.getInventory().getItem(0).copy();
-                //holds 100 stacks each.
-                int amount = storageCap.insert(diamondResource, 13000, tx);
-                helper.assertValueEqual(amount, 12800, "diamond");
-
-                //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-                ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
-                blockHandler.insert(applesWithContents, 2, tx);
-            }
-            helper.assertTrue(ResourceHandlerUtil.isEmpty(storageCap), "handler");
-
-            try (Transaction tx = TransactionManager.open(null)) {
-
-                //Because of the way the context filling works, it is attempting to fill or group similar actions together.
-                //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
-                ItemStack appleClone = player.getInventory().getItem(0).copy();
-                //holds 100 stacks each.
-                int amount = storageCap.insert(diamondResource, 13000, tx);
-                helper.assertValueEqual(amount, 12800, "diamond");
-
-                //todo add apples check to make sure the writes didn't propagate back to the apple clone. This was done manually, in debugger, just not test
-                ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
-                blockHandler.insert(applesWithContents, 2, tx);
-                tx.commit();
-            }
-
-            helper.succeed();
-        } catch (Exception e) {
-            e.printStackTrace();
+        Player player = helper.makeMockPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance().copyWithCount(4));
+        IItemContext context = PlayerItemContext.ofHand(player, InteractionHand.MAIN_HAND);
+        IResourceHandler<ItemResource> storageCap = context.getCapability(Capabilities.ItemHandler.ITEM);
+        if (storageCap == null) {
+            helper.fail("Storage Capability was missing on item");
+            return;
         }
+        BlockPos pos = ResourceHandlerTestSetup.setupLevelEnvironment(helper);
+        IResourceHandler<ItemResource> blockHandler = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
+
+        ItemResource diamondResource = ItemResource.of(Items.DIAMOND);
+        try (Transaction tx = TransactionManager.open(null)) {
+            //Because of the way the context filling works, it is attempting to fill or group similar actions together.
+            //This means that only 2 "apples" will be filled with diamonds, despite sending 200 more diamond to it.
+            ItemStack appleClone = player.getInventory().getItem(0).copy();
+            //holds 100 stacks each.
+            int amount = storageCap.insert(diamondResource, 13000, tx);
+            helper.assertValueEqual(amount, 12800, "diamond");
+
+            ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
+            blockHandler.insert(applesWithContents, 2, tx);
+        }
+        helper.assertTrue(ResourceHandlerUtil.isEmpty(storageCap), "handler");
+
+        try (Transaction tx = TransactionManager.open(null)) {
+
+            //holds 100 stacks each.
+            int amount = storageCap.insert(diamondResource, 13000, tx);
+            helper.assertValueEqual(12800, amount, "diamond");
+
+            ItemResource applesWithContents = ItemResource.of(player.getInventory().getItem(1));
+            blockHandler.insert(applesWithContents, 2, tx);
+            tx.commit();
+        }
+
+        helper.succeed();
     }
 
     @GameTest

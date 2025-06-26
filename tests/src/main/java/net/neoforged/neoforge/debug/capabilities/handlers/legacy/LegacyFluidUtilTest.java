@@ -35,7 +35,7 @@ public class LegacyFluidUtilTest {
      */
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Legacy tryEmptyContainer")
+    @TestHolder(description = "Tests that FluidHandlerItemStack works")
     private static void test_tryEmptyContainer(ExtendedGameTestHelper helper) {
         var sourceStack = new ItemStack(Items.WATER_BUCKET, 2);
         var targetTank = new FluidTank(10000);

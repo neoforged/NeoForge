@@ -20,7 +20,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Variant of {@link EnergyBufferAttachment} for use with data components.
+ * Variant of {@link EnergyBuffer} for use with data components.
  * <p>
  * The actual data storage is managed by a data component, and all changes will write back to that component.
  * <p>
@@ -219,7 +219,7 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
         }
 
         /**
-         * Constructs a new {@link EnergyBufferAttachment} to use.
+         * Constructs a new {@link EnergyBuffer} to use.
          *
          * @param ignored     The ItemStack that is usually provided with the capability, but in this case it is ignored for easier construction.
          * @param itemContext The context that handles exchanging the component data upon mutation.

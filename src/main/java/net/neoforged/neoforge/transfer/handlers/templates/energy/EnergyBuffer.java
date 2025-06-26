@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * A simple reference implementation of {@link IEnergyHandler}. Use this or implement your own if you need custom logic.
  * It is recommended to make your own implementation of {@link IEnergyHandler}.
  * <p>
- * If using this, then it is recommended to use the {@link Builder} to construct an {@link EnergyBufferAttachment} such as:
+ * If using this, then it is recommended to use the {@link Builder} to construct an {@link EnergyBuffer} such as:
  *
  * <pre>
  * {@code
@@ -38,14 +38,14 @@ import org.jetbrains.annotations.Nullable;
  * </pre>
  *
  * <p>
- * Unlike the {@link EnergyBufferComponentHandler}, the handler also is the attachment data.
+ * Unlike the {@link EnergyBufferComponentHandler}, the handler is mutable and is expected to be used as a block entity field, attachment, or similar.
  */
-public final class EnergyBufferAttachment implements IEnergyHandler {
-    public static MapCodec<EnergyBufferAttachment> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+public final class EnergyBuffer implements IEnergyHandler {
+    public static MapCodec<EnergyBuffer> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("capacity").forGetter(data -> data.capacity),
             Codec.INT.fieldOf("max_insertion").forGetter(data -> data.maxInsert),
             Codec.INT.fieldOf("max_extraction").forGetter(data -> data.maxExtract),
-            Codec.INT.fieldOf("energy").forGetter(data -> data.energy)).apply(instance, EnergyBufferAttachment::new));
+            Codec.INT.fieldOf("energy").forGetter(data -> data.energy)).apply(instance, EnergyBuffer::new));
 
     /**
      * Example for making an attachment builder when registering
@@ -56,11 +56,11 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
      * }
      * </pre>
      */
-    public static AttachmentType.Builder<EnergyBufferAttachment> attachment(Supplier<EnergyBufferAttachment> buffer) {
+    public static AttachmentType.Builder<EnergyBuffer> attachment(Supplier<EnergyBuffer> buffer) {
         //This is done this way so that the serialized value also gets the holder using the above codec
         //Otherwise in the deserialized version, the attachment holder would always be null.
         return AttachmentType.builder(buffer)
-                .serialize(holderWith(EnergyBufferAttachment.CODEC, EnergyBufferAttachment::setHolder));
+                .serialize(holderWith(EnergyBuffer.CODEC, EnergyBuffer::setHolder));
     }
 
     private final IndexedIntSnapshot snapshots;
@@ -112,7 +112,7 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
      * @param maxExtractionRate How much energy can be extracted in a single {@link IEnergyHandler#extract} call.
      * @param energy            An array of initial or serialized energy sub-buffer amounts.
      */
-    public EnergyBufferAttachment(int capacity, int maxInsertionRate, int maxExtractionRate, int energy) {
+    public EnergyBuffer(int capacity, int maxInsertionRate, int maxExtractionRate, int energy) {
         EnergyHandlerUtil.checkEnergy(energy);
         if (capacity < 0) throw new IllegalArgumentException("Capacity must be non-negative");
         if (maxInsertionRate < 0) throw new IllegalArgumentException("MaxInsertion rate must be non-negative");
@@ -187,12 +187,12 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
     }
 
     /**
-     * Creates a builder of a specified capacity. This is the advised way to make an {@link EnergyBufferAttachment}.
+     * Creates a builder of a specified capacity. This is the advised way to make an {@link EnergyBuffer}.
      * An important note, by default the transfer rate is 1% of the capacity (but never less than 1).
      * This it to help make a simple feeling of something charging.
      *
      * @param capacity How much energy the buffer is set to be able to hold.
-     * @return Chainable builder to allow creation of a new {@link EnergyBufferAttachment}
+     * @return Chainable builder to allow creation of a new {@link EnergyBuffer}
      */
     public static Builder builder(int capacity) {
         return new Builder().capacity(capacity).maxExtractRate(capacity).maxInsertRate(Mth.ceil(capacity * 0.01f));
@@ -250,10 +250,10 @@ public final class EnergyBufferAttachment implements IEnergyHandler {
         }
 
         /**
-         * Constructs a new {@link EnergyBufferAttachment} to use from the values assigned while building.
+         * Constructs a new {@link EnergyBuffer} to use from the values assigned while building.
          */
-        public EnergyBufferAttachment build() {
-            return new EnergyBufferAttachment(capacity, maxInsertRate, maxExtractRate, energy);
+        public EnergyBuffer build() {
+            return new EnergyBuffer(capacity, maxInsertRate, maxExtractRate, energy);
         }
     }
 

@@ -33,7 +33,6 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        //No-op
         ResourceHandlerUtil.isEmpty(resource, amount);
         return 0;
     }

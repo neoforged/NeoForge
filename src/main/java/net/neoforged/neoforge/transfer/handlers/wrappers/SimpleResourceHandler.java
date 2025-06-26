@@ -127,7 +127,6 @@ public final class SimpleResourceHandler<T extends IResource> {
 
     @Override
     public String toString() {
-        return "SimpleResourceHandler[" +
-                "handler=" + handler + ']';
+        return "SimpleResourceHandler[handler=%s]".formatted(handler);
     }
 }

@@ -23,6 +23,9 @@ public abstract class ItemContextFluidHandler extends ItemContextResourceHandler
         super(itemContext, componentType, FluidResource.EMPTY_STACK, singleItemLimit, validator);
     }
 
+    /**
+     * A consumable fluid container that, when emptied, will be destroyed rather than just have the fluid removed.
+     */
     public static class Consumable extends ItemContextFluidHandler {
         public Consumable(IItemContext itemContext, DataComponentType<ResourceStack<FluidResource>> componentType, int singleItemLimit) {
             super(itemContext, componentType, singleItemLimit);
@@ -32,11 +35,20 @@ public abstract class ItemContextFluidHandler extends ItemContextResourceHandler
             super(itemContext, componentType, singleItemLimit, validator);
         }
 
-        protected int setEmpty(int count, TransactionContext context) {
-            return itemContext.extract(itemContext.getResource(), count, context);
+        @Override
+        protected int set(int count, ResourceStack<FluidResource> resultStack, TransactionContext transaction) {
+            //if the fluid is empty, we then want to "consume" the container
+            if (resultStack.isEmpty())
+                return itemContext.extract(itemContext.getResource(), count, transaction);
+            return super.set(count, resultStack, transaction);
         }
     }
 
+    /**
+     * A swappable fluid container that, when emptied, will swap from the fluid storing to a different Item Resource.
+     * Conceptually, it similar to a bucket of fluid -> an empty bucket
+     * (despite them having their own custom handler)
+     */
     public static class SwapEmpty extends ItemContextFluidHandler {
         protected final ItemResource emptyContainer;
 
@@ -50,8 +62,12 @@ public abstract class ItemContextFluidHandler extends ItemContextResourceHandler
             this.emptyContainer = emptyContainer;
         }
 
-        protected int setEmpty(int count, TransactionContext context) {
-            return itemContext.exchange(emptyContainer, count, context);
+        @Override
+        protected int set(int count, ResourceStack<FluidResource> resultStack, TransactionContext transaction) {
+            //if the fluid is empty, we want to set it to a different resource. Like a water bucket -> an empty bucket.
+            if (resultStack.isEmpty())
+                return itemContext.exchange(emptyContainer, count, transaction);
+            return super.set(count, resultStack, transaction);
         }
     }
 }

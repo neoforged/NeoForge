@@ -18,11 +18,11 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * Implement this interface as a capability which should handle fluids
  *
- * @deprecated Use {@link IResourceHandler} bound by type {@link FluidResource} instead.
- * 
- *             <pre>{@code
+ * <pre>{@code
  *  IResourceHandler<FluidResource>
  * }</pre>
+ * 
+ * @deprecated Use {@link IResourceHandler} bound by type {@link FluidResource} instead.
  */
 
 @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)

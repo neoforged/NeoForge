@@ -44,7 +44,6 @@ public class EnergyTestsSetup {
         COMPONENTS.register(framework.modEventBus());
         ITEMS.register(framework.modEventBus());
         framework.modEventBus().<RegisterCapabilitiesEvent>addListener(event -> {
-            //noinspection DataFlowIssue context should never be null. We just can't mark NotNull due to immaculate
             event.registerItem(Capabilities.EnergyHandler.ITEM, EnergyBufferComponentHandler.builder(MAX_CAPACITY, ENERGY_COMPONENT)::build, BATTERY);
         });
     }

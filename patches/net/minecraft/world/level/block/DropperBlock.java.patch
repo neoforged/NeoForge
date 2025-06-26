@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/DropperBlock.java
 +++ b/net/minecraft/world/level/block/DropperBlock.java
-@@ -58,12 +_,18 @@
+@@ -58,12 +_,17 @@
                  ItemStack itemstack = dispenserblockentity.getItem(i);
                  if (!itemstack.isEmpty()) {
                      Direction direction = p_52944_.getBlockState(p_52945_).getValue(FACING);
@@ -15,7 +15,6 @@
 +                        if (containerOrHandler.container() != null) {
 +                            itemstack1 = HopperBlockEntity.addItem(dispenserblockentity, containerOrHandler.container(), itemstack.copyWithCount(1), direction.getOpposite());
 +                        } else {
-+                            //noinspection DataFlowIssue
 +                            int accepted = net.neoforged.neoforge.transfer.ResourceHandlerUtil.insertStacking(containerOrHandler.itemHandler(), net.neoforged.neoforge.transfer.resources.ItemResource.of(itemstack), 1, null);
 +                            itemstack1  = itemstack.copyWithCount(1 - accepted);
 +                        }
