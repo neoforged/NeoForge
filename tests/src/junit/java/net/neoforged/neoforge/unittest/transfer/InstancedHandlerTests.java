@@ -40,8 +40,8 @@ public class InstancedHandlerTests {
     @Test
     public void endlessHandlers() {
         //InfiniteResourceHandlers creates infinite of a specified resource, but doesn't allow insertion
-        testEndlessResource(FluidResource.of(Fluids.WATER), FluidResource.EMPTY);
-        testEndlessResource(ItemResource.of(Blocks.COBBLESTONE), ItemResource.EMPTY);
+        testInfiniteResource(FluidResource.of(Fluids.WATER), FluidResource.EMPTY);
+        testInfiniteResource(ItemResource.of(Blocks.COBBLESTONE), ItemResource.EMPTY);
     }
 
     private static <T extends IResource> void testVoidResource(VoidResourceHandler<T> handler, T emptyResource) {
@@ -65,7 +65,7 @@ public class InstancedHandlerTests {
         }
     }
 
-    private static <T extends IResource> void testEndlessResource(T resource, T emptyResource) {
+    private static <T extends IResource> void testInfiniteResource(T resource, T emptyResource) {
         InfiniteResourceHandler<T> handler = new InfiniteResourceHandler<>(resource);
         Assertions.assertThat(handler.size()).withFailMessage("Size should be 1").isEqualTo(1);
         Assertions.assertThat(handler.supportsExtraction()).withFailMessage("Extraction should be allowed").isTrue().isEqualTo(handler.supportsExtraction(0));

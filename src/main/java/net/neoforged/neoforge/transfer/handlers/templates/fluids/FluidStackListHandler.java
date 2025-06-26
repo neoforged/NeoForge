@@ -37,7 +37,7 @@ public class FluidStackListHandler extends StackListHandler<FluidStack, FluidRes
     }
 
     @Override
-    public boolean matches(FluidResource resource, FluidStack stack) {
+    public boolean matches(FluidStack stack, FluidResource resource) {
         return resource.is(stack);
     }
 

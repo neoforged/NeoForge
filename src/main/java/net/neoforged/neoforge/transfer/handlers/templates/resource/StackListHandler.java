@@ -23,7 +23,7 @@ import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSl
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.snapshots.NotifyingSnapshotJournal;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -44,12 +44,13 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     private int size;
     private final IStackFactory<R, S> stackFactory;
     private final List<StackJournal> snapshotJournals;
-    private final GroupedSnapshotJournal onChangeJournal;
+    private final NotifyingSnapshotJournal onChangeJournal;
     private final Codec<NonNullList<S>> codec = NonNullList.codecOf(stackCodec());
 
     /**
      * @param size              How large this list will be.
      * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
+     * @param stackFactory      Creates a stack of type {@code S} from a resource type {@code R} and an amount.
      * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
      */
     public StackListHandler(int size, S emptyStack, int capacity, IStackFactory<R, S> stackFactory, @Nullable Runnable onChangedCallback) {
@@ -59,6 +60,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     /**
      * @param stacks            A non-null list of stacks stored in this handler. This will make a mutable copy of the passed in list.
      * @param capacity          How many of a single item can a single index maximally hold. This result will be the minimum value between what is set here, and the max stack size of the item.
+     * @param stackFactory      Creates a stack of type {@code S} from a resource type {@code R} and an amount.
      * @param onChangedCallback What actions should be done when the contents changed. Typically {@link BlockEntity#setChanged()} or similar.
      */
     public StackListHandler(NonNullList<S> stacks, S emptyStack, int capacity, IStackFactory<R, S> stackFactory, @Nullable Runnable onChangedCallback) {
@@ -70,7 +72,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         this.snapshotJournals = new ArrayList<>(size);
         //Creates a change journal in charge of notifying the handler has been changed.
         // The callback is usually something like someInstance::setChanged
-        this.onChangeJournal = GroupedSnapshotJournal.commitWith(onChangedCallback);
+        this.onChangeJournal = NotifyingSnapshotJournal.commitWith(onChangedCallback);
         this.emptyStack = emptyStack;
         for (int i = 0; i < size; i++) {
             snapshotJournals.add(new StackJournal(i));
@@ -91,7 +93,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
     @Override
     public void deserialize(ValueInput input) {
-        Optional<NonNullList<S>> optional = input.read(codec.fieldOf(VALUE_IO_KEY));
+        Optional<NonNullList<S>> optional = input.read(VALUE_IO_KEY, codec);
         if (optional.isEmpty()) return;
 
         //Safety precaution in case the deserialized list was or ever becomes immutable.
@@ -109,12 +111,12 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     protected abstract int getAmountFrom(S stack);
 
     @ApiStatus.OverrideOnly
-    protected int getCapacityFrom(R stack) {
+    protected int getCapacityFrom(R resource) {
         return Integer.MAX_VALUE;
     }
 
     @ApiStatus.OverrideOnly
-    protected abstract boolean matches(R resource, S stack);
+    protected abstract boolean matches(S stack, R resource);
 
     @ApiStatus.OverrideOnly
     protected abstract S snapshotOf(S stack);
@@ -155,6 +157,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     public int getCapacity(int index, R resource) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty()) return capacity;
+        var current = stacks.get(index);
         return Math.min(capacity, getCapacityFrom(resource));
     }
 
@@ -203,7 +206,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         int currentAmount = getAmountFrom(currentStack);
 
         int capacity = getCapacity(index, resource);
-        if (currentAmount >= capacity || (currentAmount > 0 && !matches(resource, currentStack))) return 0;
+        if (currentAmount >= capacity || (currentAmount > 0 && !matches(currentStack, resource))) return 0;
         int inserted = Math.min(amount, capacity - currentAmount);
         if (inserted > 0) {
             snapshotJournals.get(index).updateSnapshots(transaction);
@@ -235,7 +238,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     private int extractBehaviour(int index, R resource, int amount, TransactionContext transaction) {
         S currentStack = stacks.get(index);
 
-        if (!matches(resource, currentStack)) return 0;
+        if (!matches(currentStack, resource)) return 0;
         int currentAmount = getAmountFrom(currentStack);
         int handledAmount = Math.min(amount, currentAmount);
         if (handledAmount > 0) {

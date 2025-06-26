@@ -106,7 +106,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     public void onClose(TransactionContext transaction, Transaction.Result result) {
         //Neo: for testing and will be removed after deprecation period is over for handler reworks.
         // This is to provide a quick way to give some metrics during the migration phase
-        var currentDepth = transaction.nestingDepth();
+        int currentDepth = transaction.nestingDepth();
         int max = Math.max(DEEPEST_LAYER, currentDepth);
         if (max != DEEPEST_LAYER) {
             DEEPEST_LAYER = max;
@@ -124,16 +124,14 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
             //The transaction is the root.
             originalState = snapshot;
             transaction.addRootCloseCallback(this);
+        } else if (snapshots.get(currentDepth - 1) == null) {
+            // No snapshot yet, so move the snapshot one nesting level up.
+            snapshots.set(currentDepth - 1, snapshot);
+            // This is the first snapshot at this level: we need to call addCloseCallback.
+            transaction.getOpenTransaction(currentDepth - 1).addCloseCallback(this);
         } else {
-            if (snapshots.get(currentDepth - 1) == null) {
-                // No snapshot yet, so move the snapshot one nesting level up.
-                snapshots.set(currentDepth - 1, snapshot);
-                // This is the first snapshot at this level: we need to call addCloseCallback.
-                transaction.getOpenTransaction(currentDepth - 1).addCloseCallback(this);
-            } else {
-                // There is already an older snapshot at the nesting level above, just release the newer one.
-                releaseSnapshot(snapshot);
-            }
+            // There is already an older snapshot at the nesting level above, just release the newer one.
+            releaseSnapshot(snapshot);
         }
     }
 

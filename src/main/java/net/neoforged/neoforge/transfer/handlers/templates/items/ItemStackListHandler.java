@@ -42,7 +42,7 @@ public class ItemStackListHandler extends StackListHandler<ItemStack, ItemResour
     }
 
     @Override
-    public boolean matches(ItemResource resource, ItemStack stack) {
+    public boolean matches(ItemStack stack, ItemResource resource) {
         return resource.is(stack);
     }
 

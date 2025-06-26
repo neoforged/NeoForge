@@ -69,7 +69,7 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
         if (maxInsert == 0) return 0;
         if (itemContext.getAmount() == 0) return 0;
 
@@ -90,7 +90,7 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
         if (maxExtract == 0) return 0;
         if (itemContext.getAmount() == 0) return 0;
 

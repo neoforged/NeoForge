@@ -78,7 +78,7 @@ public class ComponentResourceTests {
             tx.commit();
         }
 
-        if (!ResourceHandlerUtil.isIndexEmpty(handler, 0))
+        if (!handler.getResource(0).isEmpty())
             helper.fail("Expected empty tank");
 
         ResourceStack<FluidResource> component = player.getMainHandItem().get(ResourceHandlerTestSetup.Content.SINGLE_FLUID_CONTENT);

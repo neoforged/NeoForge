@@ -80,7 +80,7 @@ public class ResourceHandlerSlot extends Slot {
             if (extracted > 0) return ItemStack.EMPTY;
 
             transaction.commit();
-            return ItemStack.EMPTY;
+            return resource.toStack(extracted);
         }
     }
 

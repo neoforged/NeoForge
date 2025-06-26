@@ -43,7 +43,7 @@ public class VanillaInventoryCodeHooks {
         for (int i = 0; i < size; i++) {
             ItemStack extractedItemStack;
             try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-                extractedItemStack = ItemUtil.extractItemStackFilteredAtIndex(handler, resource -> true, i, 1, transaction);
+                extractedItemStack = ItemUtil.extractItemStackAtIndex(handler, resource -> true, i, 1, transaction);
                 // If our item stack is empty we revert the extraction (by not committing),
                 // and move on to the next index in the handler
                 if (extractedItemStack.isEmpty()) continue;

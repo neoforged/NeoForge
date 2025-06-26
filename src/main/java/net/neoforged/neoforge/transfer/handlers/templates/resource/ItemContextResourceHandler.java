@@ -106,30 +106,32 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         ResourceStack<T> resourceStack = getStoredResourceStack();
 
         if (resourceStack.isEmpty()) {
+            //if the amount is less than the capacity, we should fill partially.
             if (amount < capacityOfOneItem) {
                 var partiallyFilledStack = ResourceStack.of(resource, amount, emptyStack);
                 int insertedCount = set(1, partiallyFilledStack, transaction);
                 return insertedCount == 1 ? amount : 0;
             }
-            var filledStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
-            int filledCount = set(amount / capacityOfOneItem, filledStack, transaction);
+            // If the capacity is the same, then we exchange the number that would be filled.
+            var filledContainerStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
+            int filledCount = set(amount / capacityOfOneItem, filledContainerStack, transaction);
             return IntMath.saturatedMultiply(filledCount, capacityOfOneItem);
         }
 
         if (!resourceStack.resource().equals(resource)) return 0;
 
-        int containerFill = resourceStack.amount();
-        int spaceLeft = capacityOfOneItem - containerFill;
+        int currentStored = resourceStack.amount();
+        int spaceLeft = capacityOfOneItem - currentStored;
         if (spaceLeft == 0) return 0;
 
         if (amount < spaceLeft) {
-            var partiallyFilledStack = ResourceStack.of(resource, amount + containerFill, emptyStack);
-            int insertedCount = set(1, partiallyFilledStack, transaction);
+            var partiallyFilledContainerStack = ResourceStack.of(resource, amount + currentStored, emptyStack);
+            int insertedCount = set(1, partiallyFilledContainerStack, transaction);
             return insertedCount == 1 ? amount : 0;
         }
 
-        var filledStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
-        int filledCount = set(amount / spaceLeft, filledStack, transaction);
+        var filledContainerStack = ResourceStack.of(resource, capacityOfOneItem, emptyStack);
+        int filledCount = set(amount / spaceLeft, filledContainerStack, transaction);
         return IntMath.saturatedMultiply(filledCount, spaceLeft);
     }
 
@@ -143,8 +145,8 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
             return 0;
 
         if (amount < resourceStack.amount()) {
-            var resultStack = ResourceStack.of(resource, resourceStack.amount() - amount, emptyStack);
-            int extractedCount = set(1, resultStack, transaction);
+            var partiallyDrainedContainerStack = ResourceStack.of(resource, resourceStack.amount() - amount, emptyStack);
+            int extractedCount = set(1, partiallyDrainedContainerStack, transaction);
             return extractedCount == 1 ? amount : 0;
         }
 

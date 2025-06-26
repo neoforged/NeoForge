@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -231,6 +232,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     public List<ItemStack> toStacks(int count) {
+        if (count == 0 || isEmpty())
+            return Collections.emptyList();
+
         int maxStackSize = getMaxStackSize();
         int stackCount = count / maxStackSize;
         List<ItemStack> stacks = new ArrayList<>(stackCount + 1);

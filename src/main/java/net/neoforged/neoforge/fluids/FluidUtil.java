@@ -74,7 +74,7 @@ public final class FluidUtil {
      * @param pos    The position of the fluid handler block in the level.
      * @param side   The side of the block to interact with. May be null.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
-     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#interactWithFluidHandler(Player, InteractionHand, Level, BlockPos, Direction)}
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#interactWithHandler(Player, InteractionHand, Level, BlockPos, Direction, TransactionContext)}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side) {
@@ -94,7 +94,7 @@ public final class FluidUtil {
      * @param hand    The player's hand that is holding an item that should interact with the fluid handler.
      * @param handler The fluid handler.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
-     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#interactWithFluidHandler(Player, InteractionHand, IResourceHandler, TransactionContext)}
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#interactWithHandler(Player, InteractionHand, IResourceHandler, TransactionContext)}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static boolean interactWithFluidHandler(Player player, InteractionHand hand, IFluidHandler handler) {
@@ -422,7 +422,7 @@ public final class FluidUtil {
     /**
      * Helper method to get the fluid contained in an itemStack
      * 
-     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#getFirstFluidResource(IItemContext)}We no longer have enough context of what part of the stack we are referring. We can now look at a single instance in the stack or the full stack with {@link IItemContext}
+     * @deprecated Use {@link net.neoforged.neoforge.transfer.FluidUtil#getFirstResource(IItemContext)}We no longer have enough context of what part of the stack we are referring. We can now look at a single instance in the stack or the full stack with {@link IItemContext}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     public static Optional<FluidStack> getFluidContained(ItemStack container) {

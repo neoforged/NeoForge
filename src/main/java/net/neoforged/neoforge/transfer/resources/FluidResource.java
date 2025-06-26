@@ -277,7 +277,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     @Override
     public String toString() {
-        //DO we even want to try to encode the components into the print?
         return innerStack.getFluid().getFluidType().toString();
     }
 

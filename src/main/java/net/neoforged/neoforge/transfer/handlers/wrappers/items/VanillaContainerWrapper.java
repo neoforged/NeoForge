@@ -27,7 +27,7 @@ import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.snapshots.NotifyingSnapshotJournal;
 
 public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     /**
@@ -56,12 +56,13 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
 
     private final Container container;
     private int size;
+    //TODO Look into pushing these into the container itself to remove the need for a wrapper.
     private final ArrayList<SlotItemStackResourceHandlerJournal> snapshots = new ArrayList<>();
     private final SnapshotJournal<?> setChangeJournal;
 
     VanillaContainerWrapper(Container container) {
         this.container = container;
-        this.setChangeJournal = GroupedSnapshotJournal.commitWith(container::setChanged);
+        this.setChangeJournal = NotifyingSnapshotJournal.commitWith(container::setChanged);
     }
 
     protected Container getContainer() {

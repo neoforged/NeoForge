@@ -27,7 +27,7 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
     @SafeVarargs
     public CombinedResourceHandlerWrapper(IResourceHandler<T>... handlers) {
-        if (handlers.length == 0) throw new IllegalArgumentException("No handlers specified");
+        if (handlers.length <= 1) throw new IllegalArgumentException("At least 2 handlers must be specified");
         this.handlers = handlers;
         this.baseIndex = new int[handlers.length];
         int index = 0;

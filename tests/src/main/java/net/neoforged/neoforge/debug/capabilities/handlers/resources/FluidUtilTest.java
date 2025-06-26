@@ -121,13 +121,13 @@ public class FluidUtilTest {
             startingAmount = ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction);
         }
 
-        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler, null), "Should pick up fluid");
+        helper.assertTrue(FluidUtil.interactWithHandler(player, InteractionHand.MAIN_HAND, handler, null), "Should pick up fluid");
         checkInventory(helper, player, Items.WATER_BUCKET, 1, Items.WATER_BUCKET, 1);
         try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(startingAmount - FluidType.BUCKET_VOLUME, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");
         }
 
-        helper.assertTrue(FluidUtil.interactWithFluidHandler(player, InteractionHand.MAIN_HAND, handler, null), "Should dispense of fluid");
+        helper.assertTrue(FluidUtil.interactWithHandler(player, InteractionHand.MAIN_HAND, handler, null), "Should dispense of fluid");
         checkInventory(helper, player, Items.BUCKET, 1, Items.BUCKET, 1);
         try (var transaction = TransactionManager.open(null)) {
             helper.assertValueEqual(startingAmount, ResourceHandlerUtil.extract(handler, Fluids.WATER.getDefaultResource(), Integer.MAX_VALUE, transaction), "fluid amount");

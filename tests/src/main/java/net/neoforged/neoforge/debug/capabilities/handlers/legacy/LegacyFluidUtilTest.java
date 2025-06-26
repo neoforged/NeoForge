@@ -35,7 +35,7 @@ public class LegacyFluidUtilTest {
      */
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that FluidHandlerItemStack works")
+    @TestHolder(description = "Ensures that tryEmptyContainer doesn't change the target fluid handler when simulating.")
     private static void test_tryEmptyContainer(ExtendedGameTestHelper helper) {
         var sourceStack = new ItemStack(Items.WATER_BUCKET, 2);
         var targetTank = new FluidTank(10000);
@@ -64,7 +64,7 @@ public class LegacyFluidUtilTest {
      */
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Legacy tryFillContainer")
+    @TestHolder(description = "Ensures that tryFillContainer doesn't change the target fluid handler when simulating.")
     private static void test_tryFillContainer(ExtendedGameTestHelper helper) {
         var targetStack = new ItemStack(Items.BUCKET, 2);
         var sourceTank = new FluidTank(10000);
@@ -93,7 +93,7 @@ public class LegacyFluidUtilTest {
      */
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Legacy tryEmptyContainerAndStow_stackable")
+    @TestHolder(description = "Ensures that tryEmptyContainerAndStow doesn't duplicate fluids in the target when the container is stackable.")
     private static void test_tryEmptyContainerAndStow_stackable(ExtendedGameTestHelper helper) {
         var sourceStack = new ItemStack(Items.WATER_BUCKET, 2);
         var targetTank = new FluidTank(10000);

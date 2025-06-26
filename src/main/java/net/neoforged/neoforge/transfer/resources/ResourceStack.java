@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
+import net.minecraft.ReportedException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -29,8 +30,6 @@ public final class ResourceStack<T extends IResource> {
     @SuppressWarnings("DataFlowIssue")
     private static final ResourceStack<?> EMPTY = new ResourceStack<>(() -> true, 0, null);
 
-    private final ResourceStack<T> emptyInstance;
-
     /**
      * Creates a resource stack from a given resource, amount, and a reference to the empty stack for the resource type.
      * <p>
@@ -48,9 +47,12 @@ public final class ResourceStack<T extends IResource> {
      * @return A new resource stack (or the empty instance if had been empty).
      * @see ItemResource#withAmount(int)
      * @see FluidResource#withAmount(int)
+     * @throws NullPointerException When the empty instance is null
+     * @throws ReportedException    When the amount is negative
      */
     public static <T extends IResource> ResourceStack<T> of(T resource, int amount, ResourceStack<T> emptyInstance) {
-        if (amount == 0 || resource.isEmpty()) {
+        if (emptyInstance == null) throw new NullPointerException("Empty instance must not be null");
+        if (ResourceHandlerUtil.checkNonNegative(amount) == 0 || resource.isEmpty()) {
             return emptyInstance;
         }
         return new ResourceStack<>(resource, amount, emptyInstance);
@@ -61,22 +63,12 @@ public final class ResourceStack<T extends IResource> {
      * For items or fluids, don't construct your own, use {@link ItemResource#EMPTY} and {@link FluidResource#EMPTY} respectively.
      *
      * @return A new reference bound to your resource type.
+     * @throws IllegalArgumentException When the resource is non-empty
      */
     public static <T extends IResource> ResourceStack<T> constructEmptyReference(T resource) {
         // noinspection unchecked
+        if (!resource.isEmpty()) throw new IllegalArgumentException("Resource must be empty");
         return new ResourceStack<>(resource, 0, (ResourceStack<T>) EMPTY);
-    }
-
-    private final T resource;
-    private final int amount;
-
-    // A note for future debugging. Empty instance should only be null in one specific case,
-    // which is the ResourceStack.EMPTY instance reference.
-    private ResourceStack(T resource, int amount, ResourceStack<T> emptyInstance) {
-        ResourceStack.validate(resource, amount);
-        this.resource = resource;
-        this.amount = amount;
-        this.emptyInstance = emptyInstance;
     }
 
     /**
@@ -105,7 +97,7 @@ public final class ResourceStack<T extends IResource> {
 
     /**
      * Creates a standard stream codec for a ResourceStack of the specified resource type.
-     * 
+     *
      * @param resourceCodec The codec for the resource type.
      * @param stackFactory  The method used to create a new resource stack given a resource and an amount.
      *                      This is expected to handle returning the EMPTY instance when the stack would be empty.
@@ -140,6 +132,19 @@ public final class ResourceStack<T extends IResource> {
         return i;
     }
 
+    private final T resource;
+    private final int amount;
+    private final ResourceStack<T> emptyInstance;
+
+    // A note for future debugging. Empty instance should only be null in one specific case,
+    // which is the ResourceStack.EMPTY instance reference.
+    private ResourceStack(T resource, int amount, ResourceStack<T> emptyInstance) {
+        ResourceStack.validate(resource, amount);
+        this.resource = resource;
+        this.amount = amount;
+        this.emptyInstance = emptyInstance;
+    }
+
     public T resource() {
         return resource;
     }
@@ -149,24 +154,29 @@ public final class ResourceStack<T extends IResource> {
     }
 
     /**
-     * @return a copy of this instance with an updated amount.
-     *         If the newAmount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
+     * @return A new immutable instance of this resource stack with an updated amount.
+     *         If the amount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
      */
-    public ResourceStack<T> withAmount(int newAmount) {
-        if (resource.isEmpty() || newAmount == 0) return emptyInstance;
-        if (newAmount == amount) return this;
-        return ResourceStack.of(resource, newAmount, emptyInstance);
+    public ResourceStack<T> withAmount(int amount) {
+        ResourceHandlerUtil.checkNonNegative(amount);
+        if (resource.isEmpty() || amount == 0) return emptyInstance;
+        if (amount == this.amount) return this;
+        return ResourceStack.of(resource, amount, emptyInstance);
     }
 
     /**
-     * @return a copy of this instance with an updated resource.
+     * @return A new immutable instance of this resource stack with an updated amount decreased by the specified {@code amount}.
+     *         If the newAmount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
+     * @see #withAmount(int)
      */
     public ResourceStack<T> shrink(int amount) {
+        ResourceHandlerUtil.checkNonNegative(amount);
         return withAmount(Math.max(this.amount - amount, 0));
     }
 
     /**
-     * @return a copy of this instance with an updated resource.
+     * @return A new immutable instance of this resource stack with an amount increased by the specified {@code amount}.
+     *         If the resource was already empty, then the EMPTY instance will be returned instead
      */
     public ResourceStack<T> grow(int amount) {
         return withAmount(this.amount + amount);
@@ -176,7 +186,7 @@ public final class ResourceStack<T extends IResource> {
      * @return A new this instance with an updated resource should it have changed, otherwise it returns itself.
      */
     public ResourceStack<T> with(UnaryOperator<T> operator) {
-        var result = operator.apply(resource);
+        T result = operator.apply(resource);
         if (result.equals(resource)) return this;
         return ResourceStack.of(result, amount, emptyInstance);
     }
@@ -184,8 +194,9 @@ public final class ResourceStack<T extends IResource> {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof ResourceStack<?> that)) return false;
-        return Objects.equals(resource, that.resource()) && amount == that.amount();
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ResourceStack<?> that = (ResourceStack<?>) obj;
+        return amount == that.amount && resource.equals(that.resource);
     }
 
     @Override
@@ -205,7 +216,7 @@ public final class ResourceStack<T extends IResource> {
      * @return {@code true} if empty
      */
     public boolean isEmpty() {
-        return amount() <= 0 || resource().isEmpty();
+        return amount() == 0 || resource().isEmpty();
     }
 
     public boolean isEnabled(FeatureFlagSet enabledFeatures) {

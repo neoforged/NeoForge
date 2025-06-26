@@ -24,21 +24,17 @@ import org.jetbrains.annotations.Range;
  */
 public final class EnergyHandlerUtil {
     /**
-     * @return True if the specified amount is 0 and should skip being processed.
-     * @throws IllegalArgumentException when amount is negative.
+     * @return The amount passed.
+     * @throws ReportedException when amount is negative.
      */
-    public static boolean checkEnergy(int amount) {
+    public static int checkNonNegative(int amount) {
         if (amount < 0) {
             CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Energy amount was negative");
             report.addCategory("EnergyHandler")
                     .setDetail("Amount", amount);
             throw new ReportedException(report);
         }
-        return amount == 0;
-    }
-
-    public static boolean isEmpty(IEnergyHandler handler) {
-        return checkEnergy(handler.getAmount());
+        return amount;
     }
 
     /**
@@ -49,14 +45,15 @@ public final class EnergyHandlerUtil {
      * @param amount      The maximum amount that will be transferred.
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
      * @return The total amount of energy that was successfully transferred.
-     * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
+     * @throws IllegalStateException If no transaction is passed.
+     * @throws ReportedException     If amount is negative.
      */
     public static int move(
             @Nullable IEnergyHandler from, @Nullable IEnergyHandler to,
             int amount,
             @Nullable TransactionContext transaction) {
         if (from == null || to == null) return 0;
-        if (checkEnergy(amount)) return 0;
+        if (checkNonNegative(amount) == 0) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int extractableAmount;
@@ -105,7 +102,7 @@ public final class EnergyHandlerUtil {
      * @return {@code true} if any energy could be accepted by the handler, otherwise {@code false}.
      */
     public static boolean canAcceptEnergy(IEnergyHandler handler) {
-        return getInsertableValue(handler) > 0;
+        return getInsertableAmount(handler) > 0;
     }
 
     /**
@@ -114,7 +111,7 @@ public final class EnergyHandlerUtil {
      * @param handler the energy handler to check
      * @return The max value that energy handler could receive
      */
-    public static int getInsertableValue(IEnergyHandler handler) {
+    public static int getInsertableAmount(IEnergyHandler handler) {
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             return handler.insert(Integer.MAX_VALUE, transaction);
         }
@@ -126,7 +123,7 @@ public final class EnergyHandlerUtil {
      * @param handler the energy handler to check
      * @return The max value that energy handler could provide
      */
-    public static int getExtractableValue(IEnergyHandler handler) {
+    public static int getExtractableAmount(IEnergyHandler handler) {
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             return handler.insert(Integer.MAX_VALUE, transaction);
         }

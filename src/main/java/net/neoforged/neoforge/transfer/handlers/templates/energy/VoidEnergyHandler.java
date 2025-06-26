@@ -44,14 +44,13 @@ public final class VoidEnergyHandler implements IEnergyHandler {
     //Accepts as much as is inserted
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        EnergyHandlerUtil.checkEnergy(amount);
-        return amount;
+        return EnergyHandlerUtil.checkNonNegative(amount);
     }
 
     //Never has anything to extract so we return 0
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        EnergyHandlerUtil.checkEnergy(amount);
+        EnergyHandlerUtil.checkNonNegative(amount);
         return 0;
     }
 

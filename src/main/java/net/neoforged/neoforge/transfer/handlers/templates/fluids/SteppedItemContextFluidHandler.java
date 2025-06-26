@@ -21,6 +21,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * This is similar to the {@link net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketResourceHandler}, but is controlled by the DataComponentType
  */
+//todo name to not stepped. While it is technically correct, the intent is not incremental anymore, but rather all or nothing.
 public abstract class SteppedItemContextFluidHandler extends SteppedItemContextResourceHandler<FluidResource> {
     public SteppedItemContextFluidHandler(IItemContext context, DataComponentType<ResourceStack<FluidResource>> componentType, int capacityOfOneItem) {
         super(context, componentType, FluidResource.EMPTY_STACK, capacityOfOneItem);

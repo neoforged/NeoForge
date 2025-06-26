@@ -37,25 +37,30 @@ import net.neoforged.neoforge.transfer.transaction.TransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 public final class FluidUtil {
+    private FluidUtil() {}
+
     /**
-     * Used to handle the common case of a player holding a fluid item and right-clicking on a fluid handler block.
+     * Used to handle the common case of a player holding a fluid item and right-clicking on a potential fluid handler block.
      * First it tries to fill the item from the block,
      * if that action fails then it tries to drain the item into the block.
      * Automatically updates the item in the player's hand and stashes any extra items created.
      *
-     * @param player The player doing the interaction between the item and fluid handler block.
-     * @param hand   The player's hand that is holding an item that should interact with the fluid handler block.
-     * @param level  The level that contains the fluid handler block.
-     * @param pos    The position of the fluid handler block in the level.
-     * @param side   The side of the block to interact with. May be null.
+     * @param player      The player doing the interaction between the item and fluid handler block.
+     * @param hand        The player's hand that is holding an item that should interact with the fluid handler block.
+     * @param level       The level that contains the fluid handler block.
+     * @param pos         The position of the fluid handler block in the level.
+     * @param side        The side of the block to interact with. May be null.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
      */
-    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side) {
+    public static boolean interactWithHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
         Preconditions.checkNotNull(level);
         Preconditions.checkNotNull(pos);
 
         IResourceHandler<FluidResource> blockHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, side);
-        return blockHandler != null && interactWithFluidHandler(player, hand, blockHandler, null);
+        return blockHandler != null && interactWithHandler(player, hand, blockHandler, transaction);
     }
 
     /**
@@ -67,10 +72,12 @@ public final class FluidUtil {
      * @param player      The player doing the interaction between the item and fluid handler.
      * @param hand        The player's hand that is holding an item that should interact with the fluid handler.
      * @param handler     The fluid handler.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
      */
-    public static boolean interactWithFluidHandler(Player player, InteractionHand hand, IResourceHandler<FluidResource> handler, @Nullable TransactionContext transaction) {
+    public static boolean interactWithHandler(Player player, InteractionHand hand, IResourceHandler<FluidResource> handler, @Nullable TransactionContext transaction) {
         Preconditions.checkNotNull(player);
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
@@ -93,11 +100,13 @@ public final class FluidUtil {
      * @param from        The fluid handler to be drained.
      * @param amount      The largest amount of fluid that should be transferred.
      * @param player      The player to make the filling noise. Pass null for no noise.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
-     * @return a {@link FluidStack} holding the filled container if successful.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
+     * @return a {@link FluidStack} held by the filled container if successful.
      */
-    //formerly tryFillContainer
     public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
+        if (ResourceHandlerUtil.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
         return handleContainer(from, itemCapability, amount, player, transaction);
@@ -110,10 +119,13 @@ public final class FluidUtil {
      * @param to          The fluid handler to be filled.
      * @param amount      The largest amount of fluid that should be transferred.
      * @param player      The player to make the filling noise. Pass null for no noise.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
-     * @return a {@link FluidStack} holding the filled container if successful.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
+     * @return a {@link FluidStack} held by the filled container if successful.
      */
     public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
+        if (ResourceHandlerUtil.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
         return handleContainer(itemCapability, to, amount, player, transaction);
@@ -142,7 +154,9 @@ public final class FluidUtil {
      * @param from        The fluid handler to move fluid from.
      * @param to          The fluid handler to move fluid to.
      * @param amount      The amount of fluid to move.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
     public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable TransactionContext transaction) {
@@ -168,7 +182,9 @@ public final class FluidUtil {
      * @param soundPos    The position to play the sound at.
      * @param level       The level where the fluid is placed.
      * @param pos         The position of the fluid in the level.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was picked up and moved to the handler, false otherwise.
      */
     public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
@@ -185,7 +201,9 @@ public final class FluidUtil {
      * @param soundPos    The position to play the sound at.
      * @param level       The level where the fluid is placed.
      * @param pos         The position to place the fluid in the level.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was placed and moved from the handler, false otherwise.
      */
     public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
@@ -202,7 +220,9 @@ public final class FluidUtil {
      * @param hand        The hand holding the item that should pick up the fluid.
      * @param level       The level where the fluid is placed.
      * @param pos         The position of the fluid in the level.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
     public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
@@ -218,7 +238,9 @@ public final class FluidUtil {
      * @param hand        The hand holding the item that should place the fluid.
      * @param level       The level where the fluid is placed.
      * @param pos         The position to place the fluid in the level.
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
     public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
@@ -294,19 +316,18 @@ public final class FluidUtil {
     }
 
     /**
-     * Move fluids between two handlers, from and to another given some fluidstack and a decision on if it is simulating or executing.
+     * Move fluids between two handlers, from and to another given some fluid stack and a decision on if it is simulating or executing.
      *
      * @param from        The fluid handler to be inserted into.
      * @param to          The fluid handler to be extracted from.
      * @param fluidStack  The fluid that should be transferred. Amount represents the maximum amount to transfer.
      * @param transaction The transaction chain this is a part of. {@code null} if starting a root transaction.
-     * @return the fluidStack that was transferred from the from to the to. null on failure.
+     * @return the fluid stack that was transferred from the from to the to. null on failure.
      */
     public static FluidStack move(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, FluidStack fluidStack, @Nullable TransactionContext transaction) {
         FluidResource resource = FluidResource.of(fluidStack);
         int amount = ResourceHandlerUtil.move(from, to, resource::equals, fluidStack.getAmount(), transaction);
 
-        //Commit if we are executing
         return resource.toStack(amount);
     }
 
@@ -316,10 +337,12 @@ public final class FluidUtil {
      * @param handler     The fluid handler to be extracted from.
      * @param filter      The filter to match the resources with.
      * @param amount      The amount that is desired to extract
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
-     * @return Returns a FluidStack with the first fluid resource and the total amount extracted, but no more than what was requested.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
+     * @return Returns a fluid stack with the first fluid resource and the total amount extracted, but no more than what was requested.
      */
-    public static FluidStack extractFluidStackFiltered(
+    public static FluidStack extractFluidStack(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
             int amount,
@@ -333,10 +356,12 @@ public final class FluidUtil {
      * @param handler     The fluid handler to be extracted from.
      * @param filter      The filter to match the resources with.
      * @param amount      The amount that is desired to extract
-     * @param transaction The transaction chain. {@code null} if opening a root transaction.
+     * @param transaction The transaction context for a given insertion.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return Returns a ResourceStack with the first fluid resource and the total amount extracted, but no more than what was requested.
      */
-    public static ResourceStack<FluidResource> extractResourceStackFiltered(
+    public static ResourceStack<FluidResource> extractResourceStack(
             IResourceHandler<FluidResource> handler,
             Predicate<FluidResource> filter,
             int amount,
@@ -346,30 +371,30 @@ public final class FluidUtil {
 
     /**
      * Finds the first Fluid Resource in the specified handler
-     * 
+     *
      * @param handler The handler to iterate over.
      * @return First non-empty Fluid Resource found. Otherwise, {@code Empty} is returned.
      */
-    public static FluidResource getFirstFluidResource(IResourceHandler<FluidResource> handler) {
+    public static FluidResource getFirstResource(IResourceHandler<FluidResource> handler) {
         return ResourceHandlerUtil.getFirstResourceOrDefault(handler, FluidResource.EMPTY);
     }
 
     /**
      * Gets the first fluid found in the fluid handler of the item context.
      */
-    public static FluidResource getFirstFluidResource(IItemContext context) {
+    public static FluidResource getFirstResource(IItemContext context) {
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return FluidResource.EMPTY;
-        return getFirstFluidResource(handler);
+        return getFirstResource(handler);
     }
 
     /**
      * Gets the first fluid found in the fluid handler of the item stack.
      */
-    public static FluidResource getFirstFluidResource(ItemStack stack) {
+    public static FluidResource getFirstResource(ItemStack stack) {
         IResourceHandler<FluidResource> handler = new StackItemContext(stack).getCapability(Capabilities.FluidHandler.ITEM);
         if (handler == null) return FluidResource.EMPTY;
-        return getFirstFluidResource(handler);
+        return getFirstResource(handler);
     }
 
     /**
@@ -393,6 +418,4 @@ public final class FluidUtil {
     public static ResourceStack<FluidResource> getResourceStackAt(IResourceHandler<FluidResource> handler, int index) {
         return ResourceHandlerUtil.getStackAt(handler, index, FluidResource::withAmount);
     }
-
-    private FluidUtil() {}
 }

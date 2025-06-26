@@ -89,7 +89,7 @@ public class ResourceHandlerUtilTests {
         var full = ResourceHandlerUtil.isFull(outputHandler);
         helper.assertTrue(full, "Dst handler should be full");
 
-        helper.assertValueEqual(ItemUtil.extractResourceStackFiltered(outputHandler, resource -> true, 400, null), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
+        helper.assertValueEqual(ItemUtil.extractResourceStack(outputHandler, resource -> true, 400, null), ItemResource.of(Items.APPLE).withAmount(400), "extracted");
         helper.assertFalse(ResourceHandlerUtil.isFull(outputHandler), "Dst handler should not be full");
 
         ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, resource -> true, Integer.MAX_VALUE, null);

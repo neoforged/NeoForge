@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.energy;
 
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
@@ -22,7 +21,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * This would effectively create a new capability that other mods could utilize so long as they create a new capability with the same id without needing any extra API provided by you.
  */
-public interface IEnergyHandler extends ITransactionHandler {
+public interface IEnergyHandler {
     /**
      * The total amount of energy available in this handler.
      * <p>

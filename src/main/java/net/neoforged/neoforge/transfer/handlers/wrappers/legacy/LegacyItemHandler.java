@@ -50,7 +50,7 @@ public final class LegacyItemHandler implements IItemHandler {
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (ResourceHandlerUtil.isZero(amount)) return ItemStack.EMPTY;
+        if (ResourceHandlerUtil.checkNonNegative(amount) == 0) return ItemStack.EMPTY;
 
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             ItemResource resource = handler.getResource(slot);

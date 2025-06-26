@@ -43,7 +43,8 @@ public final class TransactionManager {
      * @return The current lifecycle of the transaction stack on this thread.
      */
     public static Transaction.Lifecycle getLifecycle() {
-        return getManagerForThread().internalGetLifecycle();
+        TransactionManager transactionManager = getManagerForThread();
+        return transactionManager.currentDepth == -1 ? TransactionContext.Lifecycle.NONE : transactionManager.stack.get(transactionManager.currentDepth).lifecycle;
     }
 
     /**
@@ -107,10 +108,6 @@ public final class TransactionManager {
         debugMap.put(currentDepth, callerClass);
         current.lifecycle = TransactionContext.Lifecycle.OPEN;
         return current;
-    }
-
-    private Transaction.Lifecycle internalGetLifecycle() {
-        return currentDepth == -1 ? TransactionContext.Lifecycle.NONE : stack.get(currentDepth).lifecycle;
     }
 
     private TransactionManager() {}

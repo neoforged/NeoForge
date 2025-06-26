@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A snapshot journal that can keep track of {@code int} values in an indexable structure. Also takes in a SnapshotJournal
- * that can be updated when an index gets written to. An example is using a {@link GroupedSnapshotJournal} to handle
+ * that can be updated when an index gets written to. An example is using a {@link NotifyingSnapshotJournal} to handle
  * the scenario of doing a single commit for something like {@link BlockEntity#setChanged()}.
  */
 public class IndexedIntSnapshot extends SnapshotJournal<Integer> {

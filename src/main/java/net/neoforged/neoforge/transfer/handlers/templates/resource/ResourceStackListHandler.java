@@ -34,7 +34,7 @@ public abstract class ResourceStackListHandler<R extends IResource> extends Stac
     }
 
     @Override
-    public boolean matches(R resource, ResourceStack<R> stack) {
+    public boolean matches(ResourceStack<R> stack, R resource) {
         return stack.resource().equals(resource);
     }
 

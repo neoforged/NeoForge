@@ -21,8 +21,8 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.snapshots.GroupedSnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.snapshots.IndexedIntSnapshot;
+import net.neoforged.neoforge.transfer.transaction.snapshots.NotifyingSnapshotJournal;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -113,7 +113,7 @@ public final class EnergyBuffer implements IEnergyHandler {
      * @param energy            An array of initial or serialized energy sub-buffer amounts.
      */
     public EnergyBuffer(int capacity, int maxInsertionRate, int maxExtractionRate, int energy) {
-        EnergyHandlerUtil.checkEnergy(energy);
+        EnergyHandlerUtil.checkNonNegative(energy);
         if (capacity < 0) throw new IllegalArgumentException("Capacity must be non-negative");
         if (maxInsertionRate < 0) throw new IllegalArgumentException("MaxInsertion rate must be non-negative");
         if (maxExtractionRate < 0) throw new IllegalArgumentException("MaxExtraction rate must be non-negative");
@@ -121,7 +121,7 @@ public final class EnergyBuffer implements IEnergyHandler {
         this.maxInsert = maxInsertionRate;
         this.maxExtract = maxExtractionRate;
         this.energy = energy;
-        GroupedSnapshotJournal onChanged = GroupedSnapshotJournal.commitWith(this::onSetChanged);
+        NotifyingSnapshotJournal onChanged = NotifyingSnapshotJournal.commitWith(this::onSetChanged);
         this.snapshots = IndexedIntSnapshot.of((index, amount) -> set(amount), index -> getAmount(), onChanged);
     }
 
@@ -139,7 +139,7 @@ public final class EnergyBuffer implements IEnergyHandler {
     @Override
     public int insert(int amount, TransactionContext transaction) {
         amount = Math.min(maxInsert, amount);
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
+        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
 
         if (energy == capacity) return 0;
 
@@ -152,8 +152,8 @@ public final class EnergyBuffer implements IEnergyHandler {
     @Override
     public int extract(int amount, TransactionContext transaction) {
         amount = Math.min(maxExtract, amount);
-        if (EnergyHandlerUtil.checkEnergy(amount)) return 0;
-        if (EnergyHandlerUtil.checkEnergy(energy)) return 0;
+        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
+        if (EnergyHandlerUtil.checkNonNegative(energy) == 0) return 0;
 
         int handledAmount = Math.min(energy, amount);
         snapshots.updateSnapshots(transaction);
@@ -244,7 +244,7 @@ public final class EnergyBuffer implements IEnergyHandler {
          * @param amount Amount to set the initial energy buffer to
          */
         public Builder energy(int amount) {
-            EnergyHandlerUtil.checkEnergy(amount);
+            EnergyHandlerUtil.checkNonNegative(amount);
             energy = amount;
             return this;
         }

@@ -60,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <pre>{@code
  * // other extraction code
- * context.exchange(Items.BOTTLE.defaultResource, 4, transaction);
+ * context.exchange(ItemResource.of(Items.BOTTLE), 4, transaction);
  * }</pre>
  *
  * <p>

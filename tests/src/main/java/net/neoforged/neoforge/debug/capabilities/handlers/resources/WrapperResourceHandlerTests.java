@@ -41,7 +41,7 @@ public class WrapperResourceHandlerTests {
         }
         helper.assertValueEqual(chestInserted, 1, "armor insert");
         helper.assertValueEqual(chest2Inserted, 0, "armor insert");
-        var amount = ItemUtil.extractResourceStackFiltered(cap, item -> item.is(Items.DIAMOND_CHESTPLATE), 2, null);
+        var amount = ItemUtil.extractResourceStack(cap, item -> item.is(Items.DIAMOND_CHESTPLATE), 2, null);
         helper.assertValueEqual(amount.amount(), 1, "armor extract");
 //        if (cap instanceof PlayerInventoryHandler wrapper) {
 //            ResourceHandlerUtil.insertIndexForced(wrapper.armorHandler, Items.DIAMOND_BOOTS.defaultResource(), 1300, TransferAction.EXECUTE, TransactionContext.EMPTY);

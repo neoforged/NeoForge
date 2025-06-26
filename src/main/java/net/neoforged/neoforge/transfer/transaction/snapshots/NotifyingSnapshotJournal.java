@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * When the transaction is committed, {@link #commitCallback} will run; and when the transaction is reverted {@link #revertCallback} will instead. Only one per transaction chain will be called and only once.
  */
-public final class GroupedSnapshotJournal extends SnapshotJournal<GroupedSnapshotJournal.IgnoredValue> {
+public final class NotifyingSnapshotJournal extends SnapshotJournal<NotifyingSnapshotJournal.IgnoredValue> {
     @Nullable
     private final Runnable commitCallback;
     @Nullable
@@ -34,8 +34,8 @@ public final class GroupedSnapshotJournal extends SnapshotJournal<GroupedSnapsho
      * @param revertCallback Action called when the transaction reverts to a snapshot.
      * @return A Journal able to be take notes of when a value was changed, but doesn't allocate any value.
      */
-    public static GroupedSnapshotJournal of(@Nullable Runnable commitCallback, @Nullable Runnable revertCallback) {
-        return new GroupedSnapshotJournal(commitCallback, revertCallback);
+    public static NotifyingSnapshotJournal of(@Nullable Runnable commitCallback, @Nullable Runnable revertCallback) {
+        return new NotifyingSnapshotJournal(commitCallback, revertCallback);
     }
 
     /**
@@ -46,15 +46,15 @@ public final class GroupedSnapshotJournal extends SnapshotJournal<GroupedSnapsho
      * @param commitCallback Action called when the transaction successfully commits its chain.
      * @return A Journal able to be take notes of when a value was changed, but doesn't allocate any value.
      */
-    public static GroupedSnapshotJournal commitWith(@Nullable Runnable commitCallback) {
-        return new GroupedSnapshotJournal(commitCallback, null);
+    public static NotifyingSnapshotJournal commitWith(@Nullable Runnable commitCallback) {
+        return new NotifyingSnapshotJournal(commitCallback, null);
     }
 
-    public static GroupedSnapshotJournal revertWith(@Nullable Runnable revertCallback) {
-        return new GroupedSnapshotJournal(null, revertCallback);
+    public static NotifyingSnapshotJournal revertWith(@Nullable Runnable revertCallback) {
+        return new NotifyingSnapshotJournal(null, revertCallback);
     }
 
-    private GroupedSnapshotJournal(@Nullable Runnable commitCallback, @Nullable Runnable revertCallback) {
+    private NotifyingSnapshotJournal(@Nullable Runnable commitCallback, @Nullable Runnable revertCallback) {
         this.commitCallback = commitCallback;
         this.revertCallback = revertCallback;
     }

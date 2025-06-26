@@ -50,14 +50,13 @@ public final class InfiniteEnergyHandler implements IEnergyHandler {
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        EnergyHandlerUtil.checkEnergy(amount);
+        EnergyHandlerUtil.checkNonNegative(amount);
         return 0;
     }
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        EnergyHandlerUtil.checkEnergy(amount);
-        return amount;
+        return EnergyHandlerUtil.checkNonNegative(amount);
     }
 
     private InfiniteEnergyHandler() {}

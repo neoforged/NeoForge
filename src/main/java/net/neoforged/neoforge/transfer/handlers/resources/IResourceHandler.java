@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.ITransactionHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -18,7 +17,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  *
  * @param <T> The type of resource this handler manages.
  */
-public interface IResourceHandler<T extends IResource> extends ITransactionHandler {
+public interface IResourceHandler<T extends IResource> {
     /**
      * An index is synonymous with "slot", "tank", "buffer", etc.
      *
@@ -133,6 +132,25 @@ public interface IResourceHandler<T extends IResource> extends ITransactionHandl
      * @see #supportsInsertion()
      */
     boolean supportsInsertion(int index);
+
+    //INSERT
+    //EXTRACT
+    //VOIDING
+    //PROCESSING
+    //IMMUTABLE
+    //UNKNOWN = 0
+    default int getCharacteristics() {
+        //this will supersede supports calls.
+        //Orion, Monica, Nano, and myself had a conversation on this.
+        return 0;
+    };
+
+    default int getCharacteristics(int index) {
+        //this will supersede supports calls.
+        //Orion, Monica, Nano, and myself had a conversation on this.
+        return 0;
+        //the indexed variation of this call is still unknown if we will use this or not.
+    };
 
     /**
      * Checks if the handler allows insertion into at least one index, regardless of the state of the handler.

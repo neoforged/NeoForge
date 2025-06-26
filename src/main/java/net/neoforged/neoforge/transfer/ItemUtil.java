@@ -75,7 +75,7 @@ public final class ItemUtil {
      * @param preferredSlot slot to start on
      */
     public static void giveItemToPlayer(Player player, ItemResource resource, int amount, int preferredSlot, @Nullable TransactionContext transaction) {
-        if (resource.isEmpty()) return;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return;
 
         PlayerItemContext context = new PlayerItemContext(player, preferredSlot);
         try (Transaction internalTransaction = TransactionManager.open(transaction)) {
@@ -92,6 +92,7 @@ public final class ItemUtil {
      * @param amount   The amount of the resource. Any amount greater than the stack size will result in multiple stacks to drop
      */
     public static void dropFromPlayer(Player player, ItemResource resource, int amount) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return;
         for (ItemStack stack : resource.toStacks(amount)) {
             player.drop(stack, false);
         }
@@ -128,14 +129,14 @@ public final class ItemUtil {
     }
 
     /**
-     * Inserts an ItemStack into an {@link IResourceHandler} using stacking logic.
-     * ItemStacks will be inserted into filled slot(s) first, then empty slot(s).
+     * Inserts an item stack into an {@link IResourceHandler} using stacking logic.
+     * Item stacks will be inserted into filled slot(s) first, then empty slot(s).
      *
-     * @param handler     the {@link IResourceHandler} to insert the itemstack into
-     * @param stack       the ItemStack to insert
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param handler     the {@link IResourceHandler} to insert the item stack into
+     * @param stack       the item stack to insert
+     * @param transaction The transaction context for the operation.
+     *                    passing In {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return the amount of the stack that was inserted
      * @see ResourceHandlerUtil#insertStacking(IResourceHandler, IResource, int, TransactionContext) ResourceHandlerUtil when already working with ItemResources
      */
@@ -149,9 +150,9 @@ public final class ItemUtil {
      *
      * @param handler     The {@link IResourceHandler} to insert the resource into
      * @param stack       The {@link ItemStack} to insert.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction The transaction context for the operation.
+     *                    passing In {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return the amount of the {@link ItemStack} that was inserted
      */
     public static int insertIndexForced(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {
@@ -164,12 +165,12 @@ public final class ItemUtil {
      * @param handler     The {@link IResourceHandler} to extract the resource from
      * @param filter      The filter to apply to the resources
      * @param amount      The desired amount of the resource to extract
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction The transaction context for the operation.
+     *                    passing In {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return an {@link ItemStack} of the first matching resource of the filter.
      */
-    public static ItemStack extractItemStackFiltered(
+    public static ItemStack extractItemStack(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
             int amount,
@@ -183,12 +184,12 @@ public final class ItemUtil {
      * @param handler     The {@link IResourceHandler} to extract the resource from
      * @param filter      The filter to apply to the resources in the handler.
      * @param amount      The desired amount of the resource to extract
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction The transaction context for the operation.
+     *                    passing In {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return a {@link ResourceStack} of the first matching resource for the specified filter; otherwise {@link ItemResource#EMPTY}
      */
-    public static ResourceStack<ItemResource> extractResourceStackFiltered(
+    public static ResourceStack<ItemResource> extractResourceStack(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
             int amount,
@@ -202,12 +203,12 @@ public final class ItemUtil {
      * @param index       The index that is being checked in the handler.
      * @param handler     the {@link IResourceHandler} to extract the resource from.
      * @param amount      the desired amount of the resource to extract.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
-     * @return an ItemStack that matches both the filter and index specified; otherwise {@link ItemStack#EMPTY}
+     * @param transaction The transaction context for the operation.
+     *                    passing In {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
+     * @return an item stack that matches both the filter and index specified; otherwise {@link ItemStack#EMPTY}
      */
-    public static ItemStack extractItemStackFilteredAtIndex(
+    public static ItemStack extractItemStackAtIndex(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
             int index,
@@ -222,12 +223,12 @@ public final class ItemUtil {
      * @param index       The index that is being checked in the handler.
      * @param handler     the {@link IResourceHandler} to extract the resource from.
      * @param amount      the desired amount of the resource to extract.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction The transaction context for the operation.
+     *                    passing In {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return A {@link ResourceStack} that matches both the filter and index specified; otherwise {@link ItemResource#EMPTY}
      */
-    public static ResourceStack<ItemResource> extractResourceStackFilteredAtIndex(
+    public static ResourceStack<ItemResource> extractResourceStackAtIndex(
             IResourceHandler<ItemResource> handler,
             Predicate<ItemResource> filter,
             int index,
@@ -237,11 +238,11 @@ public final class ItemUtil {
     }
 
     /**
-     * A helper method to construct a {@link ItemStack} based on what resides at a particular index given a handler
+     * A helper method to construct an {@link ItemStack} based on what resides at a particular index given a handler
      *
      * @param handler The fluid handler to query.
      * @param index   The index that the fluid is at
-     * @return A {@link ItemStack} based on the {@link ItemResource} and {@code amount} at the index
+     * @return An {@link ItemStack} based on the {@link ItemResource} and {@code amount} at the index
      */
     public static ItemStack getItemStackAt(IResourceHandler<ItemResource> handler, int index) {
         return ResourceHandlerUtil.getStackAt(handler, index, ItemResource::toStack);

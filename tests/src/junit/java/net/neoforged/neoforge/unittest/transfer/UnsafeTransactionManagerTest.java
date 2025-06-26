@@ -37,8 +37,8 @@ public class UnsafeTransactionManagerTest {
         try (Transaction secondTransaction = UnsafeTransactionManager.openUnsafe()) {
             //These methods actually make use of this functionality, but we want to be doubly sure by opening
             // an outer transaction on top of it.
-            var insertable = EnergyHandlerUtil.getInsertableValue(VoidEnergyHandler.INSTANCE);
-            var extractable = EnergyHandlerUtil.getExtractableValue(VoidEnergyHandler.INSTANCE);
+            var insertable = EnergyHandlerUtil.getInsertableAmount(VoidEnergyHandler.INSTANCE);
+            var extractable = EnergyHandlerUtil.getExtractableAmount(VoidEnergyHandler.INSTANCE);
 
             //This commit is mostly just to see that we can commit this layer without crashing
             secondTransaction.commit();

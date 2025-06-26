@@ -29,28 +29,25 @@ public final class ResourceHandlerUtil {
      * <p>
      * Typically used in handler insert or extract implementations to determine if the operation is valid before proceeding.
      *
-     * @throws IllegalArgumentException When the amount is negative
+     * @throws ReportedException When the amount is negative
      * @see ResourceContainerContentsHandler#insert(int, IResource, int, TransactionContext)
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
-        if (amount < 0) {
-            CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Resource amount was negative");
-            report.addCategory("ResourceHandlerUtil#isEmpty")
-                    .setDetail("Resource", resource)
-                    .setDetail("Amount", amount);
-            throw new ReportedException(report);
-        }
-        return amount == 0 || resource.isEmpty();
+        return checkNonNegative(amount) == 0 || resource.isEmpty();
     }
 
-    public static boolean isZero(int amount) {
+    /**
+     * @return The amount passed.
+     * @throws ReportedException when amount is negative.
+     */
+    public static int checkNonNegative(int amount) {
         if (amount < 0) {
             CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Resource amount was negative");
-            report.addCategory("ResourceHandlerUtil#amountCheck")
+            report.addCategory("ResourceHandlerUtil")
                     .setDetail("Amount", amount);
             throw new ReportedException(report);
         }
-        return amount == 0;
+        return amount;
     }
 
     /**
@@ -65,7 +62,7 @@ public final class ResourceHandlerUtil {
     public static boolean isEmpty(IResourceHandler<? extends IResource> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (!isIndexEmpty(handler, i))
+            if (!handler.getResource(i).isEmpty())
                 return false;
         }
         return true;
@@ -87,22 +84,6 @@ public final class ResourceHandlerUtil {
                 return false;
         }
         return true;
-    }
-
-    /**
-     * Checks if a specific index of an {@link IResourceHandler} is empty.
-     *
-     * <p>An index is considered empty if the resource at the specified index is either empty or
-     * the amount of the resource is less than or equal to zero.
-     *
-     * @param handler the {@link IResourceHandler} to check
-     * @param index   the index of the resource to check
-     * @return {@code true} if the resource at the specified index is empty, {@code false} otherwise
-     */
-    public static boolean isIndexEmpty(IResourceHandler<? extends IResource> handler, int index) {
-        // We likely only need to check the resource is empty and not the amount.
-        // Though the amount COULD be 0 and not empty, we assume this check is correct with just isEmpty.
-        return handler.getResource(index).isEmpty();
     }
 
     /**
@@ -192,9 +173,9 @@ public final class ResourceHandlerUtil {
      * @param handler     the {@link IResourceHandler} to insert the resource into
      * @param resource    the resource to insert
      * @param amount      the desired amount of the resource to insert
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction The transaction context for the operation.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
     public static <T extends IResource> int insertStacking(
@@ -202,14 +183,15 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (isZero(amount)) return 0;
+        if (checkNonNegative(amount) == 0) return 0;
 
         try (Transaction tx = TransactionManager.open(transaction)) {
             int inserted = 0;
             int size = handler.size();
             //attempt to insert into matching resources first
             for (int index = 0; index < size; index++) {
-                if (isIndexEmpty(handler, index)) continue;
+
+                if (handler.getResource(index).isEmpty()) continue;
                 inserted += handler.insert(index, resource, amount - inserted, tx);
 
                 if (inserted != amount) continue;
@@ -220,7 +202,9 @@ public final class ResourceHandlerUtil {
 
             //if any remain we need to handle those in index order filling in empty indices
             for (int index = 0; index < size; index++) {
-                if (!ResourceHandlerUtil.isIndexEmpty(handler, index)) continue;
+
+                if (!handler.getResource(index).isEmpty()) continue;
+
                 inserted += handler.insert(index, resource, amount - inserted, tx);
                 if (inserted == amount)
                     break;
@@ -238,9 +222,9 @@ public final class ResourceHandlerUtil {
      * @param handler     the {@link IResourceHandler} to insert the resource into
      * @param resource    the resource to insert
      * @param amount      the desired amount of the resource to insert
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will essentially be the same as doing `execute`,
-     *                    whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction The transaction context for the operation.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return the amount of the resource that was (or would have been, if simulated) inserted
      */
     public static <T extends IResource> int insertIndexForced(
@@ -248,7 +232,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (isZero(amount)) return 0;
+        if (checkNonNegative(amount) == 0) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int inserted = 0;
@@ -271,7 +255,9 @@ public final class ResourceHandlerUtil {
      * @param handler     the {@link IResourceHandler} to extract the resource from
      * @param resource    the resource to extract
      * @param amount      the desired amount of the resource to extract
-     * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
+     * @param transaction The transaction context for the operation.
+     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @return the amount of the resource that was (or would have been, if simulated) extracted
      */
     public static <T extends IResource> int extract(
@@ -279,7 +265,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (isZero(amount)) return 0;
+        if (checkNonNegative(amount) == 0) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int extracted = 0;
@@ -328,9 +314,9 @@ public final class ResourceHandlerUtil {
      * @param handler      The {@link IResourceHandler} to extract the resource from
      * @param filter       The filter to apply to the resources
      * @param amount       The desired amount of the resource to extract
-     * @param transaction  The transaction context for a given insertion.
-     *                     Passing in {@code null} will essentially be the same as doing `execute`,
-     *                     whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction  The transaction context for the operation.
+     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                     allow you to make the final decision to commit based on the results of this method.
      * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
      * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
      */
@@ -341,7 +327,7 @@ public final class ResourceHandlerUtil {
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
-        if (isZero(amount)) return stackFactory.create(defaultResource, 0);
+        if (checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
 
         int size = handler.size();
         int handled = 0;
@@ -379,9 +365,9 @@ public final class ResourceHandlerUtil {
      * @param filter       The filter to apply to the resources
      * @param index        The index that is being checked in the handler.
      * @param amount       the desired amount of the resource to extract.
-     * @param transaction  The transaction context for a given insertion.
-     *                     Passing in {@code null} will essentially be the same as doing `execute`,
-     *                     whereas passing in a closeable context allows you to choose if it should be committed.
+     * @param transaction  The transaction context for the operation.
+     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                     allow you to make the final decision to commit based on the results of this method.
      * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
      * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
      */
@@ -393,7 +379,7 @@ public final class ResourceHandlerUtil {
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
-        if (isZero(amount)) return stackFactory.create(defaultResource, 0);
+        if (checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
         R resource = handler.getResource(index);
         if (doesNotMatch(filter, resource))
             return stackFactory.create(defaultResource, 0);
@@ -436,7 +422,8 @@ public final class ResourceHandlerUtil {
      *                    This filter will never be tested with an empty resource, and filters are encouraged to throw an
      *                    exception if this guarantee is violated.
      * @param amount      The maximum amount that will be transferred.
-     * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
+     * @param transaction The transaction context for the operation. Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                    allow you to make the final decision to commit based on the results of this method.
      * @param <T>         The type of resources to move.
      * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
@@ -448,7 +435,7 @@ public final class ResourceHandlerUtil {
             int amount,
             @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
-        if (isZero(amount)) return 0;
+        if (checkNonNegative(amount) == 0) return 0;
 
         if (from == null || to == null) return 0;
 
@@ -510,7 +497,9 @@ public final class ResourceHandlerUtil {
      *                     This filter will never be tested with an empty resource, and filters are encouraged to throw an
      *                     exception if this guarantee is violated.
      * @param amount       The maximum amount that will be transferred.
-     * @param transaction  The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
+     * @param transaction  The transaction context for the operation.
+     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                     allow you to make the final decision to commit based on the results of this method.
      * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
      * @param <R>          the type of resource to move.
      * @param <S>          The type of stack returned by the handler.
@@ -525,7 +514,7 @@ public final class ResourceHandlerUtil {
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
         Objects.requireNonNull(filter, "Filter may not be null");
-        if (isZero(amount)) return stackFactory.create(defaultResource, 0);
+        if (checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
 
         if (from == null || to == null)
             return stackFactory.create(defaultResource, 0);
