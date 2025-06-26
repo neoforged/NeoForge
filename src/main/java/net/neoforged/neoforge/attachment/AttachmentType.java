@@ -61,7 +61,7 @@ public final class AttachmentType<T> {
     final boolean copyOnDeath;
     final IAttachmentCopyHandler<T> copyHandler;
     @Nullable
-    IAttachmentSyncHandler<T> syncHandler;
+    AttachmentSyncHandler<T> syncHandler;
 
     private AttachmentType(Builder<T> builder) {
         this.defaultValueSupplier = builder.defaultValueSupplier;
@@ -166,7 +166,7 @@ public final class AttachmentType<T> {
         @Nullable
         private IAttachmentCopyHandler<T> copyHandler;
         @Nullable
-        private IAttachmentSyncHandler<T> syncHandler;
+        private AttachmentSyncHandler<T> syncHandler;
 
         private Builder(Function<IAttachmentHolder, T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;
@@ -258,7 +258,7 @@ public final class AttachmentType<T> {
         /**
          * Requests that this attachment be synced to clients.
          */
-        public Builder<T> sync(IAttachmentSyncHandler<T> syncHandler) {
+        public Builder<T> sync(AttachmentSyncHandler<T> syncHandler) {
             Objects.requireNonNull(syncHandler);
             this.syncHandler = syncHandler;
             return this;
@@ -267,7 +267,7 @@ public final class AttachmentType<T> {
         // TODO: Predicate<ServerPlayer> version too? Some data is not relevant to other players.
         public Builder<T> sync(StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
             Objects.requireNonNull(streamCodec);
-            return sync(new IAttachmentSyncHandler<>() {
+            return sync(new AttachmentSyncHandler<>() {
                 @Override
                 public void write(RegistryFriendlyByteBuf buf, T attachment, boolean initialSync) {
                     streamCodec.encode(buf, attachment);

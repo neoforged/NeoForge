@@ -114,7 +114,7 @@ public interface IAttachmentHolder {
     /**
      * Syncs a data attachment of the given type with all relevant clients.
      *
-     * @see IAttachmentSyncHandler
+     * @see AttachmentSyncHandler
      */
     // TODO: what happens if there is no such data?
     // TODO: auto sync on getData, removeData, other modifications
@@ -125,7 +125,7 @@ public interface IAttachmentHolder {
     /**
      * Syncs a data attachment of the given type with all relevant clients.
      *
-     * @see IAttachmentSyncHandler
+     * @see AttachmentSyncHandler
      */
     default void syncData(Supplier<? extends AttachmentType<?>> type) {
         syncData(type.get());

@@ -27,7 +27,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.attachment.IAttachmentSyncHandler;
+import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -43,7 +43,7 @@ public class AttachmentSyncTest {
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT)
                     // TODO: use streamcodec version at some point
-                    .sync(new IAttachmentSyncHandler<Integer>() {
+                    .sync(new AttachmentSyncHandler<Integer>() {
                         @Override
                         public void write(RegistryFriendlyByteBuf buf, Integer attachment, boolean initialSync) {
                             buf.writeInt(attachment);

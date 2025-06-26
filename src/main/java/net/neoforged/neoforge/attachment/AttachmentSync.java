@@ -144,7 +144,7 @@ public final class AttachmentSync {
             for (var entry : holder.attachments.entrySet()) {
                 AttachmentType<?> type = entry.getKey();
                 @SuppressWarnings("unchecked")
-                var syncHandler = (IAttachmentSyncHandler<Object>) type.syncHandler;
+                var syncHandler = (AttachmentSyncHandler<Object>) type.syncHandler;
                 if (syncHandler != null) {
                     int indexBefore = buf.writerIndex();
                     syncHandler.write(buf, entry.getValue(), true);
@@ -216,7 +216,7 @@ public final class AttachmentSync {
         try {
             for (var type : types) {
                 @SuppressWarnings("unchecked")
-                var syncHandler = (IAttachmentSyncHandler<Object>) type.syncHandler;
+                var syncHandler = (AttachmentSyncHandler<Object>) type.syncHandler;
                 if (syncHandler == null) {
                     throw new IllegalArgumentException("Received synced attachment type without a sync handler registered: " + NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type));
                 }

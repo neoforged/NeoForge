@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>For other cases such as modifications to mutable synced attachments,
  * {@link IAttachmentHolder#syncData(AttachmentType)} can be called to trigger syncing.
  */
-public interface IAttachmentSyncHandler<T> {
+public interface AttachmentSyncHandler<T> {
     /**
      * Decides whether data should be sent to some player that can see the holder.
      *
