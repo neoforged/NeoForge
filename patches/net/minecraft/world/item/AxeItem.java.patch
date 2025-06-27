@@ -69,7 +69,7 @@
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
 +        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        if (strippable != null) {
++        if (strippable != null && (p_150691_.hasProperty(RotatedPillarBlock.AXIS) && strippable.stripped().defaultBlockState().hasProperty(RotatedPillarBlock.AXIS))) {
 +            return Optional.of(strippable.stripped())
 +                .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +        }
