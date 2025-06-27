@@ -73,8 +73,6 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      * If this transaction was opened with a {@code null} parent, all changes are applied.
      * If this transaction was opened with a non-{@code null} parent, all changes will be applied when and if the changes of
      * the parent transactions are applied.
-     * <p>
-     * This would be familiar to using `execute` in the old simulated handlers
      *
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in,
      *                               this transaction is not the current transaction, or this transaction was closed.

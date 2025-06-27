@@ -275,7 +275,8 @@ public final class ResourceHandlerUtil {
                 if (extracted == amount)
                     break;
             }
-            subTransaction.commit();
+            if (extracted > 0)
+                subTransaction.commit();
             return extracted;
         }
     }

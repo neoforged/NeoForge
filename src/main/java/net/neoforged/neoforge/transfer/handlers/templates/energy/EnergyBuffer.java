@@ -10,7 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
@@ -56,10 +56,10 @@ public final class EnergyBuffer implements IEnergyHandler {
      * }
      * </pre>
      */
-    public static AttachmentType.Builder<EnergyBuffer> attachment(Supplier<EnergyBuffer> buffer) {
+    public static AttachmentType.Builder<EnergyBuffer> attachmentBuilder(Function<IAttachmentHolder, EnergyBuffer> bufferFactory) {
         //This is done this way so that the serialized value also gets the holder using the above codec
         //Otherwise in the deserialized version, the attachment holder would always be null.
-        return AttachmentType.builder(buffer)
+        return AttachmentType.builder(bufferFactory)
                 .serialize(holderWith(EnergyBuffer.CODEC, EnergyBuffer::setHolder));
     }
 
@@ -254,6 +254,19 @@ public final class EnergyBuffer implements IEnergyHandler {
          */
         public EnergyBuffer build() {
             return new EnergyBuffer(capacity, maxInsertRate, maxExtractRate, energy);
+        }
+
+        /**
+         * Constructs a new {@link EnergyBuffer} to use from the values assigned while building
+         * as well as assigns an attachment holder to use
+         * 
+         * @param holder The holder the attachment will be applied to.
+         * @return A new instance of an EnergyBuffer setting the holder in the process.
+         */
+        public EnergyBuffer build(IAttachmentHolder holder) {
+            var energyBuffer = new EnergyBuffer(capacity, maxInsertRate, maxExtractRate, energy);
+            energyBuffer.setHolder(holder);
+            return energyBuffer;
         }
     }
 

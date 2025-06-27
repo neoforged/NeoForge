@@ -13,20 +13,26 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler IResourceHandler}
+ * Wraps the vanilla ComponentData of {@link ItemContainerContents} to allow it to be used as a {@link IResourceHandler}.
+ * For use with any resource, consider using {@link ResourceContainerContents} and its associated handler {@link ResourceContainerContentsHandler}
+ *
+ * @see ResourceContainerContents
+ * @see ResourceContainerContentsHandler
  */
 public class ItemContainerContentsResourceHandler implements IResourceHandler<ItemResource> {
+    protected final IItemContext itemContext;
+    protected final DataComponentType<ItemContainerContents> componentType;
     /**
      * Size the component is expected to be able to grow to.
      */
     protected final int size;
-    protected final DataComponentType<ItemContainerContents> componentType;
-    protected final IItemContext itemContext;
 
     public ItemContainerContentsResourceHandler(IItemContext itemContext, DataComponentType<ItemContainerContents> componentType, int size) {
         if (size > 256)

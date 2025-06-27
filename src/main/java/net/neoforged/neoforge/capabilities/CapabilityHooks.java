@@ -10,7 +10,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.item.BucketItem;
@@ -29,7 +28,6 @@ import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.CombinedResourceHandlerWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.BucketResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ComposterWrapper;
-import net.neoforged.neoforge.transfer.handlers.wrappers.items.EntityEquipmentItemHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ItemContainerContentsResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.VanillaContainerWrapper;
@@ -164,7 +162,8 @@ public class CapabilityHooks {
                 if (entity instanceof AbstractHorse horse)
                     return VanillaContainerWrapper.of(horse.getInventory());
                 else if (entity instanceof LivingEntity livingEntity)
-                    return EntityEquipmentItemHandler.of(livingEntity, EntityEquipmentItemHandler::isHands, EquipmentSlot::isArmor);
+                    //access the existing handler or create a new one if this is the first time being accessed
+                    return livingEntity.getData(NeoForgeMod.ENTITY_EQUIPMENT_ATTACHMENT);
                 return null;
             });
         }
