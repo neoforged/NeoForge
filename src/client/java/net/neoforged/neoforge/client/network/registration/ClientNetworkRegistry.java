@@ -144,7 +144,7 @@ public final class ClientNetworkRegistry extends NetworkRegistry {
             return;
         }
 
-        var payloadId = packet.payload().type().id();
+        ResourceLocation payloadId = packet.payload().type().id();
         ClientPayloadContext context = new ClientPayloadContext(listener, payloadId);
 
         if (CLIENTBOUND_HANDLERS.containsKey(listener.protocol())) {

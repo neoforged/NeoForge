@@ -65,20 +65,20 @@ public class PayloadRegistrar {
     /**
      * Registers a bidirectional payload for the play phase.
      * <p>
-     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
-     */
-    public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
-        return this.playBidirectional(type, codec, serverHandler, null);
-    }
-
-    /**
-     * Registers a bidirectional payload for the play phase.
-     * <p>
      * If the provided {@linkplain IPayloadHandler client handler} is null, it must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
     public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
         register(type, codec, serverHandler, clientHandler, List.of(ConnectionProtocol.PLAY), Optional.empty(), version, optional);
         return this;
+    }
+
+    /**
+     * Registers a bidirectional payload for the play phase.
+     * <p>
+     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar playBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
+        return this.playBidirectional(type, codec, serverHandler, null);
     }
 
     /**
@@ -108,20 +108,20 @@ public class PayloadRegistrar {
     /**
      * Registers a bidirectional payload for the configuration phase.
      * <p>
-     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
-     */
-    public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
-        return this.configurationBidirectional(type, codec, serverHandler, null);
-    }
-
-    /**
-     * Registers a bidirectional payload for the configuration phase.
-     * <p>
      * If the provided {@linkplain IPayloadHandler client handler} is null, it must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
     public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
         register(type, codec, serverHandler, clientHandler, List.of(ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
         return this;
+    }
+
+    /**
+     * Registers a bidirectional payload for the configuration phase.
+     * <p>
+     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar configurationBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
+        return this.configurationBidirectional(type, codec, serverHandler, null);
     }
 
     /**
@@ -151,20 +151,20 @@ public class PayloadRegistrar {
     /**
      * Registers a bidirectional payload for all phases.
      * <p>
-     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
-     */
-    public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
-        return this.commonBidirectional(type, codec, serverHandler, null);
-    }
-
-    /**
-     * Registers a bidirectional payload for all phases.
-     * <p>
      * If the provided {@linkplain IPayloadHandler client handler} is null, it must be registered via {@code RegisterClientPayloadHandlersEvent}
      */
     public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler, @Nullable IPayloadHandler<T> clientHandler) {
         register(type, codec, serverHandler, clientHandler, List.of(ConnectionProtocol.PLAY, ConnectionProtocol.CONFIGURATION), Optional.empty(), version, optional);
         return this;
+    }
+
+    /**
+     * Registers a bidirectional payload for all phases.
+     * <p>
+     * The provided handler is registered for serverbound payloads and the client-side handler must be registered via {@code RegisterClientPayloadHandlersEvent}
+     */
+    public <T extends CustomPacketPayload> PayloadRegistrar commonBidirectional(CustomPacketPayload.Type<T> type, StreamCodec<? super FriendlyByteBuf, T> codec, IPayloadHandler<T> serverHandler) {
+        return this.commonBidirectional(type, codec, serverHandler, null);
     }
 
     /**
