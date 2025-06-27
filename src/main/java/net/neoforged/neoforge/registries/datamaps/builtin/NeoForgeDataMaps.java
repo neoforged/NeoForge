@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -118,6 +119,17 @@ public class NeoForgeDataMaps {
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
 
     /**
+     * The {@linkplain Block} data map that replaces {@link AxeItem#STRIPPABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code stripped}, the block that comes after a log is stripped by a player</li>
+     * </ul>
+     */
+    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
+            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.BLOCK_CODEC, false).build();
+
+    /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/game_event/vibration_frequencies.json}, and the values are objects with 1 field:
@@ -168,6 +180,7 @@ public class NeoForgeDataMaps {
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
+        event.register(STRIPPABLES);
         event.register(VIBRATION_FREQUENCIES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);

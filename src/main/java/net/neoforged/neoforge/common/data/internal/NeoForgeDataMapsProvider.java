@@ -25,10 +25,12 @@ import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -47,6 +49,7 @@ import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import net.neoforged.neoforge.registries.datamaps.builtin.Oxidizable;
 import net.neoforged.neoforge.registries.datamaps.builtin.ParrotImitation;
 import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
+import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
@@ -79,6 +82,10 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final var raidHeroGifts = builder(NeoForgeDataMaps.RAID_HERO_GIFTS);
         ObfuscationReflectionHelper.<Map<ResourceKey<VillagerProfession>, ResourceKey<LootTable>>, GiveGiftToHero>getPrivateValue(GiveGiftToHero.class, null, "GIFTS")
                 .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(type), new RaidHeroGift(lootTable), false));
+
+        final var strippables = builder(NeoForgeDataMaps.STRIPPABLES);
+        ObfuscationReflectionHelper.<Map<Block, Block>, AxeItem>getPrivateValue(AxeItem.class, null, "STRIPPABLES")
+                .forEach((block, stripped) -> strippables.add(block.builtInRegistryHolder(), new Strippable(stripped), false));
 
         final var monsterRoomMobs = builder(NeoForgeDataMaps.MONSTER_ROOM_MOBS);
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
