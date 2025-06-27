@@ -104,10 +104,12 @@ public final class PacketDistributor {
     }
 
     private static Packet<?> makeClientboundPacket(CustomPacketPayload payload, CustomPacketPayload... payloads) {
+        Objects.requireNonNull(payload, "Cannot send null payload");
         if (payloads.length > 0) {
             final List<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>();
             packets.add(new ClientboundCustomPayloadPacket(payload));
             for (CustomPacketPayload otherPayload : payloads) {
+                Objects.requireNonNull(otherPayload, "Cannot send null payload");
                 packets.add(new ClientboundCustomPayloadPacket(otherPayload));
             }
             return new ClientboundBundlePacket(packets);
