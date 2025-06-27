@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
@@ -91,16 +92,6 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return true;
-    }
-
-    @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount) || !isValid(SINGLE_INDEX, resource)) return 0;
         ResourceStack<T> resourceStack = getStoredResourceStack();
@@ -153,6 +144,16 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
         int extractedCount = amount / resourceStack.amount();
         int exchanged = set(extractedCount, emptyStack, transaction);
         return IntMath.saturatedMultiply(exchanged, resourceStack.amount());
+    }
+
+    @Override
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
+    }
+
+    @Override
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
     }
 
     /**

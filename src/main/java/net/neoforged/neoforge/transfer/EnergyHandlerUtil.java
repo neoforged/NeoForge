@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -23,20 +24,6 @@ import org.jetbrains.annotations.Range;
  * Utility class for handling various {@link IEnergyHandler} interactions
  */
 public final class EnergyHandlerUtil {
-    /**
-     * @return The amount passed.
-     * @throws ReportedException when amount is negative.
-     */
-    public static int checkNonNegative(int amount) {
-        if (amount < 0) {
-            CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Energy amount was negative");
-            report.addCategory("EnergyHandler")
-                    .setDetail("Amount", amount);
-            throw new ReportedException(report);
-        }
-        return amount;
-    }
-
     /**
      * Moves energy between two handlers, and return the amount that was successfully transferred.
      *
@@ -52,8 +39,16 @@ public final class EnergyHandlerUtil {
             @Nullable IEnergyHandler from, @Nullable IEnergyHandler to,
             int amount,
             @Nullable TransactionContext transaction) {
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
         if (from == null || to == null) return 0;
-        if (checkNonNegative(amount) == 0) return 0;
+
+        //Test if the `from` handler has the extraction characteristic (or is unknown).
+        //While this is not strictly necessary, it can reduce our iteration loop cost
+        if (!from.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)) return 0;
+
+        //Test if the `to` handler has the insertion characteristic (or is unknown).
+        //While this is not strictly necessary, it can reduce our iteration loop cost
+        if (!to.hasCharacteristics(TransferCharacteristics.INSERTABLE)) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int extractableAmount;
@@ -91,7 +86,11 @@ public final class EnergyHandlerUtil {
      */
     @Range(from = Redstone.SIGNAL_NONE, to = Redstone.SIGNAL_MAX)
     public static int getRedstoneSignalStrength(IEnergyHandler handler) {
-        float proportion = (float) handler.getAmountAsLong() / (float) handler.getCapacityAsLong();
+        var capacity = handler.getCapacityAsLong();
+        if (capacity == 0) return Redstone.SIGNAL_NONE;
+        var amount = handler.getAmountAsLong();
+        if (amount == 0) return Redstone.SIGNAL_NONE;
+        float proportion = (float) amount / (float) capacity;
         return Mth.lerpDiscrete(proportion, Redstone.SIGNAL_NONE, Redstone.SIGNAL_MAX);
     }
 

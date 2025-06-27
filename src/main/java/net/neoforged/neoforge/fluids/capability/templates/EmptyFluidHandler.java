@@ -23,7 +23,7 @@ public class EmptyFluidHandler implements IResourceHandler<FluidResource>, IFlui
      * @deprecated Use {@link EmptyResourceHandler#instance()} instead
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
-    public static final IResourceHandler<FluidResource> INSTANCE = EmptyResourceHandler.instance();
+    public static final EmptyResourceHandler<FluidResource> INSTANCE = EmptyResourceHandler.instance();
 
     @Override
     public int getTanks() {
@@ -93,15 +93,13 @@ public class EmptyFluidHandler implements IResourceHandler<FluidResource>, IFlui
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
-        Objects.checkIndex(index, size());
-        return false;
+    public int characteristics() {
+        return INSTANCE.characteristics();
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        Objects.checkIndex(index, size());
-        return false;
+    public int characteristics(int index) {
+        return INSTANCE.characteristics(index);
     }
 
     @Override

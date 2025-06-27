@@ -66,13 +66,13 @@ public class WorldlyContainerWrapper implements IResourceHandler<ItemResource> {
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
-        return wrappedContainer.supportsInsertion(convertSlot(index));
+    public int characteristics(int index) {
+        return wrappedContainer.characteristics(convertSlot(index));
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        return wrappedContainer.supportsExtraction(convertSlot(index));
+    public int characteristics() {
+        return wrappedContainer.characteristics();
     }
 
     @Override

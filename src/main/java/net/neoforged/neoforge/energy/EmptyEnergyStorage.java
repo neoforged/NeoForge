@@ -29,7 +29,7 @@ public final class EmptyEnergyStorage implements IEnergyStorage, IEnergyHandler 
      */
     public static final EmptyEnergyStorage INSTANCE = new EmptyEnergyStorage();
 
-    protected EmptyEnergyStorage() {}
+    private EmptyEnergyStorage() {}
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
@@ -83,12 +83,7 @@ public final class EmptyEnergyStorage implements IEnergyStorage, IEnergyHandler 
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return EmptyEnergyHandler.INSTANCE.supportsInsertion();
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return EmptyEnergyHandler.INSTANCE.supportsExtraction();
+    public int characteristics() {
+        return EmptyEnergyHandler.INSTANCE.characteristics();
     }
 }

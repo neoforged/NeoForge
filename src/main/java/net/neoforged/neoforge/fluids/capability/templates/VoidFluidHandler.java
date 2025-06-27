@@ -76,13 +76,13 @@ public class VoidFluidHandler implements IFluidHandler, ISingleResourceHandler<F
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return VoidResourceHandler.FLUID.supportsInsertion();
+    public int characteristics(int index) {
+        return VoidResourceHandler.FLUID.characteristics(index);
     }
 
     @Override
-    public boolean supportsExtraction() {
-        return VoidResourceHandler.FLUID.supportsExtraction();
+    public int characteristics() {
+        return VoidResourceHandler.FLUID.characteristics();
     }
 
     @Override

@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -139,13 +140,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public boolean supportsExtraction() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsInsertion() {
-            return true;
+        public int characteristics() {
+            return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERTABLE;
         }
 
         @Override
@@ -219,13 +215,8 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         }
 
         @Override
-        public boolean supportsInsertion() {
-            return false;
-        }
-
-        @Override
-        public boolean supportsExtraction() {
-            return true;
+        public int characteristics() {
+            return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.EXTRACTABLE;
         }
 
         @Override

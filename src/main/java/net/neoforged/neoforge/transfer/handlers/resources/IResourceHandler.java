@@ -6,10 +6,13 @@
 package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A generic handler for handling a {@link IResource resource} of type {@link T} whether it be inserting, extracting, querying some size value, etc.
@@ -101,141 +104,57 @@ public interface IResourceHandler<T extends IResource> {
     boolean isValid(int index, T resource);
 
     /**
-     * Checks if the given index allows insertion of a resource,
-     * regardless of the state of the handler. Meaning this value should not be dynamic.
+     * A description of how this handler is intended to be used. For instance, if resources are intended
+     * to be insertable, then this would be expected to return a composite value that contains {@link TransferCharacteristics#INSERTABLE}.
+     * It should be noted, that this isn't intended to be used as the control logic for your handler, but rather a communication to
+     * outside consumers of this resource handler to make some pre-calculated decisions on. Examples of when calling this
+     * is to be used, pipes creating pre-emptive look up tables for what should be interactable, prioritization on handlers
+     * that don't have {@code VOIDING} as a characteristic, etc.
      * <p>
-     * Intended use is for something like a pipe graph lookup to be able to reduce
-     * the runtime workload on handlers that can never do a specific operation.
+     * If this were to return {@link TransferCharacteristics#UNKNOWN}, then no assumptions can be made about the
+     * handler and should be used as you would without this information. Meaning that if you were planning on calling {@link #insert}
+     * and the return is {@code UNKNOWN} then you would carry on as though it was insertable.
      * <p>
-     * As long as the handler could, under the right conditions, allow a resource to
-     * be inserted into the given index, this should return true. To be clear, this value is assumed
-     * to be constant throughout the life-time of the handler and
-     * does <b>not</b> control the handler's logic in any way.
-     * <h5>IMPORTANT:</h5>
-     * Returning false, will not inherently prevent something from calling insert
-     * or change the result of that call, so you will still need to handle those scenarios.
-     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
-     * what it can do with the handler well before actually operating.
-     * <p>
-     * It is also advised to not use the result of this call in insert nor calling just before you call insert.
-     * This if for an early lookup spanning multiple ticks.
-     * <p>
-     * If your handler can change size dynamically, then it may be wise to
-     * return true for this unless you know for certain a particular index would never be insertable to.
-     * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.
-     * </b> (hence the note about dynamic size erring on the side of caution)
+     * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
+     * 
+     * <pre>{@code
+     * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
+     * }</pre>
+     * 
+     * @return Composite value of characteristics. These can be composed with a bitwise OR, (the '|').
      *
+     * @see TransferCharacteristics
+     * @see #characteristics(int)
+     * @see #hasCharacteristics(int)
+     */
+    @MagicConstant(flagsFromClass = TransferCharacteristics.class)
+    int characteristics();
+
+    /**
+     * A description of how this handler for this index is intended to be used. For instance, if resources are intended
+     * to be insertable, then this would be expected to return a composite value that contains {@link TransferCharacteristics#INSERTABLE}.
+     * It should be noted, that this isn't intended to be used as the control logic for your handler, but rather a communication to
+     * outside consumers of this resource handler to make some pre-calculated decisions on. By default, all indices return what the
+     * handler would return with the {@link #characteristics() index-less variant}.
+     * <p>
+     * If this were to return {@link TransferCharacteristics#UNKNOWN}, then no assumptions can be made about the
+     * handler and should be used as you would without this information.
+     * <p>
+     * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
+     * 
+     * <pre>{@code
+     * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
+     * }</pre>
+     * 
+     * @return Composite value of characteristics. These can be composed with a bitwise OR (the '|').
      * @param index The index to check. <strong>Must be non-negative</strong>
-     * @return True if the handler supports insertion to the specified index regardless of contents, false otherwise.
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @see #supportsInsertion()
+     * @see #characteristics()
+     * @see #hasCharacteristics(int,int)
      */
-    boolean supportsInsertion(int index);
-
-    //INSERT
-    //EXTRACT
-    //VOIDING
-    //PROCESSING
-    //IMMUTABLE
-    //UNKNOWN = 0
-    default int getCharacteristics() {
-        //this will supersede supports calls.
-        //Orion, Monica, Nano, and myself had a conversation on this.
-        return 0;
-    };
-
-    default int getCharacteristics(int index) {
-        //this will supersede supports calls.
-        //Orion, Monica, Nano, and myself had a conversation on this.
-        return 0;
-        //the indexed variation of this call is still unknown if we will use this or not.
-    };
-
-    /**
-     * Checks if the handler allows insertion into at least one index, regardless of the state of the handler.
-     * Meaning this value should not be dynamic.
-     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way.
-     * Returning false, will not inherently prevent something from calling insert
-     * or change the result of that call, so you will still need to handle those scenarios.
-     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
-     * what it can do with the handler before actually operating.
-     * <p>
-     * It is also advised to not use the result of this call in insert nor calling just before you call insert.
-     * This if for an early lookup spanning multiple ticks.
-     * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b>
-     * (hence the note about dynamic size erring on the side of caution)
-     *
-     * @return True if the handler supports insertion regardless of contents, false otherwise.
-     * @see #supportsInsertion(int)
-     */
-    default boolean supportsInsertion() {
-        int size = size();
-        for (int i = 0; i < size; i++) {
-            if (supportsInsertion(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if the given index allows extraction of a resource, regardless of the state of the handler.
-     * Meaning this value should not be dynamic.
-     * <p>
-     * As long as the handler could, under the right conditions, allow a resource to be extracted
-     * from the given index, this should return true.
-     * <p>
-     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way.
-     * Returning false, will not inherently prevent something from calling extract or
-     * change the result of that call, so you will still need to handle those scenarios.
-     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
-     * what it can do with the handler before actually operating.
-     * <p>
-     * It is also advised to not use the result of this call in extract nor calling just before you call extract.
-     * This if for an early lookup spanning multiple ticks.
-     * <p>
-     * If your handler can change size dynamically, then it may be wise to return true for
-     * this unless you know for certain a particular index would never be extractable from.
-     *
-     * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b>
-     * (hence the note about dynamic size erring on the side of caution)
-     *
-     * @param index The index to check. <strong>Must be non-negative</strong>
-     * @return True if the handler supports extraction from the specified index regardless of contents, false otherwise.
-     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @see #supportsExtraction()
-     */
-    boolean supportsExtraction(int index);
-
-    /**
-     * Checks if the handler allows extraction from at least one index, regardless of the state of
-     * the handler. Meaning this value should not be dynamic.
-     * <h5>IMPORTANT:</h5> This does not control your handler's logic in any way.
-     * Returning false, will not inherently prevent something from calling extract
-     * or change the result of that call, so you will still need to handle those scenarios.
-     * This is to allow things like logistics (pipes, searches, etc.) to be able to infer
-     * what it can do with the handler before actually operating.
-     * <p>
-     * It is also advised to not use the result of this call in extract nor calling just before you call extract.
-     * This if for an early lookup spanning multiple ticks.
-     * <p>
-     * <b>This is expected to not change result unless it is accompanied by a capability invalidation.</b>
-     * (hence the note about dynamic size erring on the side of caution)
-     *
-     * @return True if the handler supports extraction regardless of contents, false otherwise.
-     * @see #supportsExtraction(int)
-     */
-    default boolean supportsExtraction() {
-        int size = size();
-        for (int i = 0; i < size; i++) {
-            if (supportsExtraction(i)) {
-                return true;
-            }
-        }
-        return false;
+    @MagicConstant(flagsFromClass = TransferCharacteristics.class)
+    default int characteristics(int index) {
+        return characteristics();
     }
 
     /**
@@ -319,12 +238,46 @@ public interface IResourceHandler<T extends IResource> {
     }
 
     /**
+     * Transfer characteristics can be used to describe how this handler is intended to be used based on the returns
+     * of {@link #characteristics()}
+     * <p>
+     * <strong>Don't override this method.</strong>
+     *
+     * @param characteristics The characteristics to test against.
+     * @return {@code true} if the current set of characteristics contains the inquiry or is fully {@code UNKNOWN}; {@code false} otherwise.
+     * @see #characteristics()
+     * @see TransferCharacteristics
+     */
+    @ApiStatus.NonExtendable
+    default boolean hasCharacteristics(@MagicConstant(flagsFromClass = TransferCharacteristics.class) int characteristics) {
+        if (characteristics == TransferCharacteristics.UNKNOWN) return true;
+        return (characteristics() & characteristics) == characteristics;
+    }
+
+    /**
+     * Transfer characteristics can be used to describe how this handler is intended to be used based on the returns
+     * of {@link #characteristics()}
+     * <p>
+     * <strong>Don't override this method.</strong>
+     * 
+     * @param index           The index to check. <strong>Must be non-negative</strong>
+     * @param characteristics The characteristics to test against.
+     * @return {@code true} if the current set of characteristics at the index contains the inquiry or is fully {@code UNKNOWN}; {@code false} otherwise.
+     * @see #characteristics(int)
+     * @see TransferCharacteristics
+     */
+    @ApiStatus.NonExtendable
+    default boolean hasCharacteristics(int index, @MagicConstant(flagsFromClass = TransferCharacteristics.class) int characteristics) {
+        if (characteristics == TransferCharacteristics.UNKNOWN) return true;
+        return (characteristics(index) & characteristics) == characteristics;
+    }
+
+    /**
      * <p>
      * Example:
      *
      * <pre>{@code
      * public static final BlockCapability<IResourceHandler<FluidResource>, @Nullable Direction> BLOCK = BlockCapability.createSided(create("fluid_handler"), IResourceHandler.asClass());
-     *
      * }</pre>
      *
      * @return a class type ready to be used by something like the capability token registry.

@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -91,15 +92,14 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
+    public int characteristics(int index) {
         Objects.checkIndex(index, size());
-        return true;
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        Objects.checkIndex(index, size());
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     private ResourceStack<T> getStackInSlot(ResourceContainerContents<T> contents, int index) {

@@ -20,6 +20,7 @@ import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 
 /**
  * Represents an immutable {@link IResource} and an amount.
@@ -52,7 +53,7 @@ public final class ResourceStack<T extends IResource> {
      */
     public static <T extends IResource> ResourceStack<T> of(T resource, int amount, ResourceStack<T> emptyInstance) {
         if (emptyInstance == null) throw new NullPointerException("Empty instance must not be null");
-        if (ResourceHandlerUtil.checkNonNegative(amount) == 0 || resource.isEmpty()) {
+        if (TransferPreconditions.checkNonNegative(amount) == 0 || resource.isEmpty()) {
             return emptyInstance;
         }
         return new ResourceStack<>(resource, amount, emptyInstance);
@@ -158,7 +159,7 @@ public final class ResourceStack<T extends IResource> {
      *         If the amount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
      */
     public ResourceStack<T> withAmount(int amount) {
-        ResourceHandlerUtil.checkNonNegative(amount);
+        TransferPreconditions.checkNonNegative(amount);
         if (resource.isEmpty() || amount == 0) return emptyInstance;
         if (amount == this.amount) return this;
         return ResourceStack.of(resource, amount, emptyInstance);
@@ -170,7 +171,7 @@ public final class ResourceStack<T extends IResource> {
      * @see #withAmount(int)
      */
     public ResourceStack<T> shrink(int amount) {
-        ResourceHandlerUtil.checkNonNegative(amount);
+        TransferPreconditions.checkNonNegative(amount);
         return withAmount(Math.max(this.amount - amount, 0));
     }
 

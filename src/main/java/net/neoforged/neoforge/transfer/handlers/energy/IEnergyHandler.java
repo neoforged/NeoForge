@@ -6,7 +6,10 @@
 package net.neoforged.neoforge.transfer.handlers.energy;
 
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A capability interface providing the methods such as insert/extract a buffered energy amount for a handler.<br>
@@ -59,20 +62,6 @@ public interface IEnergyHandler {
     }
 
     /**
-     * <b>IMPORTANT:</b> This doesn't add any control, this is merely a guide for things like pipes to know ahead of time if it can be ever inserted into when the capability invalidates for example.
-     *
-     * @return True if the handler can be inserted into at this time, false otherwise.
-     */
-    boolean supportsInsertion();
-
-    /**
-     * <b>IMPORTANT:</b> This doesn't add any control, this is merely a guide for things like pipes to know ahead of time if it can be ever extracted from when the capability invalidates for example.
-     *
-     * @return {@code true} if the handler can be extracted from in its configuration, false otherwise.
-     */
-    boolean supportsExtraction();
-
-    /**
      * Inserts a given amount of energy into the handler.
      * <p>
      *
@@ -90,4 +79,42 @@ public interface IEnergyHandler {
      * @return The amount that was extracted. <strong>Must be non-negative</strong>
      */
     int extract(int amount, TransactionContext transaction);
+
+    /**
+     * A description of how this handler is intended to be used. For instance, if energy is intended
+     * to be insertable, then this would be expected to return a composite value that contains {@link TransferCharacteristics#INSERTABLE}.
+     * It should be noted, that this isn't intended to be used as the control logic for your handler, but rather a communication to
+     * outside consumers of this energy handler to make some pre-calculated decisions on.
+     * <p>
+     * If this were to return {@link TransferCharacteristics#UNKNOWN}, then no assumptions can be made about the
+     * handler and should be used as you would without this information or alternatively as if your inquiry was true.
+     * <p>
+     * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
+     *
+     * <pre>{@code
+     * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
+     * }</pre>
+     *
+     * @return Composite value of characteristics. These can be composed with a bitwise OR, (the '|').
+     * @see TransferCharacteristics
+     */
+    @MagicConstant(flagsFromClass = TransferCharacteristics.class)
+    int characteristics();
+
+    /**
+     * Transfer characteristics can be used to describe how this handler is intended to be used based on the returns
+     * of {@link #characteristics()}
+     * <p>
+     * <strong>Don't override this method.</strong>
+     *
+     * @param characteristics The characteristics to test against.
+     * @return {@code true} if the current set of characteristics contains the inquiry or is fully {@code UNKNOWN}; {@code false} otherwise.
+     * @see #characteristics()
+     * @see TransferCharacteristics
+     */
+    @ApiStatus.NonExtendable
+    default boolean hasCharacteristics(@MagicConstant(flagsFromClass = TransferCharacteristics.class) int characteristics) {
+        if (characteristics == TransferCharacteristics.UNKNOWN) return true;
+        return (characteristics() & characteristics) == characteristics;
+    }
 }

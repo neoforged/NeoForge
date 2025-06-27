@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -78,13 +79,13 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return true;
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override
-    public boolean supportsExtraction() {
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     /**

@@ -106,7 +106,7 @@ public final class FluidUtil {
      * @return a {@link FluidStack} held by the filled container if successful.
      */
     public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
-        if (ResourceHandlerUtil.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
         return handleContainer(from, itemCapability, amount, player, transaction);
@@ -125,7 +125,7 @@ public final class FluidUtil {
      * @return a {@link FluidStack} held by the filled container if successful.
      */
     public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
-        if (ResourceHandlerUtil.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
         return handleContainer(itemCapability, to, amount, player, transaction);

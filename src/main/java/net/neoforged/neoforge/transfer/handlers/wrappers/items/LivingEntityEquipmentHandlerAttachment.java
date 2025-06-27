@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -98,15 +99,13 @@ public final class LivingEntityEquipmentHandlerAttachment implements IResourceHa
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
-        Objects.checkIndex(index, size());
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        Objects.checkIndex(index, size());
-        return true;
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override

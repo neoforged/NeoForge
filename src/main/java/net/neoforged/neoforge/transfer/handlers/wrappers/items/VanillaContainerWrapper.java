@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
@@ -144,13 +145,13 @@ public class VanillaContainerWrapper implements IResourceHandler<ItemResource> {
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        return true;
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override

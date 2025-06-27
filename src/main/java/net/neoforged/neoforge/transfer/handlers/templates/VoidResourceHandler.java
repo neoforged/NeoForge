@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates;
 
 import java.util.Objects;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -70,12 +71,7 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return false;
+    public int characteristics() {
+        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERTABLE | TransferCharacteristics.VOIDING | TransferCharacteristics.IMMUTABLE;
     }
 }

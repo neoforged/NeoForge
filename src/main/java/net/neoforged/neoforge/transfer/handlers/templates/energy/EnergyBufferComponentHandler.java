@@ -11,8 +11,9 @@ import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -45,6 +46,7 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
     private final int capacityOfOneItem;
     private final int maxInsert;
     private final int maxExtract;
+    private final int characteristics;
 
     /**
      * Creates a new ComponentEnergyStorage with a data component as the backing store for the energy value.
@@ -61,6 +63,15 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
         this.capacityOfOneItem = capacityOfOneItem;
         this.maxInsert = maxInsert;
         this.maxExtract = maxExtract;
+
+        var characteristics = 0;
+        if (maxInsert > 0)
+            characteristics |= TransferCharacteristics.INSERTABLE;
+        if (maxExtract > 0)
+            characteristics |= TransferCharacteristics.EXTRACTABLE;
+        if (characteristics == 0)
+            characteristics = TransferCharacteristics.NO_OP;
+        this.characteristics = TransferCharacteristics.STATICALLY_SIZED | characteristics;
     }
 
     private int getIndividualAmount() {
@@ -69,7 +80,7 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
         if (maxInsert == 0) return 0;
         if (itemContext.getAmount() == 0) return 0;
 
@@ -90,7 +101,7 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
         if (maxExtract == 0) return 0;
         if (itemContext.getAmount() == 0) return 0;
 
@@ -148,13 +159,8 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return maxInsert > 0;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return maxExtract > 0;
+    public int characteristics() {
+        return characteristics;
     }
 
     /**

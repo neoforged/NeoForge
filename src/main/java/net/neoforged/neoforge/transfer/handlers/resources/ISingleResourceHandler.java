@@ -30,12 +30,6 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
     int getAmount(int index);
 
     @Override
-    boolean supportsInsertion();
-
-    @Override
-    boolean supportsExtraction();
-
-    @Override
     int getCapacity(int index, T resource);
 
     @Override
@@ -78,17 +72,8 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
 
     @ApiStatus.NonExtendable
     @Override
-    default boolean supportsInsertion(int index) {
+    default int characteristics(int index) {
         Objects.checkIndex(index, size());
-        //We effectively flip the root's check so that we check on index-less instead
-        return supportsInsertion();
-    }
-
-    @ApiStatus.NonExtendable
-    @Override
-    default boolean supportsExtraction(int index) {
-        Objects.checkIndex(index, size());
-        //We effectively flip the root's check so that we check on index-less instead
-        return supportsExtraction();
+        return characteristics();
     }
 }

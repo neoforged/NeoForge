@@ -5,11 +5,14 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public final class EmptyEnergyHandler implements IEnergyHandler {
-    public static final IEnergyHandler INSTANCE = new EmptyEnergyHandler();
+    public static final EmptyEnergyHandler INSTANCE = new EmptyEnergyHandler();
+
+    private EmptyEnergyHandler() {}
 
     @Override
     public int getAmount() {
@@ -32,12 +35,7 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return false;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return false;
+    public int characteristics() {
+        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.NO_OP | TransferCharacteristics.IMMUTABLE;
     }
 }

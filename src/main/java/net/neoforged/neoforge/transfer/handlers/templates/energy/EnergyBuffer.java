@@ -18,7 +18,8 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
-import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.IndexedIntSnapshot;
@@ -88,6 +89,7 @@ public final class EnergyBuffer implements IEnergyHandler {
      * then you will need to make your own implementation of {@link IEnergyHandler} that has the required information.
      */
     private final int maxExtract;
+    private final int characteristics;
 
     @Nullable
     private IAttachmentHolder holder;
@@ -113,7 +115,7 @@ public final class EnergyBuffer implements IEnergyHandler {
      * @param energy            An array of initial or serialized energy sub-buffer amounts.
      */
     public EnergyBuffer(int capacity, int maxInsertionRate, int maxExtractionRate, int energy) {
-        EnergyHandlerUtil.checkNonNegative(energy);
+        TransferPreconditions.checkNonNegative(energy);
         if (capacity < 0) throw new IllegalArgumentException("Capacity must be non-negative");
         if (maxInsertionRate < 0) throw new IllegalArgumentException("MaxInsertion rate must be non-negative");
         if (maxExtractionRate < 0) throw new IllegalArgumentException("MaxExtraction rate must be non-negative");
@@ -123,6 +125,15 @@ public final class EnergyBuffer implements IEnergyHandler {
         this.energy = energy;
         NotifyingSnapshotJournal onChanged = NotifyingSnapshotJournal.commitWith(this::onSetChanged);
         this.snapshots = IndexedIntSnapshot.of((index, amount) -> set(amount), index -> getAmount(), onChanged);
+
+        var characteristics = 0;
+        if (maxInsertionRate > 0)
+            characteristics |= TransferCharacteristics.INSERTABLE;
+        if (maxExtractionRate > 0)
+            characteristics |= TransferCharacteristics.EXTRACTABLE;
+        if (characteristics == 0)
+            characteristics = TransferCharacteristics.NO_OP;
+        this.characteristics = TransferCharacteristics.STATICALLY_SIZED | characteristics;
     }
 
     //Attachment building methods
@@ -139,7 +150,7 @@ public final class EnergyBuffer implements IEnergyHandler {
     @Override
     public int insert(int amount, TransactionContext transaction) {
         amount = Math.min(maxInsert, amount);
-        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
 
         if (energy == capacity) return 0;
 
@@ -152,8 +163,8 @@ public final class EnergyBuffer implements IEnergyHandler {
     @Override
     public int extract(int amount, TransactionContext transaction) {
         amount = Math.min(maxExtract, amount);
-        if (EnergyHandlerUtil.checkNonNegative(amount) == 0) return 0;
-        if (EnergyHandlerUtil.checkNonNegative(energy) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(energy) == 0) return 0;
 
         int handledAmount = Math.min(energy, amount);
         snapshots.updateSnapshots(transaction);
@@ -173,13 +184,8 @@ public final class EnergyBuffer implements IEnergyHandler {
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return maxInsert > 0;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return maxExtract > 0;
+    public int characteristics() {
+        return characteristics;
     }
 
     private void set(int amount) {
@@ -244,7 +250,7 @@ public final class EnergyBuffer implements IEnergyHandler {
          * @param amount Amount to set the initial energy buffer to
          */
         public Builder energy(int amount) {
-            EnergyHandlerUtil.checkNonNegative(amount);
+            TransferPreconditions.checkNonNegative(amount);
             energy = amount;
             return this;
         }
@@ -259,7 +265,7 @@ public final class EnergyBuffer implements IEnergyHandler {
         /**
          * Constructs a new {@link EnergyBuffer} to use from the values assigned while building
          * as well as assigns an attachment holder to use
-         * 
+         *
          * @param holder The holder the attachment will be applied to.
          * @return A new instance of an EnergyBuffer setting the holder in the process.
          */

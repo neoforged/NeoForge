@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import java.util.Objects;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -107,13 +108,8 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override

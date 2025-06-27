@@ -5,7 +5,8 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
-import net.neoforged.neoforge.transfer.EnergyHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -14,7 +15,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * If you need custom behaviour, then a new implementation is required rather than extending {@link VoidEnergyHandler}
  */
 public final class VoidEnergyHandler implements IEnergyHandler {
-    public static final IEnergyHandler INSTANCE = new VoidEnergyHandler();
+    public static final VoidEnergyHandler INSTANCE = new VoidEnergyHandler();
 
     @Override
     public int getAmount() {
@@ -31,27 +32,22 @@ public final class VoidEnergyHandler implements IEnergyHandler {
         return Long.MAX_VALUE;
     }
 
-    @Override
-    public boolean supportsInsertion() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return false;
-    }
-
     //Accepts as much as is inserted
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        return EnergyHandlerUtil.checkNonNegative(amount);
+        return TransferPreconditions.checkNonNegative(amount);
     }
 
     //Never has anything to extract so we return 0
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        EnergyHandlerUtil.checkNonNegative(amount);
+        TransferPreconditions.checkNonNegative(amount);
         return 0;
+    }
+
+    @Override
+    public int characteristics() {
+        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERTABLE | TransferCharacteristics.VOIDING | TransferCharacteristics.IMMUTABLE;
     }
 
     /**

@@ -8,6 +8,7 @@ package net.neoforged.neoforge.unittest.transfer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
@@ -46,8 +47,8 @@ public class InstancedHandlerTests {
 
     private static <T extends IResource> void testVoidResource(VoidResourceHandler<T> handler, T emptyResource) {
         Assertions.assertThat(handler.size()).withFailMessage("Size should be 1").isEqualTo(1);
-        Assertions.assertThat(handler.supportsExtraction()).withFailMessage("Extraction should be not be allowed").isFalse().isEqualTo(handler.supportsExtraction(0));
-        Assertions.assertThat(handler.supportsInsertion()).withFailMessage("Insertion should be be allowed").isTrue().isEqualTo(handler.supportsInsertion(0));
+        Assertions.assertThat(handler.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)).withFailMessage("Extraction should be not be allowed").isFalse().isEqualTo(handler.hasCharacteristics(0, TransferCharacteristics.EXTRACTABLE));
+        Assertions.assertThat(handler.hasCharacteristics(TransferCharacteristics.INSERTABLE)).withFailMessage("Insertion should be be allowed").isTrue().isEqualTo(handler.hasCharacteristics(0, TransferCharacteristics.INSERTABLE));
         Assertions.assertThat(ResourceHandlerUtil.isValid(handler, emptyResource)).withFailMessage("Voids should always be valid for a resource").isTrue();
         Assertions.assertThat(handler.getCapacity(0, emptyResource)).withFailMessage("Voids should hava capacity of max int").isEqualTo(Integer.MAX_VALUE);
         Assertions.assertThat(handler.getResource(0)).withFailMessage("Empty resource should match").isEqualTo(emptyResource);
@@ -68,8 +69,8 @@ public class InstancedHandlerTests {
     private static <T extends IResource> void testInfiniteResource(T resource, T emptyResource) {
         InfiniteResourceHandler<T> handler = new InfiniteResourceHandler<>(resource);
         Assertions.assertThat(handler.size()).withFailMessage("Size should be 1").isEqualTo(1);
-        Assertions.assertThat(handler.supportsExtraction()).withFailMessage("Extraction should be allowed").isTrue().isEqualTo(handler.supportsExtraction(0));
-        Assertions.assertThat(handler.supportsInsertion()).withFailMessage("Insertion should not be allowed").isFalse().isEqualTo(handler.supportsInsertion(0));
+        Assertions.assertThat(handler.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)).withFailMessage("Extraction should be allowed").isTrue().isEqualTo(handler.hasCharacteristics(0, TransferCharacteristics.EXTRACTABLE));
+        Assertions.assertThat(handler.hasCharacteristics(TransferCharacteristics.INSERTABLE)).withFailMessage("Insertion should not be allowed").isFalse().isEqualTo(handler.hasCharacteristics(0, TransferCharacteristics.INSERTABLE));
         Assertions.assertThat(ResourceHandlerUtil.isValid(handler, resource)).withFailMessage("Endless resource can not be inserted into, thus isValid should be false").isFalse();
         Assertions.assertThat(Integer.MAX_VALUE).withFailMessage("Capacity should be max int")
                 .isEqualTo(handler.getCapacity(0, resource))

@@ -14,6 +14,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -95,15 +96,14 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         return (long) FluidType.BUCKET_VOLUME * itemContext.getAmount();
     }
 
-    //These are hints to consumers, but given these are on items, the hints are less valuable to be fully stateless
     @Override
-    public boolean supportsInsertion() {
-        return true;
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override
-    public boolean supportsExtraction() {
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override

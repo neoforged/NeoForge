@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -33,21 +34,7 @@ public final class ResourceHandlerUtil {
      * @see ResourceContainerContentsHandler#insert(int, IResource, int, TransactionContext)
      */
     public static <T extends IResource> boolean isEmpty(T resource, int amount) {
-        return checkNonNegative(amount) == 0 || resource.isEmpty();
-    }
-
-    /**
-     * @return The amount passed.
-     * @throws ReportedException when amount is negative.
-     */
-    public static int checkNonNegative(int amount) {
-        if (amount < 0) {
-            CrashReport report = CrashReport.forThrowable(new IllegalArgumentException("Amount must be non-negative"), "Resource amount was negative");
-            report.addCategory("ResourceHandlerUtil")
-                    .setDetail("Amount", amount);
-            throw new ReportedException(report);
-        }
-        return amount;
+        return TransferPreconditions.checkNonNegative(amount) == 0 || resource.isEmpty();
     }
 
     /**
@@ -183,7 +170,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
 
         try (Transaction tx = TransactionManager.open(transaction)) {
             int inserted = 0;
@@ -232,7 +219,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int inserted = 0;
@@ -265,7 +252,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (checkNonNegative(amount) == 0) return 0;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int extracted = 0;
@@ -328,7 +315,7 @@ public final class ResourceHandlerUtil {
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
-        if (checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
 
         int size = handler.size();
         int handled = 0;
@@ -380,7 +367,7 @@ public final class ResourceHandlerUtil {
             R defaultResource,
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
-        if (checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
         R resource = handler.getResource(index);
         if (doesNotMatch(filter, resource))
             return stackFactory.create(defaultResource, 0);
@@ -436,9 +423,16 @@ public final class ResourceHandlerUtil {
             int amount,
             @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
-        if (checkNonNegative(amount) == 0) return 0;
-
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
         if (from == null || to == null) return 0;
+
+        //Test if the `from` handler has the extraction characteristic (or is unknown).
+        //While this is not strictly necessary, it can reduce our iteration loop cost
+        if (!from.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)) return 0;
+
+        //Test if the `to` handler has the insertion characteristic (or is unknown).
+        //While this is not strictly necessary, it can reduce our iteration loop cost
+        if (!to.hasCharacteristics(TransferCharacteristics.INSERTABLE)) return 0;
 
         try (Transaction subTransaction = TransactionManager.open(transaction)) {
             int totalMoved = 0;
@@ -515,7 +509,7 @@ public final class ResourceHandlerUtil {
             @Nullable TransactionContext transaction,
             IStackFactory<R, S> stackFactory) {
         Objects.requireNonNull(filter, "Filter may not be null");
-        if (checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
 
         if (from == null || to == null)
             return stackFactory.create(defaultResource, 0);

@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.IStackFactory;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
@@ -142,6 +143,16 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     }
 
     @Override
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
+    }
+
+    @Override
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
+    }
+
+    @Override
     public R getResource(int index) {
         Objects.checkIndex(index, size());
         return getResourceFrom(stacks.get(index));
@@ -163,18 +174,6 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
     @Override
     public boolean isValid(int index, R resource) {
-        Objects.checkIndex(index, size());
-        return true;
-    }
-
-    @Override
-    public boolean supportsInsertion(int index) {
-        Objects.checkIndex(index, size());
-        return true;
-    }
-
-    @Override
-    public boolean supportsExtraction(int index) {
         Objects.checkIndex(index, size());
         return true;
     }

@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -104,15 +105,19 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public boolean supportsInsertion(int index) {
+    public int characteristics(int index) {
         int handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).supportsInsertion(getSlotFromIndex(index, handlerIndex));
+        var specifiedIndex = getSlotFromIndex(index, handlerIndex);
+        return getHandlerFromIndex(handlerIndex).characteristics(specifiedIndex);
     }
 
     @Override
-    public boolean supportsExtraction(int index) {
-        int handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).supportsExtraction(getSlotFromIndex(index, handlerIndex));
+    public int characteristics() {
+        int handled = TransferCharacteristics.UNKNOWN;
+        for (IResourceHandler<T> resourceHandler : handlers) {
+            handled |= resourceHandler.characteristics();
+        }
+        return handled;
     }
 
     @Override

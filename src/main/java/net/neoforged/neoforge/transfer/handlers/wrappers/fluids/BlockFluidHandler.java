@@ -21,6 +21,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -80,13 +81,13 @@ public class BlockFluidHandler extends SnapshotJournal<BlockFluidHandler.Snapsho
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return true;
+    public int characteristics(int index) {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override
-    public boolean supportsExtraction() {
-        return true;
+    public int characteristics() {
+        return TransferCharacteristics.DEFAULT;
     }
 
     @Override

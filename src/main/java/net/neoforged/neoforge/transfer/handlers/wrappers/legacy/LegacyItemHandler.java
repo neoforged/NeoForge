@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.legacy;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -50,7 +50,7 @@ public final class LegacyItemHandler implements IItemHandler {
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (ResourceHandlerUtil.checkNonNegative(amount) == 0) return ItemStack.EMPTY;
+        if (TransferPreconditions.checkNonNegative(amount) == 0) return ItemStack.EMPTY;
 
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             ItemResource resource = handler.getResource(slot);
