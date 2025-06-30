@@ -83,19 +83,19 @@ public interface IItemHandler {
      * otherwise its stack size must be less than or equal to {@code amount} and {@link ItemStack#getMaxStackSize()}.
      * </p>
      *
+     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransactionContext)} & {@link IResourceHandler#getResource(int)}
+     *
+     *             <pre>{@code
+     *                   T resource = handler.getResource(index);
+     *                   int extracted = handler.extract(index, resource, amount, action);
+     *              }</pre>
+     *
      * @param slot     Slot to extract from.
      * @param amount   Amount to extract (may be greater than the current stack's max limit)
      * @param simulate If true, the extraction is only simulated
      * @return ItemStack extracted from the slot, must be empty if nothing can be extracted.
      *         The returned ItemStack can be safely modified after, so item handlers should return a new or copied stack.
-     * @deprecated This is now {@link IResourceHandler#extract(IResource, int, TransactionContext)} & {@link IResourceHandler#getResource(int)}
      *
-     *             <pre>
-     *     {@code
-     *      T resource = handler.getResource(index);
-     *      int amount = handler.extract(index, resource, amount, action);
-     *     }
-     * </pre>
      **/
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     ItemStack extractItem(int slot, int amount, boolean simulate);

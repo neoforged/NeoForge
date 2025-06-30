@@ -36,7 +36,7 @@
 +    public ItemContainerContents with(int size, int index, ItemStack stack) {
 +        NonNullList<ItemStack> list = NonNullList.withSize(size, ItemStack.EMPTY);
 +        copyInto(list);
-+        list.set(index, stack);
++        list.set(index, stack.copy());
 +        return fromItems(list);
 +    }
 +

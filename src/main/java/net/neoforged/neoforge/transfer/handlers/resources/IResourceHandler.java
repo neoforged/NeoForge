@@ -94,6 +94,7 @@ public interface IResourceHandler<T extends IResource> {
      * This is typically called in the {@link #insert(int, IResource, int, TransactionContext Context)}
      * implementations or general resource querying. However, this is separate from if the resource could
      * currently fit in the handler. This is expected to be true, even if the handler would be full.
+     * Empty resources should always return {@code true}.
      *
      * @param index    The index to check. <strong>Must be non-negative</strong>
      * @param resource The resource to check.

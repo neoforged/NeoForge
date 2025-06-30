@@ -88,6 +88,7 @@ public abstract class ItemContextResourceHandler<T extends IResource> implements
     @Override
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return true;
         return validator.test(resource);
     }
 

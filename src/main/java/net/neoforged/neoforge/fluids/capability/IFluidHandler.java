@@ -127,7 +127,7 @@ public interface IFluidHandler {
      * @param action   If SIMULATE, drain will only be simulated.
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
      *         simulated) drained.
-     * @deprecated This is now {@link ResourceHandlerUtil#extractFiltered}
+     * @deprecated This is now {@link ResourceHandlerUtil#extract}
      */
     @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6, forRemoval = true)
     FluidStack drain(int maxDrain, FluidAction action);

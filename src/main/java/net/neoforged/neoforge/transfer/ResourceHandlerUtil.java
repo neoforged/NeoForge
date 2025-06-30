@@ -42,6 +42,7 @@ public final class ResourceHandlerUtil {
      *
      * <p>An {@link IResourceHandler} is considered empty if all of its indices
      * contain either an empty resource or have an amount less than or equal to zero.
+     * A handler with zero indices will always return true.
      *
      * @param handler the {@link IResourceHandler} to check for emptiness
      * @return {@code true} if the {@link IResourceHandler} is empty, {@code false} otherwise
@@ -57,9 +58,10 @@ public final class ResourceHandlerUtil {
 
     /**
      * Checks if an {@link IResourceHandler} is full.
-     *
-     * <p>An {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
+     * <p>
+     * An {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
      * greater than or equal to their respective limits.
+     * Note, A handler with zero indices will always return that it is full.
      *
      * @param handler the {@link IResourceHandler} to check
      * @return {@code true} if the {@link IResourceHandler} is full, {@code false} otherwise
@@ -77,7 +79,7 @@ public final class ResourceHandlerUtil {
      * Checks if a specific index of an {@link IResourceHandler} is full.
      *
      * <p>
-     * An index is considered full if the amount of the resource at the specified index is greater than or equal to
+     * An index is considered full if the amount of the resource at the specified index is equal to
      * the limit of the resource at the specified index.
      * <p>
      * Amount should never surpass the capacity.
@@ -87,7 +89,6 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the resource at the specified index is full, {@code false} otherwise
      */
     public static <T extends IResource> boolean isIndexFull(IResourceHandler<T> handler, int index) {
-        //should we use the long or the "normal" returns for these?
         return handler.getAmountAsLong(index) == handler.getCapacityAsLong(index, handler.getResource(index));
     }
 
@@ -154,7 +155,7 @@ public final class ResourceHandlerUtil {
 
     /**
      * Inserts a resource into an {@link IResourceHandler} using stacking logic.
-     * Resources will be inserted into filled slot(s) first, then empty slot(s).
+     * Resources will be inserted into filled indices first, then empty indices.
      *
      * @param <T>         the type of resource handled by the handler
      * @param handler     the {@link IResourceHandler} to insert the resource into
@@ -163,7 +164,7 @@ public final class ResourceHandlerUtil {
      * @param transaction The transaction context for the operation.
      *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
      *                    allow you to make the final decision to commit based on the results of this method.
-     * @return the amount of the resource that was (or would have been, if simulated) inserted
+     * @return the amount of the resource that was inserted
      */
     public static <T extends IResource> int insertStacking(
             IResourceHandler<T> handler,
@@ -203,7 +204,7 @@ public final class ResourceHandlerUtil {
 
     /**
      * Inserts a resource into an {@link IResourceHandler} using non-stacking logic.
-     * Resources will be inserted into the first slot(s) that can accept the resource.
+     * Resources will be inserted into the first indices that can accept the resource.
      *
      * @param <T>         the type of resource handled by the handler
      * @param handler     the {@link IResourceHandler} to insert the resource into
@@ -212,9 +213,9 @@ public final class ResourceHandlerUtil {
      * @param transaction The transaction context for the operation.
      *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
      *                    allow you to make the final decision to commit based on the results of this method.
-     * @return the amount of the resource that was (or would have been, if simulated) inserted
+     * @return the amount of the resource that was inserted
      */
-    public static <T extends IResource> int insertIndexForced(
+    public static <T extends IResource> int insertInIndexOrder(
             IResourceHandler<T> handler,
             T resource,
             int amount,
@@ -236,7 +237,7 @@ public final class ResourceHandlerUtil {
 
     /**
      * Extracts a resource from an {@link IResourceHandler}
-     * Resources will be extracted from the first slot(s) that contain the resource.
+     * Resources will be extracted from the first indices that contain the resource.
      *
      * @param <T>         the type of resource handled by the handler
      * @param handler     the {@link IResourceHandler} to extract the resource from
@@ -245,7 +246,7 @@ public final class ResourceHandlerUtil {
      * @param transaction The transaction context for the operation.
      *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
      *                    allow you to make the final decision to commit based on the results of this method.
-     * @return the amount of the resource that was (or would have been, if simulated) extracted
+     * @return the amount of the resource that was extracted
      */
     public static <T extends IResource> int extract(
             IResourceHandler<T> handler,
@@ -272,9 +273,9 @@ public final class ResourceHandlerUtil {
      * @param <T>      the type of resource handled by the handler
      * @param handler  the {@link IResourceHandler} to extract the resource from
      * @param resource the resource to extract
-     * @return The total extractable amount of a resource in a given handler without committing
+     * @return The total extractable amount of a resource in a given handler
      */
-    public static <T extends IResource> int getExtractableAmountOf(IResourceHandler<T> handler, T resource) {
+    public static <T extends IResource> int getExtractableAmount(IResourceHandler<T> handler, T resource) {
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             //We don't commit allow us to just inquiry the amount
             return handler.extract(resource, Integer.MAX_VALUE, transaction);
@@ -285,9 +286,9 @@ public final class ResourceHandlerUtil {
      * @param <T>      the type of resource handled by the handler
      * @param handler  the {@link IResourceHandler} to insert the resource to
      * @param resource the resource to insert
-     * @return The total insertable amount of a resource in a given handler without committing
+     * @return The total insertable amount of a resource in a given handler
      */
-    public static <T extends IResource> int getInsertableAmountOf(IResourceHandler<T> handler, T resource) {
+    public static <T extends IResource> int getInsertableAmount(IResourceHandler<T> handler, T resource) {
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
             //We don't commit allow us to just inquiry the amount
             return handler.insert(resource, Integer.MAX_VALUE, transaction);
@@ -308,7 +309,7 @@ public final class ResourceHandlerUtil {
      * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
      * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
      */
-    public static <R extends IResource, S> S extractFiltered(
+    public static <R extends IResource, S> S extract(
             IResourceHandler<R> handler,
             Predicate<R> filter,
             int amount,
@@ -359,7 +360,7 @@ public final class ResourceHandlerUtil {
      * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
      * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
      */
-    public static <R extends IResource, S> S extractIndexFiltered(
+    public static <R extends IResource, S> S extract(
             IResourceHandler<R> handler,
             Predicate<R> filter,
             int index,

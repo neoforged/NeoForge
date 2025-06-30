@@ -267,7 +267,7 @@ public class VanillaHandlersTests {
         }
 
         //We wanted to ensure we commited nothing to lava
-        var lava = ResourceHandlerUtil.getExtractableAmountOf(slotHandler, FluidResource.of(Fluids.LAVA));
+        var lava = ResourceHandlerUtil.getExtractableAmount(slotHandler, FluidResource.of(Fluids.LAVA));
         helper.assertValueEqual(lava, 12800, "No extra lava should be stored only what we started with ");
 
         try (var transaction = TransactionManager.open(null)) {
@@ -276,7 +276,7 @@ public class VanillaHandlersTests {
             // revert taking apples
         }
         //Check to make sure we have 100 apples and not 90
-        var amount = ResourceHandlerUtil.getExtractableAmountOf(chestHandler, targetResource);
+        var amount = ResourceHandlerUtil.getExtractableAmount(chestHandler, targetResource);
         helper.assertValueEqual(amount, 100, "Chest should have 100 apples");
 
         try (var transaction = TransactionManager.open(null)) {
@@ -298,7 +298,7 @@ public class VanillaHandlersTests {
         var hopperEntity = helper.getBlockEntity(pos, HopperBlockEntity.class);
         var hopper = helper.requireCapability(Capabilities.ItemHandler.BLOCK, pos, null);
 
-        helper.assertFalse(hopperEntity.isOnCooldown(), "Not committing should mean no cooldown.");
+        helper.assertFalse(hopperEntity.isOnCooldown(), "Doing nothing should mean no cooldown.");
         helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
 
         try (var transaction = TransactionManager.open(null)) {
@@ -316,6 +316,17 @@ public class VanillaHandlersTests {
 
         helper.assertFalse(hopperEntity.isOnCooldown(), "No insert committed should mean no cooldown.");
         helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
+
+        try (var transaction = TransactionManager.open(null)) {
+            var inserted = hopper.insert(ItemResource.of(Items.APPLE), 10, transaction);
+            transaction.commit();
+        }
+
+        helper.assertTrue(hopperEntity.isOnCooldown(), "Committing should mean cooldown.");
+        helper.assertFalse(hopperEntity.isOnCustomCooldown(), "Should never have a custom cooldown with this test.");
+        //We are skipping past 10 ticks to make sure are able to commence inserting again
+        for (var i = 0; i < 10; i++)
+            helper.tickBlock(pos);
 
         try (var transaction = TransactionManager.open(null)) {
             var inserted = hopper.insert(ItemResource.of(Items.APPLE), 10, transaction);

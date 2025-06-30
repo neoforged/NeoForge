@@ -67,7 +67,7 @@ public sealed class LegacyFluidHandler implements IFluidHandler permits LegacyFl
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-            FluidStack extracted = ResourceHandlerUtil.extractFiltered(handler, t -> true, maxDrain, FluidResource.EMPTY, transaction, FluidResource::toStack);
+            FluidStack extracted = ResourceHandlerUtil.extract(handler, t -> true, maxDrain, FluidResource.EMPTY, transaction, FluidResource::toStack);
             if (action.execute()) {
                 transaction.commit();
             }

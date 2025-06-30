@@ -8,8 +8,10 @@ package net.neoforged.neoforge.transfer.handlers.wrappers.items;
 import net.minecraft.world.Container;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.Internal
 public record ContainerOrHandler(
         @Nullable Container container,
         @Nullable IResourceHandler<ItemResource> itemHandler) {

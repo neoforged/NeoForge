@@ -95,6 +95,7 @@ public final class LivingEntityEquipmentHandlerAttachment implements IResourceHa
     @Override
     public boolean isValid(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return true;
         return resource.canEquip(slots.get(index), entity);
     }
 

@@ -133,7 +133,7 @@ public abstract class ItemStackResourceHandlerJournal extends SnapshotJournal<It
     @Override
     public boolean isValid(int index, ItemResource resource) {
         Objects.checkIndex(index, size());
-        return canInsert(resource);
+        return resource.isEmpty() || canInsert(resource);
     }
 
     @Override

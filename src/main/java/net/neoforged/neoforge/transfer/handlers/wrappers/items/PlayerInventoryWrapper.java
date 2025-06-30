@@ -46,6 +46,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
     @Override
     public boolean isValid(int index, ItemResource resource) {
         EquipmentSlot slot = getEquipmentSlot(index);
+        if (resource.isEmpty()) return true;
         return slot != null ? resource.canEquip(slot, inventory.player) : super.isValid(index, resource);
     }
 

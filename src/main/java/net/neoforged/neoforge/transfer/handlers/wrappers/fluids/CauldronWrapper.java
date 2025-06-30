@@ -75,7 +75,7 @@ public final class CauldronWrapper extends SnapshotJournal<BlockState> implement
     @Override
     public boolean isValid(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
-        return CauldronFluidContent.getForFluid(resource.getInstanceValue()) != null;
+        return resource.isEmpty() || CauldronFluidContent.getForFluid(resource.getInstanceValue()) != null;
     }
 
     @Override

@@ -71,6 +71,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     @Override
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return true;
         return getDelegate().isValid(convertIndex(index), resource);
     }
 

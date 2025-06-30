@@ -23,6 +23,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -93,14 +94,14 @@ public class CustomFluidContainerTest {
             var fluidStack = FluidUtil.getFirstFluidStackContained(context);
             if (fluidStack.isEmpty()) {
                 var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
-                if (FluidUtil.tryPickupFluidAsPlayer(player, hand, level, blockHitResult.getBlockPos(), null)) {
+                if (FluidUtil.tryPickupFluidAsPlayer(player, hand, level, blockHitResult.getBlockPos(), from -> from.getSound(SoundActions.BUCKET_FILL), null)) {
                     return InteractionResult.SUCCESS;
                 }
             } else {
                 var blockHitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
                 //try to place fluid in hit block (waterlogging, fill tank, ...). When no success try the block on the hit side.
                 for (BlockPos pos : Arrays.asList(blockHitResult.getBlockPos(), blockHitResult.getBlockPos().relative(blockHitResult.getDirection()))) {
-                    if (FluidUtil.tryPlaceFluidAsPlayer(player, hand, level, pos, null)) {
+                    if (FluidUtil.tryPlaceFluidAsPlayer(player, hand, level, pos, from -> from.getSound(SoundActions.BUCKET_EMPTY), null)) {
                         return InteractionResult.SUCCESS;
                     }
                 }

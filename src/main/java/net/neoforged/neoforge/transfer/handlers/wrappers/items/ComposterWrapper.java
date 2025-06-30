@@ -211,7 +211,7 @@ public class ComposterWrapper extends SnapshotJournal<Float> {
         @Override
         public boolean isValid(int index, ItemResource resource) {
             Objects.checkIndex(index, size());
-            return false;
+            return resource.isEmpty();
         }
 
         @Override

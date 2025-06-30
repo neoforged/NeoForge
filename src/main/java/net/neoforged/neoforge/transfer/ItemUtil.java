@@ -43,7 +43,7 @@ public final class ItemUtil {
      * @param amount   The amount of the resource to give
      */
     public static void giveItemToPlayer(Player player, ItemResource resource, int amount, @Nullable TransactionContext transaction) {
-        if (resource.isEmpty()) return;
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) return;
         IResourceHandler<ItemResource> cap = player.getCapability(Capabilities.ItemHandler.ENTITY);
         if (cap == null) return;
 
@@ -156,7 +156,7 @@ public final class ItemUtil {
      * @return the amount of the {@link ItemStack} that was inserted
      */
     public static int insertIndexForced(IResourceHandler<ItemResource> handler, ItemStack stack, @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.insertIndexForced(handler, ItemResource.of(stack), stack.getCount(), transaction);
+        return ResourceHandlerUtil.insertInIndexOrder(handler, ItemResource.of(stack), stack.getCount(), transaction);
     }
 
     /**
@@ -175,7 +175,7 @@ public final class ItemUtil {
             Predicate<ItemResource> filter,
             int amount,
             @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
+        return ResourceHandlerUtil.extract(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
     }
 
     /**
@@ -194,7 +194,7 @@ public final class ItemUtil {
             Predicate<ItemResource> filter,
             int amount,
             @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
+        return ResourceHandlerUtil.extract(handler, filter, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
 
     /**
@@ -214,7 +214,7 @@ public final class ItemUtil {
             int index,
             int amount,
             @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
+        return ResourceHandlerUtil.extract(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::toStack);
     }
 
     /**
@@ -234,7 +234,7 @@ public final class ItemUtil {
             int index,
             int amount,
             @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.extractIndexFiltered(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
+        return ResourceHandlerUtil.extract(handler, filter, index, amount, ItemResource.EMPTY, transaction, ItemResource::withAmount);
     }
 
     /**

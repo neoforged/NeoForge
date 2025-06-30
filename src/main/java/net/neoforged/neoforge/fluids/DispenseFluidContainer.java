@@ -12,6 +12,7 @@ import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.transfer.FluidUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.DispenserItemContext;
@@ -48,7 +49,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
         DispenserItemContext context = new DispenserItemContext(stack);
         var handler = context.getCapability(Capabilities.FluidHandler.ITEM);
 
-        if (handler == null || !FluidUtil.tryPickupFluid(handler, source.center(), source.level(), blockpos, null)) {
+        if (handler == null || !FluidUtil.tryPickupFluid(handler, source.center(), source.level(), blockpos, from -> from.getSound(SoundActions.BUCKET_FILL), null)) {
             return super.execute(source, stack);
         }
 
@@ -64,7 +65,7 @@ public class DispenseFluidContainer extends DefaultDispenseItemBehavior {
 
         DispenserItemContext context = new DispenserItemContext(stack);
         IResourceHandler<FluidResource> handler = context.getCapability(Capabilities.FluidHandler.ITEM);
-        if (handler == null || !FluidUtil.tryPlaceFluid(handler, source.center(), source.level(), blockpos, null)) {
+        if (handler == null || !FluidUtil.tryPlaceFluid(handler, source.center(), source.level(), blockpos, from -> from.getSound(SoundActions.BUCKET_EMPTY), null)) {
             return super.execute(source, stack);
         }
 

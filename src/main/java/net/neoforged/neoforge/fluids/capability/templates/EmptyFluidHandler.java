@@ -89,7 +89,7 @@ public class EmptyFluidHandler implements IResourceHandler<FluidResource>, IFlui
     @Override
     public boolean isValid(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
-        return false;
+        return resource.isEmpty();
     }
 
     @Override

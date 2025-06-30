@@ -20,8 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.SoundAction;
-import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
@@ -45,22 +43,24 @@ public final class FluidUtil {
      * if that action fails then it tries to drain the item into the block.
      * Automatically updates the item in the player's hand and stashes any extra items created.
      *
-     * @param player      The player doing the interaction between the item and fluid handler block.
-     * @param hand        The player's hand that is holding an item that should interact with the fluid handler block.
-     * @param level       The level that contains the fluid handler block.
-     * @param pos         The position of the fluid handler block in the level.
-     * @param side        The side of the block to interact with. May be null.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param player             The player doing the interaction between the item and fluid handler block.
+     * @param hand               The player's hand that is holding an item that should interact with the fluid handler block.
+     * @param level              The level that contains the fluid handler block.
+     * @param pos                The position of the fluid handler block in the level.
+     * @param side               The side of the block to interact with. May be null.
+     * @param transaction        The transaction context for a given insertion.
+     *                           Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                           allow you to make the final decision to commit based on the results of this method.
+     * @param fillSoundResolver  Sound resolver providing the sound event for filling the container.
+     * @param emptySoundResolver Sound resolver providing the sound event for emptying the container.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
      */
-    public static boolean interactWithHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction) {
+    public static boolean interactWithHandler(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable Direction side, @Nullable TransactionContext transaction, IFluidSoundResolver<FluidResource> fillSoundResolver, IFluidSoundResolver<FluidResource> emptySoundResolver) {
         Preconditions.checkNotNull(level);
         Preconditions.checkNotNull(pos);
 
         IResourceHandler<FluidResource> blockHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, side);
-        return blockHandler != null && interactWithHandler(player, hand, blockHandler, transaction);
+        return blockHandler != null && interactWithHandler(player, hand, blockHandler, fillSoundResolver, emptySoundResolver, transaction);
     }
 
     /**
@@ -69,15 +69,17 @@ public final class FluidUtil {
      * if that action fails then it tries to drain the item into the handler.
      * Automatically updates the item in the player's hand and stashes any extra items created.
      *
-     * @param player      The player doing the interaction between the item and fluid handler.
-     * @param hand        The player's hand that is holding an item that should interact with the fluid handler.
-     * @param handler     The fluid handler.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param player           The player doing the interaction between the item and fluid handler.
+     * @param hand             The player's hand that is holding an item that should interact with the fluid handler.
+     * @param handler          The fluid handler.
+     * @param fillSoundAction  The sound action associated with filling the container.
+     * @param emptySoundAction The sound action associated with emptying the container.
+     * @param transaction      The transaction context for a given insertion.
+     *                         Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                         allow you to make the final decision to commit based on the results of this method.
      * @return true if the interaction succeeded and updated the item held by the player, false otherwise.
      */
-    public static boolean interactWithHandler(Player player, InteractionHand hand, IResourceHandler<FluidResource> handler, @Nullable TransactionContext transaction) {
+    public static boolean interactWithHandler(Player player, InteractionHand hand, IResourceHandler<FluidResource> handler, IFluidSoundResolver<FluidResource> fillSoundAction, IFluidSoundResolver<FluidResource> emptySoundAction, @Nullable TransactionContext transaction) {
         Preconditions.checkNotNull(player);
         Preconditions.checkNotNull(hand);
         Preconditions.checkNotNull(handler);
@@ -86,61 +88,61 @@ public final class FluidUtil {
         IResourceHandler<FluidResource> handHandler = itemContext.getCapability(Capabilities.FluidHandler.ITEM);
         if (handHandler == null) return false;
 
-        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_FILL, handler, handHandler, Integer.MAX_VALUE, transaction);
+        ResourceStack<FluidResource> tryInsert = moveFluidWithSound(player.level(), player.position(), fillSoundAction, handler, handHandler, Integer.MAX_VALUE, transaction);
         if (!tryInsert.isEmpty()) return true;
 
-        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.level(), player.position(), SoundActions.BUCKET_EMPTY, handHandler, handler, Integer.MAX_VALUE, transaction);
+        ResourceStack<FluidResource> tryExtract = moveFluidWithSound(player.level(), player.position(), emptySoundAction, handHandler, handler, Integer.MAX_VALUE, transaction);
         return !tryExtract.isEmpty();
     }
 
     /**
      * Fill a container from the given fluidSource.
      *
-     * @param context     The container (Or the item context for the container) to be filled. Won't be mutated unless executed.
-     * @param from        The fluid handler to be drained.
-     * @param amount      The largest amount of fluid that should be transferred.
-     * @param player      The player to make the filling noise. Pass null for no noise.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param context              The container (Or the item context for the container) to be filled. Won't be mutated unless executed.
+     * @param from                 The fluid handler to be drained.
+     * @param amount               The largest amount of fluid that should be transferred.
+     * @param player               The player to make the filling noise. Pass null for no noise.
+     * @param fillingSoundResolver The sound resolver associated with filling the container.
+     * @param transaction          The transaction context for a given insertion.
+     *                             Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                             allow you to make the final decision to commit based on the results of this method.
      * @return a {@link FluidStack} held by the filled container if successful.
      */
-    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
+    public static FluidStack fillContainer(IItemContext context, IResourceHandler<FluidResource> from, int amount, @Nullable Player player, IFluidSoundResolver<FluidStack> fillingSoundResolver, @Nullable TransactionContext transaction) {
         if (TransferPreconditions.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
-        return handleContainer(from, itemCapability, amount, player, transaction);
+        return handleContainer(from, itemCapability, amount, player, fillingSoundResolver, transaction);
     }
 
     /**
      * Empty a container from the given fluidSource.
      *
-     * @param context     The container (Or the item context for the container) to be drained.
-     * @param to          The fluid handler to be filled.
-     * @param amount      The largest amount of fluid that should be transferred.
-     * @param player      The player to make the filling noise. Pass null for no noise.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param context               The container (Or the item context for the container) to be drained.
+     * @param to                    The fluid handler to be filled.
+     * @param amount                The largest amount of fluid that should be transferred.
+     * @param player                The player to make the filling noise. Pass null for no noise.
+     * @param emptyingSoundResolver The sound resolver associated with emptying the container.
+     * @param transaction           The transaction context for a given insertion.
+     *                              Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                              allow you to make the final decision to commit based on the results of this method.
      * @return a {@link FluidStack} held by the filled container if successful.
      */
-    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
+    public static FluidStack emptyContainer(IItemContext context, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, IFluidSoundResolver<FluidStack> emptyingSoundResolver, @Nullable TransactionContext transaction) {
         if (TransferPreconditions.checkNonNegative(amount) == 0) return FluidStack.EMPTY;
         IResourceHandler<FluidResource> itemCapability = context.getCapability(Capabilities.FluidHandler.ITEM);
         if (itemCapability == null) return FluidStack.EMPTY;
-        return handleContainer(itemCapability, to, amount, player, transaction);
+        return handleContainer(itemCapability, to, amount, player, emptyingSoundResolver, transaction);
     }
 
     /**
      * Common logic for filling and draining the container context.
      */
-    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, @Nullable TransactionContext transaction) {
+    private static FluidStack handleContainer(IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable Player player, IFluidSoundResolver<FluidStack> fillingSoundResolver, @Nullable TransactionContext transaction) {
         FluidStack stack = ResourceHandlerUtil.moveFirstOrDefault(from, to, resource -> true, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
-        if (player == null) return stack;
-
-        SoundEvent soundevent = stack.getFluidType().getSound(stack, SoundActions.BUCKET_FILL);
-        if (soundevent != null) {
-            player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+        if (player != null) {
+            var pos = player.position();
+            playSoundAction(player.level(), pos.x(), pos.y() + 0.5, pos.z(), fillingSoundResolver.resolve(stack));
         }
         return stack;
     }
@@ -148,29 +150,33 @@ public final class FluidUtil {
     /**
      * Moves fluid between two fluid handlers, playing a sound if the action is executed.
      *
-     * @param level       The level where the sound should be played
-     * @param pos         The position of the fluid handlers in the level
-     * @param soundAction The sound action to play if the action is executed.
-     * @param from        The fluid handler to move fluid from.
-     * @param to          The fluid handler to move fluid to.
-     * @param amount      The amount of fluid to move.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param level         The level where the sound should be played
+     * @param pos           The position of the fluid handlers in the level
+     * @param soundResolver The sound resolver to provide the sound event
+     * @param from          The fluid handler to move fluid from.
+     * @param to            The fluid handler to move fluid to.
+     * @param amount        The amount of fluid to move.
+     * @param transaction   The transaction context for a given insertion.
+     *                      Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                      allow you to make the final decision to commit based on the results of this method.
      * @return The fluid stack that was moved, or empty if no fluid was moved.
      */
-    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, SoundAction soundAction, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable TransactionContext transaction) {
+    public static ResourceStack<FluidResource> moveFluidWithSound(Level level, Vec3 pos, IFluidSoundResolver<FluidResource> soundResolver, IResourceHandler<FluidResource> from, IResourceHandler<FluidResource> to, int amount, @Nullable TransactionContext transaction) {
         try (Transaction internalTransaction = TransactionManager.open(transaction)) {
             ResourceStack<FluidResource> moved = ResourceHandlerUtil.moveFirstOrDefault(from, to, Predicates.alwaysTrue(), amount, FluidResource.EMPTY, internalTransaction, FluidResource::withAmount);
             if (moved.isEmpty()) return moved;
 
-            SoundEvent soundevent = moved.resource().getSound(soundAction);
-            if (soundevent != null) {
-                level.playSound(null, pos.x(), pos.y() + 0.5, pos.z(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
-            }
+            playSoundAction(level, pos.x(), pos.y(), pos.z(), soundResolver.resolve(moved.resource()));
 
             internalTransaction.commit();
             return moved;
+        }
+    }
+
+    private static void playSoundAction(Level level, double x, double y, double z, @Nullable SoundEvent soundevent) {
+        if (soundevent != null) {
+            //The only method in legacy fluid utils to not use a null player was `tryPlaceFluid`
+            level.playSound(null, x, y, z, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
@@ -178,18 +184,19 @@ public final class FluidUtil {
      * Attempts to pick up the fluid placed in world at the given location in the given level and insert it into the provided handler.
      * If pickup is successful, the fluid is moved to the given fluid handler and a sound is played at the given position.
      *
-     * @param handler     The fluid handler to move the fluid to.
-     * @param soundPos    The position to play the sound at.
-     * @param level       The level where the fluid is placed.
-     * @param pos         The position of the fluid in the level.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param handler              The fluid handler to move the fluid to.
+     * @param soundPos             The position to play the sound at.
+     * @param level                The level where the fluid is placed.
+     * @param pos                  The position of the fluid in the level.
+     * @param fillingSoundResolver The sound resolver for getting the filling sound event of the fluid into the container.
+     * @param transaction          The transaction context for a given insertion.
+     *                             Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                             allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was picked up and moved to the handler, false otherwise.
      */
-    public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
+    public static boolean tryPickupFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, IFluidSoundResolver<FluidResource> fillingSoundResolver, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_FILL, blockHandler, handler, FluidType.BUCKET_VOLUME, transaction);
+        ResourceStack<FluidResource> pickedUp = moveFluidWithSound(level, soundPos, fillingSoundResolver, blockHandler, handler, FluidType.BUCKET_VOLUME, transaction);
         return !pickedUp.isEmpty();
     }
 
@@ -197,18 +204,19 @@ public final class FluidUtil {
      * Attempts to place the fluid held in the fluid handler at the given position in the given level. If placement is successful, the
      * fluid is extracted from the given fluid handler and a sound is played at the given position.
      *
-     * @param handler     The fluid handler to move the fluid from.
-     * @param soundPos    The position to play the sound at.
-     * @param level       The level where the fluid is placed.
-     * @param pos         The position to place the fluid in the level.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param handler               The fluid handler to move the fluid from.
+     * @param soundPos              The position to play the sound at.
+     * @param level                 The level where the fluid is placed.
+     * @param pos                   The position to place the fluid in the level.
+     * @param emptyingSoundResolver The sound resolver for getting the emptying sound event of the fluid from the container.
+     * @param transaction           The transaction context for a given insertion.
+     *                              Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                              allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was placed and moved from the handler, false otherwise.
      */
-    public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
+    public static boolean tryPlaceFluid(IResourceHandler<FluidResource> handler, Vec3 soundPos, Level level, BlockPos pos, IFluidSoundResolver<FluidResource> emptyingSoundResolver, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> blockHandler = new BlockFluidHandler(level, pos);
-        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, SoundActions.BUCKET_EMPTY, handler, blockHandler, FluidType.BUCKET_VOLUME, transaction);
+        ResourceStack<FluidResource> placed = moveFluidWithSound(level, soundPos, emptyingSoundResolver, handler, blockHandler, FluidType.BUCKET_VOLUME, transaction);
         return !placed.isEmpty();
     }
 
@@ -216,36 +224,38 @@ public final class FluidUtil {
      * Attempts to pick up the fluid placed in world at the given location in the given level and insert it into a handler
      * that is attached to the item in the player's hand. If pickup is successful, the fluid is inserted into the item's fluid handler.
      *
-     * @param player      The player picking up the fluid.
-     * @param hand        The hand holding the item that should pick up the fluid.
-     * @param level       The level where the fluid is placed.
-     * @param pos         The position of the fluid in the level.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param player               The player picking up the fluid.
+     * @param hand                 The hand holding the item that should pick up the fluid.
+     * @param level                The level where the fluid is placed.
+     * @param pos                  The position of the fluid in the level.
+     * @param fillingSoundResolver The sound resolver for getting the filling sound event of the fluid into the container.
+     * @param transaction          The transaction context for a given insertion.
+     *                             Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                             allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was picked up and moved to the item's fluid handler, false otherwise.
      */
-    public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
+    public static boolean tryPickupFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, IFluidSoundResolver<FluidResource> fillingSoundResolver, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).oneByOne().getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos, transaction);
+        return handHandler != null && tryPickupFluid(handHandler, player.position(), level, pos, fillingSoundResolver, transaction);
     }
 
     /**
      * Attempts to place the fluid held in the fluid handler found in the given player's hand at the given position in the
      * given level. If placement is successful, the fluid is extracted from the item's fluid handler.
      *
-     * @param player      The player placing the fluid.
-     * @param hand        The hand holding the item that should place the fluid.
-     * @param level       The level where the fluid is placed.
-     * @param pos         The position to place the fluid in the level.
-     * @param transaction The transaction context for a given insertion.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param player                The player placing the fluid.
+     * @param hand                  The hand holding the item that should place the fluid.
+     * @param level                 The level where the fluid is placed.
+     * @param pos                   The position to place the fluid in the level.
+     * @param emptyingSoundResolver The sound resolver for getting the emptying sound event of the fluid from the container.
+     * @param transaction           The transaction context for a given insertion.
+     *                              Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+     *                              allow you to make the final decision to commit based on the results of this method.
      * @return true if the fluid was placed and moved from the item's fluid handler, false otherwise.
      */
-    public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, @Nullable TransactionContext transaction) {
+    public static boolean tryPlaceFluidAsPlayer(Player player, InteractionHand hand, Level level, BlockPos pos, IFluidSoundResolver<FluidResource> emptyingSoundResolver, @Nullable TransactionContext transaction) {
         IResourceHandler<FluidResource> handHandler = PlayerItemContext.ofHand(player, hand).oneByOne().getCapability(Capabilities.FluidHandler.ITEM);
-        return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos, transaction);
+        return handHandler != null && tryPlaceFluid(handHandler, player.position(), level, pos, emptyingSoundResolver, transaction);
     }
 
     /**
@@ -347,7 +357,7 @@ public final class FluidUtil {
             Predicate<FluidResource> filter,
             int amount,
             @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
+        return ResourceHandlerUtil.extract(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::toStack);
     }
 
     /**
@@ -366,7 +376,7 @@ public final class FluidUtil {
             Predicate<FluidResource> filter,
             int amount,
             @Nullable TransactionContext transaction) {
-        return ResourceHandlerUtil.extractFiltered(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
+        return ResourceHandlerUtil.extract(handler, filter, amount, FluidResource.EMPTY, transaction, FluidResource::withAmount);
     }
 
     /**

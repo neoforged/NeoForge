@@ -101,6 +101,7 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     @Override
     public boolean isValid(int index, T resource) {
         int handlerIndex = getHandlerIndex(index);
+        if (resource.isEmpty()) return true;
         return getHandlerFromIndex(handlerIndex).isValid(getSlotFromIndex(index, handlerIndex), resource);
     }
 

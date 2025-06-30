@@ -46,12 +46,11 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         Objects.checkIndex(index, size());
 
         ItemResource resource = itemContext.getResource();
-        if (resource.getInstanceValue() instanceof BucketItem bucket) {
+        if (resource.getInstanceValue() instanceof BucketItem bucket)
             return FluidResource.of(bucket.content);
-            // Should this check for milk item specifically, tag, or something else. It was an instanceof check before.
-        } else if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound()) {
+        if (resource.is(Items.MILK_BUCKET) && NeoForgeMod.MILK.isBound())
             return FluidResource.of(NeoForgeMod.MILK.get());
-        }
+
         return FluidResource.EMPTY;
     }
 
@@ -115,9 +114,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         }
 
         ItemResource filledBucket = resource.getFilledBucket();
-        if (filledBucket.isEmpty()) {
-            return 0; // the fluid has no associated bucket item
-        }
+        if (filledBucket.isEmpty()) return 0; // the fluid has no associated bucket item
 
         int bucketsToFill = amount / FluidType.BUCKET_VOLUME;
         if (bucketsToFill == 0) return 0;
@@ -131,16 +128,11 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
         if (!isBucket()) return 0;
         FluidResource containedFluid = getResource(0);
 
-        if (!resource.equals(containedFluid)) {
-            // Incompatible fluid
-            return 0;
-        }
+        if (!resource.equals(containedFluid)) return 0; // Incompatible fluid
 
         int bucketsToEmpty = amount / FluidType.BUCKET_VOLUME;
-        if (bucketsToEmpty == 0) {
-            // Nothing to empty
-            return 0;
-        }
+        if (bucketsToEmpty == 0) return 0; // Nothing to empty
+
         int bucketsEmptied = itemContext.exchange(ItemResource.of(Items.BUCKET), bucketsToEmpty, transaction);
         return IntMath.saturatedMultiply(bucketsEmptied, FluidType.BUCKET_VOLUME);
     }
@@ -148,6 +140,7 @@ public final class BucketResourceHandler implements ISingleResourceHandler<Fluid
     @Override
     public boolean isValid(int index, FluidResource resource) {
         Objects.checkIndex(index, size());
+        if (resource.isEmpty()) return true;
         if (!isBucket()) return false;
         return !resource.getFilledBucket().isEmpty();
     }

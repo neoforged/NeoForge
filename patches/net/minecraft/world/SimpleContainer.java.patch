@@ -4,7 +4,7 @@
  
      @Override
      public void setItem(int p_19162_, ItemStack p_19163_) {
-+        setItem(p_19162_, p_19163_, true);
++        setItem(p_19162_, p_19163_, false);
 +    }
 +
 +    @Override

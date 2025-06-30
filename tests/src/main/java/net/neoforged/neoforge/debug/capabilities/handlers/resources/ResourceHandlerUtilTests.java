@@ -78,7 +78,7 @@ public class ResourceHandlerUtilTests {
         //reset (empty)
         ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, resource -> true, Integer.MAX_VALUE, null);
 
-        helper.assertValueEqual(ResourceHandlerUtil.insertIndexForced(outputHandler, ItemResource.of(Items.APPLE), 123, null), 123, "apples inserted");
+        helper.assertValueEqual(ResourceHandlerUtil.insertInIndexOrder(outputHandler, ItemResource.of(Items.APPLE), 123, null), 123, "apples inserted");
         //reset (empty+fill)
         ResourceHandlerUtil.move(outputHandler, VoidResourceHandler.ITEM, resource -> true, Integer.MAX_VALUE, null);
         ResourceHandlerUtil.move(new InfiniteResourceHandler<>(ItemResource.of(Items.APPLE)), outputHandler, resource -> true, Integer.MAX_VALUE, null);
