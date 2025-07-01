@@ -1732,33 +1732,25 @@ public class CommonHooks {
         if (!EDA_CHECKED_CLASSES.add(callerClass)) return;
 
         // Replicate Mojang check, which ensures that the defining class is the same as the holder
-        var isValid = callerClass == holderClass;
-        StringBuilder mixinClasses = null;
+        final var isEntityClass = callerClass == holderClass;
 
         // The check might hold up either because the definition is sound or because someone added a Mixin into the
         // entity class aiming to add their own synced data; this is still an issue as different ordering that might
         // occur due to whatever version might still cause problems down the line.
-        if (isValid) {
-            for (final var field : callerClass.getDeclaredFields()) {
-                if (!EntityDataAccessor.class.isAssignableFrom(field.getType())) continue;
-
-                final var mixinMerged = field.getAnnotation(MixinMerged.class);
-                if (mixinMerged == null) continue;
-
-                // Identified an EntityDataAccessor merged by a Mixin, this is a problem: we will now append the Mixin
-                // declaration to mixinClasses; do note that we are processing all mixin-merged fields anyway, so we
-                // will report all problematic areas at once.
-                final var mixinName = mixinMerged.mixin();
-
-                isValid = false;
-                if (mixinClasses == null) {
-                    mixinClasses = new StringBuilder(mixinName);
-                } else {
-                    mixinClasses.append(", ").append(mixinName);
-                }
-            }
+        final List<String> mixinsInjectingEda;
+        if (isEntityClass) {
+            mixinsInjectingEda = Stream.of(callerClass.getDeclaredFields())
+                    .filter(it -> EntityDataAccessor.class.isAssignableFrom(it.getType()))
+                    .map(it -> it.getAnnotation(MixinMerged.class))
+                    .filter(Objects::nonNull)
+                    .map(MixinMerged::mixin)
+                    .toList();
+        } else {
+            // We don't care about which mixins exist outside of entities, it's wrong already
+            mixinsInjectingEda = List.of();
         }
 
+        final var isValid = isEntityClass && mixinsInjectingEda.isEmpty();
         if (isValid) {
             return;
         }
@@ -1767,10 +1759,10 @@ public class CommonHooks {
         message.append("Identified an attempt to add synced data to a foreign entity: this is highly discouraged.\n");
         message.append("Entity class: ").append(holderClass.getName()).append('\n');
 
-        if (mixinClasses == null) {
+        if (mixinsInjectingEda.isEmpty()) {
             message.append("Declaring class: ").append(callerClass.getName());
         } else {
-            message.append("Mixins into entity class: ").append(mixinClasses);
+            message.append("Mixins into entity class: ").append(String.join(", ", mixinsInjectingEda));
         }
 
         message.append("\nModders should instead use syncable data attachments instead, as they do not suffer from potential ID mismatches.\n");
