@@ -71,7 +71,9 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.SyncedDataHolder;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -228,6 +230,7 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 
 /**
  * Class for various common (i.e. client and server-side) hooks.
@@ -692,7 +695,7 @@ public class CommonHooks {
      * Called from {@link AnvilMenu#createResult()} after the vanilla result has been computed.
      * <p>
      * If the left input to the anvil is not empty, this method fires the {@link AnvilUpdateEvent} to allow mods to manipulate the result.
-     * 
+     *
      * @param menu       The anvil menu
      * @param leftInput  The left input item
      * @param rightInput The right input item
@@ -724,7 +727,7 @@ public class CommonHooks {
      * This is fired from the head of {@link AnvilMenu#onTake}, before any other logic is run.
      * <p>
      * If this event is cancelled, {@link AnvilMenu#onTake} should return immediately.
-     * 
+     *
      * @param menu   The anvil menu
      * @param player The player who is using the anvil
      * @param output The output item
@@ -741,7 +744,7 @@ public class CommonHooks {
      * Fires the {@link AnvilCraftEvent.Post} when the anvil is used to craft an item.
      * <p>
      * This is fired from the tail of {@link AnvilMenu#onTake}, after all other logic is run.
-     * 
+     *
      * @param menu   The anvil menu
      * @param player The player who is using the anvil
      * @param output The output item
@@ -1719,6 +1722,58 @@ public class CommonHooks {
             var payload = RecipeContentPayload.create(recipeTypesToSend, recipeMap);
             LOGGER.debug("Sending {} recipes of the following types: {}", payload.recipes().size(), payload.recipeTypes());
             PacketDistributor.sendToPlayer(player, payload);
+        }
+    }
+
+    public static void verifyEntityDataAccessorRegistration(final Class<?> callerClass, final Class<? extends SyncedDataHolder> holderClass) {
+        // Replicate Mojang check, which ensures that the defining class is the same as the holder
+        var isValid = callerClass == holderClass;
+        StringBuilder mixinClasses = null;
+
+        // The check might hold up either because the definition is sound or because someone added a Mixin into the
+        // entity class aiming to add their own synced data; this is still an issue as different ordering that might
+        // occur due to whatever version might still cause problems down the line.
+        if (isValid) {
+            for (final var field : callerClass.getDeclaredFields()) {
+                if (!EntityDataAccessor.class.isAssignableFrom(field.getType())) continue;
+
+                final var mixinMerged = field.getAnnotation(MixinMerged.class);
+                if (mixinMerged == null) continue;
+
+                // Identified an EntityDataAccessor merged by a Mixin, this is a problem: we will now append the Mixin
+                // declaration to mixinClasses; do note that we are processing all mixin-merged fields anyway, so we
+                // will report all problematic areas at once.
+                final var mixinName = mixinMerged.mixin();
+
+                isValid = false;
+                if (mixinClasses == null) {
+                    mixinClasses = new StringBuilder(mixinName);
+                } else {
+                    mixinClasses.append(", ").append(mixinName);
+                }
+            }
+        }
+
+        if (isValid) {
+            return;
+        }
+
+        final var message = new StringBuilder();
+        message.append("Identified an attempt to add synced data to a foreign entity: this is highly discouraged.\n");
+        message.append("Entity class: ").append(holderClass.getName()).append('\n');
+        message.append("Declaring class: ").append(callerClass.getName());
+
+        if (mixinClasses != null) {
+            message.append(" (due to the following Mixins: ").append(mixinClasses).append(')');
+        }
+
+        message.append("\nModders should instead use syncable data attachments instead, as they do not suffer from potential ID mismatches.\n");
+        message.append("Please refer to the data attachments documentation available at https://docs.neoforged.net/docs/datastorage/attachments.");
+
+        if (SharedConstants.IS_RUNNING_IN_IDE) {
+            throw new IllegalStateException(message.toString());
+        } else {
+            LOGGER.warn(message);
         }
     }
 }
