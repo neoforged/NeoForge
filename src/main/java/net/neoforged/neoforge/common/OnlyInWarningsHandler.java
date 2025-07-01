@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.common;
 
 import com.mojang.logging.LogUtils;
@@ -18,7 +23,7 @@ import org.slf4j.Logger;
 @Mod(NeoForgeVersion.MOD_ID)
 public class OnlyInWarningsHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
-    
+
     public OnlyInWarningsHandler(ModContainer container) {
         if (!FMLEnvironment.production) {
             ModList.get().forEachModFile(file -> {
