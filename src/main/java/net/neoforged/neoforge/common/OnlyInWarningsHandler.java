@@ -31,9 +31,20 @@ public class OnlyInWarningsHandler {
                     return;
                 }
                 Type anType = Type.getType(OnlyIn.class);
-                if (file.getScanResult().getAnnotations().stream().anyMatch(ad -> ad.annotationType().equals(anType))) {
-                    LOGGER.warn("The mod {} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon", file.getModInfos().getFirst().getModId());
+                var onlyInUsages = file.getScanResult().getAnnotations().stream().filter(ad -> ad.annotationType().equals(anType)).toList();
+                if (!onlyInUsages.isEmpty()) {
                     ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.onlyin", file.getModInfos().getFirst().getModId()).withAffectedModFile(file));
+                    LOGGER.error("The mod {} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon", file.getModInfos().getFirst().getModId());
+                    for (var annData : onlyInUsages) {
+                        switch (annData.targetType()) {
+                            case TYPE -> LOGGER.error("@OnlyIn used on class {}", annData.clazz().getClassName());
+                            case FIELD -> LOGGER.error("@OnlyIn used on field {}.{}", annData.clazz().getClassName(), annData.memberName());
+                            case METHOD -> LOGGER.error("@OnlyIn used on method {}.{}", annData.clazz().getClassName(), annData.memberName());
+                            case CONSTRUCTOR -> LOGGER.error("@OnlyIn used on constructor for {}", annData.clazz().getClassName());
+                            case ANNOTATION_TYPE -> LOGGER.error("@OnlyIn used on annotation {}", annData.clazz().getClassName());
+                            case PACKAGE -> LOGGER.error("@OnlyIn used on package {}", annData.clazz().getClassName());
+                        }
+                    }
                 }
             });
         }
