@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1725,7 +1726,11 @@ public class CommonHooks {
         }
     }
 
+    private static final Set<Class<?>> EDA_CHECKED_CLASSES = new HashSet<>(BuiltInRegistries.ENTITY_TYPE.size());
+
     public static void verifyEntityDataAccessorRegistration(final Class<?> callerClass, final Class<? extends SyncedDataHolder> holderClass) {
+        if (!EDA_CHECKED_CLASSES.add(callerClass)) return;
+
         // Replicate Mojang check, which ensures that the defining class is the same as the holder
         var isValid = callerClass == holderClass;
         StringBuilder mixinClasses = null;
@@ -1761,14 +1766,16 @@ public class CommonHooks {
         final var message = new StringBuilder();
         message.append("Identified an attempt to add synced data to a foreign entity: this is highly discouraged.\n");
         message.append("Entity class: ").append(holderClass.getName()).append('\n');
-        message.append("Declaring class: ").append(callerClass.getName());
 
-        if (mixinClasses != null) {
-            message.append(" (due to the following Mixins: ").append(mixinClasses).append(')');
+        if (mixinClasses == null) {
+            message.append("Declaring class: ").append(callerClass.getName());
+        } else {
+            message.append("Mixins into entity class: ").append(mixinClasses);
         }
 
         message.append("\nModders should instead use syncable data attachments instead, as they do not suffer from potential ID mismatches.\n");
-        message.append("Please refer to the data attachments documentation available at https://docs.neoforged.net/docs/datastorage/attachments.");
+        message.append("Please refer to the data attachments documentation available at https://docs.neoforged.net/docs/datastorage/attachments.\n");
+        message.append("This message will only be printed once per class");
 
         if (SharedConstants.IS_RUNNING_IN_IDE) {
             throw new IllegalStateException(message.toString());
