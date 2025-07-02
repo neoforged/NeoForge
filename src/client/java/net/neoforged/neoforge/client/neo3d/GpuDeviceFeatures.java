@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.neo3d;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;
 
@@ -17,6 +19,7 @@ public class GpuDeviceFeatures implements Cloneable {
 
     private static final Field[] fields = GpuDeviceFeatures.class.getFields();
 
+    @ApiStatus.Internal
     public boolean hasAll(GpuDeviceFeatures features) {
         try {
             for (final var field : fields) {
@@ -37,6 +40,7 @@ public class GpuDeviceFeatures implements Cloneable {
         return true;
     }
 
+    @ApiStatus.Internal
     public void enableAll(GpuDeviceFeatures features) {
         try {
             for (final var field : fields) {
