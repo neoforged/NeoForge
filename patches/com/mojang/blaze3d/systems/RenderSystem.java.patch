@@ -25,6 +25,15 @@
      public static String getBackendDescription() {
          return String.format(Locale.ROOT, "LWJGL version %s", GLX._getLWJGLVersion());
      }
+@@ -214,7 +_,7 @@
+     public static void initRenderer(
+         long p_409720_, int p_69581_, boolean p_69582_, BiFunction<ResourceLocation, ShaderType, String> p_410113_, boolean p_410401_
+     ) {
+-        DEVICE = new GlDevice(p_409720_, p_69581_, p_69582_, p_410113_, p_410401_);
++        DEVICE = net.neoforged.neoforge.client.ClientHooks.createGpuDevice(p_409720_, p_69581_, p_69582_, p_410113_, p_410401_);
+         apiDescription = getDevice().getImplementationInformation();
+         dynamicUniforms = new DynamicUniforms();
+ 
 @@ -423,6 +_,40 @@
          if (gpubufferslice2 != null) {
              p_418212_.setUniform("Lighting", gpubufferslice2);

@@ -1,9 +1,20 @@
 --- a/com/mojang/blaze3d/opengl/GlDevice.java
 +++ b/com/mojang/blaze3d/opengl/GlDevice.java
-@@ -187,6 +_,67 @@
-         }
-     }
+@@ -37,7 +_,7 @@
+ import org.slf4j.Logger;
  
+ @OnlyIn(Dist.CLIENT)
+-public class GlDevice implements GpuDevice {
++public abstract class GlDevice implements GpuDevice {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     protected static boolean USE_GL_ARB_vertex_attrib_binding = true;
+     protected static boolean USE_GL_KHR_debug = true;
+@@ -185,6 +_,67 @@
+                 return gltexture;
+             }
+         }
++    }
++
 +    /**
 +     * Adopt an external OpenGL texture into a GpuTexture.
 +     * The lifecycle of the OpenGL texture will not be tied to this GpuTexture and the external system is responsible
@@ -63,8 +74,6 @@
 +        GlTexture gltexture = new GlTexture(usage, label, format, width, height, depthOrLayers, mipLevels, nativeId, true);
 +        this.debugLabels.applyLabel(gltexture);
 +        return gltexture;
-+    }
-+
+     }
+ 
      @Override
-     public GpuTextureView createTextureView(GpuTexture p_423640_) {
-         return this.createTextureView(p_423640_, 0, p_423640_.getMipLevels());

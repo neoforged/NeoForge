@@ -25,6 +25,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.client.neo3d.validation.ValidationGpuDevice;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
@@ -52,7 +53,11 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
-        var framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
+        var gpuDevice = RenderSystem.getDevice();
+        if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
+            gpuDevice = validationGpuDevice.getRealDevice();
+        }
+        var framebuffer = ((GlDevice) gpuDevice).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
         Minecraft.getInstance().getTextureManager().register(LOADING_OVERLAY_TEXTURE_ID, new ExternalTexture(framebuffer));
     }
 

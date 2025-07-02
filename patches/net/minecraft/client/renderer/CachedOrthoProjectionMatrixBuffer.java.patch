@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/CachedOrthoProjectionMatrixBuffer.java
++++ b/net/minecraft/client/renderer/CachedOrthoProjectionMatrixBuffer.java
+@@ -47,7 +_,7 @@
+     }
+ 
+     private Matrix4f createProjectionMatrix(float p_418447_, float p_418426_) {
+-        return new Matrix4f().setOrtho(0.0F, p_418447_, this.invertY ? p_418426_ : 0.0F, this.invertY ? 0.0F : p_418426_, this.zNear, this.zFar);
++        return new Matrix4f().setOrtho(0.0F, p_418447_, this.invertY ? p_418426_ : 0.0F, this.invertY ? 0.0F : p_418426_, this.zNear, this.zFar, RenderSystem.getDevice().properties().depthZeroToOne);
+     }
+ 
+     @Override

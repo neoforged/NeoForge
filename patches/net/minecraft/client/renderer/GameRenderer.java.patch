@@ -52,6 +52,16 @@
              f2 /= livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
+@@ -438,7 +_,8 @@
+             p_363849_ * (float) (Math.PI / 180.0),
+             (float)this.minecraft.getWindow().getWidth() / this.minecraft.getWindow().getHeight(),
+             0.05F,
+-            this.getDepthFar()
++            this.getDepthFar(),
++            RenderSystem.getDevice().properties().depthZeroToOne
+         );
+     }
+ 
 @@ -513,7 +_,8 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
