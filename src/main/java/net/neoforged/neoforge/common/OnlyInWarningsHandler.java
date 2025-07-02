@@ -27,7 +27,7 @@ public class OnlyInWarningsHandler {
     public OnlyInWarningsHandler(ModContainer container) {
         if (!FMLEnvironment.production) {
             ModList.get().forEachModFile(file -> {
-                if (file.getModInfos().stream().anyMatch(info -> info.getModId().equals("minecraft") || info.getModId().equals(NeoForgeVersion.MOD_ID))) {
+                if (file.getModInfos().stream().anyMatch(info -> info.getModId().equals("minecraft"))) {
                     return;
                 }
                 Type anType = Type.getType(OnlyIn.class);

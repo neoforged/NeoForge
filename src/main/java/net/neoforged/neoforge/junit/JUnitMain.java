@@ -5,10 +5,8 @@
 
 package net.neoforged.neoforge.junit;
 
-import cpw.mods.modlauncher.Launcher;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
-import net.neoforged.fml.common.asm.RuntimeDistCleaner;
 
 public class JUnitMain {
     public static void main(String[] args) {
@@ -17,10 +15,5 @@ public class JUnitMain {
 
         // Load mods
         net.neoforged.neoforge.server.loading.ServerModLoader.load();
-
-        // We launch as a server, but we want client classes available.
-        // Passing null disables dist-cleaning.
-        var distCleaner = (RuntimeDistCleaner) Launcher.INSTANCE.environment().findLaunchPlugin("runtimedistcleaner").orElseThrow();
-        distCleaner.setDistribution(null);
     }
 }

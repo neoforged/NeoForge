@@ -105,7 +105,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     static class ExternalTexture extends AbstractTexture {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;

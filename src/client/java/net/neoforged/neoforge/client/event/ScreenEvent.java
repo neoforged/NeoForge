@@ -46,7 +46,6 @@ import org.lwjgl.glfw.GLFW;
  * @see MouseInput
  * @see KeyInput
  */
-@OnlyIn(Dist.CLIENT)
 public abstract class ScreenEvent extends Event {
     private final Screen screen;
 
