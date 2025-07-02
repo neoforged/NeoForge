@@ -6,13 +6,23 @@
 package net.neoforged.neoforge.client.neo3d;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.DestFactor;
+import com.mojang.blaze3d.platform.SourceFactor;
+import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.TextureFormat;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 public class GpuDeviceProperties {
     public final String backendName = defaultVal("Default");
@@ -20,10 +30,16 @@ public class GpuDeviceProperties {
     public final String apiVersionString = defaultVal("3.2");
     public final int apiVersionMajor = defaultVal(3);
     public final int apiVersionMinor = defaultVal(2);
-    
+
     public final int knownGpuBufferUsageBits = defaultVal((GpuBuffer.USAGE_UNIFORM_TEXEL_BUFFER << 1) - 1);
-    
     public final int knownGpuTextureUsageBits = defaultVal((GpuTexture.USAGE_CUBEMAP_COMPATIBLE << 1) - 1);
+    public final Set<DepthTestFunction> knownDepthTestFunctions = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(DepthTestFunction.class)));
+    public final Set<DestFactor> knownDestFactors = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(DestFactor.class)));
+    public final Set<SourceFactor> knownSourceFactors = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(SourceFactor.class)));
+    public final Set<ShaderType> knownShaderTypes = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(ShaderType.class)));
+    public final Set<UniformType> knownUniformTypes = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(UniformType.class)));
+    public final Set<AddressMode> knownAddressModes = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(AddressMode.class)));
+    public final Set<TextureFormat> knownTextureFormats = defaultVal(Collections.unmodifiableSet(EnumSet.allOf(TextureFormat.class)));
 
     /**
      * Some APIs require a 0-1 depth range, this may affect shaders that rely on specific depth ranges

@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/shaders/ShaderType.java
++++ b/com/mojang/blaze3d/shaders/ShaderType.java
+@@ -9,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
++@net.neoforged.neoforge.internal.NonExhaustiveEnum
+ public enum ShaderType {
+     VERTEX("vertex", ".vsh"),
+     FRAGMENT("fragment", ".fsh");

@@ -115,7 +115,11 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;
             this.setFilter(false, false);
-            this.textureView = RenderSystem.getDevice().createTextureView(texture);
+            var gpuDevice = RenderSystem.getDevice();
+            if (gpuDevice instanceof ValidationGpuDevice) {
+                gpuDevice = ((ValidationGpuDevice) gpuDevice).getRealDevice();
+            }
+            this.textureView = gpuDevice.createTextureView(texture);
         }
     }
 }

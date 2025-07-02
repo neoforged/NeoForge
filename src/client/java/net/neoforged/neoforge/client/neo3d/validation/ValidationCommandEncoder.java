@@ -13,13 +13,11 @@ import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
-
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
-
 import org.jetbrains.annotations.Nullable;
 
 public class ValidationCommandEncoder implements CommandEncoder {
@@ -47,27 +45,34 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void clearColorTexture(GpuTexture texture, int clearColor) {
-        realCommandEncoder.clearColorTexture(texture, clearColor);
+        assert texture instanceof ValidationGpuTexture;
+        realCommandEncoder.clearColorTexture(((ValidationGpuTexture) texture).getRealTexture(), clearColor);
     }
 
     @Override
     public void clearColorAndDepthTextures(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth) {
-        realCommandEncoder.clearColorAndDepthTextures(colorTexture, clearColor, depthTexture, clearDepth);
+        assert colorTexture instanceof ValidationGpuTexture;
+        assert depthTexture instanceof ValidationGpuTexture;
+        realCommandEncoder.clearColorAndDepthTextures(((ValidationGpuTexture) colorTexture).getRealTexture(), clearColor, ((ValidationGpuTexture) depthTexture).getRealTexture(), clearDepth);
     }
 
     @Override
     public void clearColorAndDepthTextures(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth, int scissorX, int scissorY, int scissorWidth, int scissorHeight) {
-        realCommandEncoder.clearColorAndDepthTextures(colorTexture, clearColor, depthTexture, clearDepth, scissorX, scissorY, scissorWidth, scissorHeight);
+        assert colorTexture instanceof ValidationGpuTexture;
+        assert depthTexture instanceof ValidationGpuTexture;
+        realCommandEncoder.clearColorAndDepthTextures(((ValidationGpuTexture) colorTexture).getRealTexture(), clearColor, ((ValidationGpuTexture) depthTexture).getRealTexture(), clearDepth, scissorX, scissorY, scissorWidth, scissorHeight);
     }
 
     @Override
     public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
-        realCommandEncoder.clearDepthTexture(depthTexture, clearDepth);
+        assert depthTexture instanceof ValidationGpuTexture;
+        realCommandEncoder.clearDepthTexture(((ValidationGpuTexture) depthTexture).getRealTexture(), clearDepth);
     }
 
     @Override
     public void clearStencilTexture(GpuTexture stencilTexture, int clearValue) {
-        realCommandEncoder.clearStencilTexture(stencilTexture, clearValue);
+        assert stencilTexture instanceof ValidationGpuTexture;
+        realCommandEncoder.clearStencilTexture(((ValidationGpuTexture) stencilTexture).getRealTexture(), clearValue);
     }
 
     @Override
@@ -92,32 +97,39 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void writeToTexture(GpuTexture texture, NativeImage image) {
-        realCommandEncoder.writeToTexture(texture, image);
+        assert texture instanceof ValidationGpuTexture;
+        realCommandEncoder.writeToTexture(((ValidationGpuTexture) texture).getRealTexture(), image);
     }
 
     @Override
     public void writeToTexture(GpuTexture texture, NativeImage image, int mipLevel, int layer, int dstX, int dstY, int width, int height, int srcX, int srcY) {
-        realCommandEncoder.writeToTexture(texture, image, mipLevel, layer, dstX, dstY, width, height, srcX, srcY);
+        assert texture instanceof ValidationGpuTexture;
+        realCommandEncoder.writeToTexture(((ValidationGpuTexture) texture).getRealTexture(), image, mipLevel, layer, dstX, dstY, width, height, srcX, srcY);
     }
 
     @Override
     public void writeToTexture(GpuTexture texture, IntBuffer imageData, NativeImage.Format imageFormat, int mipLevel, int layer, int x, int y, int width, int height) {
-        realCommandEncoder.writeToTexture(texture, imageData, imageFormat, mipLevel, layer, x, y, width, height);
+        assert texture instanceof ValidationGpuTexture;
+        realCommandEncoder.writeToTexture(((ValidationGpuTexture) texture).getRealTexture(), imageData, imageFormat, mipLevel, layer, x, y, width, height);
     }
 
     @Override
     public void copyTextureToBuffer(GpuTexture texture, GpuBuffer buffer, int bufferOffset, Runnable callback, int mipLevel) {
-        realCommandEncoder.copyTextureToBuffer(texture, buffer, bufferOffset, callback, mipLevel);
+        assert texture instanceof ValidationGpuTexture;
+        realCommandEncoder.copyTextureToBuffer(((ValidationGpuTexture) texture).getRealTexture(), buffer, bufferOffset, callback, mipLevel);
     }
 
     @Override
     public void copyTextureToBuffer(GpuTexture texture, GpuBuffer buffer, int bufferOffset, Runnable callback, int mipLevel, int x, int y, int width, int height) {
-        realCommandEncoder.copyTextureToBuffer(texture, buffer, bufferOffset, callback, mipLevel, x, y, width, height);
+        assert texture instanceof ValidationGpuTexture;
+        realCommandEncoder.copyTextureToBuffer(((ValidationGpuTexture) texture).getRealTexture(), buffer, bufferOffset, callback, mipLevel, x, y, width, height);
     }
 
     @Override
     public void copyTextureToTexture(GpuTexture srcTexture, GpuTexture dstTexture, int mipLevel, int srcX, int srcY, int dstX, int dstY, int width, int height) {
-        realCommandEncoder.copyTextureToTexture(srcTexture, dstTexture, mipLevel, srcX, srcY, dstX, dstY, width, height);
+        assert srcTexture instanceof ValidationGpuTexture;
+        assert dstTexture instanceof ValidationGpuTexture;
+        realCommandEncoder.copyTextureToTexture(((ValidationGpuTexture) srcTexture).getRealTexture(), ((ValidationGpuTexture) dstTexture).getRealTexture(), mipLevel, srcX, srcY, dstX, dstY, width, height);
     }
 
     @Override

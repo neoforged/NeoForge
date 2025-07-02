@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.client.neo3d;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;
+import org.jetbrains.annotations.ApiStatus;
 
 public class GpuDeviceFeatures implements Cloneable {
     /**

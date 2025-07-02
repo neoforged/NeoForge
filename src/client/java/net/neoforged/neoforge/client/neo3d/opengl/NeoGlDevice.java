@@ -25,9 +25,17 @@ import static org.lwjgl.opengl.GL32C.GL_MAX_VERTEX_OUTPUT_COMPONENTS;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.opengl.GlDevice;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.DestFactor;
+import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.TextureFormat;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.function.BiFunction;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -55,7 +63,14 @@ public class NeoGlDevice extends GlDevice {
 
         propertiesMap.put("knownGpuBufferUsageBits", (GpuBuffer.USAGE_UNIFORM_TEXEL_BUFFER << 1) - 1);
         propertiesMap.put("knownGpuTextureUsageBits", (GpuTexture.USAGE_CUBEMAP_COMPATIBLE << 1) - 1);
-        
+        propertiesMap.put("knownDepthTestFunctions", Collections.unmodifiableSet(EnumSet.range(DepthTestFunction.NO_DEPTH_TEST, DepthTestFunction.GREATER_DEPTH_TEST)));
+        propertiesMap.put("knownDestFactors", Collections.unmodifiableSet(EnumSet.range(DestFactor.CONSTANT_ALPHA, DestFactor.ZERO)));
+        propertiesMap.put("knownSourceFactors", Collections.unmodifiableSet(EnumSet.range(SourceFactor.CONSTANT_ALPHA, SourceFactor.ZERO)));
+        propertiesMap.put("knownShaderTypes", Collections.unmodifiableSet(EnumSet.range(ShaderType.VERTEX, ShaderType.FRAGMENT)));
+        propertiesMap.put("knownUniformTypes", Collections.unmodifiableSet(EnumSet.range(UniformType.UNIFORM_BUFFER, UniformType.TEXEL_BUFFER)));
+        propertiesMap.put("knownAddressModes", Collections.unmodifiableSet(EnumSet.range(AddressMode.REPEAT, AddressMode.CLAMP_TO_EDGE)));
+        propertiesMap.put("knownTextureFormats", Collections.unmodifiableSet(EnumSet.range(TextureFormat.RGBA8, TextureFormat.DEPTH32_STENCIL8)));
+
         propertiesMap.put("depthZeroToOne", false);
 
         final var maxUboBindings = Math.min(glGetInteger(GL_MAX_VERTEX_UNIFORM_BLOCKS), glGetInteger(GL_MAX_FRAGMENT_UNIFORM_BLOCKS));

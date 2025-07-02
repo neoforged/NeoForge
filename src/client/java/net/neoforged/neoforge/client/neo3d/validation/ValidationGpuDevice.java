@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class ValidationGpuDevice implements GpuDevice {
@@ -34,41 +35,50 @@ public class ValidationGpuDevice implements GpuDevice {
         validationCommandEncoder = wrapCommandEncoder(realDevice.createCommandEncoder(), validator);
     }
 
+    @ApiStatus.Internal
     public GpuDevice getRealDevice() {
         return realDevice;
     }
 
-    protected ValidationCommandEncoder wrapCommandEncoder(CommandEncoder commandEncoder, GpuDeviceUsageValidator validator){
+    protected ValidationCommandEncoder wrapCommandEncoder(CommandEncoder commandEncoder, GpuDeviceUsageValidator validator) {
         return new ValidationCommandEncoder(commandEncoder, validator);
     }
-    
+
     @Override
     public CommandEncoder createCommandEncoder() {
         return validationCommandEncoder;
     }
 
+    protected ValidationGpuTexture wrapGpuTexture(GpuTexture texture, GpuDeviceUsageValidator validator) {
+        return new ValidationGpuTexture(texture, validator);
+    }
+
     @Override
     public GpuTexture createTexture(@Nullable Supplier<String> label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
         validator.validateTextureUsage(usage);
+        validator.validateTextureFormat(format);
         validator.validateTextureSize(usage, width, height, depthOrLayers);
-        return realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels);
+        return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 
     @Override
     public GpuTexture createTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
         validator.validateTextureUsage(usage);
+        validator.validateTextureFormat(format);
         validator.validateTextureSize(usage, width, height, depthOrLayers);
-        return realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels);
+        return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 
     @Override
     public GpuTextureView createTextureView(GpuTexture texture) {
-        return realDevice.createTextureView(texture);
+        assert texture instanceof ValidationGpuTexture;
+        return realDevice.createTextureView(((ValidationGpuTexture) texture).getRealTexture());
     }
 
     @Override
     public GpuTextureView createTextureView(GpuTexture texture, int baseMipLevel, int mipLevels) {
-        return realDevice.createTextureView(texture, baseMipLevel, mipLevels);
+        assert texture instanceof ValidationGpuTexture;
+        return realDevice.createTextureView(((ValidationGpuTexture) texture).getRealTexture(), baseMipLevel, mipLevels);
     }
 
     @Override
