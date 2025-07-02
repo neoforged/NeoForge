@@ -24,20 +24,24 @@ import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
 import org.jetbrains.annotations.Nullable;
 
 public class ValidationGpuDevice implements GpuDevice {
-    private final GpuDevice realDevice;
-    private final GpuDeviceUsageValidator validator;
+    protected final GpuDevice realDevice;
+    protected final GpuDeviceUsageValidator validator;
     private final ValidationCommandEncoder validationCommandEncoder;
 
     public ValidationGpuDevice(GpuDevice realDevice) {
         this.realDevice = realDevice;
         validator = new GpuDeviceUsageValidator(this);
-        validationCommandEncoder = new ValidationCommandEncoder(realDevice.createCommandEncoder(), validator);
+        validationCommandEncoder = wrapCommandEncoder(realDevice.createCommandEncoder(), validator);
     }
 
     public GpuDevice getRealDevice() {
         return realDevice;
     }
 
+    protected ValidationCommandEncoder wrapCommandEncoder(CommandEncoder commandEncoder, GpuDeviceUsageValidator validator){
+        return new ValidationCommandEncoder(commandEncoder, validator);
+    }
+    
     @Override
     public CommandEncoder createCommandEncoder() {
         return validationCommandEncoder;

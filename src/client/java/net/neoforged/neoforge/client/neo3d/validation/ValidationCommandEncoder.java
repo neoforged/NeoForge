@@ -13,11 +13,13 @@ import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 public class ValidationCommandEncoder implements CommandEncoder {
@@ -29,14 +31,18 @@ public class ValidationCommandEncoder implements CommandEncoder {
         this.validator = validator;
     }
 
+    protected ValidationRenderPass wrapRenderPass(RenderPass renderPass, GpuDeviceUsageValidator validator) {
+        return new ValidationRenderPass(renderPass, validator);
+    }
+
     @Override
     public RenderPass createRenderPass(Supplier<String> label, GpuTextureView colorTextureView, OptionalInt clearColor) {
-        return new ValidationRenderPass(realCommandEncoder.createRenderPass(label, colorTextureView, clearColor), validator);
+        return wrapRenderPass(realCommandEncoder.createRenderPass(label, colorTextureView, clearColor), validator);
     }
 
     @Override
     public RenderPass createRenderPass(Supplier<String> label, GpuTextureView colorTextureView, OptionalInt clearColor, @Nullable GpuTextureView depthTextureView, OptionalDouble clearDepth) {
-        return new ValidationRenderPass(realCommandEncoder.createRenderPass(label, colorTextureView, clearColor, depthTextureView, clearDepth), validator);
+        return wrapRenderPass(realCommandEncoder.createRenderPass(label, colorTextureView, clearColor, depthTextureView, clearDepth), validator);
     }
 
     @Override
