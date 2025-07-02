@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 @Mod(NeoForgeVersion.MOD_ID)
 public class OnlyInWarningsHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final boolean HIDE_WARNING_SCREEN = Boolean.getBoolean("neoforge.warnings.onlyin.hide");
 
     public OnlyInWarningsHandler(ModContainer container) {
         if (!FMLEnvironment.production) {
@@ -33,7 +34,9 @@ public class OnlyInWarningsHandler {
                 Type anType = Type.getType(OnlyIn.class);
                 var onlyInUsages = file.getScanResult().getAnnotations().stream().filter(ad -> ad.annotationType().equals(anType)).toList();
                 if (!onlyInUsages.isEmpty()) {
-                    ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.onlyin", file.getModInfos().getFirst().getModId()).withAffectedModFile(file));
+                    if (!HIDE_WARNING_SCREEN) {
+                        ModLoader.addLoadingIssue(ModLoadingIssue.warning("loadwarning.neoforge.onlyin", file.getModInfos().getFirst().getModId()).withAffectedModFile(file));
+                    }
                     LOGGER.error("The mod {} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon", file.getModInfos().getFirst().getModId());
                     for (var annData : onlyInUsages) {
                         switch (annData.targetType()) {
