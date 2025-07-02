@@ -18,6 +18,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
@@ -250,6 +251,13 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     public int getMaxStackSize() {
         return innerStack.getMaxStackSize();
+    }
+
+    /**
+     * @return The hover name of the {@link ItemStack}
+     */
+    public Component getHoverName() {
+        return innerStack.getHoverName();
     }
 
     public boolean canEquip(EquipmentSlot slot, LivingEntity entity) {

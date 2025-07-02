@@ -14,7 +14,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 
 // Not quite ready for review, but you are welcome to look over it if you wish. Missing docs but that will be coming next.
 public class FluidResourceContainerContents {
@@ -36,7 +35,7 @@ public class FluidResourceContainerContents {
         return ResourceContainerContents.fromIndices(indexList, FluidResource.EMPTY, FluidResource::withAmount, FluidResourceContainerContents::getHoverName, EMPTY);
     }
 
-    private static Component getHoverName(ResourceStack<FluidResource> resource) {
-        return UnsafeResourceUtils.innerStackOf(resource.resource()).getHoverName();
+    private static Component getHoverName(ResourceStack<FluidResource> stack) {
+        return stack.resource().getHoverName();
     }
 }

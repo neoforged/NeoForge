@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>Call {@link #updateSnapshots} right before the state of your subclass is modified in a transaction.</li>
  * <li>Override {@link #createSnapshot}: it is called when necessary to create an object representing the state of your subclass.</li>
  * <li>Override {@link #revertToSnapshot}: it is called when necessary to revert to a previous state of your subclass.</li>
- * <li>You may optionally override {@link #onCommit}: it is called at the of a transaction that modified the state.
+ * <li>You may optionally override {@link #onCommit}: it is called at the end of a transaction that modified the state.
  * For example, it could contain a call to {@code setChanged()}.</li>
  * <li>(Advanced!) You may optionally override {@link #releaseSnapshot}: it is called once a snapshot object will not be used,
  * for example you may wish to pool expensive state objects.</li>
@@ -104,6 +104,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
 
     @Override
     public void onClose(TransactionContext transaction, Transaction.Result result) {
+        //region Migration phase removal
         //Neo: for testing and will be removed after deprecation period is over for handler reworks.
         // This is to provide a quick way to give some metrics during the migration phase
         int currentDepth = transaction.nestingDepth();
@@ -112,6 +113,8 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
             DEEPEST_LAYER = max;
             DEEPEST_SNAPSHOT = this;
         }
+        //endregion
+
         // Get and remove the relevant snapshot.
         T snapshot = snapshots.remove(currentDepth);
 

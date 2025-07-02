@@ -14,6 +14,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
@@ -254,9 +255,23 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return filledBucket;
     }
 
+    /**
+     * Returns a sound to play when a certain action is performed. If no
+     * sound is present, then the sound will be {@code null}.
+     *
+     * @param action the action being performed
+     * @return the sound to play when performing the action
+     */
     @Nullable
     public SoundEvent getSound(SoundAction action) {
         return innerStack.getFluidType().getSound(innerStack, action);
+    }
+
+    /**
+     * @return The hover name of the {@link FluidStack}
+     */
+    public Component getHoverName() {
+        return innerStack.getHoverName();
     }
 
     public ResourceStack<FluidResource> withAmount(int amount) {

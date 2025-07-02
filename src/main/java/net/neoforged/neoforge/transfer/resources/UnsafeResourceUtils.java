@@ -10,14 +10,15 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * <strong>Avoid use of this utility.</strong> This is only intended to be used internally by Neo.
+ * <strong>Avoid use of this utility.</strong> This is only intended to be used internally by Neo or in read only
+ * scenarios to avoid allocation where you can ensure no data is written back to the stack.
  */
 @ApiStatus.Internal
 public final class UnsafeResourceUtils {
     /**
      * <strong>Avoid use of this method.</strong>
      * <p>
-     * You shouldn't be calling this yourself. This is intended for <b>readonly</b> use in the ResourceHandler wrapper implementations
+     * You shouldn't be calling this yourself. This is intended for <b>readonly</b> use in the ResourceHandler wrapper implementations.
      */
     @ApiStatus.Internal
     public static ItemStack innerStackOf(ItemResource resource) {
@@ -27,7 +28,7 @@ public final class UnsafeResourceUtils {
     /**
      * <strong>Avoid use of this method.</strong>
      * <p>
-     * You shouldn't be calling this yourself. This is intended for <b>readonly</b> use in the ResourceHandler wrapper implementations
+     * You shouldn't be calling this yourself. This is intended for <b>readonly</b> use in the ResourceHandler wrapper implementations.
      */
     @ApiStatus.Internal
     public static FluidStack innerStackOf(FluidResource resource) {

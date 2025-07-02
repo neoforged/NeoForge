@@ -29,7 +29,8 @@ public interface IEnergyHandler {
      * The total amount of energy available in this handler.
      * <p>
      * It should be expected that {@code getAmount() <= getCapacity()}.
-     *
+     * 
+     * @see #getAmountAsLong()
      * @return The amount of energy stored in the handler across all indices. <strong>Must be non-negative</strong>
      */
     int getAmount();
@@ -37,7 +38,8 @@ public interface IEnergyHandler {
     /**
      * This is an optional method that provides the ability to query the contents up to a long should the internals allow for it.
      * This is only needed to be overridden should you store more than an int.
-     *
+     * 
+     * @see #getAmount()
      * @return The amount of energy stored. <strong>Must be non-negative</strong>
      */
     default long getAmountAsLong() {
@@ -46,7 +48,8 @@ public interface IEnergyHandler {
 
     /**
      * Gets the capacity the handler can hold.
-     *
+     * 
+     * @see #getCapacityAsLong()
      * @return The capacity of the handler across all indices. <strong>Must be non-negative</strong>
      */
     int getCapacity();
@@ -54,7 +57,8 @@ public interface IEnergyHandler {
     /**
      * This is an optional method that provides the ability to query the capacity up to a long should the internals allow for it.
      * This is only needed to be overridden should you be able to store more than an int.
-     *
+     * 
+     * @see #getCapacity()
      * @return The amount of energy that can be stored in the handler. <strong>Must be non-negative</strong>
      */
     default long getCapacityAsLong() {

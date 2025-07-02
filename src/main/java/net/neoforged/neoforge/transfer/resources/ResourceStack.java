@@ -202,7 +202,7 @@ public final class ResourceStack<T extends IResource> {
 
     @Override
     public int hashCode() {
-        return 31 * (31 + resource.hashCode()) + Integer.hashCode(amount);
+        return 31 * resource.hashCode() + Integer.hashCode(amount);
     }
 
     @Override

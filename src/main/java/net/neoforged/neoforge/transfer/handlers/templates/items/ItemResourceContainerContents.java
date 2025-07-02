@@ -14,7 +14,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
-import net.neoforged.neoforge.transfer.resources.UnsafeResourceUtils;
 
 // Not quite ready for review, but you are welcome to look over it if you wish. Missing docs but that will be coming next.
 public class ItemResourceContainerContents {
@@ -39,6 +38,6 @@ public class ItemResourceContainerContents {
     }
 
     private static Component getHoverName(ResourceStack<ItemResource> stack) {
-        return UnsafeResourceUtils.innerStackOf(stack.resource()).getHoverName();
+        return stack.resource().getHoverName();
     }
 }
