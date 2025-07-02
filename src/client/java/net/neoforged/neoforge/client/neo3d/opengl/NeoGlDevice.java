@@ -23,8 +23,10 @@ import static org.lwjgl.opengl.GL31C.GL_MAX_VERTEX_UNIFORM_BLOCKS;
 import static org.lwjgl.opengl.GL31C.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT;
 import static org.lwjgl.opengl.GL32C.GL_MAX_VERTEX_OUTPUT_COMPONENTS;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.shaders.ShaderType;
+import com.mojang.blaze3d.textures.GpuTexture;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import java.util.function.BiFunction;
 import net.minecraft.Util;
@@ -51,6 +53,9 @@ public class NeoGlDevice extends GlDevice {
         propertiesMap.put("apiVersionMajor", glMajorVersion);
         propertiesMap.put("apiVersionMinor", glMinorVersion);
 
+        propertiesMap.put("knownGpuBufferUsageBits", (GpuBuffer.USAGE_UNIFORM_TEXEL_BUFFER << 1) - 1);
+        propertiesMap.put("knownGpuTextureUsageBits", (GpuTexture.USAGE_CUBEMAP_COMPATIBLE << 1) - 1);
+        
         propertiesMap.put("depthZeroToOne", false);
 
         final var maxUboBindings = Math.min(glGetInteger(GL_MAX_VERTEX_UNIFORM_BLOCKS), glGetInteger(GL_MAX_FRAGMENT_UNIFORM_BLOCKS));

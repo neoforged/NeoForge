@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.neo3d;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.textures.GpuTexture;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import java.lang.reflect.Field;
@@ -18,6 +20,10 @@ public class GpuDeviceProperties {
     public final String apiVersionString = defaultVal("3.2");
     public final int apiVersionMajor = defaultVal(3);
     public final int apiVersionMinor = defaultVal(2);
+    
+    public final int knownGpuBufferUsageBits = defaultVal((GpuBuffer.USAGE_UNIFORM_TEXEL_BUFFER << 1) - 1);
+    
+    public final int knownGpuTextureUsageBits = defaultVal((GpuTexture.USAGE_CUBEMAP_COMPATIBLE << 1) - 1);
 
     /**
      * Some APIs require a 0-1 depth range, this may affect shaders that rely on specific depth ranges

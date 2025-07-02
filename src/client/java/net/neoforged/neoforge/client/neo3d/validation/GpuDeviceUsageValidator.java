@@ -21,6 +21,18 @@ public class GpuDeviceUsageValidator {
         enabledFeatures = device.enabledFeatures();
     }
 
+    void validateBufferUsage(int usage) {
+        if ((usage & ~properties.knownGpuBufferUsageBits) != 0) {
+            throw new IllegalArgumentException(String.format("Unknown GpuBuffer usage bits provided, 0x%X requested, 0x%X known", usage, properties.knownGpuBufferUsageBits));
+        }
+    }
+
+    void validateTextureUsage(int usage) {
+        if ((usage & ~properties.knownGpuTextureUsageBits) != 0) {
+            throw new IllegalArgumentException(String.format("Unknown GpuTexture usage bits provided, 0x%X requested, 0x%X known", usage, properties.knownGpuTextureUsageBits));
+        }
+    }
+
     void validateTextureSize(int usage, int width, int height, int depthOrLayers) {
         if (height == 1 && depthOrLayers == 1) {
             // 1d texture

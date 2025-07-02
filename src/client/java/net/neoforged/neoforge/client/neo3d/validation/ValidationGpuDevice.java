@@ -49,12 +49,14 @@ public class ValidationGpuDevice implements GpuDevice {
 
     @Override
     public GpuTexture createTexture(@Nullable Supplier<String> label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
+        validator.validateTextureUsage(usage);
         validator.validateTextureSize(usage, width, height, depthOrLayers);
         return realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels);
     }
 
     @Override
     public GpuTexture createTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
+        validator.validateTextureUsage(usage);
         validator.validateTextureSize(usage, width, height, depthOrLayers);
         return realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels);
     }
@@ -71,11 +73,13 @@ public class ValidationGpuDevice implements GpuDevice {
 
     @Override
     public GpuBuffer createBuffer(@Nullable Supplier<String> label, int usage, int size) {
+        validator.validateBufferUsage(usage);
         return realDevice.createBuffer(label, usage, size);
     }
 
     @Override
     public GpuBuffer createBuffer(@Nullable Supplier<String> label, int usage, ByteBuffer data) {
+        validator.validateBufferUsage(usage);
         return realDevice.createBuffer(label, usage, data);
     }
 
