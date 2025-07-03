@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "由模組 {100,modinfo,id} 提供的 FeatureFlag 檔案 {0} 不存在",
   "fml.modloadingissue.feature_flags.loading_error": "無法載入模組 {100,modinfo,id} 中位於 {0} 的 FeatureFlag 資料：{102,exc,msg}",
   "loadwarning.neoforge.prbuild": "這個 NeoForge 由社群成員建立，是 §c§l不受支援§r 的",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "枚舉常數必須是 %1$s 之一，找到 %2$s",
   "commands.neoforge.dimensions.list": "目前依照類型註冊的維度：",
   "commands.neoforge.dump.success": "新建立的 %s 登錄位於 %s",
