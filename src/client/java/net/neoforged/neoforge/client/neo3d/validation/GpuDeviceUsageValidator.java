@@ -75,7 +75,7 @@ public class GpuDeviceUsageValidator {
     }
 
     public void validatePipeline(RenderPipeline pipeline) {
-        if (pipeline.getColorLogic() != LogicOp.NONE && enabledFeatures.logicOp) {
+        if (pipeline.getColorLogic() != LogicOp.NONE && enabledFeatures.logicOp()) {
             throw new IllegalArgumentException(String.format("Cannot use LogicOp other than NONE without enabling 'logicOp' device feature, %s", pipeline.getLocation()));
         }
         if (pipeline.getVertexFormat().getElements().size() > properties.maximumVertexInputAttributes) {

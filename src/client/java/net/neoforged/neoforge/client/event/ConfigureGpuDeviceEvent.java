@@ -26,17 +26,10 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent {
     }
 
     public GpuDeviceFeatures getAvailableFeatures() {
-        return availableFeatures.clone();
+        return availableFeatures;
     }
 
     public GpuDeviceFeatures getEnabledFeatures() {
-        return enabledFeatures.clone();
-    }
-
-    public void requireFeatures(GpuDeviceFeatures requiredFeatures) {
-        if (!availableFeatures.hasAll(requiredFeatures)) {
-            throw new IllegalArgumentException("Attempted to enable unavailable GpuDevice feature");
-        }
-        enabledFeatures.enableAll(requiredFeatures);
+        return enabledFeatures;
     }
 }

@@ -5,63 +5,12 @@
 
 package net.neoforged.neoforge.client.neo3d;
 
-import java.lang.reflect.AccessFlag;
-import java.lang.reflect.Field;
-import org.jetbrains.annotations.ApiStatus;
-
-public class GpuDeviceFeatures implements Cloneable {
+public interface GpuDeviceFeatures {
     /**
      * LogicOp is problematic on Qualcomm GPUs via OpenGL
      * LogicOp is unavailable on MacOS via Vulkan
      */
-    public boolean logicOp = false;
+    boolean logicOp();
 
-    private static final Field[] fields = GpuDeviceFeatures.class.getFields();
-
-    @ApiStatus.Internal
-    public boolean hasAll(GpuDeviceFeatures features) {
-        try {
-            for (final var field : fields) {
-                if (field.accessFlags().contains(AccessFlag.STATIC)) {
-                    continue;
-                }
-                if (!field.getBoolean(features)) {
-                    continue;
-                }
-                if (field.getBoolean(this)) {
-                    continue;
-                }
-                return false;
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return true;
-    }
-
-    @ApiStatus.Internal
-    public void enableAll(GpuDeviceFeatures features) {
-        try {
-            for (final var field : fields) {
-                if (field.accessFlags().contains(AccessFlag.STATIC)) {
-                    continue;
-                }
-                if (!field.getBoolean(features)) {
-                    continue;
-                }
-                field.setBoolean(this, true);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public GpuDeviceFeatures clone() {
-        try {
-            return (GpuDeviceFeatures) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
+    void enableLogicOp();
 }

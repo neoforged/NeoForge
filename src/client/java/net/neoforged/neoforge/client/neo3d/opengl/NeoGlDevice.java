@@ -37,7 +37,6 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.function.BiFunction;
-import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent;
@@ -47,7 +46,7 @@ import org.lwjgl.opengl.GL;
 
 public class NeoGlDevice extends GlDevice {
     private final GpuDeviceProperties deviceProperties;
-    private final GpuDeviceFeatures deviceFeatures;
+    private final NeoGlDeviceFeatures enabledFeatures;
 
     public NeoGlDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
         super(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
@@ -100,11 +99,10 @@ public class NeoGlDevice extends GlDevice {
         propertiesMap.put("maximumImageDimensionCube", glGetInteger(GL_MAX_CUBE_MAP_TEXTURE_SIZE));
 
         deviceProperties = GpuDeviceProperties.create(GpuDeviceProperties.class, propertiesMap);
-        final var availableFeatures = new GpuDeviceFeatures();
-        // logic op is unavailable on 
-        availableFeatures.logicOp = !(Util.getPlatform() == Util.OS.WINDOWS && Util.isAarch64());
-        final var configureResult = ModLoader.postEventWithReturn(new ConfigureGpuDeviceEvent(properties(), availableFeatures, new GpuDeviceFeatures()));
-        deviceFeatures = configureResult.getEnabledFeatures();
+        final var availableFeatures = new NeoGlDeviceFeatures(null);
+        enabledFeatures = new NeoGlDeviceFeatures(availableFeatures);
+        ModLoader.postEvent(new ConfigureGpuDeviceEvent(properties(), availableFeatures, enabledFeatures));
+        enabledFeatures.lock();
     }
 
     @Override
@@ -114,7 +112,6 @@ public class NeoGlDevice extends GlDevice {
 
     @Override
     public GpuDeviceFeatures enabledFeatures() {
-        // because the objects are mutable, return a clone
-        return deviceFeatures.clone();
+        return enabledFeatures;
     }
 }
