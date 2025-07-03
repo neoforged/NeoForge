@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "FeatureFlag file {0}, provided by mod {100,modinfo,id}, does not exist",
   "fml.modloadingissue.feature_flags.loading_error": "Failed to load FeatureFlag data at {0} in mod {100,modinfo,id}: {102,exc,msg}",
   "loadwarning.neoforge.prbuild": "Táto verzia NeoForgu bola vytvorená členom komunity, a preto je §c§lNEPODPOROVANÁ§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "Konštanta Enum musí byť jedna z %1$s, nájdené %2$s",
   "commands.neoforge.dimensions.list": "Aktuálne registrované dimenzie podľa typu:",
   "commands.neoforge.dump.success": "Nový súbor vytvorený s %s registrovým obsahom je vo %s",
