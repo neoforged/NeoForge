@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "FeatureFlag bestand {0}, aangeleverd door mod {100,modinfo,id}, bestaat niet",
   "fml.modloadingissue.feature_flags.loading_error": "Laden van FeatureFlag gegevens op {0} in mod {100,modinfo,id} mislukt: {102,exc,msg}",
   "loadwarning.neoforge.prbuild": "Deze build van NeoForge was gemaakt door een lid van de gemeenschap en wordt daarom §c§lNIET ONDERSTEUND§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "Enum constante moet van %1$s zijn, vond %2$s",
   "commands.neoforge.dimensions.list": "Momenteel geregistreerde dimensies op type:",
   "commands.neoforge.dump.success": "Nieuw bestand gemaakt met %s register inhoud is in %s",
