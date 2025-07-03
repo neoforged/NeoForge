@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "FeatureFlag file {0}, provided by mod {100,modinfo,id}, does not exist",
   "fml.modloadingissue.feature_flags.loading_error": "Failed to load FeatureFlag data at {0} in mod {100,modinfo,id}: {102,exc,msg}",
   "loadwarning.neoforge.prbuild": "이 네오 포지 빌드는 커뮤니티 멤버가 만든 것이며 §c§l공식 지원되지 않습니다§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "잘못된 값입니다. [%1$s] 중 하나가 필요한데, '%2$s'가 입력되었습니다.",
   "commands.neoforge.dimensions.list": "현재 등록된 차원들:",
   "commands.neoforge.dump.success": "%s 레지스트리의 내용을 파일 %s에 출력했습니다.",
