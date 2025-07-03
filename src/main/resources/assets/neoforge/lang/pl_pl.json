@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "Plik FeatureFlag {0}, dostarczony przez modyfikację {100,modinfo,id}, nie istnieje",
   "fml.modloadingissue.feature_flags.loading_error": "Nie udało się załadować danych FeatureFlag w {0} w mod {100,modinfo,id}: {102,exc,msg}",
   "loadwarning.neoforge.prbuild": "Ta kompilacja NeoForge została stworzona przez członka społeczności i jest §c§lNIEWSPIERANA§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "Stała Enum musi być jednym z %1$s, znaleziono %2$s",
   "commands.neoforge.dimensions.list": "Aktualnie zarejestrowane wymiary według typu:",
   "commands.neoforge.dump.success": "Nowy plik utworzony z zawartością rejestru %s jest w %s",
