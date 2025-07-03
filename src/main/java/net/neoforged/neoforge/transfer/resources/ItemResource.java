@@ -38,6 +38,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
 public final class ItemResource implements IDataComponentHolderResource<Item> {
+    //TODO provide documentation on all methods
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
     public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
 

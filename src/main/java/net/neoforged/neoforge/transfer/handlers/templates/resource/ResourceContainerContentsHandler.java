@@ -35,10 +35,10 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
     private final T emptyResource;
     private final int capacity;
 
-    //Docs will come in next batch of commits or so.
+    //Docs will come post slicing.
     public ResourceContainerContentsHandler(IItemContext itemContext, DataComponentType<ResourceContainerContents<T>> componentType, int size, int capacity, T emptyResource, IStackFactory<T, ResourceStack<T>> stackFactory, ResourceContainerContents<T> emptyContents) {
         if (size > 256)
-            throw new IllegalArgumentException("Got %d items, but maximum is 256".formatted(size));
+            throw new IllegalArgumentException("Had a size of %d, but maximum is 256.".formatted(size));
 
         this.size = size;
         this.capacity = capacity;
@@ -66,6 +66,7 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
     public T getResource(int index) {
         Objects.checkIndex(index, size());
         ResourceContainerContents<T> contents = getContents();
+        if (contents.getSlots() <= index) return emptyResource;
         return getStackInSlot(contents, index).resource();
     }
 
@@ -73,6 +74,7 @@ public class ResourceContainerContentsHandler<T extends IResource> implements IR
     public int getAmount(int index) {
         Objects.checkIndex(index, size());
         ResourceContainerContents<T> contents = getContents();
+        if (contents.getSlots() <= index) return 0;
         return getStackInSlot(contents, index).amount();
     }
 

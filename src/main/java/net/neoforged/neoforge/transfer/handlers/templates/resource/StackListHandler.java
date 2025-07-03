@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -20,8 +21,13 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler.Fluid;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler.Item;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
+import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
+import net.neoforged.neoforge.transfer.resources.ItemResource;
+import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import net.neoforged.neoforge.transfer.transaction.snapshots.NotifyingSnapshotJournal;
@@ -81,8 +87,8 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     }
 
     private static <T> NonNullList<T> mutableCopyOf(NonNullList<T> list) {
-        var size = list.size();
-        var temp = NonNullList.<T>createWithCapacity(size);
+        int size = list.size();
+        NonNullList<T> temp = NonNullList.<T>createWithCapacity(size);
         temp.addAll(list);
         return temp;
     }
@@ -102,23 +108,55 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
         size = stacks.size();
     }
 
+    /**
+     * Codec for the stack being stored. This must support empty stacks.
+     */
     @ApiStatus.OverrideOnly
     protected abstract Codec<S> stackCodec();
 
+    /**
+     * @param stack The stack being inquired.
+     * @return The resource that the stack represents. In the case of an {@link ItemStack} an {@link ItemResource} would be used for example.
+     */
     @ApiStatus.OverrideOnly
     protected abstract R getResourceFrom(S stack);
 
+    /**
+     * @param stack The stack being inquired
+     * @return The current amount (or count) of the stack.
+     */
     @ApiStatus.OverrideOnly
     protected abstract int getAmountFrom(S stack);
 
+    /**
+     * How much the stack can accept
+     * 
+     * @param resource The resource backing the stack.
+     * @return The maximum capacity of the resource regardless of index. Specifically for the case of items, this would
+     *         return the {@link ItemResource#getMaxStackSize()}. Fluids on the other hand have no innate limit per stack or resource.
+     */
     @ApiStatus.OverrideOnly
     protected int getCapacityFrom(R resource) {
         return Integer.MAX_VALUE;
     }
 
+    /**
+     * @param stack    The stack (usually the current stored value)
+     * @param resource The resource (usually the inquired value in insert or extract)
+     * @return {@code true} if the stack and resource match; {@code false} otherwise.
+     * @see Item#matches(ResourceStack, ItemResource)
+     * @see Fluid#matches(ResourceStack, FluidResource)
+     *
+     */
     @ApiStatus.OverrideOnly
     protected abstract boolean matches(S stack, R resource);
 
+    /**
+     * @param stack The stack currently stored and having a snapshot taken.
+     * @return A snapshot of the current stack. Typically, if using a resource stack, since they are immutable, they can
+     *         just be returned as is; but in the case of something like an item stack or fluid stack, they are expected to be copied
+     *         to prevent data write backs.
+     */
     @ApiStatus.OverrideOnly
     protected abstract S snapshotOf(S stack);
 
@@ -168,7 +206,8 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
     public int getCapacity(int index, R resource) {
         Objects.checkIndex(index, size());
         if (resource.isEmpty()) return capacity;
-        var current = stacks.get(index);
+        S current = stacks.get(index);
+        if (getAmountFrom(current) > 0 && !matches(current, resource)) return 0;
         return Math.min(capacity, getCapacityFrom(resource));
     }
 
@@ -279,8 +318,7 @@ public abstract class StackListHandler<S, R extends IResource> implements IResou
 
         @Override
         protected S createSnapshot() {
-            S original = stacks.get(index);
-            return snapshotOf(original);
+            return snapshotOf(stacks.get(index));
         }
 
         @Override

@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
  * @see FluidResource
  */
 public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
+    //TODO provide documentation on all methods
     boolean isComponentsPatchEmpty();
 
     IDataComponentHolderResource<T> withPatch(DataComponentPatch patch);

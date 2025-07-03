@@ -45,7 +45,7 @@ public class CustomFluidContainerTest {
 
     public static final DeferredItem<Item> CUSTOM_FLUID_CONTAINER = ITEMS.registerItem("custom_fluid_container", props -> new CustomFluidContainer(props.stacksTo(1)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SIMPLE_FLUID_CONTENT = COMPONENT_TYPES.register("simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
-            .persistent(FluidResource.OPTIONAL_RESOURCE_STACK_CODEC)
+            .persistent(FluidResource.RESOURCE_STACK_CODEC)
             .networkSynchronized(FluidResource.RESOURCE_STACK_STREAM_CODEC).build());
 
     public CustomFluidContainerTest(IEventBus modEventBus) {

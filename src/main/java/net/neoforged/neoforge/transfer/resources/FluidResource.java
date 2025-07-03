@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
 public final class FluidResource implements IDataComponentHolderResource<Fluid> {
+    //TODO provide documentation on all methods
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
     public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.constructEmptyReference(FluidResource.EMPTY);
 
@@ -40,23 +41,29 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * Same format as {@link FluidStack#fixedAmountCodec}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<FluidResource> CODEC = Codec.lazyInitialized(() -> FluidStack.fixedAmountCodec(1000).xmap(FluidResource::of, FluidResource::toStack));
+    public static final Codec<FluidResource> CODEC = Codec.lazyInitialized(() -> FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME).xmap(FluidResource::of, FluidResource::toStack));
 
     /**
-     * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
+     * Codec for a fluid resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
     public static final Codec<FluidResource> OPTIONAL_CODEC = Codec.lazyInitialized(() -> ExtraCodecs.optionalEmptyMap(CODEC).xmap(FluidResource::fromOptional, FluidResource::asOptional));
 
-    public static final Codec<ResourceStack<FluidResource>> OPTIONAL_RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, FluidResource::withAmount));
+    /**
+     * A codec for a {@code ResourceStack<FluidResource>} serializing the resource and the amount. Can accept empty resources.
+     */
+    public static final Codec<ResourceStack<FluidResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, FluidResource::withAmount));
 
     /**
-     * Stream codec for an item resource. Accepts empty resources.
+     * Stream codec for a fluid resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidResource> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::getHolder,
             DataComponentPatch.STREAM_CODEC, FluidResource::getComponentsPatch,
             FluidResource::of);
 
+    /**
+     * Stream codec for a resource stack backed by an FluidResource. Accepts empty resources.
+     */
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -123,6 +130,9 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * We wrap a fluid stack which must never be modified.
      */
+    //This is package private to provide Unsafe access in the scenarios of avoiding allocation
+    // when being used in readonly context. A getInnerStack method could be done, but serves
+    // no functional difference in this case since the field is marked final.
     final FluidStack innerStack;
 
     /**
@@ -274,6 +284,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return innerStack.getHoverName();
     }
 
+    @Override
     public ResourceStack<FluidResource> withAmount(int amount) {
         if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
         return ResourceStack.of(this, amount, FluidResource.EMPTY_STACK);

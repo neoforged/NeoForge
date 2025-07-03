@@ -66,7 +66,7 @@ public record ResourceHandlerTestSetup() {
 
         DeferredHolder<DataComponentType<?>, DataComponentType<ResourceStack<FluidResource>>> SINGLE_FLUID_CONTENT = Registry.COMPONENTS.register(
                 "simple_fluid_content", () -> DataComponentType.<ResourceStack<FluidResource>>builder()
-                        .persistent(FluidResource.OPTIONAL_RESOURCE_STACK_CODEC)
+                        .persistent(FluidResource.RESOURCE_STACK_CODEC)
                         .networkSynchronized(FluidResource.RESOURCE_STACK_STREAM_CODEC)
                         .build());
 

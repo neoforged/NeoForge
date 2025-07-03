@@ -70,7 +70,7 @@ public abstract class ResourceStackListHandler<R extends IResource> extends Stac
 
         @Override
         public Codec<ResourceStack<FluidResource>> stackCodec() {
-            return FluidResource.OPTIONAL_RESOURCE_STACK_CODEC;
+            return FluidResource.RESOURCE_STACK_CODEC;
         }
     }
 }

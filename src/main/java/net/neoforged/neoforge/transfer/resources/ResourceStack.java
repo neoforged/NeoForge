@@ -27,10 +27,7 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
  * Can be seen as an immutable version of {@link ItemStack} or {@link FluidStack}.
  */
 public final class ResourceStack<T extends IResource> {
-    //This should be the only instance that has a null instance empty parameter as it can't reference itself.
-    @SuppressWarnings("DataFlowIssue")
-    private static final ResourceStack<?> EMPTY = new ResourceStack<>(() -> true, 0, null);
-
+    //TODO documentation post slice
     /**
      * Creates a resource stack from a given resource, amount, and a reference to the empty stack for the resource type.
      * <p>
@@ -67,8 +64,8 @@ public final class ResourceStack<T extends IResource> {
      * @throws IllegalArgumentException When the resource is non-empty
      */
     public static <T extends IResource> ResourceStack<T> constructEmptyReference(T resource) {
-        // noinspection unchecked
         if (!resource.isEmpty()) throw new IllegalArgumentException("Resource must be empty");
+        // noinspection unchecked
         return new ResourceStack<>(resource, 0, (ResourceStack<T>) EMPTY);
     }
 
@@ -192,6 +189,20 @@ public final class ResourceStack<T extends IResource> {
         return ResourceStack.of(result, amount, emptyInstance);
     }
 
+    /**
+     * Checks if this is empty, meaning that the amount is not positive
+     * or that the resource is {@link IResource#isEmpty() empty}.
+     *
+     * @return {@code true} if empty
+     */
+    public boolean isEmpty() {
+        return amount() == 0 || resource().isEmpty();
+    }
+
+    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
+        return !(resource() instanceof IRegisteredResource<?> reg) || reg.isEnabled(enabledFeatures);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -210,17 +221,17 @@ public final class ResourceStack<T extends IResource> {
         return "%s(%d)".formatted(resource, amount);
     }
 
-    /**
-     * Checks if this is empty, meaning that the amount is not positive
-     * or that the resource is {@link IResource#isEmpty() empty}.
-     *
-     * @return {@code true} if empty
-     */
-    public boolean isEmpty() {
-        return amount() == 0 || resource().isEmpty();
-    }
+    //This should be the only instance that has a null instance empty parameter as it can't reference itself.
+    @SuppressWarnings("DataFlowIssue")
+    private static final ResourceStack<?> EMPTY = new ResourceStack<>(new IResource() {
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
 
-    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
-        return !(resource() instanceof IRegisteredResource<?> reg) || reg.isEnabled(enabledFeatures);
-    }
+        @Override
+        public ResourceStack<? extends IResource> withAmount(int amount) {
+            return EMPTY;
+        }
+    }, 0, null);
 }
