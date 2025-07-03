@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/renderer/RenderPipelines.java
 +++ b/net/minecraft/client/renderer/RenderPipelines.java
-@@ -714,4 +_,14 @@
+@@ -713,4 +_,14 @@
      public static List<RenderPipeline> getStaticPipelines() {
          return PIPELINES_BY_LOCATION.values().stream().toList();
      }

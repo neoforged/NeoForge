@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/DirectStateAccess.java
 +++ b/com/mojang/blaze3d/opengl/DirectStateAccess.java
-@@ -40,7 +_,11 @@
+@@ -41,7 +_,11 @@
  
      abstract int createFrameBufferObject();
  
@@ -13,7 +13,7 @@
  
      abstract void blitFrameBuffers(
          int p_412546_,
-@@ -108,9 +_,10 @@
+@@ -111,9 +_,10 @@
          }
  
          @Override
@@ -26,7 +26,7 @@
              if (p_412591_ != 0) {
                  GlStateManager._glBindFramebuffer(p_412591_, p_412474_);
              }
-@@ -213,12 +_,13 @@
+@@ -230,12 +_,13 @@
          }
  
          @Override
