@@ -20,6 +20,9 @@
   "net/minecraft/client/gui/Font": [
     "net/neoforged/neoforge/client/extensions/IFontExtension"
   ],
+  "net/minecraft/world/Container": [
+    "net/neoforged/neoforge/common/extensions/IContainerExtension"
+  ],
   "net/minecraft/client/gui/GuiGraphics": [
     "net/neoforged/neoforge/client/extensions/IGuiGraphicsExtension"
   ],
