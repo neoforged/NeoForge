@@ -20,8 +20,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
@@ -105,7 +103,6 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     static class ExternalTexture extends AbstractTexture {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;

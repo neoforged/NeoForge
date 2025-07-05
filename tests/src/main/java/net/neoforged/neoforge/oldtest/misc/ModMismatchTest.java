@@ -57,6 +57,7 @@ public class ModMismatchTest implements IPayloadHandler<ModMismatchTest.ModMisma
                     .configurationBidirectional(
                             ModMismatchPayload.TYPE,
                             ModMismatchPayload.STREAM_CODEC,
+                            this,
                             this);
         }
     }

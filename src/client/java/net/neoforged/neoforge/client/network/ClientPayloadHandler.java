@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.network.handlers;
+package net.neoforged.neoforge.client.network;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -25,19 +25,23 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.RecipeMap;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
+import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.client.registries.ClientRegistryManager;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.ConfigSync;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
-import net.neoforged.neoforge.network.payload.ClientDispatchPayload;
 import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
@@ -53,28 +57,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApiStatus.Internal
-public final class ClientPayloadHandler {
+@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, value = Dist.CLIENT)
+final class ClientPayloadHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientPayloadHandler.class);
     private static final Set<ResourceLocation> toSynchronize = Sets.newConcurrentHashSet();
     private static final Map<ResourceLocation, RegistrySnapshot> synchronizedRegistries = Maps.newConcurrentMap();
 
     private ClientPayloadHandler() {}
 
-    public static void dispatch(ClientDispatchPayload payload, IPayloadContext context) {
-        switch (payload) {
-            case AdvancedAddEntityPayload advancedAddEntityPayload -> handle(advancedAddEntityPayload, context);
-            case AdvancedContainerSetDataPayload advancedContainerSetDataPayload -> handle(advancedContainerSetDataPayload, context);
-            case AdvancedOpenScreenPayload advancedOpenScreenPayload -> handle(advancedOpenScreenPayload, context);
-            case AuxiliaryLightDataPayload auxiliaryLightDataPayload -> handle(auxiliaryLightDataPayload, context);
-            case ClientboundCustomSetTimePayload clientboundCustomSetTimePayload -> handle(clientboundCustomSetTimePayload, context);
-            case ConfigFilePayload configFilePayload -> handle(configFilePayload, context);
-            case FrozenRegistryPayload frozenRegistryPayload -> handle(frozenRegistryPayload, context);
-            case FrozenRegistrySyncCompletedPayload frozenRegistrySyncCompletedPayload -> handle(frozenRegistrySyncCompletedPayload, context);
-            case FrozenRegistrySyncStartPayload frozenRegistrySyncStartPayload -> handle(frozenRegistrySyncStartPayload, context);
-            case KnownRegistryDataMapsPayload knownRegistryDataMapsPayload -> ClientRegistryManager.handleKnownDataMaps(knownRegistryDataMapsPayload, context);
-            case RecipeContentPayload recipeContentPayload -> handle(recipeContentPayload, context);
-            case RegistryDataMapSyncPayload<?> registryDataMapSyncPayload -> ClientRegistryManager.handleDataMapSync(registryDataMapSyncPayload, context);
-        }
+    @SubscribeEvent
+    private static void register(RegisterClientPayloadHandlersEvent event) {
+        event.register(ConfigFilePayload.TYPE, ClientPayloadHandler::handle);
+        event.register(FrozenRegistrySyncStartPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(FrozenRegistryPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(FrozenRegistrySyncCompletedPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(KnownRegistryDataMapsPayload.TYPE, ClientRegistryManager::handleKnownDataMaps);
+        event.register(AdvancedAddEntityPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(AdvancedOpenScreenPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(AuxiliaryLightDataPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(RegistryDataMapSyncPayload.TYPE, ClientRegistryManager::handleDataMapSync);
+        event.register(AdvancedContainerSetDataPayload.TYPE, ClientPayloadHandler::handle);
+        event.register(ClientboundCustomSetTimePayload.TYPE, ClientPayloadHandler::handle);
+        event.register(RecipeContentPayload.TYPE, ClientPayloadHandler::handle);
     }
 
     private static void handle(FrozenRegistryPayload payload, IPayloadContext context) {

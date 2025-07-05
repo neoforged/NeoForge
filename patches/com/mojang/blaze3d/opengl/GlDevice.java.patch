@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/opengl/GlDevice.java
 +++ b/com/mojang/blaze3d/opengl/GlDevice.java
-@@ -186,6 +_,67 @@
+@@ -187,6 +_,67 @@
          }
      }
  
