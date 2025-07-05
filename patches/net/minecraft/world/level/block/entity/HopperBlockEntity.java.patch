@@ -1,5 +1,49 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -82,6 +_,43 @@
+         p_59316_.limitSize(this.getMaxStackSize(p_59316_));
+     }
+ 
++    // Neo: Update cooldown after insertion into hopper
++    private boolean isInserting = false;
++    private final net.neoforged.neoforge.transfer.transaction.SnapshotJournal<Boolean> journal = new net.neoforged.neoforge.transfer.transaction.SnapshotJournal<>() {
++        @Override
++        protected Boolean createSnapshot() {
++            return isInserting;
++        }
++
++        @Override
++        protected void revertToSnapshot(Boolean snapshot) {
++           isInserting = snapshot;
++        }
++    };
++
++    @Override
++    public void onCommit(int slot, ItemStack originalStack) {
++        if (isInserting && originalStack.isEmpty() && !getItem(slot).isEmpty()) {
++            if (!isOnCustomCooldown()) {
++                // This cooldown is always set to 8 in vanilla with one exception:
++                // Hopper -> Hopper transfer sets this cooldown to 7 when this hopper
++                // has not been updated as recently as the one pushing items into it.
++                // Hopper <-> hopper interactions don't use transactions so we don't need to worry about that.
++                setCooldown(HopperBlockEntity.MOVE_ITEM_SPEED);
++            }
++        }
++        isInserting = false;
++    }
++
++    @Override
++    public void onTransfer(int slot, boolean isInserting, net.neoforged.neoforge.transfer.transaction.TransactionContext context) {
++        super.onTransfer(slot, isInserting, context);
++        if (isInserting) {
++            journal.updateSnapshots(context);
++            this.isInserting = true;
++        }
++    }
++
+     @Override
+     public void setBlockState(BlockState p_326468_) {
+         super.setBlockState(p_326468_);
 @@ -138,10 +_,11 @@
      }
  

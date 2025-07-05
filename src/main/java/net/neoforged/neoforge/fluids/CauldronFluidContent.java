@@ -18,7 +18,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.fluids.capability.wrappers.CauldronWrapper;
+import net.neoforged.neoforge.transfer.handlers.wrappers.fluids.CauldronWrapper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,6 +77,14 @@ public final class CauldronFluidContent {
         }
     }
 
+    /**
+     * Return the amount of fluid, in millibuckets, in the cauldron given its block state.
+     * This is expected to be lossy in scenarios where division would result in a decimal number. (Floor rounding)
+     */
+    public int getMillibuckets(BlockState state) {
+        return totalAmount * currentLevel(state) / maxLevel;
+    }
+
     private CauldronFluidContent(Block block, Fluid fluid, int totalAmount, int maxLevel, @Nullable IntegerProperty levelProperty) {
         this.block = block;
         this.fluid = fluid;
@@ -87,6 +95,7 @@ public final class CauldronFluidContent {
 
     private static final Map<Block, CauldronFluidContent> BLOCK_TO_CAULDRON = new IdentityHashMap<>();
     private static final Map<Fluid, CauldronFluidContent> FLUID_TO_CAULDRON = new IdentityHashMap<>();
+    private static int largestValue = FluidType.BUCKET_VOLUME;
 
     /**
      * Get the cauldron fluid content for a cauldron block, or {@code null} if none was registered (yet).
@@ -94,6 +103,10 @@ public final class CauldronFluidContent {
     @Nullable
     public static CauldronFluidContent getForBlock(Block block) {
         return BLOCK_TO_CAULDRON.get(block);
+    }
+
+    public static int getLargestValue() {
+        return largestValue;
     }
 
     /**
@@ -156,6 +169,7 @@ public final class CauldronFluidContent {
 
         BLOCK_TO_CAULDRON.put(block, data);
         FLUID_TO_CAULDRON.put(fluid, data);
+        largestValue = Math.max(totalAmount, largestValue);
     }
 
     @ApiStatus.Internal
@@ -167,7 +181,7 @@ public final class CauldronFluidContent {
         for (Block block : BLOCK_TO_CAULDRON.keySet()) {
             event.registerBlock(
                     Capabilities.FluidHandler.BLOCK,
-                    (level, pos, state, be, context) -> new CauldronWrapper(level, pos),
+                    (level, pos, state, be, context) -> CauldronWrapper.get(level, pos),
                     block);
         }
     }

@@ -80,6 +80,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.capabilities.CapabilityHooks;
 import net.neoforged.neoforge.common.advancements.critereon.ItemAbilityPredicate;
 import net.neoforged.neoforge.common.advancements.critereon.PiglinCurrencyItemPredicate;
@@ -158,6 +159,8 @@ import net.neoforged.neoforge.server.command.ModIdArgument;
 import net.neoforged.neoforge.server.permission.events.PermissionGatherEvent;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
+import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.wrappers.items.LivingEntityEquipmentHandlerAttachment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -174,6 +177,7 @@ public class NeoForgeMod {
     private static boolean isPRBuild;
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
@@ -198,6 +202,15 @@ public class NeoForgeMod {
      * Game mode flight cannot be disabled via this attribute.
      */
     public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
+
+    /**
+     * An attachment intended for living entities to hold their {@link IResourceHandler} handling their equipment items.
+     * This is only added on demand, rather than for every living entity, hence why it is an attachment since things like Players, and horse like creatures,
+     * have their own equipment handling.
+     * 
+     * @see CapabilityHooks
+     */
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<LivingEntityEquipmentHandlerAttachment>> ENTITY_EQUIPMENT_ATTACHMENT = ATTACHMENTS.register("entity_equipment", LivingEntityEquipmentHandlerAttachment.BUILDER::build);
 
     /**
      * Stock loot modifier type that adds loot from a subtable to the final loot.
@@ -554,6 +567,7 @@ public class NeoForgeMod {
         modEventBus.addListener(NeoForgeMod::onConfigLoad);
         modEventBus.addListener(NeoForgeMod::onConfigFileChange);
         ATTRIBUTES.register(modEventBus);
+        ATTACHMENTS.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
         STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
