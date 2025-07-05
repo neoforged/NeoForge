@@ -10,7 +10,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.debug.capabilities.handlers.resources.ResourceHandlerTestSetup;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.InfiniteResourceHandler;
 import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.OnInit;

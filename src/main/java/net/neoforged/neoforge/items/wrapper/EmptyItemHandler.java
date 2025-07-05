@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
-import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.EmptyResourceHandler;
 
 /**
  * @deprecated Use {@link EmptyResourceHandler#instance()}

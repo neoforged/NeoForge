@@ -17,13 +17,13 @@ import org.jetbrains.annotations.Nullable;
  * update with them, (like {@link IndexedIntSnapshot} does in {@link IndexedIntSnapshot#updateSnapshots(TransactionContext)}) so that any time a new snapshot is taken,
  * this will update at the same time. Since we only store one snapshot per depth in a transaction, this will only have 1 regardless of which and how many indices were updated in that chain.
  * <p>
- * When the transaction is committed, {@link #commitCallback} will run; and when the transaction is reverted {@link #revertCallback} will instead. Only one per transaction chain will be called and only once.
+ * When the transaction is committed, {@link #onCommit} will run; and when the transaction is reverted {@link #onRevert} will instead. Only one per transaction chain will be called and only once.
  */
 public final class NotifyingSnapshotJournal extends SnapshotJournal<NotifyingSnapshotJournal.IgnoredValue> {
     @Nullable
-    private final Runnable commitCallback;
+    private final Runnable onCommit;
     @Nullable
-    private final Runnable revertCallback;
+    private final Runnable onRevert;
 
     /**
      * Creates a grouped snapshot journal with custom commit and revert logic
@@ -54,9 +54,9 @@ public final class NotifyingSnapshotJournal extends SnapshotJournal<NotifyingSna
         return new NotifyingSnapshotJournal(null, revertCallback);
     }
 
-    private NotifyingSnapshotJournal(@Nullable Runnable commitCallback, @Nullable Runnable revertCallback) {
-        this.commitCallback = commitCallback;
-        this.revertCallback = revertCallback;
+    private NotifyingSnapshotJournal(@Nullable Runnable onCommit, @Nullable Runnable onRevert) {
+        this.onCommit = onCommit;
+        this.onRevert = onRevert;
     }
 
     @Override
@@ -66,8 +66,8 @@ public final class NotifyingSnapshotJournal extends SnapshotJournal<NotifyingSna
 
     @Override
     protected void revertToSnapshot(IgnoredValue snapshot) {
-        if (revertCallback != null) {
-            revertCallback.run();
+        if (onRevert != null) {
+            onRevert.run();
         }
     }
 
@@ -80,8 +80,8 @@ public final class NotifyingSnapshotJournal extends SnapshotJournal<NotifyingSna
      * A way to force running the callback if desired, instead of caching it elsewhere as well.
      */
     public void runCommitCallback() {
-        if (commitCallback != null)
-            commitCallback.run();
+        if (onCommit != null)
+            onCommit.run();
     }
 
     public static final class IgnoredValue {

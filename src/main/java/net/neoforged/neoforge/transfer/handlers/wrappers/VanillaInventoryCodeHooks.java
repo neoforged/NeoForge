@@ -24,6 +24,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 import org.jetbrains.annotations.Nullable;
 
+// Should likely be just renamed VanillaHopperCodeHooks, but something to look into post slicing
 public class VanillaInventoryCodeHooks {
     /**
      * Tries to extract items from an item handler and insert them in the hopper.

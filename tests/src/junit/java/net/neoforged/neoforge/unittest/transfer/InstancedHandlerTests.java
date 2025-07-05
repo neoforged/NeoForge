@@ -10,9 +10,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.templates.EmptyResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.InfiniteResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.VoidResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.EmptyResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.InfiniteResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resource.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -43,8 +43,8 @@ public class InstancedHandlerTests {
     @Test
     public void endlessHandlers() {
         //InfiniteResourceHandlers creates infinite of a specified resource, but doesn't allow insertion
-        testInfiniteResource(FluidResource.of(Fluids.WATER), FluidResource.EMPTY, ItemResource.of(Items.APPLE));
-        testInfiniteResource(ItemResource.of(Blocks.COBBLESTONE), ItemResource.EMPTY, FluidResource.of(Fluids.WATER));
+        testInfiniteResource(FluidResource.of(Fluids.WATER), FluidResource.EMPTY);
+        testInfiniteResource(ItemResource.of(Blocks.COBBLESTONE), ItemResource.EMPTY);
     }
 
     private static <T extends IResource> void testVoidResource(VoidResourceHandler<T> handler, T emptyResource, T testedResource) {
@@ -60,17 +60,17 @@ public class InstancedHandlerTests {
         try (Transaction transaction = TransactionManager.open(null)) {
             Assertions.assertThat(Integer.MAX_VALUE)
                     .withFailMessage("Void should be able to accept infinite resources")
-                    .isEqualTo(handler.insert(0, emptyResource, Integer.MAX_VALUE, transaction))
-                    .isEqualTo(handler.insert(emptyResource, Integer.MAX_VALUE, transaction));
+                    .isEqualTo(handler.insert(0, testedResource, Integer.MAX_VALUE, transaction))
+                    .isEqualTo(handler.insert(testedResource, Integer.MAX_VALUE, transaction));
 
             Assertions.assertThat(0)
                     .withFailMessage("Void should be provide no resources")
-                    .isEqualTo(handler.extract(0, emptyResource, Integer.MAX_VALUE, transaction))
-                    .isEqualTo(handler.extract(emptyResource, Integer.MAX_VALUE, transaction));
+                    .isEqualTo(handler.extract(0, testedResource, Integer.MAX_VALUE, transaction))
+                    .isEqualTo(handler.extract(testedResource, Integer.MAX_VALUE, transaction));
         }
     }
 
-    private static <T extends IResource> void testInfiniteResource(T resource, T emptyResource, T testedResource) {
+    private static <T extends IResource> void testInfiniteResource(T resource, T emptyResource) {
         InfiniteResourceHandler<T> handler = new InfiniteResourceHandler<>(resource);
         Assertions.assertThat(handler.size()).withFailMessage("Size should be 1").isEqualTo(1);
         Assertions.assertThat(handler.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)).withFailMessage("Extraction should be allowed").isTrue().isEqualTo(handler.hasCharacteristics(0, TransferCharacteristics.EXTRACTABLE));
@@ -127,12 +127,8 @@ public class InstancedHandlerTests {
         });
     }
 
-    private static void emptyHandlerDoesNotThrow(Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (Exception e) {
-            Assertions.fail(e.getMessage());
-        }
+    private static void emptyHandlerDoesNotThrow(ThrowableAssert.ThrowingCallable runnable) {
+        Assertions.assertThatCode(runnable).withFailMessage("Empty handler should accept index-less calls").doesNotThrowAnyException();
     }
 
     private static void emptyHandlerThrow(ThrowableAssert.ThrowingCallable callable) {

@@ -16,9 +16,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * <strong>Important: This will only work with constant sized handlers.</strong>
  * Dynamically sized handlers are supported by api, but not by this implementation
- * <p>
- * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled. *
- *
+ * 
  * @param <T>
  */
 public class CombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {

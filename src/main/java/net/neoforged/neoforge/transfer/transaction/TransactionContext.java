@@ -60,7 +60,7 @@ public interface TransactionContext {
     /**
      * Register a callback that will be invoked after the outermost transaction is closed,
      * and after callbacks registered with {@link #addCloseCallback} are ran.
-     * Registered callbacks are invoked last-to-first.
+     * Registered callbacks are invoked with last in first out (LIFO) order.
      *
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
      */
