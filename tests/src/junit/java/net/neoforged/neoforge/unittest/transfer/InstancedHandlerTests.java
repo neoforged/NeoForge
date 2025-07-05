@@ -115,14 +115,13 @@ public class InstancedHandlerTests {
         emptyHandlerDoesNotThrow(() -> {
             try (Transaction transaction = TransactionManager.open(null)) {
                 int inserted = handler.insert(testedResource, 100, transaction);
-                Assertions.assertThat(100).isEqualTo(inserted);
-
+                Assertions.assertThat(0).isEqualTo(inserted);
             }
         });
         emptyHandlerDoesNotThrow(() -> {
             try (Transaction transaction = TransactionManager.open(null)) {
                 int extracted = handler.extract(testedResource, 100, transaction);
-                Assertions.assertThat(100).isEqualTo(extracted);
+                Assertions.assertThat(0).isEqualTo(extracted);
             }
         });
     }
