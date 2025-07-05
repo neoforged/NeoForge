@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/component/ItemContainerContents.java
 +++ b/net/minecraft/world/item/component/ItemContainerContents.java
-@@ -164,6 +_,35 @@
+@@ -164,6 +_,46 @@
          }
      }
  
@@ -31,6 +31,17 @@
 +        if (slot < 0 || slot >= getSlots()) {
 +            throw new UnsupportedOperationException("Slot " + slot + " not in valid range - [0," + getSlots() + ")");
 +        }
++    }
++
++    public ItemContainerContents with(int size, int index, ItemStack stack) {
++        NonNullList<ItemStack> list = NonNullList.withSize(size, ItemStack.EMPTY);
++        copyInto(list);
++        list.set(index, stack.copy());
++        return fromItems(list);
++    }
++
++    public ItemContainerContents with(int size, int index, net.neoforged.neoforge.transfer.resources.ItemResource resource, int amount) {
++        return with(size, index, resource.toStack(amount));
 +    }
 +
      record Slot(int index, ItemStack item) {
