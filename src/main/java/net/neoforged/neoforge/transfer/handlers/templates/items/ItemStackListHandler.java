@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.items;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import org.jetbrains.annotations.Nullable;
 

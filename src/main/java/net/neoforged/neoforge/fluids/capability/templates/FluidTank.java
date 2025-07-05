@@ -15,8 +15,8 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceStackListHandler;
 
 /**
  * @deprecated For components use {@link ResourceContainerContents} with helpers from {@link FluidResourceContainerContents} to build it, or for attachments use either {@link ResourceStackListHandler.Fluid} or {@link FluidStackListHandler}

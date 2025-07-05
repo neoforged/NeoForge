@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 import java.util.function.Predicate;
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.SteppedItemContextResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.SteppedItemContextResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;

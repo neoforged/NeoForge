@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 

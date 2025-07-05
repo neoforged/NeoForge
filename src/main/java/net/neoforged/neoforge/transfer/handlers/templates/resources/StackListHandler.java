@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.resource;
+package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler.Fluid;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler.Item;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceStackListHandler.Fluid;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceStackListHandler.Item;
 import net.neoforged.neoforge.transfer.handlers.wrappers.items.ResourceHandlerSlot;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;

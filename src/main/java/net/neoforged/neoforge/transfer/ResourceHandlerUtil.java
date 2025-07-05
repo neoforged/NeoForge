@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContentsHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;

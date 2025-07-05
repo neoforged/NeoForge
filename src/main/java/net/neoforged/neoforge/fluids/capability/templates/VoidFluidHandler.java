@@ -10,7 +10,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.VoidResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.VoidResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 

@@ -20,7 +20,7 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidStackListHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStackListHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceStackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceStackListHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;

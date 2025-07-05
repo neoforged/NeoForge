@@ -24,7 +24,7 @@ import net.neoforged.neoforge.transfer.handlers.templates.contexts.StackItemCont
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.FluidResourceContainerContents;
 import net.neoforged.neoforge.transfer.handlers.templates.fluids.ItemContextFluidHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemResourceContainerContents;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.resource;
+package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import java.util.Objects;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;

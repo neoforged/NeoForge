@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.transfer.handlers.templates.resource;
+package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;

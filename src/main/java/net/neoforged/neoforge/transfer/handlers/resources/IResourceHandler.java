@@ -7,7 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;

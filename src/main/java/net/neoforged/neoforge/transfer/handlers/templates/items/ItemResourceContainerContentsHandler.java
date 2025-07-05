@@ -7,8 +7,8 @@ package net.neoforged.neoforge.transfer.handlers.templates.items;
 
 import net.minecraft.core.component.DataComponentType;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContents;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.ResourceContainerContentsHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContents;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 
 public class ItemResourceContainerContentsHandler extends ResourceContainerContentsHandler<ItemResource> {

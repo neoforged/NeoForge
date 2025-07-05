@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.templates.fluids;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.transfer.handlers.templates.resource.StackListHandler;
+import net.neoforged.neoforge.transfer.handlers.templates.resources.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import org.jetbrains.annotations.Nullable;
 
