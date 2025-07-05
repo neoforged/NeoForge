@@ -25,6 +25,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
+import net.neoforged.neoforge.common.tagdefaults.TagDefaultsManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -50,6 +51,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class NeoForgeEventHandler {
     private static LootModifierManager LOOT_MODIFIER_MANAGER;
+    private static TagDefaultsManager TAG_DEFAULTS_MANAGER;
     private static DataMapLoader DATA_MAP_LOADER;
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -162,12 +164,19 @@ public class NeoForgeEventHandler {
         event.addListener(NeoForgeReloadListeners.RECIPE_PRIORITIES, new RecipePriorityManager(event.getServerResources().getRecipeManager()));
         event.addListener(NeoForgeReloadListeners.DATA_MAPS, DATA_MAP_LOADER = new DataMapLoader(event.getConditionContext(), event.getRegistryAccess()));
         event.addListener(NeoForgeReloadListeners.CREATIVE_TABS, CreativeModeTabRegistry.getReloadListener());
+        event.addListener(NeoForgeReloadListeners.TAG_DEFAULTS, TAG_DEFAULTS_MANAGER = new TagDefaultsManager());
     }
 
     static LootModifierManager getLootModifierManager() {
         if (LOOT_MODIFIER_MANAGER == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
         return LOOT_MODIFIER_MANAGER;
+    }
+
+    public static TagDefaultsManager getTagDefaultsManager() {
+        if (TAG_DEFAULTS_MANAGER == null)
+            throw new IllegalStateException("Can not retrieve TagDefaultsManager until resources have loaded once.");
+        return TAG_DEFAULTS_MANAGER;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

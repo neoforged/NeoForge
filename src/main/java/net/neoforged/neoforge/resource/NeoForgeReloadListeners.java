@@ -25,6 +25,8 @@ public class NeoForgeReloadListeners {
 
     public static final ResourceLocation CREATIVE_TABS = key("creative_tabs");
 
+    public static final ResourceLocation TAG_DEFAULTS = key("tag_defaults");
+
     // Client Listeners
     public static final ResourceLocation CLIENT_MOD_LOADING = key("client_mod_loading");
 
