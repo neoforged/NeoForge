@@ -72,8 +72,7 @@
      }
  
      @OnlyIn(Dist.CLIENT)
--    public static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
-+    static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
+     static class BlockStateGeneratorCollector implements Consumer<BlockModelDefinitionGenerator> {
          private final Map<Block, BlockModelDefinitionGenerator> generators = new HashMap<>();
 +        private final Supplier<Stream<? extends Holder<Block>>> knownBlocks;
 +
