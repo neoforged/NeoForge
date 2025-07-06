@@ -21,7 +21,6 @@ import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.impl.TestFrameworkMod;
 
 public record TestEnabledIngredient(Ingredient base, TestFramework framework, String testId) implements ICustomIngredient {
-
     public static final MapCodec<TestEnabledIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
@@ -29,6 +28,7 @@ public record TestEnabledIngredient(Ingredient base, TestFramework framework, St
                             MutableTestFramework.REFERENCE_CODEC.fieldOf("framework").forGetter(i -> i.framework),
                             Codec.STRING.fieldOf("testId").forGetter(i -> i.testId))
                     .apply(builder, TestEnabledIngredient::new));
+
     @Override
     public boolean test(ItemStack stack) {
         return base.test(stack) && framework.tests().isEnabled(testId);
