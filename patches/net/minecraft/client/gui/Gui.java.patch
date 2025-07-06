@@ -84,8 +84,8 @@
 +        layerManager.add(CONTEXTUAL_INFO_BAR, this::renderContextualInfoBar, guiVisible);
 +        layerManager.add(SELECTED_ITEM_NAME, this::maybeRenderSelectedItemName, guiVisible);
 +        layerManager.add(SPECTATOR_TOOLTIP, this::maybeRenderSpectatorTooltip, guiVisible);
-+        layerManager.add(EFFECTS, this::renderEffects);
-+        layerManager.add(BOSS_OVERLAY, this::renderBossOverlay);
++        layerManager.add(EFFECTS, this::renderEffects, guiVisible);
++        layerManager.add(BOSS_OVERLAY, this::renderBossOverlay, guiVisible);
 +        layerManager.add(SLEEP_OVERLAY, this::renderSleepOverlay);
 +        layerManager.add(DEMO_OVERLAY, this::renderDemoOverlay, guiVisible);
 +        layerManager.add(DEBUG_OVERLAY, this::renderDebugOverlay, guiVisible);
