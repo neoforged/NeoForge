@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -25,12 +24,13 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.ModelDebugName;
 import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.model.ComposedModelState;
@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, Optional<ResourceLocation> darkerTrim, ItemTransforms transforms, BakingContext context) implements ItemModel {
+public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, ItemTransforms transforms, BakingContext context) implements ItemModel {
 
     private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
@@ -51,12 +51,16 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, Op
     public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
         this.base().update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
 
-        if (stack.get(DataComponents.TRIM) != null) {
-            ResourceKey<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material().getKey();
-            boolean darker = this.darkerTrim().isPresent() && material.location().equals(this.darkerTrim().get());
-            var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + material.location().getPath() + (darker ? "_darker" : ""))), DEBUG_NAME);
+        if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
+            Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
 
-            TRIM_LAYERS.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+            if (equippable.assetId().isPresent()) {
+                Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
+                String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
+                var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + material.getKey().location().getPath() + suffix)), DEBUG_NAME);
+
+                TRIM_LAYERS.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+            }
         }
     }
 
@@ -68,16 +72,15 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, Op
 
         return new BlockModelWrapper(List.of(), quads, renderProperties, Sheets.translucentItemSheet());
     }
-    public record Unbaked(BlockModelWrapper.Unbaked baseModel, ResourceLocation trimTexture, Optional<ResourceLocation> darkerTrim) implements ItemModel.Unbaked {
-
+    public record Unbaked(BlockModelWrapper.Unbaked baseModel, ResourceLocation trimTexture) implements ItemModel.Unbaked {
         public static final MapCodec<TrimmedArmorModel.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 BlockModelWrapper.Unbaked.MAP_CODEC.fieldOf("base_model").forGetter(TrimmedArmorModel.Unbaked::baseModel),
-                ResourceLocation.CODEC.fieldOf("base_trim_texture").forGetter(Unbaked::trimTexture),
-                ResourceLocation.CODEC.optionalFieldOf("darker_trim_override").forGetter(Unbaked::darkerTrim))
+                ResourceLocation.CODEC.fieldOf("base_trim_texture").forGetter(Unbaked::trimTexture))
                 .apply(instance, Unbaked::new));
+
         @Override
         public ItemModel bake(BakingContext context) {
-            return new TrimmedArmorModel(this.baseModel().bake(context), this.trimTexture(), this.darkerTrim(), context.blockModelBaker().getModel(this.baseModel().model()).getTopTransforms(), context);
+            return new TrimmedArmorModel(this.baseModel().bake(context), this.trimTexture(), context.blockModelBaker().getModel(this.baseModel().model()).getTopTransforms(), context);
         }
 
         @Override
