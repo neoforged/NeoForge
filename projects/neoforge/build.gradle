@@ -102,8 +102,11 @@ dependencies {
     }
 
     moduleLibraries "net.neoforged.fancymodloader:securejarhandler:${project.fancy_mod_loader_version}"
+    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
+    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
-        moduleLibraries(asmModule) {
+        libraries(asmModule) {
             // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
             // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
             version {
@@ -111,9 +114,6 @@ dependencies {
             }
         }
     }
-    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
-
     libraries ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'
