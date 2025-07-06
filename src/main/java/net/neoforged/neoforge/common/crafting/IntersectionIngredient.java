@@ -18,12 +18,12 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 
 /** Ingredient that matches if all child ingredients match */
 public record IntersectionIngredient(List<Ingredient> children) implements ICustomIngredient {
-
     public IntersectionIngredient {
         if (children.isEmpty()) {
             throw new IllegalArgumentException("Intersection ingredient must have at least one child.");
         }
     }
+
     public static final MapCodec<IntersectionIngredient> CODEC = RecordCodecBuilder.mapCodec(
             builder -> builder
                     .group(
