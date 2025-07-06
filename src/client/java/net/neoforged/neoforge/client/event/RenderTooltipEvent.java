@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.datafixers.util.Either;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
