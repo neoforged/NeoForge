@@ -15,7 +15,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public record ClientboundCustomSetTimePayload(long gameTime, long dayTime, boolean gameRule, float dayTimeFraction, float dayTimePerTick) implements CustomPacketPayload {
-
     public static final Type<ClientboundCustomSetTimePayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "custom_time_packet"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSetTimePayload> STREAM_CODEC = StreamCodec.composite(
@@ -25,6 +24,7 @@ public record ClientboundCustomSetTimePayload(long gameTime, long dayTime, boole
             ByteBufCodecs.FLOAT, ClientboundCustomSetTimePayload::dayTimeFraction,
             ByteBufCodecs.FLOAT, ClientboundCustomSetTimePayload::dayTimePerTick,
             ClientboundCustomSetTimePayload::new);
+
     @Override
     public Type<ClientboundCustomSetTimePayload> type() {
         return TYPE;

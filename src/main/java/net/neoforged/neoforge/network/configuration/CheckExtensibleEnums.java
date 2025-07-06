@@ -231,7 +231,6 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
     }
 
     public record EnumEntry(String className, NetworkedEnum.NetworkCheck networkCheck, Optional<ExtensionData> data) {
-
         public static final StreamCodec<ByteBuf, EnumEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8,
                 EnumEntry::className,
@@ -240,6 +239,7 @@ public record CheckExtensibleEnums(ServerConfigurationPacketListener listener) i
                 ByteBufCodecs.optional(ExtensionData.STREAM_CODEC),
                 EnumEntry::data,
                 EnumEntry::new);
+
         public boolean isClientbound() {
             return networkCheck == NetworkedEnum.NetworkCheck.CLIENTBOUND || networkCheck == NetworkedEnum.NetworkCheck.BIDIRECTIONAL;
         }
