@@ -4,7 +4,6 @@
     "base_model": {
       "model": "minecraft:item/golden_helmet"
     },
-    "base_trim_texture": "minecraft:trims/items/helmet_trim",
-    "darker_trim_override": "minecraft:gold"
+    "base_trim_texture": "minecraft:trims/items/helmet_trim"
   }
 }
