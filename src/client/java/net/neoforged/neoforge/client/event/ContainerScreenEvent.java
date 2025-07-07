@@ -112,7 +112,7 @@ public abstract class ContainerScreenEvent extends Event {
          * @deprecated use the new {@link ScreenEvent.Render.Background} event
          */
         @SuppressWarnings("DeprecatedIsStillUsed")
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "1.21.7")
         public static class Background extends Render {
             @ApiStatus.Internal
             public Background(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {
