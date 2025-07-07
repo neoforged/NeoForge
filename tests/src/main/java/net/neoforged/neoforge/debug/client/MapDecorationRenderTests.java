@@ -39,7 +39,6 @@ import org.joml.Matrix4f;
 public class MapDecorationRenderTests {
     public static final String GROUP = "map_decoration_render";
 
-    @EmptyTemplate
     @TestHolder(description = "Tests if custom map decoration renderers work", enabledByDefault = true)
     static void customRenderer(DynamicTest test) {
         var decorationType = test.registrationHelper().registrar(Registries.MAP_DECORATION_TYPE).register(
@@ -70,7 +69,6 @@ public class MapDecorationRenderTests {
         });
     }
 
-    @EmptyTemplate
     @TestHolder(description = "Tests if custom map decoration render state data works")
     static void customRenderData(DynamicTest test) {
         var key = new ContextKey<Integer>(ResourceLocation.fromNamespaceAndPath(test.createModId(), "custom_color"));

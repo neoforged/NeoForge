@@ -36,7 +36,9 @@ public interface Test extends Groupable {
 
     /**
      * A list of the groups of this test. <br>
-     * If this list is empty, the test will be only in the {@code ungrouped} group.
+     * If this list is empty, the test will be put in the {@code ungrouped} group.
+     * <p>
+     * Tests without a {@link #asGameTest() game test} will also be automatically put in the {@code manual} group.
      *
      * @return the groups of this test
      */

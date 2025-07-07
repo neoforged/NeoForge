@@ -69,8 +69,6 @@ public class TextureAtlasTests {
     }
 
     @TestHolder(description = { "Tests that custom sprite metadata sections get passed through resource reloading properly" }, enabledByDefault = true)
-    @GameTest
-    @EmptyTemplate
     static void defaultSpriteMetadataSections(final DynamicTest test) {
         String modId = test.createModId();
 

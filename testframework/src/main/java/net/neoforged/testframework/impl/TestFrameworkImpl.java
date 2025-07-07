@@ -463,6 +463,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 test.groups().forEach(group -> getOrCreateGroup(group).add(test));
             }
             test.init(TestFrameworkImpl.this);
+
+            if (test.asGameTest() == null) {
+                getOrCreateGroup("manual").add(test);
+            }
         }
 
         private Group addGroupToParents(Group group) {
