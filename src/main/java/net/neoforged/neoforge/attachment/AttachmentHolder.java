@@ -158,7 +158,10 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                 getAttachmentMap().put(type, type.serializer.read(getExposedHolder(), input.childOrEmpty(key)));
             } catch (Exception exception) {
                 LOGGER.error("Failed to deserialize data attachment {}. Skipping.", key, exception);
+                continue;
             }
+
+            syncData(type);
         }
     }
 
