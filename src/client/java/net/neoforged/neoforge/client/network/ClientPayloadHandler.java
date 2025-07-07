@@ -198,7 +198,7 @@ final class ClientPayloadHandler {
 
     private static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
         switch (payload.target()) {
-            case SyncAttachmentsPayload.BlockEntityTarget(BlockPos pos) -> {
+            case SyncAttachmentsPayload.BlockEntityTarget(var pos) -> {
                 var blockEntity = context.player().level().getBlockEntity(pos);
                 if (blockEntity == null) {
                     LOGGER.warn("Received synced attachments from unknown block entity");
@@ -222,7 +222,7 @@ final class ClientPayloadHandler {
                     AttachmentSync.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
-            case SyncAttachmentsPayload.LevelTarget ignored -> {
+            case SyncAttachmentsPayload.LevelTarget() -> {
                 AttachmentSync.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
             }
         }

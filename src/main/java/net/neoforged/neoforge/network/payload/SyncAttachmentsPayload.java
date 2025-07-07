@@ -44,19 +44,19 @@ public record SyncAttachmentsPayload(
         StreamCodec<RegistryFriendlyByteBuf, Target> STREAM_CODEC = StreamCodec.of(
                 (buf, target) -> {
                     switch (target) {
-                        case BlockEntityTarget blockEntityTarget -> {
+                        case BlockEntityTarget(var pos) -> {
                             buf.writeByte(0);
-                            buf.writeBlockPos(blockEntityTarget.pos());
+                            buf.writeBlockPos(pos);
                         }
-                        case ChunkTarget chunkTarget -> {
+                        case ChunkTarget(var pos) -> {
                             buf.writeByte(1);
-                            buf.writeChunkPos(chunkTarget.pos());
+                            buf.writeChunkPos(pos);
                         }
-                        case EntityTarget entityTarget -> {
+                        case EntityTarget(var entityId) -> {
                             buf.writeByte(2);
-                            buf.writeVarInt(entityTarget.entity());
+                            buf.writeVarInt(entityId);
                         }
-                        case LevelTarget ignored -> {
+                        case LevelTarget() -> {
                             buf.writeByte(3);
                         }
                     }
