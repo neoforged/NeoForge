@@ -61,7 +61,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private static void register(final RegisterPayloadHandlersEvent event) {
         event.registrar("1")
                 .optional()
-                .commonBidirectional(SplitPacketPayload.TYPE, SplitPacketPayload.STREAM_CODEC, GenericPacketSplitter::handle);
+                .commonBidirectional(SplitPacketPayload.TYPE, SplitPacketPayload.STREAM_CODEC, GenericPacketSplitter::handle, GenericPacketSplitter::handle);
     }
 
     private static void handle(SplitPacketPayload payload, IPayloadContext context) {

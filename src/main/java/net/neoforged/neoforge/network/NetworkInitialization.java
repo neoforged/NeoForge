@@ -7,19 +7,15 @@ package net.neoforged.neoforge.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.internal.NeoForgeProxy;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.configuration.CheckExtensibleEnums;
 import net.neoforged.neoforge.network.configuration.CheckFeatureFlags;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handlers.ServerPayloadHandler;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
-import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
 import net.neoforged.neoforge.network.payload.AdvancedContainerSetDataPayload;
 import net.neoforged.neoforge.network.payload.AdvancedOpenScreenPayload;
 import net.neoforged.neoforge.network.payload.AuxiliaryLightDataPayload;
-import net.neoforged.neoforge.network.payload.ClientDispatchPayload;
 import net.neoforged.neoforge.network.payload.ClientboundCustomSetTimePayload;
 import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.ExtensibleEnumAcknowledgePayload;
@@ -39,10 +35,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 @EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
-public class NetworkInitialization {
-    private static <T extends ClientDispatchPayload> IPayloadHandler<T> clientHandler() {
-        return NeoForgeProxy.INSTANCE::handleClientPayload;
-    }
+final class NetworkInitialization {
+    private NetworkInitialization() {}
 
     @SubscribeEvent
     private static void register(final RegisterPayloadHandlersEvent event) {
@@ -51,24 +45,20 @@ public class NetworkInitialization {
         registrar
                 .commonToClient(
                         ConfigFilePayload.TYPE,
-                        ConfigFilePayload.STREAM_CODEC,
-                        clientHandler())
+                        ConfigFilePayload.STREAM_CODEC)
                 .configurationToClient(
                         FrozenRegistrySyncStartPayload.TYPE,
-                        FrozenRegistrySyncStartPayload.STREAM_CODEC,
-                        clientHandler())
+                        FrozenRegistrySyncStartPayload.STREAM_CODEC)
                 .configurationToClient(
                         FrozenRegistryPayload.TYPE,
-                        FrozenRegistryPayload.STREAM_CODEC,
-                        clientHandler())
+                        FrozenRegistryPayload.STREAM_CODEC)
                 .configurationBidirectional(
                         FrozenRegistrySyncCompletedPayload.TYPE,
                         FrozenRegistrySyncCompletedPayload.STREAM_CODEC,
-                        new DirectionalPayloadHandler<>(clientHandler(), ServerPayloadHandler::handle))
+                        ServerPayloadHandler::handle)
                 .configurationToClient(
                         KnownRegistryDataMapsPayload.TYPE,
-                        KnownRegistryDataMapsPayload.STREAM_CODEC,
-                        clientHandler())
+                        KnownRegistryDataMapsPayload.STREAM_CODEC)
                 .configurationToClient(
                         ExtensibleEnumDataPayload.TYPE,
                         ExtensibleEnumDataPayload.STREAM_CODEC,
@@ -91,30 +81,23 @@ public class NetworkInitialization {
                         CheckFeatureFlags::handleServerboundPayload)
                 .playToClient(
                         AdvancedAddEntityPayload.TYPE,
-                        AdvancedAddEntityPayload.STREAM_CODEC,
-                        clientHandler())
+                        AdvancedAddEntityPayload.STREAM_CODEC)
                 .playToClient(
                         AdvancedOpenScreenPayload.TYPE,
-                        AdvancedOpenScreenPayload.STREAM_CODEC,
-                        clientHandler())
+                        AdvancedOpenScreenPayload.STREAM_CODEC)
                 .playToClient(
                         AuxiliaryLightDataPayload.TYPE,
-                        AuxiliaryLightDataPayload.STREAM_CODEC,
-                        clientHandler())
+                        AuxiliaryLightDataPayload.STREAM_CODEC)
                 .playToClient(
                         RegistryDataMapSyncPayload.TYPE,
-                        RegistryDataMapSyncPayload.STREAM_CODEC,
-                        clientHandler())
+                        RegistryDataMapSyncPayload.STREAM_CODEC)
                 .playToClient(AdvancedContainerSetDataPayload.TYPE,
-                        AdvancedContainerSetDataPayload.STREAM_CODEC,
-                        clientHandler())
+                        AdvancedContainerSetDataPayload.STREAM_CODEC)
                 .playToClient(
                         ClientboundCustomSetTimePayload.TYPE,
-                        ClientboundCustomSetTimePayload.STREAM_CODEC,
-                        clientHandler())
+                        ClientboundCustomSetTimePayload.STREAM_CODEC)
                 .playToClient(
                         RecipeContentPayload.TYPE,
-                        RecipeContentPayload.STREAM_CODEC,
-                        clientHandler());
+                        RecipeContentPayload.STREAM_CODEC);
     }
 }

@@ -26,6 +26,7 @@ import net.neoforged.fml.VersionChecker;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
+import net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry;
 import net.neoforged.neoforge.internal.CommonModLoader;
 import net.neoforged.neoforge.logging.CrashReportExtender;
 import net.neoforged.neoforge.resource.ResourcePackLoader;
@@ -97,7 +98,10 @@ public class ClientModLoader extends CommonModLoader {
     }
 
     private static void finishModLoading(Executor syncExecutor, Executor parallelExecutor) {
-        catchLoadingException(() -> finish(syncExecutor, parallelExecutor));
+        catchLoadingException(() -> {
+            finish(syncExecutor, parallelExecutor);
+            ModLoader.runInitTask("Client network registry lock", syncExecutor, () -> {}, ClientNetworkRegistry::setup);
+        });
         loading = false;
         loadingComplete = true;
     }
