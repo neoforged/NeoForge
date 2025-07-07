@@ -49,8 +49,8 @@ public class NeoForgeDataMaps {
      *
      * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
      */
-    public static final DataMapType<EntityType<?>, AcceptableHostileDistance> ACCEPTABLE_HOSTILE_DISTANCES = DataMapType.builder(id("acceptable_hostile_distances"), Registries.ENTITY_TYPE, AcceptableHostileDistance.CODEC)
-            .synced(AcceptableHostileDistance.DISTANCE_CODEC, false).build();
+    public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_hostile_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
+            .synced(AcceptableVillagerDistance.DISTANCE_CODEC, false).build();
     /**
      * The {@linkplain Item} data map that replaces {@link ComposterBlock#COMPOSTABLES}.
      * <p>
@@ -175,7 +175,7 @@ public class NeoForgeDataMaps {
 
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
-        event.register(ACCEPTABLE_HOSTILE_DISTANCES);
+        event.register(ACCEPTABLE_VILLAGER_DISTANCES);
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);

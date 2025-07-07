@@ -41,7 +41,7 @@ import net.minecraft.world.level.levelgen.feature.MonsterRoomFeature;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.data.DataMapProvider;
-import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableHostileDistance;
+import net.neoforged.neoforge.registries.datamaps.builtin.AcceptableVillagerDistance;
 import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
@@ -68,9 +68,9 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
         ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new Compostable(chance, villagerCompostables.contains(item.asItem())), false));
 
-        final var acceptableHostileDistances = builder(NeoForgeDataMaps.ACCEPTABLE_HOSTILE_DISTANCES);
+        final var acceptableHostileDistances = builder(NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
         ObfuscationReflectionHelper.<ImmutableMap<EntityType<?>, Float>, VillagerHostilesSensor>getPrivateValue(VillagerHostilesSensor.class, null, "ACCEPTABLE_DISTANCE_FROM_HOSTILES")
-                .forEach((entityType, distance) -> acceptableHostileDistances.add(BuiltInRegistries.ENTITY_TYPE.getKey(entityType), new AcceptableHostileDistance(distance), false));
+                .forEach((entityType, distance) -> acceptableHostileDistances.add(BuiltInRegistries.ENTITY_TYPE.getKey(entityType), new AcceptableVillagerDistance(distance), false));
 
         final var fuels = builder(NeoForgeDataMaps.FURNACE_FUELS);
         FuelValues.vanillaBurnTimes(new FuelValuesDataMapBuilder(provider, fuels), AbstractFurnaceBlockEntity.BURN_TIME_STANDARD);
