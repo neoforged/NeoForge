@@ -151,7 +151,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     /**
      * We wrap an item stack which must never be modified.
      */
-    final ItemStack innerStack;
+    private final ItemStack innerStack;
 
     private ItemResource(ItemStack innerStack) {
         this.innerStack = innerStack;

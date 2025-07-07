@@ -111,19 +111,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
-     * 
-     * @throws IllegalStateException If the backing registry is unavailable.
-     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
-     */
-    public static FluidResource of(Fluid fluid) {
-        if (fluid == Fluids.EMPTY) return EMPTY;
-        return fluid.getDefaultResource();
-    }
-
-    /**
-     * <strong>Note:</strong> This cannot be called before your fluid is registered
-     * 
+     *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
@@ -137,11 +125,26 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
      * 
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
+     */
+    public static FluidResource of(Fluid fluid) {
+        return of(fluid, DataComponentPatch.EMPTY);
+    }
+
+    /**
+     * <strong>Note:</strong> This cannot be called before your fluid is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
-        if (fluid.value() == Fluids.EMPTY) return EMPTY;
-        if (patch.isEmpty()) return fluid.value().getDefaultResource();
+        return of(fluid.value(), patch);
+    }
+
+    public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
+        if (fluid == Fluids.EMPTY) return EMPTY;
+        if (patch.isEmpty()) return fluid.getDefaultResource();
         return new FluidResource(new FluidStack(fluid, 1, patch));
     }
 
@@ -151,7 +154,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     //This is package private to provide Unsafe access in the scenarios of avoiding allocation
     // when being used in readonly context. A getInnerStack method could be done, but serves
     // no functional difference in this case since the field is marked final.
-    final FluidStack innerStack;
+    private final FluidStack innerStack;
 
     /**
      * Lazily initialized.
