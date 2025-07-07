@@ -210,6 +210,24 @@ public abstract class ScreenEvent extends Event {
         }
 
         /**
+         * Fired after the screen's background layer and elements are drawn.
+         *
+         * <p>This can be used for rendering elements that must be below tooltips and the dragged stack,
+         * such as slot or item stack specific overlays.</p>
+         *
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         *
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
+         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         */
+        public static class Background extends ScreenEvent.Render {
+            @ApiStatus.Internal
+            public Background(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /**
          * Fired <b>after</b> the screen is drawn.
          *
          * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
