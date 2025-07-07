@@ -258,7 +258,7 @@ public final class AttachmentType<T> {
         }
 
         /**
-         * Requests that this attachment be synced to clients.
+         * Requests that this attachment be synced to clients using the provided {@code syncHandler}.
          */
         public Builder<T> sync(AttachmentSyncHandler<T> syncHandler) {
             Objects.requireNonNull(syncHandler);

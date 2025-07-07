@@ -198,16 +198,15 @@ final class ClientPayloadHandler {
 
     private static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
         switch (payload.target()) {
-            case SyncAttachmentsPayload.BlockEntityTarget target -> {
-                var blockEntity = context.player().level().getBlockEntity(target.pos());
+            case SyncAttachmentsPayload.BlockEntityTarget(BlockPos pos) -> {
+                var blockEntity = context.player().level().getBlockEntity(pos);
                 if (blockEntity == null) {
                     LOGGER.warn("Received synced attachments from unknown block entity");
                 } else {
                     AttachmentSync.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
-            case SyncAttachmentsPayload.ChunkTarget target -> {
-                var pos = target.pos();
+            case SyncAttachmentsPayload.ChunkTarget(var pos) -> {
                 var chunk = context.player().level().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
                 if (chunk == null) {
                     LOGGER.warn("Received synced attachments from unknown chunk");
@@ -215,8 +214,8 @@ final class ClientPayloadHandler {
                     AttachmentSync.receiveSyncedDataAttachments(chunk.getAttachmentHolder(), chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
                 }
             }
-            case SyncAttachmentsPayload.EntityTarget target -> {
-                var entity = context.player().level().getEntity(target.entity());
+            case SyncAttachmentsPayload.EntityTarget(var entityId) -> {
+                var entity = context.player().level().getEntity(entityId);
                 if (entity == null) {
                     LOGGER.warn("Received synced attachments from unknown entity");
                 } else {
