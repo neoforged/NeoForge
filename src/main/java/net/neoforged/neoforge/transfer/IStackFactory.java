@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import java.util.function.BiFunction;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
@@ -23,12 +22,7 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * @param <R> The type of resource
  * @param <S> The type of the returned quantifiable stack
  */
-public interface IStackFactory<R extends IResource, S> extends BiFunction<R, Integer, S> {
-    @Override
-    default S apply(R r, Integer integer) {
-        return create(r, integer);
-    }
-
+public interface IStackFactory<R extends IResource<R>, S> {
     /**
      * Creates a stack of type {@code <S>} given a resource of type {@code <R>} and an amount.
      * It is expected that this handles cases where an empty resource or amount could occur.

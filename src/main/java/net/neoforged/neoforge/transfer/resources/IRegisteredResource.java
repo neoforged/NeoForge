@@ -19,7 +19,7 @@ import net.minecraft.world.flag.FeatureFlagSet;
  * @see ItemResource
  * @see FluidResource
  */
-public interface IRegisteredResource<T> extends IResource {
+public interface IRegisteredResource<T, R extends IResource<R>> extends IResource<R> {
     //TODO provide documentation on all methods
     /**
      * @return The backing instance of the resource.

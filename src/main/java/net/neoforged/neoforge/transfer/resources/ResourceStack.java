@@ -7,9 +7,7 @@ package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Objects;
 import java.util.function.UnaryOperator;
-import net.minecraft.ReportedException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,47 +24,42 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
  * Represents an immutable {@link IResource} and an amount.
  * Can be seen as an immutable version of {@link ItemStack} or {@link FluidStack}.
  */
-public final class ResourceStack<T extends IResource> {
-    //TODO documentation post slice
+public final class ResourceStack<T extends IResource<T>> {
     /**
-     * Creates a resource stack from a given resource, amount, and a reference to the empty stack for the resource type.
+     * Creates a resource stack from a given resource and amount.
      * <p>
-     * For custom resources, it is required to have an accessible EMPTY stack instance to use.
+     * For custom resources, it is required to have an accessible EMPTY stack instance to use. Note, this is true even if
+     * your resource type can never be empty. In that scenario, it would be more accurate to call it a default instance
+     * rather than empty.
      * See {@link ItemResource#EMPTY} for an example:
      *
      * <pre>{@code
      * public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
      * }</pre>
      *
-     * @param resource      The resource to wrap the stack around.
-     * @param amount        The amount of the resource the stack is holding.
-     * @param emptyInstance The empty stack reference when operations like {@link #withAmount(int)} are called.
-     * @param <T>           The type of resource.
+     * @param resource The resource to wrap the stack around.
+     * @param amount   The amount of the resource the stack is holding.
+     * @param <T>      The type of resource.
      * @return A new resource stack (or the empty instance if had been empty).
      * @see ItemResource#withAmount(int)
      * @see FluidResource#withAmount(int)
-     * @throws NullPointerException When the empty instance is null
-     * @throws ReportedException    When the amount is negative
+     * @throws NullPointerException     When the empty instance is null
+     * @throws IllegalArgumentException When the amount is negative
      */
-    public static <T extends IResource> ResourceStack<T> of(T resource, int amount, ResourceStack<T> emptyInstance) {
-        if (emptyInstance == null) throw new NullPointerException("Empty instance must not be null");
-        if (TransferPreconditions.checkNonNegative(amount) == 0 || resource.isEmpty()) {
-            return emptyInstance;
-        }
-        return new ResourceStack<>(resource, amount, emptyInstance);
+    public static <T extends IResource<T>> ResourceStack<T> of(T resource, int amount) {
+        if (ResourceHandlerUtil.isEmpty(resource, amount))
+            return resource.getEmptyResourceStackInstance();
+        return new ResourceStack<>(resource, amount);
     }
 
     /**
-     * Used only for initializing your Empty resource reference.
-     * For items or fluids, don't construct your own, use {@link ItemResource#EMPTY} and {@link FluidResource#EMPTY} respectively.
+     * Used only for initializing the Empty or default resource stack reference for a given resource type.
+     * For items, fluids, or resource types provided by an API, don't construct your own, use {@link ItemResource#EMPTY}, {@link FluidResource#EMPTY}, and the API's references respectively.
      *
      * @return A new reference bound to your resource type.
-     * @throws IllegalArgumentException When the resource is non-empty
      */
-    public static <T extends IResource> ResourceStack<T> constructEmptyReference(T resource) {
-        if (!resource.isEmpty()) throw new IllegalArgumentException("Resource must be empty");
-        // noinspection unchecked
-        return new ResourceStack<>(resource, 0, (ResourceStack<T>) EMPTY);
+    public static <T extends IResource<T>> ResourceStack<T> constructEmptyReference(T resource) {
+        return new ResourceStack<>(resource, 0);
     }
 
     /**
@@ -86,11 +79,11 @@ public final class ResourceStack<T extends IResource> {
      * @param <R>           the resource type
      * @return a codec for a resource stack
      */
-    public static <R extends IResource> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec, IStackFactory<R, ResourceStack<R>> factory) {
+    public static <R extends IResource<R>> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(ResourceStack<R>::resource),
                 NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1).forGetter(ResourceStack<R>::amount))
-                .apply(instance, factory));
+                .apply(instance, stackFactory::create));
     }
 
     /**
@@ -100,22 +93,11 @@ public final class ResourceStack<T extends IResource> {
      * @param stackFactory  The method used to create a new resource stack given a resource and an amount.
      *                      This is expected to handle returning the EMPTY instance when the stack would be empty.
      */
-    public static <B extends FriendlyByteBuf, R extends IResource> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
+    public static <B extends FriendlyByteBuf, R extends IResource<R>> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
         return StreamCodec.composite(
                 resourceCodec, ResourceStack::resource,
                 ByteBufCodecs.VAR_INT, ResourceStack::amount,
-                stackFactory);
-    }
-
-    /**
-     * Ensures the resource is not null and the amount is non-negative, throws otherwise.
-     *
-     * @throws NullPointerException     When resource is null
-     * @throws IllegalArgumentException When amount is negative
-     */
-    public static void validate(IResource resource, int amount) {
-        Objects.requireNonNull(resource, "Resource must not be null");
-        ResourceHandlerUtil.isEmpty(resource, amount);
+                stackFactory::create);
     }
 
     /**
@@ -132,15 +114,10 @@ public final class ResourceStack<T extends IResource> {
 
     private final T resource;
     private final int amount;
-    private final ResourceStack<T> emptyInstance;
 
-    // A note for future debugging. Empty instance should only be null in one specific case,
-    // which is the ResourceStack.EMPTY instance reference.
-    private ResourceStack(T resource, int amount, ResourceStack<T> emptyInstance) {
-        ResourceStack.validate(resource, amount);
+    private ResourceStack(T resource, int amount) {
         this.resource = resource;
         this.amount = amount;
-        this.emptyInstance = emptyInstance;
     }
 
     public T resource() {
@@ -152,17 +129,20 @@ public final class ResourceStack<T extends IResource> {
     }
 
     /**
+     * @param amount Amount the new resource stack should be. Must be non-negative.
+     *
      * @return A new immutable instance of this resource stack with an updated amount.
      *         If the amount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
      */
     public ResourceStack<T> withAmount(int amount) {
         TransferPreconditions.checkNonNegative(amount);
-        if (resource.isEmpty() || amount == 0) return emptyInstance;
         if (amount == this.amount) return this;
-        return ResourceStack.of(resource, amount, emptyInstance);
+        if (amount == 0 || resource.isEmpty()) return resource().getEmptyResourceStackInstance();
+        return ResourceStack.of(resource, amount);
     }
 
     /**
+     * @param amount Amount to shrink by. Must be non-negative.
      * @return A new immutable instance of this resource stack with an updated amount decreased by the specified {@code amount}.
      *         If the newAmount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
      * @see #withAmount(int)
@@ -173,10 +153,13 @@ public final class ResourceStack<T extends IResource> {
     }
 
     /**
+     * @param amount Amount to grow by. Must be non-negative.
+     *
      * @return A new immutable instance of this resource stack with an amount increased by the specified {@code amount}.
      *         If the resource was already empty, then the EMPTY instance will be returned instead
      */
     public ResourceStack<T> grow(int amount) {
+        TransferPreconditions.checkNonNegative(amount);
         return withAmount(this.amount + amount);
     }
 
@@ -186,21 +169,29 @@ public final class ResourceStack<T extends IResource> {
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         T result = operator.apply(resource);
         if (result.equals(resource)) return this;
-        return ResourceStack.of(result, amount, emptyInstance);
+        return ResourceStack.of(result, amount);
     }
 
     /**
-     * Checks if this is empty, meaning that the amount is not positive
+     * Checks if this is empty, meaning that the amount is zero
      * or that the resource is {@link IResource#isEmpty() empty}.
      *
      * @return {@code true} if empty
      */
     public boolean isEmpty() {
-        return amount() == 0 || resource().isEmpty();
+        return ResourceHandlerUtil.isEmpty(resource(), amount());
     }
 
+    /**
+     * Determines if the resource's backing value is enabled. If it is not, most actions are expected to not function,
+     * such as right click behaviour or similar. This is a per level/world setting. For instance, this should be checked before
+     * filling an item based resource handler.
+     * 
+     * @param enabledFeatures Feature flags currently enabled for this level.
+     * @return {@code true} if the resource is enabled in the feature set of the level; {@code false} otherwise.
+     */
     public boolean isEnabled(FeatureFlagSet enabledFeatures) {
-        return !(resource() instanceof IRegisteredResource<?> reg) || reg.isEnabled(enabledFeatures);
+        return !(resource() instanceof IRegisteredResource<?, ?> reg) || reg.isEnabled(enabledFeatures);
     }
 
     @Override
@@ -220,18 +211,4 @@ public final class ResourceStack<T extends IResource> {
     public String toString() {
         return "%s(%d)".formatted(resource, amount);
     }
-
-    //This should be the only instance that has a null instance empty parameter as it can't reference itself.
-    @SuppressWarnings("DataFlowIssue")
-    private static final ResourceStack<?> EMPTY = new ResourceStack<>(new IResource() {
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public ResourceStack<? extends IResource> withAmount(int amount) {
-            return EMPTY;
-        }
-    }, 0, null);
 }

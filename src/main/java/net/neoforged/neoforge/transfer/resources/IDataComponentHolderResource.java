@@ -21,23 +21,23 @@ import net.minecraft.world.item.ItemStack;
  * @see ItemResource
  * @see FluidResource
  */
-public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
+public interface IDataComponentHolderResource<T, R extends IResource<R>> extends IRegisteredResource<T, R>, DataComponentHolder {
     //TODO provide documentation on all methods
     boolean isComponentsPatchEmpty();
 
-    IDataComponentHolderResource<T> withPatch(DataComponentPatch patch);
+    IDataComponentHolderResource<T, R> withPatch(DataComponentPatch patch);
 
-    <D> IDataComponentHolderResource<T> with(DataComponentType<D> type, D data);
+    <D> IDataComponentHolderResource<T, R> with(DataComponentType<D> type, D data);
 
-    IDataComponentHolderResource<T> without(DataComponentType<?> type);
+    IDataComponentHolderResource<T, R> without(DataComponentType<?> type);
 
     DataComponentPatch getComponentsPatch();
 
-    default <D> IDataComponentHolderResource<T> with(Supplier<DataComponentType<D>> type, D data) {
+    default <D> IDataComponentHolderResource<T, R> with(Supplier<DataComponentType<D>> type, D data) {
         return with(type.get(), data);
     }
 
-    default IDataComponentHolderResource<T> without(Supplier<? extends DataComponentType<?>> type) {
+    default IDataComponentHolderResource<T, R> without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
     }
 }

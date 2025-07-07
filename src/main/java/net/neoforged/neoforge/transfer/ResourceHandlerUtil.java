@@ -17,7 +17,7 @@ public class ResourceHandlerUtil {
      * @throws ReportedException When the amount is negative
      * @see ResourceContainerContentsHandler#insert(int, IResource, int, TransactionContext)
      */
-    public static <T extends IResource> boolean isEmpty(T resource, int amount) {
+    public static boolean isEmpty(IResource<?> resource, int amount) {
         return TransferPreconditions.checkNonNegative(amount) == 0 || resource.isEmpty();
     }
 }

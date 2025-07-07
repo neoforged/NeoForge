@@ -37,7 +37,7 @@ import org.jetbrains.annotations.ApiStatus;
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
-public final class ItemResource implements IDataComponentHolderResource<Item> {
+public final class ItemResource implements IDataComponentHolderResource<Item, ItemResource> {
     //TODO provide documentation on all methods
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
     public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
@@ -100,6 +100,12 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return new ItemResource(new ItemStack(item));
     }
 
+    /**
+     * Creates an ItemResource using the default or copy of the passed in item stack.
+     * 
+     * @param itemStack stack to copy
+     * @return If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
+     */
     public static ItemResource of(ItemStack itemStack) {
         if (itemStack.isEmpty()) return EMPTY;
 
@@ -111,6 +117,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(ItemLike item) {
         if (item.asItem() == Items.AIR) return EMPTY;
@@ -119,6 +128,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
         if (item.value() == Items.AIR) return EMPTY;
@@ -128,6 +140,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(Holder<Item> item) {
         return of(item.value());
@@ -155,7 +170,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return innerStack.getItemHolder();
     }
 
-    //Defers to the stack in case there are injections done to it at some point
+    //Defers to the stack in case there are injections done to its method for accuracy.
     @Override
     public boolean isEnabled(FeatureFlagSet enabledFeatures) {
         return innerStack.isItemEnabled(enabledFeatures);
@@ -269,9 +284,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return !EnchantmentHelper.has(innerStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE);
     }
 
-    public ResourceStack<ItemResource> withAmount(int amount) {
-        if (amount == 0 || isEmpty()) return ItemResource.EMPTY_STACK;
-        return ResourceStack.of(this, amount, ItemResource.EMPTY_STACK);
+    @Override
+    public ResourceStack<ItemResource> getEmptyResourceStackInstance() {
+        return ItemResource.EMPTY_STACK;
     }
 
     @Override

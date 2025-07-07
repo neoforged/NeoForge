@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IDataComponentHolderResource<Fluid> {
+public final class FluidResource implements IDataComponentHolderResource<Fluid, FluidResource> {
     //TODO provide documentation on all methods
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
     public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.constructEmptyReference(FluidResource.EMPTY);
@@ -94,6 +94,12 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return new FluidResource(new FluidStack(fluid, 1));
     }
 
+    /**
+     * Creates an {@link FluidResource} using the default or copy of the passed in fluid stack.
+     *
+     * @param fluidStack stack to copy
+     * @return If there were no patches on the stack's data components, the fluid's default resource will be returned, otherwise a new instance with the copied stack.
+     */
     public static FluidResource of(FluidStack fluidStack) {
         if (fluidStack.isEmpty()) return FluidResource.EMPTY;
 
@@ -105,6 +111,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
      */
     public static FluidResource of(Fluid fluid) {
         if (fluid == Fluids.EMPTY) return EMPTY;
@@ -113,6 +123,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
      */
     public static FluidResource of(Holder<Fluid> fluid) {
         return of(fluid.value());
@@ -120,6 +134,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
+     * 
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
     public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
         if (fluid.value() == Fluids.EMPTY) return EMPTY;
@@ -285,9 +303,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     @Override
-    public ResourceStack<FluidResource> withAmount(int amount) {
-        if (amount == 0 || isEmpty()) return FluidResource.EMPTY_STACK;
-        return ResourceStack.of(this, amount, FluidResource.EMPTY_STACK);
+    public ResourceStack<FluidResource> getEmptyResourceStackInstance() {
+        return FluidResource.EMPTY_STACK;
     }
 
     @Override
