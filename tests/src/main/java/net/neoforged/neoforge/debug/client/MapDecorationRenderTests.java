@@ -32,7 +32,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import net.neoforged.testframework.gametest.EmptyTemplate;
 import org.joml.Matrix4f;
 
 @ForEachTest(side = Dist.CLIENT, groups = MapDecorationRenderTests.GROUP)
