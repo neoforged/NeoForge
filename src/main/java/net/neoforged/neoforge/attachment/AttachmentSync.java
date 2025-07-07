@@ -80,8 +80,13 @@ public final class AttachmentSync {
             return;
         }
         var data = FriendlyByteBufUtil.writeCustomData(buf -> {
-            // TODO: what if data is missing?
-            type.syncHandler.write(buf, holder.getData(type), false);
+            var existingData = holder.getExistingDataOrNull(type);
+            if (existingData != null) {
+                buf.writeBoolean(true);
+                type.syncHandler.write(buf, holder.getData(type), false);
+            } else {
+                buf.writeBoolean(false);
+            }
         }, registryAccess);
         var packet = new SyncAttachmentsPayload(syncTarget(holder), List.of(type), data).toVanillaClientbound();
         for (var player : players) {
@@ -147,6 +152,7 @@ public final class AttachmentSync {
                 var syncHandler = (AttachmentSyncHandler<Object>) type.syncHandler;
                 if (syncHandler != null) {
                     int indexBefore = buf.writerIndex();
+                    buf.writeBoolean(true);
                     syncHandler.write(buf, entry.getValue(), true);
                     if (indexBefore < buf.writerIndex()) {
                         // Actually wrote something
@@ -221,7 +227,8 @@ public final class AttachmentSync {
                     throw new IllegalArgumentException("Received synced attachment type without a sync handler registered: " + NeoForgeRegistries.ATTACHMENT_TYPES.getKey(type));
                 }
                 var previousValue = holder.attachments == null ? null : holder.attachments.get(type);
-                var result = syncHandler.read(holder.getExposedHolder(), buf, previousValue);
+                boolean hasAttachment = buf.readBoolean();
+                var result = hasAttachment ? syncHandler.read(holder.getExposedHolder(), buf, previousValue) : null;
                 if (result == null) {
                     if (holder.attachments != null) {
                         holder.attachments.remove(type);
