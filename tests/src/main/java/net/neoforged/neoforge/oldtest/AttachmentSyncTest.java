@@ -34,6 +34,7 @@ public class AttachmentSyncTest {
     private static final Supplier<AttachmentType<Integer>> ATTACHMENT_TYPE = ATTACHMENT_TYPES.register("test",
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT.fieldOf("value"))
+                    .copyOnDeath()
                     // TODO: use streamcodec version at some point
                     .sync(new AttachmentSyncHandler<Integer>() {
                         @Override

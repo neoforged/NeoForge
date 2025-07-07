@@ -37,6 +37,9 @@ public final class AttachmentInternals {
                 Object copy = copyHandler.copy(entry.getValue(), to.getExposedHolder(), provider);
                 if (copy != null) {
                     to.getAttachmentMap().put(type, copy);
+                    // TODO: do we want to sync here? the entity is potentially not fully added to the world yet...
+                    // TODO: this doesn't even work for respawns and presumably for conversions since the entity is not tracked yet...
+                    to.syncData(type);
                 }
             }
         }

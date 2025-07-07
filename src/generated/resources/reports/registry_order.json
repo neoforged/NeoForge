@@ -96,6 +96,7 @@
     "neoforge:global_loot_modifier_serializers",
     "neoforge:holder_set_type",
     "neoforge:ingredient_serializer",
-    "neoforge:structure_modifier_serializers"
+    "neoforge:structure_modifier_serializers",
+    "neoforge:synced_attachment_types"
   ]
 }
