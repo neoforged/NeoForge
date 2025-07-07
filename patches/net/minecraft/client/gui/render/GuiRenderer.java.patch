@@ -71,7 +71,7 @@
 +        return false;
      }
  
-     private void renderItemToAtlas(ItemStackRenderState p_416159_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
+     private void renderItemToAtlas(TrackingItemStackRenderState p_428843_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
 @@ -691,7 +_,7 @@
              this.itemsAtlasDepthView.close();
          }

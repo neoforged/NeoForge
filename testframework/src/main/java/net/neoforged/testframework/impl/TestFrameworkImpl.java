@@ -42,6 +42,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -322,7 +323,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
                 () -> PacketDistributor.sendToAllPlayers(packet),
-                () -> PacketDistributor.sendToServer(packet),
+                () -> ClientPacketDistributor.sendToServer(packet),
                 null);
     }
 
@@ -349,7 +350,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         final ChangeEnabledPayload packet = new ChangeEnabledPayload(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
                 () -> PacketDistributor.sendToAllPlayers(packet),
-                () -> PacketDistributor.sendToServer(packet),
+                () -> ClientPacketDistributor.sendToServer(packet),
                 null);
     }
 

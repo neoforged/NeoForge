@@ -48,7 +48,7 @@ immaculate {
         toggleOff = 'spotless:off'
         toggleOn = 'spotless:on'
         eclipse {
-            version '3.37.0'
+            version project.jdt_core_version
             config = rootProject.file('codeformat/formatter-config.xml')
         }
 
