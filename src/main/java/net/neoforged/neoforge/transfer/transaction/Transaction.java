@@ -26,7 +26,7 @@ import net.minecraft.ReportedException;
  * <li>Calling {@link TransactionManager#open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
  * Committing a nested transaction will validate the changes that happened, but they may
  * still be cancelled later if a parent transaction is cancelled.
- * Aborting a nested transaction immediately reverts the changes - cancelling any modification made after the call
+ * Aborting a nested transaction immediately reverts the changes within that nested transaction - cancelling any modification made after the call
  * to {@link TransactionManager#open}.</li>
  * </ul>
  *
