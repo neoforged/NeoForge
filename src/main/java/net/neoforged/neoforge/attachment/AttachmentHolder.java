@@ -138,6 +138,8 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     /**
      * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(ValueOutput)}.
+     *
+     * <p>This does not trigger {@link IAttachmentHolder#syncData syncing} of the deserialized attachments.
      */
     protected final void deserializeAttachments(ValueInput input) {
         for (var key : input.keySet()) {

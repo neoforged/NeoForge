@@ -27,7 +27,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FriendlyByteBufUtil;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.network.connection.ConnectionType;
@@ -57,7 +56,7 @@ public final class AttachmentSync {
         }
     };
 
-    static SyncAttachmentsPayload.Target syncTarget(AttachmentHolder holder) {
+    private static SyncAttachmentsPayload.Target syncTarget(AttachmentHolder holder) {
         return switch (holder) {
             case BlockEntity blockEntity -> new SyncAttachmentsPayload.BlockEntityTarget(blockEntity.getBlockPos());
             case AttachmentHolder.AsField asField when asField.getExposedHolder() instanceof LevelChunk chunk -> new SyncAttachmentsPayload.ChunkTarget(chunk.getPos());
@@ -67,6 +66,9 @@ public final class AttachmentSync {
         };
     }
 
+    /**
+     * Syncs the update (possibly removal) of a single attachment type to a list of players.
+     */
     private static <T> void syncUpdate(AttachmentHolder holder, AttachmentType<T> type, List<ServerPlayer> players) {
         RegistryAccess registryAccess = null;
         for (var player : players) {
@@ -132,6 +134,9 @@ public final class AttachmentSync {
         syncUpdate(level, type, level.players());
     }
 
+    /**
+     * Constructs a payload to sync all syncable attachments to a player, if any.
+     */
     @Nullable
     private static SyncAttachmentsPayload syncInitialAttachments(AttachmentHolder holder, ServerPlayer to) {
         if (holder.attachments == null) {
@@ -188,7 +193,7 @@ public final class AttachmentSync {
     /**
      * Handles initial syncing of entity attachments, except for a player's own attachments.
      */
-    public static void sendEntityPairingData(Entity entity, ServerPlayer to, Consumer<Packet<? super ClientGamePacketListener>> packetConsumer) {
+    public static void syncInitialEntityAttachments(Entity entity, ServerPlayer to, Consumer<Packet<? super ClientGamePacketListener>> packetConsumer) {
         var packet = syncInitialAttachments(entity, to);
         if (packet != null) {
             packetConsumer.accept(packet.toVanillaClientbound());
@@ -198,10 +203,8 @@ public final class AttachmentSync {
     /**
      * Handles initial syncing of a player's own attachments.
      */
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        var player = (ServerPlayer) event.getEntity();
-        var packet = syncInitialAttachments(event.getEntity(), player);
+    public static void syncInitialPlayerAttachments(ServerPlayer player) {
+        var packet = syncInitialAttachments(player, player);
         if (packet != null) {
             player.connection.send(packet.toVanillaClientbound());
         }
@@ -210,7 +213,7 @@ public final class AttachmentSync {
     /**
      * Handles initial syncing of level attachments. Needs to be called for login, respawn and teleports.
      */
-    public static void sendLevelInfo(ServerLevel level, ServerPlayer to) {
+    public static void syncInitialLevelAttachments(ServerLevel level, ServerPlayer to) {
         var packet = syncInitialAttachments(level, to);
         if (packet != null) {
             to.connection.send(packet.toVanillaClientbound());

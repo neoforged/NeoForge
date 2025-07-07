@@ -30,10 +30,13 @@
              this.sendPlayerPermissionLevel(p_11263_);
              p_11263_.getStats().markAllDirty();
              p_11263_.getRecipeBook().sendInitialRecipeBook(p_11263_);
-@@ -244,6 +_,7 @@
+@@ -244,6 +_,10 @@
                  p_11263_.loadAndSpawnParentVehicle(p_421335_);
              });
              p_11263_.initInventoryMenu();
++
++            // Neo: sync player's attachments on login
++            net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(p_11263_);
 +            net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn(p_11263_);
          }
      }
@@ -84,10 +87,12 @@
              serverplayer.copyRespawnPosition(p_11237_);
          }
  
-@@ -459,6 +_,7 @@
+@@ -459,6 +_,9 @@
          this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
          serverplayer.initInventoryMenu();
          serverplayer.setHealth(serverplayer.getHealth());
++        // Neo: sync player's attachments on respawn
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(serverplayer);
 +        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
          ServerPlayer.RespawnConfig serverplayer$respawnconfig = serverplayer.getRespawnConfig();
          if (!p_11238_ && serverplayer$respawnconfig != null) {
@@ -125,7 +130,7 @@
  
          p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
          this.server.tickRateManager().updateJoiningPlayer(p_11230_);
-+        net.neoforged.neoforge.attachment.AttachmentSync.sendLevelInfo(p_11231_, p_11230_);
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialLevelAttachments(p_11231_, p_11230_);
      }
  
      public void sendAllPlayerInfo(ServerPlayer p_11293_) {
