@@ -7,8 +7,8 @@ package net.neoforged.neoforge.oldtest;
 
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,12 +20,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
 @Mod(AttachmentSyncTest.MOD_ID)
 public class AttachmentSyncTest {
@@ -35,18 +33,7 @@ public class AttachmentSyncTest {
             () -> AttachmentType.builder(() -> 0)
                     .serialize(Codec.INT.fieldOf("value"))
                     .copyOnDeath()
-                    // TODO: use streamcodec version at some point
-                    .sync(new AttachmentSyncHandler<Integer>() {
-                        @Override
-                        public void write(RegistryFriendlyByteBuf buf, Integer attachment, boolean initialSync) {
-                            buf.writeInt(attachment);
-                        }
-
-                        @Override
-                        public Integer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable Integer previousValue) {
-                            return buf.readInt();
-                        }
-                    })
+                    .sync(ByteBufCodecs.VAR_INT)
                     .build());
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
     static {

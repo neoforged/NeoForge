@@ -10,11 +10,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -264,10 +266,32 @@ public final class AttachmentType<T> {
             return this;
         }
 
-        // TODO: Predicate<ServerPlayer> version too? Some data is not relevant to other players.
+        /**
+         * Requests that this attachment be synced to all clients that receive the holding object.
+         *
+         * <p>The full data is always written using the provided stream codec.
+         */
         public Builder<T> sync(StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+            return sync((holder, to) -> true, streamCodec);
+        }
+
+        /**
+         * Requests that this attachment be synced to some clients.
+         *
+         * <p>The full data is always written using the provided stream codec.
+         *
+         * @param sendToPlayer A predicate that determines whether the data should be sent to a specific player that receives the holding object.
+         * @see AttachmentSyncHandler#sendToPlayer
+         */
+        public Builder<T> sync(BiPredicate<IAttachmentHolder, ServerPlayer> sendToPlayer, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+            Objects.requireNonNull(sendToPlayer);
             Objects.requireNonNull(streamCodec);
             return sync(new AttachmentSyncHandler<>() {
+                @Override
+                public boolean sendToPlayer(IAttachmentHolder holder, ServerPlayer to) {
+                    return sendToPlayer.test(holder, to);
+                }
+
                 @Override
                 public void write(RegistryFriendlyByteBuf buf, T attachment, boolean initialSync) {
                     streamCodec.encode(buf, attachment);
