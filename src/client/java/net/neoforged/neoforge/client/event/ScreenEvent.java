@@ -210,7 +210,7 @@ public abstract class ScreenEvent extends Event {
         }
 
         /**
-         * Fired after the screen's background layer and elements are drawn.
+         * Fired after the screen's renderBackground and before its render method.
          *
          * <p>This can be used for rendering elements that must be below tooltips and the dragged stack,
          * such as slot or item stack specific overlays.</p>
