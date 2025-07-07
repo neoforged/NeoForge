@@ -6,10 +6,7 @@
 package net.neoforged.neoforge.debug;
 
 import java.util.function.Consumer;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -18,7 +15,6 @@ import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
-import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(groups = EventTests.GROUP)
@@ -51,33 +47,5 @@ public class EventTests {
                         Items.ACACIA_FENCE.getDefaultInstance(),
                         ItemStack::isSameItem))
                 .thenSucceed());
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder
-    static void alwaysFail(GameTestHelper helper) {
-        // The line below shall always fail
-        helper.fail(Component.literal("For testing... always fail"));
-
-        // Check warnings...
-        new Object() {
-            @Override
-            protected void finalize() throws Throwable {
-                System.out.println("hi!");
-                super.finalize();
-            }
-        };
-    }
-
-    @GameTest
-    @EmptyTemplate
-    @TestHolder
-    static void alwaysFail2(ExtendedGameTestHelper helper) {
-        helper.startSequence(() -> helper.makeMockPlayer(GameType.SPECTATOR))
-                .thenExecute(player -> {
-                    // The player should have health, so this also fails
-                    helper.assertEntityProperty(player, LivingEntity::getHealth, "health", 0);
-                });
     }
 }

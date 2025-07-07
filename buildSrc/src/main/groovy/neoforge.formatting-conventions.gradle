@@ -40,8 +40,6 @@ final generatePackageInfos = tasks.register('generatePackageInfos', GeneratePack
 }
 
 immaculate {
-    truncateExceptions = false
-    reportIssuesRootPath = rootProject.isolated.projectDirectory.asFile
     workflows.register('java') {
         java()
         trailingNewline()
