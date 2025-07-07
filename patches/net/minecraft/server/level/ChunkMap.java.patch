@@ -109,7 +109,7 @@
 +            for (var connection : trackedEntity.seenBy) {
 +                ret.add(connection.getPlayer());
 +            }
-+            return List.copyOf(ret);
++            return java.util.Collections.unmodifiableList(ret);
 +        } else {
 +            return List.of();
 +        }
