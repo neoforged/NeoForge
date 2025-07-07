@@ -119,12 +119,13 @@ public interface IAttachmentHolder {
      *
      * @see AttachmentSyncHandler
      */
-    default void syncData(AttachmentType<?> type) {
-        // TODO: do nothing by default?
-    }
+    void syncData(AttachmentType<?> type);
 
     /**
      * Syncs a data attachment of the given type with all relevant clients.
+     *
+     * <p>If there is currently no attachment of the given type,
+     * the removal of the attachment is synced to the client.
      *
      * @see AttachmentSyncHandler
      */
