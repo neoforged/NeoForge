@@ -17,7 +17,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Groupable;
 import org.jetbrains.annotations.Nullable;
@@ -104,26 +105,20 @@ public interface Test extends Groupable {
     }
 
     /**
-     * A group of collectors by {@link EventBusSubscriber.Bus bus}.
+     * A group of collectors by bus.
      */
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
     interface EventListenerGroup {
         /**
-         * Gets the collector for a bus.
-         *
-         * @param bus the bus to get the collector for
-         * @return the collector associated with the bus
+         * {@return the listener collector for the {@link ModContainer#getEventBus() mod event bus}}
          */
-        EventListenerCollector getFor(EventBusSubscriber.Bus bus);
+        EventListenerCollector mod();
 
-        default EventListenerCollector mod() {
-            return getFor(EventBusSubscriber.Bus.MOD);
-        }
-
-        default EventListenerCollector forge() {
-            return getFor(EventBusSubscriber.Bus.GAME);
-        }
+        /**
+         * {@return the listener collector for the {@link NeoForge#EVENT_BUS game event bus}}
+         */
+        EventListenerCollector forge();
 
         /**
          * A collector of event listeners which automatically unregisters listeners when a test is disabled.

@@ -31,7 +31,6 @@ public record FrameworkConfiguration(
         @Nullable Supplier<ClientConfiguration> clientConfiguration,
         List<SummaryDumper> dumpers,
         MissingDescriptionAction onMissingDescription) {
-
     public static Builder builder(ResourceLocation id) {
         return new Builder(id);
     }
@@ -43,6 +42,7 @@ public record FrameworkConfiguration(
     public MutableTestFramework create() {
         return new TestFrameworkImpl(this);
     }
+
     public static final class Builder {
         private final ResourceLocation id;
         private final Collection<Feature> features = EnumSet.noneOf(Feature.class);

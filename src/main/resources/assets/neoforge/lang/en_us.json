@@ -68,6 +68,7 @@
   "fml.modloadingissue.feature_flags.loading_error": "Failed to load FeatureFlag data at {0} in mod {100,modinfo,id}: {102,exc,msg}",
 
   "loadwarning.neoforge.prbuild": "This build of NeoForge was created by a community member and is thus §c§lUNSUPPORTED§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
 
   "commands.neoforge.arguments.enum.invalid": "Enum constant must be one of %1$s, found %2$s",
   "commands.neoforge.dimensions.list": "Currently registered dimensions by type:",

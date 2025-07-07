@@ -24,7 +24,7 @@ public class CustomItemDecorationsTest {
 
     public CustomItemDecorationsTest() {}
 
-    @EventBusSubscriber(modid = CustomItemDecorationsTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = CustomItemDecorationsTest.MOD_ID, value = Dist.CLIENT)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onRegisterItemDecorations(final RegisterItemDecorationsEvent event) {

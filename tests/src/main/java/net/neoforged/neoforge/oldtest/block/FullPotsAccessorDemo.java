@@ -214,7 +214,7 @@ public class FullPotsAccessorDemo {
         }
     }
 
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     private static class ClientHandler {
         @SubscribeEvent
         public static void registerBlockStateModelType(final RegisterBlockStateModels event) {
