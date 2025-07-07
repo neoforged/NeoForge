@@ -26,6 +26,7 @@ public interface IResource<T extends IResource<T>> {
     /**
      * @return The empty resource stack of the resource type. If the resource type is classified as never being empty, then a defaulting instance should be specified.
      * @see ItemResource#EMPTY_STACK
+     * @see FluidResource#EMPTY_STACK
      */
     ResourceStack<T> getEmptyResourceStackInstance();
 
@@ -43,6 +44,7 @@ public interface IResource<T extends IResource<T>> {
     /**
      * @return The empty instance of the resource type. If the resource type is classified as never being empty, then a defaulting instance should be specified.
      * @see ItemResource#EMPTY
+     * @see FluidResource#EMPTY
      */
     @ApiStatus.NonExtendable
     default T getEmptyInstance() {

@@ -43,23 +43,16 @@ public final class ResourceStack<T extends IResource<T>> {
      * @return A new resource stack (or the empty instance if had been empty).
      * @see ItemResource#withAmount(int)
      * @see FluidResource#withAmount(int)
-     * @throws NullPointerException     When the empty instance is null
      * @throws IllegalArgumentException When the amount is negative
      */
     public static <T extends IResource<T>> ResourceStack<T> of(T resource, int amount) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount))
-            return resource.getEmptyResourceStackInstance();
+        if (ResourceHandlerUtil.isEmpty(resource, amount)) {
+            var existingEmpty = resource.getEmptyResourceStackInstance();
+            //noinspection ReplaceNullCheck, ConstantValue This allows assigning the empty instances instead of having a different method for it.
+            if (existingEmpty != null) return existingEmpty;
+            return new ResourceStack<>(resource, 0);
+        }
         return new ResourceStack<>(resource, amount);
-    }
-
-    /**
-     * Used only for initializing the Empty or default resource stack reference for a given resource type.
-     * For items, fluids, or resource types provided by an API, don't construct your own, use {@link ItemResource#EMPTY}, {@link FluidResource#EMPTY}, and the API's references respectively.
-     *
-     * @return A new reference bound to your resource type.
-     */
-    public static <T extends IResource<T>> ResourceStack<T> constructEmptyReference(T resource) {
-        return new ResourceStack<>(resource, 0);
     }
 
     /**
@@ -167,8 +160,18 @@ public final class ResourceStack<T extends IResource<T>> {
      * @return A new this instance with an updated resource should it have changed, otherwise it returns itself.
      */
     public ResourceStack<T> with(UnaryOperator<T> operator) {
+        return with(operator, amount);
+    }
+
+    /**
+     * @param amount the amount the new stack should be.
+     * @return A new this instance with an updated resource should it have changed, otherwise it returns itself.
+     */
+    public ResourceStack<T> with(UnaryOperator<T> operator, int amount) {
+        if (amount == 0) return resource().getEmptyResourceStackInstance();
+
         T result = operator.apply(resource);
-        if (result.equals(resource)) return this;
+        if (result.equals(resource) && amount == amount()) return this;
         return ResourceStack.of(result, amount);
     }
 

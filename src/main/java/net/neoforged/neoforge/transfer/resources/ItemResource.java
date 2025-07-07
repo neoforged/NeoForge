@@ -40,7 +40,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class ItemResource implements IDataComponentHolderResource<Item, ItemResource> {
     //TODO provide documentation on all methods
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
-    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.of(ItemResource.EMPTY, 0);
 
     /**
      * Codec for an item resource.

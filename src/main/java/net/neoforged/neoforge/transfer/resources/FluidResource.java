@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 public final class FluidResource implements IDataComponentHolderResource<Fluid, FluidResource> {
     //TODO provide documentation on all methods
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
-    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.constructEmptyReference(FluidResource.EMPTY);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.of(FluidResource.EMPTY, 0);
 
     /**
      * Codec for a fluid resource.
