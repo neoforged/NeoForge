@@ -24,8 +24,7 @@ public record SyncAttachmentsPayload(
         Target target,
         List<AttachmentType<?>> types,
         byte[] syncPayload)
-        implements ClientDispatchPayload {
-
+        implements CustomPacketPayload {
     public static final Type<SyncAttachmentsPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "sync_attachments"));;
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncAttachmentsPayload> STREAM_CODEC = StreamCodec.composite(
             Target.STREAM_CODEC,
@@ -40,6 +39,7 @@ public record SyncAttachmentsPayload(
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
+
     public sealed interface Target {
         StreamCodec<RegistryFriendlyByteBuf, Target> STREAM_CODEC = StreamCodec.of(
                 (buf, target) -> {

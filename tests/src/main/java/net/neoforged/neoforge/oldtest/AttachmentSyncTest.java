@@ -5,32 +5,24 @@
 
 package net.neoforged.neoforge.oldtest;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +33,7 @@ public class AttachmentSyncTest {
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MOD_ID);
     private static final Supplier<AttachmentType<Integer>> ATTACHMENT_TYPE = ATTACHMENT_TYPES.register("test",
             () -> AttachmentType.builder(() -> 0)
-                    .serialize(Codec.INT)
+                    .serialize(Codec.INT.fieldOf("value"))
                     // TODO: use streamcodec version at some point
                     .sync(new AttachmentSyncHandler<Integer>() {
                         @Override
@@ -55,80 +47,112 @@ public class AttachmentSyncTest {
                         }
                     })
                     .build());
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MOD_ID);
+    static {
+        ITEMS.registerItem("tester_blockentity", BlockEntityTester::new);
+        ITEMS.registerItem("tester_chunk", ChunkTester::new);
+        ITEMS.registerItem("tester_entity", EntityTester::new);
+        ITEMS.registerItem("tester_level", LevelTester::new);
+    }
 
     public AttachmentSyncTest(IEventBus modBus) {
         ATTACHMENT_TYPES.register(modBus);
-
-        NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
-            registerCommands(event.getDispatcher(), "attachment_sync_test");
-        });
+        ITEMS.register(modBus);
     }
 
-    @EventBusSubscriber(Dist.CLIENT)
-    static class ClientOnly {
-        @SubscribeEvent
-        private static void registerClientCommands(RegisterClientCommandsEvent event) {
-            registerCommands(event.getDispatcher(), "attachment_sync_test_client");
+    /**
+     * On the logical client: print attachment value.
+     * On the logical server: increment attachment value, with a reset to 0 when we get to 5, and print the old and new values.
+     */
+    private static void testInteraction(String what, Player player, IAttachmentHolder holder) {
+        if (player.level().isClientSide()) {
+            Integer data = holder.getExistingDataOrNull(ATTACHMENT_TYPE);
+            player.displayClientMessage(Component.literal(
+                    "[Client] Current value on %s is %s.".formatted(
+                            what,
+                            data == null ? "null" : data.toString())),
+                    false);
+        } else {
+            Integer value = holder.getExistingDataOrNull(ATTACHMENT_TYPE);
+            int newValue = value == null ? 1 : value + 1;
+
+            if (newValue == 5) {
+                holder.removeData(ATTACHMENT_TYPE);
+            } else {
+                holder.setData(ATTACHMENT_TYPE, newValue);
+            }
+
+            player.displayClientMessage(Component.literal(
+                    "[Server] Changed value on %s from %s to %s.".formatted(
+                            what,
+                            value == null ? "null" : value.toString(),
+                            newValue == 5 ? "null" : newValue)),
+                    false);
         }
     }
 
-    private static final SimpleCommandExceptionType ERROR_NOT_A_BLOCK_ENTITY = new SimpleCommandExceptionType(Component.literal("Not a block entity"));
+    private static class BlockEntityTester extends Item {
+        public BlockEntityTester(Properties properties) {
+            super(properties);
+        }
 
-    private static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, String commandName) {
-        dispatcher.register(Commands.literal(commandName)
-                .requires(source -> source.hasPermission(4))
-                .then(Commands.literal("blockentity")
-                        .then(
-                                addGetSet(
-                                        Commands.argument("pos", BlockPosArgument.blockPos()),
-                                        context -> {
-                                            var pos = BlockPosArgument.getBlockPos(context, "pos");
-                                            var blockEntity = context.getSource().getUnsidedLevel().getBlockEntity(pos);
-                                            if (blockEntity == null) {
-                                                throw ERROR_NOT_A_BLOCK_ENTITY.create();
-                                            }
-                                            return blockEntity;
-                                        })))
-                .then(Commands.literal("chunk")
-                        .then(
-                                addGetSet(
-                                        Commands.argument("pos", BlockPosArgument.blockPos()),
-                                        context -> {
-                                            var pos = BlockPosArgument.getBlockPos(context, "pos");
-                                            return context.getSource().getUnsidedLevel().getChunkAt(pos);
-                                        })))
-                .then(Commands.literal("entity")
-                        .then(
-                                addGetSet(
-                                        Commands.argument("entity", EntityArgument.entity()),
-                                        context -> EntityArgument.getEntity(context, "entity"))))
-                .then(
-                        addGetSet(
-                                Commands.literal("level"),
-                                context -> context.getSource().getUnsidedLevel())));
+        @Override
+        public InteractionResult useOn(UseOnContext context) {
+            if (context.getPlayer() instanceof Player p
+                    && context.getLevel().getBlockEntity(context.getClickedPos()) instanceof BlockEntity be) {
+                testInteraction("block entity", p, be);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+            return super.useOn(context);
+        }
     }
 
-    private interface HolderFinder {
-        IAttachmentHolder find(CommandContext<CommandSourceStack> source) throws CommandSyntaxException;
+    private static class ChunkTester extends Item {
+        public ChunkTester(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            testInteraction("chunk", player, level.getChunkAt(player.blockPosition()));
+            return InteractionResult.SUCCESS_SERVER;
+        }
     }
 
-    private static ArgumentBuilder<CommandSourceStack, ?> addGetSet(ArgumentBuilder<CommandSourceStack, ?> builder, HolderFinder holderFinder) {
-        return builder
-                .then(Commands.literal("get")
-                        .executes(context -> {
-                            var holder = holderFinder.find(context);
-                            var data = holder.getExistingData(ATTACHMENT_TYPE).orElse(null);
-                            context.getSource().sendSuccess(() -> Component.literal("Value of data: " + data), false);
-                            return Command.SINGLE_SUCCESS;
-                        }))
-                .then(Commands.literal("set")
-                        .then(Commands.argument("value", IntegerArgumentType.integer())
-                                .executes(context -> {
-                                    var holder = holderFinder.find(context);
-                                    var data = IntegerArgumentType.getInteger(context, "value");
-                                    var previousData = holder.setData(ATTACHMENT_TYPE, data);
-                                    context.getSource().sendSuccess(() -> Component.literal("Previous value of data: " + previousData + ". New value: " + data), false);
-                                    return Command.SINGLE_SUCCESS;
-                                })));
+    private static class EntityTester extends Item {
+        public EntityTester(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity livingEntity, InteractionHand hand) {
+            if (player.isSecondaryUseActive()) {
+                // Test the player itself if sneaking
+                return super.interactLivingEntity(stack, player, livingEntity, hand);
+            }
+            testInteraction("entity", player, livingEntity);
+            return InteractionResult.SUCCESS_SERVER;
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            if (!player.isSecondaryUseActive()) {
+                return super.use(level, player, hand);
+            }
+            testInteraction("player", player, player);
+            return InteractionResult.SUCCESS_SERVER;
+        }
+    }
+
+    private static class LevelTester extends Item {
+        public LevelTester(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+            testInteraction("level", player, level);
+            return InteractionResult.SUCCESS_SERVER;
+        }
     }
 }
