@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-@FieldsAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@ FieldsAreNonnullByDefault @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 package net.neoforged.neoforge.attachment;
 
