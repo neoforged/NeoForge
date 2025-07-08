@@ -1,13 +1,14 @@
 --- a/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
-@@ -230,7 +_,10 @@
+@@ -230,7 +_,11 @@
              p_281357_.renderItemDecorations(this.font, p_283466_, p_282403_, p_283601_);
          } else {
              p_281357_.renderItemDecorations(this.font, p_282046_, p_282403_, p_283601_, p_282046_.getCount() == 1 ? "1" : null);
 -            p_281357_.renderItemDecorations(this.font, p_283466_, p_282403_ + 14, p_283601_, p_283466_.getCount() == 1 ? "1" : null);
-+            // Forge: fixes Forge-8806, code for count rendering taken from GuiGraphics#renderGuiItemDecorations
++            // Neo: Fixes MCForge#8806: forced item decorations (e.g., ItemStack#isBarVisible() returns true) were rendered for discount count text
++            // Code for count rendering taken from GuiGraphics#renderItemCount
 +            String count = p_283466_.getCount() == 1 ? "1" : String.valueOf(p_283466_.getCount());
-+            p_281357_.drawString(font, count, p_282403_ + 14 + 19 - 2 - font.width(count), p_283601_ + 6 + 3, 0xFFFFFF, true);
++            p_281357_.drawString(font, count, p_282403_ + 14 + 19 - 2 - font.width(count), p_283601_ + 6 + 3, 0xFFFFFFFF, true);
 +
              p_281357_.blitSprite(RenderPipelines.GUI_TEXTURED, DISCOUNT_STRIKETHRUOGH_SPRITE, p_282403_ + 7, p_283601_ + 12, 9, 2);
          }
