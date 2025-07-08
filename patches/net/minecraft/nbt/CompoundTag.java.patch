@@ -27,14 +27,14 @@
      }
  
 +    /**
-+     * Neo: create a compound tag that is generally suitable to hold the given amount of mappings
++     * Neo: create a compound tag that is generally suitable to hold the given amount of entries
 +     * without needing to resize the internal map.
 +     *
-+     * @param numMappings the expected number of mappings that the compound tag will have
++     * @param expectedEntries the expected number of entries that the compound tag will have
 +     * @see HashMap#newHashMap(int)
 +     */
-+    public CompoundTag(int numMappings) {
-+        this(HashMap.newHashMap(numMappings));
++    public CompoundTag(int expectedEntries) {
++        this(HashMap.newHashMap(expectedEntries));
 +    }
 +
      @Override
