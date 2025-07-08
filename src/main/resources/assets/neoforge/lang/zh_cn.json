@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "由模组{100,modinfo,id}提供的扩展文件{0}不存在",
   "fml.modloadingissue.feature_flags.loading_error": "无法加载模组{100,modinfo,id}中位于{0}的枚举扩展数据：{102,exc,msg}",
   "loadwarning.neoforge.prbuild": "这个 NeoForge 构建由社区成员创建，是 §c§l不受支持§r 的",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "枚举常量必须是 %1$s 之一，但发现了 %2$s",
   "commands.neoforge.dimensions.list": "当前已注册的维度，按维度类型展示:",
   "commands.neoforge.dump.success": "据 %s 注册表内容创建的新文件位于 %s",

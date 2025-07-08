@@ -522,6 +522,7 @@ public class DataGeneratorTest {
 
     private static class Advancements implements AdvancementSubProvider {
         @Override
+        @SuppressWarnings("removal")
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
             var obtainDirt = Advancement.Builder.advancement()
                     .display(Items.DIRT,

@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -124,7 +125,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 boolean isGameTestRun = event.getServer() instanceof GameTestServer;
 
                 // Summarise test results
-                var builder = new TestSummary.Builder(id(), isGameTestRun);
+                var builder = new TestSummary.Builder(this, isGameTestRun);
                 tests().all().forEach(test -> {
                     String id = test.id();
                     Test.Status status = tests().getStatus(id);
@@ -316,7 +317,9 @@ public class TestFrameworkImpl implements MutableTestFramework {
         tests.globalListeners.forEach(listener -> listener.onStatusChange(this, test, oldStatus, newStatus, changer));
         test.listeners().forEach(listener -> listener.onStatusChange(this, test, oldStatus, newStatus, changer));
 
-        logger.info("Status of test '{}' has had status changed to {}{}.", test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
+        BiConsumer<String, Object[]> logger = newStatus.result() == Test.Result.FAILED ? this.logger::error : this.logger::info;
+
+        logger.accept("Test '{}' has had status changed to {}{}.", new Object[] { test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "" });
 
         if (server == null && !inClientWorld) return;
 
@@ -460,6 +463,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 test.groups().forEach(group -> getOrCreateGroup(group).add(test));
             }
             test.init(TestFrameworkImpl.this);
+
+            if (test.asGameTest() == null) {
+                getOrCreateGroup("manual").add(test);
+            }
         }
 
         private Group addGroupToParents(Group group) {

@@ -27,7 +27,7 @@ public class DatapackEntryTests {
 
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that datapack entry conditions are generated correctly", enabledByDefault = true)
+    @TestHolder(description = "Tests that datapack entry conditions are generated correctly")
     static void conditionalDatapackEntries(final DynamicTest test, final RegistrationHelper reg) {
         ResourceKey<DamageType> CONDITIONAL_FALSE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "conditional_false"));
         ResourceKey<DamageType> CONDITIONAL_TRUE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(reg.modId(), "conditional_true"));
