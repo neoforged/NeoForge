@@ -440,7 +440,7 @@ public abstract class PlayerEvent extends LivingEvent {
      * <li>Before resizing the stacks.</li>
      * </ul>
      * <p>
-     * The event is fired via {@link EventHooks#firePlayerSmithingEvent(Player, ItemStack, ItemStack, ItemStack, ItemStack)} <br>
+     * The event is fired via {@link EventHooks#firePlayerSmithedEvent(Player, ItemStack, ItemStack, ItemStack, ItemStack)} <br>
      * and is posted to the {@link NeoForge#EVENT_BUS}.
      */
     public static class ItemSmithedEvent extends PlayerEvent {

@@ -25,8 +25,8 @@ import net.neoforged.testframework.gametest.GameTest;
 public class CraftingEventTests {
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that ItemSmeltingEvent is fired correctly")
-    static void itemSmeltingEventTest(final DynamicTest test) {
+    @TestHolder(description = "Tests that ItemSmeltedEvent is fired correctly")
+    static void itemSmeltedEventTest(final DynamicTest test) {
         AtomicInteger timesFired = new AtomicInteger(0);
         test.whenEnabled(listeners -> {
             listeners.forge().addListener((final PlayerEvent.ItemSmeltedEvent event) -> {
