@@ -1197,9 +1197,10 @@ public class CommonHooks {
     @ApiStatus.Internal
     public static void writeAdditionalLevelSaveData(WorldData worldData, CompoundTag levelTag) {
         if (CommonHooks.modList == null) {
-            var modListTag = new ListTag();
-            ModList.get().getMods().forEach(mi -> {
-                final CompoundTag mod = new CompoundTag();
+            var mods = ModList.get().getMods();
+            var modListTag = new ListTag(mods.size());
+            mods.forEach(mi -> {
+                final CompoundTag mod = new CompoundTag(2);
                 mod.putString("ModId", mi.getModId());
                 mod.putString("ModVersion", MavenVersionTranslator.artifactVersionToString(mi.getVersion()));
                 modListTag.add(mod);
