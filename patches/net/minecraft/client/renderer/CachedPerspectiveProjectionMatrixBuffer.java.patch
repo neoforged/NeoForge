@@ -5,7 +5,7 @@
  
      private Matrix4f createProjectionMatrix(int p_418522_, int p_418062_, float p_418303_) {
 -        return new Matrix4f().perspective(p_418303_ * (float) (Math.PI / 180.0), (float)p_418522_ / p_418062_, this.zNear, this.zFar);
-+        return new Matrix4f().perspective(p_418303_ * (float) (Math.PI / 180.0), (float)p_418522_ / p_418062_, this.zNear, this.zFar, RenderSystem.getDevice().properties().depthZeroToOne);
++        return new Matrix4f().perspective(p_418303_ * (float) (Math.PI / 180.0), (float)p_418522_ / p_418062_, this.zNear, this.zFar, RenderSystem.getDevice().properties().depthZeroToOne());
      }
  
      @Override

@@ -58,7 +58,7 @@
              0.05F,
 -            this.getDepthFar()
 +            this.getDepthFar(),
-+            RenderSystem.getDevice().properties().depthZeroToOne
++            RenderSystem.getDevice().properties().depthZeroToOne()
          );
      }
  

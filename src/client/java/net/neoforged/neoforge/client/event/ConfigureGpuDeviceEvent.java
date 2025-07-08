@@ -10,15 +10,15 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
 
-public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent {
+public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuDeviceFeatures {
     private final GpuDeviceProperties deviceProperties;
     private final GpuDeviceFeatures availableFeatures;
-    private final GpuDeviceFeatures enabledFeatures;
 
-    public ConfigureGpuDeviceEvent(GpuDeviceProperties deviceProperties, GpuDeviceFeatures availableFeatures, GpuDeviceFeatures enabledFeatures) {
+    private boolean logicOp = false;
+
+    public ConfigureGpuDeviceEvent(GpuDeviceProperties deviceProperties, GpuDeviceFeatures availableFeatures) {
         this.deviceProperties = deviceProperties;
         this.availableFeatures = availableFeatures;
-        this.enabledFeatures = enabledFeatures;
     }
 
     public GpuDeviceProperties getDeviceProperties() {
@@ -29,7 +29,15 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent {
         return availableFeatures;
     }
 
-    public GpuDeviceFeatures getEnabledFeatures() {
-        return enabledFeatures;
+    @Override
+    public boolean logicOp() {
+        return logicOp;
+    }
+
+    public void enableLogicOp() {
+        if (!availableFeatures.logicOp()) {
+            throw new UnsupportedOperationException("LogicOp is unavailable");
+        }
+        logicOp = true;
     }
 }
