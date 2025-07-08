@@ -77,7 +77,7 @@ import org.jetbrains.annotations.Nullable;
 public class CustomItemDisplayContextTest {
     public static final String MODID = "custom_transformtype_test";
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MODID)
     private static class RendererEvents {
         public static final ItemDisplayContext HANGING = ItemDisplayContext.valueOf("NEOTESTS_HANGING");
 

@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.RenderTypeHelper;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerChangeGameTypeEvent;
@@ -70,7 +71,7 @@ public class ClientEventTests {
         test.framework().modEventBus().addListener((final RegisterRenderBuffersEvent event) -> {
             event.registerRenderBuffer(RenderType.lightning());
         });
-        test.framework().modEventBus().addListener((final RenderLevelStageEvent.RegisterStageEvent event) -> {
+        test.framework().modEventBus().addListener((final AddClientReloadListenersEvent event) -> {
             try {
                 var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
                 var field = bufferSource.getClass().getDeclaredField("fixedBuffers");
@@ -203,37 +204,35 @@ public class ClientEventTests {
         test.whenEnabled(listeners -> {
             listeners.forge().addListener((final ClientChatEvent chatEvent) -> {
                 if (chatEvent.getMessage().equalsIgnoreCase("gold block")) {
-                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent event) -> {
-                        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_OPAQUE_BLOCKS) {
-                            var randomSource = new SingleThreadedRandomSource(0);
-                            var state = Blocks.GOLD_BLOCK.defaultBlockState();
-                            var stack = event.getPoseStack();
-                            var camera = event.getCamera().getPosition();
-                            event.getRenderableSections().forEach(section -> {
-                                if (section.isEmpty()) {
-                                    return;
-                                }
+                    NeoForge.EVENT_BUS.addListener((final RenderLevelStageEvent.AfterOpaqueBlocks event) -> {
+                        var randomSource = new SingleThreadedRandomSource(0);
+                        var state = Blocks.GOLD_BLOCK.defaultBlockState();
+                        var stack = event.getPoseStack();
+                        var camera = event.getCamera().getPosition();
+                        event.getRenderableSections().forEach(section -> {
+                            if (section.isEmpty()) {
+                                return;
+                            }
 
-                                stack.pushPose();
-                                stack.translate(
-                                        section.getRenderOrigin().getX() - camera.x,
-                                        section.getRenderOrigin().getY() - camera.y,
-                                        section.getRenderOrigin().getZ() - camera.z);
+                            stack.pushPose();
+                            stack.translate(
+                                    section.getRenderOrigin().getX() - camera.x,
+                                    section.getRenderOrigin().getY() - camera.y,
+                                    section.getRenderOrigin().getZ() - camera.z);
 
-                                var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(state).collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state, randomSource);
-                                Minecraft.getInstance().getBlockRenderer().renderBatched(
-                                        state,
-                                        section.getRenderOrigin(),
-                                        Minecraft.getInstance().level,
-                                        stack,
-                                        csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
-                                        false,
-                                        parts);
-                                stack.popPose();
+                            var parts = Minecraft.getInstance().getBlockRenderer().getBlockModel(state).collectParts(EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO, state, randomSource);
+                            Minecraft.getInstance().getBlockRenderer().renderBatched(
+                                    state,
+                                    section.getRenderOrigin(),
+                                    Minecraft.getInstance().level,
+                                    stack,
+                                    csl -> Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderTypeHelper.getEntityRenderType(csl)),
+                                    false,
+                                    parts);
+                            stack.popPose();
 
-                                test.pass();
-                            });
-                        }
+                            test.pass();
+                        });
                     });
                 }
             });

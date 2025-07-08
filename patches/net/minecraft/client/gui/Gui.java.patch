@@ -76,16 +76,16 @@
 +                .add(PLAYER_HEALTH, (guiGraphics, partialTick) -> renderHealthLevel(guiGraphics))
 +                .add(ARMOR_LEVEL, (guiGraphics, partialTick) -> renderArmorLevel(guiGraphics))
 +                .add(FOOD_LEVEL, (guiGraphics, partialTick) -> renderFoodLevel(guiGraphics))
++                .add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> renderVehicleHealth(guiGraphics), guiVisible)
 +                .add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics));
 +        layerManager.add(playerHealthComponents, () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean());
-+        layerManager.add(VEHICLE_HEALTH, this::renderVehicleHealth, guiVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::renderContextualInfoBarBackground, guiVisible);
 +        layerManager.add(EXPERIENCE_LEVEL, this::renderExperienceLevel, guiVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR, this::renderContextualInfoBar, guiVisible);
 +        layerManager.add(SELECTED_ITEM_NAME, this::maybeRenderSelectedItemName, guiVisible);
 +        layerManager.add(SPECTATOR_TOOLTIP, this::maybeRenderSpectatorTooltip, guiVisible);
-+        layerManager.add(EFFECTS, this::renderEffects);
-+        layerManager.add(BOSS_OVERLAY, this::renderBossOverlay);
++        layerManager.add(EFFECTS, this::renderEffects, guiVisible);
++        layerManager.add(BOSS_OVERLAY, this::renderBossOverlay, guiVisible);
 +        layerManager.add(SLEEP_OVERLAY, this::renderSleepOverlay);
 +        layerManager.add(DEMO_OVERLAY, this::renderDemoOverlay, guiVisible);
 +        layerManager.add(DEBUG_OVERLAY, this::renderDebugOverlay, guiVisible);

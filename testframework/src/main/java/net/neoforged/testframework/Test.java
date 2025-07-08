@@ -17,7 +17,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.testframework.gametest.GameTestData;
 import net.neoforged.testframework.group.Groupable;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +36,9 @@ public interface Test extends Groupable {
 
     /**
      * A list of the groups of this test. <br>
-     * If this list is empty, the test will be only in the {@code ungrouped} group.
+     * If this list is empty, the test will be put in the {@code ungrouped} group.
+     * <p>
+     * Tests without a {@link #asGameTest() game test} will also be automatically put in the {@code manual} group.
      *
      * @return the groups of this test
      */
@@ -104,26 +107,20 @@ public interface Test extends Groupable {
     }
 
     /**
-     * A group of collectors by {@link EventBusSubscriber.Bus bus}.
+     * A group of collectors by bus.
      */
     @ParametersAreNonnullByDefault
     @MethodsReturnNonnullByDefault
     interface EventListenerGroup {
         /**
-         * Gets the collector for a bus.
-         *
-         * @param bus the bus to get the collector for
-         * @return the collector associated with the bus
+         * {@return the listener collector for the {@link ModContainer#getEventBus() mod event bus}}
          */
-        EventListenerCollector getFor(EventBusSubscriber.Bus bus);
+        EventListenerCollector mod();
 
-        default EventListenerCollector mod() {
-            return getFor(EventBusSubscriber.Bus.MOD);
-        }
-
-        default EventListenerCollector forge() {
-            return getFor(EventBusSubscriber.Bus.GAME);
-        }
+        /**
+         * {@return the listener collector for the {@link NeoForge#EVENT_BUS game event bus}}
+         */
+        EventListenerCollector forge();
 
         /**
          * A collector of event listeners which automatically unregisters listeners when a test is disabled.
@@ -202,10 +199,15 @@ public interface Test extends Groupable {
     /**
      * Represents the status of a test.
      *
-     * @param result  the result
-     * @param message the message, providing additional context if the test failed
+     * @param result    the result
+     * @param message   the message, providing additional context if the test failed
+     * @param exception the exception with which the test failed. Can be {@code null} if the test did not fail or if it failed without throwing an exception
      */
-    record Status(Result result, String message) {
+    record Status(Result result, String message, @Nullable Exception exception) {
+        public Status(Result result, String message) {
+            this(result, message, null);
+        }
+
         public static final Status DEFAULT = new Status(Result.NOT_PROCESSED, "");
         public static final Status PASSED = new Status(Result.PASSED, "");
 
@@ -218,7 +220,11 @@ public interface Test extends Groupable {
         }
 
         public static Status failed(String message) {
-            return new Status(Result.FAILED, message);
+            return failed(message, null);
+        }
+
+        public static Status failed(String message, @Nullable Exception exception) {
+            return new Status(Result.FAILED, message, exception);
         }
 
         public MutableComponent asComponent() {
@@ -235,7 +241,7 @@ public interface Test extends Groupable {
             if (message.isBlank()) {
                 return "[result=" + result + "]";
             } else {
-                return "[result=" + result + ",message=" + message + "]";
+                return "[result=" + result + ",message=" + message + ",exception=" + exception + "]";
             }
         }
     }

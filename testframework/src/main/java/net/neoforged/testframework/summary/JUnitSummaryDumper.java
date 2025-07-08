@@ -59,7 +59,7 @@ public class JUnitSummaryDumper implements FileSummaryDumper {
         DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
         Document document = documentBuilder.newDocument();
         Element testsuites = document.createElement("testsuites");
-        testsuites.setAttribute("name", summary.frameworkId().toString());
+        testsuites.setAttribute("name", summary.framework().id().toString());
         testsuites.setAttribute("tests", Integer.toString(root.tests));
         testsuites.setAttribute("failures", Integer.toString(root.failures));
         testsuites.setAttribute("skipped", Integer.toString(root.skipped));

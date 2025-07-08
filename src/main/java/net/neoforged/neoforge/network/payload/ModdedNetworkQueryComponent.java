@@ -25,13 +25,13 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 public record ModdedNetworkQueryComponent(ResourceLocation id, String version, Optional<PacketFlow> flow, boolean optional) {
-
     public static final StreamCodec<FriendlyByteBuf, ModdedNetworkQueryComponent> STREAM_CODEC = StreamCodec.composite(
             ResourceLocation.STREAM_CODEC, ModdedNetworkQueryComponent::id,
             ByteBufCodecs.STRING_UTF8, ModdedNetworkQueryComponent::version,
             ByteBufCodecs.optional(NeoForgeStreamCodecs.enumCodec(PacketFlow.class)), ModdedNetworkQueryComponent::flow,
             ByteBufCodecs.BOOL, ModdedNetworkQueryComponent::optional,
             ModdedNetworkQueryComponent::new);
+
     public ModdedNetworkQueryComponent(PayloadRegistration<?> reg) {
         this(reg.id(), reg.version(), reg.flow(), reg.optional());
     }

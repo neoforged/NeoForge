@@ -18,11 +18,12 @@
      private static boolean isFaceOccludedByState(Direction p_110980_, float p_110981_, BlockState p_110983_) {
          VoxelShape voxelshape = p_110983_.getFaceOcclusionShape(p_110980_.getOpposite());
          if (voxelshape == Shapes.empty()) {
-@@ -64,14 +_,20 @@
+@@ -64,14 +_,21 @@
          return isFaceOccludedByState(p_110963_.getOpposite(), 1.0F, p_110962_);
      }
  
 +    /** @deprecated Neo: use overload that accepts BlockState */
++    @Deprecated
      public static boolean shouldRenderFace(FluidState p_203169_, BlockState p_203170_, Direction p_203171_, FluidState p_203172_) {
          return !isFaceOccludedBySelf(p_203170_, p_203171_) && !isNeighborSameFluid(p_203169_, p_203172_);
      }

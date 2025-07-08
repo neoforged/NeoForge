@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -40,9 +41,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -124,7 +125,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 boolean isGameTestRun = event.getServer() instanceof GameTestServer;
 
                 // Summarise test results
-                var builder = new TestSummary.Builder(id(), isGameTestRun);
+                var builder = new TestSummary.Builder(this, isGameTestRun);
                 tests().all().forEach(test -> {
                     String id = test.id();
                     Test.Status status = tests().getStatus(id);
@@ -224,7 +225,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 .onInitMethodsWithAnnotation(container);
 
         this.modBus = modBus;
-        tests.buses = Map.of(EventBusSubscriber.Bus.GAME, NeoForge.EVENT_BUS, EventBusSubscriber.Bus.MOD, modBus);
+        tests.buses = new EventListenerGroupImpl.BusSet(modBus, NeoForge.EVENT_BUS);
 
         byStage.get(OnInit.Stage.BEFORE_SETUP).forEach(cons -> cons.accept(this));
 
@@ -316,14 +317,16 @@ public class TestFrameworkImpl implements MutableTestFramework {
         tests.globalListeners.forEach(listener -> listener.onStatusChange(this, test, oldStatus, newStatus, changer));
         test.listeners().forEach(listener -> listener.onStatusChange(this, test, oldStatus, newStatus, changer));
 
-        logger.info("Status of test '{}' has had status changed to {}{}.", test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "");
+        BiConsumer<String, Object[]> logger = newStatus.result() == Test.Result.FAILED ? this.logger::error : this.logger::info;
+
+        logger.accept("Test '{}' has had status changed to {}{}.", new Object[] { test.id(), newStatus, changer instanceof Player player ? " by " + player.getGameProfile().getName() : "" });
 
         if (server == null && !inClientWorld) return;
 
         final ChangeStatusPayload packet = new ChangeStatusPayload(this, test.id(), newStatus);
         sendPacketIfOn(
                 () -> PacketDistributor.sendToAllPlayers(packet),
-                () -> PacketDistributor.sendToServer(packet),
+                () -> ClientPacketDistributor.sendToServer(packet),
                 null);
     }
 
@@ -350,7 +353,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         final ChangeEnabledPayload packet = new ChangeEnabledPayload(TestFrameworkImpl.this, test.id(), enabled);
         sendPacketIfOn(
                 () -> PacketDistributor.sendToAllPlayers(packet),
-                () -> PacketDistributor.sendToServer(packet),
+                () -> ClientPacketDistributor.sendToServer(packet),
                 null);
     }
 
@@ -373,7 +376,7 @@ public class TestFrameworkImpl implements MutableTestFramework {
         private final Map<String, EventListenerGroupImpl> collectors = new HashMap<>();
         private final Set<String> enabled = Collections.synchronizedSet(new LinkedHashSet<>());
         private final Map<String, Test.Status> statuses = new ConcurrentHashMap<>();
-        private Map<EventBusSubscriber.Bus, IEventBus> buses = Map.of();
+        private EventListenerGroupImpl.BusSet buses;
 
         private final Set<TestListener> globalListeners = new HashSet<>();
 
@@ -460,6 +463,10 @@ public class TestFrameworkImpl implements MutableTestFramework {
                 test.groups().forEach(group -> getOrCreateGroup(group).add(test));
             }
             test.init(TestFrameworkImpl.this);
+
+            if (test.asGameTest() == null) {
+                getOrCreateGroup("manual").add(test);
+            }
         }
 
         private Group addGroupToParents(Group group) {

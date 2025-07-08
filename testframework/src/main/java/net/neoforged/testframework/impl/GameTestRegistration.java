@@ -70,7 +70,7 @@ public final class GameTestRegistration {
 
                     @Override
                     public void testFailed(GameTestInfo info, GameTestRunner runner) {
-                        framework.changeStatus(test, Test.Status.failed("GameTest fail: " + info.getError().getMessage()), null);
+                        framework.changeStatus(test, Test.Status.failed("GameTest failure: " + info.getError().getMessage(), info.getError()), null);
                         disable();
                     }
 
@@ -88,7 +88,7 @@ public final class GameTestRegistration {
                 try {
                     game.function().accept(helper);
                 } catch (GameTestAssertException assertion) {
-                    ((MutableTestFramework) framework).tests().setStatus(test.id(), Test.Status.failed("GameTest fail: " + assertion.getMessage()));
+                    ((MutableTestFramework) framework).tests().setStatus(test.id(), Test.Status.failed("GameTest failure: " + assertion.getMessage(), assertion));
                     throw assertion;
                 }
             } catch (GameTestAssertException exception) {

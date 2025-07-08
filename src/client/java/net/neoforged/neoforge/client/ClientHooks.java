@@ -47,7 +47,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Overlay;
@@ -84,7 +83,6 @@ import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayerGroup;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
@@ -115,7 +113,6 @@ import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -174,7 +171,6 @@ import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
@@ -188,6 +184,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
+import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
 import net.neoforged.neoforge.client.internal.ForgeSnapshotsModClient;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
@@ -287,19 +284,6 @@ public class ClientHooks {
 
     public static boolean onDrawHighlight(LevelRenderer context, Camera camera, BlockHitResult target, DeltaTracker deltaTracker, PoseStack poseStack, MultiBufferSource bufferSource, boolean forTranslucentBlocks) {
         return NeoForge.EVENT_BUS.post(new RenderHighlightEvent.Block(context, camera, target, deltaTracker, poseStack, bufferSource, forTranslucentBlocks)).isCanceled();
-    }
-
-    public static void dispatchRenderStage(RenderLevelStageEvent.Stage stage, Level level, LevelRenderer levelRenderer, @Nullable PoseStack poseStack, Matrix4f modelViewMatrix, int renderTick, Camera camera, Frustum frustum) {
-        var mc = Minecraft.getInstance();
-        var profiler = Profiler.get();
-        profiler.push(stage.toString());
-        NeoForge.EVENT_BUS.post(new RenderLevelStageEvent(stage, level, levelRenderer, poseStack, modelViewMatrix, renderTick, mc.getDeltaTracker(), camera, frustum, levelRenderer.getRenderableSections()));
-        profiler.pop();
-    }
-
-    public static void dispatchRenderStage(ChunkSectionLayerGroup chunkLayerGroup, Level level, LevelRenderer levelRenderer, Matrix4f modelViewMatrix, int renderTick, Camera camera, Frustum frustum) {
-        RenderLevelStageEvent.Stage stage = RenderLevelStageEvent.Stage.fromChunkLayerGroup(chunkLayerGroup);
-        dispatchRenderStage(stage, level, levelRenderer, null, modelViewMatrix, renderTick, camera, frustum);
     }
 
     public static boolean renderSpecificFirstPersonHand(InteractionHand hand, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
@@ -441,7 +425,7 @@ public class ClientHooks {
         if (camera.getPosition().y < (double) ((float) camera.getBlockPosition().getY() + state.getHeight(camera.getEntity().level(), camera.getBlockPosition())))
             IClientFluidTypeExtensions.of(state).modifyFogRender(camera, environment, renderDistance, partialTick, fogData);
 
-        new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData);
+        NeoForge.EVENT_BUS.post(new ViewportEvent.RenderFog(environment, type, camera, partialTick, fogData));
     }
 
     public static void onModifyBakingResult(ModelBakery.BakingResult bakingResult, Map<ResourceLocation, AtlasSet.StitchResult> stitchResults, ModelBakery modelBakery) {
@@ -1138,11 +1122,10 @@ public class ClientHooks {
         return Collections.unmodifiableSet(DEFAULT_METADATA_SECTION_TYPES);
     }
 
-    public static List<PictureInPictureRenderer<?>> gatherPictureInPictureRenderers(
-            MultiBufferSource.BufferSource bufferSource,
-            List<PictureInPictureRenderer<?>> vanillaRenderers) {
+    public static List<PictureInPictureRendererRegistration<?>> gatherPictureInPictureRenderers(
+            List<PictureInPictureRendererRegistration<?>> vanillaRenderers) {
         vanillaRenderers = new ArrayList<>(vanillaRenderers);
-        ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers, bufferSource));
+        ModLoader.postEvent(new RegisterPictureInPictureRenderersEvent(vanillaRenderers));
         return List.copyOf(vanillaRenderers);
     }
 }

@@ -18,7 +18,7 @@ public interface FileSummaryDumper extends SummaryDumper {
 
     default void dump(TestSummary summary, Logger logger) {
         logger.info("Test summary processing...");
-        Path outputPath = outputPath(summary.frameworkId());
+        Path outputPath = outputPath(summary.framework().id());
         try {
             Files.createDirectories(outputPath.getParent());
             try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(outputPath))) {
