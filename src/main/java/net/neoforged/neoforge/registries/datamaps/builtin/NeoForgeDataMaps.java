@@ -42,7 +42,7 @@ public class NeoForgeDataMaps {
     /**
      * The {@linkplain EntityType} data map that replaces {@link VillagerHostilesSensor#ACCEPTABLE_DISTANCE_FROM_HOSTILES}.
      * <p>
-     * The location of this data map is {@code neoforge/data_maps/entity_type/acceptable_hostile_distances.json}, and the values are objects with 1 field:
+     * The location of this data map is {@code neoforge/data_maps/entity_type/acceptable_villager_distances.json}, and the values are objects with 1 field:
      * <ul>
      * <li>{@code distance}, a float - the acceptable distance between a villager and another hostile mob.</li>
      * </ul>
