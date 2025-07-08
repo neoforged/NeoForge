@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import net.minecraft.ReportedException;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 public class ResourceHandlerUtil {
@@ -14,10 +13,11 @@ public class ResourceHandlerUtil {
      * <p>
      * Typically used in handler insert or extract implementations to determine if the operation is valid before proceeding.
      *
-     * @throws ReportedException When the amount is negative
+     * @throws IllegalArgumentException When the amount is negative
      * @see ResourceContainerContentsHandler#insert(int, IResource, int, TransactionContext)
      */
     public static boolean isEmpty(IResource<?> resource, int amount) {
-        return TransferPreconditions.checkNonNegative(amount) == 0 || resource.isEmpty();
+        TransferPreconditions.checkNonNegative(amount);
+        return amount == 0 || resource.isEmpty();
     }
 }

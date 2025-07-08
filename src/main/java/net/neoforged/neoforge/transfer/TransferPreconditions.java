@@ -11,11 +11,10 @@ public class TransferPreconditions {
     /**
      * Ensures the value passed in is non-negative, throws otherwise.
      *
-     * @return The value passed.
      * @throws IllegalArgumentException when value is negative.
      */
-    public static int checkNonNegative(int value) {
-        if (value >= 0) return value;
-        throw new IllegalArgumentException("Non-negative check failed: " + value);
+    public static void checkNonNegative(int value) {
+        if (value < 0)
+            throw new IllegalArgumentException("Non-negative check failed: " + value);
     }
 }

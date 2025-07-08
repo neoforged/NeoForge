@@ -67,11 +67,11 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static FluidResource fromOptional(Optional<FluidResource> optional) {
+    private static FluidResource fromOptional(Optional<FluidResource> optional) {
         return optional.orElse(FluidResource.EMPTY);
     }
 
-    public Optional<FluidResource> asOptional() {
+    private Optional<FluidResource> asOptional() {
         return isEmpty() ? Optional.empty() : Optional.of(this);
     }
 
@@ -324,16 +324,5 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     @Override
     public String toString() {
         return innerStack.getFluid().getFluidType().toString();
-    }
-
-    /**
-     * @return the full value and data components in string form
-     */
-    public String toExpandedString() {
-        if (isComponentsPatchEmpty()) {
-            return toString();
-        } else {
-            return "%s %s".formatted(getInstanceValue(), getComponentsPatch().toString());
-        }
     }
 }

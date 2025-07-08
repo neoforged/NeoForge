@@ -73,11 +73,11 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static ItemResource fromOptional(Optional<ItemResource> optional) {
+    private static ItemResource fromOptional(Optional<ItemResource> optional) {
         return optional.orElse(ItemResource.EMPTY);
     }
 
-    public Optional<ItemResource> asOptional() {
+    private Optional<ItemResource> asOptional() {
         return isEmpty() ? Optional.empty() : Optional.of(this);
     }
 
@@ -303,16 +303,5 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     @Override
     public String toString() {
         return innerStack.getItem().toString();
-    }
-
-    /**
-     * @return the full value and data components in string form
-     */
-    public String toExpandedString() {
-        if (isComponentsPatchEmpty()) {
-            return toString();
-        } else {
-            return "%s %s".formatted(getInstanceValue(), getComponentsPatch().toString());
-        }
     }
 }
