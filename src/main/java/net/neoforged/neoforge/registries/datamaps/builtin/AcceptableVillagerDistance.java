@@ -9,7 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
- * Data map value for {@linkplain NeoForgeDataMaps#ACCEPTABLE_VILLAGER_DISTANCES acceptable hostile distances}.
+ * Data map value for {@linkplain NeoForgeDataMaps#ACCEPTABLE_VILLAGER_DISTANCES acceptable villager distances}.
  *
  * @param distance the acceptable distance between a villager and a hostile mob.
  */
