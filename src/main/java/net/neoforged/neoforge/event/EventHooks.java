@@ -930,7 +930,7 @@ public class EventHooks {
      * @param craftMatrix The crafting matrix that was used for the recipe.
      */
     public static void firePlayerCraftingEvent(Player player, ItemStack result, Container craftMatrix) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftingEvent(player, result, craftMatrix));
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemCraftedEvent(player, result, craftMatrix));
     }
 
     /**
@@ -941,7 +941,7 @@ public class EventHooks {
      * @param amountRemoved The amount of items removed from the output slot.
      */
     public static void firePlayerSmeltingEvent(Player player, ItemStack result, int amountRemoved) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltingEvent(player, result, amountRemoved));
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmeltedEvent(player, result, amountRemoved));
     }
 
     /**
@@ -954,7 +954,7 @@ public class EventHooks {
      * @param result   The item that was smithed.
      */
     public static void firePlayerSmithingEvent(Player player, ItemStack template, ItemStack mainItem, ItemStack addition, ItemStack result) {
-        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmithingEvent(player, template, mainItem, addition, result));
+        NeoForge.EVENT_BUS.post(new PlayerEvent.ItemSmithedEvent(player, template, mainItem, addition, result));
     }
 
     /**

@@ -387,11 +387,11 @@ public abstract class PlayerEvent extends LivingEvent {
         }
     }
 
-    public static class ItemCraftingEvent extends PlayerEvent {
+    public static class ItemCraftedEvent extends PlayerEvent {
         private final ItemStack result;
         private final Container craftMatrix;
 
-        public ItemCraftingEvent(Player player, ItemStack result, Container craftMatrix) {
+        public ItemCraftedEvent(Player player, ItemStack result, Container craftMatrix) {
             super(player);
             this.result = result;
             this.craftMatrix = craftMatrix;
@@ -406,11 +406,11 @@ public abstract class PlayerEvent extends LivingEvent {
         }
     }
 
-    public static class ItemSmeltingEvent extends PlayerEvent {
+    public static class ItemSmeltedEvent extends PlayerEvent {
         private final ItemStack result;
         private final int amountRemoved;
 
-        public ItemSmeltingEvent(Player player, ItemStack result, int amountRemoved) {
+        public ItemSmeltedEvent(Player player, ItemStack result, int amountRemoved) {
             super(player);
             this.result = result;
             this.amountRemoved = amountRemoved;
@@ -443,13 +443,13 @@ public abstract class PlayerEvent extends LivingEvent {
      * The event is fired via {@link EventHooks#firePlayerSmithingEvent(Player, ItemStack, ItemStack, ItemStack, ItemStack)} <br>
      * and is posted to the {@link NeoForge#EVENT_BUS}.
      */
-    public static class ItemSmithingEvent extends PlayerEvent {
+    public static class ItemSmithedEvent extends PlayerEvent {
         private final ItemStack template;
         private final ItemStack mainItem;
         private final ItemStack addition;
         private final ItemStack result;
 
-        public ItemSmithingEvent(Player player, ItemStack template, ItemStack mainItem, ItemStack addition, ItemStack result) {
+        public ItemSmithedEvent(Player player, ItemStack template, ItemStack mainItem, ItemStack addition, ItemStack result) {
             super(player);
             this.template = template;
             this.mainItem = mainItem;
