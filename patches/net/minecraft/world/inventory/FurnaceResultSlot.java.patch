@@ -5,7 +5,7 @@
          }
  
 +        if (this.removeCount != 0) {
-+            net.neoforged.neoforge.event.EventHooks.firePlayerSmeltedEvent(this.player, p_39558_, this.removeCount);
++            net.neoforged.neoforge.event.EventHooks.firePlayerSmeltingEvent(this.player, p_39558_, this.removeCount);
 +        }
          this.removeCount = 0;
      }

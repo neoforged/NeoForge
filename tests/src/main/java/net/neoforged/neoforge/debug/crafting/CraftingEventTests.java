@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.debug.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
@@ -21,15 +20,17 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @ForEachTest(groups = "crafting.event")
 public class CraftingEventTests {
     @GameTest
     @EmptyTemplate
-    @TestHolder(description = "Tests that ItemSmeltedEvent is fired correctly")
-    static void itemSmeltedEventTest(final DynamicTest test) {
+    @TestHolder(description = "Tests that ItemSmeltingEvent is fired correctly")
+    static void itemSmeltingEventTest(final DynamicTest test) {
         AtomicInteger timesFired = new AtomicInteger(0);
         test.whenEnabled(listeners -> {
-            listeners.forge().addListener((final PlayerEvent.ItemSmeltedEvent event) -> {
+            listeners.forge().addListener((final PlayerEvent.ItemSmeltingEvent event) -> {
                 timesFired.incrementAndGet();
                 var removed = event.getAmountRemoved();
                 if (removed != 32) {

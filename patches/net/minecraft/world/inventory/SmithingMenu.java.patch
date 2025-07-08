@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/inventory/SmithingMenu.java
++++ b/net/minecraft/world/inventory/SmithingMenu.java
+@@ -72,6 +_,7 @@
+     protected void onTake(Player p_150663_, ItemStack p_150664_) {
+         p_150664_.onCraftedBy(p_150663_, p_150664_.getCount());
+         this.resultSlots.awardUsedRecipes(p_150663_, this.getRelevantItems());
++        net.neoforged.neoforge.event.EventHooks.firePlayerSmithingEvent(p_150663_, this.inputSlots.getItem(0), this.inputSlots.getItem(1), this.inputSlots.getItem(2), p_150664_);
+         this.shrinkStackInSlot(0);
+         this.shrinkStackInSlot(1);
+         this.shrinkStackInSlot(2);
