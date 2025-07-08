@@ -1,5 +1,26 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
+@@ -75,6 +_,11 @@
+     private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
+     @Nullable
+     private MultipleTestTracker testTracker;
++    // Neo: disable mob spawning and weather cycling when running game tests, same as for the ephemeral test server
++    private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(ENABLED_FEATURES), rules -> {
++        rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null);
++        rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
++    });
+ 
+     public static GameTestServer create(
+         Thread p_206607_, LevelStorageSource.LevelStorageAccess p_206608_, PackRepository p_206609_, Optional<String> p_397118_, boolean p_397698_
+@@ -85,7 +_,7 @@
+         arraylist.addFirst("vanilla");
+         WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(new DataPackConfig(arraylist, List.of()), ENABLED_FEATURES);
+         LevelSettings levelsettings = new LevelSettings(
+-            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, new GameRules(ENABLED_FEATURES), worlddataconfiguration
++            "Test Level", GameType.CREATIVE, false, Difficulty.NORMAL, true, TEST_GAME_RULES, worlddataconfiguration
+         );
+         WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_206609_, worlddataconfiguration, false, true);
+         WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.DEDICATED, 4);
 @@ -152,10 +_,12 @@
      @Override
      public boolean initServer() {
@@ -11,5 +32,35 @@
          LOGGER.info("Started game test server");
 +        net.neoforged.neoforge.server.ServerLifecycleHooks.handleServerStarting(this);
          return true;
+     }
+ 
+@@ -216,8 +_,14 @@
+             GlobalTestReporter.finish();
+             LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
+             if (this.testTracker.hasFailedRequired()) {
+-                LOGGER.info("{} required tests failed :(", this.testTracker.getFailedRequiredCount());
++                LOGGER.error("{} required tests failed :(", this.testTracker.getFailedRequiredCount());
+                 this.testTracker.getFailedRequired().forEach(GameTestServer::logFailedTest);
++
++                // Neo: when running in GitHub actions emit actions-specific error annotations to make finding the error message easier
++                // See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#example-creating-an-annotation-for-an-error
++                if (System.getenv().getOrDefault("CI", "false").equals("true") && System.getenv().getOrDefault("GITHUB_ACTIONS", "false").equals("true")) {
++                    System.out.printf("\n::error title=GameTest Failure::%s required game tests failed: %s\n\n", testTracker.getFailedRequiredCount(), testTracker.getFailedRequired().stream().map(info -> info.id().toString()).collect(java.util.stream.Collectors.joining(", ")));
++                }
+             } else {
+                 LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
+             }
+@@ -233,11 +_,11 @@
+ 
+     private static void logFailedTest(GameTestInfo p_401161_) {
+         if (p_401161_.getRotation() != Rotation.NONE) {
+-            LOGGER.info(
++            LOGGER.error(
+                 "   - {} with rotation {}: {}", p_401161_.id(), p_401161_.getRotation().getSerializedName(), p_401161_.getError().getDescription().getString()
+             );
+         } else {
+-            LOGGER.info("   - {}: {}", p_401161_.id(), p_401161_.getError().getDescription().getString());
++            LOGGER.error("   - {}: {}", p_401161_.id(), p_401161_.getError().getDescription().getString());
+         }
      }
  

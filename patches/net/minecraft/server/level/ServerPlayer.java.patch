@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -300,6 +_,10 @@
+@@ -310,6 +_,10 @@
          }
  
          private void broadcastDataValue(AbstractContainerMenu p_143455_, int p_143456_, int p_143457_) {
@@ -11,7 +11,7 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
          }
  
-@@ -725,6 +_,11 @@
+@@ -735,6 +_,11 @@
                  this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
              }
  
@@ -23,7 +23,7 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
-@@ -738,7 +_,7 @@
+@@ -748,7 +_,7 @@
  
      private void synchronizeSpecialItemUpdates(ItemStack p_372884_) {
          MapId mapid = p_372884_.get(DataComponents.MAP_ID);
@@ -32,15 +32,15 @@
          if (mapitemsaveddata != null) {
              Packet<?> packet = mapitemsaveddata.getUpdatePacket(mapid, this);
              if (packet != null) {
-@@ -807,6 +_,7 @@
+@@ -817,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {
          this.gameEvent(GameEvent.ENTITY_DIE);
 +        if (net.neoforged.neoforge.common.CommonHooks.onLivingDeath(this, p_9035_)) return;
-         boolean flag = this.serverLevel().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
+         boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
          if (flag) {
              Component component = this.getCombatTracker().getDeathMessage();
-@@ -966,7 +_,7 @@
+@@ -994,7 +_,7 @@
              return BedBlock.findStandUpPosition(EntityType.PLAYER, p_348505_, blockpos, blockstate.getValue(BedBlock.FACING), f)
                  .map(p_348148_ -> ServerPlayer.RespawnPosAngle.of(p_348148_, blockpos));
          } else if (!flag) {
@@ -49,7 +49,7 @@
          } else {
              boolean flag1 = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_348505_.getBlockState(blockpos.above());
-@@ -989,6 +_,7 @@
+@@ -1017,6 +_,7 @@
  
      @Nullable
      public ServerPlayer teleport(TeleportTransition p_379854_) {
@@ -57,7 +57,7 @@
          if (this.isRemoved()) {
              return null;
          } else {
-@@ -1016,7 +_,7 @@
+@@ -1044,7 +_,7 @@
                  PlayerList playerlist = this.server.getPlayerList();
                  playerlist.sendPlayerPermissionLevel(this);
                  serverlevel1.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -66,7 +66,7 @@
                  ProfilerFiller profilerfiller = Profiler.get();
                  profilerfiller.push("moving");
                  if (resourcekey == Level.OVERWORLD && serverlevel.dimension() == Level.NETHER) {
-@@ -1036,10 +_,12 @@
+@@ -1064,11 +_,13 @@
                  playerlist.sendLevelInfo(this, serverlevel);
                  playerlist.sendAllPlayerInfo(this);
                  playerlist.sendActivePlayerEffects(this);
@@ -75,11 +75,12 @@
                  this.lastSentExp = -1;
                  this.lastSentHealth = -1.0F;
                  this.lastSentFood = -1;
+                 this.teleportSpectators(p_379854_, serverlevel1);
 +                net.neoforged.neoforge.event.EventHooks.firePlayerChangedDimensionEvent(this, resourcekey, p_379854_.newLevel().dimension());
                  return this;
              }
          }
-@@ -1080,6 +_,15 @@
+@@ -1109,6 +_,15 @@
  
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
@@ -95,7 +96,7 @@
          Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
          if (this.isSleeping() || !this.isAlive()) {
              return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-@@ -1108,7 +_,21 @@
+@@ -1137,7 +_,21 @@
                          return Either.left(Player.BedSleepingProblem.NOT_SAFE);
                      }
                  }
@@ -118,7 +119,7 @@
                  Either<Player.BedSleepingProblem, Unit> either = super.startSleepInBed(p_9115_).ifRight(p_9029_ -> {
                      this.awardStat(Stats.SLEEP_IN_BED);
                      CriteriaTriggers.SLEPT_IN_BED.trigger(this);
-@@ -1130,6 +_,7 @@
+@@ -1159,6 +_,7 @@
      }
  
      private boolean bedInRange(BlockPos p_9117_, Direction p_9118_) {
@@ -126,7 +127,7 @@
          return this.isReachableBedBlock(p_9117_) || this.isReachableBedBlock(p_9117_.relative(p_9118_.getOpposite()));
      }
  
-@@ -1206,11 +_,19 @@
+@@ -1240,11 +_,19 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
@@ -146,7 +147,7 @@
              }
  
              this.nextContainerCounter();
-@@ -1222,10 +_,32 @@
+@@ -1256,10 +_,32 @@
  
                  return OptionalInt.empty();
              } else {
@@ -179,7 +180,7 @@
                  return OptionalInt.of(this.containerCounter);
              }
          }
-@@ -1247,6 +_,7 @@
+@@ -1281,6 +_,7 @@
          this.connection.send(new ClientboundHorseScreenOpenPacket(this.containerCounter, i, p_9059_.getId()));
          this.containerMenu = new HorseInventoryMenu(this.containerCounter, this.getInventory(), p_9060_, p_9059_, i);
          this.initMenu(this.containerMenu);
@@ -187,7 +188,7 @@
      }
  
      @Override
-@@ -1275,6 +_,7 @@
+@@ -1309,6 +_,7 @@
      public void doCloseContainer() {
          this.containerMenu.removed(this);
          this.inventoryMenu.transferState(this.containerMenu);
@@ -195,14 +196,14 @@
          this.containerMenu = this.inventoryMenu;
      }
  
-@@ -1498,6 +_,15 @@
+@@ -1534,6 +_,15 @@
          this.setShoulderEntityLeft(p_9016_.getShoulderEntityLeft());
          this.setShoulderEntityRight(p_9016_.getShoulderEntityRight());
          this.setLastDeathLocation(p_9016_.getLastDeathLocation());
 +
 +        //Copy over a section of the Entity Data from the old player.
 +        //Allows mods to specify data that persists after players respawn.
-+        CompoundTag old = p_9016_.getPersistentData();
++        var old = p_9016_.getPersistentData();
 +        if (old.contains(PERSISTED_NBT_TAG))
 +             getPersistentData().put(PERSISTED_NBT_TAG, old.get(PERSISTED_NBT_TAG));
 +        net.neoforged.neoforge.event.EventHooks.onPlayerClone(this, p_9016_, !p_9017_);
@@ -211,7 +212,7 @@
      }
  
      @Override
-@@ -1601,6 +_,8 @@
+@@ -1637,6 +_,8 @@
  
      public boolean setGameMode(GameType p_143404_) {
          boolean flag = this.isSpectator();
@@ -220,7 +221,7 @@
          if (!this.gameMode.changeGameModeForPlayer(p_143404_)) {
              return false;
          } else {
-@@ -1771,6 +_,7 @@
+@@ -1807,6 +_,7 @@
      public void setCamera(@Nullable Entity p_9214_) {
          Entity entity = this.getCamera();
          this.camera = (Entity)(p_9214_ == null ? this : p_9214_);
@@ -228,7 +229,7 @@
          if (entity != this.camera) {
              if (this.camera.level() instanceof ServerLevel serverlevel) {
                  this.teleportTo(serverlevel, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1807,7 +_,11 @@
+@@ -1843,7 +_,11 @@
  
      @Nullable
      public Component getTabListDisplayName() {
@@ -241,7 +242,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1842,6 +_,7 @@
+@@ -1878,6 +_,7 @@
      }
  
      public void setRespawnPosition(@Nullable ServerPlayer.RespawnConfig p_405460_, boolean p_9162_) {
@@ -249,7 +250,7 @@
          if (p_9162_ && p_405460_ != null && !p_405460_.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -1896,6 +_,75 @@
+@@ -1932,6 +_,75 @@
          return itementity;
      }
  
@@ -325,7 +326,7 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -1954,11 +_,14 @@
+@@ -1990,11 +_,14 @@
  
      public boolean drop(boolean p_182295_) {
          Inventory inventory = this.getInventory();
@@ -341,13 +342,3 @@
      }
  
      @Override
-@@ -2138,7 +_,8 @@
-                 .apply(p_405139_, ServerPlayer.RespawnConfig::new)
-         );
- 
--        static ResourceKey<Level> getDimensionOrDefault(@Nullable ServerPlayer.RespawnConfig p_405808_) {
-+        // TODO: convert to AT
-+        public static ResourceKey<Level> getDimensionOrDefault(@Nullable ServerPlayer.RespawnConfig p_405808_) {
-             return p_405808_ != null ? p_405808_.dimension() : Level.OVERWORLD;
-         }
- 

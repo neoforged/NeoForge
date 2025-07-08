@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
++++ b/net/minecraft/client/gui/render/pip/PictureInPictureRenderer.java
+@@ -142,4 +_,13 @@
+     protected abstract void renderToTexture(T p_415826_, PoseStack p_415928_);
+ 
+     protected abstract String getTextureLabel();
++
++    /**
++     * Neo: This is used to check if this renderer can be reused for a given state, texture width and texture height on
++     * a subsequent frame. In Vanilla, a renderer would be used for multiple different states even within the same frame,
++     * leading to crashes and the last state being used for all blits of that renderer in that frame.
++     */
++    public boolean canBeReusedFor(T state, int textureWidth, int textureHeight) {
++        return texture == null || (texture.getWidth(0) == textureWidth && texture.getHeight(0) == textureHeight);
++    }
+ }

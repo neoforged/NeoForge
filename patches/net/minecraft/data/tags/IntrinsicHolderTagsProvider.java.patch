@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/IntrinsicHolderTagsProvider.java
 +++ b/net/minecraft/data/tags/IntrinsicHolderTagsProvider.java
-@@ -13,16 +_,17 @@
+@@ -12,16 +_,17 @@
  public abstract class IntrinsicHolderTagsProvider<T> extends TagsProvider<T> {
      private final Function<T, ResourceKey<T>> keyExtractor;
  
@@ -20,7 +20,7 @@
      public IntrinsicHolderTagsProvider(
          PackOutput p_275304_,
          ResourceKey<? extends Registry<T>> p_275709_,
-@@ -30,7 +_,16 @@
+@@ -29,7 +_,16 @@
          CompletableFuture<TagsProvider.TagLookup<T>> p_275311_,
          Function<T, ResourceKey<T>> p_275566_
      ) {
@@ -38,15 +38,3 @@
          this.keyExtractor = p_275566_;
      }
  
-@@ -61,6 +_,11 @@
-         public final IntrinsicHolderTagsProvider.IntrinsicTagAppender<T> add(T... p_255868_) {
-             Stream.<T>of(p_255868_).map(this.keyExtractor).forEach(this::add);
-             return this;
-+        }
-+
-+        @Override
-+        public final ResourceKey<T> getKey(T value) {
-+            return this.keyExtractor.apply(value);
-         }
-     }
- }

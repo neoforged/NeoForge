@@ -56,7 +56,7 @@ public class ShaderResourcesTest {
             event.registerPipeline(CUBEMAP_PIPELINE);
         }
 
-        private static void onRenderLevelStage(final RenderLevelStageEvent event) {
+        private static void onRenderLevelStage(final RenderLevelStageEvent.AfterLevel event) {
             if (checked) return;
 
             CompiledRenderPipeline compiledPipeline = RenderSystem.getDevice().precompilePipeline(CUBEMAP_PIPELINE);

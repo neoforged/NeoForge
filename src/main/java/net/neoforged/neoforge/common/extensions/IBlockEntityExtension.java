@@ -9,10 +9,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.model.data.ModelData;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -27,22 +27,22 @@ public interface IBlockEntityExtension {
      * be the remote server. On the server, it will be whomever is responsible for
      * sending the packet.
      *
-     * @param net The NetworkManager the packet originated from
-     * @param pkt The data packet
+     * @param net        The {@link Connection} the packet originated from
+     * @param valueInput The {@link ValueInput} to read the packet data from
      */
-    default void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        self().loadWithComponents(pkt.getTag(), lookupProvider);
+    default void onDataPacket(Connection net, ValueInput valueInput) {
+        self().loadWithComponents(valueInput);
     }
 
     /**
      * Called when the chunk's TE update tag, gotten from {@link BlockEntity#getUpdateTag(HolderLookup.Provider)}, is received on the client.
      * <p>
-     * Used to handle this tag in a special way. By default this simply calls {@link BlockEntity#loadWithComponents(CompoundTag, HolderLookup.Provider)}.
+     * Used to handle this tag in a special way. By default, this simply calls {@link BlockEntity#loadWithComponents(ValueInput)}.
      *
-     * @param tag The {@link CompoundTag} sent from {@link BlockEntity#getUpdateTag(HolderLookup.Provider)}
+     * @param input The data sent from {@link BlockEntity#getUpdateTag(HolderLookup.Provider)}
      */
-    default void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        self().loadWithComponents(tag, lookupProvider);
+    default void handleUpdateTag(ValueInput input) {
+        self().loadWithComponents(input);
     }
 
     /**

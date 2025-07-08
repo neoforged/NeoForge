@@ -7,11 +7,11 @@ package net.neoforged.neoforge.client.event;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -29,10 +29,10 @@ public abstract class RenderGuiLayerEvent extends Event {
     private final GuiGraphics guiGraphics;
     private final DeltaTracker partialTick;
     private final ResourceLocation name;
-    private final LayeredDraw.Layer layer;
+    private final GuiLayer layer;
 
     @ApiStatus.Internal
-    protected RenderGuiLayerEvent(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+    protected RenderGuiLayerEvent(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, GuiLayer layer) {
         this.guiGraphics = guiGraphics;
         this.partialTick = partialTick;
         this.name = name;
@@ -51,7 +51,7 @@ public abstract class RenderGuiLayerEvent extends Event {
         return name;
     }
 
-    public LayeredDraw.Layer getLayer() {
+    public GuiLayer getLayer() {
         return layer;
     }
 
@@ -69,7 +69,7 @@ public abstract class RenderGuiLayerEvent extends Event {
      */
     public static class Pre extends RenderGuiLayerEvent implements ICancellableEvent {
         @ApiStatus.Internal
-        public Pre(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+        public Pre(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, GuiLayer layer) {
             super(guiGraphics, partialTick, name, layer);
         }
     }
@@ -84,7 +84,7 @@ public abstract class RenderGuiLayerEvent extends Event {
      */
     public static class Post extends RenderGuiLayerEvent {
         @ApiStatus.Internal
-        public Post(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, LayeredDraw.Layer layer) {
+        public Post(GuiGraphics guiGraphics, DeltaTracker partialTick, ResourceLocation name, GuiLayer layer) {
             super(guiGraphics, partialTick, name, layer);
         }
     }

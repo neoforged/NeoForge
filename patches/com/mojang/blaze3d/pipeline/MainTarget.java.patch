@@ -13,13 +13,13 @@
          this.createFrameBuffer(p_166137_, p_166138_);
      }
  
-@@ -82,7 +_,8 @@
+@@ -94,7 +_,8 @@
      @Nullable
      private GpuTexture allocateDepthAttachment(MainTarget.Dimension p_166145_) {
          try {
--            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", TextureFormat.DEPTH32, p_166145_.width, p_166145_.height, 1);
+-            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, TextureFormat.DEPTH32, p_166145_.width, p_166145_.height, 1, 1);
 +            var format = this.useStencil ? net.neoforged.neoforge.client.ClientHooks.getStencilFormat() : TextureFormat.DEPTH32;
-+            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", format, p_166145_.width, p_166145_.height, 1);
++            return RenderSystem.getDevice().createTexture(() -> this.label + " / Depth", 15, format, p_166145_.width, p_166145_.height, 1, 1);
          } catch (GpuOutOfMemoryException gpuoutofmemoryexception) {
              return null;
          }

@@ -15,14 +15,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeVersion.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeVersion.MOD_ID)
 public final class NeoForgeRenderPipelines {
-    // Duplicate of RenderPipelines.ENTITY_TRANSLUCENT with custom shaders
+    // Duplicate of RenderPipelines.ENTITY_TRANSLUCENT with directional shading and lighting disabled
     public static final RenderPipeline ENTITY_UNLIT_TRANSLUCENT = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
             .withLocation(ResourceLocation.parse("neoforge:pipeline/entity_unlit_translucent"))
-            .withVertexShader(ResourceLocation.parse("neoforge:core/rendertype_entity_unlit_translucent"))
-            .withFragmentShader(ResourceLocation.parse("neoforge:core/rendertype_entity_unlit_translucent"))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+            .withShaderDefine("NO_CARDINAL_LIGHTING")
             .withSampler("Sampler1")
             .withBlend(BlendFunction.TRANSLUCENT)
             .withCull(false)

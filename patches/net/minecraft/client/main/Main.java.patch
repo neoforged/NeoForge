@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/main/Main.java
 +++ b/net/minecraft/client/main/Main.java
-@@ -121,10 +_,12 @@
+@@ -123,10 +_,12 @@
              CrashReport.preload();
              logger = LogUtils.getLogger();
              s1 = "Bootstrap";

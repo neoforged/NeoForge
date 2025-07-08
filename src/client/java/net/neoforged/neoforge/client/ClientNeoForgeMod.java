@@ -9,7 +9,7 @@ import java.util.Optional;
 import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.metadata.PackMetadataGenerator;
 import net.minecraft.network.chat.Component;
@@ -119,7 +119,7 @@ public class ClientNeoForgeMod {
         event.createProvider(output -> new PackMetadataGenerator(output)
                 .add(PackMetadataSection.TYPE, new PackMetadataSection(
                         Component.translatable("pack.neoforge.description"),
-                        DetectedVersion.BUILT_IN.getPackVersion(PackType.SERVER_DATA),
+                        DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA),
                         Optional.of(new InclusiveRange<>(0, Integer.MAX_VALUE)))));
 
         event.createProvider(NeoForgeAdvancementProvider::new);
@@ -162,7 +162,7 @@ public class ClientNeoForgeMod {
 
     @SubscribeEvent
     static void onRegisterNamedRenderTypes(RegisterNamedRenderTypesEvent event) {
-        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_unlit"), RenderType.translucent(), NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
+        event.register(ResourceLocation.fromNamespaceAndPath("neoforge", "item_unlit"), ChunkSectionLayer.TRANSLUCENT, NeoForgeRenderTypes.ITEM_UNSORTED_UNLIT_TRANSLUCENT.get());
     }
 
     @SubscribeEvent
@@ -254,14 +254,4 @@ public class ClientNeoForgeMod {
     static void registerBlockStateModels(RegisterBlockStateModels event) {
         event.registerModel(neoForgeId("composite"), CompositeBlockModel.Unbaked.MAP_CODEC);
     }
-
-    // TODO 1.21.4
-//    @SubscribeEvent(priority = EventPriority.LOWEST)
-//    static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {
-//        SpawnEggItem.eggs().forEach(egg -> {
-//            if (event.getItemColors().get(egg) == null) {
-//                event.register((stack, layer) -> ARGB.opaque(egg.getColor(layer)), egg);
-//            }
-//        });
-//    }
 }

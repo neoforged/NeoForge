@@ -19,8 +19,8 @@
 +            if ((this.width >> i) <= 0 || (this.height >> i) <= 0) break;
              RenderSystem.getDevice()
                  .createCommandEncoder()
-                 .writeToTexture(p_404943_, p_248825_[i], i, p_248895_ >> i, p_250245_ >> i, this.width >> i, this.height >> i, p_250458_ >> i, p_251337_ >> i);
-@@ -248,7 +_,8 @@
+                 .writeToTexture(
+@@ -250,7 +_,8 @@
              for (int i = 0; i < this.activeFrame.length; i++) {
                  int j = SpriteContents.this.width >> i;
                  int k = SpriteContents.this.height >> i;
@@ -30,7 +30,7 @@
              }
          }
  
-@@ -263,6 +_,9 @@
+@@ -265,6 +_,9 @@
                  for (int k = 0; k < this.activeFrame.length; k++) {
                      int l = SpriteContents.this.width >> k;
                      int i1 = SpriteContents.this.height >> k;

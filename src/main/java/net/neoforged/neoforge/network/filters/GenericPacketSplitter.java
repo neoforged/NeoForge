@@ -37,7 +37,7 @@ import org.jetbrains.annotations.ApiStatus;
  * A generic packet splitter that can be used to split packets that are too large to be sent in one go.
  */
 @ApiStatus.Internal
-@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
 public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> implements DynamicChannelHandler {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -61,7 +61,7 @@ public class GenericPacketSplitter extends MessageToMessageEncoder<Packet<?>> im
     private static void register(final RegisterPayloadHandlersEvent event) {
         event.registrar("1")
                 .optional()
-                .commonBidirectional(SplitPacketPayload.TYPE, SplitPacketPayload.STREAM_CODEC, GenericPacketSplitter::handle);
+                .commonBidirectional(SplitPacketPayload.TYPE, SplitPacketPayload.STREAM_CODEC, GenericPacketSplitter::handle, GenericPacketSplitter::handle);
     }
 
     private static void handle(SplitPacketPayload payload, IPayloadContext context) {

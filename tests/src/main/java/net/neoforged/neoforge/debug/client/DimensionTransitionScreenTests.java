@@ -8,7 +8,7 @@ package net.neoforged.neoforge.debug.client;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +21,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 
-@ForEachTest(side = Dist.CLIENT, groups = { DimensionTransitionScreenTests.GROUP, "manual" })
+@ForEachTest(side = Dist.CLIENT, groups = DimensionTransitionScreenTests.GROUP)
 public class DimensionTransitionScreenTests {
     public static final String GROUP = "dimension_transition";
     public static final ResourceLocation NETHER_BG = ResourceLocation.withDefaultNamespace("textures/block/netherrack.png");
@@ -71,7 +71,7 @@ public class DimensionTransitionScreenTests {
 
         @Override
         public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            graphics.blit(RenderType::guiTextured, this.bgTexture, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, this.bgTexture, 0, 0, 0, 0.0F, 0, this.width, this.height, 32, 32);
         }
     }
 }

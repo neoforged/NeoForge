@@ -128,7 +128,7 @@ public abstract class CreateInstallerProfile extends DefaultTask {
                 List.of("--task", "DOWNLOAD_MOJMAPS", "--version", getMinecraftVersion().get(), "--side", "{SIDE}", "--output", "{MOJMAPS}")
         );
         commonProcessor.accept(InstallerProcessor.INSTALLERTOOLS,
-                List.of("--task", "MERGE_MAPPING", "--left", "{MAPPINGS}", "--right", "{MOJMAPS}", "--output", "{MERGED_MAPPINGS}", "--classes", "--fields", "--methods", "--reverse-right")
+                List.of("--task", "MERGE_MAPPING", "--merge", "{MAPPINGS}", "--base", "{MOJMAPS}", "--output", "{MERGED_MAPPINGS}", "--reverse-base")
         );
         clientProcessor.accept(InstallerProcessor.JARSPLITTER,
                 List.of("--input", "{MINECRAFT_JAR}", "--slim", "{MC_SLIM}", "--extra", "{MC_EXTRA}", "--srg", "{MERGED_MAPPINGS}")

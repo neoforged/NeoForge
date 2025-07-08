@@ -19,8 +19,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
-import net.neoforged.neoforge.client.model.standalone.StandaloneModelBaker;
-import net.neoforged.neoforge.client.model.standalone.StandaloneModelBakerWrapper;
 import net.neoforged.neoforge.client.model.standalone.StandaloneModelKey;
 import net.neoforged.neoforge.client.model.standalone.UnbakedStandaloneModel;
 import org.jetbrains.annotations.ApiStatus;
@@ -151,18 +149,7 @@ public abstract class ModelEvent extends Event {
         }
 
         /**
-         * Registers a model to be loaded, along with its dependencies.
-         */
-        public <T> void register(StandaloneModelKey<T> modelKey, StandaloneModelBaker<T> baker) {
-            modelMap.put(modelKey, new StandaloneModelBakerWrapper<>(modelKey.getModelId(), baker));
-        }
-
-        /**
          * Registers a {@linkplain UnbakedStandaloneModel model} to be loaded, along with its dependencies.
-         *
-         * <p>Unlike {@link #register(StandaloneModelKey, StandaloneModelBaker)}, dependency gathering and baking is
-         * performed by an {@link UnbakedStandaloneModel}. This allows you to depend on multiple models files at once,
-         * baking them into a single dynamic model.
          */
         public <T> void register(StandaloneModelKey<T> modelKey, UnbakedStandaloneModel<T> baker) {
             modelMap.put(modelKey, baker);

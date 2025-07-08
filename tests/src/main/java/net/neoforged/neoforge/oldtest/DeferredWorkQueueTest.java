@@ -16,8 +16,8 @@ import org.slf4j.Logger;
  * Tests that the {@link net.neoforged.fml.DeferredWorkQueue} properly executes enqueued tasks and
  * forwards any exceptions thrown by those tasks
  */
+@EventBusSubscriber
 @Mod(DeferredWorkQueueTest.MOD_ID)
-@EventBusSubscriber(modid = DeferredWorkQueueTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class DeferredWorkQueueTest {
     public static final String MOD_ID = "deferred_work_queue_test";
     private static final boolean ENABLE = false;

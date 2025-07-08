@@ -161,7 +161,7 @@ public class ResourcePackLoader {
     }
 
     private static Pack.Metadata readMeta(PackType type, PackLocationInfo location, Pack.ResourcesSupplier resources) throws IOException {
-        final int currentVersion = SharedConstants.getCurrentVersion().getPackVersion(type);
+        final int currentVersion = SharedConstants.getCurrentVersion().packVersion(type);
         try (final PackResources primaryResources = resources.openPrimary(location)) {
             final PackMetadataSection metadata = primaryResources.getMetadataSection(OPTIONAL_FORMAT);
 
@@ -202,7 +202,7 @@ public class ResourcePackLoader {
         return Pack.readMetaAndCreate(
                 new PackLocationInfo(id, Component.literal(name), PackSource.DEFAULT, Optional.empty()),
                 new EmptyPackResources.EmptyResourcesSupplier(new PackMetadataSection(Component.translatable(descriptionKey, hiddenPacks.size()),
-                        SharedConstants.getCurrentVersion().getPackVersion(packType))),
+                        SharedConstants.getCurrentVersion().packVersion(packType))),
                 packType,
                 new PackSelectionConfig(true, Pack.Position.TOP, false)).withChildren(hiddenPacks);
     }

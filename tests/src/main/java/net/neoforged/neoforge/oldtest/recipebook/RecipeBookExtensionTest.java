@@ -77,7 +77,7 @@ public class RecipeBookExtensionTest {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
     }
 
-    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientHandler {
         @SubscribeEvent
         public static void clientSetup(RegisterMenuScreensEvent event) {

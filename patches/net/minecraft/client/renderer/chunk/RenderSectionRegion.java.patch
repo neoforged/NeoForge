@@ -1,0 +1,46 @@
+--- a/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
++++ b/net/minecraft/client/renderer/chunk/RenderSectionRegion.java
+@@ -23,13 +_,21 @@
+     private final int minSectionZ;
+     private final SectionCopy[] sections;
+     private final Level level;
++    private final it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot;
+ 
++    /** @deprecated Neo: use {@link #RenderSectionRegion(Level, int, int, int, SectionCopy[], it.unimi.dsi.fastutil.longs.Long2ObjectFunction)} instead */
++    @Deprecated
+     RenderSectionRegion(Level p_427508_, int p_427409_, int p_427310_, int p_427483_, SectionCopy[] p_427286_) {
++        this(p_427508_, p_427409_, p_427310_, p_427483_, p_427286_, net.neoforged.neoforge.model.data.ModelDataManager.EMPTY_SNAPSHOT);
++    }
++
++    RenderSectionRegion(Level p_427508_, int p_427409_, int p_427310_, int p_427483_, SectionCopy[] p_427286_, it.unimi.dsi.fastutil.longs.Long2ObjectFunction<net.neoforged.neoforge.model.data.ModelData> modelDataSnapshot) {
+         this.level = p_427508_;
+         this.minSectionX = p_427409_;
+         this.minSectionY = p_427310_;
+         this.minSectionZ = p_427483_;
+         this.sections = p_427286_;
++        this.modelDataSnapshot = modelDataSnapshot;
+     }
+ 
+     @Override
+@@ -91,6 +_,21 @@
+     @Override
+     public int getHeight() {
+         return this.level.getHeight();
++    }
++
++    @Override
++    public float getShade(float normalX, float normalY, float normalZ, boolean shade) {
++        return this.level.getShade(normalX, normalY, normalZ, shade);
++    }
++
++    @Override
++    public net.neoforged.neoforge.model.data.ModelData getModelData(BlockPos pos) {
++        return modelDataSnapshot.get(pos.asLong());
++    }
++
++    @Override
++    public net.neoforged.neoforge.common.world.AuxiliaryLightManager getAuxLightManager(net.minecraft.world.level.ChunkPos pos) {
++        return this.getSection(pos.x, this.minSectionY, pos.z).wrapped.getAuxLightManager(pos);
+     }
+ 
+     public static int index(int p_427335_, int p_427442_, int p_427497_, int p_427301_, int p_427248_, int p_427503_) {

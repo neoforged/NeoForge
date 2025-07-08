@@ -5,7 +5,7 @@
  
  @OnlyIn(Dist.CLIENT)
 -public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) implements BlockModelPart {
-+public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon, @Nullable net.minecraft.client.renderer.RenderType renderType) implements BlockModelPart {
++public record SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon, @Nullable net.minecraft.client.renderer.chunk.ChunkSectionLayer renderType) implements BlockModelPart {
 +    @Deprecated // Neo: Use render type aware version
 +    public SimpleModelWrapper(QuadCollection quads, boolean useAmbientOcclusion, TextureAtlasSprite particleIcon) {
 +        this(quads, useAmbientOcclusion, particleIcon, null);
@@ -34,7 +34,7 @@
 +    }
 +
 +    @Override
-+    public net.minecraft.client.renderer.RenderType getRenderType(net.minecraft.world.level.block.state.BlockState state) {
++    public net.minecraft.client.renderer.chunk.ChunkSectionLayer getRenderType(net.minecraft.world.level.block.state.BlockState state) {
 +        return this.renderType != null ? this.renderType : BlockModelPart.super.getRenderType(state);
      }
  }

@@ -1,11 +1,6 @@
 --- a/net/minecraft/client/server/LanServerPinger.java
 +++ b/net/minecraft/client/server/LanServerPinger.java
-@@ -12,11 +_,11 @@
- import net.neoforged.api.distmarker.OnlyIn;
- import org.slf4j.Logger;
- 
--@OnlyIn(Dist.CLIENT)
-+// Neo: Make this client-only class also available on the server
+@@ -16,7 +_,7 @@
  public class LanServerPinger extends Thread {
      private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
      private static final Logger LOGGER = LogUtils.getLogger();

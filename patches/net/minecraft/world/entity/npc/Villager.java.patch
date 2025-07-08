@@ -16,10 +16,10 @@
 -        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL) {
 +        if (p_35409_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
              LOGGER.info("Villager {} was struck by lightning {}.", this, p_35410_);
-             Witch witch = this.convertTo(EntityType.WITCH, ConversionParams.single(this, false, false), p_409390_ -> {
-                 p_409390_.finalizeSpawn(p_35409_, p_35409_.getCurrentDifficultyAt(p_409390_.blockPosition()), EntitySpawnReason.CONVERSION, null);
-+                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_409390_);
-                 p_409390_.setPersistenceRequired();
+             Witch witch = this.convertTo(EntityType.WITCH, ConversionParams.single(this, false, false), p_427125_ -> {
+                 p_427125_.finalizeSpawn(p_35409_, p_35409_.getCurrentDifficultyAt(p_427125_.blockPosition()), EntitySpawnReason.CONVERSION, null);
++                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_427125_);
+                 p_427125_.setPersistenceRequired();
                  this.releaseAllPois();
              });
 @@ -802,7 +_,10 @@

@@ -6,8 +6,9 @@
 package net.neoforged.neoforge.fluids.capability.templates;
 
 import java.util.function.Predicate;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -17,7 +18,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
  *
  * @author King Lemming
  */
-public class FluidTank implements IFluidHandler, IFluidTank {
+public class FluidTank implements IFluidHandler, IFluidTank, ValueIOSerializable {
     protected Predicate<FluidStack> validator;
     protected FluidStack fluid = FluidStack.EMPTY;
     protected int capacity;
@@ -59,17 +60,16 @@ public class FluidTank implements IFluidHandler, IFluidTank {
         return fluid.getAmount();
     }
 
-    public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        fluid = FluidStack.parseOptional(lookupProvider, nbt.getCompoundOrEmpty("Fluid"));
-        return this;
+    @Override
+    public void deserialize(ValueInput input) {
+        this.fluid = input.read("Fluid", FluidStack.CODEC).orElse(FluidStack.EMPTY);
     }
 
-    public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        if (!fluid.isEmpty()) {
-            nbt.put("Fluid", fluid.save(lookupProvider));
+    @Override
+    public void serialize(ValueOutput output) {
+        if (!this.fluid.isEmpty()) {
+            output.store("Fluid", FluidStack.CODEC, this.fluid);
         }
-
-        return nbt;
     }
 
     @Override

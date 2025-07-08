@@ -1,0 +1,32 @@
+--- a/net/minecraft/data/tags/VanillaItemTagsProvider.java
++++ b/net/minecraft/data/tags/VanillaItemTagsProvider.java
+@@ -488,5 +_,29 @@
+             this.itemAppender.addOptionalTag(blockTagToItemTag(p_422609_));
+             return this;
+         }
++
++        @Override
++        public TagAppender<Block, Block> add(net.minecraft.tags.TagEntry entry) {
++            itemAppender.add(entry);
++            return this;
++        }
++
++        @Override
++        public TagAppender<Block, Block> replace(boolean value) {
++            itemAppender.replace(value);
++            return this;
++        }
++
++        @Override
++        public TagAppender<Block, Block> remove(Block block) {
++            itemAppender.remove(block.asItem());
++            return this;
++        }
++
++        @Override
++        public TagAppender<Block, Block> remove(TagKey<Block> tag) {
++            itemAppender.remove(blockTagToItemTag(tag));
++            return this;
++        }
+     }
+ }

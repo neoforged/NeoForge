@@ -28,7 +28,7 @@
 +        BlockPos p_234357_,
 +        BlockAndTintGetter p_234358_,
 +        PoseStack p_234359_,
-+        java.util.function.Function<net.minecraft.client.renderer.RenderType, VertexConsumer> bufferLookup,
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup,
 +        boolean p_234361_,
 +        List<BlockModelPart> p_410643_
 +    ) {

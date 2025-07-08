@@ -1,0 +1,12 @@
+--- a/net/minecraft/network/protocol/game/ClientboundRecipeBookSettingsPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundRecipeBookSettingsPacket.java
+@@ -7,7 +_,8 @@
+ import net.minecraft.stats.RecipeBookSettings;
+ 
+ public record ClientboundRecipeBookSettingsPacket(RecipeBookSettings bookSettings) implements Packet<ClientGamePacketListener> {
+-    public static final StreamCodec<FriendlyByteBuf, ClientboundRecipeBookSettingsPacket> STREAM_CODEC = StreamCodec.composite(
++    // Neo: We need RegistryFriendlyByteBuf to detect the connection type for Vanilla client/server compatibility
++    public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, ClientboundRecipeBookSettingsPacket> STREAM_CODEC = StreamCodec.composite(
+         RecipeBookSettings.STREAM_CODEC, ClientboundRecipeBookSettingsPacket::bookSettings, ClientboundRecipeBookSettingsPacket::new
+     );
+ 

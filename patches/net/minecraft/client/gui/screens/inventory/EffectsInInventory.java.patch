@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
 +++ b/net/minecraft/client/gui/screens/inventory/EffectsInInventory.java
-@@ -48,12 +_,16 @@
+@@ -47,12 +_,16 @@
          Collection<MobEffectInstance> collection = this.minecraft.player.getActiveEffects();
          if (!collection.isEmpty() && j >= 32) {
              boolean flag = j >= 120;
@@ -18,16 +18,16 @@
              this.renderBackgrounds(p_376884_, i, k, iterable, flag);
              this.renderIcons(p_376884_, i, k, iterable, flag);
              if (flag) {
-@@ -75,6 +_,8 @@
-                         this.getEffectName(mobeffectinstance),
-                         MobEffectUtil.formatDuration(mobeffectinstance, 1.0F, this.minecraft.level.tickRateManager().tickrate())
-                     );
-+                    // Neo: Allow mods to adjust the tooltip shown when hovering a mob effect.
-+                    list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, mobeffectinstance, list);
-                     p_376884_.renderTooltip(this.screen.getFont(), list, Optional.empty(), p_376869_, p_376740_);
-                 }
-             }
-@@ -100,6 +_,11 @@
+@@ -77,6 +_,8 @@
+                 this.getEffectName(this.hoveredEffect),
+                 MobEffectUtil.formatDuration(this.hoveredEffect, 1.0F, this.minecraft.level.tickRateManager().tickrate())
+             );
++            // Neo: Allow mods to adjust the tooltip shown when hovering a mob effect.
++            list = net.neoforged.neoforge.client.ClientHooks.getEffectTooltip(screen, this.hoveredEffect, list);
+             p_418320_.setTooltipForNextFrame(this.screen.getFont(), list, Optional.empty(), p_418474_, p_418496_);
+         }
+     }
+@@ -99,6 +_,11 @@
          int i = this.screen.topPos;
  
          for (MobEffectInstance mobeffectinstance : p_376215_) {
@@ -37,9 +37,9 @@
 +                continue;
 +            }
              Holder<MobEffect> holder = mobeffectinstance.getEffect();
-             TextureAtlasSprite textureatlassprite = mobeffecttexturemanager.get(holder);
-             p_376734_.blitSprite(RenderType::guiTextured, textureatlassprite, p_376350_ + (p_376312_ ? 6 : 7), i + 7, 18, 18);
-@@ -111,6 +_,11 @@
+             ResourceLocation resourcelocation = Gui.getMobEffectSprite(holder);
+             p_376734_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation, p_376350_ + (p_376312_ ? 6 : 7), i + 7, 18, 18);
+@@ -110,6 +_,11 @@
          int i = this.screen.topPos;
  
          for (MobEffectInstance mobeffectinstance : p_376910_) {
@@ -49,5 +49,5 @@
 +                continue;
 +            }
              Component component = this.getEffectName(mobeffectinstance);
-             p_376227_.drawString(this.screen.getFont(), component, p_376372_ + 10 + 18, i + 6, 16777215);
+             p_376227_.drawString(this.screen.getFont(), component, p_376372_ + 10 + 18, i + 6, -1);
              Component component1 = MobEffectUtil.formatDuration(mobeffectinstance, 1.0F, this.minecraft.level.tickRateManager().tickrate());

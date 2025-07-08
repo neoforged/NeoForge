@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/gui/font/glyphs/BakedGlyph.java
 +++ b/net/minecraft/client/gui/font/glyphs/BakedGlyph.java
-@@ -139,6 +_,15 @@
-             .setLight(p_382874_);
+@@ -179,6 +_,15 @@
+         return this.renderTypes.guiPipeline();
      }
  
 +    /**

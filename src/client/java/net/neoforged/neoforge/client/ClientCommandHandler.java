@@ -18,17 +18,18 @@ import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -59,7 +60,7 @@ public class ClientCommandHandler {
      * with server commands in suggestions
      */
     @ApiStatus.Internal
-    public static CommandDispatcher<SharedSuggestionProvider> mergeServerCommands(CommandDispatcher<SharedSuggestionProvider> serverCommands, CommandBuildContext buildContext) {
+    public static CommandDispatcher<ClientSuggestionProvider> mergeServerCommands(CommandDispatcher<ClientSuggestionProvider> serverCommands, CommandBuildContext buildContext) {
         CommandDispatcher<CommandSourceStack> commandsTemp = new CommandDispatcher<>();
         NeoForge.EVENT_BUS.post(new RegisterClientCommandsEvent(commandsTemp, buildContext));
 
@@ -68,15 +69,15 @@ public class ClientCommandHandler {
         copy(commandsTemp.getRoot(), commands.getRoot());
 
         // Copies the server commands into another RootCommandNode so that redirects can't be used with client commands
-        RootCommandNode<SharedSuggestionProvider> serverCommandsRoot = serverCommands.getRoot();
-        CommandDispatcher<SharedSuggestionProvider> newServerCommands = new CommandDispatcher<>();
+        RootCommandNode<ClientSuggestionProvider> serverCommandsRoot = serverCommands.getRoot();
+        CommandDispatcher<ClientSuggestionProvider> newServerCommands = new CommandDispatcher<>();
         copy(serverCommandsRoot, newServerCommands.getRoot());
 
         // Copies the client side commands into the server side commands to be used for suggestions
         CommandHelper.mergeCommandNode(commands.getRoot(), newServerCommands.getRoot(), new IdentityHashMap<>(), getSource(), (context) -> 0, (suggestions) -> {
-            SuggestionProvider<SharedSuggestionProvider> suggestionProvider = SuggestionProviders
-                    .safelySwap((SuggestionProvider<SharedSuggestionProvider>) (SuggestionProvider<?>) suggestions);
-            if (suggestionProvider == SuggestionProviders.ASK_SERVER) {
+            ResourceLocation id = SuggestionProviders.getName(suggestions);
+            SuggestionProvider<ClientSuggestionProvider> suggestionProvider;
+            if (SuggestionProviders.getProvider(id) == SuggestionProviders.ASK_SERVER) {
                 suggestionProvider = (context, builder) -> {
                     ClientCommandSourceStack source = getSource();
                     StringReader reader = new StringReader(context.getInput());
@@ -87,6 +88,8 @@ public class ClientCommandHandler {
                     ParseResults<CommandSourceStack> parse = commands.parse(reader, source);
                     return commands.getCompletionSuggestions(parse);
                 };
+            } else {
+                suggestionProvider = SuggestionProviders.getProvider(id);
             }
             return suggestionProvider;
         });

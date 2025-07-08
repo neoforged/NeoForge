@@ -1,30 +1,96 @@
 --- a/net/minecraft/stats/RecipeBookSettings.java
 +++ b/net/minecraft/stats/RecipeBookSettings.java
-@@ -14,7 +_,7 @@
-     public static final StreamCodec<FriendlyByteBuf, RecipeBookSettings> STREAM_CODEC = StreamCodec.ofMember(
-         RecipeBookSettings::write, RecipeBookSettings::read
+@@ -13,7 +_,8 @@
+ import net.minecraft.world.inventory.RecipeBookType;
+ 
+ public final class RecipeBookSettings {
+-    public static final StreamCodec<FriendlyByteBuf, RecipeBookSettings> STREAM_CODEC = StreamCodec.composite(
++    // Neo: We need RegistryFriendlyByteBuf to detect the connection type for Vanilla client/server compatibility
++    public static final StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, RecipeBookSettings> STREAM_CODEC = StreamCodec.composite(
+         RecipeBookSettings.TypeSettings.STREAM_CODEC,
+         p_421342_ -> p_421342_.crafting,
+         RecipeBookSettings.TypeSettings.STREAM_CODEC,
+@@ -22,6 +_,9 @@
+         p_421337_ -> p_421337_.blastFurnace,
+         RecipeBookSettings.TypeSettings.STREAM_CODEC,
+         p_421340_ -> p_421340_.smoker,
++        // Neo: Also send settings for modded recipe book types
++        net.neoforged.neoforge.common.CommonHooks.MODDED_RECIPE_BOOK_TYPES_SETTINGS_STREAM_CODEC,
++        settings -> settings.moddedSettings,
+         RecipeBookSettings::new
      );
--    private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = ImmutableMap.of(
-+    private static final Map<RecipeBookType, Pair<String, String>> TAG_FIELDS = net.neoforged.neoforge.common.CommonHooks.buildRecipeBookTypeTagFields(ImmutableMap.of(
-         RecipeBookType.CRAFTING,
-         Pair.of("isGuiOpen", "isFilteringCraftable"),
-         RecipeBookType.FURNACE,
-@@ -23,7 +_,7 @@
-         Pair.of("isBlastingFurnaceGuiOpen", "isBlastingFurnaceFilteringCraftable"),
-         RecipeBookType.SMOKER,
-         Pair.of("isSmokerGuiOpen", "isSmokerFilteringCraftable")
--    );
-+    ));
-     private final Map<RecipeBookType, RecipeBookSettings.TypeSettings> states;
+     public static final MapCodec<RecipeBookSettings> MAP_CODEC = RecordCodecBuilder.mapCodec(
+@@ -30,6 +_,7 @@
+                 RecipeBookSettings.TypeSettings.FURNACE_MAP_CODEC.forGetter(p_421344_ -> p_421344_.furnace),
+                 RecipeBookSettings.TypeSettings.BLAST_FURNACE_MAP_CODEC.forGetter(p_421336_ -> p_421336_.blastFurnace),
+                 RecipeBookSettings.TypeSettings.SMOKER_MAP_CODEC.forGetter(p_421341_ -> p_421341_.smoker)
++                , net.neoforged.neoforge.common.CommonHooks.makeModdedRecipeBookTypesSettingsCodec().forGetter(settings -> settings.moddedSettings)
+             )
+             .apply(p_421339_, RecipeBookSettings::new)
+     );
+@@ -37,6 +_,7 @@
+     private RecipeBookSettings.TypeSettings furnace;
+     private RecipeBookSettings.TypeSettings blastFurnace;
+     private RecipeBookSettings.TypeSettings smoker;
++    private final java.util.Map<RecipeBookType, RecipeBookSettings.TypeSettings> moddedSettings;
  
-     private RecipeBookSettings(Map<RecipeBookType, RecipeBookSettings.TypeSettings> p_12730_) {
-@@ -72,7 +_,8 @@
-     private static RecipeBookSettings read(FriendlyByteBuf p_12753_) {
-         Map<RecipeBookType, RecipeBookSettings.TypeSettings> map = new EnumMap<>(RecipeBookType.class);
+     public RecipeBookSettings() {
+         this(
+@@ -53,10 +_,21 @@
+         RecipeBookSettings.TypeSettings p_421838_,
+         RecipeBookSettings.TypeSettings p_421582_
+     ) {
++        this(p_422389_, p_422071_, p_421838_, p_421582_, new java.util.EnumMap<>(RecipeBookType.class));
++    }
++
++    private RecipeBookSettings(
++            RecipeBookSettings.TypeSettings p_422389_,
++            RecipeBookSettings.TypeSettings p_422071_,
++            RecipeBookSettings.TypeSettings p_421838_,
++            RecipeBookSettings.TypeSettings p_421582_,
++            java.util.Map<RecipeBookType, RecipeBookSettings.TypeSettings> moddedSettings
++    ) {
+         this.crafting = p_422389_;
+         this.furnace = p_422071_;
+         this.blastFurnace = p_421838_;
+         this.smoker = p_421582_;
++        this.moddedSettings = moddedSettings;
+     }
  
--        for (RecipeBookType recipebooktype : RecipeBookType.values()) {
-+        // Neo: filter out modded RecipeBookTypes when connected to a vanilla server
-+        for (RecipeBookType recipebooktype : net.neoforged.neoforge.internal.NeoForgeProxy.INSTANCE.getFilteredRecipeBookTypeValues()) {
-             boolean flag = p_12753_.readBoolean();
-             boolean flag1 = p_12753_.readBoolean();
-             if (flag || flag1) {
+     @VisibleForTesting
+@@ -66,6 +_,7 @@
+             case FURNACE -> this.furnace;
+             case BLAST_FURNACE -> this.blastFurnace;
+             case SMOKER -> this.smoker;
++            default -> this.moddedSettings.getOrDefault(p_380129_, RecipeBookSettings.TypeSettings.DEFAULT);
+         };
+     }
+ 
+@@ -82,6 +_,9 @@
+                 break;
+             case SMOKER:
+                 this.smoker = p_379491_.apply(this.smoker);
++                break;
++            default:
++                this.moddedSettings.put(p_379381_, p_379491_.apply(this.moddedSettings.getOrDefault(p_379381_, RecipeBookSettings.TypeSettings.DEFAULT)));
+         }
+     }
+ 
+@@ -102,7 +_,7 @@
+     }
+ 
+     public RecipeBookSettings copy() {
+-        return new RecipeBookSettings(this.crafting, this.furnace, this.blastFurnace, this.smoker);
++        return new RecipeBookSettings(this.crafting, this.furnace, this.blastFurnace, this.smoker, new java.util.EnumMap<>(this.moddedSettings));
+     }
+ 
+     public void replaceFrom(RecipeBookSettings p_12733_) {
+@@ -110,6 +_,8 @@
+         this.furnace = p_12733_.furnace;
+         this.blastFurnace = p_12733_.blastFurnace;
+         this.smoker = p_12733_.smoker;
++        this.moddedSettings.clear();
++        this.moddedSettings.putAll(p_12733_.moddedSettings);
+     }
+ 
+     public record TypeSettings(boolean open, boolean filtering) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/Font.java
 +++ b/net/minecraft/client/gui/Font.java
-@@ -42,6 +_,8 @@
+@@ -43,6 +_,8 @@
      private final Function<ResourceLocation, FontSet> fonts;
      final boolean filterFishyGlyphs;
      private final StringSplitter splitter;
@@ -9,39 +9,12 @@
  
      public Font(Function<ResourceLocation, FontSet> p_243253_, boolean p_243245_) {
          this.fonts = p_243253_;
-@@ -298,6 +_,8 @@
+@@ -219,6 +_,8 @@
+     public StringSplitter getSplitter() {
          return this.splitter;
      }
- 
-+    @Override public Font self() { return this; }
 +
++    @Override public Font self() { return this; }
+ 
      @OnlyIn(Dist.CLIENT)
      public static enum DisplayMode {
-         NORMAL,
-@@ -402,7 +_,7 @@
-                     p_381032_ - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, this.getUnderTextEffectDepth(), this.backgroundColor
-                 );
-                 bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
--                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
-+                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
-                 bakedglyph.renderEffect(bakedglyph$effect, this.pose, vertexconsumer, this.packedLightCoords);
-             }
- 
-@@ -412,7 +_,7 @@
-                     bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
-                 }
- 
--                VertexConsumer vertexconsumer1 = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
-+                VertexConsumer vertexconsumer1 = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
- 
-                 for (BakedGlyph.Effect bakedglyph$effect1 : this.effects) {
-                     bakedglyph.renderEffect(bakedglyph$effect1, this.pose, vertexconsumer1, this.packedLightCoords);
-@@ -446,7 +_,7 @@
-         void renderCharacters() {
-             for (BakedGlyph.GlyphInstance bakedglyph$glyphinstance : this.glyphInstances) {
-                 BakedGlyph bakedglyph = bakedglyph$glyphinstance.glyph();
--                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode));
-+                VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bakedglyph.renderType(this.mode, Font.this.enableTextTextureLinearFiltering));
-                 bakedglyph.renderChar(bakedglyph$glyphinstance, this.pose, vertexconsumer, this.packedLightCoords);
-             }
-         }

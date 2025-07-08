@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "building",
-  "group": "carpet",
+  "category": "misc",
+  "group": "carpet_dye",
   "ingredients": [
     "#c:dyes/light_blue",
     [

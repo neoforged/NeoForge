@@ -21,7 +21,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.random.Weighted;
@@ -45,7 +44,6 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.mixins.MappedRegistryAccessor;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
@@ -100,9 +98,6 @@ public class ServerLifecycleHooks {
     public static void handleServerStarting(final MinecraftServer server) {
         if (FMLEnvironment.dist.isDedicatedServer()) {
             LanguageHook.loadModLanguages(server);
-            // GameTestServer requires the gametests to be registered earlier, so it is done in main and should not be done twice.
-            if (!(server instanceof GameTestServer))
-                GameTestHooks.registerGametests(server.registryAccess());
         }
         PermissionAPI.initializePermissionAPI();
         NeoForge.EVENT_BUS.post(new ServerStartingEvent(server));

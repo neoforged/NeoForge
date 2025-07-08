@@ -38,14 +38,14 @@ public class ChunkWatchEventTest {
         ++watched;
         WATCHED_BY_PLAYER.put(event.getPlayer().getUUID(), watched);
         LOGGER.info("Watching chunk {} in dimension {}. Player's dimension: {}, total chunks watched by player {}",
-                event.getPos(), getDimensionName(event.getLevel()), getDimensionName(event.getPlayer().getCommandSenderWorld()),
+                event.getPos(), getDimensionName(event.getLevel()), getDimensionName(event.getPlayer().level()),
                 watched);
     }
 
     @SubscribeEvent
     public static void onSent(ChunkWatchEvent.Sent event) {
         LOGGER.info("Watched chunk {} in dimension {} sent to client. Player's dimension: {}",
-                event.getPos(), getDimensionName(event.getLevel()), getDimensionName(event.getPlayer().getCommandSenderWorld()));
+                event.getPos(), getDimensionName(event.getLevel()), getDimensionName(event.getPlayer().level()));
     }
 
     @SubscribeEvent
@@ -54,7 +54,7 @@ public class ChunkWatchEventTest {
         --watched;
         WATCHED_BY_PLAYER.put(event.getPlayer().getUUID(), watched);
         LOGGER.info("Unwatching chunk {} in dimension {}. Player's dimension: {}, total chunks watched by player {}",
-                event.getPos(), getDimensionName(event.getLevel()), getDimensionName(event.getPlayer().getCommandSenderWorld()),
+                event.getPos(), getDimensionName(event.getLevel()), getDimensionName(event.getPlayer().level()),
                 watched);
     }
 

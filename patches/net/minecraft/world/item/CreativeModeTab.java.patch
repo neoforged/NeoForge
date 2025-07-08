@@ -127,7 +127,7 @@
 +        private boolean hasSearchBar = false;
 +        private int searchBarWidth = 89;
 +        private net.minecraft.resources.ResourceLocation tabsImage = CREATIVE_INVENTORY_TABS_IMAGE;
-+        private int labelColor = 4210752;
++        private int labelColor = -12566464;
 +        private int slotColor = -2130706433;
 +        private java.util.function.Function<CreativeModeTab.Builder, CreativeModeTab> tabFactory = CreativeModeTab::new;
 +        private final java.util.List<net.minecraft.resources.ResourceLocation> tabsBefore = new java.util.ArrayList<>();

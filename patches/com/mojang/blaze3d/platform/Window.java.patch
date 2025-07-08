@@ -31,7 +31,7 @@
          LOGGER.error("########## GL ERROR ##########");
          LOGGER.error("@ {}", this.errorSection);
          LOGGER.error("{}: {}", p_85383_, s);
-@@ -494,5 +_,26 @@
+@@ -495,5 +_,26 @@
          WindowInitFailed(String p_85455_) {
              super(p_85455_);
          }

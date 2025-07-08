@@ -351,6 +351,11 @@ public abstract class AbstractTest implements Test {
         public void pass() {
             DynamicTest.super.pass();
         }
+
+        @Nullable
+        public Method getMethod() {
+            return null;
+        }
     }
 
     protected interface AnnotationHolder {

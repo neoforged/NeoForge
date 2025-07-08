@@ -36,7 +36,7 @@ public final class StandaloneModelLoader {
             try {
                 return model.bake(baker);
             } catch (Exception e) {
-                LOGGER.warn("Unable to bake standalone model: '{}': {}", key.getModelId(), e);
+                LOGGER.warn("Unable to bake standalone model: '{}': {}", key.getName(), e);
                 return null;
             }
         }, executor).thenApply(BakedModels::new);

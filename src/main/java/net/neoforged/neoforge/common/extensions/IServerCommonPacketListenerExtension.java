@@ -5,7 +5,7 @@
 
 package net.neoforged.neoforge.common.extensions;
 
-import net.minecraft.network.PacketSendListener;
+import io.netty.channel.ChannelFutureListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ServerCommonPacketListener;
@@ -29,14 +29,14 @@ public interface IServerCommonPacketListenerExtension extends ICommonPacketListe
      *
      * @param listener An optional callback for when the payload is sent
      */
-    void send(Packet<?> packet, @Nullable PacketSendListener listener);
+    void send(Packet<?> packet, @Nullable ChannelFutureListener listener);
 
     /**
      * Sends a payload to the client of this listener.
      *
      * @param listener An optional callback for when the payload is sent
      */
-    default void send(CustomPacketPayload payload, @Nullable PacketSendListener listener) {
+    default void send(CustomPacketPayload payload, @Nullable ChannelFutureListener listener) {
         this.send(new ClientboundCustomPayloadPacket(payload), listener);
     }
 }

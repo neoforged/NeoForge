@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/Rabbit.java
-@@ -557,7 +_,7 @@
+@@ -558,7 +_,7 @@
          @Override
          public boolean canUse() {
              if (this.nextStartTick <= 0) {
@@ -9,7 +9,7 @@
                      return false;
                  }
  
-@@ -606,7 +_,7 @@
+@@ -607,7 +_,7 @@
          @Override
          protected boolean isValidTarget(LevelReader p_29785_, BlockPos p_29786_) {
              BlockState blockstate = p_29785_.getBlockState(p_29786_);

@@ -19,7 +19,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -126,7 +125,7 @@ public class StopUsingItemTest {
         }
     }
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Bus.GAME)
+    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
     public static class ClientEvents {
         @SubscribeEvent
         static void computeFovModifier(ComputeFovModifierEvent event) {

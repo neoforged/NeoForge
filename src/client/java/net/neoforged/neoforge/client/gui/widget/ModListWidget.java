@@ -5,11 +5,10 @@
 
 package net.neoforged.neoforge.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -74,14 +73,11 @@ public class ModListWidget extends ObjectSelectionList<ModListWidget.ModEntry> {
             Component version = Component.literal(stripControlCodes(MavenVersionTranslator.artifactVersionToString(container.getModInfo().getVersion())));
             VersionChecker.CheckResult vercheck = VersionChecker.getResult(container.getModInfo());
             Font font = this.parent.getFontRenderer();
-            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(name, listWidth))), left + 3, top + 2, 0xFFFFFF, false);
-            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(version, listWidth))), left + 3, top + 2 + font.lineHeight, 0xCCCCCC, false);
+            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(name, listWidth))), left + 3, top + 2, 0xFFFFFFFF, false);
+            guiGraphics.drawString(font, Language.getInstance().getVisualOrder(FormattedText.composite(font.substrByWidth(version, listWidth))), left + 3, top + 2 + font.lineHeight, 0xFFCCCCCC, false);
             if (vercheck.status().shouldDraw()) {
                 //TODO: Consider adding more icons for visualization
-                RenderSystem.setShaderColor(1, 1, 1, 1);
-                guiGraphics.pose().pushPose();
-                guiGraphics.blit(RenderType::guiTextured, VERSION_CHECK_ICONS, getX() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
-                guiGraphics.pose().popPose();
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, VERSION_CHECK_ICONS, getX() + width - 12, top + entryHeight / 4, vercheck.status().getSheetOffset() * 8, (vercheck.status().isAnimated() && ((System.currentTimeMillis() / 800 & 1)) == 1) ? 8 : 0, 8, 8, 64, 16);
             }
         }
 

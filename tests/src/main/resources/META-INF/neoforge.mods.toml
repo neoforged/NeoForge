@@ -175,17 +175,11 @@ modId="part_entity_test"
 [[mods]]
 modId="custom_armor_model_test"
 [[mods]]
-modId="duplicate_optional_tag_test"
-[[mods]]
 modId="custom_particle_type_test"
 [[mods]]
 modId="renderable_test"
 [[mods]]
 modId="ingredient_invalidation"
-[[mods]]
-modId="registry_codec_test"
-[[mods]]
-modId="deferred_holder_test"
 [[mods]]
 modId="gametest_test"
 [[mods]]
@@ -232,8 +226,6 @@ modId="grindstone_event_test"
 modId="data_pack_registries_test"
 [[mods]]
 modId="creative_mode_tab_test"
-[[mods]]
-modId="render_level_stages_test"
 [[mods]]
 modId="trade_with_villager_event_test"
 [[mods]]

@@ -1,27 +1,19 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -45,6 +_,8 @@
- @DontObfuscate
- public class RenderSystem {
-     public static final ScissorState SCISSOR_STATE = new ScissorState();
+@@ -101,6 +_,9 @@
+     @Nullable
+     private static DynamicUniforms dynamicUniforms;
+     private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
 +    @Nullable
 +    public static net.neoforged.neoforge.client.stencil.StencilTest STENCIL_TEST = null;
-     static final Logger LOGGER = LogUtils.getLogger();
-     public static final int MINIMUM_ATLAS_TEXTURE_SIZE = 1024;
-     @Nullable
-@@ -90,6 +_,7 @@
-     @Nullable
-     private static GpuBuffer QUAD_VERTEX_BUFFER;
-     private static final ArrayListDeque<RenderSystem.GpuAsyncTask> PENDING_FENCES = new ArrayListDeque<>();
 +    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
  
      public static void initRenderThread() {
          if (renderThread != null) {
-@@ -154,6 +_,15 @@
-         SCISSOR_STATE.disable();
+@@ -199,6 +_,14 @@
+         return scissorStateForRenderTypeDraws;
      }
  
-+
 +    public static void enableStencil(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
 +        STENCIL_TEST = stencilTest;
 +    }
@@ -30,13 +22,13 @@
 +        STENCIL_TEST = null;
 +    }
 +
-     public static void setShaderFog(FogParameters p_360454_) {
-         assertOnRenderThread();
-         shaderFog = p_360454_;
-@@ -426,6 +_,40 @@
-     @Nullable
-     public static GpuDevice tryGetDevice() {
-         return DEVICE;
+     public static String getBackendDescription() {
+         return String.format(Locale.ROOT, "LWJGL version %s", GLX._getLWJGLVersion());
+     }
+@@ -423,6 +_,40 @@
+         if (gpubufferslice2 != null) {
+             p_418212_.setUniform("Lighting", gpubufferslice2);
+         }
 +    }
 +
 +    /**

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/storage/loot/LootDataType.java
 +++ b/net/minecraft/world/level/storage/loot/LootDataType.java
-@@ -9,14 +_,26 @@
+@@ -10,14 +_,26 @@
  import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
  import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
  

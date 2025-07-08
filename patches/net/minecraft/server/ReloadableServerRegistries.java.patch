@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/ReloadableServerRegistries.java
 +++ b/net/minecraft/server/ReloadableServerRegistries.java
-@@ -61,7 +_,16 @@
+@@ -59,7 +_,16 @@
              () -> {
                  WritableRegistry<T> writableregistry = new MappedRegistry<>(p_335741_.registryKey(), Lifecycle.experimental());
                  Map<ResourceLocation, T> map = new HashMap<>();

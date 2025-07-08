@@ -20,6 +20,8 @@ import net.neoforged.neoforge.client.event.ModelEvent;
  *
  * <p>The baked object can be retrieved later using {@link ModelManager#getStandaloneModel(StandaloneModelKey)}.
  *
+ * <p>{@link SimpleUnbakedStandaloneModel} provides a basic implementation that loads a single model.
+ *
  * @param <T> The type of the baked model.
  * @see ModelEvent.RegisterStandalone#register(StandaloneModelKey, UnbakedStandaloneModel)
  */

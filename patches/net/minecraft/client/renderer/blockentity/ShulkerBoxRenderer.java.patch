@@ -1,7 +1,7 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -60,6 +_,12 @@
-         p_388735_.popPose();
+@@ -72,6 +_,12 @@
+         this.model.root().getExtentsForGui(posestack, p_428287_);
      }
  
 +    @Override

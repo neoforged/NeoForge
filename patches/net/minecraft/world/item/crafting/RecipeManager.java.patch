@@ -25,7 +25,7 @@
          List<SelectableRecipe.SingleInputEntry<StonecutterRecipe>> list = new ArrayList<>();
          List<RecipeManager.IngredientCollector> list1 = RECIPE_PROPERTY_SETS.entrySet()
              .stream()
-@@ -260,6 +_,16 @@
+@@ -261,6 +_,16 @@
          return p_380850_ -> p_380850_.getType() == p_381108_ && p_380850_ instanceof SingleItemRecipe singleitemrecipe
              ? Optional.of(singleitemrecipe.input())
              : Optional.empty();
