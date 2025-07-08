@@ -7,7 +7,7 @@
 -            p_281357_.renderItemDecorations(this.font, p_283466_, p_282403_ + 14, p_283601_, p_283466_.getCount() == 1 ? "1" : null);
 +            // Forge: fixes Forge-8806, code for count rendering taken from GuiGraphics#renderGuiItemDecorations
 +            String count = p_283466_.getCount() == 1 ? "1" : String.valueOf(p_283466_.getCount());
-+            p_281357_.drawString(font, count, p_282403_ + 14 + 19 - 2 - font.width(count), p_283601_ + 6 + 3, 0xFFFFFF, true);
++            p_281357_.drawString(font, count, p_282403_ + 14 + 19 - 2 - font.width(count), p_283601_ + 6 + 3, 0xFFFFFFFF, true);
 +
              p_281357_.blitSprite(RenderPipelines.GUI_TEXTURED, DISCOUNT_STRIKETHRUOGH_SPRITE, p_282403_ + 7, p_283601_ + 12, 9, 2);
          }
