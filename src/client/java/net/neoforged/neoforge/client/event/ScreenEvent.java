@@ -41,7 +41,6 @@ import org.lwjgl.glfw.GLFW;
  *
  * @see Init
  * @see Render
- * @see BackgroundRendered
  * @see MouseInput
  * @see KeyInput
  */
@@ -148,6 +147,7 @@ public abstract class ScreenEvent extends Event {
      * See the two subclasses for listening before and after drawing.
      *
      * @see Render.Pre
+     * @see Render.Background
      * @see Render.Post
      */
     public static abstract class Render extends ScreenEvent {
