@@ -68,9 +68,9 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         final List<Item> villagerCompostables = ObfuscationReflectionHelper.getPrivateValue(WorkAtComposter.class, null, "COMPOSTABLE_ITEMS");
         ComposterBlock.COMPOSTABLES.forEach((item, chance) -> compostables.add(item.asItem().builtInRegistryHolder(), new Compostable(chance, villagerCompostables.contains(item.asItem())), false));
 
-        final var acceptableHostileDistances = builder(NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
+        final var acceptableVillagerDistances = builder(NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
         ObfuscationReflectionHelper.<ImmutableMap<EntityType<?>, Float>, VillagerHostilesSensor>getPrivateValue(VillagerHostilesSensor.class, null, "ACCEPTABLE_DISTANCE_FROM_HOSTILES")
-                .forEach((entityType, distance) -> acceptableHostileDistances.add(BuiltInRegistries.ENTITY_TYPE.getKey(entityType), new AcceptableVillagerDistance(distance), false));
+                .forEach((entityType, distance) -> acceptableVillagerDistances.add(BuiltInRegistries.ENTITY_TYPE.getKey(entityType), new AcceptableVillagerDistance(distance), false));
 
         final var fuels = builder(NeoForgeDataMaps.FURNACE_FUELS);
         FuelValues.vanillaBurnTimes(new FuelValuesDataMapBuilder(provider, fuels), AbstractFurnaceBlockEntity.BURN_TIME_STANDARD);
