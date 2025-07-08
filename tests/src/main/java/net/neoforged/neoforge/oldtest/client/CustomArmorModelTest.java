@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
@@ -28,6 +29,7 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.Nullable;
 
 @Mod(CustomArmorModelTest.MOD_ID)
 public class CustomArmorModelTest {
@@ -68,7 +70,7 @@ public class CustomArmorModelTest {
         private static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
             event.registerItem(new IClientItemExtensions() {
                 @Override
-                public HumanoidModel<?> getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType armorSlot, Model _default) {
+                public HumanoidModel<?> getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType armorSlot, Model _default, @Nullable EntityRenderState renderState) {
                     return ENDERMAN.get();
                 }
 

@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/entity/EntityRenderDispatcher.java
+@@ -221,7 +_,7 @@
+             double d1 = p_412059_ + vec3.z();
+             p_412055_.pushPose();
+             p_412055_.translate(d3, d0, d1);
+-            p_412321_.render(p_412595_, p_412055_, p_412539_, p_412431_);
++            net.neoforged.neoforge.client.ClientHooks.renderEntity(p_412321_, p_412595_, p_412055_, p_412539_, p_412431_);
+             if (p_412595_.displayFireAnimation) {
+                 this.renderFlame(p_412055_, p_412539_, p_412595_, Mth.rotationAroundAxis(Mth.Y_AXIS, this.cameraOrientation, new Quaternionf()));
+             }
 @@ -485,6 +_,10 @@
          return this.itemInHandRenderer;
      }

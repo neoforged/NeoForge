@@ -13,6 +13,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -96,16 +97,17 @@ public interface IClientItemExtensions {
      * @param itemStack The item stack
      * @param layerType The slot the item is in
      * @param original  The original armor model. Will have attributes set.
+     * @param renderState The render state of the entity
      * @return A HumanoidModel to be rendered. Relevant properties are to be copied over by the caller.
-     * @see #getGenericArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)
+     * @see #getGenericArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model, EntityRenderState)
      */
-    default Model getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
+    default Model getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original, @Nullable EntityRenderState renderState) {
         return original;
     }
 
     /**
      * Queries the armor model for this item when it's equipped. Useful in place of
-     * {@link #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)} for wrapping the original
+     * {@link #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model, EntityRenderState)} for wrapping the original
      * model or returning anything non-standard.
      * <p>
      * If you override this method you are responsible for copying any properties you care about from the original model.
@@ -113,11 +115,12 @@ public interface IClientItemExtensions {
      * @param itemStack The item stack
      * @param layerType The slot the item is in
      * @param original  The original armor model. Will have attributes set.
+     * @param renderState The render state of the entity
      * @return A Model to be rendered. Relevant properties must be copied over manually.
-     * @see #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model)
+     * @see #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model, EntityRenderState)
      */
-    default Model getGenericArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original) {
-        Model replacement = getHumanoidArmorModel(itemStack, layerType, original);
+    default Model getGenericArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model original, @Nullable EntityRenderState renderState) {
+        Model replacement = getHumanoidArmorModel(itemStack, layerType, original, renderState);
         if (replacement != original) {
             if (original instanceof HumanoidModel<?> originalHumanoid && replacement instanceof HumanoidModel<?> replacementHumanoid) {
                 ClientHooks.copyModelProperties(originalHumanoid, replacementHumanoid);

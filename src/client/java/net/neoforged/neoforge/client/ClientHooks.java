@@ -57,6 +57,7 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -85,6 +86,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
@@ -266,6 +269,10 @@ public class ClientHooks {
      */
     public static Gui.HeartType firePlayerHeartTypeEvent(Player player, Gui.HeartType heartType) {
         return NeoForge.EVENT_BUS.post(new PlayerHeartTypeEvent(player, heartType)).getType();
+    }
+
+    public static Model getArmorModel(IClientItemExtensions extensions, ItemStack stack, EquipmentClientInfo.LayerType layerType, Model original) {
+        return extensions.getGenericArmorModel(stack, layerType, original, getCurrentEntityRenderState());
     }
 
     public static ResourceLocation getArmorTexture(ItemStack armor, EquipmentClientInfo.LayerType type, EquipmentClientInfo.Layer layer, ResourceLocation _default) {
@@ -662,6 +669,27 @@ public class ClientHooks {
 
     public static boolean shouldRenderEffect(MobEffectInstance effectInstance) {
         return IClientMobEffectExtensions.of(effectInstance).isVisibleInInventory(effectInstance);
+    }
+
+    private static final ThreadLocal<EntityRenderState> capturedRenderState = new ThreadLocal<>();
+
+    public static <S extends EntityRenderState> void renderEntity(EntityRenderer<?, S> renderer, S renderState, PoseStack pose, MultiBufferSource bufferSource, int packedLight) {
+        capturedRenderState.set(renderState);
+        renderer.render(renderState, pose, bufferSource, packedLight);
+        capturedRenderState.remove();
+    }
+
+    /**
+     * Returns the entity render state being used to render the current entity. This is captured
+     * when {@link net.minecraft.client.renderer.entity.EntityRenderDispatcher#render} is invoked,
+     * and only during {@link EntityRenderer#render}. This can be called in methods used by the render,
+     * but does not propagate the render state.
+     *
+     * @return the current entity render state
+     */
+    @Nullable
+    public static EntityRenderState getCurrentEntityRenderState() {
+        return capturedRenderState.get();
     }
 
     private static final Map<ModelLayerLocation, Supplier<LayerDefinition>> layerDefinitions = new HashMap<>();
