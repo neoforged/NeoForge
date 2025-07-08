@@ -1,4 +1,5 @@
 import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 project.plugins.apply('dev.lukebemish.immaculate')
 
@@ -69,6 +70,19 @@ immaculate {
 
         custom 'jetbrainsNullable', { String fileContents ->
             fileContents.replace('javax.annotation.Nullable', 'org.jetbrains.annotations.Nullable')
+        }
+
+        def iPrefixedInterface = Pattern.compile(' interface (I[A-Z]\\w+)')
+        def allowedInterfaces = [ "IAbstractBoatExtension", "IAbstractWidgetExtension", "IAdvancementBuilderExtension", "IArmPoseTransformer", "IAttachmentCopyHandler", "IAttachmentHolder", "IAttachmentSerializer", "IAttributeExtension", "IBaseRailBlockExtension", "IBlockAndTintGetterExtension", "IBlockCapabilityProvider", "IBlockEntityExtension", "IBlockEntityRendererExtension", "IBlockExtension", "IBlockGetterExtension", "IBlockStateExtension", "IBrewingRecipe", "IBucketPickupExtension", "ICapabilityInvalidationListener", "ICapabilityProvider", "IClientBlockExtensions", "IClientCommonPacketListenerExtension", "IClientFluidTypeExtensions", "IClientItemExtensions", "IClientMobEffectExtensions", "ICommandSourceStackExtension", "ICommonPacketListener", "ICondition", "IConfigScreenFactory", "IContainerFactory", "IContext", "ICustomConfigurationTask", "ICustomHolderSet", "ICustomIngredient", "IDataComponentHolderExtension", "IDataComponentMapBuilderExtensions", "IDeathMessageProvider", "IDimensionSpecialEffectsExtension", "IDispensibleContainerItemExtension", "IEnchantmentExtension", "IEnergyStorage", "IEntityExtension", "IEntitySelectorType", "IEntityWithComplexSpawn", "IFallableExtension", "IFluidExtension", "IFluidHandler", "IFluidHandlerItem", "IFluidStateExtension", "IFluidTank", "IFontExtension", "IFriendlyByteBufExtension", "IGlobalLootModifier", "IGuiGraphicsExtension", "IHolderExtension", "IHolderLookupProviderExtension", "IHolderSetExtension", "IItemDecorator", "IItemExtension", "IItemHandler", "IItemHandlerModifiable", "IItemPropertiesExtensions", "IItemStackExtension", "IKeyConflictContext", "IKeyMappingExtension", "ILevelExtension", "ILevelReaderExtension", "ILivingEntityExtension", "ILivingTargetType", "IMapDecorationRenderer", "IMenuProviderExtension", "IMenuTypeExtension", "IMinecartCollisionHandler", "IMinecraftExtension", "IMobEffectExtension", "IModelProviderExtension", "IOwnedSpawner", "IPackResourcesExtension", "IPacketFlowExtension", "IPayloadContext", "IPayloadHandler", "IPermissionHandler", "IPermissionHandlerFactory", "IPlayerExtension", "IPlayerListExtension", "IPoseStackExtension", "IQuadTransformer", "IRecipeContainer", "IRecipeOutputExtension", "IReductionFunction", "IRegistryExtension", "IRenderStateExtension", "IRenderableSection", "IScalingFunction", "IServerChunkCacheExtension", "IServerCommonPacketListenerExtension", "IServerConfigurationPacketListenerExtension", "IServerGamePacketListenerExtension", "IShearable", "ITagAppenderExtension", "ITagBuilderExtension", "ITexturedModelExtension", "ITicketGetter", "ITicketManager", "ITransformationExtension", "IVertexConsumerExtension", "IWithData", "IWorker" ].toSet()
+        custom 'noIPrefix', { String fileContents ->
+            def match = iPrefixedInterface.matcher(fileContents)
+            if (match.find()) {
+                def interfaceName = match.group(1)
+                if (allowedInterfaces.contains(interfaceName)) {
+                    return // Allowed interface, do nothing
+                }
+                throw new GradleException("Interface should not be prefixed with I: ${match.group(1)}")
+            }
         }
     }
 }
