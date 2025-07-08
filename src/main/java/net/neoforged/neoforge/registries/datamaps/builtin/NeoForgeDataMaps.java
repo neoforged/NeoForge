@@ -49,7 +49,7 @@ public class NeoForgeDataMaps {
      *
      * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
      */
-    public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_hostile_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
+    public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_villager_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
             .synced(AcceptableVillagerDistance.DISTANCE_CODEC, false).build();
     /**
      * The {@linkplain Item} data map that replaces {@link ComposterBlock#COMPOSTABLES}.
