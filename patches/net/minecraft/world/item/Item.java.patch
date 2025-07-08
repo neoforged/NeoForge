@@ -21,7 +21,7 @@
              }
          }
 +        this.canCombineRepair = p_41383_.canCombineRepair;
-+        defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.ItemResource.invalidateDefault(this));
++        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.ItemResource.createDefaultInstance(this));
      }
  
      @Deprecated

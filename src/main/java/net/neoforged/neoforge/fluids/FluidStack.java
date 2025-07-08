@@ -282,7 +282,9 @@ public final class FluidStack implements MutableDataComponentHolder {
     }
 
     /**
-     * @return An immutable {@link ResourceStack} with the current count.
+     * Returns an immutable {@link ResourceStack} with the current count.
+     * 
+     * @return An immutable {@link ResourceStack} with the current count
      */
     public ResourceStack<FluidResource> immutable() {
         return FluidResource.of(this).withAmount(amount);

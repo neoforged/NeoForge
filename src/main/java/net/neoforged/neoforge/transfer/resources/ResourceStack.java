@@ -12,7 +12,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -168,9 +167,9 @@ public final class ResourceStack<T extends IResource<T>> {
      * @return A new this instance with an updated resource should it have changed, otherwise it returns itself.
      */
     public ResourceStack<T> with(UnaryOperator<T> operator, int amount) {
-        if (amount == 0) return resource().getEmptyResourceStackInstance();
-
         T result = operator.apply(resource);
+        if (amount == 0) return result.getEmptyResourceStackInstance();
+
         if (result.equals(resource) && amount == amount()) return this;
         return ResourceStack.of(result, amount);
     }
@@ -183,18 +182,6 @@ public final class ResourceStack<T extends IResource<T>> {
      */
     public boolean isEmpty() {
         return ResourceHandlerUtil.isEmpty(resource(), amount());
-    }
-
-    /**
-     * Determines if the resource's backing value is enabled. If it is not, most actions are expected to not function,
-     * such as right click behaviour or similar. This is a per level/world setting. For instance, this should be checked before
-     * filling an item based resource handler.
-     * 
-     * @param enabledFeatures Feature flags currently enabled for this level.
-     * @return {@code true} if the resource is enabled in the feature set of the level; {@code false} otherwise.
-     */
-    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
-        return !(resource() instanceof IRegisteredResource<?, ?> reg) || reg.isEnabled(enabledFeatures);
     }
 
     @Override

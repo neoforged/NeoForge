@@ -156,12 +156,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     // no functional difference in this case since the field is marked final.
     private final FluidStack innerStack;
 
-    /**
-     * Lazily initialized.
-     */
-    @Nullable
-    private ItemResource filledBucket;
-
     private FluidResource(FluidStack innerStack) {
         this.innerStack = innerStack;
     }
@@ -192,32 +186,20 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
         return innerStack.isEmpty();
     }
 
-    /**
-     * Returns a copy of this resource with the patch applied.
-     *
-     * @param patch the patch to apply
-     * @return the new resource
-     */
     @Override
     public FluidResource withPatch(DataComponentPatch patch) {
+        if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.applyComponents(patch);
-        return new FluidResource(stack);
+        return FluidResource.of(stack);
     }
 
-    /**
-     * Returns a copy of this resource with the set data component.
-     *
-     * @param type the type of data component
-     * @param data the data to set
-     * @param <D>  the type of data component
-     * @return the new resource
-     */
     @Override
     public <D> FluidResource with(DataComponentType<D> type, D data) {
+        if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.set(type, data);
-        return new FluidResource(stack);
+        return FluidResource.of(stack);
     }
 
     /**
@@ -228,9 +210,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
      */
     @Override
     public FluidResource without(DataComponentType<?> type) {
+        if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.remove(type);
-        return new FluidResource(stack);
+        return FluidResource.of(stack);
     }
 
     /**
@@ -242,7 +225,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
 
     @Override
     public DataComponentMap getComponents() {
-        if (innerStack.isEmpty()) return DataComponentMap.EMPTY;
+        if (isEmpty()) return DataComponentMap.EMPTY;
         return innerStack.getComponents().toImmutableMap();
     }
 
@@ -252,7 +235,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     public FluidStack toStack(int amount) {
-        return amount == 0 || this.isEmpty() ? FluidStack.EMPTY : this.innerStack.copyWithAmount(amount);
+        return this.innerStack.copyWithAmount(amount);
     }
 
     /**
@@ -280,10 +263,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     public ItemResource getFilledBucket() {
-        if (filledBucket == null) {
-            filledBucket = ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
-        }
-        return filledBucket;
+        return ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
     }
 
     /**

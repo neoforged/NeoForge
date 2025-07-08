@@ -9,8 +9,6 @@ import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.flag.FeatureElement;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 
 /**
@@ -57,9 +55,5 @@ public interface IRegisteredResource<T, R extends IResource<R>> extends IResourc
 
     default boolean is(HolderSet<T> holders) {
         return holders.contains(getHolder());
-    }
-
-    default boolean isEnabled(FeatureFlagSet enabledFeatures) {
-        return isEmpty() || !(getInstanceValue() instanceof FeatureElement element) || element.isEnabled(enabledFeatures);
     }
 }

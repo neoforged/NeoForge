@@ -24,7 +24,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -47,7 +46,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(() -> ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack));
+    public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(() -> ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, itemResource -> itemResource.toStack(1)));
 
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
@@ -95,7 +94,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
-    public static ItemResource invalidateDefault(ItemLike item) {
+    public static ItemResource createDefaultInstance(ItemLike item) {
         if (item.asItem() == Items.AIR) return EMPTY;
         return new ItemResource(new ItemStack(item));
     }
@@ -170,12 +169,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
         return innerStack.getItemHolder();
     }
 
-    //Defers to the stack in case there are injections done to its method for accuracy.
-    @Override
-    public boolean isEnabled(FeatureFlagSet enabledFeatures) {
-        return innerStack.isItemEnabled(enabledFeatures);
-    }
-
     @Override
     public boolean isEmpty() {
         return innerStack.isEmpty();
@@ -200,21 +193,18 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     @Override
     public ItemResource withPatch(DataComponentPatch patch) {
+        if (isEmpty()) return ItemResource.EMPTY;
         ItemStack stack = innerStack.copy();
         stack.applyComponents(patch);
-        return new ItemResource(stack);
+        return ItemResource.of(stack);
     }
 
     @Override
     public <D> ItemResource with(DataComponentType<D> type, D data) {
+        if (isEmpty()) return ItemResource.EMPTY;
         ItemStack stack = innerStack.copy();
         stack.set(type, data);
-        return new ItemResource(stack);
-    }
-
-    @Override
-    public <D> ItemResource with(Supplier<DataComponentType<D>> type, D data) {
-        return with(type.get(), data);
+        return ItemResource.of(stack);
     }
 
     @Override
@@ -244,7 +234,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     }
 
     public ItemStack toStack(int count) {
-        if (count == 0 || this.isEmpty()) return ItemStack.EMPTY;
         return this.innerStack.copyWithCount(count);
     }
 
