@@ -215,7 +215,7 @@ public abstract class ScreenEvent extends Event {
          * <p>This can be used for rendering elements that must be below tooltips and the dragged stack,
          * such as slot or item stack specific overlays.</p>
          *
-         * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
