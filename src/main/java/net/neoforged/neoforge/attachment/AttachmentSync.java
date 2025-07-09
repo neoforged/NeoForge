@@ -42,12 +42,25 @@ import org.jetbrains.annotations.Nullable;
 public final class AttachmentSync {
     /**
      * Contains all entries added to {@link NeoForgeRegistries#ATTACHMENT_TYPES} with a sync handler.
-     * Should never be registered against directly.
+     * This ensures that non-synced attachments can be used freely on either side,
+     * but synced attachments must match across client and server.
+     * This also ensures that we can use the raw ids for network syncing.
+     *
+     * <p>Should never be registered against directly.
+     * Entries are automatically added with {@link #ATTACHMENT_TYPE_ADD_CALLBACK}.
      */
     public static final Registry<AttachmentType<?>> SYNCED_ATTACHMENT_TYPES = new RegistryBuilder<>(
             ResourceKey.<AttachmentType<?>>createRegistryKey(
                     ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "synced_attachment_types")))
                             .sync(true)
+                            .callback((AddCallback<AttachmentType<?>>) (registry, id, key, value) -> {
+                                // Sanity check to ensure that no entries are added to this registry by accident
+                                if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsKey(key.location())
+                                        || !NeoForgeRegistries.ATTACHMENT_TYPES.containsValue(value)
+                                        || NeoForgeRegistries.ATTACHMENT_TYPES.getValue(key.location()) != value) {
+                                    throw new IllegalStateException("Cannot add entries to the SYNCED_ATTACHMENT_TYPES registry directly.");
+                                }
+                            })
                             .create();
 
     public static final AddCallback<AttachmentType<?>> ATTACHMENT_TYPE_ADD_CALLBACK = (registry, id, key, value) -> {
