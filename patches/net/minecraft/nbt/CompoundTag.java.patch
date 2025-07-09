@@ -22,6 +22,24 @@
                  Tag tag = CompoundTag.readNamedTagData(TagTypes.getType(b0), s, p_302338_, p_302362_);
                  if (map.put(s, tag) == null) {
                      p_302362_.accountBytes(36L);
+@@ -168,6 +_,17 @@
+         this(Maps.newHashMap());
+     }
+ 
++    /**
++     * Neo: create a compound tag that is generally suitable to hold the given amount of entries
++     * without needing to resize the internal map.
++     *
++     * @param expectedEntries the expected number of entries that the compound tag will have
++     * @see HashMap#newHashMap(int)
++     */
++    public CompoundTag(int expectedEntries) {
++        this(HashMap.newHashMap(expectedEntries));
++    }
++
+     @Override
+     public void write(DataOutput p_128341_) throws IOException {
+         for (String s : this.tags.keySet()) {
 @@ -211,6 +_,7 @@
  
      @Nullable
