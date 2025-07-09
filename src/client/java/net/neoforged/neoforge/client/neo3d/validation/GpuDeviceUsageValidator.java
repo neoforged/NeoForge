@@ -75,7 +75,7 @@ public class GpuDeviceUsageValidator {
     }
 
     public void validatePipeline(RenderPipeline pipeline) {
-        if (pipeline.getColorLogic() != LogicOp.NONE && enabledFeatures.logicOp()) {
+        if (pipeline.getColorLogic() != LogicOp.NONE && !enabledFeatures.logicOp()) {
             throw new IllegalArgumentException(String.format("Cannot use LogicOp other than NONE without enabling 'logicOp' device feature, %s", pipeline.getLocation()));
         }
         if (pipeline.getVertexFormat().getElements().size() > properties.maximumVertexInputAttributes()) {
@@ -99,7 +99,7 @@ public class GpuDeviceUsageValidator {
         if (utbs + samplers > properties.maximumTextureBindings()) {
             throw new IllegalArgumentException(String.format("Pipeline %s defines %s texture bindings, more than %s allowed", pipeline.getLocation(), utbs + samplers, properties.maximumTextureBindings()));
         }
-        if (ubos + utbs + samplers > properties.maximumTextureBindings()) {
+        if (ubos + utbs + samplers > properties.maximumUniformBindings()) {
             throw new IllegalArgumentException(String.format("Pipeline %s defines %s uniform bindings, more than %s allowed", pipeline.getLocation(), ubos + utbs + samplers, properties.maximumUniformBindings()));
         }
         if (!properties.knownDepthTestFunctions().contains(pipeline.getDepthTestFunction())) {
@@ -115,10 +115,10 @@ public class GpuDeviceUsageValidator {
                 throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for sourceAlpha, known factors are %s", blendFunc.sourceAlpha().name(), Arrays.toString(properties.knownSourceFactors().toArray())));
             }
             if (!properties.knownDestFactors().contains(blendFunc.destColor())) {
-                throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for destColor, known factors are %s", blendFunc.destColor().name(), Arrays.toString(properties.knownDestFactors().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device DestFactor (%s) provided for destColor, known factors are %s", blendFunc.destColor().name(), Arrays.toString(properties.knownDestFactors().toArray())));
             }
             if (!properties.knownDestFactors().contains(blendFunc.destAlpha())) {
-                throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for destAlpha, known factors are %s", blendFunc.destAlpha().name(), Arrays.toString(properties.knownDestFactors().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device DestFactor (%s) provided for destAlpha, known factors are %s", blendFunc.destAlpha().name(), Arrays.toString(properties.knownDestFactors().toArray())));
             }
         }
     }
