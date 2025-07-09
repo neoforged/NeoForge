@@ -8,5 +8,8 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
  * @param <T> The generic type of the {@link Result}.
  */
 public interface ResultSlotDisplay<T> extends SlotDisplay {
+    /**
+     * @return The {@link Result} this display depends on.
+     */
     Result<T> result();
 }

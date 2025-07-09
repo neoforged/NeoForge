@@ -19,6 +19,10 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.Optional;
 
+/**
+ * Represents an item-based recipe result that represents the item as a tag-fallback combination.
+ * {@link DefaultedItemTagResult#resolve()} resolves that combination into a concrete {@link ItemStack}.
+ */
 public class DefaultedItemTagResult implements Result<ItemStack> {
     public static final MapCodec<DefaultedItemTagResult> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(it -> it.tagKey),
@@ -38,6 +42,12 @@ public class DefaultedItemTagResult implements Result<ItemStack> {
     private final int count;
     private final DataComponentPatch components;
 
+    /**
+     * @param tagKey     The {@link TagKey} to use for looking up the result.
+     * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive result.
+     * @param count      The count to use. Corresponds to {@link ItemStack#getCount()}.
+     * @param components The data components to use. Corresponds to {@link ItemStack#getComponents()}.
+     */
     public DefaultedItemTagResult(TagKey<Item> tagKey, Holder<Item> fallback, int count, DataComponentPatch components) {
         this.tagKey = tagKey;
         this.fallback = fallback;

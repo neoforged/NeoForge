@@ -12,6 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
@@ -22,6 +23,10 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * Represents a fluid-based recipe result that represents the fluid as a tag-fallback combination.
+ * {@link DefaultedFluidTagResult#resolve()} resolves that combination into a concrete {@link FluidStack}.
+ */
 public class DefaultedFluidTagResult implements Result<FluidStack> {
     public static final MapCodec<DefaultedFluidTagResult> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(it -> it.tagKey),
@@ -41,6 +46,12 @@ public class DefaultedFluidTagResult implements Result<FluidStack> {
     private final int amount;
     private final DataComponentPatch components;
 
+    /**
+     * @param tagKey     The {@link TagKey} to use for looking up the result.
+     * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive result.
+     * @param amount     The amount to use. Corresponds to {@link FluidStack#getAmount()}.
+     * @param components The data components to use. Corresponds to {@link FluidStack#getComponents()}.
+     */
     public DefaultedFluidTagResult(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount, DataComponentPatch components) {
         this.tagKey = tagKey;
         this.fallback = fallback;
@@ -61,7 +72,7 @@ public class DefaultedFluidTagResult implements Result<FluidStack> {
 
     @Override
     public SlotDisplay display() {
-        return null;
+        return new Display(this);
     }
 
     public record Display(DefaultedFluidTagResult result) implements FluidResultSlotDisplay {

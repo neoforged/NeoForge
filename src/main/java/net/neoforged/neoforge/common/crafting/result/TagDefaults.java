@@ -13,6 +13,9 @@ import java.util.Map;
 public class TagDefaults<T> {
     protected final Map<TagKey<T>, T> values;
 
+    /**
+     * @param values The {@code TagKey<T>} -> {@code T} associations.
+     */
     public TagDefaults(Map<TagKey<T>, T> values) {
         this.values = values;
     }
