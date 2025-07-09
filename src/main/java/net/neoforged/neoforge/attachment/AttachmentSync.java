@@ -171,10 +171,13 @@ public final class AttachmentSync {
                 if (syncHandler != null) {
                     int indexBefore = buf.writerIndex();
                     buf.writeBoolean(true);
+                    int indexBetween = buf.writerIndex();
                     syncHandler.write(buf, entry.getValue(), true);
-                    if (indexBefore < buf.writerIndex()) {
+                    if (indexBetween < buf.writerIndex()) {
                         // Actually wrote something
                         syncedTypes.add(type);
+                    } else {
+                        buf.writerIndex(indexBefore);
                     }
                 }
             }

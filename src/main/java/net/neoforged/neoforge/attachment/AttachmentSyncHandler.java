@@ -50,6 +50,9 @@ public interface AttachmentSyncHandler<T> {
      * the client already received a previous version of the data.
      * In this case, this method is only called once for the attachment,
      * and the resulting data is broadcast to all relevant players.
+     *
+     * <p>If nothing is written to the buffer, nothing is sent to the client at all,
+     * and {@link #read} will not be called on the client side.
      */
     void write(RegistryFriendlyByteBuf buf, T attachment, boolean initialSync);
 
