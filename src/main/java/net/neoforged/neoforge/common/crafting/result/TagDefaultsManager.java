@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.common.tagdefaults;
+package net.neoforged.neoforge.common.crafting.result;
 
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
@@ -49,7 +49,7 @@ public class TagDefaultsManager extends SimpleJsonResourceReloadListener<JsonEle
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> resolve(ResourceKey<? extends Registry<T>> registryKey, TagKey<T> tagKey) {
-        return Optional.ofNullable(((TagDefaults<T>) entries.get(registryKey)).resolve(tagKey));
+        return Optional.ofNullable((TagDefaults<T>) entries.get(registryKey)).map(defaults -> defaults.resolve(tagKey));
     }
 
     /**

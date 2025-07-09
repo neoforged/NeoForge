@@ -25,7 +25,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.crafting.RecipePriorityManager;
 import net.neoforged.neoforge.common.loot.LootModifierManager;
-import net.neoforged.neoforge.common.tagdefaults.TagDefaultsManager;
+import net.neoforged.neoforge.common.crafting.result.TagDefaultsManager;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;

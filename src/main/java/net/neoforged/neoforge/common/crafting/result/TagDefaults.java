@@ -1,4 +1,4 @@
-package net.neoforged.neoforge.common.tagdefaults;
+package net.neoforged.neoforge.common.crafting.result;
 
 import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.Nullable;
