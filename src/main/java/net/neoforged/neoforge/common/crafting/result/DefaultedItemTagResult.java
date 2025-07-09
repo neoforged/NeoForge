@@ -20,7 +20,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import java.util.Optional;
 
 public class DefaultedItemTagResult implements Result<ItemStack> {
-    public static final MapCodec<DefaultedItemTagResult> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+    public static final MapCodec<DefaultedItemTagResult> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(it -> it.tagKey),
             BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("fallback").forGetter(it -> it.fallback),
             ExtraCodecs.intRange(1, 99).fieldOf("count").orElse(1).forGetter(it -> it.count),
@@ -62,8 +62,8 @@ public class DefaultedItemTagResult implements Result<ItemStack> {
     }
 
     public record Display(DefaultedItemTagResult result) implements ItemResultSlotDisplay {
-        public static final MapCodec<Display> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                DefaultedItemTagResult.CODEC.fieldOf("result").forGetter(Display::result)
+        public static final MapCodec<Display> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                DefaultedItemTagResult.MAP_CODEC.fieldOf("result").forGetter(Display::result)
         ).apply(inst, Display::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Display> STREAM_CODEC = StreamCodec.composite(
                 DefaultedItemTagResult.STREAM_CODEC, Display::result,
@@ -71,7 +71,7 @@ public class DefaultedItemTagResult implements Result<ItemStack> {
 
         @Override
         public Type<? extends SlotDisplay> type() {
-            return NeoForgeMod.DEFAULTED_ITEM_TAG_RESULT_SLOT_DISPLAY.get();
+            return NeoForgeMod.DEFAULTED_FLUID_TAG_RESULT_SLOT_DISPLAY.get();
         }
     }
 }

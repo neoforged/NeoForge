@@ -88,12 +88,16 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public static final Codec<FluidStack> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
             .xmap(optional -> optional.orElse(FluidStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
+
+    /**
+     * A stream codec for fluid holders.
+     */
+    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Fluid>> FLUID_STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.FLUID);
+
     /**
      * A stream codec for fluid stacks that accepts empty stacks.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidStack> OPTIONAL_STREAM_CODEC = new StreamCodec<>() {
-        private static final StreamCodec<RegistryFriendlyByteBuf, Holder<Fluid>> FLUID_STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.FLUID);
-
         @Override
         public FluidStack decode(RegistryFriendlyByteBuf buf) {
             int amount = buf.readVarInt();

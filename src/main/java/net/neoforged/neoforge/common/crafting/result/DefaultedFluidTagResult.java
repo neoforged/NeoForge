@@ -1,0 +1,80 @@
+package net.neoforged.neoforge.common.crafting.result;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.FluidStack;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+
+public class DefaultedFluidTagResult implements Result<FluidStack> {
+    public static final MapCodec<DefaultedFluidTagResult> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(it -> it.tagKey),
+            BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("fallback").forGetter(it -> it.fallback),
+            ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(it -> it.amount),
+            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)
+    ).apply(inst, DefaultedFluidTagResult::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, DefaultedFluidTagResult> STREAM_CODEC = StreamCodec.composite(
+            TagKey.streamCodec(Registries.FLUID), it -> it.tagKey,
+            FluidStack.FLUID_STREAM_CODEC, it -> it.fallback,
+            ByteBufCodecs.VAR_INT, it -> it.amount,
+            DataComponentPatch.STREAM_CODEC, it -> it.components,
+            DefaultedFluidTagResult::new);
+
+    private final TagKey<Fluid> tagKey;
+    private final Holder<Fluid> fallback;
+    private final int amount;
+    private final DataComponentPatch components;
+
+    public DefaultedFluidTagResult(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount, DataComponentPatch components) {
+        this.tagKey = tagKey;
+        this.fallback = fallback;
+        this.amount = amount;
+        this.components = components;
+    }
+
+    @Override
+    public FluidStack resolve() {
+        Optional<Fluid> optional = NeoForgeEventHandler.getTagDefaultsManager().resolve(Registries.FLUID, tagKey);
+        return new FluidStack(optional.<Holder<Fluid>>map(Fluid::builtInRegistryHolder).orElse(fallback), amount, components);
+    }
+
+    @Override
+    public ResultType<?> type() {
+        return NeoForgeMod.DEFAULTED_FLUID_TAG_RESULT_TYPE.get();
+    }
+
+    @Override
+    public SlotDisplay display() {
+        return null;
+    }
+
+    public record Display(DefaultedFluidTagResult result) implements FluidResultSlotDisplay {
+        public static final MapCodec<Display> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                DefaultedFluidTagResult.MAP_CODEC.fieldOf("result").forGetter(Display::result)
+        ).apply(inst, Display::new));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Display> STREAM_CODEC = StreamCodec.composite(
+                DefaultedFluidTagResult.STREAM_CODEC, Display::result,
+                Display::new);
+
+        @Override
+        public Type<? extends SlotDisplay> type() {
+            return NeoForgeMod.DEFAULTED_FLUID_TAG_RESULT_SLOT_DISPLAY.get();
+        }
+    }
+}

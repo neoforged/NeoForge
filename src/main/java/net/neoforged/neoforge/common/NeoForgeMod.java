@@ -105,6 +105,7 @@ import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
+import net.neoforged.neoforge.common.crafting.result.DefaultedFluidTagResult;
 import net.neoforged.neoforge.common.crafting.result.DefaultedItemTagResult;
 import net.neoforged.neoforge.common.crafting.result.ResultType;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
@@ -350,7 +351,8 @@ public class NeoForgeMod {
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidSlotDisplay>> FLUID_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid", () -> new SlotDisplay.Type<>(FluidSlotDisplay.MAP_CODEC, FluidSlotDisplay.STREAM_CODEC));
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidStackSlotDisplay>> FLUID_STACK_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_stack", () -> new SlotDisplay.Type<>(FluidStackSlotDisplay.MAP_CODEC, FluidStackSlotDisplay.STREAM_CODEC));
     public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<FluidTagSlotDisplay>> FLUID_TAG_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("fluid_tag", () -> new SlotDisplay.Type<>(FluidTagSlotDisplay.MAP_CODEC, FluidTagSlotDisplay.STREAM_CODEC));
-    public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<DefaultedItemTagResult.Display>> DEFAULTED_ITEM_TAG_RESULT_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("item_result", () -> new SlotDisplay.Type<>(DefaultedItemTagResult.Display.CODEC, DefaultedItemTagResult.Display.STREAM_CODEC));
+    public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<DefaultedFluidTagResult.Display>> DEFAULTED_FLUID_TAG_RESULT_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("defaulted_fluid_tag_result", () -> new SlotDisplay.Type<>(DefaultedFluidTagResult.Display.MAP_CODEC, DefaultedFluidTagResult.Display.STREAM_CODEC));
+    public static final DeferredHolder<SlotDisplay.Type<?>, SlotDisplay.Type<DefaultedItemTagResult.Display>> DEFAULTED_ITEM_TAG_RESULT_SLOT_DISPLAY = SLOT_DISPLAY_TYPES.register("defaulted_item_tag_result", () -> new SlotDisplay.Type<>(DefaultedItemTagResult.Display.MAP_CODEC, DefaultedItemTagResult.Display.STREAM_CODEC));
 
     private static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, NeoForgeVersion.MOD_ID);
 
@@ -370,7 +372,8 @@ public class NeoForgeMod {
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CustomDisplayFluidIngredient>> CUSTOM_DISPLAY_FLUID_INGREDIENT = FLUID_INGREDIENT_TYPES.register("custom_display", () -> new FluidIngredientType<>(CustomDisplayFluidIngredient.CODEC, CustomDisplayFluidIngredient.STREAM_CODEC));
 
     private static final DeferredRegister<ResultType<?>> RESULT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.RESULT_TYPES, NeoForgeVersion.MOD_ID);
-    public static final DeferredHolder<ResultType<?>, ResultType<DefaultedItemTagResult>> DEFAULTED_ITEM_TAG_RESULT_TYPE = RESULT_TYPES.register("defaulted_item_tag", () -> new ResultType<>(DefaultedItemTagResult.CODEC, DefaultedItemTagResult.STREAM_CODEC));
+    public static final DeferredHolder<ResultType<?>, ResultType<DefaultedFluidTagResult>> DEFAULTED_FLUID_TAG_RESULT_TYPE = RESULT_TYPES.register("defaulted_fluid_tag", () -> new ResultType<>(DefaultedFluidTagResult.MAP_CODEC, DefaultedFluidTagResult.STREAM_CODEC));
+    public static final DeferredHolder<ResultType<?>, ResultType<DefaultedItemTagResult>> DEFAULTED_ITEM_TAG_RESULT_TYPE = RESULT_TYPES.register("defaulted_item_tag", () -> new ResultType<>(DefaultedItemTagResult.MAP_CODEC, DefaultedItemTagResult.STREAM_CODEC));
 
     private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
