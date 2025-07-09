@@ -57,7 +57,7 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, It
             if (equippable.assetId().isPresent()) {
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
-                var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + material.getKey().location().getPath() + suffix)), DEBUG_NAME);
+                var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + suffix)), DEBUG_NAME);
 
                 TRIM_LAYERS.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
             }
