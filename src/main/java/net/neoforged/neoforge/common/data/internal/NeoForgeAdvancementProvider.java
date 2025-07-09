@@ -334,6 +334,7 @@ public class NeoForgeAdvancementProvider extends AdvancementProvider {
         }
 
         @Nullable
+        @SuppressWarnings("removal")
         private Advancement.Builder findAndReplaceInHolder(AdvancementHolder advancementHolder, HolderLookup.Provider registries) {
             Advancement advancement = advancementHolder.value();
             Advancement.Builder builder = Advancement.Builder.advancement();

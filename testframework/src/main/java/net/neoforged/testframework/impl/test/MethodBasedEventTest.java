@@ -13,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.ReflectionUtils;
+import org.jetbrains.annotations.Nullable;
 
 public class MethodBasedEventTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
@@ -58,5 +59,11 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
                 framework.logger().warn("Encountered exception firing event listeners for method-based event test {}: ", method, throwable);
             }
         });
+    }
+
+    @Nullable
+    @Override
+    public Method getMethod() {
+        return method;
     }
 }
