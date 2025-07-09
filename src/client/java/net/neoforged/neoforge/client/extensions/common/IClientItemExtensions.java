@@ -94,9 +94,9 @@ public interface IClientItemExtensions {
     /**
      * Queries the humanoid armor model for this item when it's equipped.
      *
-     * @param itemStack The item stack
-     * @param layerType The slot the item is in
-     * @param original  The original armor model. Will have attributes set.
+     * @param itemStack   The item stack
+     * @param layerType   The slot the item is in
+     * @param original    The original armor model. Will have attributes set.
      * @param renderState The render state of the entity
      * @return A HumanoidModel to be rendered. Relevant properties are to be copied over by the caller.
      * @see #getGenericArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model, EntityRenderState)
@@ -112,9 +112,9 @@ public interface IClientItemExtensions {
      * <p>
      * If you override this method you are responsible for copying any properties you care about from the original model.
      *
-     * @param itemStack The item stack
-     * @param layerType The slot the item is in
-     * @param original  The original armor model. Will have attributes set.
+     * @param itemStack   The item stack
+     * @param layerType   The slot the item is in
+     * @param original    The original armor model. Will have attributes set.
      * @param renderState The render state of the entity
      * @return A Model to be rendered. Relevant properties must be copied over manually.
      * @see #getHumanoidArmorModel(ItemStack, EquipmentClientInfo.LayerType, Model, EntityRenderState)
