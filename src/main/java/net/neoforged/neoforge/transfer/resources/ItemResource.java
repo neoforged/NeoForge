@@ -37,8 +37,13 @@ import org.jetbrains.annotations.ApiStatus;
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
 public final class ItemResource implements IDataComponentHolderResource<Item, ItemResource> {
-    //TODO provide documentation on all methods
+    /**
+     * The empty resource instance of a {@link ItemResource}
+     */
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    /**
+     * The empty resource stack instance of a {@link ItemResource}.
+     */
     public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.of(ItemResource.EMPTY, 0);
 
     /**
@@ -71,11 +76,17 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
+    /**
+     * A helper to provide clearer readability when making the {@link #OPTIONAL_CODEC}
+     */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private static ItemResource fromOptional(Optional<ItemResource> optional) {
         return optional.orElse(ItemResource.EMPTY);
     }
 
+    /**
+     * A helper to provide clearer readability when making the {@link #OPTIONAL_CODEC}
+     */
     private Optional<ItemResource> asOptional() {
         return isEmpty() ? Optional.empty() : Optional.of(this);
     }
@@ -83,7 +94,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     /**
      * A helper method to quickly construct an {@link ItemStack} from a ResourceStack
      *
-     * @param resourceStack The resource stack with the fluid resource and amount
+     * @param resourceStack The resource stack with the item resource and amount
      * @return A new item stack with the same size as the resourceStack.
      */
     public static ItemStack itemStackOf(ResourceStack<ItemResource> resourceStack) {
@@ -148,7 +159,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     }
 
     /**
-     * We wrap an item stack which must never be modified.
+     * A wrapped {@link ItemStack} which must never be modified.
      */
     private final ItemStack innerStack;
 
@@ -174,14 +185,30 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
         return innerStack.isEmpty();
     }
 
+    /**
+     * {@return true if the stack components and instance matches the inner stack's components and instance} Uses the {@link ItemStack#isSameItemSameComponents(ItemStack, ItemStack)} method for comparison.
+     * 
+     * @param stack the item stack to check
+     */
     public boolean is(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
     }
 
+    /**
+     * {@return true if the item instance matches the backing instance value}
+     *
+     * @param item the item to check
+     */
     public boolean is(ItemLike item) {
         return is(item.asItem());
     }
 
+    /**
+     * Tests an {@link ItemStack} predicate with the inner stack.
+     * 
+     * @param predicate Predicate to perform the test with
+     * @return {@code true} if the test passed
+     */
     public boolean test(Predicate<ItemStack> predicate) {
         return predicate.test(innerStack);
     }
@@ -229,14 +256,22 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
         return innerStack.getComponentsPatch();
     }
 
-    public ItemStack toStack() {
-        return toStack(1);
-    }
-
+    /**
+     * Creates an {@link ItemStack} of the specified count.
+     * 
+     * @param count The amount of the item the stack should have.
+     * @return A new copy of the inner item stack with the specified count.
+     */
     public ItemStack toStack(int count) {
         return this.innerStack.copyWithCount(count);
     }
 
+    /**
+     * Creates a list of {@link ItemStack ItemStacks} of the specified count taking into account the max stack size of the item.
+     * 
+     * @param count The amount of the item the stack should have.
+     * @return A list of item stacks that all have a maximum count of the max stack size of the item.
+     */
     public List<ItemStack> toStacks(int count) {
         if (count == 0 || isEmpty())
             return Collections.emptyList();

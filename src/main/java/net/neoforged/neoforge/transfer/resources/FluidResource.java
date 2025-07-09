@@ -17,23 +17,25 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
 public final class FluidResource implements IDataComponentHolderResource<Fluid, FluidResource> {
-    //TODO provide documentation on all methods
+    /**
+     * The empty resource instance of a {@link FluidResource}
+     */
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
+    /**
+     * The empty resource stack instance of a {@link FluidResource}.
+     */
     public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.of(FluidResource.EMPTY, 0);
 
     /**
@@ -41,7 +43,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
      * Same format as {@link FluidStack#fixedAmountCodec}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<FluidResource> CODEC = Codec.lazyInitialized(() -> FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME).xmap(FluidResource::of, FluidResource::toStack));
+    public static final Codec<FluidResource> CODEC = Codec.lazyInitialized(() -> FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME).xmap(FluidResource::of, resource -> resource.toStack(FluidType.BUCKET_VOLUME)));
 
     /**
      * Codec for a fluid resource. Same format as {@link #CODEC}, and also accepts empty resources.
@@ -133,7 +135,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
-     * 
+     *
+     * @param fluid Fluid holder to create the resource with.
+     * @param patch Data components that should be on the resource instance.
+     * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
@@ -142,6 +147,16 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
         return of(fluid.value(), patch);
     }
 
+    /**
+     * <strong>Note:</strong> This cannot be called before your fluid is registered
+     *
+     * @param fluid Fluid to create the resource with.
+     * @param patch Data components that should be on the resource instance.
+     * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
+     */
     public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
         if (fluid == Fluids.EMPTY) return EMPTY;
         if (patch.isEmpty()) return fluid.getDefaultResource();
@@ -149,11 +164,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     /**
-     * We wrap a fluid stack which must never be modified.
+     * A wrapped {@link FluidStack} which must never be modified.
      */
-    //This is package private to provide Unsafe access in the scenarios of avoiding allocation
-    // when being used in readonly context. A getInnerStack method could be done, but serves
-    // no functional difference in this case since the field is marked final.
     private final FluidStack innerStack;
 
     private FluidResource(FluidStack innerStack) {
@@ -202,12 +214,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
         return FluidResource.of(stack);
     }
 
-    /**
-     * Returns a copy of this resource with the data component removed.
-     *
-     * @param type The type of data component
-     * @return The new resource
-     */
     @Override
     public FluidResource without(DataComponentType<?> type) {
         if (isEmpty()) return FluidResource.EMPTY;
@@ -234,15 +240,14 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
         return innerStack.getComponentsPatch();
     }
 
+    /**
+     * Creates an {@link FluidStack} of the specified count.
+     *
+     * @param amount The amount of the fluid the stack should have.
+     * @return A new copy of the inner fluid stack with the specified count.
+     */
     public FluidStack toStack(int amount) {
         return this.innerStack.copyWithAmount(amount);
-    }
-
-    /**
-     * @return A {@link FluidStack} copy of the inner stack. The size is by default {@value FluidType#BUCKET_VOLUME}
-     */
-    public FluidStack toStack() {
-        return toStack(FluidType.BUCKET_VOLUME);
     }
 
     @Override
@@ -262,20 +267,13 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
         return predicate.test(innerStack);
     }
 
-    public ItemResource getFilledBucket() {
-        return ItemResource.of(innerStack.getFluidType().getBucket(innerStack));
-    }
-
     /**
-     * Returns a sound to play when a certain action is performed. If no
-     * sound is present, then the sound will be {@code null}.
-     *
-     * @param action the action being performed
-     * @return the sound to play when performing the action
+     * {@return the filled bucket item resource for the fluid resource}
      */
-    @Nullable
-    public SoundEvent getSound(SoundAction action) {
-        return innerStack.getFluidType().getSound(innerStack, action);
+    public ItemResource getFilledBucket() {
+        // Only the instance and data components are expected to be used in getBucket(FluidStack).
+        // The amount is ignored.
+        return ItemResource.of(getFluidType().getBucket(innerStack));
     }
 
     /**
