@@ -7,17 +7,17 @@ package net.neoforged.neoforge.transfer;
 
 import net.neoforged.neoforge.transfer.resources.IResource;
 
-public class ResourceHandlerUtil {
+public final class ResourceHandlerUtil {
+    private ResourceHandlerUtil() {}
+
     /**
-     * A utility method to check both resource and amount to validate if the resource would be empty.
-     * <p>
-     * Typically used in handler insert or extract implementations to determine if the operation is valid before proceeding.
+     * Determines if either the given resource or amount is classified as empty.
      *
-     * @throws IllegalArgumentException When the amount is negative
-     * @see ResourceContainerContentsHandler#insert(int, IResource, int, TransactionContext)
+     * @param resource The resource to check.
+     * @param amount   An amount to check. <strong>Must be non-negative.</strong>
+     * @return {@code true} if either {@link IResource#isEmpty()} returns true, or the amount is zero.
      */
     public static boolean isEmpty(IResource<?> resource, int amount) {
-        TransferPreconditions.checkNonNegative(amount);
         return amount == 0 || resource.isEmpty();
     }
 }

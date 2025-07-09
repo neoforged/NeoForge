@@ -255,14 +255,29 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
         return innerStack.isComponentsPatchEmpty();
     }
 
+    /**
+     * @param fluidType Fluid type to check
+     * @return {@code true} if the inner stack's fluid type is the same as the specified fluid type.
+     */
     public boolean is(FluidType fluidType) {
         return innerStack.is(fluidType);
     }
 
+    /**
+     * {@return true if the stack components and instance matches the inner stack's components and instance} Uses the {@link FluidStack#isSameFluidSameComponents(FluidStack, FluidStack)} method for comparison.
+     *
+     * @param stack the item stack to check
+     */
     public boolean is(FluidStack stack) {
         return FluidStack.isSameFluidSameComponents(stack, innerStack);
     }
 
+    /**
+     * Tests an {@link FluidStack} predicate with the inner stack.
+     *
+     * @param predicate Predicate to perform the test with
+     * @return {@code true} if the test passed
+     */
     public boolean test(Predicate<FluidStack> predicate) {
         return predicate.test(innerStack);
     }

@@ -125,6 +125,8 @@ public final class ResourceStack<T extends IResource<T>> {
      *
      * @return A new immutable instance of this resource stack with an updated amount.
      *         If the amount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
+     *
+     * @throws IllegalArgumentException when {@code amount} is negative.
      */
     public ResourceStack<T> withAmount(int amount) {
         TransferPreconditions.checkNonNegative(amount);
@@ -137,6 +139,9 @@ public final class ResourceStack<T extends IResource<T>> {
      * @param amount Amount to shrink by. Must be non-negative.
      * @return A new immutable instance of this resource stack with an updated amount decreased by the specified {@code amount}.
      *         If the newAmount is 0 or the resource is empty, then the EMPTY instance for the resource will be returned.
+     *
+     * @throws IllegalArgumentException when {@code amount} is negative.
+     *
      * @see #withAmount(int)
      */
     public ResourceStack<T> shrink(int amount) {
@@ -149,6 +154,8 @@ public final class ResourceStack<T extends IResource<T>> {
      *
      * @return A new immutable instance of this resource stack with an amount increased by the specified {@code amount}.
      *         If the resource was already empty, then the EMPTY instance will be returned instead
+     *
+     * @throws IllegalArgumentException when {@code amount} is negative.
      */
     public ResourceStack<T> grow(int amount) {
         TransferPreconditions.checkNonNegative(amount);
