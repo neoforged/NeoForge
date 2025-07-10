@@ -46,7 +46,7 @@
 +        // We ignore events from keys with the scan code 63 as they're emitted
 +        // (only as RELEASE, not PRESS) by Mac systems to indicate that "Fn" is being pressed
 +        // See https://github.com/neoforged/NeoForge/issues/1683
-+        if (this.selectedKey != null && (net.minecraft.Util.getPlatform() != net.minecraft.Util.OS.OSX || p_94716_ != 63)) {
++        if (this.selectedKey != null && (!net.minecraft.client.Minecraft.ON_OSX || p_94716_ != 63)) {
 +            if (p_94715_ == 256) {
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.selectedKey.setKey(InputConstants.UNKNOWN);
