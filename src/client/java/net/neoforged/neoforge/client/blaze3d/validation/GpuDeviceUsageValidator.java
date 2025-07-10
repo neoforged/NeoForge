@@ -36,13 +36,13 @@ public class GpuDeviceUsageValidator {
 
     void validateTextureFormat(TextureFormat format) {
         if (!properties.knownTextureFormats().contains(format)) {
-            throw new IllegalArgumentException(String.format("Unknown by device TextureFormat (%s) provided, known formats are %s", format.name(), Arrays.toString(properties.knownTextureFormats().toArray())));
+            throw new IllegalArgumentException(String.format("Unknown by device TextureFormat (%s) provided, known formats are %s", format.name(), properties.knownTextureFormats()));
         }
     }
 
     void validateAddressMode(AddressMode mode) {
         if (!properties.knownAddressModes().contains(mode)) {
-            throw new IllegalArgumentException(String.format("Unknown by device AddressMode (%s) provided, known formats are %s", mode.name(), Arrays.toString(properties.knownAddressModes().toArray())));
+            throw new IllegalArgumentException(String.format("Unknown by device AddressMode (%s) provided, known formats are %s", mode.name(), properties.knownAddressModes()));
         }
     }
 
@@ -53,26 +53,26 @@ public class GpuDeviceUsageValidator {
 
         for (RenderPipeline.UniformDescription uniform : pipeline.getUniforms()) {
             if (!properties.knownUniformTypes().contains(uniform.type())) {
-                throw new IllegalArgumentException(String.format("Unknown by device UniformType (%s) provided for uniform %s, known types are %s", uniform.type().name(), uniform.name(), Arrays.toString(properties.knownUniformTypes().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device UniformType (%s) provided for uniform %s, known types are %s", uniform.type().name(), uniform.name(), properties.knownUniformTypes()));
             }
         }
         if (!properties.knownDepthTestFunctions().contains(pipeline.getDepthTestFunction())) {
-            throw new IllegalArgumentException(String.format("Unknown by device DepthTestFunction (%s) provided, known functions are %s", pipeline.getDepthTestFunction().name(), Arrays.toString(properties.knownDepthTestFunctions().toArray())));
+            throw new IllegalArgumentException(String.format("Unknown by device DepthTestFunction (%s) provided, known functions are %s", pipeline.getDepthTestFunction().name(), properties.knownDepthTestFunctions()));
         }
         final var blendFunctionOpt = pipeline.getBlendFunction();
         if (blendFunctionOpt.isPresent()) {
             final var blendFunc = blendFunctionOpt.get();
             if (!properties.knownSourceFactors().contains(blendFunc.sourceColor())) {
-                throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for sourceColor, known factors are %s", blendFunc.sourceColor().name(), Arrays.toString(properties.knownSourceFactors().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for sourceColor, known factors are %s", blendFunc.sourceColor().name(), properties.knownSourceFactors()));
             }
             if (!properties.knownSourceFactors().contains(blendFunc.sourceAlpha())) {
-                throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for sourceAlpha, known factors are %s", blendFunc.sourceAlpha().name(), Arrays.toString(properties.knownSourceFactors().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device SourceFactor (%s) provided for sourceAlpha, known factors are %s", blendFunc.sourceAlpha().name(), properties.knownSourceFactors()));
             }
             if (!properties.knownDestFactors().contains(blendFunc.destColor())) {
-                throw new IllegalArgumentException(String.format("Unknown by device DestFactor (%s) provided for destColor, known factors are %s", blendFunc.destColor().name(), Arrays.toString(properties.knownDestFactors().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device DestFactor (%s) provided for destColor, known factors are %s", blendFunc.destColor().name(), properties.knownDestFactors()));
             }
             if (!properties.knownDestFactors().contains(blendFunc.destAlpha())) {
-                throw new IllegalArgumentException(String.format("Unknown by device DestFactor (%s) provided for destAlpha, known factors are %s", blendFunc.destAlpha().name(), Arrays.toString(properties.knownDestFactors().toArray())));
+                throw new IllegalArgumentException(String.format("Unknown by device DestFactor (%s) provided for destAlpha, known factors are %s", blendFunc.destAlpha().name(), properties.knownDestFactors()));
             }
         }
     }
