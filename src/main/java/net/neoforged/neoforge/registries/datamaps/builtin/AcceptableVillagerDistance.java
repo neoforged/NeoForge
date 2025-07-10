@@ -11,7 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /**
  * Data map value for {@linkplain NeoForgeDataMaps#ACCEPTABLE_VILLAGER_DISTANCES acceptable villager distances}.
  *
- * @param distance the acceptable distance between a villager and a hostile mob.
+ * @param distance the acceptable distance between the hostile mob and a villager
  */
 public record AcceptableVillagerDistance(float distance) {
     public static final Codec<AcceptableVillagerDistance> DISTANCE_CODEC = Codec.FLOAT
