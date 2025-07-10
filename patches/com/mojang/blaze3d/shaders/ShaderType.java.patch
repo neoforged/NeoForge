@@ -4,7 +4,7 @@
  
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
-+@net.neoforged.neoforge.internal.NonExhaustiveEnum
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Compute shader support will be later added, Task and Mesh shaders may also be later defined")
  public enum ShaderType {
      VERTEX("vertex", ".vsh"),
      FRAGMENT("fragment", ".fsh");

@@ -22,4 +22,9 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Internal
 @Target(ElementType.TYPE)
-public @interface NonExhaustiveEnum {}
+public @interface NonExhaustiveEnum {
+    /**
+     * this is done as an annotation member to preserve the comment without sources attached
+     */
+    String reason();
+}

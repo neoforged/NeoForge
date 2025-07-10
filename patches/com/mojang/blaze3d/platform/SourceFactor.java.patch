@@ -4,7 +4,7 @@
  
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
-+@net.neoforged.neoforge.internal.NonExhaustiveEnum
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Remaining source factors will be later added")
  public enum SourceFactor {
      CONSTANT_ALPHA,
      CONSTANT_COLOR,
