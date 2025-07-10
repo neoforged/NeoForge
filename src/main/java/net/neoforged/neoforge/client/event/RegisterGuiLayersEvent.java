@@ -76,6 +76,12 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * Registers a layer that renders above all others.
      *
      * @param id    A unique resource id for this layer
+     * @param layer The layer
+     */
+    public void registerAboveAll(ResourceLocation id, LayeredDraw.Layer layer) {
+        register(Ordering.AFTER, null, id, layer);
+    }
+
     /**
      * Replace the layer with the given {@code id} with a new one.
      *
@@ -85,7 +91,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @see #wrapLayer(ResourceLocation, UnaryOperator) use {@code wrapLayer} if you'd like to
      *      wrap the layer to apply pose stack transformations
      */
-    public void replaceLayer(ResourceLocation id, GuiLayer replacement) {
+    public void replaceLayer(ResourceLocation id, LayeredDraw.Layer replacement) {
         wrapLayer(id, old -> replacement);
     }
 
@@ -98,7 +104,7 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      * @param wrapper an unary operator which takes in the old layer and returns the new layer that wraps the old one
      * @throws IllegalArgumentException if a layer with the given {@code id} is not yet registered
      */
-    public void wrapLayer(ResourceLocation id, UnaryOperator<GuiLayer> wrapper) {
+    public void wrapLayer(ResourceLocation id, UnaryOperator<LayeredDraw.Layer> wrapper) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(wrapper);
 
@@ -113,12 +119,6 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
         }
 
         throw new IllegalArgumentException("Attempted to wrap layer with id '" + id + "', which does not exist!");
-    }
-
-     * @param layer The layer
-     */
-    public void registerAboveAll(ResourceLocation id, LayeredDraw.Layer layer) {
-        register(Ordering.AFTER, null, id, layer);
     }
 
     private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, LayeredDraw.Layer layer) {
