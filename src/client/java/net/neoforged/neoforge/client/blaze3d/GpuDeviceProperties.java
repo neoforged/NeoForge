@@ -13,7 +13,6 @@ import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.TextureFormat;
 import java.util.Set;
-import org.jetbrains.annotations.ApiStatus;
 
 public interface GpuDeviceProperties {
     /**
@@ -140,78 +139,4 @@ public interface GpuDeviceProperties {
      * GL_MAX_CUBE_MAP_TEXTURE_SIZE
      */
     int maximumImageDimensionCube();
-
-    record Immutable(
-            String backendName,
-            String apiName,
-            String apiVersionString,
-            int apiVersionMajor,
-            int apiVersionMinor,
-            int knownGpuBufferUsageBits,
-            int knownGpuTextureUsageBits,
-            Set<DepthTestFunction> knownDepthTestFunctions,
-            Set<DestFactor> knownDestFactors,
-            Set<SourceFactor> knownSourceFactors,
-            Set<ShaderType> knownShaderTypes,
-            Set<UniformType> knownUniformTypes,
-            Set<AddressMode> knownAddressModes,
-            Set<TextureFormat> knownTextureFormats,
-            boolean depthZeroToOne,
-            int maximumUniformBindings,
-            int maximumUBOBindings,
-            int maximumTextureBindings,
-            int minimumUBOAlignment,
-            int maximumUBOSize,
-            int maximumTexelBufferSize,
-            int maximumVertexInputAttributes,
-            int maximumVertexInputBuffers,
-            int maximumVertexOutputLocations,
-            int maximumImageArrayLayers,
-            int maximumImageDimension1D,
-            int maximumImageDimension2D,
-            int maximumImageDimension3D,
-            int maximumImageDimensionCube) implements GpuDeviceProperties {
-        /**
-         * Immutable record should only be constructed from an instance of the interface
-         * <br>
-         * Additional elements may be added without being considered a breaking change
-         *
-         * @see Immutable#Immutable(GpuDeviceProperties)
-         */
-        @ApiStatus.Internal
-        public Immutable {}
-
-        public Immutable(GpuDeviceProperties properties) {
-            this(
-                    properties.backendName(),
-                    properties.apiName(),
-                    properties.apiVersionString(),
-                    properties.apiVersionMajor(),
-                    properties.apiVersionMinor(),
-                    properties.knownGpuBufferUsageBits(),
-                    properties.knownGpuTextureUsageBits(),
-                    properties.knownDepthTestFunctions(),
-                    properties.knownDestFactors(),
-                    properties.knownSourceFactors(),
-                    properties.knownShaderTypes(),
-                    properties.knownUniformTypes(),
-                    properties.knownAddressModes(),
-                    properties.knownTextureFormats(),
-                    properties.depthZeroToOne(),
-                    properties.maximumUniformBindings(),
-                    properties.maximumUBOBindings(),
-                    properties.maximumTextureBindings(),
-                    properties.minimumUBOAlignment(),
-                    properties.maximumUBOSize(),
-                    properties.maximumTexelBufferSize(),
-                    properties.maximumVertexInputAttributes(),
-                    properties.maximumVertexInputBuffers(),
-                    properties.maximumVertexOutputLocations(),
-                    properties.maximumImageArrayLayers(),
-                    properties.maximumImageDimension1D(),
-                    properties.maximumImageDimension2D(),
-                    properties.maximumImageDimension3D(),
-                    properties.maximumImageDimensionCube());
-        }
-    }
 }

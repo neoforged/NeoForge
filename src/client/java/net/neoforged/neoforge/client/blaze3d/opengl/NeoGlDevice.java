@@ -21,9 +21,9 @@ public class NeoGlDevice extends GlDevice {
     public NeoGlDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
         super(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
 
-        deviceProperties = new GpuDeviceProperties.Immutable(new NeoGlDeviceProperties());
+        deviceProperties = new ImmutableGlDeviceProperties(new NeoGlDeviceProperties());
         final var event = ModLoader.postEventWithReturn(new ConfigureGpuDeviceEvent(properties(), new NeoGlDeviceFeatures()));
-        enabledFeatures = new GpuDeviceFeatures.Immutable(event);
+        enabledFeatures = new ImmutableGlDeviceFeatures(event);
     }
 
     @Override
