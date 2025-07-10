@@ -5,23 +5,9 @@
 
 package net.neoforged.neoforge.client.blaze3d.opengl;
 
-import static org.lwjgl.opengl.ARBVertexAttribBinding.GL_MAX_VERTEX_ATTRIB_BINDINGS;
 import static org.lwjgl.opengl.GL11C.glGetInteger;
-import static org.lwjgl.opengl.GL20C.GL_MAX_TEXTURE_IMAGE_UNITS;
-import static org.lwjgl.opengl.GL20C.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS;
 import static org.lwjgl.opengl.GL30C.GL_MAJOR_VERSION;
 import static org.lwjgl.opengl.GL30C.GL_MINOR_VERSION;
-import static org.lwjgl.opengl.GL31C.GL_MAX_3D_TEXTURE_SIZE;
-import static org.lwjgl.opengl.GL31C.GL_MAX_ARRAY_TEXTURE_LAYERS;
-import static org.lwjgl.opengl.GL31C.GL_MAX_CUBE_MAP_TEXTURE_SIZE;
-import static org.lwjgl.opengl.GL31C.GL_MAX_FRAGMENT_UNIFORM_BLOCKS;
-import static org.lwjgl.opengl.GL31C.GL_MAX_TEXTURE_BUFFER_SIZE;
-import static org.lwjgl.opengl.GL31C.GL_MAX_TEXTURE_SIZE;
-import static org.lwjgl.opengl.GL31C.GL_MAX_UNIFORM_BLOCK_SIZE;
-import static org.lwjgl.opengl.GL31C.GL_MAX_VERTEX_ATTRIBS;
-import static org.lwjgl.opengl.GL31C.GL_MAX_VERTEX_UNIFORM_BLOCKS;
-import static org.lwjgl.opengl.GL31C.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT;
-import static org.lwjgl.opengl.GL32C.GL_MAX_VERTEX_OUTPUT_COMPONENTS;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.platform.DepthTestFunction;
@@ -110,85 +96,5 @@ public class NeoGlDeviceProperties implements GpuDeviceProperties {
     @Override
     public Set<TextureFormat> knownTextureFormats() {
         return Collections.unmodifiableSet(EnumSet.range(TextureFormat.RGBA8, TextureFormat.DEPTH32_STENCIL8));
-    }
-
-    @Override
-    public boolean depthZeroToOne() {
-        return false;
-    }
-
-    @Override
-    public int maximumUniformBindings() {
-        return maximumUBOBindings() + maximumTextureBindings();
-    }
-
-    @Override
-    public int maximumUBOBindings() {
-        return Math.min(glGetInteger(GL_MAX_VERTEX_UNIFORM_BLOCKS), glGetInteger(GL_MAX_FRAGMENT_UNIFORM_BLOCKS));
-    }
-
-    @Override
-    public int maximumTextureBindings() {
-        return Math.min(glGetInteger(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS), glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS));
-    }
-
-    @Override
-    public int minimumUBOAlignment() {
-        return glGetInteger(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT);
-    }
-
-    @Override
-    public int maximumUBOSize() {
-        return glGetInteger(GL_MAX_UNIFORM_BLOCK_SIZE);
-    }
-
-    @Override
-    public int maximumTexelBufferSize() {
-        return glGetInteger(GL_MAX_TEXTURE_BUFFER_SIZE);
-    }
-
-    @Override
-    public int maximumVertexInputAttributes() {
-        return glGetInteger(GL_MAX_VERTEX_ATTRIBS);
-    }
-
-    @Override
-    public int maximumVertexInputBuffers() {
-        if (glCaps.GL_ARB_vertex_attrib_binding) {
-            return glGetInteger(GL_MAX_VERTEX_ATTRIB_BINDINGS);
-        } else {
-            // older GL doesn't specify, but as many attribs is a valid limit in that case
-            return maximumVertexInputAttributes();
-        }
-    }
-
-    @Override
-    public int maximumVertexOutputLocations() {
-        return glGetInteger(GL_MAX_VERTEX_OUTPUT_COMPONENTS) / 4;
-    }
-
-    @Override
-    public int maximumImageArrayLayers() {
-        return glGetInteger(GL_MAX_ARRAY_TEXTURE_LAYERS);
-    }
-
-    @Override
-    public int maximumImageDimension1D() {
-        return glGetInteger(GL_MAX_TEXTURE_SIZE);
-    }
-
-    @Override
-    public int maximumImageDimension2D() {
-        return maximumImageDimension1D();
-    }
-
-    @Override
-    public int maximumImageDimension3D() {
-        return glGetInteger(GL_MAX_3D_TEXTURE_SIZE);
-    }
-
-    @Override
-    public int maximumImageDimensionCube() {
-        return glGetInteger(GL_MAX_CUBE_MAP_TEXTURE_SIZE);
     }
 }

@@ -48,13 +48,11 @@ public class ValidationRenderPass implements RenderPass {
 
     @Override
     public void setUniform(String name, GpuBuffer buffer) {
-        validator.validateUBOBinding(buffer.slice());
         realRenderPass.setUniform(name, buffer);
     }
 
     @Override
     public void setUniform(String name, GpuBufferSlice bufferSlice) {
-        validator.validateUBOBinding(bufferSlice);
         realRenderPass.setUniform(name, bufferSlice);
     }
 

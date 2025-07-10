@@ -57,7 +57,6 @@ public class ValidationGpuDevice implements GpuDevice {
     public GpuTexture createTexture(@Nullable Supplier<String> label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
         validator.validateTextureUsage(usage);
         validator.validateTextureFormat(format);
-        validator.validateTextureSize(usage, width, height, depthOrLayers);
         return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 
@@ -65,7 +64,6 @@ public class ValidationGpuDevice implements GpuDevice {
     public GpuTexture createTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
         validator.validateTextureUsage(usage);
         validator.validateTextureFormat(format);
-        validator.validateTextureSize(usage, width, height, depthOrLayers);
         return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 

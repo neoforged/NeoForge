@@ -29,22 +29,7 @@ record ImmutableGlDeviceProperties(
         Set<ShaderType> knownShaderTypes,
         Set<UniformType> knownUniformTypes,
         Set<AddressMode> knownAddressModes,
-        Set<TextureFormat> knownTextureFormats,
-        boolean depthZeroToOne,
-        int maximumUniformBindings,
-        int maximumUBOBindings,
-        int maximumTextureBindings,
-        int minimumUBOAlignment,
-        int maximumUBOSize,
-        int maximumTexelBufferSize,
-        int maximumVertexInputAttributes,
-        int maximumVertexInputBuffers,
-        int maximumVertexOutputLocations,
-        int maximumImageArrayLayers,
-        int maximumImageDimension1D,
-        int maximumImageDimension2D,
-        int maximumImageDimension3D,
-        int maximumImageDimensionCube) implements GpuDeviceProperties {
+        Set<TextureFormat> knownTextureFormats) implements GpuDeviceProperties {
     ImmutableGlDeviceProperties(GpuDeviceProperties properties) {
         this(
                 properties.backendName(),
@@ -60,21 +45,6 @@ record ImmutableGlDeviceProperties(
                 properties.knownShaderTypes(),
                 properties.knownUniformTypes(),
                 properties.knownAddressModes(),
-                properties.knownTextureFormats(),
-                properties.depthZeroToOne(),
-                properties.maximumUniformBindings(),
-                properties.maximumUBOBindings(),
-                properties.maximumTextureBindings(),
-                properties.minimumUBOAlignment(),
-                properties.maximumUBOSize(),
-                properties.maximumTexelBufferSize(),
-                properties.maximumVertexInputAttributes(),
-                properties.maximumVertexInputBuffers(),
-                properties.maximumVertexOutputLocations(),
-                properties.maximumImageArrayLayers(),
-                properties.maximumImageDimension1D(),
-                properties.maximumImageDimension2D(),
-                properties.maximumImageDimension3D(),
-                properties.maximumImageDimensionCube());
+                properties.knownTextureFormats());
     }
 }
