@@ -55,6 +55,23 @@ public class DefaultedItemTagResult implements Result<ItemStack> {
         this.components = components;
     }
 
+    /**
+     * @param tagKey   The {@link TagKey} to use for looking up the result.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive result.
+     * @param count    The count to use. Corresponds to {@link ItemStack#getCount()}.
+     */
+    public DefaultedItemTagResult(TagKey<Item> tagKey, Holder<Item> fallback, int count) {
+        this(tagKey, fallback, count, DataComponentPatch.EMPTY);
+    }
+
+    /**
+     * @param tagKey   The {@link TagKey} to use for looking up the result.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive result.
+     */
+    public DefaultedItemTagResult(TagKey<Item> tagKey, Holder<Item> fallback) {
+        this(tagKey, fallback, 1, DataComponentPatch.EMPTY);
+    }
+
     @Override
     public ItemStack resolve() {
         Optional<Item> optional = NeoForgeEventHandler.getTagDefaultsManager().resolve(Registries.ITEM, tagKey);

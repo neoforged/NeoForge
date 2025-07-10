@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/recipes/SingleItemRecipeBuilder.java
++++ b/net/minecraft/data/recipes/SingleItemRecipeBuilder.java
+@@ -68,7 +_,7 @@
+             .requirements(AdvancementRequirements.Strategy.OR);
+         this.criteria.forEach(advancement$builder::addCriterion);
+         SingleItemRecipe singleitemrecipe = this.factory
+-            .create(Objects.requireNonNullElse(this.group, ""), this.ingredient, new ItemStack(this.result, this.count));
++            .create(Objects.requireNonNullElse(this.group, ""), this.ingredient, net.neoforged.neoforge.common.crafting.result.ResultWrapper.item(new ItemStack(this.result, this.count)));
+         p_301137_.accept(
+             p_379508_, singleitemrecipe, advancement$builder.build(p_379508_.location().withPrefix("recipes/" + this.category.getFolderName() + "/"))
+         );

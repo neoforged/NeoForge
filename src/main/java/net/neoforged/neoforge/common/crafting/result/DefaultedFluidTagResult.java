@@ -59,6 +59,23 @@ public class DefaultedFluidTagResult implements Result<FluidStack> {
         this.components = components;
     }
 
+    /**
+     * @param tagKey   The {@link TagKey} to use for looking up the result.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive result.
+     * @param amount   The amount to use. Corresponds to {@link FluidStack#getAmount()}.
+     */
+    public DefaultedFluidTagResult(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount) {
+        this(tagKey, fallback, amount, DataComponentPatch.EMPTY);
+    }
+
+    /**
+     * @param tagKey   The {@link TagKey} to use for looking up the result.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive result.
+     */
+    public DefaultedFluidTagResult(TagKey<Fluid> tagKey, Holder<Fluid> fallback) {
+        this(tagKey, fallback, 1, DataComponentPatch.EMPTY);
+    }
+
     @Override
     public FluidStack resolve() {
         Optional<Fluid> optional = NeoForgeEventHandler.getTagDefaultsManager().resolve(Registries.FLUID, tagKey);
