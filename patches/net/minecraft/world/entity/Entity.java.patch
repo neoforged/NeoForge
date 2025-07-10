@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
+@@ -41,6 +_,7 @@
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.Holder;
++import net.minecraft.core.HolderSet;
+ import net.minecraft.core.RegistryAccess;
+ import net.minecraft.core.SectionPos;
+ import net.minecraft.core.UUIDUtil;
 @@ -124,6 +_,7 @@
  import net.minecraft.world.level.levelgen.Heightmap;
  import net.minecraft.world.level.material.Fluid;
@@ -318,16 +326,18 @@
          } else {
              AABB aabb = this.getBoundingBox().deflate(0.001);
              int i = Mth.floor(aabb.minX);
-@@ -3488,25 +_,35 @@
+@@ -3488,25 +_,39 @@
              Vec3 vec3 = Vec3.ZERO;
              int k1 = 0;
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 +            class InterimCalculation {
++                Set<FluidState> states = new HashSet<>();
++                double fluidScale = 0.0D;
 +                double fluidHeight = 0.0D;
 +                Vec3 flowVector = Vec3.ZERO;
 +                int blockCount = 0;
 +            }
-+            it.unimi.dsi.fastutil.objects.Object2ObjectMap<FluidState, InterimCalculation> interimCalcs = null;
++            it.unimi.dsi.fastutil.objects.Object2ObjectMap<HolderSet<Fluid>, InterimCalculation> interimCalcs = null;
  
              for (int l1 = i; l1 < j; l1++) {
                  for (int i2 = k; i2 < l; i2++) {
@@ -344,7 +354,9 @@
 +                                if (interimCalcs == null) {
 +                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
 +                                }
-+                                InterimCalculation interim = interimCalcs.computeIfAbsent(fluidstate, t -> new InterimCalculation());
++                                InterimCalculation interim = interimCalcs.computeIfAbsent(fluidstate.getFamily(), t -> new InterimCalculation());
++                                interim.states.add(fluidstate);
++                                interim.fluidScale = interim.fluidScale + this.getFluidMotionScale(fluidstate);
 +                                interim.fluidHeight = Math.max(d1 - aabb.minY, interim.fluidHeight);
 +                                if (this.isPushedByFluid(fluidstate)) {
                                      Vec3 vec31 = fluidstate.getFlow(this.level(), blockpos$mutableblockpos);
@@ -361,7 +373,7 @@
                                  }
                              }
                          }
-@@ -3514,27 +_,30 @@
+@@ -3514,27 +_,32 @@
                  }
              }
  
@@ -369,7 +381,7 @@
 -                if (k1 > 0) {
 -                    vec3 = vec3.scale(1.0 / k1);
 +            if(interimCalcs != null) {
-+            interimCalcs.forEach((fluid, interim) -> {
++            interimCalcs.forEach((family, interim) -> {
 +            if (interim.flowVector.length() > 0.0D) {
 +                if (interim.blockCount > 0) {
 +                    interim.flowVector = interim.flowVector.scale(1.0D / (double)interim.blockCount);
@@ -382,7 +394,7 @@
  
                  Vec3 vec32 = this.getDeltaMovement();
 -                vec3 = vec3.scale(p_204033_);
-+                interim.flowVector = interim.flowVector.scale(this.getFluidMotionScale(fluid));
++                interim.flowVector = interim.flowVector.scale(interim.fluidScale / interim.states.size());
                  double d2 = 0.003;
 -                if (Math.abs(vec32.x) < 0.003 && Math.abs(vec32.z) < 0.003 && vec3.length() < 0.0045000000000000005) {
 -                    vec3 = vec3.normalize().scale(0.0045000000000000005);
@@ -396,7 +408,9 @@
  
 -            this.fluidHeight.put(p_204032_, d0);
 -            return flag1;
-+            this.fluidHeight.put(fluid, interim.fluidHeight);
++            interim.states.forEach(state -> {
++                this.fluidHeight.put(state, interim.fluidHeight);
++            });
 +            });
 +            }
          }

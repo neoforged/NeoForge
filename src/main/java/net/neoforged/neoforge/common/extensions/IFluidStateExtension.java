@@ -2,6 +2,7 @@ package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderSet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +23,11 @@ import org.jetbrains.annotations.Nullable;
 public interface IFluidStateExtension {
     private FluidState self() {
         return (FluidState) this;
+    }
+
+    default HolderSet<Fluid> getFamily() {
+        return self().getType().getFamily()
+            .orElse(HolderSet.direct(self().holder()));
     }
 
     /**

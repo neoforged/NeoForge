@@ -4,12 +4,15 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.DependantName;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,6 +33,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * A rough duplicate of {@link BlockBehaviour}, aimed at fluids.
@@ -38,6 +43,7 @@ public abstract class FluidBehaviour implements FeatureElement {
     protected final float explosionResistance;
     protected final float fallDistanceModifier;
     protected final double motionScale;
+    protected final Optional<HolderSet<Fluid>> family;
     protected final FeatureFlagSet requiredFeatures;
     protected final String descriptionId;
     protected final FluidBehaviour.Properties properties;
@@ -46,6 +52,7 @@ public abstract class FluidBehaviour implements FeatureElement {
         this.explosionResistance = properties.explosionResistance;
         this.fallDistanceModifier = properties.fallDistanceModifier;
         this.motionScale = properties.motionScale;
+        this.family = Optional.ofNullable(properties.family);
         this.requiredFeatures = properties.requiredFeatures;
         this.descriptionId = properties.effectiveDescriptionId();
 
@@ -67,6 +74,10 @@ public abstract class FluidBehaviour implements FeatureElement {
 
     public MutableComponent getName() {
         return Component.translatable(this.getDescriptionId());
+    }
+
+    public Optional<HolderSet<Fluid>> getFamily() {
+        return this.family;
     }
 
     @Nullable
@@ -146,6 +157,8 @@ public abstract class FluidBehaviour implements FeatureElement {
         private float fallDistanceModifier = 0.5f;
         private double motionScale = 0.014D;
         @Nullable
+        private HolderSet<Fluid> family;
+        @Nullable
         private ResourceKey<Fluid> id;
         private DependantName<Fluid, String> descriptionId = fluid -> Util.makeDescriptionId("fluid", fluid.location());
         private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
@@ -169,6 +182,21 @@ public abstract class FluidBehaviour implements FeatureElement {
 
         public FluidBehaviour.Properties motionScale(double motionScale) {
             this.motionScale = motionScale;
+            return this;
+        }
+
+        public FluidBehaviour.Properties family(HolderSet<Fluid> family) {
+            this.family = family;
+            return this;
+        }
+
+        public FluidBehaviour.Properties family(Holder<Fluid>... family) {
+            this.family = net.minecraft.core.HolderSet.direct(family);
+            return this;
+        }
+
+        public FluidBehaviour.Properties family(TagKey<Fluid> family) {
+            this.family = HolderSet.emptyNamed(BuiltInRegistries.FLUID, family);
             return this;
         }
 
