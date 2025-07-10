@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Forge Development LLC and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.client.blaze3d.opengl;
 
 import com.mojang.blaze3d.platform.DepthTestFunction;
@@ -9,7 +14,6 @@ import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.TextureFormat;
 import java.util.Set;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
-import org.jetbrains.annotations.ApiStatus;
 
 record ImmutableGlDeviceProperties(
         String backendName,
