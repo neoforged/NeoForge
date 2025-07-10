@@ -69,7 +69,7 @@ public class ValidationGpuDevice implements GpuDevice {
 
     @Override
     public GpuTextureView createTextureView(GpuTexture texture) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         return realDevice.createTextureView(validationTexture.getRealTexture());
@@ -77,7 +77,7 @@ public class ValidationGpuDevice implements GpuDevice {
 
     @Override
     public GpuTextureView createTextureView(GpuTexture texture, int baseMipLevel, int mipLevels) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         return realDevice.createTextureView(validationTexture.getRealTexture(), baseMipLevel, mipLevels);

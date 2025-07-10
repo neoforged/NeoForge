@@ -45,7 +45,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void clearColorTexture(GpuTexture texture, int clearColor) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.clearColorTexture(validationTexture.getRealTexture(), clearColor);
@@ -53,10 +53,10 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void clearColorAndDepthTextures(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth) {
-        if(!(colorTexture instanceof ValidationGpuTexture validationColorTexture)){
+        if (!(colorTexture instanceof ValidationGpuTexture validationColorTexture)) {
             throw new IllegalArgumentException();
         }
-        if(!(depthTexture instanceof ValidationGpuTexture validationDepthTexture)){
+        if (!(depthTexture instanceof ValidationGpuTexture validationDepthTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.clearColorAndDepthTextures(validationColorTexture.getRealTexture(), clearColor, validationDepthTexture.getRealTexture(), clearDepth);
@@ -64,10 +64,10 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void clearColorAndDepthTextures(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth, int scissorX, int scissorY, int scissorWidth, int scissorHeight) {
-        if(!(colorTexture instanceof ValidationGpuTexture validationColorTexture)){
+        if (!(colorTexture instanceof ValidationGpuTexture validationColorTexture)) {
             throw new IllegalArgumentException();
         }
-        if(!(depthTexture instanceof ValidationGpuTexture validationDepthTexture)){
+        if (!(depthTexture instanceof ValidationGpuTexture validationDepthTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.clearColorAndDepthTextures(validationColorTexture.getRealTexture(), clearColor, validationDepthTexture.getRealTexture(), clearDepth, scissorX, scissorY, scissorWidth, scissorHeight);
@@ -75,7 +75,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void clearDepthTexture(GpuTexture depthTexture, double clearDepth) {
-        if(!(depthTexture instanceof ValidationGpuTexture validationDepthTexture)){
+        if (!(depthTexture instanceof ValidationGpuTexture validationDepthTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.clearDepthTexture(validationDepthTexture.getRealTexture(), clearDepth);
@@ -83,7 +83,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void clearStencilTexture(GpuTexture stencilTexture, int clearValue) {
-        if(!(stencilTexture instanceof ValidationGpuTexture validationStencilTexture)){
+        if (!(stencilTexture instanceof ValidationGpuTexture validationStencilTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.clearStencilTexture(validationStencilTexture.getRealTexture(), clearValue);
@@ -111,7 +111,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void writeToTexture(GpuTexture texture, NativeImage image) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.writeToTexture(validationTexture.getRealTexture(), image);
@@ -119,7 +119,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void writeToTexture(GpuTexture texture, NativeImage image, int mipLevel, int layer, int dstX, int dstY, int width, int height, int srcX, int srcY) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.writeToTexture(validationTexture.getRealTexture(), image, mipLevel, layer, dstX, dstY, width, height, srcX, srcY);
@@ -127,7 +127,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void writeToTexture(GpuTexture texture, IntBuffer imageData, NativeImage.Format imageFormat, int mipLevel, int layer, int x, int y, int width, int height) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.writeToTexture(validationTexture.getRealTexture(), imageData, imageFormat, mipLevel, layer, x, y, width, height);
@@ -135,7 +135,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void copyTextureToBuffer(GpuTexture texture, GpuBuffer buffer, int bufferOffset, Runnable callback, int mipLevel) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.copyTextureToBuffer(validationTexture.getRealTexture(), buffer, bufferOffset, callback, mipLevel);
@@ -143,7 +143,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void copyTextureToBuffer(GpuTexture texture, GpuBuffer buffer, int bufferOffset, Runnable callback, int mipLevel, int x, int y, int width, int height) {
-        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+        if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.copyTextureToBuffer(validationTexture.getRealTexture(), buffer, bufferOffset, callback, mipLevel, x, y, width, height);
@@ -151,10 +151,10 @@ public class ValidationCommandEncoder implements CommandEncoder {
 
     @Override
     public void copyTextureToTexture(GpuTexture srcTexture, GpuTexture dstTexture, int mipLevel, int srcX, int srcY, int dstX, int dstY, int width, int height) {
-        if(!(srcTexture instanceof ValidationGpuTexture validationSrcTexture)){
+        if (!(srcTexture instanceof ValidationGpuTexture validationSrcTexture)) {
             throw new IllegalArgumentException();
         }
-        if(!(dstTexture instanceof ValidationGpuTexture validationDstTexture)){
+        if (!(dstTexture instanceof ValidationGpuTexture validationDstTexture)) {
             throw new IllegalArgumentException();
         }
         realCommandEncoder.copyTextureToTexture(validationSrcTexture.getRealTexture(), validationDstTexture.getRealTexture(), mipLevel, srcX, srcY, dstX, dstY, width, height);

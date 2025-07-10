@@ -9,7 +9,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.LogicOp;
 import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.TextureFormat;
-import java.util.Arrays;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 
