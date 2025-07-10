@@ -4,7 +4,7 @@
  
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
-+@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Remaining depth test functions will be added")
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further depth test functions may be added")
  public enum DepthTestFunction {
      NO_DEPTH_TEST,
      EQUAL_DEPTH_TEST,

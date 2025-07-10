@@ -4,7 +4,7 @@
  
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
-+@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Remaining address modes will be later added")
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further address modes may be added")
  public enum AddressMode {
      REPEAT,
      CLAMP_TO_EDGE;

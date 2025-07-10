@@ -4,7 +4,7 @@
  
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
-+@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Many additional texture formats will be later added")
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Additional texture formats may be added")
  public enum TextureFormat {
      RGBA8(4),
      RED8(1),
