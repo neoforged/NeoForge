@@ -18,6 +18,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -26,8 +28,12 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.TestFramework;
+import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
+import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "client.gui", side = Dist.CLIENT)
 public class GuiTests {
@@ -166,6 +172,31 @@ public class GuiTests {
                     color);
             gui.leftHeight += height + 1;
         };
+    }
+
+    @TestHolder(description = "Tests if gui layers can be wrapped to apply pose stack transformations")
+    static void testGuiLayerWrapping(DynamicTest test) {
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            event.wrapLayer(VanillaGuiLayers.FOOD_LEVEL, guiLayer -> (guiGraphics, deltaTracker) -> {
+                if (test.framework().tests().isEnabled(test.id())) {
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().translate(-91 / 2f, -11, 0f);
+                    guiLayer.render(guiGraphics, deltaTracker);
+                    guiGraphics.pose().popPose();
+                } else {
+                    guiLayer.render(guiGraphics, deltaTracker);
+                }
+            });
+        });
+
+        test.framework().tests().addListener(new TestListener() {
+            @Override
+            public void onEnabled(TestFramework framework, Test enabledTest, @Nullable Entity changer) {
+                if (test == enabledTest && changer instanceof Player player) {
+                    test.requestConfirmation(player, Component.literal("Is the food bar rendering above the health bar, in the centre of the screen?"));
+                }
+            }
+        });
     }
 
     @TestHolder(description = "Checks that the depth budget for GUI layers gets adjusted as necessary")
