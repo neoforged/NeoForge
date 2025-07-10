@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.neo3d.opengl;
+package net.neoforged.neoforge.client.blaze3d.opengl;
 
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.shaders.ShaderType;
 import java.util.function.BiFunction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoader;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 import net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
 
 public class NeoGlDevice extends GlDevice {
     private final GpuDeviceProperties deviceProperties;

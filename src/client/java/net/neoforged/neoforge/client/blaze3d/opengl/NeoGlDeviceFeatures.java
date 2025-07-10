@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.neo3d.opengl;
+package net.neoforged.neoforge.client.blaze3d.opengl;
 
 import net.minecraft.Util;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 
 public class NeoGlDeviceFeatures implements GpuDeviceFeatures {
     @Override

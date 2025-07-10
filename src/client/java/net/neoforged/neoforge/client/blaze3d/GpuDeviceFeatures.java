@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.neo3d;
+package net.neoforged.neoforge.client.blaze3d;
 
 import org.jetbrains.annotations.ApiStatus;
 

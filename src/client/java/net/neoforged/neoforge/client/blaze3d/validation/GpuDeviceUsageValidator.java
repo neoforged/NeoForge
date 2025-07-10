@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.neo3d.validation;
+package net.neoforged.neoforge.client.blaze3d.validation;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -12,8 +12,8 @@ import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.TextureFormat;
 import java.util.Arrays;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 
 public class GpuDeviceUsageValidator {
     private final GpuDeviceProperties properties;

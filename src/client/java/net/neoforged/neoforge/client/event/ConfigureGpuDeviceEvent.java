@@ -7,8 +7,8 @@ package net.neoforged.neoforge.client.event;
 
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 
 public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuDeviceFeatures {
     private final GpuDeviceProperties deviceProperties;

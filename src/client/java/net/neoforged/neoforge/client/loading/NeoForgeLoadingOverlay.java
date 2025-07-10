@@ -25,7 +25,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
-import net.neoforged.neoforge.client.neo3d.validation.ValidationGpuDevice;
+import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the

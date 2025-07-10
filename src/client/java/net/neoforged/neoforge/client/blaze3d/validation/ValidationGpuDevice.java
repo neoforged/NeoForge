@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.neo3d.validation;
+package net.neoforged.neoforge.client.blaze3d.validation;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

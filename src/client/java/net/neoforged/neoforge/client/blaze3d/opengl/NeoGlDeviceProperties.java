@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.neo3d.opengl;
+package net.neoforged.neoforge.client.blaze3d.opengl;
 
 import static org.lwjgl.opengl.ARBVertexAttribBinding.GL_MAX_VERTEX_ATTRIB_BINDINGS;
 import static org.lwjgl.opengl.GL11C.glGetInteger;
@@ -35,7 +35,7 @@ import com.mojang.blaze3d.textures.TextureFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
-import net.neoforged.neoforge.client.neo3d.GpuDeviceProperties;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 

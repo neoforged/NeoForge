@@ -5,7 +5,7 @@
  
      void close();
 +
-+    net.neoforged.neoforge.client.neo3d.GpuDeviceProperties properties();
++    net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties properties();
 +
-+    net.neoforged.neoforge.client.neo3d.GpuDeviceFeatures enabledFeatures();
++    net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures enabledFeatures();
  }
