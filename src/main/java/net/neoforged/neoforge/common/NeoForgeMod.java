@@ -9,11 +9,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Function;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.commands.Commands;
@@ -45,6 +40,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attribute.Sentiment;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -107,6 +103,7 @@ import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.result.DefaultedFluidTagResult;
 import net.neoforged.neoforge.common.crafting.result.DefaultedItemTagResult;
+import net.neoforged.neoforge.common.crafting.result.Result;
 import net.neoforged.neoforge.common.crafting.result.ResultType;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
@@ -128,6 +125,7 @@ import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.CustomDisplayFluidIngredient;
@@ -166,6 +164,12 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 @Mod(NeoForgeVersion.MOD_ID)
@@ -371,9 +375,11 @@ public class NeoForgeMod {
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<IntersectionFluidIngredient>> INTERSECTION_FLUID_INGREDIENT_TYPE = FLUID_INGREDIENT_TYPES.register("intersection", () -> new FluidIngredientType<>(IntersectionFluidIngredient.CODEC));
     public static final DeferredHolder<FluidIngredientType<?>, FluidIngredientType<CustomDisplayFluidIngredient>> CUSTOM_DISPLAY_FLUID_INGREDIENT = FLUID_INGREDIENT_TYPES.register("custom_display", () -> new FluidIngredientType<>(CustomDisplayFluidIngredient.CODEC, CustomDisplayFluidIngredient.STREAM_CODEC));
 
-    private static final DeferredRegister<ResultType<?>> RESULT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.RESULT_TYPES, NeoForgeVersion.MOD_ID);
-    public static final DeferredHolder<ResultType<?>, ResultType<DefaultedFluidTagResult>> DEFAULTED_FLUID_TAG_RESULT_TYPE = RESULT_TYPES.register("defaulted_fluid_tag", () -> new ResultType<>(DefaultedFluidTagResult.MAP_CODEC, DefaultedFluidTagResult.STREAM_CODEC));
-    public static final DeferredHolder<ResultType<?>, ResultType<DefaultedItemTagResult>> DEFAULTED_ITEM_TAG_RESULT_TYPE = RESULT_TYPES.register("defaulted_item_tag", () -> new ResultType<>(DefaultedItemTagResult.MAP_CODEC, DefaultedItemTagResult.STREAM_CODEC));
+    private static final DeferredRegister<ResultType<? extends Result<ItemStack>>> ITEM_RESULT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ITEM_RESULT_TYPES, NeoForgeVersion.MOD_ID);
+    public static final DeferredHolder<ResultType<? extends Result<ItemStack>>, ResultType<DefaultedItemTagResult>> DEFAULTED_ITEM_TAG_RESULT_TYPE = ITEM_RESULT_TYPES.register("defaulted_item_tag", () -> new ResultType<>(DefaultedItemTagResult.MAP_CODEC, DefaultedItemTagResult.STREAM_CODEC));
+
+    private static final DeferredRegister<ResultType<? extends Result<FluidStack>>> FLUID_RESULT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_RESULT_TYPES, NeoForgeVersion.MOD_ID);
+    public static final DeferredHolder<ResultType<? extends Result<FluidStack>>, ResultType<DefaultedFluidTagResult>> DEFAULTED_FLUID_TAG_RESULT_TYPE = FLUID_RESULT_TYPES.register("defaulted_fluid_tag", () -> new ResultType<>(DefaultedFluidTagResult.MAP_CODEC, DefaultedFluidTagResult.STREAM_CODEC));
 
     private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, NeoForgeVersion.MOD_ID);
     public static final DeferredHolder<MapCodec<? extends ICondition>, MapCodec<AndCondition>> AND_CONDITION = CONDITION_CODECS.register("and", () -> AndCondition.CODEC);
@@ -574,7 +580,7 @@ public class NeoForgeMod {
         SLOT_DISPLAY_TYPES.register(modEventBus);
         INGREDIENT_TYPES.register(modEventBus);
         FLUID_INGREDIENT_TYPES.register(modEventBus);
-        RESULT_TYPES.register(modEventBus);
+        ITEM_RESULT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);

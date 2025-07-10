@@ -62,7 +62,7 @@ public class DefaultedItemTagResult implements Result<ItemStack> {
     }
 
     @Override
-    public ResultType<?> type() {
+    public ResultType<? extends Result<ItemStack>> type() {
         return NeoForgeMod.DEFAULTED_ITEM_TAG_RESULT_TYPE.get();
     }
 

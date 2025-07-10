@@ -66,7 +66,7 @@ public class DefaultedFluidTagResult implements Result<FluidStack> {
     }
 
     @Override
-    public ResultType<?> type() {
+    public ResultType<? extends Result<FluidStack>> type() {
         return NeoForgeMod.DEFAULTED_FLUID_TAG_RESULT_TYPE.get();
     }
 
