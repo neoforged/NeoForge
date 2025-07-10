@@ -22,12 +22,12 @@ public class NeoGlDevice extends GlDevice {
         super(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
 
         deviceProperties = new ImmutableGlDeviceProperties(new NeoGlDeviceProperties());
-        final var event = ModLoader.postEventWithReturn(new ConfigureGpuDeviceEvent(properties(), new NeoGlDeviceFeatures()));
+        final var event = ModLoader.postEventWithReturn(new ConfigureGpuDeviceEvent(enabledProperties(), new NeoGlDeviceFeatures()));
         enabledFeatures = new ImmutableGlDeviceFeatures(event);
     }
 
     @Override
-    public GpuDeviceProperties properties() {
+    public GpuDeviceProperties enabledProperties() {
         return deviceProperties;
     }
 

@@ -158,8 +158,8 @@ public class ValidationGpuDevice implements GpuDevice {
     }
 
     @Override
-    public GpuDeviceProperties properties() {
-        return realDevice.properties();
+    public GpuDeviceProperties enabledProperties() {
+        return realDevice.enabledProperties();
     }
 
     @Override

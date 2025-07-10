@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.blaze3d;
 
 public interface GpuDeviceExtension {
-    GpuDeviceProperties properties();
+    GpuDeviceProperties enabledProperties();
 
     GpuDeviceFeatures enabledFeatures();
 }

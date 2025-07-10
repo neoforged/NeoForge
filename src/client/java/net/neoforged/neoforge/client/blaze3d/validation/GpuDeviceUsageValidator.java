@@ -18,7 +18,7 @@ public class GpuDeviceUsageValidator {
     private final GpuDeviceFeatures enabledFeatures;
 
     GpuDeviceUsageValidator(ValidationGpuDevice device) {
-        properties = device.properties();
+        properties = device.enabledProperties();
         enabledFeatures = device.enabledFeatures();
     }
 
