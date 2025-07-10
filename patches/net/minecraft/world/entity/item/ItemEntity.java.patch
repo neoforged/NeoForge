@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -30,6 +_,8 @@
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.gameevent.GameEvent;
++import net.minecraft.world.level.material.FluidState;
++import net.minecraft.world.level.material.Fluids;
+ import net.minecraft.world.level.portal.TeleportTransition;
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
 @@ -53,6 +_,10 @@
      @Nullable
      private UUID target;
@@ -39,8 +48,8 @@
              this.yo = this.getY();
              this.zo = this.getZ();
              Vec3 vec3 = this.getDeltaMovement();
-+            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
-+            if (!fluidType.isAir() && !fluidType.isVanilla() && this.getFluidTypeHeight(fluidType) > 0.1F) fluidType.setItemMovement(this);
++            FluidState fluidType = this.getMaxHeightFluid();
++            if (!fluidType.is(Fluids.EMPTY) && this.getFluidHeight(fluidType) > 0.1F) fluidType.move(this, vec3, getGravity());
 +            else
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();

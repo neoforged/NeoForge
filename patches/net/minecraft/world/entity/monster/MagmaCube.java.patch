@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/entity/monster/MagmaCube.java
 +++ b/net/minecraft/world/entity/monster/MagmaCube.java
-@@ -71,17 +_,28 @@
+@@ -17,6 +_,7 @@
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.material.Fluid;
++import net.minecraft.world.level.material.FluidState;
+ import net.minecraft.world.phys.Vec3;
+ 
+ public class MagmaCube extends Slime {
+@@ -71,17 +_,27 @@
          float f = this.getSize() * 0.1F;
          this.setDeltaMovement(vec3.x, this.getJumpPower() + f, vec3.z);
          this.hasImpulse = true;
@@ -8,7 +16,6 @@
      }
  
      @Override
-+    @Deprecated // FORGE: use jumpInFluid instead
      protected void jumpInLiquid(TagKey<Fluid> p_204065_) {
 -        if (p_204065_ == FluidTags.LAVA) {
 +        this.jumpInLiquidInternal(() -> p_204065_ == FluidTags.LAVA, () -> super.jumpInLiquid(p_204065_));
@@ -26,8 +33,8 @@
 +    }
 +
 +    @Override
-+    public void jumpInFluid(net.neoforged.neoforge.fluids.FluidType type) {
-+        this.jumpInLiquidInternal(() -> type == net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value(), () -> super.jumpInFluid(type));
++    public void jumpInFluid(FluidState type) {
++        this.jumpInLiquidInternal(() -> type.is(FluidTags.LAVA), () -> super.jumpInFluid(type));
      }
  
      @Override

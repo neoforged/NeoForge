@@ -21,7 +21,7 @@
                      }
  
 -                    if (!(p_221863_ >= f)) {
-+                    net.neoforged.neoforge.fluids.FluidType.DripstoneDripInfo dripInfo = fluid.getFluidType().getDripInfo();
++                    Fluid.DripstoneDripInfo dripInfo = fluid.getDripInfo();
 +                    if (dripInfo != null && !(p_221863_ >= dripInfo.chance())) {
                          BlockPos blockpos = findTip(p_221860_, p_221861_, p_221862_, 11, false);
                          if (blockpos != null) {
@@ -31,7 +31,7 @@
          double d3 = p_154073_.getZ() + 0.5 + vec3.z;
          Fluid fluid = getDripFluid(p_154072_, p_154075_);
 -        ParticleOptions particleoptions = fluid.is(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
-+        ParticleOptions particleoptions = fluid.getFluidType().getDripInfo() != null ? fluid.getFluidType().getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
++        ParticleOptions particleoptions = fluid.getDripInfo() != null ? fluid.getDripInfo().dripParticle() : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
 +        if (particleoptions != null)
          p_154072_.addParticle(particleoptions, d1, d2, d3, 0.0, 0.0, 0.0);
      }
@@ -41,7 +41,7 @@
  
      private static boolean canFillCauldron(Fluid p_154159_) {
 -        return p_154159_ == Fluids.LAVA || p_154159_ == Fluids.WATER;
-+        return p_154159_.getFluidType().getDripInfo() != null;
++        return p_154159_.getDripInfo() != null;
      }
  
      private static boolean canGrow(BlockState p_154141_, BlockState p_154142_) {

@@ -109,7 +109,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.extensions.IFluidStateExtension;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.common.util.InsertableLinkedOpenCustomHashSet;
@@ -708,7 +707,7 @@ public class EventHooks {
 
     /**
      * Checks if a fluid is allowed to create a fluid source. This fires the {@link CreateFluidSourceEvent}.
-     * By default, a fluid can create a source if it returns true to {@link IFluidStateExtension#canConvertToSource(Level, BlockPos)}
+     * By default, a fluid can create a source if it returns true to {@link IFluidExtension#canConvertToSource(Level, BlockPos)}
      */
     public static boolean canCreateFluidSource(ServerLevel level, BlockPos pos, BlockState state) {
         return NeoForge.EVENT_BUS.post(new CreateFluidSourceEvent(level, pos, state)).canConvert();

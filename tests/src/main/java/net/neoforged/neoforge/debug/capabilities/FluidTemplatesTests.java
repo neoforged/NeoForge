@@ -44,7 +44,7 @@ public class FluidTemplatesTests {
     @TestHolder(description = "Tests that FluidHandlerItemStack works")
     public static void testFluidHandlerItemStack(ExtendedGameTestHelper helper) {
         ItemStack stack = Items.APPLE.getDefaultInstance();
-        int capacity = 2 * FluidType.BUCKET_VOLUME;
+        int capacity = 2 * 1000;
         var fluidHandler = new FluidHandlerItemStack(SIMPLE_FLUID_CONTENT, stack, capacity);
 
         if (fluidHandler.getTanks() != 1) {
@@ -60,19 +60,19 @@ public class FluidTemplatesTests {
             helper.fail("Expected no fluid stack component");
         }
 
-        var waterStack = new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME);
-        if (fluidHandler.fill(waterStack, IFluidHandler.FluidAction.EXECUTE) != FluidType.BUCKET_VOLUME) {
+        var waterStack = new FluidStack(Fluids.WATER, 1000);
+        if (fluidHandler.fill(waterStack, IFluidHandler.FluidAction.EXECUTE) != 1000) {
             helper.fail("Expected to be able to fill a bucket of water");
         }
         if (!stack.has(SIMPLE_FLUID_CONTENT)) {
             helper.fail("Expected fluid stack component");
         }
-        if (fluidHandler.getFluidInTank(0).getAmount() != FluidType.BUCKET_VOLUME) {
+        if (fluidHandler.getFluidInTank(0).getAmount() != 1000) {
             helper.fail("Expected a bucket of water");
         }
 
-        var drained = fluidHandler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
-        if (!FluidStack.matches(drained, new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME))) {
+        var drained = fluidHandler.drain(1000, IFluidHandler.FluidAction.EXECUTE);
+        if (!FluidStack.matches(drained, new FluidStack(Fluids.WATER, 1000))) {
             helper.fail("Expected to drain a bucket of water");
         }
         if (fluidHandler.getFluidInTank(0).getAmount() != 0) {

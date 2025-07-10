@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -121,6 +_,7 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.material.Fluid;
+ import net.minecraft.world.level.material.FluidState;
++import net.minecraft.world.level.material.Fluids;
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
+ import net.minecraft.world.level.storage.loot.LootParams;
 @@ -189,13 +_,19 @@
      protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(0.2F);
      public static final float EXTRA_RENDER_CULLING_SIZE_WITH_BIG_HAT = 0.5F;
@@ -484,7 +492,7 @@
 +    @Deprecated // FORGE: use sinkInFluid instead
      protected void goDownInWater() {
 -        this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.04F, 0.0));
-+        this.sinkInFluid(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++        this.sinkInFluid(Fluids.WATER.defaultFluidState());
      }
  
 +    @Deprecated // FORGE: use jumpInFluid instead
@@ -500,7 +508,7 @@
          FluidState fluidstate = this.level().getFluidState(this.blockPosition());
 -        if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
 +        // Neo: Call (patched-in overload of) #travelInFluid for custom fluid types
-+        if ((this.isInWater() || this.isInLava() || this.isInFluidType(fluidstate)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
++        if ((this.isInWater() || this.isInLava() || this.isInFluid(fluidstate)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
              this.travelInFluid(p_21280_);
          } else if (this.isFallFlying()) {
              this.travelFallFlying(p_21280_);
@@ -530,7 +538,7 @@
          double d0 = this.getY();
          double d1 = this.getEffectiveGravity();
 -        if (this.isInWater()) {
-+        if (this.isInWater() || (this.isInFluidType(fluidState) && !this.moveInFluid(fluidState, p_365480_, d1))) {
++        if (this.isInWater() || (this.isInFluid(fluidState) && !this.moveInFluid(fluidState, p_365480_, d1))) {
              float f = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
              float f1 = 0.02F;
              float f2 = (float)this.getAttributeValue(Attributes.WATER_MOVEMENT_EFFICIENCY);
@@ -563,8 +571,8 @@
          profilerfiller.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double d3;
-+            net.neoforged.neoforge.fluids.FluidType fluidType = this.getMaxHeightFluidType();
-+            if (!fluidType.isAir()) d3 = this.getFluidTypeHeight(fluidType);
++            FluidState fluidType = this.getMaxHeightFluid();
++            if (!fluidType.is(Fluids.EMPTY)) d3 = this.getFluidHeight(fluidType);
 +            else
              if (this.isInLava()) {
                  d3 = this.getFluidHeight(FluidTags.LAVA);
@@ -573,7 +581,7 @@
              double d4 = this.getFluidJumpThreshold();
              if (!flag || this.onGround() && !(d3 > d4)) {
                  if (!this.isInLava() || this.onGround() && !(d3 > d4)) {
-+                    if (fluidType.isAir() || this.onGround() && !(d3 > d4)) {
++                    if (fluidType.is(Fluids.EMPTY) || this.onGround() && !(d3 > d4)) {
                      if ((this.onGround() || flag && d3 <= d4) && this.noJumpDelay == 0) {
                          this.jumpFromGround();
                          this.noJumpDelay = 10;
@@ -581,11 +589,11 @@
 +                    } else this.jumpInFluid(fluidType);
                  } else {
 -                    this.jumpInLiquid(FluidTags.LAVA);
-+                    this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.LAVA_TYPE.value());
++                    this.jumpInFluid(Fluids.LAVA.defaultFluidState());
                  }
              } else {
 -                this.jumpInLiquid(FluidTags.WATER);
-+                this.jumpInFluid(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value());
++                this.jumpInFluid(Fluids.WATER.defaultFluidState());
              }
          } else {
              this.noJumpDelay = 0;

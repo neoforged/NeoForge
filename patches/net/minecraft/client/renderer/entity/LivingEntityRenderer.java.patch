@@ -30,7 +30,7 @@
          p_360515_.isFullyFrozen = p_362733_.isFullyFrozen();
          p_360515_.isBaby = p_362733_.isBaby();
 -        p_360515_.isInWater = p_362733_.isInWater();
-+        p_360515_.isInWater = p_362733_.isInWater() || p_362733_.isInFluidType((fluidType, height) -> p_362733_.canSwimInFluidType(fluidType));
++        p_360515_.isInWater = p_362733_.isInWater() || p_362733_.isInFluid((fluidType, height) -> p_362733_.canSwimInFluid(fluidType));
          p_360515_.isAutoSpinAttack = p_362733_.isAutoSpinAttack();
          p_360515_.hasRedOverlay = p_362733_.hurtTime > 0 || p_362733_.deathTime > 0;
          ItemStack itemstack = p_362733_.getItemBySlot(EquipmentSlot.HEAD);

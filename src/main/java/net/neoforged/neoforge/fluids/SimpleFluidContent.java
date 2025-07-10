@@ -79,14 +79,6 @@ public class SimpleFluidContent implements DataComponentHolder {
         return fluidStack.getAmount();
     }
 
-    public FluidType getFluidType() {
-        return fluidStack.getFluidType();
-    }
-
-    public boolean is(FluidType fluidType) {
-        return fluidStack.is(fluidType);
-    }
-
     public boolean matches(FluidStack other) {
         return FluidStack.matches(fluidStack, other);
     }

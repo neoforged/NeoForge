@@ -234,9 +234,6 @@
   "net/minecraft/world/level/chunk/LevelChunk": [
     "net/neoforged/neoforge/attachment/IAttachmentHolder"
   ],
-  "net/minecraft/world/level/material/Fluid": [
-    "net/neoforged/neoforge/common/extensions/IFluidExtension"
-  ],
   "net/minecraft/world/level/material/FluidState": [
     "net/neoforged/neoforge/common/extensions/IFluidStateExtension"
   ],

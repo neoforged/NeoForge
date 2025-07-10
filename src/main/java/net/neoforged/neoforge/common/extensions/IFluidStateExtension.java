@@ -1,14 +1,13 @@
-/*
- * Copyright (c) Forge Development LLC and contributors
- * SPDX-License-Identifier: LGPL-2.1-only
- */
-
 package net.neoforged.neoforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -16,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.common.SoundAction;
 import org.jetbrains.annotations.Nullable;
 
 public interface IFluidStateExtension {
@@ -25,24 +24,29 @@ public interface IFluidStateExtension {
     }
 
     /**
+     * Returns whether an entity can ride in a vehicle under the fluid.
+     *
+     * @param level  the level which contains this fluid
+     * @param pos    the location of the fluid
+     * @param entity the vehicle being ridden
+     * @param rider  the entity riding the vehicle
+     * @return {@code true} if the vehicle can be ridden in under this fluid,
+     *         {@code false} otherwise
+     */
+    default boolean canVehicleRideUnder(BlockGetter level, BlockPos pos, Entity entity, Entity rider) {
+        return self().getType().canVehicleRideUnder(self(), level, pos, entity, rider);
+    }
+
+    /**
      * Returns the explosion resistance of the fluid.
      *
-     * @param level     the level the fluid is in
-     * @param pos       the position of the fluid
+     * @param level the level which contains this fluid
+     * @param pos   the location of the fluid
      * @param explosion the explosion the fluid is absorbing
      * @return the amount of the explosion the fluid can absorb
      */
     default float getExplosionResistance(BlockGetter level, BlockPos pos, Explosion explosion) {
         return self().getType().getExplosionResistance(self(), level, pos, explosion);
-    }
-
-    /**
-     * Returns the type of this fluid.
-     *
-     * @return the type of this fluid
-     */
-    default FluidType getFluidType() {
-        return self().getType().getFluidType();
     }
 
     /**
@@ -59,10 +63,14 @@ public interface IFluidStateExtension {
         return self().getType().move(self(), entity, movementVector, gravity);
     }
 
+    default boolean move(ItemEntity entity, Vec3 movementVector, double gravity) {
+        return self().getType().move(self(), entity, movementVector, gravity);
+    }
+
     /**
      * Returns whether the fluid can create a source.
      *
-     * @param level the level that can get the fluid
+     * @param level the level which contains this fluid
      * @param pos   the location of the fluid
      * @return {@code true} if the fluid can create a source, {@code false} otherwise
      */
@@ -114,7 +122,7 @@ public interface IFluidStateExtension {
     }
 
     /**
-     * Returns whether the block can be hydrated by a fluid.
+     * Returns whether the block can be hydrated by this fluid.
      *
      * <p>Hydration is an arbitrary word which depends on the block.
      * <ul>
@@ -123,24 +131,97 @@ public interface IFluidStateExtension {
      * <li>A coral can live</li>
      * </ul>
      *
-     * @param getter    the getter which can get the fluid
+     * @param level     the level which contains this fluid
      * @param pos       the position of the fluid
      * @param source    the state of the block being hydrated
      * @param sourcePos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    default boolean canHydrate(BlockGetter getter, BlockPos pos, BlockState source, BlockPos sourcePos) {
-        return self().getType().canHydrate(self(), getter, pos, source, sourcePos);
+    default boolean canHydrate(BlockGetter level, BlockPos pos, BlockState source, BlockPos sourcePos) {
+        return self().getType().canHydrate(self(), level, pos, source, sourcePos);
+    }
+
+    /**
+     * Returns whether the entity can be hydrated by this fluid.
+     *
+     * <p>Hydration is an arbitrary word which depends on the entity.
+     *
+     * @return {@code true} if the block can be hydrated, {@code false} otherwise
+     */
+    default boolean canHydrate(Entity entity) {
+        return self().getType().canHydrate(self(), entity);
     }
 
     /**
      * Returns whether the block can be extinguished by this fluid.
      *
-     * @param getter the getter which can get the fluid
+     * @param level  the level which contains this fluid
      * @param pos    the position of the fluid
      * @return {@code true} if the block can be extinguished, {@code false} otherwise
      */
-    default boolean canExtinguish(BlockGetter getter, BlockPos pos) {
-        return self().getType().canExtinguish(self(), getter, pos);
+    default boolean canExtinguish(BlockGetter level, BlockPos pos) {
+        return self().getType().canExtinguish(self(), level, pos);
+    }
+
+    /**
+     * Returns whether the entity can be extinguished by this fluid.
+     *
+     * @return {@code true} if the block can be extinguished, {@code false} otherwise
+     */
+    default boolean canExtinguish(Entity entity) {
+        return self().getType().canExtinguish(self(), entity);
+    }
+
+    /**
+     * Returns how much this fluid should scale the damage done to a falling
+     * entity when hitting the ground per tick.
+     *
+     * @param entity the entity in the fluid
+     * @return a scalar to multiply to the fall damage
+     */
+    default float getFallDistanceModifier(Entity entity) {
+        return self().getType().getFallDistanceModifier(self(), entity);
+    }
+
+    /**
+     * Returns whether the entity can drown in this fluid.
+     *
+     * @param livingEntity the entity to check.
+     * @return {@code true} if the entity can drown, {@code false} otherwise
+     */
+    default boolean canDrownIn(LivingEntity livingEntity) {
+        return self().getType().canDrownIn(self(), livingEntity);
+    }
+
+    default boolean canStartSwimming(Entity entity) {
+        return self().getType().canStartSwimming(self(), entity);
+    }
+
+    default boolean canContinueSwimming(Entity entity) {
+        return self().getType().canContinueSwimming(self(), entity);
+    }
+
+    default double motionScale(Entity entity) {
+        return self().getType().motionScale(self(), entity);
+    }
+
+    default boolean canPushEntity(Entity entity) {
+        return self().getType().canPushEntity(self(), entity);
+    }
+
+    @Nullable
+    default SoundEvent getSound(Entity entity, SoundAction action) {
+        return self().getType().getSound(self(), entity, action);
+    }
+
+    /**
+     * Determines if a fluid adjacent to the block on the given side should not be rendered.
+     *
+     * @param selfFace      the face of this block that the fluid is adjacent to
+     * @param adjacentFluid the fluid that is touching that face
+     * @return true if this block should cause the fluid's face to not render
+     */
+    default boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
+        return self().getType().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
     }
 }

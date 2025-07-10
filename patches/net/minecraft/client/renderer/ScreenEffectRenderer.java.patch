@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/ScreenEffectRenderer.java
 +++ b/net/minecraft/client/renderer/ScreenEffectRenderer.java
+@@ -20,6 +_,8 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.block.RenderShape;
+ import net.minecraft.world.level.block.state.BlockState;
++import net.minecraft.world.level.material.Fluid;
++import net.minecraft.world.level.material.Fluids;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.joml.Matrix4f;
 @@ -55,18 +_,21 @@
          Player player = this.minecraft.player;
          if (this.minecraft.options.getCameraType().isFirstPerson() && !p_416461_) {
@@ -18,7 +27,7 @@
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderWaterOverlay(player, posestack))
                      renderWater(this.minecraft, posestack, this.bufferSource);
                  }
-+                else if (!player.getEyeInFluidType().isAir()) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(this.minecraft, posestack, this.bufferSource);
++                //else if (!player.getEyeInFluid().is(Fluids.EMPTY)) net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions.of(player.getEyeInFluidType()).renderOverlay(this.minecraft, posestack, this.bufferSource);
  
                  if (this.minecraft.player.isOnFire()) {
 +                    if (!net.neoforged.neoforge.client.ClientHooks.renderFireOverlay(player, posestack))

@@ -8,10 +8,10 @@ package net.neoforged.neoforge.common.extensions;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import net.neoforged.neoforge.fluids.FluidType;
 
 public interface ILivingEntityExtension extends IEntityExtension {
     default LivingEntity self() {
@@ -19,9 +19,9 @@ public interface ILivingEntityExtension extends IEntityExtension {
     }
 
     @Override
-    default boolean canSwimInFluidType(FluidType type) {
-        if (type == NeoForgeMod.WATER_TYPE.value()) return !self().isSensitiveToWater();
-        else return IEntityExtension.super.canSwimInFluidType(type);
+    default boolean canSwimInFluid(FluidState type) {
+        if (type.is(Fluids.WATER)) return !self().isSensitiveToWater();
+        else return IEntityExtension.super.canSwimInFluid(type);
     }
 
     /**
@@ -29,9 +29,9 @@ public interface ILivingEntityExtension extends IEntityExtension {
      *
      * @param type the type of the fluid
      */
-    default void jumpInFluid(FluidType type) {
+    default void jumpInFluid(FluidState type) {
         // Apply swim speed only to WATER fluid types
-        double multiplier = type == NeoForgeMod.WATER_TYPE.value() ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
+        double multiplier = type.is(Fluids.WATER) ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
         self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * multiplier, 0.0D));
     }
 
@@ -40,9 +40,9 @@ public interface ILivingEntityExtension extends IEntityExtension {
      *
      * @param type the type of the fluid
      */
-    default void sinkInFluid(FluidType type) {
+    default void sinkInFluid(FluidState type) {
         // Apply swim speed only to WATER fluid types
-        double multiplier = type == NeoForgeMod.WATER_TYPE.value() ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
+        double multiplier = type.is(Fluids.WATER) ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
         self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * multiplier, 0.0D));
     }
 
@@ -52,8 +52,8 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      * @return {@code true} if the entity can drown in the fluid, {@code false} otherwise
      */
-    default boolean canDrownInFluidType(FluidType type) {
-        if (type == NeoForgeMod.WATER_TYPE.value()) return !self().canBreatheUnderwater();
+    default boolean canDrownInFluid(FluidState type) {
+        if (type.is(Fluids.WATER)) return !self().canBreatheUnderwater();
         return type.canDrownIn(self());
     }
 

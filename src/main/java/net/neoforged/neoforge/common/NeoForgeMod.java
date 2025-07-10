@@ -123,9 +123,7 @@ import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.CustomDisplayFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
@@ -394,89 +392,7 @@ public class NeoForgeMod {
     public static final Holder<TicketType> ENTITY_TICKET = TICKET_TYPES.register("entity", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION));
     public static final Holder<TicketType> ENTITY_WITH_NATURAL_SPAWNING_TICKET = TICKET_TYPES.register("entity_with_natural_spawning", () -> new TicketType(0L, false, TicketType.TicketUse.LOADING_AND_SIMULATION, true));
 
-    private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
-
-    public static final Holder<FluidType> EMPTY_TYPE = VANILLA_FLUID_TYPES.register("empty", () -> new FluidType(FluidType.Properties.create()
-            .descriptionId("block.minecraft.air")
-            .motionScale(1D)
-            .canPushEntity(false)
-            .canSwim(false)
-            .canDrown(false)
-            .fallDistanceModifier(1F)
-            .pathType(null)
-            .adjacentPathType(null)
-            .density(0)
-            .temperature(0)
-            .viscosity(0)) {
-        @Override
-        public void setItemMovement(ItemEntity entity) {
-            if (!entity.isNoGravity()) entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
-        }
-    });
-    public static final Holder<FluidType> WATER_TYPE = VANILLA_FLUID_TYPES.register("water", () -> new FluidType(FluidType.Properties.create()
-            .descriptionId("block.minecraft.water")
-            .fallDistanceModifier(0F)
-            .canExtinguish(true)
-            .canConvertToSource(true)
-            .supportsBoating(true)
-            .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
-            .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
-            .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH)
-            .canHydrate(true)
-            .addDripstoneDripping(PointedDripstoneBlock.WATER_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_WATER, Blocks.WATER_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON)) {
-        @Override
-        public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
-            if (reader instanceof ServerLevel level) {
-                return level.getGameRules().getBoolean(GameRules.RULE_WATER_SOURCE_CONVERSION);
-            }
-            //Best guess fallback to default (true)
-            return super.canConvertToSource(state, reader, pos);
-        }
-
-        @Override
-        public @Nullable PathType getBlockPathType(FluidState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog) {
-            return canFluidLog ? super.getBlockPathType(state, level, pos, mob, true) : null;
-        }
-    });
-    public static final Holder<FluidType> LAVA_TYPE = VANILLA_FLUID_TYPES.register("lava", () -> new FluidType(FluidType.Properties.create()
-            .descriptionId("block.minecraft.lava")
-            .canSwim(false)
-            .canDrown(false)
-            .pathType(PathType.LAVA)
-            .adjacentPathType(null)
-            .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL_LAVA)
-            .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY_LAVA)
-            .lightLevel(15)
-            .density(3000)
-            .viscosity(6000)
-            .temperature(1300)
-            .addDripstoneDripping(PointedDripstoneBlock.LAVA_TRANSFER_PROBABILITY_PER_RANDOM_TICK, ParticleTypes.DRIPPING_DRIPSTONE_LAVA, Blocks.LAVA_CAULDRON, SoundEvents.POINTED_DRIPSTONE_DRIP_LAVA_INTO_CAULDRON)) {
-        @Override
-        public boolean canConvertToSource(FluidState state, LevelReader reader, BlockPos pos) {
-            if (reader instanceof ServerLevel level) {
-                return level.getGameRules().getBoolean(GameRules.RULE_LAVA_SOURCE_CONVERSION);
-            }
-            //Best guess fallback to default (false)
-            return super.canConvertToSource(state, reader, pos);
-        }
-
-        @Override
-        public double motionScale(Entity entity) {
-            return entity.level().dimensionType().ultraWarm() ? 0.007D : 0.0023333333333333335D;
-        }
-
-        @Override
-        public void setItemMovement(ItemEntity entity) {
-            Vec3 vec3 = entity.getDeltaMovement();
-            entity.setDeltaMovement(vec3.x * (double) 0.95F, vec3.y + (double) (vec3.y < (double) 0.06F ? 5.0E-4F : 0.0F), vec3.z * (double) 0.95F);
-        }
-
-        @Override
-        public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-            // Prevent water movement logic (which is denoted by returning false) being used for lava
-            return true;
-        }
-    });
+    //private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
     private static boolean enableProperFilenameValidation = false;
     private static boolean enableMilkFluid = false;
@@ -484,7 +400,6 @@ public class NeoForgeMod {
 
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.empty_milk"));
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.fill_milk"));
-    public static final DeferredHolder<FluidType, FluidType> MILK_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, ResourceLocation.withDefaultNamespace("milk"));
     public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("milk"));
     public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_milk"));
 
@@ -558,7 +473,7 @@ public class NeoForgeMod {
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
         STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
         HOLDER_SET_TYPES.register(modEventBus);
-        VANILLA_FLUID_TYPES.register(modEventBus);
+        //VANILLA_FLUID_TYPES.register(modEventBus);
         ENTITY_PREDICATE_CODECS.register(modEventBus);
         DATA_COMPONENT_PREDICATE_TYPES.register(modEventBus);
         TICKET_TYPES.register(modEventBus);
@@ -629,19 +544,13 @@ public class NeoForgeMod {
                 helper.register(BUCKET_FILL_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_FILL_MILK.getId()));
             });
 
-            // register fluid type
-            event.register(NeoForgeRegistries.Keys.FLUID_TYPES, helper -> helper.register(MILK_TYPE.unwrapKey().orElseThrow(), new FluidType(
-                    FluidType.Properties.create().density(1024).viscosity(1024)
-                            .sound(SoundActions.BUCKET_FILL, BUCKET_FILL_MILK.value())
-                            .sound(SoundActions.BUCKET_EMPTY, BUCKET_EMPTY_MILK.value()))));
-
             // register fluids
             event.register(Registries.FLUID, helper -> {
                 // set up properties
-                BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE::value, MILK::value, FLOWING_MILK::value).bucket(() -> Items.MILK_BUCKET);
+                //BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE::value, MILK::value, FLOWING_MILK::value).bucket(() -> Items.MILK_BUCKET);
 
-                helper.register(MILK.getId(), new BaseFlowingFluid.Source(properties));
-                helper.register(FLOWING_MILK.getId(), new BaseFlowingFluid.Flowing(properties));
+                //helper.register(MILK.getId(), new BaseFlowingFluid.Source(properties));
+                //helper.register(FLOWING_MILK.getId(), new BaseFlowingFluid.Flowing(properties));
             });
         }
     }

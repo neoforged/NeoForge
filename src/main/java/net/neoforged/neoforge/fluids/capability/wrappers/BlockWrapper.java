@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
 
@@ -32,14 +31,14 @@ public class BlockWrapper extends VoidFluidHandler {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         // NOTE: "Filling" means placement in this context!
-        if (resource.getAmount() < FluidType.BUCKET_VOLUME) {
+        if (resource.getAmount() < 1000) {
             return 0;
         }
         if (action.execute()) {
             FluidUtil.destroyBlockOnFluidPlacement(world, blockPos);
             world.setBlock(blockPos, state, Block.UPDATE_ALL_IMMEDIATE);
         }
-        return FluidType.BUCKET_VOLUME;
+        return 1000;
     }
 
     public static class LiquidContainerBlockWrapper extends VoidFluidHandler {
@@ -56,13 +55,13 @@ public class BlockWrapper extends VoidFluidHandler {
         @Override
         public int fill(FluidStack resource, FluidAction action) {
             // NOTE: "Filling" means placement in this context!
-            if (resource.getAmount() >= FluidType.BUCKET_VOLUME) {
+            if (resource.getAmount() >= 1000) {
                 BlockState state = world.getBlockState(blockPos);
                 if (liquidContainer.canPlaceLiquid(null, world, blockPos, state, resource.getFluid())) {
                     if (action.execute()) {
-                        liquidContainer.placeLiquid(world, blockPos, state, resource.getFluidType().getStateForPlacement(world, blockPos, resource));
+                        liquidContainer.placeLiquid(world, blockPos, state, resource.getFluid().getStateForPlacement(world, blockPos, resource));
                     }
-                    return FluidType.BUCKET_VOLUME;
+                    return 1000;
                 }
             }
             return 0;

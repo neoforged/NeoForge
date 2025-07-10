@@ -327,13 +327,6 @@ public final class FluidStack implements MutableDataComponentHolder {
         }
     }
 
-    /**
-     * Returns the {@link FluidType#getDescriptionId(FluidStack) description id} of this stack.
-     */
-    public String getDescriptionId() {
-        return this.getFluidType().getDescriptionId(this);
-    }
-
     @Override
     public String toString() {
         return this.getAmount() + " " + this.getFluid();
@@ -377,7 +370,7 @@ public final class FluidStack implements MutableDataComponentHolder {
      * Returns the hover name of this stack.
      */
     public Component getHoverName() {
-        return getFluidType().getDescription(this);
+        return getFluid().getName();
     }
 
     /**
@@ -415,21 +408,5 @@ public final class FluidStack implements MutableDataComponentHolder {
      */
     public void shrink(int removedAmount) {
         this.grow(-removedAmount);
-    }
-
-    // Extra methods that are not directly adapted from ItemStack go below
-
-    /**
-     * Returns the fluid type of this stack.
-     */
-    public FluidType getFluidType() {
-        return getFluid().getFluidType();
-    }
-
-    /**
-     * Check if the fluid type of this stack is equal to the given fluid type.
-     */
-    public boolean is(FluidType fluidType) {
-        return getFluidType() == fluidType;
     }
 }

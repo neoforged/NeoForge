@@ -47,14 +47,14 @@
              || this.horizontalCollision && !this.minorHorizontalCollision
 -            || this.isInWater() && !this.isUnderWater();
 +            || this.isInWater() && !this.isUnderWater()
-+            || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && !this.canStartSwimming());
++            || (this.isInFluid((fluidType, height) -> this.canSwimInFluid(fluidType)) && !this.canStartSwimming());
      }
  
      private boolean shouldStopSwimSprinting() {
          return this.hasBlindness()
              || this.isPassenger() && !this.vehicleCanSprint(this.getVehicle())
 -            || !this.isInWater()
-+            || !(this.isInWater() || this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)))
++            || !(this.isInWater() || this.isInFluid((fluidType, height) -> this.canSwimInFluid(fluidType)))
              || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift()
              || !this.hasEnoughFoodToSprint();
      }
@@ -74,7 +74,7 @@
              && (!this.isFallFlying() || this.isUnderWater())
              && (!this.isMovingSlowly() || this.isUnderWater())
 -            && (!this.isInWater() || this.isUnderWater());
-+            && (!this.isInWater() || this.isUnderWater() || (this.isInFluidType((fluidType, height) -> this.canSwimInFluidType(fluidType)) && this.canStartSwimming()));
++            && (!this.isInWater() || this.isUnderWater() || (this.isInFluid((fluidType, height) -> this.canSwimInFluid(fluidType)) && this.canStartSwimming()));
      }
  
      private boolean vehicleCanSprint(Entity p_265184_) {

@@ -6,7 +6,7 @@
  
 -        if (this.isInWaterOrRain()) {
 +        // Neo: Allow custom fluids to extinguish flaming arrows
-+        if (this.isInWaterOrRain() || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
++        if (this.isInWaterOrRain() || this.isInFluid((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
              this.clearFire();
          }
  
