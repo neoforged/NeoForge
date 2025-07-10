@@ -39,6 +39,9 @@
     "minecraft:guardian": {
       "sound": "minecraft:entity.parrot.imitate.guardian"
     },
+    "minecraft:happy_ghast": {
+      "sound": "minecraft:intentionally_empty"
+    },
     "minecraft:hoglin": {
       "sound": "minecraft:entity.parrot.imitate.hoglin"
     },

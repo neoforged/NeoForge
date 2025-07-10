@@ -1,20 +1,20 @@
 --- a/net/minecraft/tags/TagLoader.java
 +++ b/net/minecraft/tags/TagLoader.java
-@@ -64,6 +_,7 @@
+@@ -64,6 +_,8 @@
  
                      String s = resource.sourcePackId();
                      tagfile.entries().forEach(p_215997_ -> list.add(new TagLoader.EntryWithSource(p_215997_, s)));
-+                    tagfile.remove().forEach(e -> list.add(new TagLoader.EntryWithSource(e, s, true)));
++                    // Make all removal entries optional at runtime to avoid them creating intrusive holders - see NeoForge#2319
++                    tagfile.remove().forEach(e -> list.add(new TagLoader.EntryWithSource(e.withRequired(false), s, true)));
                  } catch (Exception exception) {
                      LOGGER.error("Couldn't read tag list {} from {} in data pack {}", resourcelocation1, resourcelocation, resource.sourcePackId(), exception);
                  }
-@@ -78,7 +_,8 @@
+@@ -78,7 +_,7 @@
          List<TagLoader.EntryWithSource> list = new ArrayList<>();
  
          for (TagLoader.EntryWithSource tagloader$entrywithsource : p_215980_) {
 -            if (!tagloader$entrywithsource.entry().build(p_215979_, sequencedset::add)) {
 +            if (!tagloader$entrywithsource.entry().build(p_215979_, tagloader$entrywithsource.remove() ? sequencedset::remove : sequencedset::add)) {
-+                if (!tagloader$entrywithsource.remove()) // Treat all removals as optional at runtime. If it was missing, then it could of never been added.
                  list.add(tagloader$entrywithsource);
              }
          }

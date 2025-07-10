@@ -8,14 +8,39 @@
          this.ensureMapOwnership();
          T t = this.prototype.get(p_330791_);
          Optional<T> optional;
-@@ -201,6 +_,10 @@
-         }
- 
+@@ -203,6 +_,10 @@
          return i;
-+    }
-+
-+    public boolean isPatchEmpty() {
-+        return this.patch.isEmpty();
      }
  
++    public boolean isPatchEmpty() {
++        return this.patch.isEmpty();
++    }
++
      public DataComponentPatch asPatch() {
+         if (this.patch.isEmpty()) {
+             return DataComponentPatch.EMPTY;
+@@ -232,7 +_,23 @@
+ 
+     @Override
+     public int hashCode() {
+-        return this.prototype.hashCode() + this.patch.hashCode() * 31;
++        return this.prototype.hashCode() + hashPatch(this.patch) * 31;
++    }
++
++    // Neo: Change implementation of hashCode to reduce collisions.
++    // For a map, hashCode is specified as the sum of the hash codes of its entries.
++    // We do that, but change the entry hash code to 31^<key hash> * <value hash>,
++    // where <key hash> is the lower bits of the identity hash code of the key.
++    private static int hashPatch(Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch) {
++        int h = 0, n = patch.size();
++        var iterator = it.unimi.dsi.fastutil.objects.Reference2ObjectMaps.fastIterator(patch);
++        while (n-- != 0) {
++            var entry = iterator.next();
++            int exponent = System.identityHashCode(entry.getKey()) & 0xff;
++            int entryHash = com.google.common.math.IntMath.pow(31, exponent) * entry.getValue().hashCode();
++            h += entryHash;
++        }
++        return h;
+     }
+ 
+     @Override

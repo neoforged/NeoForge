@@ -53,7 +53,6 @@ import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-// TODO systemic review of all extension functions. lots of unused -C
 public interface IItemExtension {
     private Item self() {
         return (Item) this;
@@ -278,17 +277,6 @@ public interface IItemExtension {
     @Nullable
     default EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return null;
-    }
-
-    /**
-     * Allow or forbid the specific book/item combination as an anvil enchant
-     *
-     * @param stack The item
-     * @param book  The book
-     * @return if the enchantment is allowed
-     */
-    default boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return true;
     }
 
     /**

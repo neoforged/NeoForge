@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -123,6 +_,8 @@
+@@ -114,6 +_,8 @@
          renderScrollingString(p_281857_, p_282790_, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), p_282944_);
      }
  
@@ -9,7 +9,7 @@
      public void onClick(double p_93634_, double p_93635_) {
      }
  
-@@ -139,7 +_,7 @@
+@@ -130,7 +_,7 @@
                  boolean flag = this.isMouseOver(p_93641_, p_93642_);
                  if (flag) {
                      this.playDownSound(Minecraft.getInstance().getSoundManager());
@@ -18,7 +18,7 @@
                      return true;
                  }
              }
-@@ -243,6 +_,19 @@
+@@ -234,6 +_,19 @@
      @Override
      public void setFocused(boolean p_93693_) {
          this.focused = p_93693_;
@@ -28,7 +28,7 @@
 +    protected int packedFGColor = UNSET_FG_COLOR;
 +    public int getFGColor() {
 +        if (packedFGColor != UNSET_FG_COLOR) return packedFGColor;
-+        return this.active ? 16777215 : 10526880; // White : Light Grey
++        return this.active ? -1 : -6250336; // White : Light Grey
 +    }
 +    public void setFGColor(int color) {
 +        this.packedFGColor = color;

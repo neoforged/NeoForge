@@ -6,9 +6,9 @@
 package net.neoforged.neoforge.debug.entity;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,8 +21,12 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.payload.AdvancedAddEntityPayload;
@@ -41,12 +45,14 @@ public class EntityTests {
     @EmptyTemplate
     @TestHolder(description = "Tests if custom fence gates without wood types work, allowing for the use of the vanilla block for non-wooden gates")
     static void customSpawnLogic(final DynamicTest test, final RegistrationHelper reg) {
+        Supplier<AttributeSupplier.Builder> attr = () -> AttributeSupplier.builder()
+                .add(Attributes.MAX_HEALTH, 1);
         final var usingForgeAdvancedSpawn = reg.entityTypes().registerEntityType("complex_spawn", CustomComplexSpawnEntity::new, MobCategory.AMBIENT, builder -> builder.sized(1, 1))
-                .withLang("Custom complex spawn egg").withRenderer(() -> NoopRenderer::new);
+                .withLang("Custom complex spawn egg").withAttributes(attr).withRenderer(() -> NoopRenderer::new);
         final var usingCustomPayloadsSpawn = reg.entityTypes().registerEntityType("adapted_spawn", AdaptedSpawnEntity::new, MobCategory.AMBIENT, builder -> builder.sized(1, 1))
-                .withLang("Adapted complex spawn egg").withRenderer(() -> NoopRenderer::new);
+                .withLang("Adapted complex spawn egg").withAttributes(attr).withRenderer(() -> NoopRenderer::new);
         final var simpleSpawn = reg.entityTypes().registerEntityType("simple_spawn", SimpleEntity::new, MobCategory.AMBIENT, builder -> builder.sized(1, 1))
-                .withLang("Simple spawn egg").withRenderer(() -> NoopRenderer::new);
+                .withLang("Simple spawn egg").withAttributes(attr).withRenderer(() -> NoopRenderer::new);
 
         reg.eventListeners().accept((Consumer<RegisterPayloadHandlersEvent>) event -> event.registrar("1")
                 .playToClient(EntityTests.CustomSyncPayload.TYPE, CustomSyncPayload.STREAM_CODEC, (payload, context) -> {}));
@@ -95,10 +101,10 @@ public class EntityTests {
         protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput data) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
         public void writeSpawnData(RegistryFriendlyByteBuf buffer) {}
@@ -121,10 +127,10 @@ public class EntityTests {
         protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput data) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
         public void sendPairingData(ServerPlayer serverPlayer, Consumer<CustomPacketPayload> bundleBuilder) {
@@ -146,10 +152,10 @@ public class EntityTests {
         protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
         @Override
-        protected void readAdditionalSaveData(CompoundTag tag) {}
+        protected void readAdditionalSaveData(ValueInput data) {}
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {}
+        protected void addAdditionalSaveData(ValueOutput data) {}
 
         @Override
         public boolean hurtServer(ServerLevel p_376804_, DamageSource p_376155_, float p_376892_) {

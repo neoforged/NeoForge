@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/InventoryScreen.java
-@@ -105,6 +_,26 @@
+@@ -106,6 +_,26 @@
      }
  
      public static void renderEntityInInventoryFollowsMouse(
@@ -27,7 +27,7 @@
          GuiGraphics p_282802_,
          int p_275688_,
          int p_275245_,
-@@ -112,15 +_,15 @@
+@@ -113,15 +_,15 @@
          int p_294406_,
          int p_294663_,
          float p_275604_,

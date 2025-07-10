@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Pillager.java
 +++ b/net/minecraft/world/entity/monster/Pillager.java
-@@ -95,7 +_,7 @@
+@@ -96,7 +_,7 @@
  
      @Override
      public boolean canFireProjectileWeapon(ProjectileWeaponItem p_33280_) {
@@ -9,7 +9,7 @@
      }
  
      public boolean isChargingCrossbow() {
-@@ -127,7 +_,7 @@
+@@ -128,7 +_,7 @@
      public AbstractIllager.IllagerArmPose getArmPose() {
          if (this.isChargingCrossbow()) {
              return AbstractIllager.IllagerArmPose.CROSSBOW_CHARGE;

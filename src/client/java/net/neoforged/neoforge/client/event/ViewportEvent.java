@@ -5,18 +5,18 @@
 
 package net.neoforged.neoforge.client.event;
 
-import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.FogParameters;
-import net.minecraft.client.renderer.FogRenderer.FogMode;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.fog.FogData;
+import net.minecraft.client.renderer.fog.environment.FogEnvironment;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Fired for hooking into the entity view rendering in {@link GameRenderer}.
@@ -67,34 +67,31 @@ public abstract class ViewportEvent extends Event {
     /**
      * Fired for <b>rendering</b> custom fog. The plane distances are based on the player's render distance.
      *
-     * <p>This event is {@linkplain ICancellableEvent cancellable}, and {@linkplain HasResult has a result}. <br/>
-     * The event must be cancelled for any changes to the plane distances to take effect.</p>
-     *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
      */
-    public static class RenderFog extends ViewportEvent implements ICancellableEvent {
-        private final FogMode mode;
+    public static class RenderFog extends ViewportEvent {
+        @Nullable
+        private final FogEnvironment environment;
         private final FogType type;
-        private float farPlaneDistance;
-        private float nearPlaneDistance;
-        private FogShape fogShape;
+        private final FogData fogData;
 
         @ApiStatus.Internal
-        public RenderFog(FogMode mode, FogType type, Camera camera, float partialTicks, FogParameters fogParameters) {
+        public RenderFog(@Nullable FogEnvironment environment, FogType type, Camera camera, float partialTicks, FogData fogData) {
             super(Minecraft.getInstance().gameRenderer, camera, partialTicks);
-            this.mode = mode;
+            this.environment = environment;
             this.type = type;
-            setFarPlaneDistance(fogParameters.end());
-            setNearPlaneDistance(fogParameters.start());
-            setFogShape(fogParameters.shape());
+            this.fogData = fogData;
+            setFarPlaneDistance(fogData.environmentalEnd);
+            setNearPlaneDistance(fogData.environmentalStart);
         }
 
         /**
-         * {@return the mode of fog being rendered}
+         * {@return the fog environment that was applied}
          */
-        public FogMode getMode() {
-            return mode;
+        @Nullable
+        public FogEnvironment getEnvironment() {
+            return environment;
         }
 
         /**
@@ -108,21 +105,21 @@ public abstract class ViewportEvent extends Event {
          * {@return the distance to the far plane where the fog ends}
          */
         public float getFarPlaneDistance() {
-            return farPlaneDistance;
+            return fogData.environmentalEnd;
         }
 
         /**
          * {@return the distance to the near plane where the fog starts}
          */
         public float getNearPlaneDistance() {
-            return nearPlaneDistance;
+            return fogData.environmentalStart;
         }
 
         /**
-         * {@return the shape of the fog being rendered}
+         * The fog parameters that are passed to the shaders. This object is mutable.
          */
-        public FogShape getFogShape() {
-            return fogShape;
+        public FogData getFogData() {
+            return fogData;
         }
 
         /**
@@ -132,7 +129,7 @@ public abstract class ViewportEvent extends Event {
          * @see #scaleFarPlaneDistance(float)
          */
         public void setFarPlaneDistance(float distance) {
-            farPlaneDistance = distance;
+            fogData.environmentalEnd = distance;
         }
 
         /**
@@ -142,16 +139,7 @@ public abstract class ViewportEvent extends Event {
          * @see #scaleNearPlaneDistance(float)
          */
         public void setNearPlaneDistance(float distance) {
-            nearPlaneDistance = distance;
-        }
-
-        /**
-         * Sets the new shape of the fog being rendered. The new shape will only take effect if the event is cancelled.
-         *
-         * @param shape the new shape of the fog
-         */
-        public void setFogShape(FogShape shape) {
-            fogShape = shape;
+            fogData.environmentalStart = distance;
         }
 
         /**
@@ -160,7 +148,7 @@ public abstract class ViewportEvent extends Event {
          * @param factor the factor to scale the far plane distance by
          */
         public void scaleFarPlaneDistance(float factor) {
-            farPlaneDistance *= factor;
+            fogData.environmentalEnd *= factor;
         }
 
         /**
@@ -169,14 +157,14 @@ public abstract class ViewportEvent extends Event {
          * @param factor the factor to scale the near plane distance by
          */
         public void scaleNearPlaneDistance(float factor) {
-            nearPlaneDistance *= factor;
+            fogData.environmentalStart *= factor;
         }
     }
 
     /**
      * Fired for customizing the <b>color</b> of the fog visible to the player.
      *
-     * <p>This event is not {@linkplain ICancellableEvent cancellable}, and does not {@linkplain HasResult have a result}.</p>
+     * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
      *
      * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
      * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>

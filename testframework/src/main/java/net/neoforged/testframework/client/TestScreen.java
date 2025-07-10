@@ -106,7 +106,7 @@ public class TestScreen extends AbstractTestScreen {
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         searchTextField.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
-        pPoseStack.drawCenteredString(font, getTitle(), this.width / 2, 7, 0xffffff);
+        pPoseStack.drawCenteredString(font, getTitle(), this.width / 2, 7, 0xffffffff);
     }
 
     public static <T> void updateSearchTextFieldSuggestion(EditBox editBox, String value, List<T> entries, Function<T, String> nameProvider) {

@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.oldtest.block;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
@@ -79,11 +79,11 @@ public class HideNeighborFaceTest {
         }
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onClientSetup(final FMLClientSetupEvent event) {
-            ItemBlockRenderTypes.setRenderLayer(GLASS_SLAB.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(GLASS_SLAB.get(), ChunkSectionLayer.CUTOUT);
         }
     }
 }

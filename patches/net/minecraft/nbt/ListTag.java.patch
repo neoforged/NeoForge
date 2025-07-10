@@ -1,0 +1,18 @@
+--- a/net/minecraft/nbt/ListTag.java
++++ b/net/minecraft/nbt/ListTag.java
+@@ -153,6 +_,15 @@
+         this(new ArrayList<>());
+     }
+ 
++    /**
++     * Neo: create a list tag with the given initial capacity.
++     *
++     * @param initialCapacity the initial capacity of the list tag
++     */
++    public ListTag(int initialCapacity) {
++        this(new ArrayList<>(initialCapacity));
++    }
++
+     ListTag(List<Tag> p_128721_) {
+         this.list = p_128721_;
+     }

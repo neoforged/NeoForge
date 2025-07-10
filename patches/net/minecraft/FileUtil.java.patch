@@ -8,21 +8,12 @@
      private static final Pattern STRICT_PATH_SEGMENT_CHECK = Pattern.compile("[-._a-z0-9]+");
  
      public static String sanitizeName(String p_352262_) {
-@@ -31,7 +_,7 @@
+@@ -87,7 +_,7 @@
+     }
  
-     public static String findAvailableName(Path p_133731_, String p_133732_, String p_133733_) throws IOException {
-         p_133732_ = sanitizeName(p_133732_);
--        if (RESERVED_WINDOWS_FILENAMES.matcher(p_133732_).matches()) {
-+        if ((net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_133732_).matches()) {
-             p_133732_ = "_" + p_133732_ + "_";
-         }
+     public static boolean isPathPartPortable(String p_428321_) {
+-        return !RESERVED_WINDOWS_FILENAMES.matcher(p_428321_).matches();
++        return !(net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(p_428321_).matches();
+     }
  
-@@ -78,7 +_,7 @@
- 
-     public static boolean isPathPortable(Path p_133735_) {
-         for (Path path : p_133735_) {
--            if (RESERVED_WINDOWS_FILENAMES.matcher(path.toString()).matches()) {
-+            if ((net.neoforged.neoforge.common.NeoForgeMod.getProperFilenameValidation() ? RESERVED_WINDOWS_FILENAMES_NEOFORGE : RESERVED_WINDOWS_FILENAMES).matcher(path.toString()).matches()) {
-                 return false;
-             }
-         }
+     public static Path createPathToResource(Path p_133737_, String p_133738_, String p_133739_) {

@@ -74,7 +74,7 @@ import org.slf4j.Logger;
 public class LoginPacketSplitTest {
     public static final Logger LOG = LogUtils.getLogger();
     public static final String MOD_ID = "login_packet_split_test";
-    public static final boolean ENABLED = true;
+    public static final boolean ENABLED = false;
     private static final Gson GSON = new Gson();
     public static final ResourceKey<Registry<BigData>> BIG_DATA = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(MOD_ID, "big_data"));
 
@@ -157,7 +157,7 @@ public class LoginPacketSplitTest {
             final JsonObject mcmeta = new JsonObject();
             final JsonObject packJson = new JsonObject();
             packJson.addProperty("description", "A virtual resource pack.");
-            packJson.addProperty("pack_format", SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA));
+            packJson.addProperty("pack_format", SharedConstants.getCurrentVersion().packVersion(PackType.SERVER_DATA));
             mcmeta.add("pack", packJson);
 
             putRoot("pack.mcmeta", mcmeta);

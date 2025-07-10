@@ -18,7 +18,6 @@ public class LootTableIdCondition implements LootItemCondition {
                     .group(
                             ResourceLocation.CODEC.fieldOf("loot_table_id").forGetter(idCondition -> idCondition.targetLootTableId))
                     .apply(builder, LootTableIdCondition::new));
-    // TODO Forge Registry at some point?
     public static final LootItemConditionType LOOT_TABLE_ID = new LootItemConditionType(CODEC);
     public static final ResourceLocation UNKNOWN_LOOT_TABLE = ResourceLocation.fromNamespaceAndPath("neoforge", "unknown_loot_table");
 

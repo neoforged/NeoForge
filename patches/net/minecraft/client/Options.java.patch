@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/Options.java
 +++ b/net/minecraft/client/Options.java
-@@ -721,9 +_,10 @@
+@@ -729,9 +_,10 @@
              }
          },
          new OptionInstance.LazyEnum<>(
@@ -12,7 +12,7 @@
                      && !Minecraft.getInstance().getSoundManager().getAvailableSoundDevices().contains(p_232011_)
                  ? Optional.empty()
                  : Optional.of(p_232011_),
-@@ -798,7 +_,7 @@
+@@ -829,7 +_,7 @@
          this.incompatibleResourcePacks.clear();
  
          for (Pack pack : p_275268_.getSelectedPacks()) {
@@ -21,7 +21,7 @@
                  this.resourcePacks.add(pack.getId());
                  if (!pack.getCompatibility().isCompatible()) {
                      this.incompatibleResourcePacks.add(pack.getId());
-@@ -1106,6 +_,7 @@
+@@ -1151,6 +_,7 @@
      }
  
      public Options(Minecraft p_92138_, File p_92139_) {
@@ -29,16 +29,16 @@
          this.minecraft = p_92138_;
          this.optionsFile = new File(p_92139_, "options.txt");
          boolean flag = Runtime.getRuntime().maxMemory() >= 1000000000L;
-@@ -1126,6 +_,7 @@
-             p_366330_ -> {}
+@@ -1171,6 +_,7 @@
+             p_426141_ -> {}
          );
          this.syncWrites = Util.getPlatform() == Util.OS.WINDOWS;
 +        net.neoforged.neoforge.client.ClientHooks.onRegisterKeyMappings(this);
          this.load();
      }
  
-@@ -1241,10 +_,14 @@
-         this.startedCleanly = p_168428_.process("startedCleanly", this.startedCleanly);
+@@ -1289,10 +_,14 @@
+         p_168428_.process("musicFrequency", this.musicFrequency);
  
          for (KeyMapping keymapping : this.keyMappings) {
 -            String s = keymapping.saveString();
@@ -54,7 +54,7 @@
              }
          }
  
-@@ -1542,6 +_,23 @@
+@@ -1589,6 +_,23 @@
          }
  
          p_92146_.setSelected(set);

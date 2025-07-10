@@ -1,9 +1,9 @@
 --- a/net/minecraft/client/renderer/item/BlockModelWrapper.java
 +++ b/net/minecraft/client/renderer/item/BlockModelWrapper.java
-@@ -36,12 +_,19 @@
-     private final List<BakedQuad> quads;
+@@ -37,8 +_,14 @@
      private final Supplier<Vector3f[]> extents;
      private final ModelRenderProperties properties;
+     private final boolean animated;
 +    @Nullable
 +    private final net.minecraft.client.renderer.RenderType renderType;
  
@@ -15,12 +15,15 @@
          this.tints = p_388185_;
          this.quads = p_405671_;
          this.properties = p_404871_;
-         this.extents = Suppliers.memoize(() -> computeExtents(this.quads));
+@@ -53,6 +_,7 @@
+         }
+ 
+         this.animated = flag;
 +        this.renderType = renderType;
      }
  
      public static Vector3f[] computeExtents(List<BakedQuad> p_404655_) {
-@@ -79,7 +_,7 @@
+@@ -96,7 +_,7 @@
          }
  
          itemstackrenderstate$layerrenderstate.setExtents(this.extents);
@@ -28,8 +31,8 @@
 +        itemstackrenderstate$layerrenderstate.setRenderType(this.renderType != null ? this.renderType : ItemBlockRenderTypes.getRenderType(p_386443_));
          this.properties.applyToLayer(itemstackrenderstate$layerrenderstate, p_388231_);
          itemstackrenderstate$layerrenderstate.prepareQuadList().addAll(this.quads);
-     }
-@@ -110,7 +_,10 @@
+         if (this.animated) {
+@@ -130,7 +_,10 @@
              TextureSlots textureslots = resolvedmodel.getTopTextureSlots();
              List<BakedQuad> list = resolvedmodel.bakeTopGeometry(textureslots, modelbaker, BlockModelRotation.X0_Y0).getAll();
              ModelRenderProperties modelrenderproperties = ModelRenderProperties.fromResolvedModel(modelbaker, resolvedmodel, textureslots);

@@ -7,7 +7,6 @@ package net.neoforged.neoforge.oldtest.client.rendering;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,7 +24,7 @@ public class CustomItemDecorationsTest {
 
     public CustomItemDecorationsTest() {}
 
-    @EventBusSubscriber(modid = CustomItemDecorationsTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = CustomItemDecorationsTest.MOD_ID, value = Dist.CLIENT)
     public static class ClientEvents {
         @SubscribeEvent
         public static void onRegisterItemDecorations(final RegisterItemDecorationsEvent event) {
@@ -42,11 +41,12 @@ public class CustomItemDecorationsTest {
             int j = Mth.hsvToRgb(f / 3.0F, 1f, 1f) | 0xFF000000;
             int x = xOffset + 2;
             int y = yOffset + 13;
-            graphics.pose().pushPose();
-            graphics.pose().translate(0.0F, 0.0F, ItemRenderer.ITEM_DECORATION_BLIT_OFFSET + 1F);
+            graphics.pose().pushMatrix();
+            // TODO 1.21.6 validate that omitting the following actually just works
+            // graphics.pose().translate(0.0F, 0.0F, ItemRenderer.ITEM_DECORATION_BLIT_OFFSET + 1F);
             graphics.fill(x, y, x + 13, y + 2, 0xFF000000);
             graphics.fill(x, y, x + i, y + 1, j);
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
             return true;
         }
     }

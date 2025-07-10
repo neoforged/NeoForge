@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/level/storage/TagValueOutput.java
++++ b/net/minecraft/world/level/storage/TagValueOutput.java
+@@ -70,6 +_,13 @@
+     }
+ 
+     @Override
++    public void store(CompoundTag tag) {
++        for (var entry : tag.entrySet()) {
++            output.put(entry.getKey(), entry.getValue());
++        }
++    }
++
++    @Override
+     public void putBoolean(String p_422027_, boolean p_422245_) {
+         this.output.putBoolean(p_422027_, p_422245_);
+     }

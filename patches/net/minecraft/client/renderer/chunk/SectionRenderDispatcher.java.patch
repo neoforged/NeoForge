@@ -1,19 +1,18 @@
 --- a/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
 +++ b/net/minecraft/client/renderer/chunk/SectionRenderDispatcher.java
-@@ -530,9 +_,10 @@
+@@ -321,9 +_,10 @@
  
          public SectionRenderDispatcher.RenderSection.CompileTask createCompileTask(RenderRegionCache p_295324_) {
              this.cancelTasks();
--            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.sectionNode));
 +            var additionalRenderers = net.neoforged.neoforge.client.ClientHooks.gatherAdditionalRenderers(this.renderOrigin, SectionRenderDispatcher.this.level);
-+            RenderChunkRegion renderchunkregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, SectionPos.of(this.sectionNode), additionalRenderers.isEmpty());
-             boolean flag = this.compiled.get() != SectionRenderDispatcher.CompiledSection.UNCOMPILED;
--            this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(renderchunkregion, flag);
-+            this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(renderchunkregion, flag, additionalRenderers);
+             RenderSectionRegion rendersectionregion = p_295324_.createRegion(SectionRenderDispatcher.this.level, this.sectionNode);
+             boolean flag = this.sectionMesh.get() != CompiledSectionMesh.UNCOMPILED;
+-            this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(rendersectionregion, flag);
++            this.lastRebuildTask = new SectionRenderDispatcher.RenderSection.RebuildTask(rendersectionregion, flag, additionalRenderers);
              return this.lastRebuildTask;
          }
  
-@@ -572,6 +_,15 @@
+@@ -350,6 +_,15 @@
              );
          }
  
@@ -21,7 +20,7 @@
 +
 +        @Override
 +        public boolean isEmpty() {
-+            return !getCompiled().hasRenderableLayers();
++            return !getSectionMesh().hasRenderableLayers();
 +        }
 +
 +        // Neo: end
@@ -29,39 +28,31 @@
          @OnlyIn(Dist.CLIENT)
          public abstract class CompileTask {
              protected final AtomicBoolean isCancelled = new AtomicBoolean(false);
-@@ -601,10 +_,17 @@
+@@ -378,10 +_,18 @@
+         @OnlyIn(Dist.CLIENT)
          class RebuildTask extends SectionRenderDispatcher.RenderSection.CompileTask {
-             @Nullable
-             protected volatile RenderChunkRegion region;
-+            private final List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers;
+             protected final RenderSectionRegion region;
++            private final java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers;
  
++            /** @deprecated Neo: use {@link #RebuildTask(RenderSectionRegion, boolean, java.util.List)} instead */
 +            @Deprecated
-             public RebuildTask(@Nullable RenderChunkRegion p_294382_, boolean p_295207_) {
-+                this(p_294382_, p_295207_, List.of());
+             public RebuildTask(RenderSectionRegion p_427384_, boolean p_295207_) {
++                this(p_427384_, p_295207_, java.util.List.of());
 +            }
 +
-+            public RebuildTask(@Nullable RenderChunkRegion p_294382_, boolean p_295207_, List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
++            public RebuildTask(RenderSectionRegion p_427384_, boolean p_295207_, java.util.List<net.neoforged.neoforge.client.event.AddSectionGeometryEvent.AdditionalSectionRenderer> additionalRenderers) {
                  super(p_295207_);
-                 this.region = p_294382_;
+                 this.region = p_427384_;
 +                this.additionalRenderers = additionalRenderers;
              }
  
              @Override
-@@ -620,6 +_,8 @@
-                     RenderChunkRegion renderchunkregion = this.region;
-                     this.region = null;
-                     if (renderchunkregion == null) {
-+                        // Neo: Fix MC-279596 (global block entities not being updated for empty sections)
-+                        RenderSection.this.updateGlobalBlockEntities(Set.of());
-                         RenderSection.this.setCompiled(SectionRenderDispatcher.CompiledSection.EMPTY);
-                         return CompletableFuture.completedFuture(SectionRenderDispatcher.SectionTaskResult.SUCCESSFUL);
-                     } else {
-@@ -631,7 +_,7 @@
-                             SectionCompiler.Results sectioncompiler$results;
-                             try (Zone zone = Profiler.get().zone("Compile Section")) {
-                                 sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler
--                                    .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(sectionpos), p_296138_);
-+                                    .compile(sectionpos, renderchunkregion, RenderSection.this.createVertexSorting(sectionpos), p_296138_, this.additionalRenderers);
-                             }
+@@ -402,7 +_,7 @@
+                         SectionCompiler.Results sectioncompiler$results;
+                         try (Zone zone = Profiler.get().zone("Compile Section")) {
+                             sectioncompiler$results = SectionRenderDispatcher.this.sectionCompiler
+-                                .compile(sectionpos, this.region, RenderSection.this.createVertexSorting(sectionpos), p_296138_);
++                                .compile(sectionpos, this.region, RenderSection.this.createVertexSorting(sectionpos), p_296138_, this.additionalRenderers);
+                         }
  
-                             SectionRenderDispatcher.TranslucencyPointOfView sectionrenderdispatcher$translucencypointofview = SectionRenderDispatcher.TranslucencyPointOfView.of(
+                         TranslucencyPointOfView translucencypointofview = TranslucencyPointOfView.of(SectionRenderDispatcher.this.cameraPosition, i);

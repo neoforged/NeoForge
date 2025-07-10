@@ -1,13 +1,13 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
-@@ -138,4 +_,11 @@
-         int i = p_332728_.getTextureDiffuseColor();
-         p_332732_.render(p_332737_, p_332704_.buffer(p_332758_, RenderType::entityNoOutline), p_332821_, p_332828_, i);
+@@ -149,4 +_,11 @@
+         this.standingFlagModel.setupAnim(0.0F);
+         this.standingFlagModel.root().getExtentsForGui(posestack, p_428247_);
      }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(BannerBlockEntity blockEntity) {
-+        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
++        BlockPos pos = blockEntity.getBlockPos();
 +        boolean standing = blockEntity.getBlockState().getBlock() instanceof BannerBlock;
 +        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos, standing ? pos.above() : pos.below());
 +    }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -261,6 +_,7 @@
+@@ -260,6 +_,7 @@
      }
  
      protected void doUnderWaterConversion() {
@@ -8,11 +8,11 @@
          this.convertToZombieType(EntityType.DROWNED);
          if (!this.isSilent()) {
              this.level().levelEvent(null, 1040, this.blockPosition(), 0);
-@@ -271,7 +_,10 @@
+@@ -270,7 +_,10 @@
          this.convertTo(
              p_34311_,
              ConversionParams.single(this, true, true),
--            p_409373_ -> p_409373_.handleAttributes(p_409373_.level().getCurrentDifficultyAt(p_409373_.blockPosition()).getSpecialMultiplier())
+-            p_427112_ -> p_427112_.handleAttributes(p_427112_.level().getCurrentDifficultyAt(p_427112_.blockPosition()).getSpecialMultiplier())
 +            p_381517_ -> {
 +                p_381517_.handleAttributes(p_381517_.level().getCurrentDifficultyAt(p_381517_.blockPosition()).getSpecialMultiplier());
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_381517_);
@@ -20,7 +20,7 @@
          );
      }
  
-@@ -291,6 +_,7 @@
+@@ -290,6 +_,7 @@
                  p_370686_.setGossips(p_371444_.getGossips().copy());
                  p_370686_.setTradeOffers(p_371444_.getOffers().copy());
                  p_370686_.setVillagerXp(p_371444_.getVillagerXp());
@@ -28,7 +28,7 @@
                  if (!this.isSilent()) {
                      p_371466_.levelEvent(null, 1026, this.blockPosition(), 0);
                  }
-@@ -444,7 +_,7 @@
+@@ -443,7 +_,7 @@
      @Override
      public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
          boolean flag = super.killedEntity(p_219160_, p_219161_);

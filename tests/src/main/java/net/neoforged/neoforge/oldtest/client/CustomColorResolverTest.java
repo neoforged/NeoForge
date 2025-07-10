@@ -41,7 +41,7 @@ public class CustomColorResolverTest {
         ITEMS.registerSimpleBlockItem(BLOCK);
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = MOD_ID)
     private static class ClientHandler {
         private static final ColorResolver COLOR_RESOLVER = (biome, x, z) -> biome.getPrecipitationAt(BlockPos.containing(x, 0, z), Minecraft.getInstance().level.getSeaLevel()) == Biome.Precipitation.NONE ? 0xFF0000 : 0x0000FF;
 

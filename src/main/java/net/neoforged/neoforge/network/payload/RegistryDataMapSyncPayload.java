@@ -28,7 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public record RegistryDataMapSyncPayload<T>(ResourceKey<? extends Registry<T>> registryKey,
-        Map<ResourceLocation, Map<ResourceKey<T>, ?>> dataMaps) implements ClientDispatchPayload {
+        Map<ResourceLocation, Map<ResourceKey<T>, ?>> dataMaps) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<RegistryDataMapSyncPayload<?>> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("neoforge", "registry_data_map_sync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, RegistryDataMapSyncPayload<?>> STREAM_CODEC = StreamCodec.ofMember(
             RegistryDataMapSyncPayload::write, RegistryDataMapSyncPayload::decode);

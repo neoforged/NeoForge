@@ -10,17 +10,17 @@ import java.lang.reflect.Method;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.ReflectionUtils;
+import org.jetbrains.annotations.Nullable;
 
 public class MethodBasedEventTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
     private final Method method;
 
     private final Class<? extends Event> eventClass;
-    private final EventBusSubscriber.Bus bus;
+    private final boolean modBus;
     private final EventPriority priority;
     private final boolean receiveCancelled;
 
@@ -30,7 +30,7 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
 
         //noinspection unchecked
         this.eventClass = (Class<? extends Event>) method.getParameterTypes()[0];
-        this.bus = IModBusEvent.class.isAssignableFrom(eventClass) ? EventBusSubscriber.Bus.MOD : EventBusSubscriber.Bus.GAME;
+        this.modBus = IModBusEvent.class.isAssignableFrom(eventClass);
 
         final SubscribeEvent seAnnotation = method.getAnnotation(SubscribeEvent.class);
         if (seAnnotation == null) {
@@ -52,12 +52,18 @@ public class MethodBasedEventTest extends AbstractTest.Dynamic {
     @Override
     public void onEnabled(Test.EventListenerGroup buses) {
         super.onEnabled(buses);
-        buses.getFor(bus).addListener(priority, receiveCancelled, eventClass, event -> {
+        (modBus ? buses.mod() : buses.forge()).addListener(priority, receiveCancelled, eventClass, event -> {
             try {
                 handle.invoke(event, this);
             } catch (Throwable throwable) {
                 framework.logger().warn("Encountered exception firing event listeners for method-based event test {}: ", method, throwable);
             }
         });
+    }
+
+    @Nullable
+    @Override
+    public Method getMethod() {
+        return method;
     }
 }

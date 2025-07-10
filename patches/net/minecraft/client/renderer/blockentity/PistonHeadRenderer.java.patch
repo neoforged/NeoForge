@@ -8,7 +8,7 @@
 -        VertexConsumer vertexconsumer = p_112462_.getBuffer(rendertype);
 -        List<BlockModelPart> list = this.blockRenderer.getBlockModel(p_112460_).collectParts(RandomSource.create(p_112460_.getSeed(p_112459_)));
 -        this.blockRenderer.getModelRenderer().tesselateBlock(p_112463_, list, p_112460_, p_112459_, p_112461_, vertexconsumer, p_112464_, p_112465_);
-+        java.util.function.Function<RenderType, VertexConsumer> bufferLookup = renderType -> p_112462_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType));
++        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup = renderType -> p_112462_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType));
 +        List<BlockModelPart> list = this.blockRenderer.getBlockModel(p_112460_).collectParts(p_112463_, p_112459_, p_112460_, RandomSource.create(p_112460_.getSeed(p_112459_)));
 +        this.blockRenderer.getModelRenderer().tesselateBlock(p_112463_, list, p_112460_, p_112459_, p_112461_, bufferLookup, p_112464_, p_112465_);
      }

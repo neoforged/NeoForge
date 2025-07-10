@@ -534,7 +534,7 @@ public class FluidUtil {
         if (!level.isClientSide) {
             BlockState destBlockState = level.getBlockState(pos);
             boolean isDestNonSolid = !destBlockState.isSolid();
-            boolean isDestReplaceable = false; //TODO: Needs BlockItemUseContext destBlockState.getBlock().isReplaceable(level, pos);
+            boolean isDestReplaceable = false; //TODO: Needs BlockItemUseContext destBlockState.canBeReplaced(context);
             if ((isDestNonSolid || isDestReplaceable) && !destBlockState.liquid()) {
                 level.destroyBlock(pos, true);
             }

@@ -21,6 +21,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
@@ -55,7 +56,6 @@ public abstract class LanguageProvider implements DataProvider {
     }
 
     private CompletableFuture<?> save(CachedOutput cache, Path target) {
-        // TODO: DataProvider.saveStable handles the caching and hashing already, but creating the JSON Object this way seems unreliable. -C
         JsonObject json = new JsonObject();
         this.data.forEach(json::addProperty);
 
@@ -85,16 +85,6 @@ public abstract class LanguageProvider implements DataProvider {
     public void add(ItemStack key, String name) {
         add(key.getItem().getDescriptionId(), name);
     }
-
-    /*
-    public void addBiome(Supplier<? extends Biome> key, String name) {
-        add(key.get(), name);
-    }
-    
-    public void add(Biome key, String name) {
-        add(key.getTranslationKey(), name);
-    }
-    */
 
     public void addEffect(Supplier<? extends MobEffect> key, String name) {
         add(key.get(), name);
@@ -127,5 +117,9 @@ public abstract class LanguageProvider implements DataProvider {
 
     public void addDimension(ResourceKey<Level> dimension, String value) {
         add(dimension.location().toLanguageKey(ILevelExtension.TRANSLATION_PREFIX), value);
+    }
+
+    public void addBiome(ResourceKey<Biome> biome, String value) {
+        add(biome.location().toLanguageKey("biome"), value);
     }
 }

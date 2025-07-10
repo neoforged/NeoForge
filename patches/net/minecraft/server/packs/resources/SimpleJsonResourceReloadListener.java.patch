@@ -33,9 +33,9 @@
              ResourceLocation resourcelocation1 = p_387906_.fileToId(resourcelocation);
  
              try (Reader reader = entry.getValue().openAsReader()) {
--                p_371493_.parse(p_371830_, JsonParser.parseReader(reader)).ifSuccess(p_371454_ -> {
+-                p_371493_.parse(p_371830_, StrictJsonParser.parse(reader)).ifSuccess(p_371454_ -> {
 -                    if (p_279404_.putIfAbsent(resourcelocation1, (T)p_371454_) != null) {
-+                conditionalCodec.parse(p_371830_, JsonParser.parseReader(reader)).ifSuccess(p_371454_ -> {
++                conditionalCodec.parse(p_371830_, com.google.gson.JsonParser.parseReader(reader)).ifSuccess(p_371454_ -> {
 +                    if (p_371454_.isEmpty()) {
 +                        LOGGER.debug("Skipping loading data file '{}' from '{}' as its conditions were not met", resourcelocation1, resourcelocation);
 +                    } else if (p_279404_.putIfAbsent(resourcelocation1, p_371454_.get()) != null) {

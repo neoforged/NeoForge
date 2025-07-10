@@ -42,7 +42,7 @@ public class AdvancementTests {
         test.eventListeners().forge().addListener((final AdvancementEvent.AdvancementEarnEvent event) -> {
             if (event.getAdvancement().id().equals(ResourceLocation.withDefaultNamespace("story/root")) && event.getEntity() instanceof ServerPlayer player) {
                 player.getAdvancements().award(
-                        Objects.requireNonNull(player.server.getAdvancements().get(ResourceLocation.withDefaultNamespace("story/mine_stone"))),
+                        Objects.requireNonNull(player.getServer().getAdvancements().get(ResourceLocation.withDefaultNamespace("story/mine_stone"))),
                         "get_stone");
             }
             test.pass();
@@ -53,7 +53,7 @@ public class AdvancementTests {
             helper.startSequence()
                     .thenExecute(() -> player.getInventory().add(Items.CRAFTING_TABLE.getDefaultInstance()))
                     .thenExecuteAfter(5, () -> helper.assertTrue(
-                            player.getAdvancements().getOrStartProgress(player.server.getAdvancements().get(ResourceLocation.withDefaultNamespace("story/mine_stone"))).isDone(),
+                            player.getAdvancements().getOrStartProgress(player.getServer().getAdvancements().get(ResourceLocation.withDefaultNamespace("story/mine_stone"))).isDone(),
                             "Player did not receive advancement"))
                     .thenSucceed();
         });
@@ -76,7 +76,7 @@ public class AdvancementTests {
             helper.startSequence()
                     .thenExecute(() -> player.getInventory().add(Items.IRON_HELMET.getDefaultInstance()))
                     .thenExecuteAfter(5, () -> helper.assertTrue(
-                            player.getAdvancements().getOrStartProgress(player.server.getAdvancements().get(ResourceLocation.withDefaultNamespace("story/obtain_armor"))).isDone(),
+                            player.getAdvancements().getOrStartProgress(player.getServer().getAdvancements().get(ResourceLocation.withDefaultNamespace("story/obtain_armor"))).isDone(),
                             "Player did not complete advancement"))
                     .thenSucceed();
         });
@@ -84,6 +84,7 @@ public class AdvancementTests {
 
     @GameTest
     @EmptyTemplate
+    @SuppressWarnings("removal")
     @TestHolder(description = "Tests if custom advancement predicates work")
     static void customPredicateTest(final DynamicTest test, final RegistrationHelper reg) {
         DataComponentPredicate.Type<CustomNamePredicate> type = new DataComponentPredicate.Type<>(RecordCodecBuilder.create(g -> g.group(
@@ -114,7 +115,7 @@ public class AdvancementTests {
                         player.getInventory().add(stack);
                     })
                     .thenExecuteAfter(5, () -> helper.assertTrue(
-                            player.getAdvancements().getOrStartProgress(player.server.getAdvancements().get(ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"))).isDone(),
+                            player.getAdvancements().getOrStartProgress(player.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(reg.modId(), "named_item"))).isDone(),
                             "Player did not complete advancement"))
                     .thenSucceed();
         });

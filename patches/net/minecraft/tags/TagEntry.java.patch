@@ -1,5 +1,21 @@
 --- a/net/minecraft/tags/TagEntry.java
 +++ b/net/minecraft/tags/TagEntry.java
+@@ -44,6 +_,15 @@
+         return new ExtraCodecs.TagOrElementLocation(this.id, this.tag);
+     }
+ 
++    /**
++     * {@return a copy of this entry with the required flag set to the given parameter}
++     *
++     * @param required whether the new entry is required
++     */
++    TagEntry withRequired(boolean required) {
++        return new TagEntry(this.id, this.tag, required);
++    }
++
+     public static TagEntry element(ResourceLocation p_215926_) {
+         return new TagEntry(p_215926_, false, true);
+     }
 @@ -111,11 +_,21 @@
          return stringbuilder.toString();
      }

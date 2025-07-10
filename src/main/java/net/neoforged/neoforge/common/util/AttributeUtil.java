@@ -298,7 +298,7 @@ public class AttributeUtil {
      */
     public static Multimap<Holder<Attribute>, AttributeModifier> getSortedModifiers(ItemStack stack, EquipmentSlotGroup slot) {
         Multimap<Holder<Attribute>, AttributeModifier> map = LinkedListMultimap.create();
-        stack.forEachModifier(slot, (attr, modif) -> {
+        stack.forEachModifier(slot, (attr, modif, display) -> {
             if (attr != null && modif != null) {
                 map.put(attr, modif);
             } else {

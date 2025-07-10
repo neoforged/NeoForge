@@ -8,10 +8,10 @@ package net.neoforged.testframework.summary;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
+import net.neoforged.testframework.TestFramework;
 
-public record TestSummary(ResourceLocation frameworkId, boolean isGameTestRun, List<TestInfo> testInfos) {
+public record TestSummary(TestFramework framework, boolean isGameTestRun, List<TestInfo> testInfos) {
     public record TestInfo(
             String testId,
             Component name,
@@ -31,12 +31,12 @@ public record TestSummary(ResourceLocation frameworkId, boolean isGameTestRun, L
     }
 
     public static class Builder {
-        private final ResourceLocation frameworkId;
+        private final TestFramework framework;
         private final boolean isGameTestRun;
         private final ImmutableList.Builder<TestInfo> tests = ImmutableList.builder();
 
-        public Builder(ResourceLocation frameworkId, boolean isGameTestRun) {
-            this.frameworkId = frameworkId;
+        public Builder(TestFramework framework, boolean isGameTestRun) {
+            this.framework = framework;
             this.isGameTestRun = isGameTestRun;
         }
 
@@ -45,7 +45,7 @@ public record TestSummary(ResourceLocation frameworkId, boolean isGameTestRun, L
         }
 
         public TestSummary build() {
-            return new TestSummary(frameworkId, isGameTestRun, tests.build());
+            return new TestSummary(framework, isGameTestRun, tests.build());
         }
     }
 }

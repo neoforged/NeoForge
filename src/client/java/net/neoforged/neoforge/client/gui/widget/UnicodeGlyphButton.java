@@ -7,7 +7,7 @@ package net.neoforged.neoforge.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -28,7 +28,7 @@ public class UnicodeGlyphButton extends ExtendedButton {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
-        guiGraphics.blitSprite(RenderType::guiTextured, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
         Component buttonText = this.createNarrationMessage();
         int glyphWidth = (int) (mc.font.width(glyph) * glyphScale);
@@ -42,12 +42,12 @@ public class UnicodeGlyphButton extends ExtendedButton {
         strWidth = mc.font.width(buttonText);
         totalWidth = glyphWidth + strWidth;
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(glyphScale, glyphScale, 1.0F);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().scale(glyphScale, glyphScale);
         guiGraphics.drawCenteredString(mc.font, Component.literal(glyph),
                 (int) (((this.getX() + (this.width / 2) - (strWidth / 2)) / glyphScale) - (glyphWidth / (2 * glyphScale)) + 2),
                 (int) (((this.getY() + ((this.height - 8) / glyphScale) / 2) - 1) / glyphScale), getFGColor());
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
         guiGraphics.drawCenteredString(mc.font, buttonText, (int) (this.getX() + (this.width / 2) + (glyphWidth / glyphScale)),
                 this.getY() + (this.height - 8) / 2, getFGColor());

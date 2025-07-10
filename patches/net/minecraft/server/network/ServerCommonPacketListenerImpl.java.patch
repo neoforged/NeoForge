@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -43,6 +_,10 @@
+@@ -45,6 +_,10 @@
      private boolean closed = false;
      private int latency;
      private volatile boolean suspendFlushingOnServerThread = false;
@@ -11,7 +11,7 @@
  
      public ServerCommonPacketListenerImpl(MinecraftServer p_295057_, Connection p_294822_, CommonListenerCookie p_301980_) {
          this.server = p_295057_;
-@@ -50,6 +_,8 @@
+@@ -52,6 +_,8 @@
          this.keepAliveTime = Util.getMillis();
          this.latency = p_301980_.latency();
          this.transferred = p_301980_.transferred();
@@ -20,7 +20,7 @@
      }
  
      private void close() {
-@@ -90,6 +_,32 @@
+@@ -92,6 +_,32 @@
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket p_294276_) {
@@ -53,18 +53,18 @@
      }
  
      @Override
-@@ -148,7 +_,10 @@
+@@ -156,7 +_,10 @@
          this.send(p_294278_, null);
      }
  
 +    @Override
-     public void send(Packet<?> p_295099_, @Nullable PacketSendListener p_296321_) {
+     public void send(Packet<?> p_295099_, @Nullable ChannelFutureListener p_428378_) {
 +        net.neoforged.neoforge.network.registration.NetworkRegistry.checkPacket(p_295099_, this);
 +
          if (p_295099_.isTerminal()) {
              this.close();
          }
-@@ -190,7 +_,41 @@
+@@ -198,7 +_,41 @@
          return this.latency;
      }
  

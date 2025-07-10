@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -118,6 +_,7 @@
+@@ -120,6 +_,7 @@
          }
  
          if (this.fadeOutStart == -1L && this.reload.isDone() && (!this.fadeIn || f1 >= 2.0F)) {
@@ -8,7 +8,7 @@
              try {
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());
-@@ -125,7 +_,6 @@
+@@ -127,7 +_,6 @@
                  this.onFinish.accept(Optional.of(throwable));
              }
  

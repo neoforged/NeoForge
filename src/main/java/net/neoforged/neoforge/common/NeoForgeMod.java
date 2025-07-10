@@ -121,6 +121,7 @@ import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifiers;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
@@ -527,7 +528,7 @@ public class NeoForgeMod {
     }
 
     public NeoForgeMod(IEventBus modEventBus, Dist dist, ModContainer container) {
-        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.getName());
+        LOGGER.info(NEOFORGEMOD, "NeoForge mod loading, version {}, for MC {}", NeoForgeVersion.getVersion(), DetectedVersion.BUILT_IN.name());
         ForgeSnapshotsMod.logStartupWarning();
 
         SelfTest.initCommon();
@@ -621,7 +622,7 @@ public class NeoForgeMod {
 
     // done in an event instead of deferred to only enable if a mod requests it
     public void registerFluids(RegisterEvent event) {
-        if (enableMilkFluid) {
+        if (enableMilkFluid || DatagenModLoader.isRunningDataGen()) {
             // register milk fill, empty sounds (delegates to water fill, empty sounds)
             event.register(Registries.SOUND_EVENT, helper -> {
                 helper.register(BUCKET_EMPTY_MILK.getId(), SoundEvent.createVariableRangeEvent(BUCKET_EMPTY_MILK.getId()));

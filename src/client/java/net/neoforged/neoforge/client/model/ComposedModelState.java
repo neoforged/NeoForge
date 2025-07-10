@@ -19,12 +19,12 @@ public final class ComposedModelState implements ModelState {
 
     public ComposedModelState(ModelState parent, Transformation transformation) {
         this.parent = parent;
-        this.transformation = transformation;
+        this.transformation = parent.transformation().compose(transformation);
     }
 
     @Override
     public Transformation transformation() {
-        return parent.transformation().compose(transformation);
+        return transformation;
     }
 
     @Override

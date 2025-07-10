@@ -11,7 +11,7 @@
      private static void bootstrap(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> p_387865_) {
          p_387865_.accept(
              EquipmentAssets.LEATHER,
-@@ -105,14 +_,14 @@
+@@ -119,14 +_,14 @@
      }
  
      public static EquipmentClientInfo onlyHumanoid(String p_388505_) {
@@ -29,7 +29,7 @@
              )
              .build();
      }
-@@ -120,7 +_,7 @@
+@@ -134,7 +_,7 @@
      @Override
      public CompletableFuture<?> run(CachedOutput p_387304_) {
          Map<ResourceKey<EquipmentAsset>, EquipmentClientInfo> map = new HashMap<>();

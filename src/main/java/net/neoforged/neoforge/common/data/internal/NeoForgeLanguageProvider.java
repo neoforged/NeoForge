@@ -446,6 +446,20 @@ public final class NeoForgeLanguageProvider extends LanguageProvider {
         add(Tags.Biomes.IS_DRY_NETHER, "Dry Nether");
         add(Tags.Biomes.IS_DRY_END, "Dry End");
 
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE, "Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_OAK, "Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_BIRCH, "Birch Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_SPRUCE, "Spruce Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_JUNGLE, "Jungle Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_ACACIA, "Acacia Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_DARK_OAK, "Dark Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_MANGROVE, "Mangrove Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_CHERRY, "Cherry Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_PALE_OAK, "Pale Oak Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_BAMBOO, "Bamboo Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_CRIMSON, "Crimson Primary Wood Type");
+        add(Tags.Biomes.PRIMARY_WOOD_TYPE_WARPED, "Warped Primary Wood Type");
+
         add(Tags.Biomes.IS_CONIFEROUS_TREE, "Coniferous Trees");
         add(Tags.Biomes.IS_SAVANNA_TREE, "Savanna Trees");
         add(Tags.Biomes.IS_JUNGLE_TREE, "Jungle Trees");

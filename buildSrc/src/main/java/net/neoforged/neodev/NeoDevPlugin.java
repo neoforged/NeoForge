@@ -107,6 +107,13 @@ public class NeoDevPlugin implements Plugin<Project> {
                 atFiles);
 
         applyAt.configure(task -> task.mustRunAfter(genAtsTask));
+        
+        var splitUnpatchedSources = tasks.register("splitUnpatchedSources", SplitMergedSources.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getMergedJar().set(applyAt.flatMap(TransformSources::getOutputJar));
+            task.getCommonJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/common-unpatched-sources.jar")));
+            task.getClientJar().set(neoDevBuildDir.map(dir -> dir.file("artifacts/client-unpatched-sources.jar")));
+        });
 
         // 3. Apply interface injections after the ATs
         // this jar is only used for the patches in the repo
@@ -234,6 +241,13 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getArchiveFileName().set("merged-patched-sources.jar");
         });
 
+        var commonSources = tasks.register("commonPatchedSources", Zip.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.from(project.files("src/main/java"));
+            task.getDestinationDirectory().set(neoDevBuildDir.map(dir -> dir.dir("artifacts/common-sources")));
+            task.getArchiveFileName().set("common-patched-sources.jar");
+        });
+
         // Generate source patches into a patch archive, based on the jar with injected interfaces.
         var genSourcePatches = tasks.register("generateSourcePatches", GenerateSourcePatches.class, task -> {
             task.setGroup(INTERNAL_GROUP);
@@ -248,6 +262,13 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOriginalJar().set(applyAt.flatMap(TransformSources::getOutputJar));
             task.getModifiedSources().set(mergeSources.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches")));
+        });
+
+        var genCommonProductionPatches = tasks.register("generateCommonProductionSourcePatches", GenerateSourcePatches.class, task -> {
+            task.setGroup(INTERNAL_GROUP);
+            task.getOriginalJar().set(splitUnpatchedSources.flatMap(SplitMergedSources::getCommonJar));
+            task.getModifiedSources().set(commonSources.flatMap(AbstractArchiveTask::getArchiveFile));
+            task.getPatchesFolder().set(neoDevBuildDir.map(dir -> dir.dir("production-source-patches-common")));
         });
 
         // Update the patch/ folder with the current patches.
@@ -303,7 +324,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                 createCleanArtifacts,
                 joinedJar,
                 neoDevBuildDir,
-                genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
+                genProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder),
+                genCommonProductionPatches.flatMap(GenerateSourcePatches::getPatchesFolder)
         );
 
         var installerRepositoryUrls = getInstallerRepositoryUrls(project);
@@ -528,7 +550,8 @@ public class NeoDevPlugin implements Plugin<Project> {
                                                                    TaskProvider<CreateCleanArtifacts> createCleanArtifacts,
                                                                    TaskProvider<Jar> joinedJar,
                                                                    Provider<Directory> neoDevBuildDir,
-                                                                   Provider<Directory> sourcesPatchesFolder) {
+                                                                   Provider<Directory> sourcesPatchesFolder,
+                                                                   Provider<Directory> sourcesServerPatchesFolder) {
         var tasks = project.getTasks();
 
         var artConfig = configurations.getExecutableTool(Tools.AUTO_RENAMING_TOOL);
@@ -554,16 +577,25 @@ public class NeoDevPlugin implements Plugin<Project> {
         var generateMergedBinPatches = tasks.register("generateMergedBinPatches", GenerateBinaryPatches.class, task -> {
             task.setDescription("Creates binary patch files by diffing a merged client/server jar-file and the compiled Minecraft classes in this project.");
             task.getCleanJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
+            // Included so that lambda names are correct in production
+            task.getIncludeClassesJar().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getCleanJoinedJar));
+            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("merged-binpatches.lzma")));
         });
         var generateClientBinPatches = tasks.register("generateClientBinPatches", GenerateBinaryPatches.class, task -> {
             task.setDescription("Creates binary patch files by diffing a merged client jar-file and the compiled Minecraft classes in this project.");
             task.getCleanJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
+            // Included so that lambda names are correct in production
+            task.getIncludeClassesJar().set(remapClientJar.flatMap(RemapJar::getOutputJar));
+            task.getSourcePatchesFolder().set(sourcesPatchesFolder);
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("client-binpatches.lzma")));
         });
         var generateServerBinPatches = tasks.register("generateServerBinPatches", GenerateBinaryPatches.class, task -> {
             task.setDescription("Creates binary patch files by diffing a merged server jar-file and the compiled Minecraft classes in this project.");
             task.getCleanJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
+            // Included so that lambda names are correct in production
+            task.getIncludeClassesJar().set(remapServerJar.flatMap(RemapJar::getOutputJar));
+            task.getSourcePatchesFolder().set(sourcesServerPatchesFolder);
             task.getOutputFile().set(neoDevBuildDir.map(dir -> dir.file("server-binpatches.lzma")));
         });
         for (var generateBinPatchesTask : List.of(generateMergedBinPatches, generateClientBinPatches, generateServerBinPatches)) {
@@ -571,7 +603,6 @@ public class NeoDevPlugin implements Plugin<Project> {
                 task.setGroup(INTERNAL_GROUP);
                 task.classpath(binpatcherConfig);
                 task.getPatchedJar().set(joinedJar.flatMap(Jar::getArchiveFile));
-                task.getSourcePatchesFolder().set(sourcesPatchesFolder);
                 task.getMappings().set(createCleanArtifacts.flatMap(CreateCleanArtifacts::getMergedMappings));
             });
         }
@@ -668,12 +699,12 @@ public class NeoDevPlugin implements Plugin<Project> {
             task.getOriginalClientJar().set(originalClientJar);
         };
         project.getTasks().register("runProductionClient", RunProductionClient.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Runs the production client installed by installProductionClient.");
             configureRunProductionClient.accept(task);
         });
         project.getTasks().register("testProductionClient", TestProductionClient.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Tests the production client installed by installProductionClient.");
             configureRunProductionClient.accept(task);
         });
@@ -690,13 +721,13 @@ public class NeoDevPlugin implements Plugin<Project> {
         });
 
         project.getTasks().register("runProductionServer", RunProductionServer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Runs the production server installed by installProductionServer.");
             task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });
 
         project.getTasks().register("testProductionServer", TestProductionServer.class, task -> {
-            task.setGroup(INTERNAL_GROUP);
+            task.setGroup(GROUP);
             task.setDescription("Tests the production server installed by installProductionServer.");
             task.getInstallationDir().set(installServer.flatMap(InstallProductionServer::getInstallationDir));
         });

@@ -20,13 +20,13 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeVersion.MOD_ID)
 public final class ParticleBoundsDebugRenderer {
     private static boolean enabled = false;
 
     @SubscribeEvent
-    public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (!enabled || event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+    public static void onRenderLevelStage(RenderLevelStageEvent.AfterParticles event) {
+        if (!enabled) {
             return;
         }
 

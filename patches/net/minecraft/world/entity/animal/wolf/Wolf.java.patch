@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/animal/wolf/Wolf.java
 +++ b/net/minecraft/world/entity/animal/wolf/Wolf.java
-@@ -455,10 +_,11 @@
+@@ -459,10 +_,11 @@
          Item item = itemstack.getItem();
          if (this.isTame()) {
              if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
@@ -13,16 +13,7 @@
                  return InteractionResult.SUCCESS;
              }
  
-@@ -469,7 +_,7 @@
-                     return InteractionResult.SUCCESS;
-                 }
- 
--                if (!itemstack.is(Items.SHEARS)
-+                if (!itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_REMOVE_ARMOR)
-                     || !this.isOwnedBy(p_406380_)
-                     || !this.isWearingBodyArmor()
-                     || EnchantmentHelper.has(this.getBodyArmorItem(), EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) && !p_406380_.isCreative()) {
-@@ -525,7 +_,7 @@
+@@ -514,7 +_,7 @@
      }
  
      private void tryToTame(Player p_406358_) {
