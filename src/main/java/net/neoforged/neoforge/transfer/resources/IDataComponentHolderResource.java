@@ -49,7 +49,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param type the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    IDataComponentHolderResource<T, R> without(DataComponentType<?> type);
+    <D> IDataComponentHolderResource<T, R> without(DataComponentType<D> type);
 
     /**
      * Patches currently applied to the resource's data component holder.
@@ -64,7 +64,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param <D>  the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    default <D> IDataComponentHolderResource<T, R> with(Supplier<DataComponentType<D>> type, D data) {
+    default <D> IDataComponentHolderResource<T, R> with(Supplier<? extends DataComponentType<D>> type, D data) {
         return with(type.get(), data);
     }
 
@@ -74,7 +74,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param type the supplier for the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    default IDataComponentHolderResource<T, R> without(Supplier<? extends DataComponentType<?>> type) {
+    default <D> IDataComponentHolderResource<T, R> without(Supplier<? extends DataComponentType<? extends D>> type) {
         return without(type.get());
     }
 }

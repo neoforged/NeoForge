@@ -95,10 +95,10 @@ public final class ResourceStack<T extends IResource<T>> {
     /**
      * Creates a hashcode derived from a resource stack list. This is similar to how vanilla handles ItemStack lists.
      */
-    public static <T extends ResourceStack<?>> int hashTypes(Iterable<T> stacks) {
+    public static <T extends IResource<T>> int hashTypes(Iterable<ResourceStack<T>> stacks) {
         int i = 0;
         //Like vanilla, the count is omitted in the hash comparison
-        for (ResourceStack<?> resourceStack : stacks) {
+        for (ResourceStack<T> resourceStack : stacks) {
             i = i * 31 + resourceStack.resource().hashCode();
         }
         return i;
@@ -206,6 +206,6 @@ public final class ResourceStack<T extends IResource<T>> {
 
     @Override
     public String toString() {
-        return "%s(%d)".formatted(resource, amount);
+        return resource + "(" + amount + ")";
     }
 }

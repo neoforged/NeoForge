@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -159,7 +158,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     }
 
     /**
-     * A wrapped {@link ItemStack} which must never be modified.
+     * A wrapped {@link ItemStack} which must never be modified or exposed. This will be a size of 1 so that we can make use
+     * of the fact it is already an instance with a data component map.
      */
     private final ItemStack innerStack;
 
@@ -235,15 +235,10 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     }
 
     @Override
-    public ItemResource without(DataComponentType<?> type) {
+    public <D> ItemResource without(DataComponentType<D> type) {
         ItemStack stack = innerStack.copy();
         stack.remove(type);
         return new ItemResource(stack);
-    }
-
-    @Override
-    public ItemResource without(Supplier<? extends DataComponentType<?>> type) {
-        return without(type.get());
     }
 
     @Override

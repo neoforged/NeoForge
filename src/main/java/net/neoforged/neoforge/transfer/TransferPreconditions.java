@@ -15,7 +15,7 @@ public class TransferPreconditions {
      */
     public static void checkNonNegative(int value) {
         if (value < 0) {
-            throw new IllegalArgumentException("Non-negative check failed: " + value);
+            throw new IllegalArgumentException("Expected value to be non-negative: " + value);
         }
     }
 }

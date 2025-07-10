@@ -164,7 +164,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     /**
-     * A wrapped {@link FluidStack} which must never be modified.
+     * A wrapped {@link FluidStack} which must never be modified or exposed. This will be a size of 1 so that we can make use
+     * of the fact it is already an instance with a data component map.
      */
     private final FluidStack innerStack;
 
@@ -215,7 +216,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     @Override
-    public FluidResource without(DataComponentType<?> type) {
+    public <D> FluidResource without(DataComponentType<D> type) {
         if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.remove(type);
