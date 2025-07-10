@@ -22,12 +22,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLCapabilities;
 
 public class NeoGlDeviceProperties implements GpuDeviceProperties {
-    private final GLCapabilities glCaps = GL.getCapabilities();
-
     @Override
     public String backendName() {
         return "Default";
