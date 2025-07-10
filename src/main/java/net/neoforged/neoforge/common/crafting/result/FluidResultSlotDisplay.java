@@ -1,7 +1,6 @@
 package net.neoforged.neoforge.common.crafting.result;
 
 import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.display.ForFluidStacks;
