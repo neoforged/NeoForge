@@ -75,6 +75,11 @@ immaculate {
 
         def interfaceChange = Pattern.compile('[-+].*(implements|(interface.*extends))(.*)\\{')
         custom 'noInterfaceModifications', { String fileContents ->
+            // Special case: blaze3d is extended by adding a parent interface to an existing one
+            if (fileContents.startsWith("--- a/com/mojang/blaze3d")) {
+                return fileContents
+            }
+            
             def interfaceChanges = fileContents.lines().filter { it.matches(interfaceChange) }.toList()
             if (interfaceChanges.isEmpty()) return fileContents
             String oldInterfaces = ""

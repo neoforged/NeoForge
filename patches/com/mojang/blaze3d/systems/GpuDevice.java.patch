@@ -1,11 +1,11 @@
 --- a/com/mojang/blaze3d/systems/GpuDevice.java
 +++ b/com/mojang/blaze3d/systems/GpuDevice.java
-@@ -65,4 +_,8 @@
-     List<String> getEnabledExtensions();
+@@ -19,7 +_,7 @@
  
-     void close();
-+
-+    net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties properties();
-+
-+    net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures enabledFeatures();
- }
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
+-public interface GpuDevice {
++public interface GpuDevice extends net.neoforged.neoforge.client.blaze3d.GpuDeviceExtension {
+     CommandEncoder createCommandEncoder();
+ 
+     GpuTexture createTexture(
