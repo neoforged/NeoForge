@@ -19,6 +19,7 @@ jobs:
         uses: neoforged/actions/setup-java@main
         with:
           java-version: 21
+          problem-matcher: false
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4

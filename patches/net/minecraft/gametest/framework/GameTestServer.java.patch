@@ -34,3 +34,33 @@
          return true;
      }
  
+@@ -216,8 +_,14 @@
+             GlobalTestReporter.finish();
+             LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
+             if (this.testTracker.hasFailedRequired()) {
+-                LOGGER.info("{} required tests failed :(", this.testTracker.getFailedRequiredCount());
++                LOGGER.error("{} required tests failed :(", this.testTracker.getFailedRequiredCount());
+                 this.testTracker.getFailedRequired().forEach(GameTestServer::logFailedTest);
++
++                // Neo: when running in GitHub actions emit actions-specific error annotations to make finding the error message easier
++                // See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#example-creating-an-annotation-for-an-error
++                if (System.getenv().getOrDefault("CI", "false").equals("true") && System.getenv().getOrDefault("GITHUB_ACTIONS", "false").equals("true")) {
++                    System.out.printf("\n::error title=GameTest Failure::%s required game tests failed: %s\n\n", testTracker.getFailedRequiredCount(), testTracker.getFailedRequired().stream().map(info -> info.id().toString()).collect(java.util.stream.Collectors.joining(", ")));
++                }
+             } else {
+                 LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
+             }
+@@ -233,11 +_,11 @@
+ 
+     private static void logFailedTest(GameTestInfo p_401161_) {
+         if (p_401161_.getRotation() != Rotation.NONE) {
+-            LOGGER.info(
++            LOGGER.error(
+                 "   - {} with rotation {}: {}", p_401161_.id(), p_401161_.getRotation().getSerializedName(), p_401161_.getError().getDescription().getString()
+             );
+         } else {
+-            LOGGER.info("   - {}: {}", p_401161_.id(), p_401161_.getError().getDescription().getString());
++            LOGGER.error("   - {}: {}", p_401161_.id(), p_401161_.getError().getDescription().getString());
+         }
+     }
+ 

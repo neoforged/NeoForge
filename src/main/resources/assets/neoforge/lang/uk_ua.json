@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "Файл FeatureFlag {0}, наданий модом {100,modinfo,id}, не існує",
   "fml.modloadingissue.feature_flags.loading_error": "Не вдалося завантажити дані FeatureFlag в {0} в моді {100,modinfo,id}: {102,exc,msg}",
   "loadwarning.neoforge.prbuild": "Ця збірка NeoForge була створена членом спільноти й тому §c§lНЕ ПІДТРИМУЄТЬСЯ§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "Константа Enum має бути однією з %1$s, знайдено %2$s",
   "commands.neoforge.dimensions.list": "Наразі зареєстровані виміри за типом:",
   "commands.neoforge.dump.success": "Новий файл з вмістом реєстру %s створений в %s",
