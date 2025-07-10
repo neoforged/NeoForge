@@ -69,14 +69,18 @@ public class ValidationGpuDevice implements GpuDevice {
 
     @Override
     public GpuTextureView createTextureView(GpuTexture texture) {
-        assert texture instanceof ValidationGpuTexture;
-        return realDevice.createTextureView(((ValidationGpuTexture) texture).getRealTexture());
+        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+            throw new IllegalArgumentException();
+        }
+        return realDevice.createTextureView(validationTexture.getRealTexture());
     }
 
     @Override
     public GpuTextureView createTextureView(GpuTexture texture, int baseMipLevel, int mipLevels) {
-        assert texture instanceof ValidationGpuTexture;
-        return realDevice.createTextureView(((ValidationGpuTexture) texture).getRealTexture(), baseMipLevel, mipLevels);
+        if(!(texture instanceof ValidationGpuTexture validationTexture)){
+            throw new IllegalArgumentException();
+        }
+        return realDevice.createTextureView(validationTexture.getRealTexture(), baseMipLevel, mipLevels);
     }
 
     @Override
