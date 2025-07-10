@@ -23,13 +23,13 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 public record DirectoryPalettedPermutations(String texturePath, ResourceLocation paletteKey, String palettePath) implements SpriteSource {
-
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "directory_paletted_permutations");
     public static final MapCodec<DirectoryPalettedPermutations> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("textures").forGetter(DirectoryPalettedPermutations::texturePath),
             ResourceLocation.CODEC.fieldOf("palette_key").forGetter(DirectoryPalettedPermutations::paletteKey),
             Codec.STRING.fieldOf("palettes").forGetter(DirectoryPalettedPermutations::palettePath))
             .apply(instance, DirectoryPalettedPermutations::new));
+
     @Override
     public void run(ResourceManager manager, SpriteSource.Output output) {
         Map<ResourceLocation, Resource> trimTextures = new HashMap<>();

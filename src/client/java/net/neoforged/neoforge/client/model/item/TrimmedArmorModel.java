@@ -40,7 +40,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, ItemTransforms transforms, BakingContext context) implements ItemModel {
-
     private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
@@ -72,6 +71,7 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, It
 
         return new BlockModelWrapper(List.of(), quads, renderProperties, Sheets.translucentItemSheet());
     }
+
     public record Unbaked(BlockModelWrapper.Unbaked baseModel, ResourceLocation trimTexture) implements ItemModel.Unbaked {
         public static final MapCodec<TrimmedArmorModel.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 BlockModelWrapper.Unbaked.MAP_CODEC.fieldOf("base_model").forGetter(TrimmedArmorModel.Unbaked::baseModel),
