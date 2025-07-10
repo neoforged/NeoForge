@@ -7,6 +7,7 @@ package net.neoforged.neoforge.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.pipeline.MainTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -140,7 +141,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.EarlyLoadingScreenController;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.client.blaze3d.opengl.NeoGlDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.config.NeoForgeClientConfig;
 import net.neoforged.neoforge.client.entity.animation.json.AnimationTypeManager;
@@ -1136,7 +1136,7 @@ public class ClientHooks {
     }
 
     public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
-        final var glDevice = new NeoGlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
+        final var glDevice = new GlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
         if (FMLLoader.isProduction()) {
             return glDevice;
         }

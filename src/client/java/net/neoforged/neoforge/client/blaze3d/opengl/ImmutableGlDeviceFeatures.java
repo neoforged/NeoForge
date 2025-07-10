@@ -6,10 +6,12 @@
 package net.neoforged.neoforge.client.blaze3d.opengl;
 
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
+import org.jetbrains.annotations.ApiStatus;
 
-record ImmutableGlDeviceFeatures(
+@ApiStatus.Internal
+public record ImmutableGlDeviceFeatures(
         boolean logicOp) implements GpuDeviceFeatures {
-    ImmutableGlDeviceFeatures(GpuDeviceFeatures features) {
+    public ImmutableGlDeviceFeatures(GpuDeviceFeatures features) {
         this(features.logicOp());
     }
 }
