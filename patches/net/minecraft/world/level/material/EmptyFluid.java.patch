@@ -22,3 +22,12 @@
      @Override
      public Item getBucket() {
          return Items.AIR;
+@@ -39,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected float getExplosionResistance() {
++    public float getExplosionResistance() {
+         return 0.0F;
+     }
+ 

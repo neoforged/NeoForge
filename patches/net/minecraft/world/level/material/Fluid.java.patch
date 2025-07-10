@@ -36,16 +36,11 @@
          StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
          this.createFluidStateDefinition(builder);
          this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
-@@ -85,8 +_,104 @@
+@@ -85,7 +_,97 @@
          return false;
      }
  
-+    /**
-+     * @deprecated Use {{@link #getExplosionResistance(FluidState, BlockGetter, BlockPos, Explosion)}} instead.
-+     */
-+    @Deprecated
-     protected abstract float getExplosionResistance();
- 
+-    protected abstract float getExplosionResistance();
 +    public float getExplosionResistance(FluidState fluidState, BlockGetter level, BlockPos pos, Explosion explosion) {
 +        return getExplosionResistance();
 +    }
@@ -137,10 +132,9 @@
 +    public boolean shouldHideAdjacentFluidFace(FluidState state, Direction selfFace, FluidState adjacentFluid) {
 +        return shouldHideAdjacentFluidFace(selfFace, adjacentFluid);
 +    }
-+
+ 
      public abstract float getHeight(FluidState p_76124_, BlockGetter p_76125_, BlockPos p_76126_);
  
-     public abstract float getOwnHeight(FluidState p_76123_);
 @@ -107,6 +_,11 @@
      }
  

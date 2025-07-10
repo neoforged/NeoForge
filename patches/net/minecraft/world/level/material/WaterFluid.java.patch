@@ -22,6 +22,15 @@
      @Override
      public Fluid getFlowing() {
          return Fluids.FLOWING_WATER;
+@@ -126,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected float getExplosionResistance() {
++    public float getExplosionResistance() {
+         return 100.0F;
+     }
+ 
 @@ -136,6 +_,10 @@
      }
  

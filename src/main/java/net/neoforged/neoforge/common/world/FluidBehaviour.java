@@ -18,6 +18,7 @@ import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -36,6 +37,7 @@ import java.util.Objects;
 public abstract class FluidBehaviour implements FeatureElement {
     protected final float explosionResistance;
     protected final float fallDistanceModifier;
+    protected final double motionScale;
     protected final FeatureFlagSet requiredFeatures;
     protected final String descriptionId;
     protected final FluidBehaviour.Properties properties;
@@ -43,6 +45,7 @@ public abstract class FluidBehaviour implements FeatureElement {
     public FluidBehaviour(FluidBehaviour.Properties properties) {
         this.explosionResistance = properties.explosionResistance;
         this.fallDistanceModifier = properties.fallDistanceModifier;
+        this.motionScale = properties.motionScale;
         this.requiredFeatures = properties.requiredFeatures;
         this.descriptionId = properties.effectiveDescriptionId();
 
@@ -109,8 +112,12 @@ public abstract class FluidBehaviour implements FeatureElement {
         return true;
     }
 
+    public float getExplosionResistance() {
+        return this.explosionResistance;
+    }
+
     public double motionScale(Entity entity) {
-        return 1.0;
+        return this.motionScale;
     }
 
     public boolean canPushEntity(Entity entity) {
@@ -135,8 +142,9 @@ public abstract class FluidBehaviour implements FeatureElement {
     }
 
     public static class Properties {
-        private float explosionResistance;
-        private float fallDistanceModifier;
+        private float explosionResistance = 100.0F;
+        private float fallDistanceModifier = 0.5f;
+        private double motionScale = 0.014D;
         @Nullable
         private ResourceKey<Fluid> id;
         private DependantName<Fluid, String> descriptionId = fluid -> Util.makeDescriptionId("fluid", fluid.location());
@@ -156,6 +164,11 @@ public abstract class FluidBehaviour implements FeatureElement {
 
         public FluidBehaviour.Properties fallDistanceModifier(float fallDistanceModifier) {
             this.fallDistanceModifier = fallDistanceModifier;
+            return this;
+        }
+
+        public FluidBehaviour.Properties motionScale(double motionScale) {
+            this.motionScale = motionScale;
             return this;
         }
 
