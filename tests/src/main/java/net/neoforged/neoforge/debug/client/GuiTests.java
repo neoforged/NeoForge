@@ -179,10 +179,10 @@ public class GuiTests {
         test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
             event.wrapLayer(VanillaGuiLayers.FOOD_LEVEL, guiLayer -> (guiGraphics, deltaTracker) -> {
                 if (test.framework().tests().isEnabled(test.id())) {
-                    guiGraphics.pose().pushMatrix();
-                    guiGraphics.pose().translate(-91 / 2f, -11);
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().translate(-91 / 2f, -11, 0f);
                     guiLayer.render(guiGraphics, deltaTracker);
-                    guiGraphics.pose().popMatrix();
+                    guiGraphics.pose().popPose();
                 } else {
                     guiLayer.render(guiGraphics, deltaTracker);
                 }
