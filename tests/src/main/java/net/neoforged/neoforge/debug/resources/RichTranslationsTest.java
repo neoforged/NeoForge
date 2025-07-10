@@ -22,9 +22,9 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 public class RichTranslationsTest {
     public static final String GROUP = "resources";
 
-    @TestHolder(description = "Tests that rich translations work properly", enabledByDefault = true)
     @GameTest
     @EmptyTemplate("1x1x1")
+    @TestHolder(description = "Tests that rich translations work properly")
     static void richTranslations(final DynamicTest test) {
         test.onGameTest(helper -> {
             String arg = "Example argument";

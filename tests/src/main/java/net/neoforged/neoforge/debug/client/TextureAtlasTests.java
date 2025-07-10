@@ -23,8 +23,6 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
-import net.neoforged.testframework.gametest.EmptyTemplate;
-import net.neoforged.testframework.gametest.GameTest;
 
 @ForEachTest(side = Dist.CLIENT, groups = { "client.texture_atlas", "texture_atlas" })
 public class TextureAtlasTests {
@@ -69,8 +67,6 @@ public class TextureAtlasTests {
     }
 
     @TestHolder(description = { "Tests that custom sprite metadata sections get passed through resource reloading properly" }, enabledByDefault = true)
-    @GameTest
-    @EmptyTemplate
     static void defaultSpriteMetadataSections(final DynamicTest test) {
         String modId = test.createModId();
 

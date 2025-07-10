@@ -1,0 +1,30 @@
+--- a/net/minecraft/world/entity/ai/sensing/VillagerHostilesSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/VillagerHostilesSensor.java
+@@ -7,6 +_,8 @@
+ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+ 
+ public class VillagerHostilesSensor extends NearestVisibleLivingEntitySensor {
++    /** @deprecated Neo: Use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#ACCEPTABLE_VILLAGER_DISTANCES acceptable villager distances} data map instead */
++    @Deprecated
+     private static final ImmutableMap<EntityType<?>, Float> ACCEPTABLE_DISTANCE_FROM_HOSTILES = ImmutableMap.<EntityType<?>, Float>builder()
+         .put(EntityType.DROWNED, 8.0F)
+         .put(EntityType.EVOKER, 12.0F)
+@@ -27,7 +_,8 @@
+     }
+ 
+     private boolean isClose(LivingEntity p_26861_, LivingEntity p_26862_) {
+-        float f = ACCEPTABLE_DISTANCE_FROM_HOSTILES.get(p_26862_.getType());
++        var acceptableDistanceFromHostile = p_26862_.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
++        float f = acceptableDistanceFromHostile != null ? acceptableDistanceFromHostile.distance() : ACCEPTABLE_DISTANCE_FROM_HOSTILES.get(p_26862_.getType());
+         return p_26862_.distanceToSqr(p_26861_) <= f * f;
+     }
+ 
+@@ -37,6 +_,7 @@
+     }
+ 
+     private boolean isHostile(LivingEntity p_26868_) {
+-        return ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(p_26868_.getType());
++        var acceptableDistanceFromHostile = p_26868_.getType().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.ACCEPTABLE_VILLAGER_DISTANCES);
++        return acceptableDistanceFromHostile != null || ACCEPTABLE_DISTANCE_FROM_HOSTILES.containsKey(p_26868_.getType());
+     }
+ }

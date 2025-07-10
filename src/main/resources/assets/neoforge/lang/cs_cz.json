@@ -64,6 +64,7 @@
   "fml.modloadingissue.feature_flags.file_not_found": "Soubor FeatureFlag {0}, poskytovaný modulem {100,modinfo,id}, neexistuje",
   "fml.modloadingissue.feature_flags.loading_error": "Nepodařilo se načíst data FeatureFlag na {0} v modu {100,modinfo,id}: {102,exc,msg}",
   "loadwarning.neoforge.prbuild": "Tento NeoForge build byl vytvořen komunitním členem a proto je §c§lBEZ PODPORY§r",
+  "loadwarning.neoforge.onlyin": "The mod {0} uses the @OnlyIn annotation; the runtime member-stripping behaviour of this annotation is no longer present, which may lead to issues if that behaviour was relied upon",
   "commands.neoforge.arguments.enum.invalid": "Enum konstanta musí být jedna z %1$s, nalezeno %2$s",
   "commands.neoforge.dimensions.list": "Aktuálně registrované dimenze typu:",
   "commands.neoforge.dump.success": "Nový soubor vytvořen s obsahem registru %s je na %s",
