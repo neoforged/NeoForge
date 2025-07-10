@@ -13,7 +13,7 @@
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.sounds.SoundEvent;
  import net.minecraft.sounds.SoundEvents;
-@@ -30,6 +_,13 @@
+@@ -30,6 +_,19 @@
  
  public abstract class LavaFluid extends FlowingFluid {
      public static final float MIN_LEVEL_CUTOFF = 0.44444445F;
@@ -23,6 +23,12 @@
 +        super(net.neoforged.neoforge.common.world.FluidBehaviour.Properties.of()
 +            .setId(ResourceKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.withDefaultNamespace(id)))
 +            .family(FAMILY));
++    }
++
++    @Override
++    public double motionScale(final Entity entity)
++    {
++        return entity.level().dimensionType().ultraWarm() ? 0.007 : 0.0023333333333333335;
 +    }
  
      @Override
