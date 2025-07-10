@@ -44,7 +44,7 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/entity_type/acceptable_villager_distances.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code distance}, a float - the acceptable distance between a villager and another hostile mob.</li>
+     * <li>{@code distance}, a float - the acceptable distance between the hostile mob and a villager</li>
      * </ul>
      *
      * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
