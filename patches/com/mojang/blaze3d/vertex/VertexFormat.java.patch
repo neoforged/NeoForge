@@ -1,9 +1,18 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormat.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormat.java
-@@ -238,4 +_,28 @@
+@@ -128,6 +_,7 @@
+     }
+ 
+     private GpuBuffer uploadToBufferWithWorkaround(@Nullable GpuBuffer p_428850_, ByteBuffer p_428822_, int p_428845_, Supplier<String> p_428834_) {
++        p_428845_ |= GpuBuffer.USAGE_PERF_FRAME_TRANSIENT;
+         if (USE_STAGING_BUFFER_WORKAROUND) {
+             GpuDevice gpudevice = RenderSystem.getDevice();
+             if (p_428850_ == null) {
+@@ -237,5 +_,29 @@
+                 default -> 0;
              };
          }
-     }
++    }
 +
 +    public ImmutableMap<String, VertexFormatElement> getElementMapping() {
 +        ImmutableMap.Builder<String, VertexFormatElement> builder = ImmutableMap.builder();
@@ -27,5 +36,5 @@
 +
 +    public boolean hasUV(int which) {
 +        return elements.stream().anyMatch(e -> e.usage() == VertexFormatElement.Usage.UV && e.index() == which);
-+    }
+     }
  }
