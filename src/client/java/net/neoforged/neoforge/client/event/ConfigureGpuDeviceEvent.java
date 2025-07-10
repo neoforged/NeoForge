@@ -7,9 +7,17 @@ package net.neoforged.neoforge.client.event;
 
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceExtension;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 
+/**
+ * Fired during GpuDevice creation to allow optional features to be enabled.
+ * 
+ * @see GpuDeviceFeatures
+ * @see GpuDeviceProperties
+ * @see GpuDeviceExtension
+ */
 public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuDeviceFeatures {
     private final GpuDeviceProperties deviceProperties;
     private final GpuDeviceFeatures availableFeatures;
@@ -21,10 +29,18 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuD
         this.availableFeatures = availableFeatures;
     }
 
+    /**
+     * Theoretical device properties if all available features are enabled
+     * <br>
+     * The properties returned from {@link GpuDeviceExtension#enabledProperties()} after device creation has completed may be different depending on what features were enabled.
+     */
     public GpuDeviceProperties getDeviceProperties() {
         return deviceProperties;
     }
 
+    /**
+     * Device features available for use, use this to adapt what features your mod enables and uses based on what is available
+     */
     public GpuDeviceFeatures getAvailableFeatures() {
         return availableFeatures;
     }

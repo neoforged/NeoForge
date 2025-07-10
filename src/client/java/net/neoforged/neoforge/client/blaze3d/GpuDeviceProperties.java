@@ -12,8 +12,19 @@ import com.mojang.blaze3d.shaders.ShaderType;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.TextureFormat;
+import java.util.EnumSet;
 import java.util.Set;
+import net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent;
 
+/**
+ * Describes device capability limits similar to what glGetInteger or VkPhysicalDeviceLimits would return
+ * <br>
+ * When retrieved from {@link ConfigureGpuDeviceEvent#getDeviceProperties()}, this is representing theoretical device capabilities, some properties may not be available if features are not enabled
+ * This instance and values from it must not be cached and used later, as it is not representative of allowed capabilities
+ * <br>
+ * When retrieved from {@link GpuDeviceExtension#enabledProperties()} this is representing enabled and allowed device capabilities
+ * This instance and values from it may be cached and used later
+ */
 public interface GpuDeviceProperties {
     /**
      * Name of the backend implementation
@@ -36,27 +47,59 @@ public interface GpuDeviceProperties {
 
     int apiVersionMinor();
 
-    // TODO: better docs on these, both for how to use and how to implement (and what restrictions any recommendation(s) places on Neo)
-    //       the "known" properties are expected (but not required) to match whatever the Neo version the backend was built against supports
-    //       for the enums, using EnumSet.range means inserting in the middle will get automatically added at runtime, which may not be desireable
-    //       will need to be careful with the implementation, updating the enums, or both because of usages like that
-    //       these are also currently not validated at all, a backend could just report it doesnt support something that is assumed to be support
-    //       validation for that should probably be added, also for minimum required values of everything else
+    /**
+     * Bits/Enums known by the backend and/or enabled during configuration.
+     * <br>
+     * Bits or enums unknown by the backend must not be used. These may be defined by a newer NeoForge version than the backend was built against, or the feature may not be enabled.
+     * <br>
+     * Backends must not return known values for features that are not enabled, even if they are supported.
+     */
     int knownGpuBufferUsageBits();
 
+    /**
+     * @see GpuDeviceProperties#knownGpuTextureUsageBits()
+     */
     int knownGpuTextureUsageBits();
 
+    /**
+     * All sets returned must be unmodifiable, and should not be unique instances
+     * <br>
+     * Backend are recommended to use {@link EnumSet#of()} rather than {@link EnumSet#range(Enum, Enum)} to ensure that only known values are returned
+     * regardless of where future enum additions are added.
+     * Use of {@link EnumSet#range(Enum, Enum)} may in an enum added between those that did not previously exist being considered known.
+     * <br>
+     * 
+     * @see GpuDeviceProperties#knownGpuBufferUsageBits()
+     */
     Set<DepthTestFunction> knownDepthTestFunctions();
 
+    /**
+     * @see GpuDeviceProperties#knownDepthTestFunctions()
+     */
     Set<DestFactor> knownDestFactors();
 
+    /**
+     * @see GpuDeviceProperties#knownDepthTestFunctions()
+     */
     Set<SourceFactor> knownSourceFactors();
 
+    /**
+     * @see GpuDeviceProperties#knownDepthTestFunctions()
+     */
     Set<ShaderType> knownShaderTypes();
 
+    /**
+     * @see GpuDeviceProperties#knownDepthTestFunctions()
+     */
     Set<UniformType> knownUniformTypes();
 
+    /**
+     * @see GpuDeviceProperties#knownDepthTestFunctions()
+     */
     Set<AddressMode> knownAddressModes();
 
+    /**
+     * @see GpuDeviceProperties#knownDepthTestFunctions()
+     */
     Set<TextureFormat> knownTextureFormats();
 }

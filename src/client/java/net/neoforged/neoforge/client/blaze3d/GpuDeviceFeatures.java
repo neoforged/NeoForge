@@ -5,6 +5,13 @@
 
 package net.neoforged.neoforge.client.blaze3d;
 
+/**
+ * Enable-able features of a blaze3d backend GpuDevice
+ * <br>
+ * Not all backends support all features, and some features are known to be problematic on some hardware. For details on those features see notes for each feature.
+ * <br>
+ * Features must be enabled via the {@link net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent} to be used.
+ */
 public interface GpuDeviceFeatures {
     /**
      * LogicOp is unusably problematic on Qualcomm GPUs via OpenGL
