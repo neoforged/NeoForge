@@ -149,7 +149,7 @@
          if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
              Vec3 vec3 = this.getDeltaMovement();
              BlockPos blockpos1 = this.blockPosition();
-@@ -1534,7 +_,7 @@
+@@ -1534,16 +_,16 @@
                  d1 = Mth.clamp(d1, (double)blockpos.getZ(), blockpos.getZ() + 1.0);
              }
  
@@ -158,7 +158,9 @@
          }
      }
  
-@@ -1543,7 +_,7 @@
+     public boolean isEyeInFluid(TagKey<Fluid> p_204030_) {
+-        return this.fluidOnEyes.contains(p_204030_);
++        return this.isInFluid((fluid, depth) -> fluid.is(p_204030_));
      }
  
      public boolean isInLava() {

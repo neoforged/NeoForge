@@ -1,157 +1,58 @@
 --- a/net/minecraft/world/level/material/Fluid.java
 +++ b/net/minecraft/world/level/material/Fluid.java
-@@ -14,23 +_,33 @@
- import net.minecraft.util.RandomSource;
- import net.minecraft.world.entity.Entity;
- import net.minecraft.world.entity.InsideBlockEffectApplier;
-+import net.minecraft.world.entity.LivingEntity;
-+import net.minecraft.world.entity.Mob;
-+import net.minecraft.world.entity.item.ItemEntity;
-+import net.minecraft.world.entity.vehicle.AbstractBoat;
- import net.minecraft.world.item.Item;
- import net.minecraft.world.level.BlockGetter;
-+import net.minecraft.world.level.Explosion;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.LevelReader;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.level.block.state.StateDefinition;
-+import net.minecraft.world.level.pathfinder.PathType;
+@@ -23,14 +_,16 @@
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.VoxelShape;
-+import net.neoforged.neoforge.common.SoundAction;
-+import net.neoforged.neoforge.common.world.FluidBehaviour;
 +import net.neoforged.neoforge.fluids.FluidStack;
  
--public abstract class Fluid {
-+public abstract class Fluid extends net.neoforged.neoforge.common.world.FluidBehaviour {
+-public abstract class Fluid implements net.neoforged.neoforge.common.extensions.IFluidExtension {
++public abstract class Fluid extends net.neoforged.neoforge.common.world.FluidBehaviour implements net.neoforged.neoforge.common.extensions.IFluidExtension {
      public static final IdMapper<FluidState> FLUID_STATE_REGISTRY = new IdMapper<>();
      protected final StateDefinition<Fluid, FluidState> stateDefinition;
      private FluidState defaultFluidState;
      private final Holder.Reference<Fluid> builtInRegistryHolder = BuiltInRegistries.FLUID.createIntrusiveHolder(this);
  
 -    protected Fluid() {
-+    public Fluid(FluidBehaviour.Properties properties) {
++    protected Fluid(net.neoforged.neoforge.common.world.FluidBehaviour.Properties properties) {
 +        super(properties);
          StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
          this.createFluidStateDefinition(builder);
          this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
-@@ -85,7 +_,105 @@
+@@ -85,8 +_,6 @@
          return false;
      }
  
 -    protected abstract float getExplosionResistance();
-+    public float getExplosionResistance(FluidState fluidState, BlockGetter level, BlockPos pos, Explosion explosion) {
-+        return getExplosionResistance();
-+    }
-+
-+    public boolean canVehicleRideUnder(FluidState fluidState, BlockGetter level, BlockPos pos, Entity entity, Entity rider)  {
-+        return false;
-+    }
-+
-+    public boolean move(FluidState fluidState, LivingEntity entity, Vec3 movementVector, double gravity) {
-+        return false;
-+    }
-+
-+    public boolean move(FluidState fluidState, ItemEntity entity, Vec3 movementVector, double gravity) {
-+        return false;
-+    }
-+
-+    public boolean canConvertToSource(FluidState fluidState, ServerLevel level, BlockPos pos) {
-+        return false;
-+    }
-+
-+    public boolean supportsBoating(FluidState fluidState, AbstractBoat boat) {
-+        return false;
-+    }
-+
-+    @org.jetbrains.annotations.Nullable
-+    public PathType getBlockPathType(FluidState fluidState, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob, boolean canFluidLog) {
-+        return PathType.BLOCKED;
-+    }
-+
-+    @org.jetbrains.annotations.Nullable
-+    public PathType getAdjacentBlockPathType(FluidState fluidState, BlockGetter level, BlockPos pos, @org.jetbrains.annotations.Nullable Mob mob, PathType originalType) {
-+        return PathType.BLOCKED;
-+    }
-+
-+    public boolean canHydrate(FluidState fluidState, BlockGetter level, BlockPos pos, BlockState source, BlockPos sourcePos) {
-+        return false;
-+    }
-+
-+    public boolean canExtinguish(FluidState fluidState, BlockGetter level, BlockPos pos) {
-+        return false;
-+    }
-+
-+    @Nullable
-+    public SoundEvent getSound(FluidState state, FluidStack stack, SoundAction action) {
-+        return getSound(stack, action);
-+    }
-+
-+    @Nullable
-+    public SoundEvent getSound(FluidState state, Entity entity, SoundAction action) {
-+        return getSound(entity, action);
-+    }
-+
-+    public float getFallDistanceModifier(FluidState fluidState, Entity entity) {
-+        return getFallDistanceModifier(entity);
-+    }
-+
-+    public boolean canDrownIn(FluidState fluidState, LivingEntity livingEntity) {
-+        return false; //canDrownIn(livingEntity);
-+    }
-+
-+    public boolean canStartSwimming(FluidState state, Entity entity) {
-+        return canStartSwimming(entity);
-+    }
-+
-+    public boolean canContinueSwimming(FluidState state, Entity entity) {
-+        return canContinueSwimming(entity);
-+    }
-+
-+    public double motionScale(FluidState state, Entity entity) {
-+        return motionScale(entity);
-+    }
-+
-+    public boolean canPushEntity(FluidState state, Entity entity) {
-+        return canPushEntity(entity);
-+    }
-+
-+    public boolean canHydrate(FluidState state, Entity entity) {
-+        return canHydrate(entity);
-+    }
-+
-+    public boolean canExtinguish(FluidState state, Entity entity) {
-+        return canExtinguish(entity);
-+    }
-+
-+    public FluidState getStateForPlacement(BlockGetter level, BlockPos pos, FluidStack stack) {
-+        return defaultFluidState();
-+    }
-+
-+    public boolean shouldHideAdjacentFluidFace(FluidState state, Direction selfFace, FluidState adjacentFluid) {
-+        return shouldHideAdjacentFluidFace(selfFace, adjacentFluid);
-+    }
-+
-+    @Override
-+    @Deprecated
-+    public boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
-+        return this.getFamily()
-+            .map(adjacentFluid::is)
-+            .orElse(adjacentFluid.is(this));
-+    }
- 
+-
      public abstract float getHeight(FluidState p_76124_, BlockGetter p_76125_, BlockPos p_76126_);
  
-@@ -107,6 +_,11 @@
-     }
- 
-     public abstract VoxelShape getShape(FluidState p_76137_, BlockGetter p_76138_, BlockPos p_76139_);
+     public abstract float getOwnHeight(FluidState p_76123_);
+@@ -125,5 +_,27 @@
+     @Deprecated
+     public Holder.Reference<Fluid> builtInRegistryHolder() {
+         return this.builtInRegistryHolder;
++    }
 +
 +    @Override
 +    public String toString() {// Neo: Patch in a toString similar to Item#toString so that FluidStack#toStringis more readable
 +        return BuiltInRegistries.FLUID.wrapAsHolder(this).getRegisteredName();
 +    }
- 
-     @Nullable
-     public AABB getAABB(FluidState p_397902_, BlockGetter p_397853_, BlockPos p_397764_) {
++
++    @Override
++    public FluidState getStateForPlacement(BlockGetter level, BlockPos pos, FluidStack stack) {
++        return defaultFluidState();
++    }
++
++    @Override
++    public BlockState getBlockStateForPlacement(BlockGetter level, BlockPos pos) {
++        return defaultFluidState().createLegacyBlock();
++    }
++
++    @Override
++    public boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
++        return getFamily()
++            .map(adjacentFluid::is)
++            .orElse(adjacentFluid.is(this));
+     }
+ }

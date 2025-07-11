@@ -11,51 +11,83 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.DependantName;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.flag.FeatureElement;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * A rough duplicate of {@link BlockBehaviour}, aimed at fluids.
  */
 public abstract class FluidBehaviour implements FeatureElement {
-    protected final float explosionResistance;
-    protected final float fallDistanceModifier;
-    protected final double motionScale;
-    protected final Optional<HolderSet<Fluid>> family;
-    protected final FeatureFlagSet requiredFeatures;
-    protected final String descriptionId;
-    protected final FluidBehaviour.Properties properties;
+    // block related properties
+    private final float explosionResistance;
+    private final boolean canConvertToSource;
+    private final boolean canExtinguishBlocks;
+    private final boolean canHydrateBlocks;
+
+    // entity related properties
+    private final float entityFallDistanceModifier;
+    private final double entityMotionScale;
+    private final boolean canPushEntities;
+    private final boolean canEntitiesSwim;
+    private final boolean canEntitiesDrown;
+    private final boolean canExtinguishEntities;
+    private final boolean canHydrateEntities;
+    private final boolean supportsBoats;
+    @Nullable
+    private final PathType pathingType;
+    @Nullable
+    private final PathType adjacentPathingType;
+
+    // misc. properties
+    private final Optional<HolderSet<Fluid>> family;
+    private final String descriptionId;
+    private final FeatureFlagSet requiredFeatures;
+    private final Properties properties;
 
     public FluidBehaviour(FluidBehaviour.Properties properties) {
         this.explosionResistance = properties.explosionResistance;
-        this.fallDistanceModifier = properties.fallDistanceModifier;
-        this.motionScale = properties.motionScale;
-        this.family = Optional.ofNullable(properties.family);
-        this.requiredFeatures = properties.requiredFeatures;
-        this.descriptionId = properties.effectiveDescriptionId();
+        this.canConvertToSource = properties.canConvertToSource;
+        this.canExtinguishBlocks = properties.canExtinguishBlocks;
+        this.canHydrateBlocks = properties.canHydrateBlocks;
 
+        this.entityFallDistanceModifier = properties.entityFallDistanceModifier;
+        this.entityMotionScale = properties.entityMotionScale;
+        this.canPushEntities = properties.canPushEntities;
+        this.canEntitiesSwim = properties.canEntitiesSwim;
+        this.canEntitiesDrown = properties.canEntitiesDrown;
+        this.canExtinguishEntities = properties.canExtinguishEntities;
+        this.canHydrateEntities = properties.canHydrateEntities;
+        this.supportsBoats = properties.supportsBoats;
+        this.pathingType = properties.pathingType;
+        this.adjacentPathingType = properties.adjacentPathingType;
+
+        this.family = Optional.ofNullable(properties.family);
+        this.descriptionId = properties.effectiveDescriptionId();
+        this.requiredFeatures = properties.requiredFeatures;
         this.properties = properties;
     }
 
@@ -80,68 +112,29 @@ public abstract class FluidBehaviour implements FeatureElement {
         return this.family;
     }
 
-    @Nullable
-    public SoundEvent getSound(FluidStack stack, SoundAction action) {
-        return null;
+    public float getExplosionResistance() {
+        return this.explosionResistance;
     }
 
-    @Nullable
-    public SoundEvent getSound(Entity entity, SoundAction action) {
-        return null;
+    public boolean canConvertToSource(ServerLevel level, BlockPos pos) {
+        return this.canConvertToSource;
     }
 
-    @Nullable
-    public SoundEvent getSound(LivingEntity entity, LevelAccessor level, BlockPos pos, SoundAction action) {
-        return null;
+    public boolean canExtinguish(BlockGetter level, BlockPos pos) {
+        return this.canExtinguishBlocks;
     }
 
-    public boolean isVaporizedOnPlacement(BlockGetter level, BlockPos pos, FluidStack stack) {
-        return false;
-    }
-
-    public void onVaporize(LivingEntity player, BlockGetter level, BlockPos pos, FluidStack stack) {
-
+    public boolean canHydrate(BlockGetter level, BlockPos pos, BlockState source, BlockPos sourcePos) {
+        return this.canHydrateBlocks;
     }
 
     public boolean handleCauldronDrip(BlockGetter level, BlockPos pos) {
         return false;
     }
 
-    public BlockState getBlockForFluidState(BlockGetter level, BlockPos pos, FluidState state) {
-        return state.createLegacyBlock();
-    }
+    public abstract FluidState getStateForPlacement(BlockGetter level, BlockPos pos, FluidStack stack);
 
-    public float getFallDistanceModifier(Entity entity) {
-        return this.fallDistanceModifier;
-    }
-
-    public boolean canStartSwimming(Entity entity) {
-        return true;
-    }
-
-    public boolean canContinueSwimming(Entity entity) {
-        return true;
-    }
-
-    public float getExplosionResistance() {
-        return this.explosionResistance;
-    }
-
-    public double motionScale(Entity entity) {
-        return this.motionScale;
-    }
-
-    public boolean canPushEntity(Entity entity) {
-        return true;
-    }
-
-    public boolean canHydrate(Entity entity) {
-        return true;
-    }
-
-    public boolean canExtinguish(Entity entity) {
-        return true;
-    }
+    public abstract BlockState getBlockStateForPlacement(BlockGetter level, BlockPos pos);
 
     public boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
         return false;
@@ -152,10 +145,108 @@ public abstract class FluidBehaviour implements FeatureElement {
         return null;
     }
 
+    public boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
+        return false;
+    }
+
+    public boolean move(ItemEntity entity, Vec3 movementVector, double gravity) {
+        return false;
+    }
+
+    @Nullable
+    public SoundEvent getSound(LivingEntity entity, BlockGetter level, BlockPos pos, SoundAction action) {
+        return null;
+    }
+
+    @Nullable
+    public SoundEvent getSound(FluidStack stack, SoundAction action) {
+        return null;
+    }
+
+    @Nullable
+    public SoundEvent getSound(Entity entity, SoundAction action) {
+        return null;
+    }
+
+    public boolean isVaporizedOnPlacement(BlockGetter level, BlockPos pos, FluidStack stack) {
+        return false;
+    }
+
+    public void onVaporize(LivingEntity player, BlockGetter level, BlockPos pos, FluidStack stack) {
+    }
+
+    public boolean canVehicleRideUnder(BlockGetter level, BlockPos pos, Entity entity, Entity rider)  {
+        return false;
+    }
+
+    public float getFallDistanceModifier(Entity entity) {
+        return this.entityFallDistanceModifier;
+    }
+
+    public double motionScale(Entity entity) {
+        return this.entityMotionScale;
+    }
+
+    public boolean canPushEntity(Entity entity) {
+        return this.canPushEntities;
+    }
+
+    public boolean canStartSwimming(Entity entity) {
+        return this.canEntitiesSwim;
+    }
+
+    public boolean canContinueSwimming(Entity entity) {
+        return this.canEntitiesSwim;
+    }
+
+    public boolean canDrownIn(LivingEntity livingEntity) {
+        return this.canEntitiesDrown;
+    }
+
+    public boolean canExtinguish(Entity entity) {
+        return this.canExtinguishEntities;
+    }
+
+    public boolean canHydrate(Entity entity) {
+        return this.canHydrateEntities;
+    }
+
+    public boolean supportsBoating(AbstractBoat boat) {
+        return this.supportsBoats;
+    }
+
+    @Nullable
+    public PathType getBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, boolean canFluidLog) {
+        return this.pathingType;
+    }
+
+    @Nullable
+    public PathType getAdjacentBlockPathType(BlockGetter level, BlockPos pos, @Nullable Mob mob, PathType originalType) {
+        return this.adjacentPathingType;
+    }
+
     public static class Properties {
-        private float explosionResistance = 100.0F;
-        private float fallDistanceModifier = 0.5f;
-        private double motionScale = 0.014D;
+        // block related properties
+        private float explosionResistance = 0f;
+        private boolean canConvertToSource = false;
+        private boolean canExtinguishBlocks = false;
+        private boolean canHydrateBlocks = false;
+
+        // entity related properties
+        private float entityFallDistanceModifier = 1f;
+        private double entityMotionScale = 1f;
+        private boolean canPushEntities = false;
+        private boolean canEntitiesSwim = false;
+        private boolean canEntitiesDrown = false;
+        private boolean canExtinguishEntities = false;
+        private boolean canHydrateEntities = false;
+        private boolean supportsBoats = false;
+        @Nullable
+        private PathType pathingType = PathType.BLOCKED;
+        @Nullable
+        private PathType adjacentPathingType = PathType.BLOCKED;
+
+        // misc. properties
         @Nullable
         private HolderSet<Fluid> family;
         @Nullable
@@ -175,13 +266,68 @@ public abstract class FluidBehaviour implements FeatureElement {
             return this;
         }
 
+        public FluidBehaviour.Properties convertsToSource() {
+            this.canConvertToSource = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties extinguishBlocks() {
+            this.canExtinguishBlocks = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties hydrateBlocks() {
+            this.canHydrateBlocks = true;
+            return this;
+        }
+
         public FluidBehaviour.Properties fallDistanceModifier(float fallDistanceModifier) {
-            this.fallDistanceModifier = fallDistanceModifier;
+            this.entityFallDistanceModifier = fallDistanceModifier;
             return this;
         }
 
         public FluidBehaviour.Properties motionScale(double motionScale) {
-            this.motionScale = motionScale;
+            this.entityMotionScale = motionScale;
+            return this;
+        }
+
+        public FluidBehaviour.Properties pushEntities() {
+            this.canPushEntities = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties swimmable() {
+            this.canEntitiesSwim = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties drownable() {
+            this.canEntitiesDrown = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties extinguishEntities() {
+            this.canExtinguishEntities = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties hydrateEntities() {
+            this.canHydrateEntities = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties supportsBoats() {
+            this.supportsBoats = true;
+            return this;
+        }
+
+        public FluidBehaviour.Properties pathType(@Nullable PathType pathingType) {
+            this.pathingType = pathingType;
+            return this;
+        }
+
+        public FluidBehaviour.Properties adjacentPathType(@Nullable PathType pathingType) {
+            this.adjacentPathingType = pathingType;
             return this;
         }
 
@@ -200,11 +346,6 @@ public abstract class FluidBehaviour implements FeatureElement {
             return this;
         }
 
-        public FluidBehaviour.Properties requiredFeatures(FeatureFlag... featureFlags) {
-            this.requiredFeatures = FeatureFlags.REGISTRY.subset(featureFlags);
-            return this;
-        }
-
         public FluidBehaviour.Properties setId(ResourceKey<Fluid> fluidId) {
             this.id = fluidId;
             return this;
@@ -212,6 +353,11 @@ public abstract class FluidBehaviour implements FeatureElement {
 
         public FluidBehaviour.Properties overrideDescription(String description) {
             this.descriptionId = DependantName.fixed(description);
+            return this;
+        }
+
+        public FluidBehaviour.Properties requiredFeatures(FeatureFlag... featureFlags) {
+            this.requiredFeatures = FeatureFlags.REGISTRY.subset(featureFlags);
             return this;
         }
 

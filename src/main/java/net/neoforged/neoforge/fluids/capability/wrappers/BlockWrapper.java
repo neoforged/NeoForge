@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
@@ -18,12 +19,12 @@ import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
  * Wrapper around any block, only accounts for fluid placement, otherwise the block acts a void.
  */
 public class BlockWrapper extends VoidFluidHandler {
-    protected final BlockState state;
+    protected final Fluid fluid;
     protected final Level world;
     protected final BlockPos blockPos;
 
-    public BlockWrapper(BlockState state, Level world, BlockPos blockPos) {
-        this.state = state;
+    public BlockWrapper(Fluid fluid, Level world, BlockPos blockPos) {
+        this.fluid = fluid;
         this.world = world;
         this.blockPos = blockPos;
     }
@@ -36,6 +37,7 @@ public class BlockWrapper extends VoidFluidHandler {
         }
         if (action.execute()) {
             FluidUtil.destroyBlockOnFluidPlacement(world, blockPos);
+            BlockState state = fluid.getBlockStateForPlacement(world, blockPos);
             world.setBlock(blockPos, state, Block.UPDATE_ALL_IMMEDIATE);
         }
         return 1000;

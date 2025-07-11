@@ -496,7 +496,7 @@ public class FluidUtil {
             if (canDestContainFluid) {
                 handler = new BlockWrapper.LiquidContainerBlockWrapper((LiquidBlockContainer) destBlockState.getBlock(), level, pos);
             } else {
-                handler = getFluidBlockHandler(fluid, level, pos);
+                handler = new BlockWrapper(fluid, level, pos);
             }
             FluidStack result = tryFluidTransfer(handler, fluidSource, resource, true);
             if (!result.isEmpty()) {
@@ -510,17 +510,6 @@ public class FluidUtil {
             }
         }
         return false;
-    }
-
-    /**
-     * Internal method for getting a fluid block handler for placing a fluid.
-     *
-     * Modders: Instead of this method, use {@link #tryPlaceFluid(Player, Level, InteractionHand, BlockPos, ItemStack, FluidStack)}
-     * or {@link #tryPlaceFluid(Player, Level, InteractionHand, BlockPos, IFluidHandler, FluidStack)}
-     */
-    private static IFluidHandler getFluidBlockHandler(Fluid fluid, Level level, BlockPos pos) {
-        BlockState state = fluid.getBlockForFluidState(level, pos, fluid.defaultFluidState());
-        return new BlockWrapper(state, level, pos);
     }
 
     /**

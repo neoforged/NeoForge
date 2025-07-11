@@ -18,6 +18,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.SoundAction;
+import net.neoforged.neoforge.common.world.FluidBehaviour.DripstoneDripInfo;
 import org.jetbrains.annotations.Nullable;
 
 public interface IFluidStateExtension {
@@ -57,7 +58,7 @@ public interface IFluidStateExtension {
     }
 
     /**
-     * Performs how an entity moves when within the fluid. If using custom
+     * Performs how a living entity moves when within the fluid. If using custom
      * movement logic, the method should return {@code true}. Otherwise, the
      * movement logic will default to water.
      *
@@ -70,6 +71,16 @@ public interface IFluidStateExtension {
         return self().getType().move(self(), entity, movementVector, gravity);
     }
 
+    /**
+     * Performs how an item entity moves when within the fluid. If using custom
+     * movement logic, the method should return {@code true}. Otherwise, the
+     * movement logic will default to water.
+     *
+     * @param entity         the entity moving within the fluid
+     * @param movementVector the velocity of how the entity wants to move
+     * @param gravity        the gravity to apply to the entity
+     * @return {@code true} if custom movement logic is performed, {@code false} otherwise
+     */
     default boolean move(ItemEntity entity, Vec3 movementVector, double gravity) {
         return self().getType().move(self(), entity, movementVector, gravity);
     }
@@ -230,5 +241,10 @@ public interface IFluidStateExtension {
      */
     default boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
         return self().getType().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
+    }
+
+    @javax.annotation.Nullable
+    default DripstoneDripInfo getDripInfo() {
+        return self().getType().getDripInfo(self());
     }
 }

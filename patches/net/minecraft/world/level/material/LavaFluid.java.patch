@@ -13,7 +13,11 @@
  import net.minecraft.server.level.ServerLevel;
  import net.minecraft.sounds.SoundEvent;
  import net.minecraft.sounds.SoundEvents;
-@@ -30,6 +_,19 @@
+@@ -27,9 +_,27 @@
+ import net.minecraft.world.level.block.LiquidBlock;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.StateDefinition;
++import net.minecraft.world.level.pathfinder.PathType;
  
  public abstract class LavaFluid extends FlowingFluid {
      public static final float MIN_LEVEL_CUTOFF = 0.44444445F;
@@ -21,8 +25,12 @@
 +
 +    protected LavaFluid(String id) {
 +        super(net.neoforged.neoforge.common.world.FluidBehaviour.Properties.of()
-+            .setId(ResourceKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.withDefaultNamespace(id)))
-+            .family(FAMILY));
++            .fallDistanceModifier(0.5f)
++            .pushEntities()
++            .pathType(PathType.LAVA)
++            .adjacentPathType(null)
++            .family(FAMILY)
++            .setId(ResourceKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.withDefaultNamespace(id))));
 +    }
 +
 +    @Override
