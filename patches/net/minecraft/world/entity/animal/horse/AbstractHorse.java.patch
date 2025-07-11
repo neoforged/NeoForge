@@ -20,6 +20,15 @@
          if (p_275435_.z > 0.0) {
              float f = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0));
              float f1 = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0));
+@@ -983,7 +_,7 @@
+                 }
+ 
+                 blockpos$mutableblockpos.move(Direction.UP);
+-            } while (!(blockpos$mutableblockpos.getY() < d3));
++            } while (blockpos$mutableblockpos.getY() < d3);
+         }
+ 
+         return null;
 @@ -1020,6 +_,11 @@
  
          this.randomizeAttributes(p_30555_.getRandom());
