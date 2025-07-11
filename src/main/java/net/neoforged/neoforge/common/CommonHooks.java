@@ -1399,7 +1399,7 @@ public class CommonHooks {
      */
     public static void onLivingBreathe(LivingEntity entity, int consumeAirAmount, int refillAirAmount) {
         // Check things that vanilla considers to be air - these will cause the air supply to be increased.
-        boolean isAir = entity.getEyeInFluid().is(Fluids.EMPTY) || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
+        boolean isAir = entity.getEyeInFluid().isSame(Fluids.EMPTY) || entity.level().getBlockState(BlockPos.containing(entity.getX(), entity.getEyeY(), entity.getZ())).is(Blocks.BUBBLE_COLUMN);
         boolean canBreathe = isAir;
         // The following effects cause the entity to not drown, but do not cause the air supply to be increased.
         if (!isAir && (MobEffectUtil.hasWaterBreathing(entity) || !entity.canDrownInFluid(entity.getEyeInFluid()) || (entity instanceof Player player && player.getAbilities().invulnerable))) {

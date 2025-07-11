@@ -571,8 +571,8 @@
          profilerfiller.push("jump");
          if (this.jumping && this.isAffectedByFluids()) {
              double d3;
-+            FluidState fluidType = this.getMaxHeightFluid();
-+            if (!fluidType.is(Fluids.EMPTY)) d3 = this.getFluidHeight(fluidType);
++            Fluid fluidType = this.getMaxHeightFluid();
++            if (!fluidType.isSame(Fluids.EMPTY)) d3 = this.getFluidHeight(fluidType);
 +            else
              if (this.isInLava()) {
                  d3 = this.getFluidHeight(FluidTags.LAVA);
@@ -581,7 +581,7 @@
              double d4 = this.getFluidJumpThreshold();
              if (!flag || this.onGround() && !(d3 > d4)) {
                  if (!this.isInLava() || this.onGround() && !(d3 > d4)) {
-+                    if (fluidType.is(Fluids.EMPTY) || this.onGround() && !(d3 > d4)) {
++                    if (fluidType.isSame(Fluids.EMPTY) || this.onGround() && !(d3 > d4)) {
                      if ((this.onGround() || flag && d3 <= d4) && this.noJumpDelay == 0) {
                          this.jumpFromGround();
                          this.noJumpDelay = 10;
@@ -589,11 +589,11 @@
 +                    } else this.jumpInFluid(fluidType);
                  } else {
 -                    this.jumpInLiquid(FluidTags.LAVA);
-+                    this.jumpInFluid(Fluids.LAVA.defaultFluidState());
++                    this.jumpInFluid(Fluids.LAVA);
                  }
              } else {
 -                this.jumpInLiquid(FluidTags.WATER);
-+                this.jumpInFluid(Fluids.WATER.defaultFluidState());
++                this.jumpInFluid(Fluids.WATER);
              }
          } else {
              this.noJumpDelay = 0;

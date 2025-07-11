@@ -1,9 +1,10 @@
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -30,6 +_,8 @@
+@@ -30,6 +_,9 @@
  import net.minecraft.world.level.GameRules;
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.gameevent.GameEvent;
++import net.minecraft.world.level.material.Fluid;
 +import net.minecraft.world.level.material.FluidState;
 +import net.minecraft.world.level.material.Fluids;
  import net.minecraft.world.level.portal.TeleportTransition;
@@ -48,8 +49,8 @@
              this.yo = this.getY();
              this.zo = this.getZ();
              Vec3 vec3 = this.getDeltaMovement();
-+            FluidState fluidType = this.getMaxHeightFluid();
-+            if (!fluidType.is(Fluids.EMPTY) && this.getFluidHeight(fluidType) > 0.1F) fluidType.move(this, vec3, getGravity());
++            Fluid fluidType = this.getMaxHeightFluid();
++            if (!fluidType.isSame(Fluids.EMPTY) && this.getFluidHeight(fluidType) > 0.1F) fluidType.move(this.level().getFluidState(this.blockPosition()), this, vec3, getGravity());
 +            else
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();

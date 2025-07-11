@@ -5,10 +5,12 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
+
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -19,8 +21,8 @@ public interface ILivingEntityExtension extends IEntityExtension {
     }
 
     @Override
-    default boolean canSwimInFluid(FluidState type) {
-        if (type.is(Fluids.WATER)) return !self().isSensitiveToWater();
+    default boolean canSwimInFluid(Fluid type) {
+        if (type.is(FluidTags.WATER)) return !self().isSensitiveToWater();
         else return IEntityExtension.super.canSwimInFluid(type);
     }
 
@@ -29,9 +31,9 @@ public interface ILivingEntityExtension extends IEntityExtension {
      *
      * @param type the type of the fluid
      */
-    default void jumpInFluid(FluidState type) {
+    default void jumpInFluid(Fluid type) {
         // Apply swim speed only to WATER fluid types
-        double multiplier = type.is(Fluids.WATER) ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
+        double multiplier = type.is(FluidTags.WATER) ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
         self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) 0.04F * multiplier, 0.0D));
     }
 
@@ -42,7 +44,7 @@ public interface ILivingEntityExtension extends IEntityExtension {
      */
     default void sinkInFluid(FluidState type) {
         // Apply swim speed only to WATER fluid types
-        double multiplier = type.is(Fluids.WATER) ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
+        double multiplier = type.is(FluidTags.WATER) ? self().getAttributeValue(NeoForgeMod.SWIM_SPEED) : 1.0D;
         self().setDeltaMovement(self().getDeltaMovement().add(0.0D, (double) -0.04F * multiplier, 0.0D));
     }
 
@@ -52,9 +54,9 @@ public interface ILivingEntityExtension extends IEntityExtension {
      * @param type the type of the fluid
      * @return {@code true} if the entity can drown in the fluid, {@code false} otherwise
      */
-    default boolean canDrownInFluid(FluidState type) {
-        if (type.is(Fluids.WATER)) return !self().canBreatheUnderwater();
-        return type.canDrownIn(self());
+    default boolean canDrownInFluid(Fluid type) {
+        if (type.is(FluidTags.WATER)) return !self().canBreatheUnderwater();
+        return type.canDrownIn(self().level().getFluidState(self().blockPosition()), self());
     }
 
     /**

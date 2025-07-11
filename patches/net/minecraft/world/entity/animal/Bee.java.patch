@@ -31,7 +31,7 @@
 +    }
 +
 +    @Override
-+    public void jumpInFluid(FluidState type) {
++    public void jumpInFluid(Fluid type) {
 +        this.jumpInLiquidInternal();
      }
  

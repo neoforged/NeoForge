@@ -36,7 +36,7 @@
          StateDefinition.Builder<Fluid, FluidState> builder = new StateDefinition.Builder<>(this);
          this.createFluidStateDefinition(builder);
          this.stateDefinition = builder.create(Fluid::defaultFluidState, FluidState::new);
-@@ -85,7 +_,97 @@
+@@ -85,7 +_,105 @@
          return false;
      }
  
@@ -131,6 +131,14 @@
 +
 +    public boolean shouldHideAdjacentFluidFace(FluidState state, Direction selfFace, FluidState adjacentFluid) {
 +        return shouldHideAdjacentFluidFace(selfFace, adjacentFluid);
++    }
++
++    @Override
++    @Deprecated
++    public boolean shouldHideAdjacentFluidFace(Direction selfFace, FluidState adjacentFluid) {
++        return this.getFamily()
++            .map(adjacentFluid::is)
++            .orElse(adjacentFluid.is(this));
 +    }
  
      public abstract float getHeight(FluidState p_76124_, BlockGetter p_76125_, BlockPos p_76126_);

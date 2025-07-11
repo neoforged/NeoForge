@@ -33,7 +33,7 @@
 +    }
 +
 +    @Override
-+    public void jumpInFluid(FluidState type) {
++    public void jumpInFluid(Fluid type) {
 +        this.jumpInLiquidInternal(() -> type.is(FluidTags.LAVA), () -> super.jumpInFluid(type));
      }
  

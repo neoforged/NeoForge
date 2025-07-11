@@ -38,10 +38,10 @@
      private int remainingFireTicks;
      protected boolean wasTouchingWater;
 -    protected Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
-+    protected Object2DoubleMap<FluidState> fluidHeight = new Object2DoubleArrayMap<>(2);
++    protected Object2DoubleMap<Fluid> fluidHeight = new Object2DoubleArrayMap<>(2);
      protected boolean wasEyeInWater;
 -    private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
-+    private final Set<FluidState> fluidOnEyes = new HashSet<>();
++    private final Set<Fluid> fluidOnEyes = new HashSet<>();
      public int invulnerableTime;
      protected boolean firstTick = true;
      protected final SynchedEntityData entityData;
@@ -118,8 +118,8 @@
 -        boolean flag = this.updateFluidHeightAndDoFluidPushing(FluidTags.LAVA, d0);
 -        return this.isInWater() || flag;
 +        if (this.isInFluid() && !(this.getVehicle() instanceof AbstractBoat)) {
-+            this.fallDistance *= this.fluidHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().is(Fluids.EMPTY)).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
-+            if (this.isInFluid((fluid, height) -> !fluid.is(Fluids.EMPTY) && this.canFluidExtinguish(fluid))) this.clearFire();
++            this.fallDistance *= this.fluidHeight.object2DoubleEntrySet().stream().filter(e -> !e.getKey().isSame(Fluids.EMPTY)).map(e -> this.getFluidFallDistanceModifier(e.getKey())).min(Float::compare).orElse(1F);
++            if (this.isInFluid((fluid, height) -> !fluid.isSame(Fluids.EMPTY) && this.canFluidExtinguish(fluid))) this.clearFire();
 +        }
 +        return this.isInFluid();
      }
@@ -130,7 +130,7 @@
              double d1 = blockpos.getY() + fluidstate.getHeight(this.level(), blockpos);
              if (d1 > d0) {
 -                fluidstate.getTags().forEach(this.fluidOnEyes::add);
-+                this.fluidOnEyes.add(fluidstate);
++                this.fluidOnEyes.add(fluidstate.getType());
              }
          }
      }
@@ -331,7 +331,7 @@
              int k1 = 0;
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 +            class InterimCalculation {
-+                Set<FluidState> states = new HashSet<>();
++                Set<Fluid> fluids = new HashSet<>();
 +                double fluidScale = 0.0D;
 +                double fluidHeight = 0.0D;
 +                Vec3 flowVector = Vec3.ZERO;
@@ -355,8 +355,8 @@
 +                                    interimCalcs = new it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<>();
 +                                }
 +                                InterimCalculation interim = interimCalcs.computeIfAbsent(fluidstate.getFamily(), t -> new InterimCalculation());
-+                                interim.states.add(fluidstate);
-+                                interim.fluidScale = interim.fluidScale + this.getFluidMotionScale(fluidstate);
++                                interim.fluids.add(fluidstate.getType());
++                                interim.fluidScale = Math.max(interim.fluidScale, this.getFluidMotionScale(fluidstate));
 +                                interim.fluidHeight = Math.max(d1 - aabb.minY, interim.fluidHeight);
 +                                if (this.isPushedByFluid(fluidstate)) {
                                      Vec3 vec31 = fluidstate.getFlow(this.level(), blockpos$mutableblockpos);
@@ -394,7 +394,7 @@
  
                  Vec3 vec32 = this.getDeltaMovement();
 -                vec3 = vec3.scale(p_204033_);
-+                interim.flowVector = interim.flowVector.scale(interim.fluidScale / interim.states.size());
++                interim.flowVector = interim.flowVector.scale(interim.fluidScale);
                  double d2 = 0.003;
 -                if (Math.abs(vec32.x) < 0.003 && Math.abs(vec32.z) < 0.003 && vec3.length() < 0.0045000000000000005) {
 -                    vec3 = vec3.normalize().scale(0.0045000000000000005);
@@ -408,8 +408,8 @@
  
 -            this.fluidHeight.put(p_204032_, d0);
 -            return flag1;
-+            interim.states.forEach(state -> {
-+                this.fluidHeight.put(state, interim.fluidHeight);
++            interim.fluids.forEach(fluid -> {
++                this.fluidHeight.put(fluid, interim.fluidHeight);
 +            });
 +            });
 +            }
@@ -513,12 +513,12 @@
 +    }
 +
 +    @Override
-+    public final double getFluidHeight(FluidState type) {
++    public final double getFluidHeight(Fluid type) {
 +        return this.fluidHeight.getDouble(type);
 +    }
 +
 +    @Override
-+    public final boolean isInFluid(java.util.function.BiPredicate<FluidState, Double> predicate, boolean forAllTypes) {
++    public final boolean isInFluid(java.util.function.BiPredicate<Fluid, Double> predicate, boolean forAllTypes) {
 +        if (this.fluidHeight.isEmpty()) {
 +            return false;
 +        }
@@ -532,16 +532,16 @@
 +    }
 +
 +    @Override
-+    public final FluidState getEyeInFluid() {
-+        return fluidOnEyes.stream().findFirst().orElse(Fluids.EMPTY.defaultFluidState());
++    public final Fluid getEyeInFluid() {
++        return fluidOnEyes.stream().findFirst().orElse(Fluids.EMPTY);
 +    }
 +
 +    @Override
-+    public FluidState getMaxHeightFluid() {
++    public Fluid getMaxHeightFluid() {
 +        if (this.fluidHeight.isEmpty()) {
-+            return Fluids.EMPTY.defaultFluidState();
++            return Fluids.EMPTY;
 +        }
-+        return this.fluidHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElseGet(null);
++        return this.fluidHeight.object2DoubleEntrySet().stream().max(java.util.Comparator.comparingDouble(Object2DoubleMap.Entry::getDoubleValue)).map(Object2DoubleMap.Entry::getKey).orElse(Fluids.EMPTY);
 +    }
 +
 +    // Neo: Hookup Attachment data setting
