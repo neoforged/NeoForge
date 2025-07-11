@@ -26,6 +26,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentInternals;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -400,6 +401,8 @@ public interface IEntityExtension extends INBTSerializable<CompoundTag> {
 
     /**
      * Copies the serialized attachments from another entity to this entity.
+     *
+     * <p>This does not trigger {@link IAttachmentHolder#syncData syncing} of the copied attachments.
      *
      * @param other   the entity that attachments should be copied from
      * @param isDeath if {@code true}, only attachments with {@link AttachmentType.Builder#copyOnDeath()} set are copied;

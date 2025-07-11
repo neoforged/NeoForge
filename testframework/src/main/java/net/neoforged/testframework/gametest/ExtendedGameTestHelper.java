@@ -7,6 +7,7 @@ package net.neoforged.testframework.gametest;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Set;
@@ -119,6 +120,15 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             @Override
             public boolean isMemoryConnection() {
                 return true;
+            }
+
+            @Override
+            public void send(Packet<?> packet, @Nullable ChannelFutureListener listeners, boolean flush) {
+                super.send(packet, listeners, flush);
+                // Respond to keepalive packets instantly
+                if (packet instanceof ClientboundKeepAlivePacket ckp) {
+                    serverplayer.connection.handleKeepAlive(new ServerboundKeepAlivePacket(ckp.getId()));
+                }
             }
         };
         EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);

@@ -1,0 +1,12 @@
+diff a/src/main/java/net/neoforged/neoforge/network/NetworkInitialization.java b/src/main/java/net/neoforged/neoforge/network/NetworkInitialization.java	(rejected hunks)
+@@ -98,6 +99,9 @@ final class NetworkInitialization {
+                         ClientboundCustomSetTimePayload.STREAM_CODEC)
+                 .playToClient(
+                         RecipeContentPayload.TYPE,
+-                        RecipeContentPayload.STREAM_CODEC);
++                        RecipeContentPayload.STREAM_CODEC)
++                .playToClient(
++                        SyncAttachmentsPayload.TYPE,
++                        SyncAttachmentsPayload.STREAM_CODEC);
+     }
+ }

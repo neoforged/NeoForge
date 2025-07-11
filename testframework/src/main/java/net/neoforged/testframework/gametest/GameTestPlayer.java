@@ -91,15 +91,24 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
         NeoForge.EVENT_BUS.addListener(listener);
     }
 
-    private void disconnectGameTest() {
-        connection.disconnect(Component.literal("Test finished"));
-        this.listeners.forEach(NeoForge.EVENT_BUS::unregister);
-        this.listeners.clear();
+    private boolean disconnected;
+
+    public void disconnectGameTest() {
+        if (!disconnected) {
+            connection.disconnect(Component.literal("Test finished"));
+            this.listeners.forEach(NeoForge.EVENT_BUS::unregister);
+            this.listeners.clear();
+            disconnected = true;
+        }
+    }
+
+    private EmbeddedChannel getChannel() {
+        return (EmbeddedChannel) connection.getConnection().channel();
     }
 
     @SuppressWarnings("unchecked")
     private Stream<Packet<? extends ClientCommonPacketListener>> outboundPackets() {
-        return ((EmbeddedChannel) connection.getConnection().channel()).outboundMessages().stream()
+        return getChannel().outboundMessages().stream()
                 .filter(Packet.class::isInstance).map(obj -> (Packet<? extends ClientCommonPacketListener>) obj)
                 .flatMap((Function<Packet<? extends ClientCommonPacketListener>, Stream<? extends Packet<? extends ClientCommonPacketListener>>>) packet -> {
                     if (!(packet instanceof ClientboundBundlePacket clientboundBundlePacket)) return Stream.of(packet);
@@ -118,5 +127,17 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
                 .map(ClientboundCustomPayloadPacket::payload)
                 .filter(type::isInstance)
                 .map(type::cast);
+    }
+
+    public <T extends CustomPacketPayload> T requireOutboundPayload(Class<T> type) {
+        var payloads = getOutboundPayloads(type).toList();
+        if (payloads.size() != 1) {
+            throw new IllegalArgumentException("Expected player " + this + " to have exactly one outbound payload of type " + type + " but found " + payloads.size());
+        }
+        return payloads.getFirst();
+    }
+
+    public void clearOutboundPackets() {
+        getChannel().releaseOutbound();
     }
 }
