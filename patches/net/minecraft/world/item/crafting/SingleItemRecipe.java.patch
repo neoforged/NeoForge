@@ -55,7 +55,7 @@
                          Codec.STRING.optionalFieldOf("group", "").forGetter(SingleItemRecipe::group),
                          Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleItemRecipe::input),
 -                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::result)
-+                        net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult)
++                        net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult)
                      )
                      .apply(p_360076_, p_312589_::create)
              );
@@ -65,7 +65,7 @@
                  SingleItemRecipe::input,
 -                ItemStack.STREAM_CODEC,
 -                SingleItemRecipe::result,
-+                net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_STREAM_CODEC,
++                net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_STREAM_CODEC,
 +                SingleItemRecipe::getDirectResult,
                  p_312589_::create
              );

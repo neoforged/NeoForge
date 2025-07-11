@@ -43,7 +43,7 @@
                      CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_311732_ -> p_311732_.category),
                      ShapedRecipePattern.MAP_CODEC.forGetter(p_311733_ -> p_311733_.pattern),
 -                    ItemStack.STRICT_CODEC.fieldOf("result").forGetter(p_311730_ -> p_311730_.result),
-+                    net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(p_311730_ -> p_311730_.result),
++                    net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(p_311730_ -> p_311730_.result),
                      Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(p_311731_ -> p_311731_.showNotification)
                  )
                  .apply(p_340778_, ShapedRecipe::new)
@@ -52,7 +52,7 @@
              CraftingBookCategory craftingbookcategory = p_319998_.readEnum(CraftingBookCategory.class);
              ShapedRecipePattern shapedrecipepattern = ShapedRecipePattern.STREAM_CODEC.decode(p_319998_);
 -            ItemStack itemstack = ItemStack.STREAM_CODEC.decode(p_319998_);
-+            net.neoforged.neoforge.common.crafting.result.Result<ItemStack> itemstack = net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_STREAM_CODEC.decode(p_319998_);
++            net.neoforged.neoforge.common.crafting.result.Result<ItemStack> itemstack = net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_STREAM_CODEC.decode(p_319998_);
              boolean flag = p_319998_.readBoolean();
              return new ShapedRecipe(s, craftingbookcategory, shapedrecipepattern, itemstack, flag);
          }
@@ -61,7 +61,7 @@
              p_320738_.writeEnum(p_320586_.category);
              ShapedRecipePattern.STREAM_CODEC.encode(p_320738_, p_320586_.pattern);
 -            ItemStack.STREAM_CODEC.encode(p_320738_, p_320586_.result);
-+            net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_STREAM_CODEC.encode(p_320738_, p_320586_.result);
++            net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_STREAM_CODEC.encode(p_320738_, p_320586_.result);
              p_320738_.writeBoolean(p_320586_.showNotification);
          }
      }

@@ -34,7 +34,7 @@
                          CookingBookCategory.CODEC.fieldOf("category").orElse(CookingBookCategory.MISC).forGetter(AbstractCookingRecipe::category),
                          Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleItemRecipe::input),
 -                        ItemStack.STRICT_SINGLE_ITEM_CODEC.fieldOf("result").forGetter(SingleItemRecipe::result),
-+                        net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult),
++                        net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult),
                          Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(AbstractCookingRecipe::experience),
                          Codec.INT.fieldOf("cookingtime").orElse(p_379669_).forGetter(AbstractCookingRecipe::cookingTime)
                      )
@@ -44,7 +44,7 @@
                  SingleItemRecipe::input,
 -                ItemStack.STREAM_CODEC,
 -                SingleItemRecipe::result,
-+                net.neoforged.neoforge.common.crafting.result.ResultHooks.ITEM_STACK_RESULT_STREAM_CODEC,
++                net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_STREAM_CODEC,
 +                SingleItemRecipe::getDirectResult,
                  ByteBufCodecs.FLOAT,
                  AbstractCookingRecipe::experience,
