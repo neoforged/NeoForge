@@ -1,9 +1,19 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormat.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormat.java
-@@ -238,4 +_,28 @@
+@@ -138,7 +_,7 @@
+                     p_428850_.close();
+                     p_428850_ = gpudevice.createBuffer(p_428834_, p_428845_, p_428822_);
+                 } else {
+-                    UPLOAD_STAGING_BUFFER = uploadToBuffer(UPLOAD_STAGING_BUFFER, p_428822_, p_428845_, p_428834_);
++                    UPLOAD_STAGING_BUFFER = uploadToBuffer(UPLOAD_STAGING_BUFFER, p_428822_, GpuBuffer.USAGE_COPY_SRC | GpuBuffer.USAGE_COPY_DST | GpuBuffer.USAGE_HINT_CLIENT_STORAGE, p_428834_);
+                     commandencoder.copyToBuffer(UPLOAD_STAGING_BUFFER.slice(0, p_428822_.remaining()), p_428850_.slice(0, p_428822_.remaining()));
+                 }
+             }
+@@ -237,5 +_,29 @@
+                 default -> 0;
              };
          }
-     }
++    }
 +
 +    public ImmutableMap<String, VertexFormatElement> getElementMapping() {
 +        ImmutableMap.Builder<String, VertexFormatElement> builder = ImmutableMap.builder();
@@ -27,5 +37,5 @@
 +
 +    public boolean hasUV(int which) {
 +        return elements.stream().anyMatch(e -> e.usage() == VertexFormatElement.Usage.UV && e.index() == which);
-+    }
+     }
  }

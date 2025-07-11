@@ -34,6 +34,17 @@
      private void verifyColorTexture(GpuTexture p_416690_) {
          if (!p_416690_.getFormat().hasColorAspect()) {
              throw new IllegalStateException("Trying to clear a non-color texture as color");
+@@ -321,8 +_,8 @@
+             GlBuffer glbuffer = (GlBuffer)p_428848_.buffer();
+             if (glbuffer.closed) {
+                 throw new IllegalStateException("Source buffer already closed");
+-            } else if ((glbuffer.usage() & 8) == 0) {
+-                throw new IllegalStateException("Source buffer needs USAGE_COPY_DST to be a destination for a copy");
++            } else if ((glbuffer.usage() & GpuBuffer.USAGE_COPY_SRC) == 0) {
++                throw new IllegalStateException("Source buffer needs USAGE_COPY_SRC to be a source for a copy");
+             } else {
+                 GlBuffer glbuffer1 = (GlBuffer)p_428840_.buffer();
+                 if (glbuffer1.closed) {
 @@ -655,8 +_,19 @@
                  boolean flag = p_410700_.getFormat().hasDepthAspect();
                  int i = ((GlTexture)p_410700_).glId();
