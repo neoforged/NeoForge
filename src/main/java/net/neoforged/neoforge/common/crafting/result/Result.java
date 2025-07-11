@@ -22,7 +22,7 @@ public interface Result<T> {
      * As such, if this method returns {@code true}, {@link Result#type()} is expected to be {@code null}.
      *
      * @return Whether the result is considered to be "from vanilla".
-     * @see ResultHooks#ITEM_STACK_RESULT_CODEC
+     * @see ResultCodecs#ITEM_STACK_RESULT_CODEC
      */
     default boolean isVanilla() {
         return false;

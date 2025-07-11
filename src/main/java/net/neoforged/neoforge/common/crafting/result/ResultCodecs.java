@@ -14,7 +14,7 @@ import java.util.function.Function;
 /**
  * Helper class for various result-related hooks.
  */
-public final class ResultHooks {
+public final class ResultCodecs {
     public static final Codec<Result<ItemStack>> ITEM_STACK_RESULT_CODEC = makeCodec(ItemStack.STRICT_CODEC, NeoForgeRegistries.ITEM_RESULT_TYPES.byNameCodec(), ResultWrapper::item);
     public static final Codec<Result<FluidStack>> FLUID_STACK_RESULT_CODEC = makeCodec(FluidStack.CODEC, NeoForgeRegistries.FLUID_RESULT_TYPES.byNameCodec(), ResultWrapper::fluid);
     private static final int CUSTOM_RESULT_MARKER = -1000;
@@ -86,6 +86,6 @@ public final class ResultHooks {
         };
     }
 
-    private ResultHooks() {
+    private ResultCodecs() {
     }
 }
