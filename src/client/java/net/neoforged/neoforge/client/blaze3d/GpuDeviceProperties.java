@@ -52,21 +52,21 @@ public interface GpuDeviceProperties {
      * <br>
      * Bits or enums unknown by the backend must not be used. These may be defined by a newer NeoForge version than the backend was built against, or the feature may not be enabled.
      * <br>
-     * Backends must not return known values for features that are not enabled, even if they are supported.
+     * Backends must not return known values as enabled for features that are not enabled, even if they are supported.
      */
     int knownGpuBufferUsageBits();
 
     /**
-     * @see GpuDeviceProperties#knownGpuTextureUsageBits()
+     * @see GpuDeviceProperties#knownGpuBufferUsageBits()
      */
     int knownGpuTextureUsageBits();
 
     /**
      * All sets returned must be unmodifiable, and should not be unique instances
      * <br>
-     * Backend are recommended to use {@link EnumSet#of()} rather than {@link EnumSet#range(Enum, Enum)} to ensure that only known values are returned
+     * Backends are recommended to use {@link EnumSet#of()} rather than {@link EnumSet#range(Enum, Enum)} to ensure that only known values are returned
      * regardless of where future enum additions are added.
-     * Use of {@link EnumSet#range(Enum, Enum)} may in an enum added between those that did not previously exist being considered known.
+     * Use of {@link EnumSet#range(Enum, Enum)} may include an enum constant added between those that did not previously exist being considered known.
      * <br>
      * 
      * @see GpuDeviceProperties#knownGpuBufferUsageBits()
