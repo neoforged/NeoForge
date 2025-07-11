@@ -91,10 +91,15 @@ public class GameTestPlayer extends ServerPlayer implements GameTestListener {
         NeoForge.EVENT_BUS.addListener(listener);
     }
 
-    private void disconnectGameTest() {
-        connection.disconnect(Component.literal("Test finished"));
-        this.listeners.forEach(NeoForge.EVENT_BUS::unregister);
-        this.listeners.clear();
+    private boolean disconnected;
+
+    public void disconnectGameTest() {
+        if (!disconnected) {
+            connection.disconnect(Component.literal("Test finished"));
+            this.listeners.forEach(NeoForge.EVENT_BUS::unregister);
+            this.listeners.clear();
+            disconnected = true;
+        }
     }
 
     private EmbeddedChannel getChannel() {

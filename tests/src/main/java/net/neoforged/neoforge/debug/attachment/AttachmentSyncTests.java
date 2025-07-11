@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.debug.attachment;
 
 import com.mojang.serialization.Codec;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -13,7 +14,10 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -29,6 +33,7 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 @ForEachTest(groups = "attachment.sync")
@@ -81,11 +86,17 @@ public class AttachmentSyncTests {
     }
 
     @GameTest
-    @EmptyTemplate
+    @EmptyTemplate(floor = true)
+    @SuppressWarnings("DuplicatedCode")
     @TestHolder(description = "Gametest that tests if attachments sync properly in different scenarios")
     static void testAttachmentSync(DynamicTest test, RegistrationHelper reg) {
+        var blacklistedPlayer = reg.attachments().register("sync_blacklist", () -> AttachmentType.builder(() -> false)
+                .serialize(Codec.BOOL.fieldOf("value")).build());
         var intAttachment = reg.attachments().register("int", () -> AttachmentType.builder(() -> 0)
                 .serialize(Codec.INT.fieldOf("value")).sync(ByteBufCodecs.VAR_INT).build());
+        var mutableIntAttachment = reg.attachments().register("mutable_int", () -> AttachmentType.builder(() -> new MutableInt(23))
+                .serialize(Codec.INT.fieldOf("value").xmap(MutableInt::new, MutableInt::getValue))
+                .sync((h, p) -> !Boolean.TRUE.equals(p.getExistingDataOrNull(blacklistedPlayer)), ByteBufCodecs.VAR_INT.map(MutableInt::new, MutableInt::getValue)).build());
 
         class TestHelper extends ExtendedGameTestHelper {
             public TestHelper(GameTestInfo info) {
@@ -129,6 +140,8 @@ public class AttachmentSyncTests {
         test.onGameTest(TestHelper.class, helper -> {
             var player = helper.makeTickingMockServerPlayerInCorner(GameType.CREATIVE);
 
+            player.clearOutboundPackets();
+
             // Test that players receive updates for changes to their own data
             {
                 var testValue = helper.randomInt();
@@ -158,6 +171,106 @@ public class AttachmentSyncTests {
                 holder.assertEqual(intAttachment, testValue);
 
                 player.clearOutboundPackets();
+            }
+
+            var feetPos = helper.relativePos(player.blockPosition()).below(1);
+
+            // Test that players receive updates for changes to block entities in tracked chunks
+            {
+                var testValue = helper.randomInt();
+                helper.setBlock(feetPos, Blocks.FURNACE);
+                var be = helper.getBlockEntity(feetPos, FurnaceBlockEntity.class);
+                be.setData(intAttachment, testValue);
+
+                var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                helper.expectTarget(payload, new SyncAttachmentsPayload.BlockEntityTarget(helper.absolutePos(feetPos)));
+
+                var holder = helper.holder();
+                holder.readFrom(payload);
+                holder.assertEqual(intAttachment, testValue);
+
+                player.clearOutboundPackets();
+            }
+
+            var entity = helper.spawnWithNoFreeWill(EntityType.PIG, helper.relativePos(player.blockPosition()));
+            // Test that players receive updates for entities in tracked chunks
+            {
+                var testValue = helper.randomInt();
+                entity.setData(intAttachment, testValue);
+
+                var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                helper.expectTarget(payload, new SyncAttachmentsPayload.EntityTarget(entity.getId()));
+
+                var holder = helper.holder();
+                holder.readFrom(payload);
+                holder.assertEqual(intAttachment, testValue);
+
+                player.clearOutboundPackets();
+            }
+
+            // Test that players receive initial login packets
+            {
+                var newPlayer = helper.makeTickingMockServerPlayerInCorner(GameType.CREATIVE);
+                helper.assertTrue(
+                        newPlayer.getOutboundPayloads(SyncAttachmentsPayload.class)
+                                .map(SyncAttachmentsPayload::target)
+                                .toList()
+                                .containsAll(List.of(
+                                        new SyncAttachmentsPayload.BlockEntityTarget(helper.absolutePos(feetPos)),
+                                        new SyncAttachmentsPayload.ChunkTarget(player.chunkPosition()),
+                                        new SyncAttachmentsPayload.EntityTarget(player.getId()),
+                                        new SyncAttachmentsPayload.EntityTarget(entity.getId()))),
+                        "Expected to find that player received all sync payloads");
+                newPlayer.disconnectGameTest();
+            }
+
+            // Test that removing data causes players to receive packets
+            {
+                entity.removeData(intAttachment);
+
+                var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                helper.expectTarget(payload, new SyncAttachmentsPayload.EntityTarget(entity.getId()));
+
+                var holder = helper.holder();
+                holder.setData(intAttachment, 1);
+                holder.readFrom(payload);
+                holder.assertEqual(intAttachment, null);
+
+                player.clearOutboundPackets();
+            }
+
+            // Test that manual syncs send the packets to players that track the entity
+            {
+                var attachment = entity.getData(mutableIntAttachment);
+                var holder = helper.holder();
+                var payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                holder.readFrom(payload);
+                // Default value is expected to send a packet too
+                holder.assertEqual(mutableIntAttachment, new MutableInt(23));
+
+                player.clearOutboundPackets();
+
+                attachment.setValue(30);
+                helper.assertTrue(
+                        player.getOutboundPayloads(SyncAttachmentsPayload.class).count() == 0,
+                        "Expected player to receive no sync payloads for mutable attachment having its inner value updated");
+
+                entity.syncData(mutableIntAttachment);
+
+                payload = player.requireOutboundPayload(SyncAttachmentsPayload.class);
+                holder.readFrom(payload);
+                holder.assertEqual(mutableIntAttachment, new MutableInt(30));
+
+                player.clearOutboundPackets();
+            }
+
+            // Test that values are not synced if the sync predicate returns false
+            {
+                player.setData(blacklistedPlayer, true);
+                entity.setData(mutableIntAttachment, new MutableInt(4));
+                helper.assertTrue(
+                        player.getOutboundPayloads(SyncAttachmentsPayload.class).count() == 0,
+                        "Expected player not to receive a sync payload as the predicate should've returned false");
             }
 
             helper.succeed();
