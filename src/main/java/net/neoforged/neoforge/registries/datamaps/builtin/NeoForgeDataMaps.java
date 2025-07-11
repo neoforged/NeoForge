@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.GiveGiftToHero;
+import net.minecraft.world.entity.ai.sensing.VillagerHostilesSensor;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -38,6 +39,18 @@ import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
  * synced so that mods can use them on the client side.
  */
 public class NeoForgeDataMaps {
+    /**
+     * The {@linkplain EntityType} data map that replaces {@link VillagerHostilesSensor#ACCEPTABLE_DISTANCE_FROM_HOSTILES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/entity_type/acceptable_villager_distances.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code distance}, a float - the acceptable distance between the hostile mob and a villager</li>
+     * </ul>
+     *
+     * The use of a float as the value is also possible, though discouraged in case more options are added in the future.
+     */
+    public static final DataMapType<EntityType<?>, AcceptableVillagerDistance> ACCEPTABLE_VILLAGER_DISTANCES = DataMapType.builder(id("acceptable_villager_distances"), Registries.ENTITY_TYPE, AcceptableVillagerDistance.CODEC)
+            .synced(AcceptableVillagerDistance.DISTANCE_CODEC, false).build();
     /**
      * The {@linkplain Item} data map that replaces {@link ComposterBlock#COMPOSTABLES}.
      * <p>
@@ -162,6 +175,7 @@ public class NeoForgeDataMaps {
 
     @SubscribeEvent
     private static void register(final RegisterDataMapTypesEvent event) {
+        event.register(ACCEPTABLE_VILLAGER_DISTANCES);
         event.register(COMPOSTABLES);
         event.register(FURNACE_FUELS);
         event.register(MONSTER_ROOM_MOBS);
