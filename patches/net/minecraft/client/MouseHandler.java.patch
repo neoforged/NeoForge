@@ -9,35 +9,29 @@
              if (this.minecraft.getOverlay() == null) {
                  if (this.minecraft.screen == null) {
                      if (!this.mouseGrabbed && flag) {
-@@ -103,8 +_,13 @@
+@@ -103,8 +_,10 @@
                          screen.afterMouseAction();
  
                          try {
 -                            if (screen.mouseClicked(d0, d1, i)) {
 -                                return;
-+                            boolean flag2;
-+                            if (
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPre(screen, d0, d1, i) ||
-+                                (flag2 = screen.mouseClicked(d0, d1, i)) |
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPost(screen, d0, d1, i, flag2)
-+                            ) {
-+                                screenHandled = true;
++                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPre(screen, d0, d1, i);
++                            if (!screenHandled) {
++                                screenHandled = screen.mouseClicked(d0, d1, i);
++                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseClickedPost(screen, d0, d1, i, screenHandled);
                              }
                          } catch (Throwable throwable1) {
                              CrashReport crashreport = CrashReport.forThrowable(throwable1, "mouseClicked event handler");
-@@ -116,8 +_,13 @@
+@@ -116,8 +_,10 @@
                          }
                      } else {
                          try {
 -                            if (screen.mouseReleased(d0, d1, i)) {
 -                                return;
-+                            boolean flag2;
-+                            if (
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPre(screen, d0, d1, i) ||
-+                                (flag2 = screen.mouseReleased(d0, d1, i)) |
-+                                net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPost(screen, d0, d1, i, flag2)
-+                            ) {
-+                                screenHandled = true;
++                            screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPre(screen, d0, d1, i);
++                            if (!screenHandled) {
++                                screenHandled = screen.mouseReleased(d0, d1, i);
++                                screenHandled = net.neoforged.neoforge.client.ClientHooks.onScreenMouseReleasedPost(screen, d0, d1, i, screenHandled);
                              }
                          } catch (Throwable throwable) {
                              CrashReport crashreport1 = CrashReport.forThrowable(throwable, "mouseReleased event handler");
