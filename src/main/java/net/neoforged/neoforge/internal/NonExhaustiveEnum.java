@@ -14,17 +14,17 @@ import org.jetbrains.annotations.ApiStatus;
  * <br>
  * Care should be taken to ensure no reliance on the specific number or order of values in a tagged enum.
  * <p>
- * Do not rely on the number of values
+ * Do not rely on the number of values.
  * <br>
- * Do not rely on the ordinal of a specific value
+ * Do not rely on the ordinal of a specific value.
  * <br>
- * Do not use in a switch without a default case
+ * Do not use in a switch without a default case.
  */
 @ApiStatus.Internal
 @Target(ElementType.TYPE)
 public @interface NonExhaustiveEnum {
     /**
-     * this is done as an annotation member to preserve the comment without sources attached
+     * This is done as an annotation member to preserve the comment without sources attached.
      */
     String reason();
 }

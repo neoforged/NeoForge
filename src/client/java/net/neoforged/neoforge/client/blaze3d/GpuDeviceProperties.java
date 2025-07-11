@@ -17,29 +17,27 @@ import java.util.Set;
 import net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent;
 
 /**
- * Describes device capability limits similar to what glGetInteger or VkPhysicalDeviceLimits would return
+ * Describes device capability limits similar to what glGetInteger or VkPhysicalDeviceLimits would return.
  * <br>
- * When retrieved from {@link ConfigureGpuDeviceEvent#getDeviceProperties()}, this is representing theoretical device capabilities, some properties may not be available if features are not enabled
- * This instance and values from it must not be cached and used later, as it is not representative of allowed capabilities
+ * When retrieved from {@link ConfigureGpuDeviceEvent#getDeviceProperties()}, this is representing theoretical device capabilities, some properties may not be available if features are not enabled.
+ * This instance and values from it must not be cached and used later, as it is not representative of allowed capabilities.
  * <br>
- * When retrieved from {@link GpuDeviceExtension#enabledProperties()} this is representing enabled and allowed device capabilities
- * This instance and values from it may be cached and used later
+ * When retrieved from {@link GpuDeviceExtension#enabledProperties()} this is representing enabled and allowed device capabilities.
+ * This instance and values from it may be cached and used later.
  */
 public interface GpuDeviceProperties {
     /**
-     * Name of the backend implementation
-     * Can be used to identify backends that further extend B3D
+     * Name of the backend implementation, can be used to identify backends that further extend B3D.
      */
     String backendName();
 
     /**
-     * The API the backend is using
-     * ex: "OpenGL" or "Vulkan"
+     * The API the backend is using, ex: "OpenGL" or "Vulkan".
      */
     String apiName();
 
     /**
-     * The API version, may contain more or less than two identifiers
+     * The API version, may contain more or less than two identifiers.
      */
     String apiVersionString();
 
@@ -62,11 +60,11 @@ public interface GpuDeviceProperties {
     int knownGpuTextureUsageBits();
 
     /**
-     * All sets returned must be unmodifiable, and should not be unique instances
+     * All sets returned must be unmodifiable, and should not be unique instances.
      * <br>
      * Backends are recommended to use {@link EnumSet#of()} rather than {@link EnumSet#range(Enum, Enum)} to ensure that only known values are returned
      * regardless of where future enum additions are added.
-     * Use of {@link EnumSet#range(Enum, Enum)} may include an enum constant added between those that did not previously exist being considered known.
+     * Use of {@link EnumSet#range(Enum, Enum)} may include an enum constant that did not previously exist  added between existing constants being considered known.
      * <br>
      * 
      * @see GpuDeviceProperties#knownGpuBufferUsageBits()

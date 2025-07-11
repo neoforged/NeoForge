@@ -30,7 +30,7 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuD
     }
 
     /**
-     * Theoretical device properties if all available features are enabled
+     * Theoretical device properties if all available features are enabled.
      * <br>
      * The properties returned from {@link GpuDeviceExtension#enabledProperties()} after device creation has completed may be different depending on what features were enabled.
      */
@@ -39,7 +39,7 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuD
     }
 
     /**
-     * Device features available for use, use this to adapt what features your mod enables and uses based on what is available
+     * Device features available for use, use this to adapt what features your mod enables and uses based on what is available.
      */
     public GpuDeviceFeatures getAvailableFeatures() {
         return availableFeatures;

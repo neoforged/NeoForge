@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.client.blaze3d;
 
 /**
- * Enable-able features of a blaze3d backend GpuDevice
+ * Enable-able features of a Blaze3d backend GpuDevice.
  * <br>
  * Not all backends support all features, and some features are known to be problematic on some hardware. For details on those features see notes for each feature.
  * <br>
@@ -14,8 +14,8 @@ package net.neoforged.neoforge.client.blaze3d;
  */
 public interface GpuDeviceFeatures {
     /**
-     * LogicOp is unusably problematic on Qualcomm GPUs via OpenGL
-     * LogicOp is unavailable on MacOS via Vulkan
+     * LogicOp is unusably problematic on Qualcomm GPUs via OpenGL.
+     * LogicOp is unavailable on MacOS via Vulkan.
      */
     boolean logicOp();
 }
