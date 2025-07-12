@@ -54,6 +54,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.displayWindow = displayWindow;
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
         var gpuDevice = RenderSystem.getDevice();
+        // The loading overlay imports an existing OpenGL texture directly into the GlDevice and as such must reach around the Validation device if it is enabled
         if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
             gpuDevice = validationGpuDevice.getRealDevice();
         }
@@ -116,6 +117,7 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
             this.texture = texture;
             this.setFilter(false, false);
             var gpuDevice = RenderSystem.getDevice();
+            // ValidationGpuDevice.createTextureView is expecting a ValidationGpuTexture instance, but the previous reach around created a GlTexture instance instead so validation must be reached around again
             if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
                 gpuDevice = validationGpuDevice.getRealDevice();
             }

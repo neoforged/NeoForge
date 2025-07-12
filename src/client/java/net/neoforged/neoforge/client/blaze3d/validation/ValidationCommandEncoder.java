@@ -20,6 +20,11 @@ import java.util.OptionalInt;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Validation wrapper around CommandEncoder
+ * <br>
+ * This is used to wrap the RenderPass
+ */
 public class ValidationCommandEncoder implements CommandEncoder {
     private final CommandEncoder realCommandEncoder;
     private final GpuDeviceUsageValidator validator;

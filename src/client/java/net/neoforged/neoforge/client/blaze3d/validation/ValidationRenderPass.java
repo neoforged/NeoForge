@@ -16,6 +16,11 @@ import java.util.function.Supplier;
 import net.neoforged.neoforge.client.stencil.StencilTest;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Validation wrapper around RenderPass
+ * <br>
+ * Validates RenderPipieline usages.
+ */
 public class ValidationRenderPass implements RenderPass {
     private final RenderPass realRenderPass;
     private final GpuDeviceUsageValidator validator;

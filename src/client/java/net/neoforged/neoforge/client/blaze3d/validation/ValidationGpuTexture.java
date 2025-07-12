@@ -10,6 +10,11 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * Validation wrapper around GpuTexture
+ * <br>
+ * Validates AddressMode usages
+ */
 public class ValidationGpuTexture extends GpuTexture {
     private final GpuTexture realTexture;
     private final GpuDeviceUsageValidator validator;
@@ -37,12 +42,14 @@ public class ValidationGpuTexture extends GpuTexture {
     @Override
     public void setTextureFilter(FilterMode minFilter, FilterMode magFilter, boolean useMipmaps) {
         super.setTextureFilter(magFilter, magFilter, useMipmaps);
+        // updating the TextureFilter must be forwarded, though no validation is done
         realTexture.setTextureFilter(magFilter, magFilter, useMipmaps);
     }
 
     @Override
     public void setUseMipmaps(boolean useMipmaps) {
         super.setUseMipmaps(useMipmaps);
+        // updating useMipmaps must be forwarded, though no validation is done
         realTexture.setUseMipmaps(useMipmaps);
     }
 

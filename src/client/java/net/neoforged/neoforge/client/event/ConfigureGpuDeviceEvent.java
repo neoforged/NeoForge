@@ -50,6 +50,11 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuD
         return logicOp;
     }
 
+    /**
+     * Enables the LogicOp feature.
+     * <p>
+     * Allows a {@link com.mojang.blaze3d.platform.LogicOp} other than {@link com.mojang.blaze3d.platform.LogicOp#NONE} to be specified when using a {@link com.mojang.blaze3d.pipeline.RenderPipeline}.
+     */
     public void enableLogicOp() {
         if (!availableFeatures.logicOp()) {
             throw new UnsupportedOperationException("LogicOp is unavailable");

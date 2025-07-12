@@ -12,6 +12,9 @@ import com.mojang.blaze3d.textures.TextureFormat;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 
+/**
+ * Helper class for validations done by the ValidationGpuDevice layer
+ */
 public class GpuDeviceUsageValidator {
     private final GpuDeviceProperties properties;
     private final GpuDeviceFeatures enabledFeatures;

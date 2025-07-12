@@ -41,8 +41,22 @@ public interface GpuDeviceProperties {
      */
     String apiVersionString();
 
+    /**
+     * Major API version
+     * <br>
+     * glGetInteger(GL_MAJOR_VERSION)
+     * <br>
+     * VK_API_VERSION_MAJOR(VkPhysicalDeviceProperties#apiVersion)
+     */
     int apiVersionMajor();
 
+    /**
+     * Minor API version
+     * <br>
+     * glGetInteger(GL_MINOR_VERSION)
+     * <br>
+     * VK_API_VERSION_MINOR(VkPhysicalDeviceProperties#apiVersion)
+     */
     int apiVersionMinor();
 
     /**

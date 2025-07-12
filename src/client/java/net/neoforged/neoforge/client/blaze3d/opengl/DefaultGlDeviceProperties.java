@@ -23,7 +23,10 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 
-public class NeoGlDeviceProperties implements GpuDeviceProperties {
+/**
+ * Theoretical GpuDevice properties for the default GlDevice
+ */
+public class DefaultGlDeviceProperties implements GpuDeviceProperties {
     @Override
     public String backendName() {
         return "Default";
