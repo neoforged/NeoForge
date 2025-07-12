@@ -1137,7 +1137,7 @@ public class ClientHooks {
 
     public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
         final var glDevice = new GlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
-        if (FMLLoader.isProduction()) {
+        if (FMLLoader.isProduction() || Boolean.getBoolean("neoforge.disableB3DValidation")) {
             return glDevice;
         }
         return new ValidationGpuDevice(glDevice);
