@@ -78,12 +78,10 @@ public class NeoForgeEventHandler {
 
     @SubscribeEvent
     public void preServerTick(ServerTickEvent.Pre event) {
-        WorldWorkerManager.tick(true);
     }
 
     @SubscribeEvent
     public void postServerTick(ServerTickEvent.Post event) {
-        WorldWorkerManager.tick(false);
         ConfigSync.syncPendingConfigs(event.getServer());
     }
 
