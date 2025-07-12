@@ -77,8 +77,7 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void preServerTick(ServerTickEvent.Pre event) {
-    }
+    public void preServerTick(ServerTickEvent.Pre event) {}
 
     @SubscribeEvent
     public void postServerTick(ServerTickEvent.Post event) {
