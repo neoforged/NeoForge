@@ -64,7 +64,7 @@ public interface GpuDeviceProperties {
      * <br>
      * Backends are recommended to use {@link EnumSet#of()} rather than {@link EnumSet#range(Enum, Enum)} to ensure that only known values are returned
      * regardless of where future enum additions are added.
-     * Use of {@link EnumSet#range(Enum, Enum)} may include an enum constant that did not previously exist  added between existing constants being considered known.
+     * Use of {@link EnumSet#range(Enum, Enum)} may include an enum constant that did not previously exist added between existing constants being considered known.
      * <br>
      * 
      * @see GpuDeviceProperties#knownGpuBufferUsageBits()
