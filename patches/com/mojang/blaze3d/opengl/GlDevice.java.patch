@@ -13,8 +13,8 @@
          this.encoder = new GlCommandEncoder(this);
          this.uniformOffsetAlignment = GL11.glGetInteger(35380);
          GL11.glEnable(34895);
-+        deviceProperties = new net.neoforged.neoforge.client.blaze3d.opengl.ImmutableGlDeviceProperties(new net.neoforged.neoforge.client.blaze3d.opengl.NeoGlDeviceProperties());
-+        final var event = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent(enabledProperties(), new net.neoforged.neoforge.client.blaze3d.opengl.NeoGlDeviceFeatures()));
++        deviceProperties = new net.neoforged.neoforge.client.blaze3d.opengl.ImmutableGlDeviceProperties(new net.neoforged.neoforge.client.blaze3d.opengl.DefaultGlDeviceProperties());
++        final var event = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent(enabledProperties(), new net.neoforged.neoforge.client.blaze3d.opengl.DefaultGlDeviceFeatures()));
 +        enabledFeatures = new net.neoforged.neoforge.client.blaze3d.opengl.ImmutableGlDeviceFeatures(event);
      }
  
