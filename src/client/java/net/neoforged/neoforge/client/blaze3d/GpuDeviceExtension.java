@@ -10,6 +10,7 @@ import net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent;
 public interface GpuDeviceExtension {
     /**
      * GpuDeviceProperties representative of features enabled during device configuration.
+     * 
      * @see GpuDeviceProperties
      * @see ConfigureGpuDeviceEvent
      */
@@ -17,6 +18,7 @@ public interface GpuDeviceExtension {
 
     /**
      * GpuDeviceFeatures enabled during device configuration.
+     * 
      * @see GpuDeviceFeatures
      * @see ConfigureGpuDeviceEvent
      */

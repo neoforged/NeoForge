@@ -29,11 +29,11 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Validation done by this class includes:
  * <br>
- *  - Known texture/buffer usage bits
- *  <br>
- *  - Known NonExhaustiveEnum values
- *  <br>
- *  - Validates RenderPipeline precompilation
+ * - Known texture/buffer usage bits
+ * <br>
+ * - Known NonExhaustiveEnum values
+ * <br>
+ * - Validates RenderPipeline precompilation
  */
 public class ValidationGpuDevice implements GpuDevice {
     protected final GpuDevice realDevice;
