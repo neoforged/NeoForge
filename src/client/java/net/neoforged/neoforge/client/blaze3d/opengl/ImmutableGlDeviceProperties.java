@@ -20,9 +20,6 @@ import org.jetbrains.annotations.ApiStatus;
 public record ImmutableGlDeviceProperties(
         String backendName,
         String apiName,
-        String apiVersionString,
-        int apiVersionMajor,
-        int apiVersionMinor,
         int knownGpuBufferUsageBits,
         int knownGpuTextureUsageBits,
         Set<DepthTestFunction> knownDepthTestFunctions,
@@ -36,9 +33,6 @@ public record ImmutableGlDeviceProperties(
         this(
                 properties.backendName(),
                 properties.apiName(),
-                properties.apiVersionString(),
-                properties.apiVersionMajor(),
-                properties.apiVersionMinor(),
                 properties.knownGpuBufferUsageBits(),
                 properties.knownGpuTextureUsageBits(),
                 properties.knownDepthTestFunctions(),

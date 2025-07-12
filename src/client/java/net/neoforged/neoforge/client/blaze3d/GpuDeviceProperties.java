@@ -37,29 +37,6 @@ public interface GpuDeviceProperties {
     String apiName();
 
     /**
-     * The API version, may contain more or less than two identifiers.
-     */
-    String apiVersionString();
-
-    /**
-     * Major API version
-     * <br>
-     * glGetInteger(GL_MAJOR_VERSION)
-     * <br>
-     * VK_API_VERSION_MAJOR(VkPhysicalDeviceProperties#apiVersion)
-     */
-    int apiVersionMajor();
-
-    /**
-     * Minor API version
-     * <br>
-     * glGetInteger(GL_MINOR_VERSION)
-     * <br>
-     * VK_API_VERSION_MINOR(VkPhysicalDeviceProperties#apiVersion)
-     */
-    int apiVersionMinor();
-
-    /**
      * Bits/Enums known by the backend and/or enabled during configuration.
      * <br>
      * Bits or enums unknown by the backend must not be used. These may be defined by a newer NeoForge version than the backend was built against, or the feature may not be enabled.

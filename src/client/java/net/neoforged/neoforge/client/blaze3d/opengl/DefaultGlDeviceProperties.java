@@ -5,10 +5,6 @@
 
 package net.neoforged.neoforge.client.blaze3d.opengl;
 
-import static org.lwjgl.opengl.GL11C.glGetInteger;
-import static org.lwjgl.opengl.GL30C.GL_MAJOR_VERSION;
-import static org.lwjgl.opengl.GL30C.GL_MINOR_VERSION;
-
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.DestFactor;
@@ -35,21 +31,6 @@ public class DefaultGlDeviceProperties implements GpuDeviceProperties {
     @Override
     public String apiName() {
         return "OpenGL";
-    }
-
-    @Override
-    public String apiVersionString() {
-        return String.format("%d.%d", apiVersionMajor(), apiVersionMinor());
-    }
-
-    @Override
-    public int apiVersionMajor() {
-        return glGetInteger(GL_MAJOR_VERSION);
-    }
-
-    @Override
-    public int apiVersionMinor() {
-        return glGetInteger(GL_MINOR_VERSION);
     }
 
     @Override
