@@ -581,6 +581,7 @@ public class NeoForgeMod {
         INGREDIENT_TYPES.register(modEventBus);
         FLUID_INGREDIENT_TYPES.register(modEventBus);
         ITEM_OUTGREDIENT_TYPES.register(modEventBus);
+        FLUID_OUTGREDIENT_TYPES.register(modEventBus);
         CONDITION_CODECS.register(modEventBus);
         GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
