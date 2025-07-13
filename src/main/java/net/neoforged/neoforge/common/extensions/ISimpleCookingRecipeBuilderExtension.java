@@ -21,7 +21,6 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.outgredient.DefaultedItemTagOutgredient;
 import net.neoforged.neoforge.common.crafting.outgredient.Outgredient;
-import net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper;
 
 public interface ISimpleCookingRecipeBuilderExtension {
     /**

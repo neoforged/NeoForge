@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.crafting.outgredient;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,8 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.NeoForgeEventHandler;
 import net.neoforged.neoforge.common.NeoForgeMod;
-
-import java.util.Optional;
 
 /**
  * Represents an item-based recipe outgredient that represents the item as a tag-fallback combination.
@@ -39,8 +38,7 @@ public record DefaultedItemTagOutgredient(TagKey<Item> tagKey, Optional<Holder<I
             TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(it -> it.tagKey),
             BuiltInRegistries.ITEM.holderByNameCodec().optionalFieldOf("fallback").forGetter(it -> it.fallback),
             ExtraCodecs.intRange(1, 99).fieldOf("count").orElse(1).forGetter(it -> it.count),
-            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)
-    ).apply(inst, DefaultedItemTagOutgredient::new));
+            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)).apply(inst, DefaultedItemTagOutgredient::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, DefaultedItemTagOutgredient> STREAM_CODEC = StreamCodec.composite(
             TagKey.streamCodec(Registries.ITEM), it -> it.tagKey,
             Item.STREAM_CODEC.apply(ByteBufCodecs::optional), it -> it.fallback,
@@ -112,8 +110,7 @@ public record DefaultedItemTagOutgredient(TagKey<Item> tagKey, Optional<Holder<I
 
     public record Display(DefaultedItemTagOutgredient outgredient) implements ItemOutgredientSlotDisplay {
         public static final MapCodec<Display> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                DefaultedItemTagOutgredient.MAP_CODEC.fieldOf("outgredient").forGetter(Display::outgredient)
-        ).apply(inst, Display::new));
+                DefaultedItemTagOutgredient.MAP_CODEC.fieldOf("outgredient").forGetter(Display::outgredient)).apply(inst, Display::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Display> STREAM_CODEC = StreamCodec.composite(
                 DefaultedItemTagOutgredient.STREAM_CODEC, Display::outgredient,
                 Display::new);

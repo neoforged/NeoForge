@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.common.crafting.outgredient;
 
+import java.util.stream.Stream;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.display.ForFluidStacks;
-
-import java.util.stream.Stream;
 
 /**
  * Superinterface for {@link Outgredient}s of type {@link FluidStack}.

@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.common.crafting.outgredient;
 
+import java.util.function.Function;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.fluids.FluidStack;
-
-import java.util.function.Function;
 
 /**
  * This class represents a "vanilla" {@code T} wrapped as a {@link Outgredient}. Common uses are {@code ResultWrapper<ItemStack>} and {@code ResultWrapper<FluidStack>}.

@@ -5,12 +5,11 @@
 
 package net.neoforged.neoforge.common.config;
 
+import java.util.List;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.List;
 
 /**
  * General configuration that needs to be synchronized to the server and/or is desirable to be configurable per world

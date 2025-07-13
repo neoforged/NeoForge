@@ -7,6 +7,7 @@ package net.neoforged.neoforge.common.crafting.outgredient;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,8 +22,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.NeoForgeEventHandler;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
-
-import java.util.Optional;
 
 /**
  * Represents a fluid-based recipe outgredient that represents the fluid as a tag-fallback combination.
@@ -39,8 +38,7 @@ public record DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Optional<Holder
             TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(it -> it.tagKey),
             BuiltInRegistries.FLUID.holderByNameCodec().optionalFieldOf("fallback").forGetter(it -> it.fallback),
             ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(it -> it.amount),
-            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)
-    ).apply(inst, DefaultedFluidTagOutgredient::new));
+            DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)).apply(inst, DefaultedFluidTagOutgredient::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, DefaultedFluidTagOutgredient> STREAM_CODEC = StreamCodec.composite(
             TagKey.streamCodec(Registries.FLUID), it -> it.tagKey,
             FluidStack.FLUID_STREAM_CODEC.apply(ByteBufCodecs::optional), it -> it.fallback,
@@ -96,8 +94,7 @@ public record DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Optional<Holder
 
     public record Display(DefaultedFluidTagOutgredient outgredient) implements FluidOutgredientSlotDisplay {
         public static final MapCodec<Display> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                DefaultedFluidTagOutgredient.MAP_CODEC.fieldOf("outgredient").forGetter(Display::outgredient)
-        ).apply(inst, Display::new));
+                DefaultedFluidTagOutgredient.MAP_CODEC.fieldOf("outgredient").forGetter(Display::outgredient)).apply(inst, Display::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Display> STREAM_CODEC = StreamCodec.composite(
                 DefaultedFluidTagOutgredient.STREAM_CODEC, Display::outgredient,
                 Display::new);

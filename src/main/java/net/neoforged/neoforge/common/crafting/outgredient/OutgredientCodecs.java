@@ -7,14 +7,13 @@ package net.neoforged.neoforge.common.crafting.outgredient;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import java.util.function.Function;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import java.util.function.Function;
 
 /**
  * Helper class for various outgredient-related hooks.
@@ -26,13 +25,11 @@ public final class OutgredientCodecs {
     public static final StreamCodec<RegistryFriendlyByteBuf, Outgredient<ItemStack>> ITEM_STACK_OUTGREDIENT_STREAM_CODEC = makeStreamCodec(
             ItemStack.STREAM_CODEC,
             ByteBufCodecs.registry(NeoForgeRegistries.Keys.ITEM_OUTGREDIENT_TYPES).dispatch(Outgredient::type, OutgredientType::streamCodec),
-            Outgredient::ofItem
-    );
+            Outgredient::ofItem);
     public static final StreamCodec<RegistryFriendlyByteBuf, Outgredient<FluidStack>> FLUID_STACK_OUTGREDIENT_STREAM_CODEC = makeStreamCodec(
             FluidStack.STREAM_CODEC,
             ByteBufCodecs.registry(NeoForgeRegistries.Keys.FLUID_OUTGREDIENT_TYPES).dispatch(Outgredient::type, OutgredientType::streamCodec),
-            Outgredient::ofFluid
-    );
+            Outgredient::ofFluid);
 
     /**
      * Creates a new codec for {@link Outgredient}s.
@@ -47,8 +44,7 @@ public final class OutgredientCodecs {
     public static <T> Codec<Outgredient<T>> makeCodec(Codec<T> vanillaCodec, Codec<OutgredientType<? extends Outgredient<T>>> registryCodec, Function<T, ? extends Outgredient<T>> toOutgredient) {
         return Codec.xor(vanillaCodec, registryCodec.<Outgredient<T>>dispatch("neoforge:outgredient_type", Outgredient::type, OutgredientType::codec)).xmap(
                 either -> Either.unwrap(either.mapLeft(toOutgredient)),
-                outgredient -> outgredient instanceof OutgredientWrapper<T> ? Either.left(outgredient.resolve()) : Either.right(outgredient)
-        );
+                outgredient -> outgredient instanceof OutgredientWrapper<T> ? Either.left(outgredient.resolve()) : Either.right(outgredient));
     }
 
     /**
@@ -64,8 +60,7 @@ public final class OutgredientCodecs {
     public static <T> StreamCodec<RegistryFriendlyByteBuf, Outgredient<T>> makeStreamCodec(
             StreamCodec<RegistryFriendlyByteBuf, T> vanillaCodec,
             StreamCodec<RegistryFriendlyByteBuf, Outgredient<T>> outgredientCodec,
-            Function<T, ? extends Outgredient<T>> toOutgredient
-    ) {
+            Function<T, ? extends Outgredient<T>> toOutgredient) {
         return new StreamCodec<>() {
             @Override
             public Outgredient<T> decode(RegistryFriendlyByteBuf buf) {
@@ -91,6 +86,5 @@ public final class OutgredientCodecs {
         };
     }
 
-    private OutgredientCodecs() {
-    }
+    private OutgredientCodecs() {}
 }

@@ -5,14 +5,14 @@
 
 package net.neoforged.neoforge.common.crafting.outgredient;
 
+import java.util.Map;
 import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 /**
  * Represents a tag default value from a tag_defaults datapack file.
  * Basically just a wrapper around a map, to avoid generics headaches in {@link TagDefaultsManager}.
+ * 
  * @param <T> The type of the tag key and the associated value.
  */
 public class TagDefaults<T> {

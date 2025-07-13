@@ -9,6 +9,11 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
 import net.minecraft.DetectedVersion;
 import net.minecraft.advancements.critereon.EntitySubPredicate;
 import net.minecraft.commands.Commands;
@@ -164,12 +169,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Function;
 
 @SuppressWarnings("unused")
 @Mod(NeoForgeVersion.MOD_ID)

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.crafting.outgredient;
 
+import java.util.Optional;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -13,8 +14,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackSlotDisplay;
-
-import java.util.Optional;
 
 /**
  * This interface represents a generic recipe outgredient. The outgredient can be resolved to a {@code T} when required.

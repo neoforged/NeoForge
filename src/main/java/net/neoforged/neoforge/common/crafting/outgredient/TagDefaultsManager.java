@@ -9,6 +9,10 @@ import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,11 +27,6 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForgeEventHandler;
 import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import org.slf4j.Logger;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * This is the central manager class for {@link TagDefaults}. Access an instance via {@link NeoForgeEventHandler#getTagDefaultsManager()}.
@@ -91,7 +90,7 @@ public class TagDefaultsManager extends SimpleJsonResourceReloadListener<JsonEle
      *
      * @param key   The registry's {@link ResourceLocation}.
      * @param value The {@link JsonElement} to parse.
-     * @param <T> The type of the registry and the value.
+     * @param <T>   The type of the registry and the value.
      */
     @SuppressWarnings("unchecked")
     private <T> void put(ResourceLocation key, JsonElement value) {
