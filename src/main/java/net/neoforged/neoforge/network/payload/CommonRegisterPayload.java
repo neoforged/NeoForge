@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public record CommonRegisterPayload(int version, ConnectionProtocol protocol, Set<ResourceLocation> channels) implements CustomPacketPayload {
-
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("c", "register");
     public static final CustomPacketPayload.Type<CommonRegisterPayload> TYPE = new CustomPacketPayload.Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, CommonRegisterPayload> STREAM_CODEC = StreamCodec.composite(
@@ -33,6 +32,7 @@ public record CommonRegisterPayload(int version, ConnectionProtocol protocol, Se
             ByteBufCodecs.STRING_UTF8.map(CommonRegisterPayload::protocolById, ConnectionProtocol::id), CommonRegisterPayload::protocol,
             ByteBufCodecs.collection(HashSet::new, ResourceLocation.STREAM_CODEC), CommonRegisterPayload::channels,
             CommonRegisterPayload::new);
+
     @Override
     public Type<CommonRegisterPayload> type() {
         return TYPE;

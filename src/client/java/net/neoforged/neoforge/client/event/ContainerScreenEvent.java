@@ -108,7 +108,11 @@ public abstract class ContainerScreenEvent extends Event {
          *
          * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS main Forge event bus},
          * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         *
+         * @deprecated use the new {@link ScreenEvent.Render.Background} event
          */
+        @SuppressWarnings("DeprecatedIsStillUsed")
+        @Deprecated(forRemoval = true, since = "1.21.7")
         public static class Background extends Render {
             @ApiStatus.Internal
             public Background(AbstractContainerScreen<?> guiContainer, GuiGraphics guiGraphics, int mouseX, int mouseY) {

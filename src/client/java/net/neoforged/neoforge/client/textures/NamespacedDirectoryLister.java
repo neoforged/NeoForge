@@ -21,12 +21,12 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
  * stitched to this atlas
  */
 public record NamespacedDirectoryLister(String namespace, String sourcePath, String idPrefix) implements SpriteSource {
-
     public static final MapCodec<NamespacedDirectoryLister> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             Codec.STRING.fieldOf("namespace").forGetter(lister -> lister.namespace),
             Codec.STRING.fieldOf("source").forGetter(lister -> lister.sourcePath),
             Codec.STRING.fieldOf("prefix").forGetter(lister -> lister.idPrefix)).apply(inst, NamespacedDirectoryLister::new));
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "namespaced_directory");
+
     @Override
     public void run(ResourceManager resourceManager, Output output) {
         FileToIdConverter converter = new FileToIdConverter("textures/" + this.sourcePath, ".png");

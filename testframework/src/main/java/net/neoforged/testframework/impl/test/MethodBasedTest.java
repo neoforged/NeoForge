@@ -11,6 +11,7 @@ import net.neoforged.testframework.TestFramework;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.impl.ReflectionUtils;
+import org.jetbrains.annotations.Nullable;
 
 public class MethodBasedTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
@@ -39,5 +40,11 @@ public class MethodBasedTest extends AbstractTest.Dynamic {
         } catch (Throwable e) {
             throw new RuntimeException("Encountered exception initiating method-based test: " + method, e);
         }
+    }
+
+    @Nullable
+    @Override
+    public Method getMethod() {
+        return method;
     }
 }
