@@ -9,6 +9,9 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import cpw.mods.jarhandling.JarContents;
+import cpw.mods.jarhandling.impl.FolderJarContents;
+import cpw.mods.jarhandling.impl.JarFileContents;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +30,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.packs.FeatureFlagsMetadataSection;
+import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.OverlayMetadataSection;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -208,7 +212,15 @@ public class ResourcePackLoader {
     }
 
     public static Pack.ResourcesSupplier createPackForMod(IModFileInfo mf) {
-        return new PathPackResources.PathResourcesSupplier(mf.getFile().getSecureJar().getRootPath());
+        return createPackForJarContents(mf.getFile().getContents());
+    }
+
+    public static Pack.ResourcesSupplier createPackForJarContents(JarContents contents) {
+        return switch (contents) {
+            case FolderJarContents folderJarContents -> new PathPackResources.PathResourcesSupplier(folderJarContents.path());
+            case JarFileContents jarFileContents -> new FilePackResources.FileResourcesSupplier(jarFileContents.path());
+            default -> new JarContentsPackResources.JarContentsResourcesSupplier(contents);
+        };
     }
 
     public static List<String> getPackNames(PackType packType) {
