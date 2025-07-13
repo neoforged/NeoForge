@@ -47,7 +47,7 @@ public final class OutgredientCodecs {
     public static <T> Codec<Outgredient<T>> makeCodec(Codec<T> vanillaCodec, Codec<OutgredientType<? extends Outgredient<T>>> registryCodec, Function<T, ? extends Outgredient<T>> toOutgredient) {
         return Codec.xor(vanillaCodec, registryCodec.<Outgredient<T>>dispatch("neoforge:outgredient_type", Outgredient::type, OutgredientType::codec)).xmap(
                 either -> Either.unwrap(either.mapLeft(toOutgredient)),
-                outgredient -> outgredient.isVanilla() ? Either.left(outgredient.resolve()) : Either.right(outgredient)
+                outgredient -> outgredient instanceof OutgredientWrapper<T> ? Either.left(outgredient.resolve()) : Either.right(outgredient)
         );
     }
 
@@ -69,8 +69,8 @@ public final class OutgredientCodecs {
         return new StreamCodec<>() {
             @Override
             public Outgredient<T> decode(RegistryFriendlyByteBuf buf) {
-                var readerIndex = buf.readerIndex();
-                var length = buf.readVarInt();
+                int readerIndex = buf.readerIndex();
+                int length = buf.readVarInt();
                 if (length == CUSTOM_OUTGREDIENT_MARKER) {
                     return outgredientCodec.decode(buf);
                 } else {
@@ -81,7 +81,7 @@ public final class OutgredientCodecs {
 
             @Override
             public void encode(RegistryFriendlyByteBuf buf, Outgredient<T> outgredient) {
-                if (!outgredient.isVanilla() && buf.getConnectionType().isNeoForge()) {
+                if (!(outgredient instanceof OutgredientWrapper<T>) && buf.getConnectionType().isNeoForge()) {
                     buf.writeVarInt(CUSTOM_OUTGREDIENT_MARKER);
                     outgredientCodec.encode(buf, outgredient);
                 } else {
