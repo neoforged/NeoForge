@@ -1135,11 +1135,6 @@ public class ClientHooks {
         return List.copyOf(vanillaRenderers);
     }
 
-    /**
-     * Creates Blaze3d backend GpuDevice, and potentially wraps it in a validation layer.
-     * <br>
-     * Alternate backends should target this function with mixins instead of {@link RenderSystem#initRenderer(long, int, boolean, BiFunction, boolean)}.
-     */
     public static GpuDevice createGpuDevice(long window, int debugLevel, boolean syncDebug, BiFunction<ResourceLocation, ShaderType, String> defaultShaderSource, boolean enableDebugLabels) {
         final var glDevice = new GlDevice(window, debugLevel, syncDebug, defaultShaderSource, enableDebugLabels);
         if (FMLLoader.isProduction() || Boolean.getBoolean("neoforge.disableB3DValidation")) {
