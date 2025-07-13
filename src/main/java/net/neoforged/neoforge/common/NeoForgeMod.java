@@ -64,6 +64,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -113,6 +114,7 @@ import net.neoforged.neoforge.common.crafting.outgredient.OutgredientType;
 import net.neoforged.neoforge.common.extensions.IPlayerExtension;
 import net.neoforged.neoforge.common.loot.AddTableLootModifier;
 import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
+import net.neoforged.neoforge.common.loot.DefaultedItemTagLootEntry;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.common.util.SelfTest;
@@ -181,6 +183,7 @@ public class NeoForgeMod {
 
     private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, NeoForgeVersion.MOD_ID);
+    private static final DeferredRegister<LootPoolEntryType> LOOT_POOL_ENTRY_TYPES = DeferredRegister.create(Registries.LOOT_POOL_ENTRY_TYPE, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
     private static final DeferredRegister<MapCodec<? extends StructureModifier>> STRUCTURE_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, NeoForgeVersion.MOD_ID);
@@ -204,6 +207,11 @@ public class NeoForgeMod {
      * Game mode flight cannot be disabled via this attribute.
      */
     public static final Holder<Attribute> CREATIVE_FLIGHT = ATTRIBUTES.register("creative_flight", () -> new BooleanAttribute("neoforge.creative_flight", false).setSyncable(true));
+
+    /**
+     * Stock loot entry type that pulls from a tag and a fallback item. See {@link DefaultedItemTagLootEntry} for more information.
+     */
+    public static final DeferredHolder<LootPoolEntryType, LootPoolEntryType> DEFAULTED_ITEM_TAG_LOOT_ENTRY = LOOT_POOL_ENTRY_TYPES.register("defaulted_item_tag", () -> new LootPoolEntryType(DefaultedItemTagLootEntry.MAP_CODEC));
 
     /**
      * Stock loot modifier type that adds loot from a subtable to the final loot.
@@ -569,6 +577,7 @@ public class NeoForgeMod {
         modEventBus.addListener(NeoForgeMod::onConfigFileChange);
         ATTRIBUTES.register(modEventBus);
         COMMAND_ARGUMENT_TYPES.register(modEventBus);
+        LOOT_POOL_ENTRY_TYPES.register(modEventBus);
         BIOME_MODIFIER_SERIALIZERS.register(modEventBus);
         STRUCTURE_MODIFIER_SERIALIZERS.register(modEventBus);
         HOLDER_SET_TYPES.register(modEventBus);
