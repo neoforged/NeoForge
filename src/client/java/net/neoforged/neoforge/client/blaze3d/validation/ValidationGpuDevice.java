@@ -28,12 +28,11 @@ import org.jetbrains.annotations.Nullable;
  * The validation GpuDevice is used to ensure that both mods and backends are complying with the B3D API contract correctly.
  * <p>
  * Validation done by this class includes:
- * <br>
- * - Known texture/buffer usage bits
- * <br>
- * - Known NonExhaustiveEnum values
- * <br>
- * - Validates RenderPipeline precompilation
+ * <ul>
+ * <li>Known texture/buffer usage bits</li>
+ * <li>Known NonExhaustiveEnum values</li>
+ * <li>Validates RenderPipeline precompilation</li>
+ * </ul>
  */
 public class ValidationGpuDevice implements GpuDevice {
     protected final GpuDevice realDevice;
