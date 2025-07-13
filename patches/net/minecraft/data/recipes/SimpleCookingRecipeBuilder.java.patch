@@ -1,11 +1,6 @@
 --- a/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/SimpleCookingRecipeBuilder.java
-@@ -25,10 +_,11 @@
- import net.minecraft.world.item.crafting.SmokingRecipe;
- import net.minecraft.world.level.ItemLike;
- 
--public class SimpleCookingRecipeBuilder implements RecipeBuilder {
-+public class SimpleCookingRecipeBuilder implements RecipeBuilder, net.neoforged.neoforge.common.extensions.ISimpleCookingRecipeBuilderExtension {
+@@ -29,6 +_,7 @@
      private final RecipeCategory category;
      private final CookingBookCategory bookCategory;
      private final Item result;
@@ -17,7 +12,8 @@
      private String group;
      private final AbstractCookingRecipe.Factory<?> factory;
  
--    private SimpleCookingRecipeBuilder(
++    @Deprecated // Neo: use the various static methods instead
+     public SimpleCookingRecipeBuilder(
 -        RecipeCategory p_251345_,
 -        CookingBookCategory p_251607_,
 -        ItemLike p_252112_,
@@ -25,8 +21,6 @@
 -        float p_251204_,
 -        int p_250189_,
 -        AbstractCookingRecipe.Factory<?> p_311960_
-+    @Deprecated // Neo: use the various static methods instead
-+    public SimpleCookingRecipeBuilder(
 +            RecipeCategory p_251345_,
 +            CookingBookCategory p_251607_,
 +            net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result,

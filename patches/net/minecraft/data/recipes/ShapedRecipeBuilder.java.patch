@@ -1,12 +1,6 @@
 --- a/net/minecraft/data/recipes/ShapedRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/ShapedRecipeBuilder.java
-@@ -23,11 +_,12 @@
- import net.minecraft.world.item.crafting.ShapedRecipePattern;
- import net.minecraft.world.level.ItemLike;
- 
--public class ShapedRecipeBuilder implements RecipeBuilder {
-+public class ShapedRecipeBuilder implements RecipeBuilder, net.neoforged.neoforge.common.extensions.IShapedRecipeBuilderExtension {
-     private final HolderGetter<Item> items;
+@@ -28,6 +_,7 @@
      private final RecipeCategory category;
      private final Item result;
      private final int count;
@@ -18,7 +12,7 @@
      private String group;
      private boolean showNotification = true;
  
--    private ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, ItemLike p_251475_, int p_248948_) {
+-    public ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, ItemLike p_251475_, int p_248948_) {
 +    @Deprecated // Neo: use the various #shaped methods instead
 +    public ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result) {
          this.items = p_365072_;
