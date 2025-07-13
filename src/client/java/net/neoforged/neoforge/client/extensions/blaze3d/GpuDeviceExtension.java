@@ -3,8 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.client.blaze3d;
+package net.neoforged.neoforge.client.extensions.blaze3d;
 
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
+import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
 import net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent;
 
 public interface GpuDeviceExtension {

@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.client.blaze3d;
 
+import net.neoforged.neoforge.client.extensions.blaze3d.GpuDeviceExtension;
+
 /**
  * Describes device capability limits similar to what glGetInteger or VkPhysicalDeviceLimits would return.
  * <br>

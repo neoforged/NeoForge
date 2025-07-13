@@ -7,9 +7,9 @@ package net.neoforged.neoforge.client.event;
 
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
-import net.neoforged.neoforge.client.blaze3d.GpuDeviceExtension;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceFeatures;
 import net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties;
+import net.neoforged.neoforge.client.extensions.blaze3d.GpuDeviceExtension;
 
 /**
  * Fired during GpuDevice creation to allow optional features to be enabled.
@@ -32,7 +32,7 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuD
     /**
      * Device features available.
      * <br>
-     * This is constant and may be cached for future use.
+     * This is constant for the entire GpuDevice's lifetime and may be cached for future use.
      */
     public GpuDeviceProperties getDeviceProperties() {
         return deviceProperties;

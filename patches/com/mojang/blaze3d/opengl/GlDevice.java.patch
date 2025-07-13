@@ -14,7 +14,7 @@
          this.uniformOffsetAlignment = GL11.glGetInteger(35380);
          GL11.glEnable(34895);
 +        deviceProperties = new net.neoforged.neoforge.client.blaze3d.opengl.ImmutableGlDeviceProperties(new net.neoforged.neoforge.client.blaze3d.opengl.DefaultGlDeviceProperties());
-+        final var event = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent(enabledProperties(), new net.neoforged.neoforge.client.blaze3d.opengl.DefaultGlDeviceFeatures()));
++        final var event = net.neoforged.fml.ModLoader.postEventWithReturn(new net.neoforged.neoforge.client.event.ConfigureGpuDeviceEvent(deviceProperties(), new net.neoforged.neoforge.client.blaze3d.opengl.DefaultGlDeviceFeatures()));
 +        enabledFeatures = new net.neoforged.neoforge.client.blaze3d.opengl.ImmutableGlDeviceFeatures(event);
      }
  
@@ -94,7 +94,7 @@
 +    }
 +
 +    @Override
-+    public net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties enabledProperties() {
++    public net.neoforged.neoforge.client.blaze3d.GpuDeviceProperties deviceProperties() {
 +        return deviceProperties;
 +    }
 +

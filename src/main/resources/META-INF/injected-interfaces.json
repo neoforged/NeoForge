@@ -304,6 +304,6 @@
     "net/neoforged/fml/common/asm/enumextension/IExtensibleEnum"
   ],
   "com/mojang/blaze3d/systems/GpuDevice": [
-    "net/neoforged/neoforge/client/blaze3d/GpuDeviceExtension"
+    "net/neoforged/neoforge/client/extensions/blaze3d/GpuDeviceExtension"
   ]
 }
