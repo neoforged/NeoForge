@@ -183,6 +183,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Aktiviere diese Option, um den dedizierten Server zu lokalen LAN-Clients zu senden, sodass er automatisch in deren Mehrspieler-Bildschirmen angezeigt wird.",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Zusätzliche Attribute zu erweiterten Schnellinfos",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Aktiviere diese Option, damit zusätzliche Informationen über Attribute eines Items angezeigt werden, wenn \"Erweiterte Schnellinfos\" aktiviert sind.",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Licht-Pipeline aktivieren",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Aktiviert die NeoForge Block-Darstellungs-Pipeline - korrigiert die Beleuchtung von benutzerdefinierten Modellen.",
   "neoforge.configgui.fullBoundingBoxLadders": "Leitern im gesamten Kollisionsbereich",
