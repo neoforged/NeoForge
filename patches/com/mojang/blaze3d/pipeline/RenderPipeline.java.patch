@@ -1,9 +1,37 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
-@@ -176,6 +_,46 @@
+@@ -41,6 +_,7 @@
+     private final float depthBiasConstant;
+     private final int sortKey;
+     private static int sortKeySeed;
++    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
+ 
+     protected RenderPipeline(
+         ResourceLocation p_405403_,
+@@ -61,6 +_,7 @@
+         VertexFormat.Mode p_404708_,
+         float p_410755_,
+         float p_409999_,
++        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest,
+         int p_415862_
+     ) {
+         this.location = p_405403_;
+@@ -82,6 +_,7 @@
+         this.depthBiasScaleFactor = p_410755_;
+         this.depthBiasConstant = p_409999_;
+         this.sortKey = p_415862_;
++        this.stencilTest = stencilTest;
+     }
+ 
+     public int getSortKey() {
+@@ -176,6 +_,51 @@
              || this.writeDepth;
      }
  
++    public Optional<net.neoforged.neoforge.client.stencil.StencilTest> getStencilTest() {
++        return stencilTest;
++    }
++
 +    /**
 +     * Neo: Create a {@link RenderPipeline.Builder} from this {@link RenderPipeline} to adjust its configuration and
 +     * build a new, modified {@link RenderPipeline} from it
@@ -41,9 +69,71 @@
 +        builder.vertexFormatMode = Optional.of(this.vertexFormatMode);
 +        builder.depthBiasScaleFactor = this.depthBiasScaleFactor;
 +        builder.depthBiasConstant = this.depthBiasConstant;
++        builder.stencilTest = this.stencilTest;
 +        return builder;
 +    }
 +
      public static RenderPipeline.Builder builder(RenderPipeline.Snippet... p_405781_) {
          RenderPipeline.Builder renderpipeline$builder = new RenderPipeline.Builder();
  
+@@ -208,6 +_,7 @@
+         private Optional<VertexFormat.Mode> vertexFormatMode = Optional.empty();
+         private float depthBiasScaleFactor;
+         private float depthBiasConstant;
++        private Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest = Optional.empty();
+ 
+         Builder() {
+         }
+@@ -364,6 +_,11 @@
+             return this;
+         }
+ 
++        public RenderPipeline.Builder withStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
++            this.stencilTest = Optional.of(stencilTest);
++            return this;
++        }
++
+         void withSnippet(RenderPipeline.Snippet p_405255_) {
+             if (p_405255_.vertexShader.isPresent()) {
+                 this.vertexShader = p_405255_.vertexShader;
+@@ -438,6 +_,10 @@
+             if (p_405255_.vertexFormatMode.isPresent()) {
+                 this.vertexFormatMode = p_405255_.vertexFormatMode;
+             }
++
++            if (p_405255_.stencilTest.isPresent()) {
++                this.stencilTest = p_405255_.stencilTest;
++            }
+         }
+ 
+         public RenderPipeline.Snippet buildSnippet() {
+@@ -456,7 +_,8 @@
+                 this.writeDepth,
+                 this.colorLogic,
+                 this.vertexFormat,
+-                this.vertexFormatMode
++                this.vertexFormatMode,
++                this.stencilTest
+             );
+         }
+ 
+@@ -491,6 +_,7 @@
+                     this.vertexFormatMode.get(),
+                     this.depthBiasScaleFactor,
+                     this.depthBiasConstant,
++                    this.stencilTest,
+                     nextPipelineSortKey++
+                 );
+             }
+@@ -514,8 +_,9 @@
+         Optional<Boolean> writeDepth,
+         Optional<LogicOp> colorLogic,
+         Optional<VertexFormat> vertexFormat,
+-        Optional<VertexFormat.Mode> vertexFormatMode
+-    ) {
++        Optional<VertexFormat.Mode> vertexFormatMode,
++        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
++        ) {
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

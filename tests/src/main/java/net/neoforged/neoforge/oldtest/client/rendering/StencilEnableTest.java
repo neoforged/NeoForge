@@ -56,8 +56,18 @@ public class StencilEnableTest {
             event.enableStencil();
         });
         modEventBus.addListener(RegisterPipelineModifiersEvent.class, event -> {
-            event.register(STENCIL_FILL_KEY, (pipeline, name) -> pipeline);
-            event.register(STENCIL_APPLY_KEY, (pipeline, name) -> pipeline);
+            event.register(STENCIL_FILL_KEY, (pipeline, name) -> pipeline.toBuilder().withStencilTest(new StencilTest(
+                    new StencilPerFaceTest(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE, StencilFunction.ALWAYS),
+                    0xFF,
+                    0xFF,
+                    1))
+                    .build());
+            event.register(STENCIL_APPLY_KEY, (pipeline, name) -> pipeline.toBuilder().withStencilTest(new StencilTest(
+                    new StencilPerFaceTest(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP, StencilFunction.NOTEQUAL),
+                    0xFF,
+                    0,
+                    1))
+                    .build());
         });
         modEventBus.addListener(RegisterGuiLayersEvent.class, event -> {
             if (ENABLED != State.ENABLE_UI_LAYER) {
@@ -66,7 +76,6 @@ public class StencilEnableTest {
             event.registerAboveAll(
                     ResourceLocation.fromNamespaceAndPath(MOD_ID, "block_outline"),
                     (guiGraphics, delta) -> {
-                        // TODO porting: stenciling needs to be moved to the pipeline
                         //guiGraphics.flush(); // Flush before manipulating global rendersystem state or clearing render targets
 
                         guiGraphics.pose().pushMatrix();
@@ -79,27 +88,15 @@ public class StencilEnableTest {
                             var encoder = RenderSystem.getDevice().createCommandEncoder();
                             encoder.clearStencilTexture(Minecraft.getInstance().getMainRenderTarget().getDepthTexture(), 0);
 
-                            RenderSystem.enableStencil(new StencilTest(
-                                    new StencilPerFaceTest(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE, StencilFunction.ALWAYS),
-                                    0xFF,
-                                    0xFF,
-                                    1));
-
                             var stack = new ItemStack(Blocks.GRASS_BLOCK);
                             guiGraphics.renderItem(stack, 0, 0);
                             guiGraphics.renderItem(stack, 10, 10);
 
-                            // TODO porting: stenciling needs to be moved to the pipeline
                             //guiGraphics.flush(); // Flush before manipulating global rendersystem state
                         }
                         RenderSystem.popPipelineModifier();
 
                         RenderSystem.renderWithPipelineModifier(STENCIL_APPLY_KEY, () -> {
-                            RenderSystem.enableStencil(new StencilTest(
-                                    new StencilPerFaceTest(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP, StencilFunction.NOTEQUAL),
-                                    0xFF,
-                                    0,
-                                    1));
 
                             var stack = new ItemStack(Blocks.DIAMOND_BLOCK);
                             guiGraphics.pose().scale(1.1f, 1.1f);
@@ -107,11 +104,8 @@ public class StencilEnableTest {
                             guiGraphics.renderItem(stack, 0, 0);
                             guiGraphics.renderItem(stack, 10, 10);
 
-                            // TODO porting: stenciling needs to be moved to the pipeline
                             //guiGraphics.flush(); // Flush before manipulating global rendersystem state
                         });
-
-                        RenderSystem.disableStencil();
 
                         guiGraphics.pose().popMatrix();
                     });

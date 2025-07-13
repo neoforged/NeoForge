@@ -13,7 +13,6 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.Collection;
 import java.util.function.Supplier;
-import net.neoforged.neoforge.client.stencil.StencilTest;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -69,16 +68,6 @@ public class ValidationRenderPass implements RenderPass {
     @Override
     public void disableScissor() {
         realRenderPass.disableScissor();
-    }
-
-    @Override
-    public void enableStencilTest(StencilTest stencilTest) {
-        realRenderPass.enableStencilTest(stencilTest);
-    }
-
-    @Override
-    public void disableStencilTest() {
-        realRenderPass.disableStencilTest();
     }
 
     @Override
