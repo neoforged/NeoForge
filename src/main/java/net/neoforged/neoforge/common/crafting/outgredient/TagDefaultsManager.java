@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.FileToIdConverter;
@@ -20,9 +21,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import net.neoforged.neoforge.common.config.NeoForgeServerConfig;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,7 +57,32 @@ public class TagDefaultsManager extends SimpleJsonResourceReloadListener<JsonEle
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> resolve(ResourceKey<? extends Registry<T>> registryKey, TagKey<T> tagKey) {
-        return Optional.ofNullable((TagDefaults<T>) entries.get(registryKey)).map(defaults -> defaults.resolve(tagKey));
+        // Try to find an entry in the tag defaults themselves.
+        TagDefaults<T> defaults = (TagDefaults<T>) entries.get(registryKey);
+        if (defaults != null) {
+            T result = defaults.resolve(tagKey);
+            if (result != null) return Optional.of(result);
+        }
+
+        // Try to find an entry by walking the config mod id list.
+        Registry<T> registry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registryKey.location());
+        if (registry != null) {
+            List<String> modIds = NeoForgeServerConfig.INSTANCE.defaultedTagModIds.get();
+            // Walk the config mod id list.
+            for (String modId : modIds) {
+                // Filter the tag contents by mod id.
+                List<Holder<T>> tagContents = registry
+                        .getOrThrow(tagKey)
+                        .stream()
+                        .filter(holder -> holder.unwrapKey().map(key -> key.location().getNamespace().equals(modId)).orElse(false))
+                        .toList();
+                // If we have exactly one candidate, we found our result.
+                if (tagContents.size() == 1) return Optional.of(tagContents.getFirst().value());
+            }
+        }
+
+        // We haven't found anything.
+        return Optional.empty();
     }
 
     /**
