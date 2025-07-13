@@ -63,7 +63,7 @@ public final class NeoForgeClientConfig {
                 .define("handleAmbientOcclusionPerPart", true);
 
         enableB3DValidationLayer = builder
-                .comment("When enabled, all usage of B3D will be validated against allowed usage")
+                .comment("When enabled, all usage of Blaze3D will be validated against allowed usage")
                 .translation("neoforge.configgui.enableB3DValidationLayer")
                 .define("enableB3DValidationLayer", !FMLLoader.isProduction());
     }
