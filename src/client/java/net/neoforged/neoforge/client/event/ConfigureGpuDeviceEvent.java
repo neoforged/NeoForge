@@ -30,9 +30,9 @@ public class ConfigureGpuDeviceEvent extends Event implements IModBusEvent, GpuD
     }
 
     /**
-     * Theoretical device properties if all available features are enabled.
+     * Device features available.
      * <br>
-     * The properties returned from {@link GpuDeviceExtension#enabledProperties()} after device creation has completed may be different depending on what features were enabled.
+     * This is constant and may be cached for future use.
      */
     public GpuDeviceProperties getDeviceProperties() {
         return deviceProperties;

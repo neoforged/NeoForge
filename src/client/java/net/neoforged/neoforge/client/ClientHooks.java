@@ -1140,6 +1140,6 @@ public class ClientHooks {
         if (FMLLoader.isProduction() || Boolean.getBoolean("neoforge.disableB3DValidation")) {
             return glDevice;
         }
-        return new ValidationGpuDevice(glDevice);
+        return new ValidationGpuDevice(glDevice, true);
     }
 }

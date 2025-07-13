@@ -13,7 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Validation wrapper around GpuTexture
  * <br>
- * Validates AddressMode usages
+ * Currently this class is boilerplate
  */
 public class ValidationGpuTexture extends GpuTexture {
     private final GpuTexture realTexture;
@@ -33,9 +33,8 @@ public class ValidationGpuTexture extends GpuTexture {
 
     @Override
     public void setAddressMode(AddressMode addressModeU, AddressMode addressModeV) {
-        validator.validateAddressMode(addressModeU);
-        validator.validateAddressMode(addressModeV);
         super.setAddressMode(addressModeU, addressModeV);
+        // updating the AddressMode must be forwarded, though no validation is currently done
         realTexture.setAddressMode(addressModeU, addressModeV);
     }
 

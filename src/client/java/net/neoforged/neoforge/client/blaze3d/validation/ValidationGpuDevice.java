@@ -40,9 +40,9 @@ public class ValidationGpuDevice implements GpuDevice {
     protected final GpuDeviceUsageValidator validator;
     private final ValidationCommandEncoder validationCommandEncoder;
 
-    public ValidationGpuDevice(GpuDevice realDevice) {
+    public ValidationGpuDevice(GpuDevice realDevice, boolean checkReservedUsageBits) {
         this.realDevice = realDevice;
-        validator = new GpuDeviceUsageValidator(this);
+        validator = new GpuDeviceUsageValidator(this, checkReservedUsageBits);
         validationCommandEncoder = wrapCommandEncoder(realDevice.createCommandEncoder(), validator);
     }
 
@@ -67,14 +67,12 @@ public class ValidationGpuDevice implements GpuDevice {
     @Override
     public GpuTexture createTexture(@Nullable Supplier<String> label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
         validator.validateTextureUsage(usage);
-        validator.validateTextureFormat(format);
         return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 
     @Override
     public GpuTexture createTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels) {
         validator.validateTextureUsage(usage);
-        validator.validateTextureFormat(format);
         return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 
@@ -173,8 +171,8 @@ public class ValidationGpuDevice implements GpuDevice {
     }
 
     @Override
-    public GpuDeviceProperties enabledProperties() {
-        return realDevice.enabledProperties();
+    public GpuDeviceProperties deviceProperties() {
+        return realDevice.deviceProperties();
     }
 
     @Override
