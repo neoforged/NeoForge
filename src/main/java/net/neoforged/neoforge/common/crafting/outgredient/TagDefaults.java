@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.crafting.result;
+package net.neoforged.neoforge.common.crafting.outgredient;
 
 import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.Nullable;

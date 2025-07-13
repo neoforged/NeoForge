@@ -4,10 +4,10 @@
  
  public class StonecutterRecipe extends SingleItemRecipe {
      public StonecutterRecipe(String p_44479_, Ingredient p_44480_, ItemStack p_302318_) {
-+        this(p_44479_, p_44480_, net.neoforged.neoforge.common.crafting.result.ResultWrapper.item(p_302318_));
++        this(p_44479_, p_44480_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_302318_));
 +    }
 +
-+    public StonecutterRecipe(String p_44479_, Ingredient p_44480_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_302318_) {
++    public StonecutterRecipe(String p_44479_, Ingredient p_44480_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_302318_) {
          super(p_44479_, p_44480_, p_302318_);
      }
  

@@ -5,14 +5,14 @@
      private final HolderGetter<Item> items;
      private final RecipeCategory category;
 -    private final ItemStack result;
-+    private final net.neoforged.neoforge.common.crafting.result.Result<ItemStack> result;
++    private final net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result;
      private final List<Ingredient> ingredients = new ArrayList<>();
      private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
      @Nullable
      private String group;
  
 -    private ShapelessRecipeBuilder(HolderGetter<Item> p_363417_, RecipeCategory p_250837_, ItemStack p_363612_) {
-+    private ShapelessRecipeBuilder(HolderGetter<Item> p_363417_, RecipeCategory p_250837_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_363612_) {
++    private ShapelessRecipeBuilder(HolderGetter<Item> p_363417_, RecipeCategory p_250837_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_363612_) {
          this.items = p_363417_;
          this.category = p_250837_;
          this.result = p_363612_;
@@ -20,7 +20,7 @@
  
      public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_364294_, RecipeCategory p_361887_, ItemStack p_364359_) {
 -        return new ShapelessRecipeBuilder(p_364294_, p_361887_, p_364359_);
-+        return new ShapelessRecipeBuilder(p_364294_, p_361887_, net.neoforged.neoforge.common.crafting.result.ResultWrapper.item(p_364359_));
++        return new ShapelessRecipeBuilder(p_364294_, p_361887_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_364359_));
 +    }
 +
 +    public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_364294_, RecipeCategory p_361887_, TagKey<Item> tagKey, ItemLike fallback) {
@@ -28,10 +28,10 @@
 +    }
 +
 +    public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_364294_, RecipeCategory p_361887_, TagKey<Item> tagKey, ItemLike fallback, int count) {
-+        return shapeless(p_364294_, p_361887_, new net.neoforged.neoforge.common.crafting.result.DefaultedItemTagResult(tagKey, fallback.asItem().builtInRegistryHolder(), count));
++        return shapeless(p_364294_, p_361887_, new net.neoforged.neoforge.common.crafting.outgredient.DefaultedItemTagResult(tagKey, fallback.asItem().builtInRegistryHolder(), count));
 +    }
 +
-+    public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_364294_, RecipeCategory p_361887_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> result) {
++    public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_364294_, RecipeCategory p_361887_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result) {
 +        return new ShapelessRecipeBuilder(p_364294_, p_361887_, result);
      }
  

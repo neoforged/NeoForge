@@ -4,10 +4,10 @@
      private final int cookingTime;
  
      public AbstractCookingRecipe(String p_249518_, CookingBookCategory p_250891_, Ingredient p_251354_, ItemStack p_252185_, float p_252165_, int p_250256_) {
-+        this(p_249518_, p_250891_, p_251354_, net.neoforged.neoforge.common.crafting.result.ResultWrapper.item(p_252185_), p_252165_, p_250256_);
++        this(p_249518_, p_250891_, p_251354_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_252185_), p_252165_, p_250256_);
 +    }
 +
-+    public AbstractCookingRecipe(String p_249518_, CookingBookCategory p_250891_, Ingredient p_251354_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_252185_, float p_252165_, int p_250256_) {
++    public AbstractCookingRecipe(String p_249518_, CookingBookCategory p_250891_, Ingredient p_251354_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_252185_, float p_252165_, int p_250256_) {
          super(p_249518_, p_251354_, p_252185_);
          this.category = p_250891_;
          this.experience = p_252165_;
@@ -25,7 +25,7 @@
      @FunctionalInterface
      public interface Factory<T extends AbstractCookingRecipe> {
 -        T create(String p_312581_, CookingBookCategory p_312220_, Ingredient p_312282_, ItemStack p_311868_, float p_312803_, int p_312165_);
-+        T create(String p_312581_, CookingBookCategory p_312220_, Ingredient p_312282_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_311868_, float p_312803_, int p_312165_);
++        T create(String p_312581_, CookingBookCategory p_312220_, Ingredient p_312282_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_311868_, float p_312803_, int p_312165_);
      }
  
      public static class Serializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
@@ -34,7 +34,7 @@
                          CookingBookCategory.CODEC.fieldOf("category").orElse(CookingBookCategory.MISC).forGetter(AbstractCookingRecipe::category),
                          Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleItemRecipe::input),
 -                        ItemStack.STRICT_SINGLE_ITEM_CODEC.fieldOf("result").forGetter(SingleItemRecipe::result),
-+                        net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult),
++                        net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult),
                          Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(AbstractCookingRecipe::experience),
                          Codec.INT.fieldOf("cookingtime").orElse(p_379669_).forGetter(AbstractCookingRecipe::cookingTime)
                      )
@@ -44,7 +44,7 @@
                  SingleItemRecipe::input,
 -                ItemStack.STREAM_CODEC,
 -                SingleItemRecipe::result,
-+                net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_STREAM_CODEC,
++                net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_STREAM_CODEC,
 +                SingleItemRecipe::getDirectResult,
                  ByteBufCodecs.FLOAT,
                  AbstractCookingRecipe::experience,

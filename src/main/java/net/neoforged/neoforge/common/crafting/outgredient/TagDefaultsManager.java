@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-only
  */
 
-package net.neoforged.neoforge.common.crafting.result;
+package net.neoforged.neoforge.common.crafting.outgredient;
 
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
@@ -45,12 +45,12 @@ public class TagDefaultsManager extends SimpleJsonResourceReloadListener<JsonEle
     }
 
     /**
-     * Resolves a {@link TagDefaults} into an optional result.
+     * Resolves a {@link TagDefaults} into an optional outgredient.
      *
      * @param registryKey The key of the associated {@link Registry}.
      * @param tagKey      The {@link TagKey} to resolve.
      * @return An {@link Optional} of a {@link TagDefaults}'s resolved value, or an empty {@link Optional} if the {@link TagDefaults} could not be resolved.
-     * @param <T> The type of the {@link Registry} and the result.
+     * @param <T> The type of the {@link Registry} and the outgredient.
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> resolve(ResourceKey<? extends Registry<T>> registryKey, TagKey<T> tagKey) {

@@ -4,7 +4,7 @@
          super(p_251053_, p_249936_, p_251550_, p_251027_, p_250843_, p_249841_);
      }
  
-+    public BlastingRecipe(String p_251053_, CookingBookCategory p_249936_, Ingredient p_251550_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_251027_, float p_250843_, int p_249841_) {
++    public BlastingRecipe(String p_251053_, CookingBookCategory p_249936_, Ingredient p_251550_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_251027_, float p_250843_, int p_249841_) {
 +        super(p_251053_, p_249936_, p_251550_, p_251027_, p_250843_, p_249841_);
 +    }
 +

@@ -5,16 +5,16 @@
  public abstract class SingleItemRecipe implements Recipe<SingleRecipeInput> {
      private final Ingredient input;
 -    private final ItemStack result;
-+    private final net.neoforged.neoforge.common.crafting.result.Result<ItemStack> result;
++    private final net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result;
      private final String group;
      @Nullable
      private PlacementInfo placementInfo;
  
      public SingleItemRecipe(String p_44419_, Ingredient p_44420_, ItemStack p_44421_) {
-+        this(p_44419_, p_44420_, net.neoforged.neoforge.common.crafting.result.ResultWrapper.item(p_44421_));
++        this(p_44419_, p_44420_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_44421_));
 +    }
 +
-+    public SingleItemRecipe(String p_44419_, Ingredient p_44420_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_44421_) {
++    public SingleItemRecipe(String p_44419_, Ingredient p_44420_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_44421_) {
          this.group = p_44419_;
          this.input = p_44420_;
          this.result = p_44421_;
@@ -23,7 +23,7 @@
      }
  
 -    protected ItemStack result() {
-+    public net.neoforged.neoforge.common.crafting.result.Result<ItemStack> getDirectResult() {
++    public net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> getDirectResult() {
          return this.result;
      }
  
@@ -46,7 +46,7 @@
      @FunctionalInterface
      public interface Factory<T extends SingleItemRecipe> {
 -        T create(String p_311769_, Ingredient p_312083_, ItemStack p_312063_);
-+        T create(String p_311769_, Ingredient p_312083_, net.neoforged.neoforge.common.crafting.result.Result<ItemStack> p_312063_);
++        T create(String p_311769_, Ingredient p_312083_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_312063_);
      }
  
      public static class Serializer<T extends SingleItemRecipe> implements RecipeSerializer<T> {
@@ -55,7 +55,7 @@
                          Codec.STRING.optionalFieldOf("group", "").forGetter(SingleItemRecipe::group),
                          Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleItemRecipe::input),
 -                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::result)
-+                        net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult)
++                        net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult)
                      )
                      .apply(p_360076_, p_312589_::create)
              );
@@ -65,7 +65,7 @@
                  SingleItemRecipe::input,
 -                ItemStack.STREAM_CODEC,
 -                SingleItemRecipe::result,
-+                net.neoforged.neoforge.common.crafting.result.ResultCodecs.ITEM_STACK_RESULT_STREAM_CODEC,
++                net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_STREAM_CODEC,
 +                SingleItemRecipe::getDirectResult,
                  p_312589_::create
              );
