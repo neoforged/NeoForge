@@ -10,9 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import cpw.mods.jarhandling.JarResource;
 import java.io.BufferedReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,23 +32,23 @@ public final class FeatureFlagLoader {
     private FeatureFlagLoader() {}
 
     public static void loadModdedFlags(FeatureFlagRegistry.Builder builder) {
-        Map<IModInfo, Path> pathPerMod = new HashMap<>();
+        Map<IModInfo, JarResource> pathPerMod = new HashMap<>();
         LoadingModList.get()
                 .getModFiles()
                 .stream()
                 .map(ModFileInfo::getMods)
                 .flatMap(List::stream)
                 .forEach(mod -> mod.getConfig().<String>getConfigElement("featureFlags").ifPresent(file -> {
-                    Path path = mod.getOwningFile().getFile().findResource(file);
-                    if (!Files.isRegularFile(path)) {
-                        ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.file_not_found", path).withAffectedMod(mod));
+                    var resource = mod.getOwningFile().getFile().getContents().get(file);
+                    if (resource == null) {
+                        ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.file_not_found", file).withAffectedMod(mod));
                         return;
                     }
-                    pathPerMod.put(mod, path);
+                    pathPerMod.put(mod, resource);
                 }));
 
-        pathPerMod.forEach((mod, path) -> {
-            try (BufferedReader reader = Files.newBufferedReader(path)) {
+        pathPerMod.forEach((mod, resource) -> {
+            try (BufferedReader reader = resource.bufferedReader()) {
                 JsonObject obj = GSON.fromJson(reader, JsonObject.class);
                 JsonArray flagArray = GsonHelper.getAsJsonArray(obj, "flags");
                 for (JsonElement elem : flagArray) {
@@ -62,7 +61,7 @@ public final class FeatureFlagLoader {
                     builder.create(flagLocation, true);
                 }
             } catch (Throwable e) {
-                ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.loading_error", path)
+                ModLoader.addLoadingIssue(ModLoadingIssue.error("fml.modloadingissue.feature_flags.loading_error", resource)
                         .withAffectedMod(mod)
                         .withCause(e));
             }
