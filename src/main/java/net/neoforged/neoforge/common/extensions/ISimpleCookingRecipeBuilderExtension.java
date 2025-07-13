@@ -33,7 +33,7 @@ public interface ISimpleCookingRecipeBuilderExtension {
      * @return A {@link SimpleCookingRecipeBuilder}.
      */
     static <T extends AbstractCookingRecipe> SimpleCookingRecipeBuilder generic(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime, RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> factory) {
-        return generic(ingredient, category, OutgredientWrapper.item(result), experience, cookingTime, serializer, factory);
+        return generic(ingredient, category, Outgredient.ofItem(result), experience, cookingTime, serializer, factory);
     }
 
     /**
@@ -82,7 +82,7 @@ public interface ISimpleCookingRecipeBuilderExtension {
      * @return A {@link SimpleCookingRecipeBuilder}.
      */
     static SimpleCookingRecipeBuilder campfireCooking(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
-        return campfireCooking(ingredient, category, OutgredientWrapper.item(result), experience, cookingTime);
+        return campfireCooking(ingredient, category, Outgredient.ofItem(result), experience, cookingTime);
     }
 
     /**
@@ -125,7 +125,7 @@ public interface ISimpleCookingRecipeBuilderExtension {
      * @return A {@link SimpleCookingRecipeBuilder}.
      */
     static SimpleCookingRecipeBuilder blasting(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
-        return blasting(ingredient, category, OutgredientWrapper.item(result), experience, cookingTime);
+        return blasting(ingredient, category, Outgredient.ofItem(result), experience, cookingTime);
     }
 
     /**
@@ -168,7 +168,7 @@ public interface ISimpleCookingRecipeBuilderExtension {
      * @return A {@link SimpleCookingRecipeBuilder}.
      */
     static SimpleCookingRecipeBuilder smelting(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
-        return smelting(ingredient, category, OutgredientWrapper.item(result), experience, cookingTime);
+        return smelting(ingredient, category, Outgredient.ofItem(result), experience, cookingTime);
     }
 
     /**
@@ -211,7 +211,7 @@ public interface ISimpleCookingRecipeBuilderExtension {
      * @return A {@link SimpleCookingRecipeBuilder}.
      */
     static SimpleCookingRecipeBuilder smoking(Ingredient ingredient, RecipeCategory category, ItemStack result, float experience, int cookingTime) {
-        return smoking(ingredient, category, OutgredientWrapper.item(result), experience, cookingTime);
+        return smoking(ingredient, category, Outgredient.ofItem(result), experience, cookingTime);
     }
 
     /**

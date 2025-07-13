@@ -20,18 +20,18 @@ import java.util.function.Function;
  * Helper class for various outgredient-related hooks.
  */
 public final class OutgredientCodecs {
-    public static final Codec<Outgredient<ItemStack>> ITEM_STACK_OUTGREDIENT_CODEC = makeCodec(ItemStack.STRICT_CODEC, NeoForgeRegistries.ITEM_OUTGREDIENT_TYPES.byNameCodec(), OutgredientWrapper::item);
-    public static final Codec<Outgredient<FluidStack>> FLUID_STACK_OUTGREDIENT_CODEC = makeCodec(FluidStack.CODEC, NeoForgeRegistries.FLUID_OUTGREDIENT_TYPES.byNameCodec(), OutgredientWrapper::fluid);
+    public static final Codec<Outgredient<ItemStack>> ITEM_STACK_OUTGREDIENT_CODEC = makeCodec(ItemStack.STRICT_CODEC, NeoForgeRegistries.ITEM_OUTGREDIENT_TYPES.byNameCodec(), Outgredient::ofItem);
+    public static final Codec<Outgredient<FluidStack>> FLUID_STACK_OUTGREDIENT_CODEC = makeCodec(FluidStack.CODEC, NeoForgeRegistries.FLUID_OUTGREDIENT_TYPES.byNameCodec(), Outgredient::ofFluid);
     private static final int CUSTOM_OUTGREDIENT_MARKER = -1000;
     public static final StreamCodec<RegistryFriendlyByteBuf, Outgredient<ItemStack>> ITEM_STACK_OUTGREDIENT_STREAM_CODEC = makeStreamCodec(
             ItemStack.STREAM_CODEC,
             ByteBufCodecs.registry(NeoForgeRegistries.Keys.ITEM_OUTGREDIENT_TYPES).dispatch(Outgredient::type, OutgredientType::streamCodec),
-            OutgredientWrapper::item
+            Outgredient::ofItem
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, Outgredient<FluidStack>> FLUID_STACK_OUTGREDIENT_STREAM_CODEC = makeStreamCodec(
             FluidStack.STREAM_CODEC,
             ByteBufCodecs.registry(NeoForgeRegistries.Keys.FLUID_OUTGREDIENT_TYPES).dispatch(Outgredient::type, OutgredientType::streamCodec),
-            OutgredientWrapper::fluid
+            Outgredient::ofFluid
     );
 
     /**

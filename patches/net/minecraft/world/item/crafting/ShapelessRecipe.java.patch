@@ -12,7 +12,7 @@
 +    private final boolean isSimple;
  
      public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, List<Ingredient> p_361103_) {
-+        this(p_249640_, p_249390_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_252071_), p_361103_);
++        this(p_249640_, p_249390_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_252071_), p_361103_);
 +    }
 +
 +    public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_252071_, List<Ingredient> p_361103_) {

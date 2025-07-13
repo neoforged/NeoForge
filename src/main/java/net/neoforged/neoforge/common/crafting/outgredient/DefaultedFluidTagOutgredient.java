@@ -33,35 +33,55 @@ import java.util.Optional;
  * @param amount     The amount to use. Corresponds to {@link FluidStack#getAmount()}.
  * @param components The data components to use. Corresponds to {@link FluidStack#getComponents()}.
  */
-public record DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount, DataComponentPatch components) implements Outgredient<FluidStack> {
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public record DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Optional<Holder<Fluid>> fallback, int amount, DataComponentPatch components) implements Outgredient<FluidStack> {
     public static final MapCodec<DefaultedFluidTagOutgredient> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(it -> it.tagKey),
-            BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("fallback").forGetter(it -> it.fallback),
+            BuiltInRegistries.FLUID.holderByNameCodec().optionalFieldOf("fallback").forGetter(it -> it.fallback),
             ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(it -> it.amount),
             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)
     ).apply(inst, DefaultedFluidTagOutgredient::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, DefaultedFluidTagOutgredient> STREAM_CODEC = StreamCodec.composite(
             TagKey.streamCodec(Registries.FLUID), it -> it.tagKey,
-            FluidStack.FLUID_STREAM_CODEC, it -> it.fallback,
+            FluidStack.FLUID_STREAM_CODEC.apply(ByteBufCodecs::optional), it -> it.fallback,
             ByteBufCodecs.VAR_INT, it -> it.amount,
             DataComponentPatch.STREAM_CODEC, it -> it.components,
             DefaultedFluidTagOutgredient::new);
 
     /**
-     * Constructor overload that uses {@link DataComponentPatch#EMPTY} for the {@code components} parameter.
-     *
+     * @param tagKey     The {@link TagKey} to use for looking up the outgredient.
+     * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+     * @param amount     The amount to use. Corresponds to {@link FluidStack#getAmount()}.
+     * @param components The data components to use. Corresponds to {@link FluidStack#getComponents()}.
+     */
+    public DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount, DataComponentPatch components) {
+        this(tagKey, Optional.of(fallback), amount, components);
+    }
+
+    /**
+     * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+     * @param amount   The amount to use. Corresponds to {@link FluidStack#getAmount()}.
+     */
+    public DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Optional<Holder<Fluid>> fallback, int amount) {
+        this(tagKey, fallback, amount, DataComponentPatch.EMPTY);
+    }
+
+    /**
      * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
      * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
      * @param amount   The amount to use. Corresponds to {@link FluidStack#getAmount()}.
      */
     public DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount) {
-        this(tagKey, fallback, amount, DataComponentPatch.EMPTY);
+        this(tagKey, Optional.of(fallback), amount, DataComponentPatch.EMPTY);
     }
 
     @Override
     public FluidStack resolve() {
-        Optional<Fluid> optional = NeoForgeEventHandler.getTagDefaultsManager().resolve(Registries.FLUID, tagKey);
-        return new FluidStack(optional.<Holder<Fluid>>map(Fluid::builtInRegistryHolder).orElse(fallback), amount, components);
+        return NeoForgeEventHandler.getTagDefaultsManager()
+                .resolve(Registries.FLUID, tagKey)
+                .map(fluid -> new FluidStack(fluid.builtInRegistryHolder(), amount, components))
+                .orElseGet(() -> fallback.map(fluid -> new FluidStack(fluid, amount, components)).orElse(FluidStack.EMPTY));
     }
 
     @Override

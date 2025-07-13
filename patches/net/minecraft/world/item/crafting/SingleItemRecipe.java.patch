@@ -11,7 +11,7 @@
      private PlacementInfo placementInfo;
  
      public SingleItemRecipe(String p_44419_, Ingredient p_44420_, ItemStack p_44421_) {
-+        this(p_44419_, p_44420_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_44421_));
++        this(p_44419_, p_44420_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_44421_));
 +    }
 +
 +    public SingleItemRecipe(String p_44419_, Ingredient p_44420_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_44421_) {

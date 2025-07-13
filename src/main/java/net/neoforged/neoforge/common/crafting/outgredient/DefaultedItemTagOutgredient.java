@@ -33,45 +33,71 @@ import java.util.Optional;
  * @param count      The count to use. Corresponds to {@link ItemStack#getCount()}.
  * @param components The data components to use. Corresponds to {@link ItemStack#getComponents()}.
  */
-public record DefaultedItemTagOutgredient(TagKey<Item> tagKey, Holder<Item> fallback, int count, DataComponentPatch components) implements Outgredient<ItemStack> {
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public record DefaultedItemTagOutgredient(TagKey<Item> tagKey, Optional<Holder<Item>> fallback, int count, DataComponentPatch components) implements Outgredient<ItemStack> {
     public static final MapCodec<DefaultedItemTagOutgredient> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(it -> it.tagKey),
-            BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("fallback").forGetter(it -> it.fallback),
+            BuiltInRegistries.ITEM.holderByNameCodec().optionalFieldOf("fallback").forGetter(it -> it.fallback),
             ExtraCodecs.intRange(1, 99).fieldOf("count").orElse(1).forGetter(it -> it.count),
             DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(it -> it.components)
     ).apply(inst, DefaultedItemTagOutgredient::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, DefaultedItemTagOutgredient> STREAM_CODEC = StreamCodec.composite(
             TagKey.streamCodec(Registries.ITEM), it -> it.tagKey,
-            Item.STREAM_CODEC, it -> it.fallback,
+            Item.STREAM_CODEC.apply(ByteBufCodecs::optional), it -> it.fallback,
             ByteBufCodecs.VAR_INT, it -> it.count,
             DataComponentPatch.STREAM_CODEC, it -> it.components,
             DefaultedItemTagOutgredient::new);
 
     /**
-     * Constructor overload that uses {@link DataComponentPatch#EMPTY} for the {@code components} parameter.
-     *
+     * @param tagKey     The {@link TagKey} to use for looking up the outgredient.
+     * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+     * @param count      The count to use. Corresponds to {@link ItemStack#getCount()}.
+     * @param components The data components to use. Corresponds to {@link ItemStack#getComponents()}.
+     */
+    public DefaultedItemTagOutgredient(TagKey<Item> tagKey, Holder<Item> fallback, int count, DataComponentPatch components) {
+        this(tagKey, Optional.of(fallback), count, components);
+    }
+
+    /**
+     * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+     * @param count    The count to use. Corresponds to {@link ItemStack#getCount()}.
+     */
+    public DefaultedItemTagOutgredient(TagKey<Item> tagKey, Optional<Holder<Item>> fallback, int count) {
+        this(tagKey, fallback, count, DataComponentPatch.EMPTY);
+    }
+
+    /**
      * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
      * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
      * @param count    The count to use. Corresponds to {@link ItemStack#getCount()}.
      */
     public DefaultedItemTagOutgredient(TagKey<Item> tagKey, Holder<Item> fallback, int count) {
-        this(tagKey, fallback, count, DataComponentPatch.EMPTY);
+        this(tagKey, Optional.of(fallback), count, DataComponentPatch.EMPTY);
     }
 
     /**
-     * Constructor overload that uses 1 for the {@code amount} and {@link DataComponentPatch#EMPTY} for the {@code components} parameter.
-     *
+     * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
+     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+     */
+    public DefaultedItemTagOutgredient(TagKey<Item> tagKey, Optional<Holder<Item>> fallback) {
+        this(tagKey, fallback, 1, DataComponentPatch.EMPTY);
+    }
+
+    /**
      * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
      * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
      */
     public DefaultedItemTagOutgredient(TagKey<Item> tagKey, Holder<Item> fallback) {
-        this(tagKey, fallback, 1, DataComponentPatch.EMPTY);
+        this(tagKey, Optional.of(fallback), 1, DataComponentPatch.EMPTY);
     }
 
     @Override
     public ItemStack resolve() {
-        Optional<Item> optional = NeoForgeEventHandler.getTagDefaultsManager().resolve(Registries.ITEM, tagKey);
-        return new ItemStack(optional.<Holder<Item>>map(Item::builtInRegistryHolder).orElse(fallback), count, components);
+        return NeoForgeEventHandler.getTagDefaultsManager()
+                .resolve(Registries.ITEM, tagKey)
+                .map(item -> new ItemStack(item.builtInRegistryHolder(), count, components))
+                .orElseGet(() -> fallback.map(item -> new ItemStack(item, count, components)).orElse(ItemStack.EMPTY));
     }
 
     @Override

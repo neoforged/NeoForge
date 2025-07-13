@@ -25,7 +25,7 @@
  
      public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_364294_, RecipeCategory p_361887_, ItemStack p_364359_) {
 -        return new ShapelessRecipeBuilder(p_364294_, p_361887_, p_364359_);
-+        return net.neoforged.neoforge.common.extensions.IShapelessRecipeBuilderExtension.shapeless(p_364294_, p_361887_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_364359_));
++        return net.neoforged.neoforge.common.extensions.IShapelessRecipeBuilderExtension.shapeless(p_364294_, p_361887_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_364359_));
      }
  
      public static ShapelessRecipeBuilder shapeless(HolderGetter<Item> p_362315_, RecipeCategory p_250714_, ItemLike p_249659_) {

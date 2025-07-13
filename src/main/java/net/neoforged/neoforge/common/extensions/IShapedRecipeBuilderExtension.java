@@ -21,7 +21,7 @@ public interface IShapedRecipeBuilderExtension {
      * @return A new {@link ShapedRecipeBuilder}.
      */
     static ShapedRecipeBuilder shaped(HolderGetter<Item> items, RecipeCategory category, ItemStack result) {
-        return shaped(items, category, OutgredientWrapper.item(result));
+        return shaped(items, category, Outgredient.ofItem(result));
     }
 
     /**

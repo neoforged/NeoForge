@@ -13,7 +13,7 @@
      private PlacementInfo placementInfo;
  
      public ShapedRecipe(String p_272759_, CraftingBookCategory p_273506_, ShapedRecipePattern p_312827_, ItemStack p_272852_, boolean p_312010_) {
-+        this(p_272759_, p_273506_, p_312827_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_272852_), p_312010_);
++        this(p_272759_, p_273506_, p_312827_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_272852_), p_312010_);
 +    }
 +
 +    public ShapedRecipe(String p_272759_, CraftingBookCategory p_273506_, ShapedRecipePattern p_312827_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_272852_, boolean p_312010_) {

@@ -4,7 +4,7 @@
      private final int cookingTime;
  
      public AbstractCookingRecipe(String p_249518_, CookingBookCategory p_250891_, Ingredient p_251354_, ItemStack p_252185_, float p_252165_, int p_250256_) {
-+        this(p_249518_, p_250891_, p_251354_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(p_252185_), p_252165_, p_250256_);
++        this(p_249518_, p_250891_, p_251354_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_252185_), p_252165_, p_250256_);
 +    }
 +
 +    public AbstractCookingRecipe(String p_249518_, CookingBookCategory p_250891_, Ingredient p_251354_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_252185_, float p_252165_, int p_250256_) {
