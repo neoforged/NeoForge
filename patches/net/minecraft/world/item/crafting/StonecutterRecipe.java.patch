@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/item/crafting/StonecutterRecipe.java
++++ b/net/minecraft/world/item/crafting/StonecutterRecipe.java
+@@ -9,6 +_,10 @@
+ 
+ public class StonecutterRecipe extends SingleItemRecipe {
+     public StonecutterRecipe(String p_44479_, Ingredient p_44480_, ItemStack p_302318_) {
++        this(p_44479_, p_44480_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_302318_));
++    }
++
++    public StonecutterRecipe(String p_44479_, Ingredient p_44480_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_302318_) {
+         super(p_44479_, p_44480_, p_302318_);
+     }
+ 
+@@ -28,7 +_,7 @@
+     }
+ 
+     public SlotDisplay resultDisplay() {
+-        return new SlotDisplay.ItemStackSlotDisplay(this.result());
++        return this.getDirectResult().display();
+     }
+ 
+     @Override

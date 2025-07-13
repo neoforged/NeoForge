@@ -92,6 +92,15 @@
   "net/minecraft/data/recipes/RecipeOutput": [
     "net/neoforged/neoforge/common/extensions/IRecipeOutputExtension"
   ],
+  "net/minecraft/data/recipes/ShapedRecipeBuilder": [
+    "net/neoforged/neoforge/common/extensions/IShapedRecipeBuilderExtension"
+  ],
+  "net/minecraft/data/recipes/ShapelessRecipeBuilder": [
+    "net/neoforged/neoforge/common/extensions/IShapelessRecipeBuilderExtension"
+  ],
+  "net/minecraft/data/recipes/SimpleCookingRecipeBuilder": [
+    "net/neoforged/neoforge/common/extensions/ISimpleCookingRecipeBuilderExtension"
+  ],
   "net/minecraft/data/tags/IntrinsicHolderTagsProvider$IntrinsicTagAppender": [
     "net/neoforged/neoforge/common/extensions/IIntrinsicHolderTagAppenderExtension<T>"
   ],

@@ -5,6 +5,7 @@
 
 package net.neoforged.neoforge.common.config;
 
+import java.util.List;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,6 +28,8 @@ public final class NeoForgeServerConfig {
     public final ModConfigSpec.ConfigValue<String> permissionHandler;
 
     public final ModConfigSpec.BooleanValue advertiseDedicatedServerToLan;
+
+    public final ModConfigSpec.ConfigValue<List<String>> defaultedTagModIds;
 
     private NeoForgeServerConfig(ModConfigSpec.Builder builder) {
         removeErroringBlockEntities = builder
@@ -56,6 +59,11 @@ public final class NeoForgeServerConfig {
                 .comment("Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.")
                 .translation("neoforge.configgui.advertiseDedicatedServerToLan")
                 .define("advertiseDedicatedServerToLan", !FMLLoader.isProduction());
+
+        defaultedTagModIds = builder
+                .comment("Specify a list of mod ids here that will be prioritized by mod recipe's results. Values that are earlier in the list will be prioritized first.")
+                .translation("neoforge.configgui.defaultedTagModIds")
+                .define("defaultedTagModIds", List.of());
     }
 
     static {

@@ -68,6 +68,8 @@ public class NeoForgeRegistriesSetup {
         event.register(NeoForgeRegistries.HOLDER_SET_TYPES);
         event.register(NeoForgeRegistries.INGREDIENT_TYPES);
         event.register(NeoForgeRegistries.FLUID_INGREDIENT_TYPES);
+        event.register(NeoForgeRegistries.ITEM_OUTGREDIENT_TYPES);
+        event.register(NeoForgeRegistries.FLUID_OUTGREDIENT_TYPES);
         event.register(NeoForgeRegistries.CONDITION_SERIALIZERS);
         event.register(NeoForgeRegistries.ATTACHMENT_TYPES);
     }

@@ -92,10 +92,12 @@
     "neoforge:condition_codecs",
     "neoforge:entity_data_serializers",
     "neoforge:fluid_ingredient_type",
+    "neoforge:fluid_outgredient_type",
     "neoforge:fluid_type",
     "neoforge:global_loot_modifier_serializers",
     "neoforge:holder_set_type",
     "neoforge:ingredient_serializer",
+    "neoforge:item_outgredient_type",
     "neoforge:structure_modifier_serializers"
   ]
 }

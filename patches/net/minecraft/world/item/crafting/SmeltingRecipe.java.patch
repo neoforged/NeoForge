@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/crafting/SmeltingRecipe.java
++++ b/net/minecraft/world/item/crafting/SmeltingRecipe.java
+@@ -9,6 +_,10 @@
+         super(p_250200_, p_251114_, p_250340_, p_250306_, p_249577_, p_250030_);
+     }
+ 
++    public SmeltingRecipe(String p_250200_, CookingBookCategory p_251114_, Ingredient p_250340_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_250306_, float p_249577_, int p_250030_) {
++        super(p_250200_, p_251114_, p_250340_, p_250306_, p_249577_, p_250030_);
++    }
++
+     @Override
+     protected Item furnaceIcon() {
+         return Items.FURNACE;

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/item/crafting/BlastingRecipe.java
++++ b/net/minecraft/world/item/crafting/BlastingRecipe.java
+@@ -9,6 +_,10 @@
+         super(p_251053_, p_249936_, p_251550_, p_251027_, p_250843_, p_249841_);
+     }
+ 
++    public BlastingRecipe(String p_251053_, CookingBookCategory p_249936_, Ingredient p_251550_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_251027_, float p_250843_, int p_249841_) {
++        super(p_251053_, p_249936_, p_251550_, p_251027_, p_250843_, p_249841_);
++    }
++
+     @Override
+     protected Item furnaceIcon() {
+         return Items.BLAST_FURNACE;

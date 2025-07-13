@@ -1,0 +1,72 @@
+--- a/net/minecraft/world/item/crafting/SingleItemRecipe.java
++++ b/net/minecraft/world/item/crafting/SingleItemRecipe.java
+@@ -14,12 +_,16 @@
+ 
+ public abstract class SingleItemRecipe implements Recipe<SingleRecipeInput> {
+     private final Ingredient input;
+-    private final ItemStack result;
++    private final net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result;
+     private final String group;
+     @Nullable
+     private PlacementInfo placementInfo;
+ 
+     public SingleItemRecipe(String p_44419_, Ingredient p_44420_, ItemStack p_44421_) {
++        this(p_44419_, p_44420_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_44421_));
++    }
++
++    public SingleItemRecipe(String p_44419_, Ingredient p_44420_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_44421_) {
+         this.group = p_44419_;
+         this.input = p_44420_;
+         this.result = p_44421_;
+@@ -44,10 +_,15 @@
+         return this.input;
+     }
+ 
+-    protected ItemStack result() {
++    public net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> getDirectResult() {
+         return this.result;
+     }
+ 
++    @Deprecated // Neo: use getDirectResult() instead
++    protected ItemStack result() {
++        return this.result.resolve();
++    }
++
+     @Override
+     public PlacementInfo placementInfo() {
+         if (this.placementInfo == null) {
+@@ -58,12 +_,12 @@
+     }
+ 
+     public ItemStack assemble(SingleRecipeInput p_345857_, HolderLookup.Provider p_335463_) {
+-        return this.result.copy();
++        return this.result.resolve();
+     }
+ 
+     @FunctionalInterface
+     public interface Factory<T extends SingleItemRecipe> {
+-        T create(String p_311769_, Ingredient p_312083_, ItemStack p_312063_);
++        T create(String p_311769_, Ingredient p_312083_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_312063_);
+     }
+ 
+     public static class Serializer<T extends SingleItemRecipe> implements RecipeSerializer<T> {
+@@ -75,7 +_,7 @@
+                 p_360076_ -> p_360076_.group(
+                         Codec.STRING.optionalFieldOf("group", "").forGetter(SingleItemRecipe::group),
+                         Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleItemRecipe::input),
+-                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::result)
++                        net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_CODEC.fieldOf("result").forGetter(SingleItemRecipe::getDirectResult)
+                     )
+                     .apply(p_360076_, p_312589_::create)
+             );
+@@ -84,8 +_,8 @@
+                 SingleItemRecipe::group,
+                 Ingredient.CONTENTS_STREAM_CODEC,
+                 SingleItemRecipe::input,
+-                ItemStack.STREAM_CODEC,
+-                SingleItemRecipe::result,
++                net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_STREAM_CODEC,
++                SingleItemRecipe::getDirectResult,
+                 p_312589_::create
+             );
+         }

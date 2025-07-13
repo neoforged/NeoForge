@@ -1,12 +1,21 @@
 --- a/net/minecraft/world/item/crafting/ShapelessRecipe.java
 +++ b/net/minecraft/world/item/crafting/ShapelessRecipe.java
-@@ -24,12 +_,14 @@
+@@ -20,16 +_,22 @@
+ public class ShapelessRecipe implements CraftingRecipe {
+     final String group;
+     final CraftingBookCategory category;
+-    final ItemStack result;
++    final net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result;
      final List<Ingredient> ingredients;
      @Nullable
      private PlacementInfo placementInfo;
 +    private final boolean isSimple;
  
      public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, List<Ingredient> p_361103_) {
++        this(p_249640_, p_249390_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient.ofItem(p_252071_), p_361103_);
++    }
++
++    public ShapelessRecipe(String p_249640_, CraftingBookCategory p_249390_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> p_252071_, List<Ingredient> p_361103_) {
          this.group = p_249640_;
          this.category = p_249390_;
          this.result = p_252071_;
@@ -28,12 +37,41 @@
          } else {
              return p_346123_.size() == 1 && this.ingredients.size() == 1
                  ? this.ingredients.getFirst().test(p_346123_.getItem(0))
-@@ -87,7 +_,7 @@
+@@ -67,7 +_,7 @@
+     }
+ 
+     public ItemStack assemble(CraftingInput p_345555_, HolderLookup.Provider p_335725_) {
+-        return this.result.copy();
++        return this.result.resolve();
+     }
+ 
+     @Override
+@@ -75,7 +_,7 @@
+         return List.of(
+             new ShapelessCraftingRecipeDisplay(
+                 this.ingredients.stream().map(Ingredient::display).toList(),
+-                new SlotDisplay.ItemStackSlotDisplay(this.result),
++                this.result.display(),
+                 new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+             )
+         );
+@@ -86,8 +_,8 @@
+             p_360072_ -> p_360072_.group(
                      Codec.STRING.optionalFieldOf("group", "").forGetter(p_301127_ -> p_301127_.group),
                      CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(p_301133_ -> p_301133_.category),
-                     ItemStack.STRICT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
+-                    ItemStack.STRICT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
 -                    Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
++                    net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_CODEC.fieldOf("result").forGetter(p_301142_ -> p_301142_.result),
 +                    Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.maxHeight * ShapedRecipePattern.maxWidth)).fieldOf("ingredients").forGetter(p_360071_ -> p_360071_.ingredients)
                  )
                  .apply(p_360072_, ShapelessRecipe::new)
          );
+@@ -96,7 +_,7 @@
+             p_360074_ -> p_360074_.group,
+             CraftingBookCategory.STREAM_CODEC,
+             p_360073_ -> p_360073_.category,
+-            ItemStack.STREAM_CODEC,
++            net.neoforged.neoforge.common.crafting.outgredient.OutgredientCodecs.ITEM_STACK_OUTGREDIENT_STREAM_CODEC,
+             p_360070_ -> p_360070_.result,
+             Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()),
+             p_360069_ -> p_360069_.ingredients,
