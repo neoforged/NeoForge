@@ -27,8 +27,13 @@ import java.util.Optional;
 /**
  * Represents an item-based recipe outgredient that represents the item as a tag-fallback combination.
  * {@link DefaultedItemTagOutgredient#resolve()} resolves that combination into a concrete {@link ItemStack}.
+ *
+ * @param tagKey     The {@link TagKey} to use for looking up the outgredient.
+ * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+ * @param count      The count to use. Corresponds to {@link ItemStack#getCount()}.
+ * @param components The data components to use. Corresponds to {@link ItemStack#getComponents()}.
  */
-public class DefaultedItemTagOutgredient implements Outgredient<ItemStack> {
+public record DefaultedItemTagOutgredient(TagKey<Item> tagKey, Holder<Item> fallback, int count, DataComponentPatch components) implements Outgredient<ItemStack> {
     public static final MapCodec<DefaultedItemTagOutgredient> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(it -> it.tagKey),
             BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("fallback").forGetter(it -> it.fallback),
@@ -42,25 +47,9 @@ public class DefaultedItemTagOutgredient implements Outgredient<ItemStack> {
             DataComponentPatch.STREAM_CODEC, it -> it.components,
             DefaultedItemTagOutgredient::new);
 
-    private final TagKey<Item> tagKey;
-    private final Holder<Item> fallback;
-    private final int count;
-    private final DataComponentPatch components;
-
     /**
-     * @param tagKey     The {@link TagKey} to use for looking up the outgredient.
-     * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
-     * @param count      The count to use. Corresponds to {@link ItemStack#getCount()}.
-     * @param components The data components to use. Corresponds to {@link ItemStack#getComponents()}.
-     */
-    public DefaultedItemTagOutgredient(TagKey<Item> tagKey, Holder<Item> fallback, int count, DataComponentPatch components) {
-        this.tagKey = tagKey;
-        this.fallback = fallback;
-        this.count = count;
-        this.components = components;
-    }
-
-    /**
+     * Constructor overload that uses {@link DataComponentPatch#EMPTY} for the {@code components} parameter.
+     *
      * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
      * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
      * @param count    The count to use. Corresponds to {@link ItemStack#getCount()}.
@@ -70,6 +59,8 @@ public class DefaultedItemTagOutgredient implements Outgredient<ItemStack> {
     }
 
     /**
+     * Constructor overload that uses 1 for the {@code amount} and {@link DataComponentPatch#EMPTY} for the {@code components} parameter.
+     *
      * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
      * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
      */

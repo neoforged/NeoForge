@@ -27,8 +27,13 @@ import java.util.Optional;
 /**
  * Represents a fluid-based recipe outgredient that represents the fluid as a tag-fallback combination.
  * {@link DefaultedFluidTagOutgredient#resolve()} resolves that combination into a concrete {@link FluidStack}.
+ *
+ * @param tagKey     The {@link TagKey} to use for looking up the outgredient.
+ * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
+ * @param amount     The amount to use. Corresponds to {@link FluidStack#getAmount()}.
+ * @param components The data components to use. Corresponds to {@link FluidStack#getComponents()}.
  */
-public class DefaultedFluidTagOutgredient implements Outgredient<FluidStack> {
+public record DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount, DataComponentPatch components) implements Outgredient<FluidStack> {
     public static final MapCodec<DefaultedFluidTagOutgredient> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(it -> it.tagKey),
             BuiltInRegistries.FLUID.holderByNameCodec().fieldOf("fallback").forGetter(it -> it.fallback),
@@ -42,39 +47,15 @@ public class DefaultedFluidTagOutgredient implements Outgredient<FluidStack> {
             DataComponentPatch.STREAM_CODEC, it -> it.components,
             DefaultedFluidTagOutgredient::new);
 
-    private final TagKey<Fluid> tagKey;
-    private final Holder<Fluid> fallback;
-    private final int amount;
-    private final DataComponentPatch components;
-
     /**
-     * @param tagKey     The {@link TagKey} to use for looking up the outgredient.
-     * @param fallback   The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
-     * @param amount     The amount to use. Corresponds to {@link FluidStack#getAmount()}.
-     * @param components The data components to use. Corresponds to {@link FluidStack#getComponents()}.
-     */
-    public DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount, DataComponentPatch components) {
-        this.tagKey = tagKey;
-        this.fallback = fallback;
-        this.amount = amount;
-        this.components = components;
-    }
-
-    /**
+     * Constructor overload that uses {@link DataComponentPatch#EMPTY} for the {@code components} parameter.
+     *
      * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
      * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
      * @param amount   The amount to use. Corresponds to {@link FluidStack#getAmount()}.
      */
     public DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback, int amount) {
         this(tagKey, fallback, amount, DataComponentPatch.EMPTY);
-    }
-
-    /**
-     * @param tagKey   The {@link TagKey} to use for looking up the outgredient.
-     * @param fallback The fallback to use if the tag-based lookup did not yield a conclusive outgredient.
-     */
-    public DefaultedFluidTagOutgredient(TagKey<Fluid> tagKey, Holder<Fluid> fallback) {
-        this(tagKey, fallback, 1, DataComponentPatch.EMPTY);
     }
 
     @Override
