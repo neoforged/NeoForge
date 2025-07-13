@@ -1,6 +1,12 @@
 --- a/net/minecraft/data/recipes/ShapedRecipeBuilder.java
 +++ b/net/minecraft/data/recipes/ShapedRecipeBuilder.java
-@@ -28,6 +_,7 @@
+@@ -23,11 +_,12 @@
+ import net.minecraft.world.item.crafting.ShapedRecipePattern;
+ import net.minecraft.world.level.ItemLike;
+ 
+-public class ShapedRecipeBuilder implements RecipeBuilder {
++public class ShapedRecipeBuilder implements RecipeBuilder, net.neoforged.neoforge.common.extensions.IShapedRecipeBuilderExtension {
+     private final HolderGetter<Item> items;
      private final RecipeCategory category;
      private final Item result;
      private final int count;
@@ -8,14 +14,13 @@
      private final List<String> rows = Lists.newArrayList();
      private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
      private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
-@@ -36,10 +_,15 @@
+@@ -35,11 +_,13 @@
+     private String group;
      private boolean showNotification = true;
  
-     private ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, ItemLike p_251475_, int p_248948_) {
-+        this(p_365072_, p_249996_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(new ItemStack(p_251475_, p_248948_)));
-+    }
-+
-+    private ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result) {
+-    private ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, ItemLike p_251475_, int p_248948_) {
++    @Deprecated // Neo: use the various #shaped methods instead
++    public ShapedRecipeBuilder(HolderGetter<Item> p_365072_, RecipeCategory p_249996_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result) {
          this.items = p_365072_;
          this.category = p_249996_;
 -        this.result = p_251475_.asItem();
@@ -26,29 +31,15 @@
      }
  
      public static ShapedRecipeBuilder shaped(HolderGetter<Item> p_364036_, RecipeCategory p_250853_, ItemLike p_249747_) {
-@@ -50,6 +_,22 @@
-         return new ShapedRecipeBuilder(p_365019_, p_251325_, p_250636_, p_249081_);
+@@ -47,7 +_,7 @@
      }
  
-+    public static ShapedRecipeBuilder shaped(HolderGetter<Item> p_365019_, RecipeCategory p_251325_, ItemStack result) {
-+        return shaped(p_365019_, p_251325_, net.neoforged.neoforge.common.crafting.outgredient.OutgredientWrapper.item(result));
-+    }
-+
-+    public static ShapedRecipeBuilder shaped(HolderGetter<Item> p_365019_, RecipeCategory p_251325_, TagKey<Item> tagKey, ItemLike fallback) {
-+        return shaped(p_365019_, p_251325_, tagKey, fallback, 1);
-+    }
-+
-+    public static ShapedRecipeBuilder shaped(HolderGetter<Item> p_365019_, RecipeCategory p_251325_, TagKey<Item> tagKey, ItemLike fallback, int count) {
-+        return shaped(p_365019_, p_251325_, new net.neoforged.neoforge.common.crafting.outgredient.DefaultedItemTagResult(tagKey, fallback.asItem().builtInRegistryHolder(), count));
-+    }
-+
-+    public static ShapedRecipeBuilder shaped(HolderGetter<Item> p_365019_, RecipeCategory p_251325_, net.neoforged.neoforge.common.crafting.outgredient.Outgredient<ItemStack> result) {
-+        return new ShapedRecipeBuilder(p_365019_, p_251325_, result);
-+    }
-+
-     public ShapedRecipeBuilder define(Character p_206417_, TagKey<Item> p_206418_) {
-         return this.define(p_206417_, Ingredient.of(this.items.getOrThrow(p_206418_)));
+     public static ShapedRecipeBuilder shaped(HolderGetter<Item> p_365019_, RecipeCategory p_251325_, ItemLike p_250636_, int p_249081_) {
+-        return new ShapedRecipeBuilder(p_365019_, p_251325_, p_250636_, p_249081_);
++        return net.neoforged.neoforge.common.extensions.IShapedRecipeBuilderExtension.shaped(p_365019_, p_251325_, p_250636_.asItem().getDefaultInstance().copyWithCount(p_249081_));
      }
+ 
+     public ShapedRecipeBuilder define(Character p_206417_, TagKey<Item> p_206418_) {
 @@ -95,7 +_,7 @@
  
      @Override
