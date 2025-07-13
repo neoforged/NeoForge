@@ -82,6 +82,9 @@ neoDev {
         configureEach {
             gameDirectory = layout.projectDir.dir("run/$name")
             systemProperty("terminal.ansi", "true")
+
+            // This property allows the test framework to find source files and correctly annotate test failures in action runs
+            systemProperty('net.neoforged.testframework.sourceFileRoots', project.file('src/main/java').toPath().toAbsolutePath().toString())
         }
         client {
             client()
