@@ -183,6 +183,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "将此设置为true以启用向本地局域网客户端开放服务器，以便它自动显示在多人游戏屏幕中。",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "附加属性高级提示框",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "启用此项后，在“高级提示框”开启时，物品会显示关于属性的附加信息。",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge 光照管线",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "启用 NeoForge 方块渲染管线 - 修复自定义模型的光照问题。",
   "neoforge.configgui.fullBoundingBoxLadders": "梯子使用完整实体碰撞箱",
