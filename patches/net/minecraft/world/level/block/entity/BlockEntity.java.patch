@@ -66,7 +66,7 @@
      }
  
      public void preRemoveSideEffects(BlockPos p_394577_, BlockState p_394161_) {
-@@ -271,6 +_,27 @@
+@@ -271,6 +_,32 @@
  
      public BlockEntityType<?> getType() {
          return this.type;
@@ -91,6 +91,11 @@
 +    public final <T> T removeData(net.neoforged.neoforge.attachment.AttachmentType<T> type) {
 +        setChanged();
 +        return super.removeData(type);
++    }
++
++    @Override
++    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        net.neoforged.neoforge.attachment.AttachmentSync.syncBlockEntityUpdate(this, type);
      }
  
      @Deprecated

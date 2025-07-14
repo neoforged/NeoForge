@@ -195,6 +195,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Set this to true to enable advertising the dedicated server to local LAN clients so that it shows up in the Multiplayer screen automatically.",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Additional Attribute Advanced Tooltips",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Set this to true to enable additional information about attributes on an item when advanced tooltips is on.",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "NeoForge Light Pipeline",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.",
   "neoforge.configgui.fullBoundingBoxLadders": "Full Bounding Box Ladders",
