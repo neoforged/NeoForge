@@ -187,6 +187,7 @@ import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.client.extensions.common.ClientExtensionsManager;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.client.fluids.FluidRenderers;
 import net.neoforged.neoforge.client.gui.ClientTooltipComponentManager;
 import net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration;
 import net.neoforged.neoforge.client.gui.map.MapDecorationRendererManager;
@@ -999,6 +1000,7 @@ public class ClientHooks {
 
         AnimationTypeManager.init();
         BlockStateModelHooks.init();
+        FluidRenderers.init();
 
         ModLoader.postEvent(new InitializeClientRegistriesEvent());
     }

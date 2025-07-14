@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "neoforge:milk",
+      "required": false
+    },
+    {
+      "id": "neoforge:flowing_milk",
+      "required": false
+    }
+  ]
+}

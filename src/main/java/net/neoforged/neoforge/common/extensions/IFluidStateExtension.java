@@ -5,11 +5,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderSet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
@@ -151,12 +153,12 @@ public interface IFluidStateExtension {
      *
      * @param level     the level which contains this fluid
      * @param pos       the position of the fluid
-     * @param source    the state of the block being hydrated
-     * @param sourcePos the position of the block being hydrated
+     * @param target    the state of the block being hydrated
+     * @param targetPos the position of the block being hydrated
      * @return {@code true} if the block can be hydrated, {@code false} otherwise
      */
-    default boolean canHydrate(BlockGetter level, BlockPos pos, BlockState source, BlockPos sourcePos) {
-        return self().getType().canHydrate(self(), level, pos, source, sourcePos);
+    default boolean canHydrate(BlockGetter level, BlockPos pos, BlockState target, BlockPos targetPos) {
+        return self().getType().canHydrate(self(), level, pos, target, targetPos);
     }
 
     /**
@@ -243,8 +245,20 @@ public interface IFluidStateExtension {
         return self().getType().shouldHideAdjacentFluidFace(self(), selfFace, adjacentFluid);
     }
 
-    @javax.annotation.Nullable
+    @Nullable
     default DripstoneDripInfo getDripInfo() {
         return self().getType().getDripInfo(self());
+    }
+
+    /**
+     * Gets the tint of the fluid in world.
+     *
+     * @param level The level which contains this fluid.
+     * @param position The position of the fluid.
+     *
+     * @return The tint color of the fluid in world, in {@link ARGB} format.
+     */
+    default int getTintColor(BlockAndTintGetter level, BlockPos position) {
+        return self().getType().getTintColor(self(), level, position);
     }
 }

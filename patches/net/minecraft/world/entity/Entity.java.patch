@@ -56,6 +56,16 @@
      }
  
      public boolean isColliding(BlockPos p_20040_, BlockState p_20041_) {
+@@ -510,7 +_,8 @@
+             this.clearFire();
+         }
+ 
+-        if (this.isInLava()) {
++        // Neo: This is computed in updateInWaterStateAndDoFluidPushing. If we also computed it here, we would count lava twice.
++        if (false && this.isInLava()) {
+             this.fallDistance *= 0.5;
+         }
+ 
 @@ -939,9 +_,7 @@
                  return blockpos;
              } else {
@@ -165,7 +175,7 @@
  
      public boolean isInLava() {
 -        return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
-+        return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0D;
++        return !this.firstTick && this.getFluidHeight(FluidTags.LAVA) > 0.0D;
      }
  
      public void moveRelative(float p_19921_, Vec3 p_19922_) {

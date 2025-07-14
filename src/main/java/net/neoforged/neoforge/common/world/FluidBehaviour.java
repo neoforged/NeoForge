@@ -43,6 +43,7 @@ import java.util.Optional;
  */
 public abstract class FluidBehaviour implements FeatureElement {
     // block related properties
+    private final boolean canBePlacedInWorld;
     private final float explosionResistance;
     private final boolean canConvertToSource;
     private final boolean canExtinguishBlocks;
@@ -63,12 +64,14 @@ public abstract class FluidBehaviour implements FeatureElement {
     private final PathType adjacentPathingType;
 
     // misc. properties
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // Caching the Optional object for performance
     private final Optional<HolderSet<Fluid>> family;
     private final String descriptionId;
     private final FeatureFlagSet requiredFeatures;
     private final Properties properties;
 
     public FluidBehaviour(FluidBehaviour.Properties properties) {
+        this.canBePlacedInWorld = properties.canBePlacedInWorld;
         this.explosionResistance = properties.explosionResistance;
         this.canConvertToSource = properties.canConvertToSource;
         this.canExtinguishBlocks = properties.canExtinguishBlocks;
@@ -112,6 +115,10 @@ public abstract class FluidBehaviour implements FeatureElement {
         return this.family;
     }
 
+    public boolean canBePlacedInWorld(BlockGetter level, BlockPos position) {
+        return this.canBePlacedInWorld;
+    }
+
     public float getExplosionResistance() {
         return this.explosionResistance;
     }
@@ -124,7 +131,7 @@ public abstract class FluidBehaviour implements FeatureElement {
         return this.canExtinguishBlocks;
     }
 
-    public boolean canHydrate(BlockGetter level, BlockPos pos, BlockState source, BlockPos sourcePos) {
+    public boolean canHydrate(BlockGetter level, BlockPos pos, BlockState target, BlockPos targetPos) {
         return this.canHydrateBlocks;
     }
 
@@ -153,26 +160,75 @@ public abstract class FluidBehaviour implements FeatureElement {
         return false;
     }
 
+    /**
+     * Gets the sound to play when an entity performs an action with this fluid.
+     * This is usually called during an in-world interaction, such as filling
+     * or emptying a bucket.
+     *
+     * @param entity The entity (usually a player) which is attempting to
+     *               perform the action. May be null if performed by an
+     *               automated process (e.g. a Dispenser)
+     * @param level The level in which the action is being performed.
+     * @param pos The position at which the action is taking place.
+     * @param action The specific action that is taking place.
+     * @return A {@link SoundEvent} which should be played for the action.
+     */
     @Nullable
-    public SoundEvent getSound(LivingEntity entity, BlockGetter level, BlockPos pos, SoundAction action) {
+    public SoundEvent getSound(@Nullable LivingEntity entity, BlockGetter level, BlockPos pos, SoundAction action) {
         return null;
     }
 
+    /**
+     * Gets the sound to play when the player performs an action with this
+     * fluid. This is usually called during an interaction in an interface,
+     * such as filling or emptying a bucket.
+     *
+     * @param stack The fluid that is taking part in the action.
+     * @param action The specific action that is taking place.
+     * @return A {@link SoundEvent} which should be played for the action.
+     */
     @Nullable
     public SoundEvent getSound(FluidStack stack, SoundAction action) {
         return null;
     }
 
+    /**
+     * Gets the sound to play when the entity performs an action with this
+     * fluid. This is usually called from non-player entities during an
+     * in-world interaction.
+     *
+     * @param entity The entity which is attempting to perform the action.
+     * @param action The action which is being performed.
+     * @return A {@link SoundEvent} which should be played for the action.
+     */
     @Nullable
     public SoundEvent getSound(Entity entity, SoundAction action) {
         return null;
     }
 
+    /**
+     * Determines whether the fluid vaporizes when placed in the world.
+     *
+     * @param level The level in which the fluid is being placed in.
+     * @param pos The position at which the fluid is being placed.
+     * @param stack The fluid being vaporized.
+     * @return {@code true} if the fluid vaporizes when placed in the level,
+     *         or {@code false} otherwise.
+     */
     public boolean isVaporizedOnPlacement(BlockGetter level, BlockPos pos, FluidStack stack) {
         return false;
     }
 
-    public void onVaporize(LivingEntity player, BlockGetter level, BlockPos pos, FluidStack stack) {
+    /**
+     * Performs any logic which occurs when this fluid vaporizes.
+     *
+     * @param entity The entity (usually a player) which placed the fluid.
+     *               May be null if placed by an automatic process (e.g. a Dispenser)
+     * @param level The level in which the fluid was attempted to be placed.
+     * @param pos The position at which the fluid was attempted to be placed.
+     * @param stack The fluid being vaporized.
+     */
+    public void onVaporize(@Nullable LivingEntity entity, BlockGetter level, BlockPos pos, FluidStack stack) {
     }
 
     public boolean canVehicleRideUnder(BlockGetter level, BlockPos pos, Entity entity, Entity rider)  {
@@ -227,6 +283,7 @@ public abstract class FluidBehaviour implements FeatureElement {
 
     public static class Properties {
         // block related properties
+        private boolean canBePlacedInWorld = false;
         private float explosionResistance = 0f;
         private boolean canConvertToSource = false;
         private boolean canExtinguishBlocks = false;
@@ -259,6 +316,11 @@ public abstract class FluidBehaviour implements FeatureElement {
 
         public static FluidBehaviour.Properties of() {
             return new FluidBehaviour.Properties();
+        }
+
+        public FluidBehaviour.Properties placeableInWorld() {
+            this.canBePlacedInWorld = true;
+            return this;
         }
 
         public FluidBehaviour.Properties explosionResistance(float explosionResistance) {

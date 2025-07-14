@@ -4,11 +4,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,6 +28,18 @@ public interface IFluidExtension
 {
     private Fluid self() {
         return (Fluid) this;
+    }
+
+    default boolean canBePlacedInWorld(@Nullable Entity entity, BlockGetter level, BlockPos pos, FluidStack stack) {
+        return self().canBePlacedInWorld(entity, level, pos, self().getStateForPlacement(level, pos, stack));
+    }
+
+    default boolean canBePlacedInWorld(@Nullable Entity entity, BlockGetter level, BlockPos pos, FluidState state) {
+        return self().canBePlacedInWorld(entity, level, pos);
+    }
+
+    default boolean canBePlacedInWorld(@Nullable Entity entity, BlockGetter level, BlockPos pos) {
+        return self().canBePlacedInWorld(level, pos);
     }
 
     default float getExplosionResistance(FluidState fluidState, BlockGetter level, BlockPos pos, Explosion explosion) {
@@ -62,8 +76,8 @@ public interface IFluidExtension
         return self().getAdjacentBlockPathType(level, pos, mob, originalType);
     }
 
-    default boolean canHydrate(FluidState fluidState, BlockGetter level, BlockPos pos, BlockState source, BlockPos sourcePos) {
-        return self().canHydrate(level, pos, source, sourcePos);
+    default boolean canHydrate(FluidState fluidState, BlockGetter level, BlockPos pos, BlockState target, BlockPos targetPos) {
+        return self().canHydrate(level, pos, target, targetPos);
     }
 
     default boolean canExtinguish(FluidState fluidState, BlockGetter level, BlockPos pos) {
@@ -119,5 +133,18 @@ public interface IFluidExtension
     @Nullable
     default DripstoneDripInfo getDripInfo(FluidState state) {
         return self().getDripInfo();
+    }
+
+    /**
+     * Gets the tint of the fluid in world.
+     *
+     * @param state The state of the fluid.
+     * @param level The level which contains this fluid.
+     * @param position The position of the fluid.
+     *
+     * @return The tint color of the fluid in world, in {@link ARGB} format.
+     */
+    default int getTintColor(FluidState state, BlockAndTintGetter level, BlockPos position) {
+        return 0xFF_FF_FF_FF;
     }
 }

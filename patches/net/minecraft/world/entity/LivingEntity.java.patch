@@ -502,16 +502,18 @@
      }
  
      protected float getWaterSlowDown() {
-@@ -2252,7 +_,8 @@
+@@ -2252,8 +_,9 @@
  
      public void travel(Vec3 p_21280_) {
          FluidState fluidstate = this.level().getFluidState(this.blockPosition());
 -        if ((this.isInWater() || this.isInLava()) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
+-            this.travelInFluid(p_21280_);
 +        // Neo: Call (patched-in overload of) #travelInFluid for custom fluid types
 +        if ((this.isInWater() || this.isInLava() || this.isInFluid(fluidstate)) && this.isAffectedByFluids() && !this.canStandOnFluid(fluidstate)) {
-             this.travelInFluid(p_21280_);
++            this.travelInFluid(p_21280_, fluidstate);
          } else if (this.isFallFlying()) {
              this.travelFallFlying(p_21280_);
+         } else {
 @@ -2283,7 +_,7 @@
  
      private void travelInAir(Vec3 p_362457_) {
@@ -521,7 +523,7 @@
          float f1 = f * 0.91F;
          Vec3 vec3 = this.handleRelativeFrictionAndCalculateMovement(p_362457_, f);
          double d0 = vec3.y;
-@@ -2306,11 +_,19 @@
+@@ -2306,10 +_,21 @@
          }
      }
  
@@ -537,11 +539,12 @@
          boolean flag = this.getDeltaMovement().y <= 0.0;
          double d0 = this.getY();
          double d1 = this.getEffectiveGravity();
--        if (this.isInWater()) {
-+        if (this.isInWater() || (this.isInFluid(fluidState) && !this.moveInFluid(fluidState, p_365480_, d1))) {
++        if (this.isInFluid(fluidState) && this.moveInFluid(fluidState, p_365480_, d1)) {
++            // Neo: if the fluid handled the movement, don't do anything
++        } else
+         if (this.isInWater()) {
              float f = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
              float f1 = 0.02F;
-             float f2 = (float)this.getAttributeValue(Attributes.WATER_MOVEMENT_EFFICIENCY);
 @@ -2327,6 +_,7 @@
                  f = 0.96F;
              }

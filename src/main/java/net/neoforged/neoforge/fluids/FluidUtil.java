@@ -465,7 +465,7 @@ public class FluidUtil {
         }
 
         Fluid fluid = resource.getFluid();
-        if (fluid == Fluids.EMPTY) {
+        if (fluid == Fluids.EMPTY || !fluid.canBePlacedInWorld(player, level, pos, resource)) {
             return false;
         }
 

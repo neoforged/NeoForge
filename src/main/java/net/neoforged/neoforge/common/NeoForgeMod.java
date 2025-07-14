@@ -54,14 +54,21 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.biome.MobSpawnSettings.SpawnerData;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -117,6 +124,7 @@ import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifi
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveFeaturesBiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.RemoveSpawnsBiomeModifier;
+import net.neoforged.neoforge.common.world.FluidBehaviour;
 import net.neoforged.neoforge.common.world.NoneBiomeModifier;
 import net.neoforged.neoforge.common.world.NoneStructureModifier;
 import net.neoforged.neoforge.common.world.StructureModifier;
@@ -124,6 +132,7 @@ import net.neoforged.neoforge.common.world.StructureModifiers;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
+import net.neoforged.neoforge.fluids.DefaultMilkFluid;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.CustomDisplayFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
@@ -395,13 +404,14 @@ public class NeoForgeMod {
     //private static final DeferredRegister<FluidType> VANILLA_FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, "minecraft");
 
     private static boolean enableProperFilenameValidation = false;
-    private static boolean enableMilkFluid = false;
+    private static boolean enableMilkFluid = true;
     private static boolean enableMergedAttributeTooltips = false;
 
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_EMPTY_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.empty_milk"));
     public static final DeferredHolder<SoundEvent, SoundEvent> BUCKET_FILL_MILK = DeferredHolder.create(Registries.SOUND_EVENT, ResourceLocation.withDefaultNamespace("item.bucket.fill_milk"));
-    public static final DeferredHolder<Fluid, Fluid> MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("milk"));
-    public static final DeferredHolder<Fluid, Fluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_milk"));
+    public static final DeferredHolder<Fluid, FlowingFluid> MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "milk"));
+    public static final DeferredHolder<Block, LiquidBlock> MILK_BLOCK = DeferredHolder.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "milk"));
+    public static final DeferredHolder<Fluid, FlowingFluid> FLOWING_MILK = DeferredHolder.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "flowing_milk"));
 
     /**
      * Used in place of {@link DamageSources#magic()} for damage dealt by {@link MobEffects#POISON}.
@@ -546,11 +556,21 @@ public class NeoForgeMod {
 
             // register fluids
             event.register(Registries.FLUID, helper -> {
-                // set up properties
-                //BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(MILK_TYPE::value, MILK::value, FLOWING_MILK::value).bucket(() -> Items.MILK_BUCKET);
+                helper.register(MILK.getId(), new DefaultMilkFluid.Source());
+                helper.register(FLOWING_MILK.getId(), new DefaultMilkFluid.Flowing());
+            });
 
-                //helper.register(MILK.getId(), new BaseFlowingFluid.Source(properties));
-                //helper.register(FLOWING_MILK.getId(), new BaseFlowingFluid.Flowing(properties));
+            event.register(Registries.BLOCK, helper -> {
+                helper.register(MILK_BLOCK.getKey(), new LiquidBlock(MILK.get(), BlockBehaviour.Properties.of()
+                    .setId(MILK_BLOCK.getKey())
+                    .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                    .replaceable()
+                    .noCollission()
+                    .strength(100.0F)
+                    .pushReaction(PushReaction.DESTROY)
+                    .noLootTable()
+                    .liquid()
+                    .sound(SoundType.EMPTY)));
             });
         }
     }

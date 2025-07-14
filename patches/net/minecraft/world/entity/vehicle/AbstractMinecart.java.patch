@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
+@@ -281,7 +_,10 @@
+         if (this.isInLava()) {
+             this.lavaIgnite();
+             this.lavaHurt();
++            // Neo: This is computed in updateInWaterStateAndDoFluidPushing. If we also computed it here, we would count lava twice.
++            if (false) {
+             this.fallDistance *= 0.5;
++            }
+         }
+ 
+         this.firstTick = false;
 @@ -426,8 +_,8 @@
  
      public Vec3 getRedstoneDirection(BlockPos p_361470_) {

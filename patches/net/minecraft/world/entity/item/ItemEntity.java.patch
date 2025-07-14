@@ -45,13 +45,14 @@
          if (this.getItem().isEmpty()) {
              this.discard();
          } else {
-@@ -129,6 +_,9 @@
+@@ -129,6 +_,10 @@
              this.yo = this.getY();
              this.zo = this.getZ();
              Vec3 vec3 = this.getDeltaMovement();
 +            Fluid fluidType = this.getMaxHeightFluid();
-+            if (!fluidType.isSame(Fluids.EMPTY) && this.getFluidHeight(fluidType) > 0.1F) fluidType.move(this.level().getFluidState(this.blockPosition()), this, vec3, getGravity());
-+            else
++            if (!fluidType.isSame(Fluids.EMPTY) && this.getFluidHeight(fluidType) > 0.1F && fluidType.move(this.level().getFluidState(this.blockPosition()), this, vec3, getGravity())) {
++                // Neo: if the fluid handled the movement, don't do anything
++            } else
              if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
                  this.setUnderwaterMovement();
              } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {

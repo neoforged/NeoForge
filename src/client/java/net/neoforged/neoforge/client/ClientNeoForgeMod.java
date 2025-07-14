@@ -37,10 +37,14 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterFluidRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterNamedRenderTypesEvent;
 import net.neoforged.neoforge.client.event.RegisterSpriteSourcesEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.fluids.FluidRenderer;
+import net.neoforged.neoforge.client.fluids.FluidRendererProvider;
+import net.neoforged.neoforge.client.fluids.FluidRenderers;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.internal.SelfTestClient;
@@ -170,7 +174,12 @@ public class ClientNeoForgeMod {
     }
 
     @SubscribeEvent
-    static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+    static void onRegisterFluidRenderers(RegisterFluidRenderersEvent event) {
+        event.register(NeoForgeMod.MILK.get(), FluidRendererProvider.vanilla(
+            ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_still"),
+            ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "block/milk_flowing"),
+            null
+        ));
     }
 
     @SubscribeEvent
