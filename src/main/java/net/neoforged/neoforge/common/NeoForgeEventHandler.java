@@ -77,9 +77,6 @@ public class NeoForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void preServerTick(ServerTickEvent.Pre event) {}
-
-    @SubscribeEvent
     public void postServerTick(ServerTickEvent.Post event) {
         ConfigSync.syncPendingConfigs(event.getServer());
     }
