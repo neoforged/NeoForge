@@ -111,7 +111,7 @@
          this.blockEntities.values().forEach(p_427220_ -> {
              if (this.level instanceof ServerLevel serverlevel) {
                  this.addGameEventListener(p_427220_, serverlevel);
-@@ -710,6 +_,14 @@
+@@ -710,6 +_,19 @@
          return new LevelChunk.BoundTickingBlockEntity<>(p_156376_, p_156377_);
      }
  
@@ -121,6 +121,11 @@
 +    @Override
 +    public net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager getAuxLightManager(ChunkPos pos) {
 +        return auxLightManager;
++    }
++
++    @Override
++    public final void syncData(net.neoforged.neoforge.attachment.AttachmentType<?> type) {
++        net.neoforged.neoforge.attachment.AttachmentSync.syncChunkUpdate(this, getAttachmentHolder(), type);
 +    }
 +
      class BoundTickingBlockEntity<T extends BlockEntity> implements TickingBlockEntity {

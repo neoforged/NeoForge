@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/textures/AddressMode.java
++++ b/com/mojang/blaze3d/textures/AddressMode.java
+@@ -6,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further address modes may be added")
+ public enum AddressMode {
+     REPEAT,
+     CLAMP_TO_EDGE;
