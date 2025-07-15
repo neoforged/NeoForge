@@ -251,7 +251,7 @@
          return this.passengers.isEmpty();
      }
  
-+    /** @deprecated Forge: Use {@link #canBeRiddenUnderFluid(net.neoforged.neoforge.fluids.Fluid, Entity) rider sensitive version} */
++    /** @deprecated Forge: Use {@link #canBeRiddenUnderFluid(BlockGetter, BlockPos, Fluid, Entity) rider/level sensitive version} */
 +    @Deprecated
      protected boolean couldAcceptPassenger() {
          return true;
