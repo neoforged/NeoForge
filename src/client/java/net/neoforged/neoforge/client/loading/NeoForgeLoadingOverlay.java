@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 
 /**
  * This is an implementation of the LoadingOverlay that calls back into the early window rendering, as part of the
@@ -50,7 +51,12 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         this.onFinish = errorConsumer;
         this.displayWindow = displayWindow;
         this.progressMeter = StartupNotificationManager.prependProgressBar("Minecraft Progress", 1000);
-        var framebuffer = ((GlDevice) RenderSystem.getDevice()).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
+        var gpuDevice = RenderSystem.getDevice();
+        // The loading overlay imports an existing OpenGL texture directly into the GlDevice and as such must reach around the Validation device if it is enabled
+        if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
+            gpuDevice = validationGpuDevice.getRealDevice();
+        }
+        var framebuffer = ((GlDevice) gpuDevice).createExternalTexture("loading overlay framebuffer", GpuTexture.USAGE_TEXTURE_BINDING, displayWindow.getFramebufferTextureId());
         Minecraft.getInstance().getTextureManager().register(LOADING_OVERLAY_TEXTURE_ID, new ExternalTexture(framebuffer));
     }
 
@@ -107,7 +113,12 @@ public class NeoForgeLoadingOverlay extends LoadingOverlay {
         public ExternalTexture(GpuTexture texture) {
             this.texture = texture;
             this.setFilter(false, false);
-            this.textureView = RenderSystem.getDevice().createTextureView(texture);
+            var gpuDevice = RenderSystem.getDevice();
+            // ValidationGpuDevice.createTextureView is expecting a ValidationGpuTexture instance, but the previous reach around created a GlTexture instance instead so validation must be reached around again
+            if (gpuDevice instanceof ValidationGpuDevice validationGpuDevice) {
+                gpuDevice = validationGpuDevice.getRealDevice();
+            }
+            this.textureView = gpuDevice.createTextureView(texture);
         }
     }
 }

@@ -1,6 +1,11 @@
 --- a/com/mojang/blaze3d/textures/TextureFormat.java
 +++ b/com/mojang/blaze3d/textures/TextureFormat.java
-@@ -10,12 +_,15 @@
+@@ -6,16 +_,20 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Additional texture formats may be added")
+ public enum TextureFormat {
      RGBA8(4),
      RED8(1),
      RED8I(1),
