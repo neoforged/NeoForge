@@ -1,21 +1,48 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
-@@ -41,6 +_,7 @@
+@@ -41,7 +_,10 @@
      private final float depthBiasConstant;
      private final int sortKey;
      private static int sortKeySeed;
 +    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
  
++    /** @deprecated Neo: use {@link #RenderPipeline(ResourceLocation, ResourceLocation, ResourceLocation, ShaderDefines, List, List, Optional, DepthTestFunction, PolygonMode, boolean, boolean, boolean, boolean, LogicOp, VertexFormat, VertexFormat.Mode, float, float, Optional, int)} instead */
++    @Deprecated
      protected RenderPipeline(
          ResourceLocation p_405403_,
-@@ -61,6 +_,7 @@
-         VertexFormat.Mode p_404708_,
-         float p_410755_,
+         ResourceLocation p_405389_,
+@@ -63,6 +_,31 @@
          float p_409999_,
-+        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest,
          int p_415862_
      ) {
++        this(p_405403_, p_405389_, p_404945_, p_405426_, p_405334_, p_404693_, p_404667_, p_410224_, p_409822_, p_404907_, p_405688_, p_405411_, p_405477_, p_410051_, p_405109_, p_404708_, p_410755_, p_409999_, Optional.empty(), p_415862_);
++    }
++
++    protected RenderPipeline(
++            ResourceLocation p_405403_,
++            ResourceLocation p_405389_,
++            ResourceLocation p_404945_,
++            ShaderDefines p_405426_,
++            List<String> p_405334_,
++            List<RenderPipeline.UniformDescription> p_404693_,
++            Optional<BlendFunction> p_404667_,
++            DepthTestFunction p_410224_,
++            PolygonMode p_409822_,
++            boolean p_404907_,
++            boolean p_405688_,
++            boolean p_405411_,
++            boolean p_405477_,
++            LogicOp p_410051_,
++            VertexFormat p_405109_,
++            VertexFormat.Mode p_404708_,
++            float p_410755_,
++            float p_409999_,
++            Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest,
++            int p_415862_
++    ) {
          this.location = p_405403_;
+         this.vertexShader = p_405389_;
+         this.fragmentShader = p_404945_;
 @@ -82,6 +_,7 @@
          this.depthBiasScaleFactor = p_410755_;
          this.depthBiasConstant = p_409999_;
@@ -125,7 +152,7 @@
                      nextPipelineSortKey++
                  );
              }
-@@ -514,7 +_,8 @@
+@@ -514,8 +_,30 @@
          Optional<Boolean> writeDepth,
          Optional<LogicOp> colorLogic,
          Optional<VertexFormat> vertexFormat,
@@ -133,5 +160,27 @@
 +        Optional<VertexFormat.Mode> vertexFormatMode,
 +        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
      ) {
++        /** @deprecated Neo: use {@link #Snippet(Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional)} instead */
++        @Deprecated
++        public Snippet(
++                Optional<ResourceLocation> vertexShader,
++                Optional<ResourceLocation> fragmentShader,
++                Optional<ShaderDefines> shaderDefines,
++                Optional<List<String>> samplers,
++                Optional<List<RenderPipeline.UniformDescription>> uniforms,
++                Optional<BlendFunction> blendFunction,
++                Optional<DepthTestFunction> depthTestFunction,
++                Optional<PolygonMode> polygonMode,
++                Optional<Boolean> cull,
++                Optional<Boolean> writeColor,
++                Optional<Boolean> writeAlpha,
++                Optional<Boolean> writeDepth,
++                Optional<LogicOp> colorLogic,
++                Optional<VertexFormat> vertexFormat,
++                Optional<VertexFormat.Mode> vertexFormatMode
++        ) {
++            this(vertexShader, fragmentShader, shaderDefines, samplers, uniforms, blendFunction, depthTestFunction, polygonMode, cull, writeColor, writeAlpha, writeDepth, colorLogic, vertexFormat, vertexFormatMode, Optional.empty());
++        }
      }
  
+     @OnlyIn(Dist.CLIENT)
