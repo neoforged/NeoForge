@@ -1191,17 +1191,25 @@ public class CommonHooks {
         return event;
     }
 
+    @Nullable
+    private static ListTag modList;
+
     @ApiStatus.Internal
     public static void writeAdditionalLevelSaveData(WorldData worldData, CompoundTag levelTag) {
+        if (CommonHooks.modList == null) {
+            var mods = ModList.get().getMods();
+            var modListTag = new ListTag(mods.size());
+            mods.forEach(mi -> {
+                final CompoundTag mod = new CompoundTag(2);
+                mod.putString("ModId", mi.getModId());
+                mod.putString("ModVersion", MavenVersionTranslator.artifactVersionToString(mi.getVersion()));
+                modListTag.add(mod);
+            });
+            CommonHooks.modList = modListTag;
+        }
+
         CompoundTag fmlData = new CompoundTag();
-        ListTag modList = new ListTag();
-        ModList.get().getMods().forEach(mi -> {
-            final CompoundTag mod = new CompoundTag();
-            mod.putString("ModId", mi.getModId());
-            mod.putString("ModVersion", MavenVersionTranslator.artifactVersionToString(mi.getVersion()));
-            modList.add(mod);
-        });
-        fmlData.put("LoadingModList", modList);
+        fmlData.put("LoadingModList", CommonHooks.modList);
 
         LOGGER.debug(WORLDPERSISTENCE, "Gathered mod list to write to world save {}", worldData.getLevelName());
         levelTag.put("fml", fmlData);

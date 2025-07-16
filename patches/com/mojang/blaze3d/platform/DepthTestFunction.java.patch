@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/platform/DepthTestFunction.java
++++ b/com/mojang/blaze3d/platform/DepthTestFunction.java
+@@ -6,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further depth test functions may be added")
+ public enum DepthTestFunction {
+     NO_DEPTH_TEST,
+     EQUAL_DEPTH_TEST,
