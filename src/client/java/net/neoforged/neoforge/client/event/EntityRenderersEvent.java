@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -204,10 +205,12 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class CreateSkullModels extends EntityRenderersEvent {
         private final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels;
+        private final Map<SkullBlock.Type, ResourceLocation> skinByType;
 
         @ApiStatus.Internal
-        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels) {
+        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels, Map<SkullBlock.Type, ResourceLocation> skinByType) {
             this.skullModels = skullModels;
+            this.skinByType = skinByType;
         }
 
         /**
@@ -249,6 +252,12 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
             }
             if (skullModels.putIfAbsent(type, factory) != null) {
                 throw new IllegalArgumentException("Factory already registered for provided skull type: " + type.getSerializedName());
+            }
+        }
+
+        public void registerSkullBlockTexture(SkullBlock.Type type, ResourceLocation texture) {
+            if (skinByType.putIfAbsent(type, texture) != null) {
+                throw new IllegalArgumentException("Texture already registered for provided skull type: " + type.getSerializedName());
             }
         }
     }
