@@ -30,10 +30,12 @@
              this.sendPlayerPermissionLevel(p_11263_);
              p_11263_.getStats().markAllDirty();
              p_11263_.getRecipeBook().sendInitialRecipeBook(p_11263_);
-@@ -244,6 +_,7 @@
+@@ -244,6 +_,9 @@
                  p_11263_.loadAndSpawnParentVehicle(p_421335_);
              });
              p_11263_.initInventoryMenu();
++
++            net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(p_11263_);
 +            net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn(p_11263_);
          }
      }
@@ -84,10 +86,11 @@
              serverplayer.copyRespawnPosition(p_11237_);
          }
  
-@@ -459,6 +_,7 @@
+@@ -459,6 +_,8 @@
          this.playersByUUID.put(serverplayer.getUUID(), serverplayer);
          serverplayer.initInventoryMenu();
          serverplayer.setHealth(serverplayer.getHealth());
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(serverplayer);
 +        net.neoforged.neoforge.event.EventHooks.firePlayerRespawnEvent(serverplayer, p_11238_);
          ServerPlayer.RespawnConfig serverplayer$respawnconfig = serverplayer.getRespawnConfig();
          if (!p_11238_ && serverplayer$respawnconfig != null) {
@@ -121,6 +124,14 @@
          p_11230_.connection.send(new ClientboundSetDefaultSpawnPositionPacket(p_11231_.getSharedSpawnPos(), p_11231_.getSharedSpawnAngle()));
          if (p_11231_.isRaining()) {
              p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.START_RAINING, 0.0F));
+@@ -679,6 +_,7 @@
+ 
+         p_11230_.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START, 0.0F));
+         this.server.tickRateManager().updateJoiningPlayer(p_11230_);
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialLevelAttachments(p_11231_, p_11230_);
+     }
+ 
+     public void sendAllPlayerInfo(ServerPlayer p_11293_) {
 @@ -794,13 +_,6 @@
          if (serverstatscounter == null) {
              File file1 = this.server.getWorldPath(LevelResource.PLAYER_STATS_DIR).toFile();
