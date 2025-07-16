@@ -125,15 +125,13 @@
                      nextPipelineSortKey++
                  );
              }
-@@ -514,8 +_,9 @@
+@@ -514,7 +_,8 @@
          Optional<Boolean> writeDepth,
          Optional<LogicOp> colorLogic,
          Optional<VertexFormat> vertexFormat,
 -        Optional<VertexFormat.Mode> vertexFormatMode
--    ) {
 +        Optional<VertexFormat.Mode> vertexFormatMode,
 +        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
-+        ) {
+     ) {
      }
  
-     @OnlyIn(Dist.CLIENT)
