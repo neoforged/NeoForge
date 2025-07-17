@@ -972,7 +972,7 @@ public class ClientHooks {
         resourceManager.updateListenersFrom(rlEvent);
 
         ModLoader.postEvent(new EntityRenderersEvent.RegisterLayerDefinitions());
-        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType, net.minecraft.client.renderer.blockentity.SkullBlockRenderer.SKIN_BY_TYPE));
+        ModLoader.postEvent(new EntityRenderersEvent.CreateSkullModels(skullModelsByType));
         ModLoader.postEvent(new EntityRenderersEvent.RegisterRenderers());
         ModLoader.postEvent(new RegisterRenderStateModifiersEvent());
         ModLoader.postEvent(new RegisterSpriteDefaultMetadataSectionTypesEvent(DEFAULT_METADATA_SECTION_TYPES));

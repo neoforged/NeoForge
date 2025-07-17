@@ -205,12 +205,10 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
      */
     public static class CreateSkullModels extends EntityRenderersEvent {
         private final Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels;
-        private final Map<SkullBlock.Type, ResourceLocation> skinByType;
 
         @ApiStatus.Internal
-        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels, Map<SkullBlock.Type, ResourceLocation> skinByType) {
+        public CreateSkullModels(Map<SkullBlock.Type, Function<EntityModelSet, SkullModelBase>> skullModels) {
             this.skullModels = skullModels;
-            this.skinByType = skinByType;
         }
 
         /**
@@ -255,10 +253,8 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
             }
         }
 
-        public void registerSkullBlockTexture(SkullBlock.Type type, ResourceLocation texture) {
-            if (skinByType.putIfAbsent(type, texture) != null) {
-                throw new IllegalArgumentException("Texture already registered for provided skull type: " + type.getSerializedName());
-            }
+        public void registerSkullTexture(SkullBlock.Type type, ResourceLocation texture) {
+            this.registerSkullModel(type, new ModelLayerLocation(texture, "main"));
         }
     }
 }
