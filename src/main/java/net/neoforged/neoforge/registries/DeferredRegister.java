@@ -169,8 +169,8 @@ public class DeferredRegister<T> {
      * @see #create(ResourceLocation, String)
      * @see #createItems(String)
      */
-    public static DataComponents createDataComponents(ResourceKey<Registry<DataComponentType<?>>> registryKey, String modid) {
-        return new DataComponents(registryKey, modid);
+    public static DataComponents createDataComponents(String modid) {
+        return new DataComponents(modid);
     }
 
     /**
@@ -647,8 +647,8 @@ public class DeferredRegister<T> {
      * Specialized DeferredRegister for {@link DataComponentType DataComponentTypes}.
      */
     public static class DataComponents extends DeferredRegister<DataComponentType<?>> {
-        protected DataComponents(ResourceKey<Registry<DataComponentType<?>>> registryKey, String namespace) {
-            super(registryKey, namespace);
+        protected DataComponents(String namespace) {
+            super(Registries.DATA_COMPONENT_TYPE, namespace);
         }
 
         /**
