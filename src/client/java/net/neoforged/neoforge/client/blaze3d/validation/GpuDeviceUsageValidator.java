@@ -34,7 +34,7 @@ public class GpuDeviceUsageValidator {
         }
         // the reserved bits were already checked, so ignore those
         usage &= ~GpuBuffer.RESERVED_USAGE_BITS;
-        var knownGpuBufferBits = (GpuBuffer.USAGE_UNIFORM_TEXEL_BUFFER << 1) - 1;
+        var knownGpuBufferBits = (GpuBuffer.USAGE_PERF_FRAME_TRANSIENT << 1) - 1;
         if ((usage & ~knownGpuBufferBits) != 0) {
             throw new IllegalArgumentException("Use of undefined GpuBuffer usage bits");
         }
