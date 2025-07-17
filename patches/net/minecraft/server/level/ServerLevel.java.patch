@@ -67,6 +67,15 @@
              }
          }
      }
+@@ -513,7 +_,7 @@
+                 DifficultyInstance difficultyinstance = this.getCurrentDifficultyAt(blockpos);
+                 boolean flag1 = this.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)
+                     && this.random.nextDouble() < difficultyinstance.getEffectiveDifficulty() * 0.01
+-                    && !this.getBlockState(blockpos.below()).is(Blocks.LIGHTNING_ROD);
++                    && !(this.getBlockState(blockpos.below()).getBlock() instanceof net.minecraft.world.level.block.LightningRodBlock); // Neo: support custom LightningRodBlocks
+                 if (flag1) {
+                     SkeletonHorse skeletonhorse = EntityType.SKELETON_HORSE.create(this, EntitySpawnReason.EVENT);
+                     if (skeletonhorse != null) {
 @@ -541,6 +_,7 @@
          BlockPos blockpos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_295060_);
          BlockPos blockpos1 = blockpos.below();
