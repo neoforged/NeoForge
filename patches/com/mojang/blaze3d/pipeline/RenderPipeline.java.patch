@@ -6,7 +6,7 @@
      private static int sortKeySeed;
 +    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
  
-+    /** @deprecated Neo: use {@link #RenderPipeline(ResourceLocation, ResourceLocation, ResourceLocation, ShaderDefines, List, List, Optional, DepthTestFunction, PolygonMode, boolean, boolean, boolean, boolean, LogicOp, VertexFormat, VertexFormat.Mode, float, float, Optional, int)} instead */
++    /** @deprecated Neo: use {@link #RenderPipeline(ResourceLocation, ResourceLocation, ResourceLocation, ShaderDefines, List, List, Optional, DepthTestFunction, PolygonMode, boolean, boolean, boolean, boolean, LogicOp, VertexFormat, VertexFormat.Mode, float, float, int, Optional)} instead */
 +    @Deprecated
      protected RenderPipeline(
          ResourceLocation p_405403_,
@@ -15,7 +15,7 @@
          float p_409999_,
          int p_415862_
      ) {
-+        this(p_405403_, p_405389_, p_404945_, p_405426_, p_405334_, p_404693_, p_404667_, p_410224_, p_409822_, p_404907_, p_405688_, p_405411_, p_405477_, p_410051_, p_405109_, p_404708_, p_410755_, p_409999_, Optional.empty(), p_415862_);
++        this(p_405403_, p_405389_, p_404945_, p_405426_, p_405334_, p_404693_, p_404667_, p_410224_, p_409822_, p_404907_, p_405688_, p_405411_, p_405477_, p_410051_, p_405109_, p_404708_, p_410755_, p_409999_, p_415862_, Optional.empty());
 +    }
 +
 +    protected RenderPipeline(
@@ -37,9 +37,9 @@
 +            VertexFormat.Mode p_404708_,
 +            float p_410755_,
 +            float p_409999_,
-+            Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest,
-+            int p_415862_
-+    ) {
++            int p_415862_,
++            Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
++            ) {
          this.location = p_405403_;
          this.vertexShader = p_405389_;
          this.fragmentShader = p_404945_;
@@ -144,14 +144,16 @@
              );
          }
  
-@@ -491,6 +_,7 @@
+@@ -491,7 +_,8 @@
                      this.vertexFormatMode.get(),
                      this.depthBiasScaleFactor,
                      this.depthBiasConstant,
-+                    this.stencilTest,
-                     nextPipelineSortKey++
+-                    nextPipelineSortKey++
++                    nextPipelineSortKey++,
++                    this.stencilTest
                  );
              }
+         }
 @@ -514,8 +_,30 @@
          Optional<Boolean> writeDepth,
          Optional<LogicOp> colorLogic,
