@@ -1,10 +1,9 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -101,6 +_,8 @@
+@@ -101,6 +_,7 @@
      @Nullable
      private static DynamicUniforms dynamicUniforms;
      private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
-+    @Nullable
 +    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
  
      public static void initRenderThread() {
