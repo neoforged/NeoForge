@@ -103,7 +103,7 @@ final class ClientPayloadHandler {
 
         try {
             //This method normally returns missing entries, but we just accept what the server send us and ignore the rest.
-            Set<ResourceKey<?>> keysUnknownToClient = RegistryManager.applySnapshot(synchronizedRegistries, false, false);
+            Set<ResourceKey<?>> keysUnknownToClient = RegistryManager.applySnapshot(synchronizedRegistries, false);
             if (!keysUnknownToClient.isEmpty()) {
                 context.disconnect(Component.translatable("neoforge.network.registries.sync.server-with-unknown-keys", keysUnknownToClient.stream().map(Object::toString).collect(Collectors.joining(", "))));
                 return;
