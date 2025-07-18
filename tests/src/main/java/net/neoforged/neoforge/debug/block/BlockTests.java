@@ -52,6 +52,7 @@ import net.neoforged.neoforge.common.world.poi.ExtendPoiTypesEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.testframework.DynamicTest;
+import net.neoforged.testframework.Test;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -234,14 +235,18 @@ public class BlockTests {
     @TestHolder(description = "Adds a block whose states are added to the PoiTypes.MEETING PoI type", enabledByDefault = true)
     static void extendPoiTypeTest(final DynamicTest test, final RegistrationHelper reg) {
         DeferredBlock<Block> block = reg.blocks().registerSimpleBlock("test_meeting_point");
+        boolean[] failedEarly = new boolean[1];
         test.eventListeners().mod().addListener((ExtendPoiTypesEvent event) -> {
             try {
                 event.addBlockToPoi(PoiTypes.MEETING, block.value());
-            } catch (Throwable e) {
-                test.fail("PoiType extension failed with exception: " + e.getMessage());
+            } catch (Exception e) {
+                test.updateStatus(Test.Status.failed("PoiType extension failed with exception", e), null);
+                failedEarly[0] = true;
             }
         });
         test.eventListeners().mod().addListener((FMLLoadCompleteEvent event) -> {
+            if (failedEarly[0]) return;
+
             PoiType poiType = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getValueOrThrow(PoiTypes.MEETING);
             ImmutableList<BlockState> states = block.value().getStateDefinition().getPossibleStates();
             if (!poiType.matchingStates().containsAll(states)) {

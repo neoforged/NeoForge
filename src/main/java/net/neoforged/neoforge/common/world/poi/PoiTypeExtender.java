@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.common.world.poi;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -14,6 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.registries.GameData;
 import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 
 @ApiStatus.Internal
 public final class PoiTypeExtender {
@@ -34,7 +39,42 @@ public final class PoiTypeExtender {
                         type.value()));
             }
         }
-        ((PoiStateSet) type.value().matchingStates()).addCustomStates(states);
+
+        if (type.value().matchingStates() instanceof PoiStateSet poiStateSet) {
+            poiStateSet.addCustomStates(states);
+        } else {
+            List<String> accessors = Arrays.stream(PoiType.class.getDeclaredMethods())
+                    .filter(method -> method.isSynthetic() &&
+                            method.isAnnotationPresent(Accessor.class) &&
+                            method.getReturnType() == void.class &&
+                            method.getParameterCount() == 1 &&
+                            method.getParameterTypes()[0] == Set.class)
+                    .map(mth -> mth.getAnnotation(MixinMerged.class))
+                    .filter(Objects::nonNull)
+                    .map(MixinMerged::mixin)
+                    .toList();
+
+            String message;
+            if (accessors.isEmpty()) {
+                message = String.format(
+                        Locale.ROOT,
+                        "The matchingStates set of PoiType %s was replaced after construction",
+                        Objects.requireNonNull(type.getKey()).location()
+                );
+            } else {
+                StringBuilder accessorList = new StringBuilder();
+                for (String accessor : accessors) {
+                    accessorList.append("\n").append(accessor);
+                }
+                message = String.format(
+                        Locale.ROOT,
+                        "The matchingStates set of PoiType %s was replaced after construction. Accessor mixins for mutating the set were found:%s",
+                        Objects.requireNonNull(type.getKey()).location(),
+                        accessorList
+                );
+            }
+            throw new IllegalStateException(message);
+        }
     }
 
     private PoiTypeExtender() {}
