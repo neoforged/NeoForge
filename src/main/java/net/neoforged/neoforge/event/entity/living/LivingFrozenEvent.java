@@ -1,12 +1,17 @@
+/*
+ * Copyright (c) NeoForged and contributors
+ * SPDX-License-Identifier: LGPL-2.1-only
+ */
+
 package net.neoforged.neoforge.event.entity.living;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.NeoForge;
-import net.minecraft.server.level.ServerLevel;
 
 /**
  * LivingDrownEvent is fired whenever a living entity is fully frozen and is taking damage.
@@ -68,6 +73,7 @@ public class LivingFrozenEvent extends LivingEvent implements ICancellableEvent 
 
     /**
      * Cancelling the event will cancel the damage to the entity.
+     * 
      * @param canceled
      */
     @Override
