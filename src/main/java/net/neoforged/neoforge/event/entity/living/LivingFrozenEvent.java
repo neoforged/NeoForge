@@ -1,5 +1,7 @@
 package net.neoforged.neoforge.event.entity.living;
 
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -26,18 +28,40 @@ public class LivingFrozenEvent extends LivingEvent implements ICancellableEvent 
         this.damageTickRate = 40;
     }
 
+    /**
+     * Gets the amount of {@linkplain DamageSources#freeze() drowning damage} the entity would take.<br>
+     * For vanilla entities, the default amount of damage is 1 (half a heart).
+     * <p>
+     * If the damage amount is less than or equal to zero, {@link Entity#hurtServer} will not be called.
+     *
+     * @return The amount of damage that will be dealt to the entity when actively drowning.
+     */
     public float getDamageAmount() {
         return damageAmount;
     }
 
+    /**
+     * Sets the amount of freezing damage that may be inflicted.
+     *
+     * @param damageAmount The new value.
+     * @see #getDamageAmount()
+     */
     public void setDamageAmount(float damageAmount) {
         this.damageAmount = damageAmount;
     }
 
+    /**
+     * @return The amount of ticks between two damages instances.
+     */
     public int getDamageTickRate() {
         return damageTickRate;
     }
 
+    /**
+     * Sets the amount of ticks between two damages instances.
+     *
+     * @param damageTickRate The new value.
+     */
     public void setDamageTickRate(int damageTickRate) {
         this.damageTickRate = damageTickRate;
     }
