@@ -17,6 +17,14 @@
      private final EntityType<?> type;
      private boolean requiresPrecisePosition;
      private int id = 0;
+@@ -307,6 +_,7 @@
+     protected final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
+     protected final InterpolationHandler interpolationHandler;
+     private CustomData customData = CustomData.EMPTY;
++    private int ticksRequiredToFreeze = 140;
+ 
+     public Entity(EntityType<?> type, Level level) {
+         this.type = type;
 @@ -329,7 +_,10 @@
          this.entityData = entityDataBuilder.build();
          this.interpolationHandler = this.createInterpolationHandler();
@@ -311,6 +319,19 @@
      }
  
      public void setSwimming(boolean swimming) {
+@@ -2911,7 +_,11 @@
+     }
+ 
+     public int getTicksRequiredToFreeze() {
+-        return 140;
++        return this.ticksRequiredToFreeze;
++    }
++
++    public void setTicksRequiredToFreeze(int ticksRequiredToFreeze) {
++        this.ticksRequiredToFreeze = ticksRequiredToFreeze;
+     }
+ 
+     public void thunderHit(ServerLevel level, LightningBolt lightningBolt) {
 @@ -2920,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }
