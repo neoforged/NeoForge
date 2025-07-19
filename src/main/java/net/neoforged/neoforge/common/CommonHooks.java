@@ -1466,10 +1466,6 @@ public class CommonHooks {
         LivingFreezeEvent freezeEvent = new LivingFreezeEvent(entity, isFreezing);
         NeoForge.EVENT_BUS.post(freezeEvent);
 
-        if (freezeEvent.isCanceled()) { // Do not freeze if canceled
-            return;
-        }
-
         if (!freezeEvent.isFreezing()) {
             entity.setTicksFrozen(Math.max(0, entity.getTicksFrozen() - 2));
         }
