@@ -111,12 +111,17 @@
  
          Builder() {
          }
-@@ -364,6 +_,11 @@
+@@ -364,6 +_,16 @@
              return this;
          }
  
 +        public RenderPipeline.Builder withStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
 +            this.stencilTest = Optional.of(stencilTest);
++            return this;
++        }
++
++        public RenderPipeline.Builder withoutStencilTest(){
++            this.stencilTest = Optional.empty();
 +            return this;
 +        }
 +
