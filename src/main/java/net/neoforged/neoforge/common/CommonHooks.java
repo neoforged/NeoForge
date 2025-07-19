@@ -102,7 +102,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -200,6 +203,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFreezeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
@@ -1468,6 +1472,54 @@ public class CommonHooks {
 
         if (!isAir && !entity.level().isClientSide() && entity.isPassenger() && entity.getVehicle() != null && !entity.getVehicle().canBeRiddenUnderFluidType(entity.getEyeInFluidType(), entity)) {
             entity.stopRiding();
+        }
+    }
+
+    public static void onLivingFreeze(LivingEntity entity, ServerLevel serverLevel) {
+        boolean isFreezing = entity.isInPowderSnow && entity.canFreeze();
+
+        LivingFreezeEvent freezeEvent = new LivingFreezeEvent(entity, isFreezing);
+        NeoForge.EVENT_BUS.post(freezeEvent);
+
+        if (freezeEvent.isCanceled()) { // Do not freeze if canceled
+            return;
+        }
+
+        if (!freezeEvent.isFreezing()) {
+            entity.setTicksFrozen(Math.max(0, entity.getTicksFrozen() - 2));
+        }
+
+        Identifier speedModifierPowderSnowId = Identifier.withDefaultNamespace("powder_snow");
+        // LivingEntity#removeFrost
+        {
+            AttributeInstance attributeinstance = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+            if (attributeinstance != null) {
+                if (attributeinstance.getModifier(speedModifierPowderSnowId) != null) {
+                    attributeinstance.removeModifier(speedModifierPowderSnowId);
+                }
+            }
+        }
+
+        // LivingEntity#tryAddFrost
+        {
+            BlockState blockStateOnLegacy = entity.level().getBlockState(entity.getOnPosLegacy());
+            if (!blockStateOnLegacy.isAir()) {
+                int i = entity.getTicksFrozen();
+                if (i > 0) {
+                    AttributeInstance attributeinstance = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+                    if (attributeinstance == null) {
+                        return;
+                    }
+
+                    float f = freezeEvent.getSlowAmount() * entity.getPercentFrozen();
+                    attributeinstance.addTransientModifier(new AttributeModifier(speedModifierPowderSnowId, f, AttributeModifier.Operation.ADD_VALUE));
+                }
+            }
+        }
+
+        boolean isFullyFrozen = entity.getTicksFrozen() >= freezeEvent.getTicksRequiredToFreeze();
+        if (entity.tickCount % freezeEvent.getDamageTickRate() == 0 && isFullyFrozen && entity.canFreeze()) {
+            entity.hurtServer(serverLevel, entity.damageSources().freeze(), freezeEvent.getDamageAmount());
         }
     }
 

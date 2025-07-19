@@ -615,6 +615,24 @@
              }
          } else {
              this.noJumpDelay = 0;
+@@ -2994,6 +_,8 @@
+         profilerfiller.pop();
+         if (this.level() instanceof ServerLevel serverlevel) {
+             profilerfiller.push("freezing");
++            net.neoforged.neoforge.common.CommonHooks.onLivingFreeze(this, serverlevel);
++            if (false) {
+             if (!this.isInPowderSnow || !this.canFreeze()) {
+                 this.setTicksFrozen(Math.max(0, this.getTicksFrozen() - 2));
+             }
+@@ -3003,7 +_,7 @@
+             if (this.tickCount % 40 == 0 && this.isFullyFrozen() && this.canFreeze()) {
+                 this.hurtServer(serverlevel, this.damageSources().freeze(), 1.0F);
+             }
+-
++            }
+             profilerfiller.pop();
+         }
+ 
 @@ -3280,8 +_,11 @@
  
      private void updatingUsingItem() {
