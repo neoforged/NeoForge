@@ -5,7 +5,7 @@
              this.texture.setTextureFilter(FilterMode.NEAREST, false);
              this.textureView = gpudevice.createTextureView(this.texture);
 +            // Neo: copy stencil setting from main target
-+            TextureFormat depthFormat = net.minecraft.client.Minecraft.getInstance().getMainRenderTarget().useStencil ? TextureFormat.DEPTH32_STENCIL8 : TextureFormat.DEPTH32;
++            TextureFormat depthFormat = net.minecraft.client.Minecraft.getInstance().getMainRenderTarget().getDepthTexture().getFormat();
              this.depthTexture = gpudevice.createTexture(
 -                () -> "UI " + this.getTextureLabel() + " depth texture", 8, TextureFormat.DEPTH32, p_415840_, p_415644_, 1, 1
 +                () -> "UI " + this.getTextureLabel() + " depth texture", 8, depthFormat, p_415840_, p_415644_, 1, 1
