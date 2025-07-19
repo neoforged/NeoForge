@@ -53,6 +53,7 @@ public class LivingFreezeEvent extends LivingEvent {
 
     /**
      * Get the slow attribute value applied to the entity as it's freezing. It's applied as {@link AttributeModifier.Operation#ADD_VALUE}.
+     * 
      * @return The current value
      */
     public float getSlowAmount() {
@@ -61,6 +62,7 @@ public class LivingFreezeEvent extends LivingEvent {
 
     /**
      * Sets the slow attribute value that will be applied to the entity as it's freezing.
+     * 
      * @param slowAmount The new value.
      */
     public void setSlowAmount(float slowAmount) {
