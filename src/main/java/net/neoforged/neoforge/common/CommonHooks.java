@@ -1503,7 +1503,9 @@ public class CommonHooks {
 
             if (!frozenEvent.isCanceled()) {
                 if (entity.tickCount % frozenEvent.getDamageTickRate() == 0) {
-                    entity.hurtServer(serverLevel, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
+                    if (frozenEvent.getDamageAmount() > 0) {
+                        entity.hurtServer(serverLevel, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
+                    }
                 }
             }
         }
