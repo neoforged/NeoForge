@@ -8,7 +8,7 @@ package net.neoforged.neoforge.event.entity.living;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.ICancellableEvent;
 
-public class LivingFreezeEvent extends LivingEvent implements ICancellableEvent {
+public class LivingFreezeEvent extends LivingEvent {
     private boolean isFreezing;
     private int ticksRequiredToFreeze;
     private float slowAmount;
