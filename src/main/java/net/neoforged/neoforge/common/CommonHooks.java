@@ -199,6 +199,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDrownEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFreezeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFrozenEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
@@ -1489,18 +1490,22 @@ public class CommonHooks {
                 if (i > 0) {
                     AttributeInstance attributeinstance = entity.getAttribute(Attributes.MOVEMENT_SPEED);
                     if (attributeinstance != null) {
-                        int required = freezeEvent.getTicksRequiredToFreeze();
-                        float percent = (float) Math.min(entity.getTicksFrozen(), required) / required;
-                        float f = freezeEvent.getSlowAmount() * percent;
+                        float f = freezeEvent.getSlowAmount() * entity.getPercentFrozen();
                         attributeinstance.addTransientModifier(new AttributeModifier(speedModifierPowderSnowId, f, AttributeModifier.Operation.ADD_VALUE));
                     }
                 }
             }
         }
 
-        boolean isFullyFrozen = entity.getTicksFrozen() >= freezeEvent.getTicksRequiredToFreeze();
-        if (entity.tickCount % freezeEvent.getDamageTickRate() == 0 && isFullyFrozen && entity.canFreeze()) {
-            entity.hurtServer(serverLevel, entity.damageSources().freeze(), freezeEvent.getDamageAmount());
+        if (entity.isFullyFrozen() && entity.canFreeze()) {
+            LivingFrozenEvent frozenEvent = new LivingFrozenEvent(entity);
+            NeoForge.EVENT_BUS.post(frozenEvent);
+
+            if (!frozenEvent.isCanceled()) {
+                if (entity.tickCount % frozenEvent.getDamageTickRate() == 0) {
+                    entity.hurtServer(serverLevel, entity.damageSources().freeze(), frozenEvent.getDamageAmount());
+                }
+            }
         }
     }
 
