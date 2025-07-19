@@ -28,6 +28,15 @@
      private final Set<TagKey<Fluid>> fluidOnEyes = new HashSet<>();
      public int invulnerableTime;
      protected boolean firstTick = true;
+@@ -287,6 +_,8 @@
+     private final InsideBlockEffectApplier.StepBasedCollector insideEffectCollector = new InsideBlockEffectApplier.StepBasedCollector();
+     private CustomData customData = CustomData.EMPTY;
+ 
++    private int ticksRequiredToFreeze = 140;
++
+     public Entity(EntityType<?> p_19870_, Level p_19871_) {
+         this.type = p_19870_;
+         this.level = p_19871_;
 @@ -306,7 +_,10 @@
          this.defineSynchedData(synchedentitydata$builder);
          this.entityData = synchedentitydata$builder.build();
@@ -284,6 +293,19 @@
      }
  
      public void setSwimming(boolean p_20283_) {
+@@ -2719,7 +_,11 @@
+     }
+ 
+     public int getTicksRequiredToFreeze() {
+-        return 140;
++        return this.ticksRequiredToFreeze;
++    }
++
++    public void setTicksRequiredToFreeze(int ticksRequiredToFreeze) {
++        this.ticksRequiredToFreeze = ticksRequiredToFreeze;
+     }
+ 
+     public void thunderHit(ServerLevel p_19927_, LightningBolt p_19928_) {
 @@ -2728,7 +_,7 @@
              this.igniteForSeconds(8.0F);
          }

@@ -24,11 +24,13 @@ import net.neoforged.neoforge.common.NeoForge;
 public class LivingFreezeEvent extends LivingEvent {
     private boolean isFreezing;
     private float slowAmount;
+    private int ticksRequiredToFreeze;
 
     public LivingFreezeEvent(LivingEntity entity, boolean isFreezing) {
         super(entity);
         this.isFreezing = isFreezing;
         this.slowAmount = -0.05F;
+        this.ticksRequiredToFreeze = entity.getTicksRequiredToFreeze();
     }
 
     /**
@@ -67,5 +69,23 @@ public class LivingFreezeEvent extends LivingEvent {
      */
     public void setSlowAmount(float slowAmount) {
         this.slowAmount = slowAmount;
+    }
+
+    /**
+     * Get the amount of ticks required to fully freeze (start taking damage).
+     *
+     * @return The current value
+     */
+    public int getTicksRequiredToFreeze() {
+        return ticksRequiredToFreeze;
+    }
+
+    /**
+     * Sets the amount of ticks required to fully freeze (start taking damage).
+     *
+     * @param ticksRequiredToFreeze The new value
+     */
+    public void setTicksRequiredToFreeze(int ticksRequiredToFreeze) {
+        this.ticksRequiredToFreeze = ticksRequiredToFreeze;
     }
 }
