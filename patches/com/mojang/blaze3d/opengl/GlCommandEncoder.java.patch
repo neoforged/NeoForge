@@ -65,14 +65,15 @@
                          9728
                      );
                  int k = GlStateManager._getError();
-@@ -984,6 +_,25 @@
+@@ -984,6 +_,26 @@
              GlStateManager._scissorBox(p_410853_.getScissorX(), p_410853_.getScissorY(), p_410853_.getScissorWidth(), p_410853_.getScissorHeight());
          } else {
              GlStateManager._disableScissorTest();
 +        }
 +
-+        var stencilTest = p_410853_.stencilTest;
-+        if (stencilTest != null) {
++        var stencilTestOpt = p_410853_.pipeline.info().getStencilTest();
++        if (stencilTestOpt.isPresent()) {
++            var stencilTest = stencilTestOpt.get();
 +            GlStateManager._enableStencilTest();
 +            var front = stencilTest.front();
 +            var back = stencilTest.back();
