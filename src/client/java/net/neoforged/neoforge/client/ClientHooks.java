@@ -15,7 +15,6 @@ import com.mojang.blaze3d.resource.RenderTargetDescriptor;
 import com.mojang.blaze3d.shaders.ShaderType;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
@@ -1101,12 +1100,6 @@ public class ClientHooks {
     public static MainTarget instantiateMainTarget(int width, int height) {
         var e = ModLoader.postEventWithReturn(new ConfigureMainRenderTargetEvent());
         return new MainTarget(width, height, e.isStencilEnabled());
-    }
-
-    @ApiStatus.Internal
-    public static TextureFormat getStencilFormat() {
-        var reducedPrecision = NeoForgeClientConfig.INSTANCE.reducedDepthStencilFormat.getAsBoolean();
-        return reducedPrecision ? TextureFormat.DEPTH24_STENCIL8 : TextureFormat.DEPTH32_STENCIL8;
     }
 
     @ApiStatus.Internal

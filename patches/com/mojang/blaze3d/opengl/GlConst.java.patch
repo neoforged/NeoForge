@@ -1,30 +1,27 @@
 --- a/com/mojang/blaze3d/opengl/GlConst.java
 +++ b/com/mojang/blaze3d/opengl/GlConst.java
-@@ -251,6 +_,8 @@
+@@ -251,6 +_,7 @@
              case RED8 -> 33321;
              case RED8I -> 33329;
              case DEPTH32 -> 33191;
-+            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH24_STENCIL8;
 +            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH32F_STENCIL8;
          };
      }
  
-@@ -260,6 +_,10 @@
+@@ -260,6 +_,9 @@
              case RED8 -> 6403;
              case RED8I -> 6403;
              case DEPTH32 -> 6402;
 +            // As long as null data will be passed to texImage2D, the external format does not matter as long as it matches the internalFormat.
 +            // So the usage, for depth, of unsigned int in one case and float in the other case, is not a problem.
-+            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL;
 +            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_DEPTH_STENCIL;
          };
      }
  
-@@ -269,6 +_,8 @@
+@@ -269,6 +_,7 @@
              case RED8 -> 5121;
              case RED8I -> 5121;
              case DEPTH32 -> 5126;
-+            case DEPTH24_STENCIL8 -> org.lwjgl.opengl.GL32.GL_UNSIGNED_INT_24_8;
 +            case DEPTH32_STENCIL8 -> org.lwjgl.opengl.GL32.GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
          };
      }

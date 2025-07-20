@@ -1,6 +1,6 @@
 --- a/com/mojang/blaze3d/textures/TextureFormat.java
 +++ b/com/mojang/blaze3d/textures/TextureFormat.java
-@@ -6,16 +_,20 @@
+@@ -6,16 +_,19 @@
  
  @OnlyIn(Dist.CLIENT)
  @DontObfuscate
@@ -11,8 +11,7 @@
      RED8I(1),
 -    DEPTH32(4);
 +    DEPTH32(4),
-+    // Neo: Add depth+stencil formats
-+    DEPTH24_STENCIL8(4),
++    // Neo: Add depth+stencil format
 +    DEPTH32_STENCIL8(8);
  
      private final int pixelSize;
@@ -29,10 +28,10 @@
  
      public boolean hasDepthAspect() {
 -        return this == DEPTH32;
-+        return this == DEPTH32 || this == DEPTH24_STENCIL8 || this == DEPTH32_STENCIL8;
++        return this == DEPTH32 || this == DEPTH32_STENCIL8;
 +    }
 +
 +    public boolean hasStencilAspect() {
-+        return this == DEPTH24_STENCIL8 || this == DEPTH32_STENCIL8;
++        return this == DEPTH32_STENCIL8;
      }
  }
