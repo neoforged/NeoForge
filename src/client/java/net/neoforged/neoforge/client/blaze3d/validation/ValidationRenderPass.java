@@ -61,6 +61,11 @@ public class ValidationRenderPass implements RenderPass {
     }
 
     @Override
+    public void setViewport(int x, int y, int width, int height) {
+        realRenderPass.setViewport(x, y, width, height);
+    }
+
+    @Override
     public void enableScissor(int x, int y, int width, int height) {
         realRenderPass.enableScissor(x, y, width, height);
     }

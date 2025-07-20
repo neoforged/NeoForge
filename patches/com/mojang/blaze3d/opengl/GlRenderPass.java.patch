@@ -17,3 +17,15 @@
          if (this.pipeline == null || this.pipeline.info() != p_409823_) {
              this.dirtyUniforms.addAll(this.uniforms.keySet());
              this.dirtyUniforms.addAll(this.samplers.keySet());
+@@ -103,6 +_,11 @@
+             this.uniforms.put(p_409689_, p_418312_);
+             this.dirtyUniforms.add(p_409689_);
+         }
++    }
++
++    @Override
++    public void setViewport(int x, int y, int width, int height){
++        GlStateManager._viewport(x, y, width, height);
+     }
+ 
+     @Override

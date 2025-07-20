@@ -1,0 +1,11 @@
+--- a/com/mojang/blaze3d/systems/RenderPass.java
++++ b/com/mojang/blaze3d/systems/RenderPass.java
+@@ -28,6 +_,8 @@
+ 
+     void setUniform(String p_410316_, GpuBufferSlice p_418316_);
+ 
++    void setViewport(int x, int y, int width, int height);
++
+     void enableScissor(int p_409956_, int p_410530_, int p_409728_, int p_410747_);
+ 
+     void disableScissor();
