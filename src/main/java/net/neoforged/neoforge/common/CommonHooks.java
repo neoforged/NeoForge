@@ -1726,7 +1726,7 @@ public class CommonHooks {
         }
     }
 
-    private static final Set<Class<?>> EDA_CHECKED_CLASSES = new HashSet<>(BuiltInRegistries.ENTITY_TYPE.size());
+    private static final Set<Class<?>> EDA_CHECKED_CLASSES = ConcurrentHashMap.newKeySet(BuiltInRegistries.ENTITY_TYPE.size());
 
     public static void verifyEntityDataAccessorRegistration(final Class<?> callerClass, final Class<? extends SyncedDataHolder> holderClass) {
         if (!EDA_CHECKED_CLASSES.add(callerClass)) return;
