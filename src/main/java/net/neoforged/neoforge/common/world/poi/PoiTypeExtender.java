@@ -46,6 +46,7 @@ public final class PoiTypeExtender {
         if (type.value().matchingStates() instanceof PoiStateSet poiStateSet) {
             poiStateSet.addCustomStates(states);
         } else {
+            // Detect accessor mixins which may have replaced the set to add additional BlockStates after the PoiType's construction
             List<String> accessors = Arrays.stream(PoiType.class.getDeclaredMethods())
                     .filter(method -> method.isSynthetic() &&
                             method.isAnnotationPresent(Accessor.class) &&
