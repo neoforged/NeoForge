@@ -39,6 +39,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
 import net.minecraft.ResourceLocationException;
@@ -1737,17 +1738,17 @@ public class CommonHooks {
         // The check might hold up either because the definition is sound or because someone added a Mixin into the
         // entity class aiming to add their own synced data; this is still an issue as different ordering that might
         // occur due to whatever version might still cause problems down the line.
-        final List<String> mixinsInjectingEda;
+        final Collection<String> mixinsInjectingEda;
         if (isEntityClass) {
             mixinsInjectingEda = Stream.of(callerClass.getDeclaredFields())
                     .filter(it -> EntityDataAccessor.class.isAssignableFrom(it.getType()))
                     .map(it -> it.getAnnotation(MixinMerged.class))
                     .filter(Objects::nonNull)
                     .map(MixinMerged::mixin)
-                    .toList();
+                    .collect(Collectors.toSet());
         } else {
             // We don't care about which mixins exist outside of entities, it's wrong already
-            mixinsInjectingEda = List.of();
+            mixinsInjectingEda = Set.of();
         }
 
         final var isValid = isEntityClass && mixinsInjectingEda.isEmpty();
