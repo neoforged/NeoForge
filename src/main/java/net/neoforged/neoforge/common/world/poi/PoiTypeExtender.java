@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModLoader;
@@ -26,8 +28,9 @@ public final class PoiTypeExtender {
         ModLoader.postEvent(new ExtendPoiTypesEvent(PoiTypeExtender::register));
     }
 
-    private static void register(Holder<PoiType> type, Set<BlockState> states) {
+    private static void register(ResourceKey<PoiType> typeKey, Set<BlockState> states) {
         Map<BlockState, Holder<PoiType>> statePoiMap = GameData.getBlockStatePointOfInterestTypeMap();
+        Holder<PoiType> type = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getOrThrow(typeKey);
         for (BlockState state : states) {
             Holder<PoiType> prevType = statePoiMap.putIfAbsent(state, type);
             if (prevType != null) {
