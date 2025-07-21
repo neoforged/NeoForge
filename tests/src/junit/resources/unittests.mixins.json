@@ -3,7 +3,10 @@
   "minVersion": "0.8",
   "package": "net.neoforged.neoforge.unittest.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+    "EntityDataAccessorTestsCorrectMixin",
+    "EntityDataAccessorTestsWrongMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
