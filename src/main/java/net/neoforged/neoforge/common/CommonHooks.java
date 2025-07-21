@@ -1765,7 +1765,7 @@ public class CommonHooks {
             message.append("Mixins into entity class: ").append(String.join(", ", mixinsInjectingEda));
         }
 
-        message.append("\nModders should instead use syncable data attachments instead, as they do not suffer from potential ID mismatches.\n");
+        message.append("\nModders should use syncable data attachments instead, as they do not suffer from potential ID mismatches.\n");
         message.append("Please refer to the data attachments documentation available at https://docs.neoforged.net/docs/datastorage/attachments.\n");
         message.append("This message will only be printed once per class");
 
