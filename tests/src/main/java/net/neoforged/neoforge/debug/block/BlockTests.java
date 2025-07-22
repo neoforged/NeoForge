@@ -5,9 +5,12 @@
 
 package net.neoforged.neoforge.debug.block;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +22,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -34,8 +39,11 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
+import net.neoforged.neoforge.common.world.poi.ExtendPoiTypesEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
@@ -190,5 +198,37 @@ public class BlockTests {
         public BubbleColumnDirection getBubbleColumnDirection(BlockState state) {
             return bubbleColumnDirection;
         }
+    }
+
+    @TestHolder(description = "Adds a block whose states are added to the PoiTypes.MEETING PoI type", enabledByDefault = true)
+    static void extendPoiTypeTest(final DynamicTest test, final RegistrationHelper reg) {
+        DeferredBlock<Block> block = reg.blocks().registerSimpleBlock("test_meeting_point");
+        boolean[] failedEarly = new boolean[1];
+        test.eventListeners().mod().addListener((ExtendPoiTypesEvent event) -> {
+            try {
+                event.addBlockToPoi(PoiTypes.MEETING, block.value());
+            } catch (Exception e) {
+                test.fail("PoiType extension failed with exception");
+                failedEarly[0] = true;
+            }
+        });
+        test.eventListeners().mod().addListener((FMLLoadCompleteEvent event) -> {
+            if (failedEarly[0]) return;
+
+            PoiType poiType = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getOrThrow(PoiTypes.MEETING);
+            ImmutableList<BlockState> states = block.value().getStateDefinition().getPossibleStates();
+            if (!poiType.matchingStates().containsAll(states)) {
+                test.fail("Test block's states were not added to PoiType's matchingStates");
+                return;
+            }
+            for (BlockState state : states) {
+                Optional<Holder<PoiType>> type = PoiTypes.forState(state);
+                if (type.isEmpty() || type.get().getKey() != PoiTypes.MEETING) {
+                    test.fail("A state of the test block is missing from or assigned to the wrong PoI in PoiTypes.TYPE_BY_STATE");
+                    return;
+                }
+            }
+            test.pass();
+        });
     }
 }
