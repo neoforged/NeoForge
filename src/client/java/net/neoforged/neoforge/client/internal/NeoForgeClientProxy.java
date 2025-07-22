@@ -73,6 +73,6 @@ public class NeoForgeClientProxy extends NeoForgeProxy {
                 return level.registryAccess().lookup(key).orElse(null);
             }
         }
-        return null;
+        return lookup;
     }
 }
