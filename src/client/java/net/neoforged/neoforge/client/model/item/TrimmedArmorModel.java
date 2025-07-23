@@ -44,7 +44,7 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, It
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
 
-    private static final Object2ObjectMap<TextureAtlasSprite, ItemModel> TRIM_LAYERS = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<TextureAtlasSprite, ItemModel> trimLayers = new Object2ObjectOpenHashMap<>();
 
     @Override
     public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
@@ -58,7 +58,7 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, It
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
                 var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + suffix)), DEBUG_NAME);
 
-                TRIM_LAYERS.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+                this.trimLayers.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
             }
         }
     }
