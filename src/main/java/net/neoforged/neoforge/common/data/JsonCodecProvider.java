@@ -70,7 +70,7 @@ public abstract class JsonCodecProvider<T> implements DataProvider {
         gather();
 
         return lookupProvider.thenCompose(provider -> {
-            final DynamicOps<JsonElement> dynamicOps = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, provider), ICondition.IContext.EMPTY);
+            final DynamicOps<JsonElement> dynamicOps = ConditionalOps.injectConditionContext(RegistryOps.create(JsonOps.INSTANCE, provider), ICondition.IContext.EMPTY);
 
             this.conditions.forEach((id, withConditions) -> {
                 final Path path = this.pathProvider.json(id);

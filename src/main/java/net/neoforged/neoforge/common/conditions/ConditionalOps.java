@@ -13,21 +13,52 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import net.neoforged.neoforge.common.util.dfu.ContextOps;
+import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
 /**
- * Extension of {@link RegistryOps} that also encapsulates a {@link ICondition.IContext}.
- * This allows getting the {@link ICondition.IContext} while decoding an entry from within a codec.
+ * Utility methods that can be used to create wrapper codecs that only decode and return an object if its {@linkplain ICondition conditions} match.
+ * <p>
+ * This class is also an extension of {@link RegistryOps} that also encapsulates a {@link ICondition.IContext}.
+ * Using it this way is <strong>deprecated</strong>, as it will be removed in a future update. Use {@link ContextOps context ops} instances with
+ * {@link #CONDITION_CONTEXT}.
+ *
+ * @see #CONDITION_CONTEXT
+ * @see #injectConditionContext(RegistryOps, ICondition.IContext)
  */
 public class ConditionalOps<T> extends RegistryOps<T> {
+    /**
+     * The context key of the {@link ICondition.IContext condition context} injected into context-aware ops.
+     */
+    public static final ContextOps.Key<ICondition.IContext> CONDITION_CONTEXT = new ContextOps.Key<>(ICondition.IContext.class, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "condition_context"));
+
     private final ICondition.IContext context;
 
+    /**
+     * @deprecated Use {@link #injectConditionContext(RegistryOps, ICondition.IContext)}
+     */
+    @Deprecated(forRemoval = true, since = "1.21.8")
     public ConditionalOps(RegistryOps<T> ops, ICondition.IContext context) {
-        super(ops);
+        super(ops, Map.of(CONDITION_CONTEXT, context));
         this.context = context;
+    }
+
+    /**
+     * Injects the given {@link ICondition.IContext} into the {@code ops}, creating a new registry ops instance.
+     *
+     * @param ops     the ops to wrap
+     * @param context the condition context to inject
+     * @param <T>     the type of the registry ops
+     * @return the new registry ops instance with additional condition context
+     */
+    public static <T> RegistryOps<T> injectConditionContext(RegistryOps<T> ops, ICondition.IContext context) {
+        // TODO 1.22 - replace with ops.with and make this class an utility class rather than a child of RegistryOps
+        return new ConditionalOps<>(ops, context);
     }
 
     /**
@@ -35,12 +66,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * for example with {@code retrieveContext().decode(ops, ops.emptyMap())}.
      */
     public static MapCodec<ICondition.IContext> retrieveContext() {
-        return ExtraCodecs.retrieveContext(ops -> {
-            if (!(ops instanceof ConditionalOps<?> conditionalOps))
-                return DataResult.success(ICondition.IContext.EMPTY);
-
-            return DataResult.success(conditionalOps.context);
-        });
+        return ContextOps.retrieveOptionalContext(CONDITION_CONTEXT, ICondition.IContext.EMPTY);
     }
 
     /**
@@ -51,7 +77,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
      * Key used to store the value associated with conditions,
      * when the value is not represented as a map.
      * For example, if we wanted to store the value 2 with some conditions, we could do:
-     * 
+     *
      * <pre>
      * {
      *     "neoforge:conditions": [ ... ],

@@ -1,12 +1,25 @@
 --- a/net/minecraft/resources/RegistryOps.java
 +++ b/net/minecraft/resources/RegistryOps.java
-@@ -35,6 +_,11 @@
+@@ -15,7 +_,7 @@
+ import net.minecraft.core.Registry;
+ import net.minecraft.util.ExtraCodecs;
+ 
+-public class RegistryOps<T> extends DelegatingOps<T> {
++public class RegistryOps<T> extends net.neoforged.neoforge.common.util.dfu.ContextOps<T> {
+     public final RegistryOps.RegistryInfoLookup lookupProvider;
+ 
+     public static <T> RegistryOps<T> create(DynamicOps<T> p_256342_, HolderLookup.Provider p_255950_) {
+@@ -35,6 +_,15 @@
          this.lookupProvider = p_255799_;
      }
  
-+    protected RegistryOps(RegistryOps<T> other) {
-+        super(other);
++    protected RegistryOps(RegistryOps<T> other, Map<net.neoforged.neoforge.common.util.dfu.ContextOps.Key<?>, Object> additionalContext) {
++        super(other, additionalContext);
 +        this.lookupProvider = other.lookupProvider;
++    }
++
++    protected RegistryOps(RegistryOps<T> other) {
++        this(other, Map.of());
 +    }
 +
      public <U> RegistryOps<U> withParent(DynamicOps<U> p_330654_) {

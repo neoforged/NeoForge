@@ -13,7 +13,7 @@
          SortedMap<ResourceLocation, Recipe<?>> sortedmap = new TreeMap<>();
          SimpleJsonResourceReloadListener.scanDirectory(
 -            p_379845_, RECIPE_LISTER, this.registries.createSerializationContext(JsonOps.INSTANCE), Recipe.CODEC, sortedmap
-+            p_379845_, RECIPE_LISTER, new net.neoforged.neoforge.common.conditions.ConditionalOps<>(this.registries.createSerializationContext(JsonOps.INSTANCE), getContext()), Recipe.CODEC, sortedmap // Neo: add condition context
++            p_379845_, RECIPE_LISTER, net.neoforged.neoforge.common.conditions.ConditionalOps.injectConditionContext(this.registries.createSerializationContext(JsonOps.INSTANCE), getContext()), Recipe.CODEC, sortedmap // Neo: add condition context
          );
          List<RecipeHolder<?>> list = new ArrayList<>(sortedmap.size());
          sortedmap.forEach((p_379232_, p_379233_) -> {
