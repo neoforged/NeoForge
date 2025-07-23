@@ -35,7 +35,7 @@ public class ConditionalOps<T> extends RegistryOps<T> {
     /**
      * The context key of the {@link ICondition.IContext condition context} injected into context-aware ops.
      */
-    public static final ContextOps.Key<ICondition.IContext> CONDITION_CONTEXT = new ContextOps.Key<>(ICondition.IContext.class, ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "condition_context"));
+    public static final ContextOps.Key<ICondition.IContext> CONDITION_CONTEXT = new ContextOps.Key<>(ResourceLocation.fromNamespaceAndPath(NeoForgeVersion.MOD_ID, "condition_context"));
 
     private final ICondition.IContext context;
 

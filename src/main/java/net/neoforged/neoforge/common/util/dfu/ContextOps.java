@@ -18,30 +18,32 @@ import java.util.function.Supplier;
 import net.minecraft.resources.DelegatingOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A {@link DelegatingOps} that can hold additional context, identified by {@linkplain Key}s.
  * <p>
- * Context can be injected with {@link #withContext(Key, Object) withContext} and retrieved via {@link #getContext(Key) getContext}.
+ * Context can be injected with {@link #withContext(Map) withContext} and retrieved via {@link #getContext(Key) getContext}.
  * Utility methods like {@link #retrieveContext(Key)}, {@link #retrieveOptionalContext(Key)} or {@link #retrieveOptionalContext(Key, Object)}
  * can be used to retrieve the context through a {@linkplain MapCodec}.
  * <p>
  * The context map of {@linkplain ContextOps} is immutable, therefore any additional context can only be added by creating a new instance.
  *
  * @param <T> the type of the base element the delegate {@linkplain DynamicOps} serialises to and from
- *
+ * @apiNote This class should not be extended. Instead, use contexts via {@link #withContext}.
  * @see Key
  */
+@ApiStatus.NonExtendable
 public class ContextOps<T> extends DelegatingOps<T> {
-    private final Map<Key<?>, Object> contextObjects;
+    protected final Map<Key<?>, Object> contextObjects;
 
     /**
      * Create a new context that delegates to the given ops.
      *
      * @param delegate the ops to delegate to. If it is an instance of {@link ContextOps}, its context will be copied to this ops.
      */
-    public ContextOps(DynamicOps<T> delegate) {
+    protected ContextOps(DynamicOps<T> delegate) {
         this(delegate, Map.of());
     }
 
@@ -51,7 +53,7 @@ public class ContextOps<T> extends DelegatingOps<T> {
      * @param delegate          the ops to delegate to. If it is an instance of {@link ContextOps}, its context will be copied to this ops.
      * @param additionalContext additional context objects to add on top of the ones from the {@code delegate}
      */
-    public ContextOps(DynamicOps<T> delegate, Map<Key<?>, Object> additionalContext) {
+    protected ContextOps(DynamicOps<T> delegate, Map<Key<?>, Object> additionalContext) {
         super(delegate);
 
         Map<Key<?>, Object> delegateContext = delegate instanceof ContextOps<?> contextAware ? contextAware.contextObjects : Map.of();
@@ -62,6 +64,15 @@ public class ContextOps<T> extends DelegatingOps<T> {
             newContext.putAll(additionalContext);
             this.contextObjects = Collections.unmodifiableMap(newContext);
         }
+    }
+
+    /**
+     * {@return a context ops instance from the given {@code ops}}
+     *
+     * @param ops the ops to delegate to
+     */
+    public static <T> ContextOps<T> create(DynamicOps<T> ops) {
+        return ops instanceof ContextOps<T> cops ? cops : new ContextOps<>(ops);
     }
 
     /**
@@ -84,7 +95,21 @@ public class ContextOps<T> extends DelegatingOps<T> {
      * @param <Z>   the type of the context object
      */
     public <Z> ContextOps<T> withContext(Key<Z> key, Z value) {
-        return new ContextOps<>(this.delegate, Map.of(key, value));
+        return this.withContext(Map.of(key, value));
+    }
+
+    /**
+     * {@return a new context ops instance that has the given {@code contextMap} as additional context}
+     *
+     * @param contextMap additional context to add to the new context ops
+     */
+    public ContextOps<T> withContext(Map<Key<?>, Object> contextMap) {
+        return contextMap.isEmpty() ? this : new ContextOps<>(this.delegate, contextMap);
+    }
+
+    @Override
+    public String toString() {
+        return "ContextOps[delegate=" + delegate + ", context=" + contextObjects + "]";
     }
 
     /**
@@ -111,7 +136,7 @@ public class ContextOps<T> extends DelegatingOps<T> {
 
             var value = contextOps.getContext(type);
             if (value == null) {
-                return DataResult.error(() -> "Context ops " + ops + " does not have context with ID " + type.identifier() + " of type " + type.type() + ". Available context: " + contextOps.contextObjects.keySet());
+                return DataResult.error(() -> "Context ops " + ops + " does not have context with ID " + type.identifier() + ". Available context: " + contextOps.contextObjects.keySet());
             }
 
             return DataResult.success(value);
@@ -185,9 +210,13 @@ public class ContextOps<T> extends DelegatingOps<T> {
      * A key for context objects stored within a {@link ContextOps}, that can be retrieved
      * from the ops to aid in building context-aware {@linkplain Codec}s.
      *
-     * @param type       the type of the context object this key is for
      * @param identifier the identifier of the context object this key is for
      * @param <T>        the generic type of the context object
      */
-    public record Key<T>(Class<T> type, ResourceLocation identifier) {}
+    public record Key<T>(ResourceLocation identifier) {
+        @Override
+        public String toString() {
+            return identifier.toString();
+        }
+    }
 }

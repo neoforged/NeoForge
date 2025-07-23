@@ -9,7 +9,7 @@
      public final RegistryOps.RegistryInfoLookup lookupProvider;
  
      public static <T> RegistryOps<T> create(DynamicOps<T> p_256342_, HolderLookup.Provider p_255950_) {
-@@ -35,6 +_,15 @@
+@@ -35,8 +_,29 @@
          this.lookupProvider = p_255799_;
      }
  
@@ -22,9 +22,24 @@
 +        this(other, Map.of());
 +    }
 +
++    /** {@inheritDoc} **/
++    @Override
++    public <Z> RegistryOps<T> withContext(net.neoforged.neoforge.common.util.dfu.ContextOps.Key<Z> key, Z value) {
++        return withContext(Map.of(key, value));
++    }
++
++    /** {@inheritDoc} **/
++    @Override
++    public RegistryOps<T> withContext(Map<net.neoforged.neoforge.common.util.dfu.ContextOps.Key<?>, Object> contextMap) {
++        return contextMap.isEmpty() ? this : new RegistryOps<>(this, contextMap);
++    }
++
      public <U> RegistryOps<U> withParent(DynamicOps<U> p_330654_) {
-         return (RegistryOps<U>)(p_330654_ == this.delegate ? this : new RegistryOps<>(p_330654_, this.lookupProvider));
+-        return (RegistryOps<U>)(p_330654_ == this.delegate ? this : new RegistryOps<>(p_330654_, this.lookupProvider));
++        return (RegistryOps<U>)(p_330654_ == this.delegate ? this : new RegistryOps<>(p_330654_, this.lookupProvider).withContext(this.contextObjects));
      }
+ 
+     public <E> Optional<HolderOwner<E>> owner(ResourceKey<? extends Registry<? extends E>> p_255757_) {
 @@ -74,6 +_,20 @@
                      : DataResult.error(() -> "Not a registry ops")
              )

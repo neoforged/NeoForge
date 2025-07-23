@@ -25,6 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * For children of {@link SimplePreparableReloadListener}, it will be available during both {@link SimplePreparableReloadListener#prepare} prepare()} and {@link SimplePreparableReloadListener#apply apply()}.
  */
+@SuppressWarnings("removal") // TODO 1.22 - makeConditionalOps must return instances of ConditionalOps. Replace with RegistryOps in a breaking changes window
 public abstract class ContextAwareReloadListener implements PreparableReloadListener {
     private ICondition.IContext conditionContext = ICondition.IContext.EMPTY;
 
