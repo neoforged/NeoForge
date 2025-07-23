@@ -39,16 +39,28 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, ItemTransforms transforms, BakingContext context) implements ItemModel {
+public class TrimmedArmorModel implements ItemModel {
     private static final Transformation TRIM_TRANSFORM = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1.002F, 1.002F, 1.002F), new Quaternionf());
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
 
     private final Object2ObjectMap<TextureAtlasSprite, ItemModel> trimLayers = new Object2ObjectOpenHashMap<>();
 
+    private final ItemModel base;
+    private final ResourceLocation trimTexture;
+    private final ItemTransforms transforms;
+    private final BakingContext context;
+
+    public TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, ItemTransforms transforms, BakingContext context) {
+        this.base = base;
+        this.trimTexture = trimTexture;
+        this.transforms = transforms;
+        this.context = context;
+    }
+
     @Override
     public void update(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-        this.base().update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+        this.base.update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
 
         if (stack.has(DataComponents.TRIM) && stack.has(DataComponents.EQUIPPABLE)) {
             Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
@@ -56,7 +68,7 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, It
             if (equippable.assetId().isPresent()) {
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
-                var sprite = this.context().blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture().withSuffix("_" + suffix)), DEBUG_NAME);
+                var sprite = this.context.blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture.withSuffix("_" + suffix)), DEBUG_NAME);
 
                 this.trimLayers.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
             }
@@ -64,7 +76,7 @@ public record TrimmedArmorModel(ItemModel base, ResourceLocation trimTexture, It
     }
 
     private ItemModel createTrimLayer(TextureAtlasSprite sprite) {
-        var renderProperties = new ModelRenderProperties(false, sprite, this.transforms());
+        var renderProperties = new ModelRenderProperties(false, sprite, this.transforms);
 
         var unbaked = UnbakedElementsHelper.createUnbakedItemElements(0, sprite);
         var quads = UnbakedElementsHelper.bakeElements(unbaked, $ -> sprite, TRIM_STATE);
