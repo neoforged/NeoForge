@@ -144,7 +144,7 @@
              return this;
          }
  
-@@ -181,13 +_,94 @@
+@@ -181,13 +_,102 @@
              return this;
          }
  
@@ -229,6 +229,14 @@
 +        public final CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::location).forEach(this.tabsAfter::add);
 +            return this;
++        }
++
++        /**
++         * Helper to set this tabs contents to all items in the supplied {@link net.neoforged.neoforge.registries.DeferredRegister<Item>}.
++         * Note that like the vanilla method this overrides any other calls to {@link #displayItems}.
++         */
++        public CreativeModeTab.Builder displayItems(net.neoforged.neoforge.registries.DeferredRegister<Item> register) {
++            return this.displayItems((p, o) -> register.getEntries().forEach(i -> o.accept(i.get())));
 +        }
 +
          public CreativeModeTab build() {
