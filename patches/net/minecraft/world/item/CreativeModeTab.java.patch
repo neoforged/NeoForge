@@ -144,7 +144,7 @@
              return this;
          }
  
-@@ -181,13 +_,102 @@
+@@ -181,13 +_,108 @@
              return this;
          }
  
@@ -232,11 +232,17 @@
 +        }
 +
 +        /**
-+         * Helper to set this tabs contents to all items in the supplied {@link net.neoforged.neoforge.registries.DeferredRegister<Item>}.
-+         * Note that like the vanilla method this overrides any other calls to {@link #displayItems}.
++         * Helper to set this tabs contents to everything in the supplied {@link net.neoforged.neoforge.registries.DeferredRegister}.
++         * Due to the {@link ItemLike} generic, you can pass Item or Block DeferredRegisters into this by default.
++         * Entries added through this method are filtered out if {@link ItemLike#asItem()} returns {@link Items.AIR}, to account for blocks that do not have items.
++         * Note that like the vanilla method this overrides any other calls for this tab to {@link #displayItems}.
 +         */
-+        public CreativeModeTab.Builder displayItems(net.neoforged.neoforge.registries.DeferredRegister<Item> register) {
-+            return this.displayItems((p, o) -> register.getEntries().forEach(i -> o.accept(i.get())));
++        public CreativeModeTab.Builder displayItems(net.neoforged.neoforge.registries.DeferredRegister<? extends ItemLike> register) {
++            return this.displayItems((p, o) -> register.getEntries().stream()
++                    .map(net.neoforged.neoforge.registries.DeferredHolder::get)
++                    .map(ItemLike::asItem)
++                    .filter(i -> i != Items.AIR)
++                    .forEach(o::accept));
 +        }
 +
          public CreativeModeTab build() {
