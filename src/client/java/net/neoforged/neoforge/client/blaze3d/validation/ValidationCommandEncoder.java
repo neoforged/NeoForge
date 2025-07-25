@@ -55,7 +55,6 @@ public class ValidationCommandEncoder implements CommandEncoder {
         }
         if (depthTextureView instanceof ValidationGpuTextureView validationDepthTextureView) {
             // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
-
             depthTextureView = validationDepthTextureView.getRealTextureView();
         }
 
