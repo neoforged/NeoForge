@@ -46,8 +46,12 @@ public class ValidationRenderPass implements RenderPass {
     }
 
     @Override
-    public void bindSampler(String name, @Nullable GpuTextureView texture) {
-        realRenderPass.bindSampler(name, texture);
+    public void bindSampler(String name, @Nullable GpuTextureView textureView) {
+        if (textureView instanceof ValidationGpuTextureView validationTextureView) {
+            // TODO 1.21.8: Can't require a validated wrapper since we initially forgot and that'd make it a breaking change
+            textureView = validationTextureView.getRealTextureView();
+        }
+        realRenderPass.bindSampler(name, textureView);
     }
 
     @Override
