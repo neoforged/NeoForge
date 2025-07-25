@@ -24,7 +24,7 @@ public class ValidationRenderPass implements RenderPass {
     private final RenderPass realRenderPass;
     private final GpuDeviceUsageValidator validator;
 
-    ValidationRenderPass(RenderPass realRenderPass, GpuDeviceUsageValidator validator) {
+    protected ValidationRenderPass(RenderPass realRenderPass, GpuDeviceUsageValidator validator) {
         this.realRenderPass = realRenderPass;
         this.validator = validator;
     }

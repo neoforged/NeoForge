@@ -29,7 +29,7 @@ public class ValidationCommandEncoder implements CommandEncoder {
     private final CommandEncoder realCommandEncoder;
     private final GpuDeviceUsageValidator validator;
 
-    ValidationCommandEncoder(CommandEncoder realCommandEncoder, GpuDeviceUsageValidator validator) {
+    protected ValidationCommandEncoder(CommandEncoder realCommandEncoder, GpuDeviceUsageValidator validator) {
         this.realCommandEncoder = realCommandEncoder;
         this.validator = validator;
     }
