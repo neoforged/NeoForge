@@ -1,4 +1,4 @@
-package net.neoforged.neodev;
+package net.neoforged.neodev.jcc;
 
 import net.neoforged.neodev.e2e.InstallProductionClient;
 import org.gradle.api.GradleException;
