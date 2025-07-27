@@ -19,7 +19,7 @@ public class ValidationGpuTexture extends GpuTexture {
     private final GpuTexture realTexture;
     private final GpuDeviceUsageValidator validator;
 
-    protected ValidationGpuTexture(GpuTexture realTexture, GpuDeviceUsageValidator validator) {
+    public ValidationGpuTexture(GpuTexture realTexture, GpuDeviceUsageValidator validator) {
         super(realTexture.usage(), realTexture.getLabel(), realTexture.getFormat(), realTexture.getWidth(0), realTexture.getHeight(0), realTexture.getDepthOrLayers(),
                 realTexture.getMipLevels());
         this.realTexture = realTexture;

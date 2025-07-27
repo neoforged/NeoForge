@@ -394,24 +394,3 @@
              boolean flag = Screen.hasControlDown();
              switch (this.hitResult) {
                  case BlockHitResult blockhitresult:
-@@ -2298,7 +_,7 @@
-         SystemReport p_167851_, @Nullable Minecraft p_167852_, @Nullable LanguageManager p_167853_, String p_167854_, @Nullable Options p_167855_
-     ) {
-         p_167851_.setDetail("Launched Version", () -> p_167854_);
--        String s = getLauncherBrand();
-+        String s = "q";
-         if (s != null) {
-             p_167851_.setDetail("Launcher name", s);
-         }
-@@ -2788,11 +_,6 @@
- 
-     public ItemModelResolver getItemModelResolver() {
-         return this.itemModelResolver;
--    }
--
--    @Nullable
--    public static String getLauncherBrand() {
--        return System.getProperty("minecraft.launcher.brand");
-     }
- 
-     @OnlyIn(Dist.CLIENT)
