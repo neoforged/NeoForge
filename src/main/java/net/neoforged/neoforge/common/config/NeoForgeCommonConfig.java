@@ -24,8 +24,6 @@ public final class NeoForgeCommonConfig {
 
     public final ModConfigSpec.BooleanValue attributeAdvancedTooltipDebugInfo;
 
-    public final ModConfigSpec.BooleanValue enableLenientCommandSuggestions;
-
     private NeoForgeCommonConfig(ModConfigSpec.Builder builder) {
         logUntranslatedItemTagWarnings = builder
                 .comment("A config option mainly for developers. Logs out modded item tags that do not have translations when running on integrated server. Format desired is tag.item.<namespace>.<path> for the translation key. Defaults to SILENCED.")
@@ -41,11 +39,6 @@ public final class NeoForgeCommonConfig {
                 .comment("Set this to true to enable showing debug information about attributes on an item when advanced tooltips is on.")
                 .translation("neoforge.configgui.attributeAdvancedTooltipDebugInfo")
                 .define("attributeAdvancedTooltipDebugInfo", true);
-
-        enableLenientCommandSuggestions = builder
-                .comment("When enabled, searching a term will now suggest matches under any namespace")
-                .translation("neoforge.configgui.enableLenientCommandSuggestions")
-                .define("enableLenientCommandSuggestions", true);
     }
 
     static {
