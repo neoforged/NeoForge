@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/telemetry/ClientTelemetryManager.java
++++ b/net/minecraft/client/telemetry/ClientTelemetryManager.java
+@@ -48,7 +_,7 @@
+         telemetrypropertymap$builder.put(TelemetryProperty.OPERATING_SYSTEM, Util.getPlatform().telemetryName());
+         telemetrypropertymap$builder.put(TelemetryProperty.PLATFORM, System.getProperty("os.name"));
+         telemetrypropertymap$builder.put(TelemetryProperty.CLIENT_MODDED, Minecraft.checkModStatus().shouldReportAsModified());
+-        telemetrypropertymap$builder.putIfNotNull(TelemetryProperty.LAUNCHER_NAME, Minecraft.getLauncherBrand());
++        telemetrypropertymap$builder.putIfNotNull(TelemetryProperty.LAUNCHER_NAME, "xxx");
+         this.deviceSessionProperties = telemetrypropertymap$builder.build();
+         this.logDirectory = p_261610_.gameDirectory.toPath().resolve("logs/telemetry");
+         this.logManager = TelemetryLogManager.open(this.logDirectory);
