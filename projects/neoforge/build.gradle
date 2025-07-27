@@ -2,8 +2,8 @@ import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
-import net.neoforged.neodev.jcc.ProvideCompatibilityCheckJar
-import net.neoforged.neodev.jcc.DownloadInstaller
+import net.neoforged.neodev.ProvideCompatibilityCheckJar
+import net.neoforged.neodev.DownloadFile
 
 plugins {
     id 'java-library'
@@ -52,7 +52,7 @@ final checkVersion = JCCPlugin.providePreviousVersion(
         project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
         project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
 )
-def downloadPreviousVersionInstaller = tasks.register('downloadPreviousVersionInstaller', DownloadInstaller) {
+def downloadPreviousVersionInstaller = tasks.register('downloadPreviousVersionInstaller', DownloadFile) {
     url = checkVersion.map { "https://maven.neoforged.net/releases/net/neoforged/neoforge/${it}/neoforge-${it}-installer.jar".toString() }
     destination = layout.buildDirectory.file("createCompatibilityCheckJar/installer.jar")
 }

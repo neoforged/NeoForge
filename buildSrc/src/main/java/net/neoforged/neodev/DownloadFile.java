@@ -1,4 +1,4 @@
-package net.neoforged.neodev.jcc;
+package net.neoforged.neodev;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
@@ -14,11 +14,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 /**
- * Downloads an arbitrary NeoForge installer by version.
- * <p>Sometimes we cannot use Gradle configurations since Gradle would replace references to net.neoforged:neoforge
- * with a reference to the current project. That prevents downloading different versions.
+ * Downloads a file from a given URL.
+ * <p>Sometimes we cannot use Gradle configurations to resolve remote files, since Gradle would replace references
+ * to net.neoforged:neoforge with a reference to the current project. That prevents downloading different versions.
  */
-public abstract class DownloadInstaller extends DefaultTask {
+public abstract class DownloadFile extends DefaultTask {
     /**
      * The URL to download.
      */
@@ -34,7 +34,7 @@ public abstract class DownloadInstaller extends DefaultTask {
     @TaskAction
     public void exec() throws IOException {
         var url = getUrl().get();
-        getLogger().lifecycle("Downloading installer from " + url);
+        getLogger().lifecycle("Downloading " + url);
 
         var destination = getDestination().getAsFile().get();
 
@@ -44,10 +44,10 @@ public abstract class DownloadInstaller extends DefaultTask {
                     .uri(URI.create(url))
                     .build(), HttpResponse.BodyHandlers.ofFile(destination.toPath()));
         } catch (IOException e) {
-            // Delete partially downloaded file
-            destination.delete();
+            destination.delete(); // Delete partially downloaded file
             throw e;
         } catch (InterruptedException e) {
+            destination.delete(); // Delete partially downloaded file
             Thread.currentThread().interrupt();
             throw new IOException("Interrupted while waiting for download.");
         }
