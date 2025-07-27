@@ -1,8 +1,8 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
-import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
+import net.neoforged.neodev.ProvideCompatibilityCheckJar
 
 plugins {
     id 'java-library'
@@ -51,12 +51,15 @@ final checkVersion = JCCPlugin.providePreviousVersion(
         project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
         project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
 )
-final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
-    // Use the same jar that the patches were generated against
-    cleanJar.set(tasks.generateClientBinPatches.cleanJar)
-    maven.set('https://maven.neoforged.net/releases')
-    artifact.set('net.neoforged:neoforge')
-    version.set(checkVersion)
+def previousInstallerConfig = configurations.resolvable("previousVersionNeoforgeInstaller") {
+    final Provider<ExternalModuleDependency> installerDependency = checkVersion.map { dependencyFactory.create("net.neoforged:neoforge:${it}:installer") }
+    it.dependencies.addLater(installerDependency)
+}
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideCompatibilityCheckJar) {
+    installer.from(previousInstallerConfig)
+    installationDir = layout.buildDirectory.dir("createCompatibilityCheckJar")
+    output = layout.buildDirectory.file("createCompatibilityCheckJar/merged.jar")
+    version = checkVersion
     javaLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(java_version)
     }
