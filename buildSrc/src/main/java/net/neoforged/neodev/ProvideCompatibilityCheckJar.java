@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Produces a merged production Jar file with Minecraft and NeoForge classes for any given NeoForge version.
+ * <p>This jar is used as the baseline for finding breaking changes by JCC.
+ */
 public abstract class ProvideCompatibilityCheckJar extends InstallProductionClient {
     @Input
     public abstract Property<String> getVersion();
