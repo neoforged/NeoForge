@@ -8,6 +8,7 @@ package net.neoforged.neoforge.client.event;
 import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
@@ -79,6 +80,45 @@ public class RegisterGuiLayersEvent extends Event implements IModBusEvent {
      */
     public void registerAboveAll(ResourceLocation id, GuiLayer layer) {
         register(Ordering.AFTER, null, id, layer);
+    }
+
+    /**
+     * Replace the layer with the given {@code id} with a new one.
+     *
+     * @param id          the id of the layer to replace
+     * @param replacement the layer to replace it with
+     * @throws IllegalArgumentException if a layer with the given {@code id} is not yet registered
+     * @see #wrapLayer(ResourceLocation, UnaryOperator) use {@code wrapLayer} if you'd like to
+     *      wrap the layer to apply pose stack transformations
+     */
+    public void replaceLayer(ResourceLocation id, GuiLayer replacement) {
+        wrapLayer(id, old -> replacement);
+    }
+
+    /**
+     * Wrap the layer with the given {@code id} in a new layer.
+     * <p>
+     * This can be used, for instance, to apply pose stack transformations to move the layer or resize it.
+     *
+     * @param id      the id of the layer to wrap
+     * @param wrapper an unary operator which takes in the old layer and returns the new layer that wraps the old one
+     * @throws IllegalArgumentException if a layer with the given {@code id} is not yet registered
+     */
+    public void wrapLayer(ResourceLocation id, UnaryOperator<GuiLayer> wrapper) {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(wrapper);
+
+        for (int i = 0; i < layers.size(); i++) {
+            var layer = layers.get(i);
+            if (layer.name().equals(id)) {
+                var wrapped = wrapper.apply(layer.layer());
+                Objects.requireNonNull(wrapped, "wrapping layer must not be null");
+                layers.set(i, new GuiLayerManager.NamedLayer(id, wrapped));
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("Attempted to wrap layer with id '" + id + "', which does not exist!");
     }
 
     private void register(Ordering ordering, @Nullable ResourceLocation other, ResourceLocation key, GuiLayer layer) {

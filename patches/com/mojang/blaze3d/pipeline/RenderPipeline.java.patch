@@ -1,9 +1,64 @@
 --- a/com/mojang/blaze3d/pipeline/RenderPipeline.java
 +++ b/com/mojang/blaze3d/pipeline/RenderPipeline.java
-@@ -176,6 +_,46 @@
+@@ -41,7 +_,10 @@
+     private final float depthBiasConstant;
+     private final int sortKey;
+     private static int sortKeySeed;
++    private final Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest;
+ 
++    /** @deprecated Neo: use {@link #RenderPipeline(ResourceLocation, ResourceLocation, ResourceLocation, ShaderDefines, List, List, Optional, DepthTestFunction, PolygonMode, boolean, boolean, boolean, boolean, LogicOp, VertexFormat, VertexFormat.Mode, float, float, int, Optional)} instead */
++    @Deprecated
+     protected RenderPipeline(
+         ResourceLocation p_405403_,
+         ResourceLocation p_405389_,
+@@ -63,6 +_,31 @@
+         float p_409999_,
+         int p_415862_
+     ) {
++        this(p_405403_, p_405389_, p_404945_, p_405426_, p_405334_, p_404693_, p_404667_, p_410224_, p_409822_, p_404907_, p_405688_, p_405411_, p_405477_, p_410051_, p_405109_, p_404708_, p_410755_, p_409999_, p_415862_, Optional.empty());
++    }
++
++    protected RenderPipeline(
++            ResourceLocation p_405403_,
++            ResourceLocation p_405389_,
++            ResourceLocation p_404945_,
++            ShaderDefines p_405426_,
++            List<String> p_405334_,
++            List<RenderPipeline.UniformDescription> p_404693_,
++            Optional<BlendFunction> p_404667_,
++            DepthTestFunction p_410224_,
++            PolygonMode p_409822_,
++            boolean p_404907_,
++            boolean p_405688_,
++            boolean p_405411_,
++            boolean p_405477_,
++            LogicOp p_410051_,
++            VertexFormat p_405109_,
++            VertexFormat.Mode p_404708_,
++            float p_410755_,
++            float p_409999_,
++            int p_415862_,
++            Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
++            ) {
+         this.location = p_405403_;
+         this.vertexShader = p_405389_;
+         this.fragmentShader = p_404945_;
+@@ -82,6 +_,7 @@
+         this.depthBiasScaleFactor = p_410755_;
+         this.depthBiasConstant = p_409999_;
+         this.sortKey = p_415862_;
++        this.stencilTest = stencilTest;
+     }
+ 
+     public int getSortKey() {
+@@ -176,6 +_,51 @@
              || this.writeDepth;
      }
  
++    public Optional<net.neoforged.neoforge.client.stencil.StencilTest> getStencilTest() {
++        return stencilTest;
++    }
++
 +    /**
 +     * Neo: Create a {@link RenderPipeline.Builder} from this {@link RenderPipeline} to adjust its configuration and
 +     * build a new, modified {@link RenderPipeline} from it
@@ -41,9 +96,98 @@
 +        builder.vertexFormatMode = Optional.of(this.vertexFormatMode);
 +        builder.depthBiasScaleFactor = this.depthBiasScaleFactor;
 +        builder.depthBiasConstant = this.depthBiasConstant;
++        builder.stencilTest = this.stencilTest;
 +        return builder;
 +    }
 +
      public static RenderPipeline.Builder builder(RenderPipeline.Snippet... p_405781_) {
          RenderPipeline.Builder renderpipeline$builder = new RenderPipeline.Builder();
  
+@@ -208,6 +_,7 @@
+         private Optional<VertexFormat.Mode> vertexFormatMode = Optional.empty();
+         private float depthBiasScaleFactor;
+         private float depthBiasConstant;
++        private Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest = Optional.empty();
+ 
+         Builder() {
+         }
+@@ -364,6 +_,16 @@
+             return this;
+         }
+ 
++        public RenderPipeline.Builder withStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
++            this.stencilTest = Optional.of(stencilTest);
++            return this;
++        }
++
++        public RenderPipeline.Builder withoutStencilTest(){
++            this.stencilTest = Optional.empty();
++            return this;
++        }
++
+         void withSnippet(RenderPipeline.Snippet p_405255_) {
+             if (p_405255_.vertexShader.isPresent()) {
+                 this.vertexShader = p_405255_.vertexShader;
+@@ -438,6 +_,10 @@
+             if (p_405255_.vertexFormatMode.isPresent()) {
+                 this.vertexFormatMode = p_405255_.vertexFormatMode;
+             }
++
++            if (p_405255_.stencilTest.isPresent()) {
++                this.stencilTest = p_405255_.stencilTest;
++            }
+         }
+ 
+         public RenderPipeline.Snippet buildSnippet() {
+@@ -456,7 +_,8 @@
+                 this.writeDepth,
+                 this.colorLogic,
+                 this.vertexFormat,
+-                this.vertexFormatMode
++                this.vertexFormatMode,
++                this.stencilTest
+             );
+         }
+ 
+@@ -491,7 +_,8 @@
+                     this.vertexFormatMode.get(),
+                     this.depthBiasScaleFactor,
+                     this.depthBiasConstant,
+-                    nextPipelineSortKey++
++                    nextPipelineSortKey++,
++                    this.stencilTest
+                 );
+             }
+         }
+@@ -514,8 +_,30 @@
+         Optional<Boolean> writeDepth,
+         Optional<LogicOp> colorLogic,
+         Optional<VertexFormat> vertexFormat,
+-        Optional<VertexFormat.Mode> vertexFormatMode
++        Optional<VertexFormat.Mode> vertexFormatMode,
++        Optional<net.neoforged.neoforge.client.stencil.StencilTest> stencilTest
+     ) {
++        /** @deprecated Neo: use {@link #Snippet(Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional, Optional)} instead */
++        @Deprecated
++        public Snippet(
++                Optional<ResourceLocation> vertexShader,
++                Optional<ResourceLocation> fragmentShader,
++                Optional<ShaderDefines> shaderDefines,
++                Optional<List<String>> samplers,
++                Optional<List<RenderPipeline.UniformDescription>> uniforms,
++                Optional<BlendFunction> blendFunction,
++                Optional<DepthTestFunction> depthTestFunction,
++                Optional<PolygonMode> polygonMode,
++                Optional<Boolean> cull,
++                Optional<Boolean> writeColor,
++                Optional<Boolean> writeAlpha,
++                Optional<Boolean> writeDepth,
++                Optional<LogicOp> colorLogic,
++                Optional<VertexFormat> vertexFormat,
++                Optional<VertexFormat.Mode> vertexFormatMode
++        ) {
++            this(vertexShader, fragmentShader, shaderDefines, samplers, uniforms, blendFunction, depthTestFunction, polygonMode, cull, writeColor, writeAlpha, writeDepth, colorLogic, vertexFormat, vertexFormatMode, Optional.empty());
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

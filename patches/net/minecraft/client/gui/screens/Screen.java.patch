@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -103,6 +_,10 @@
+@@ -103,6 +_,11 @@
      public final void renderWithTooltip(GuiGraphics p_282345_, int p_283456_, int p_283586_, float p_282339_) {
          p_282345_.nextStratum();
          this.renderBackground(p_282345_, p_283456_, p_283586_, p_282339_);
@@ -8,6 +8,7 @@
 +        if (this instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(containerScreen, p_282345_, p_283456_, p_283586_));
 +        }
++        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, p_282345_, p_283456_, p_283586_, p_282339_));
          p_282345_.nextStratum();
          this.render(p_282345_, p_283456_, p_283586_, p_282339_);
          p_282345_.renderDeferredTooltip();
