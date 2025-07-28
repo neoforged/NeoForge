@@ -38,7 +38,8 @@ public abstract class DownloadFile extends DefaultTask {
 
         var destination = getDestination().getAsFile().get();
 
-        try (var client = HttpClient.newHttpClient()) {
+        var client = HttpClient.newHttpClient();
+        try {
             client.send(HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(url))
@@ -50,6 +51,15 @@ public abstract class DownloadFile extends DefaultTask {
             destination.delete(); // Delete partially downloaded file
             Thread.currentThread().interrupt();
             throw new IOException("Interrupted while waiting for download.");
+        } finally {
+            // HttpClient was only made AutoCloseable in Java 21. This is for compat with Java 17.
+            if (client instanceof AutoCloseable autoCloseable) {
+                try {
+                    autoCloseable.close();
+                } catch (Exception e) {
+                    getLogger().error("Failed to close HTTP client.", e);
+                }
+            }
         }
     }
 }
