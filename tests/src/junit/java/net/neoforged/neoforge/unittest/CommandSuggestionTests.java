@@ -5,22 +5,20 @@
 
 package net.neoforged.neoforge.unittest;
 
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.resources.ResourceLocation;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.resources.ResourceLocation;
+import org.junit.jupiter.api.Test;
 
 public class CommandSuggestionTests {
     private static final List<String> PRETEND_BLOCK_REGISTRY = List.of(
             "minecraft:sea_pickle",
             "modid1:dried_pickle",
             "minecraft:grass",
-            "modid2:burnt_grass"
-    );
+            "modid2:burnt_grass");
 
     @Test
     public void commandSuggestionTest_pathSearchIsNotMinecraftHardcoded() {
