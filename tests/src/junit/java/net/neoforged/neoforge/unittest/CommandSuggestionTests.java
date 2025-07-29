@@ -36,7 +36,7 @@ public class CommandSuggestionTests {
         List<String> suggestions = new ArrayList<>();
         SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "minecraft:", ResourceLocation::parse, suggestions::add);
 
-        // ["minecraft:sea_pickle"] is what vanilla will do without the patch
+        // ["minecraft:sea_pickle", "minecraft:grass"] is what vanilla will do without the patch
         assertEquals(List.of("minecraft:sea_pickle", "minecraft:grass"), suggestions);
     }
 
@@ -45,7 +45,7 @@ public class CommandSuggestionTests {
         List<String> suggestions = new ArrayList<>();
         SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "modid", ResourceLocation::parse, suggestions::add);
 
-        // ["minecraft:sea_pickle"] is what vanilla will do without the patch
+        // ["modid1:dried_pickle", "modid2:burnt_grass"] is what vanilla will do without the patch
         assertEquals(List.of("modid1:dried_pickle", "modid2:burnt_grass"), suggestions);
     }
 }
