@@ -66,7 +66,7 @@
                  ProfilerFiller profilerfiller = Profiler.get();
                  profilerfiller.push("moving");
                  if (resourcekey == Level.OVERWORLD && serverlevel.dimension() == Level.NETHER) {
-@@ -1064,11 +_,13 @@
+@@ -1064,11 +_,15 @@
                  playerlist.sendLevelInfo(this, serverlevel);
                  playerlist.sendAllPlayerInfo(this);
                  playerlist.sendActivePlayerEffects(this);
@@ -76,6 +76,8 @@
                  this.lastSentHealth = -1.0F;
                  this.lastSentFood = -1;
                  this.teleportSpectators(p_379854_, serverlevel1);
++                // Neo: On the client all attachments are lost on dimension change and need to be re-sent
++                net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(this);
 +                net.neoforged.neoforge.event.EventHooks.firePlayerChangedDimensionEvent(this, resourcekey, p_379854_.newLevel().dimension());
                  return this;
              }
