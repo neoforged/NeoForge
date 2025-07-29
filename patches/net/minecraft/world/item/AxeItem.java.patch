@@ -9,21 +9,6 @@
      protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
          .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
          .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
-@@ -54,6 +_,14 @@
-         super(p_40524_.axe(p_360755_, p_364213_, p_365432_));
-     }
- 
-+    public static boolean hasStrippable(Block unstripped) {
-+        var strippable = unstripped.builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        if (strippable != null) {
-+            return true;
-+        }
-+        return STRIPPABLES.containsKey(unstripped);
-+    }
-+
-     @Override
-     public InteractionResult useOn(UseOnContext p_40529_) {
-         Level level = p_40529_.getLevel();
 @@ -62,7 +_,7 @@
          if (playerHasBlockingItemUseIntent(p_40529_)) {
              return InteractionResult.PASS;
@@ -64,14 +49,14 @@
  
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
 +        var block = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        return block != null ? block.stripped().defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : STRIPPABLES.get(originalState.getBlock()).defaultBlockState();
++        return block != null ? block.stripped().withPropertiesOf(originalState) : STRIPPABLES.get(originalState.getBlock()).defaultBlockState();
 +    }
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
 +        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        if (strippable != null && (p_150691_.hasProperty(RotatedPillarBlock.AXIS) && strippable.stripped().defaultBlockState().hasProperty(RotatedPillarBlock.AXIS))) {
++        if (strippable != null) {
 +            return Optional.of(strippable.stripped())
-+                .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
++                .map(p_360012_ -> p_360012_.withPropertiesOf(strippable.stripped().defaultBlockState()));
 +        }
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
              .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
