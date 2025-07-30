@@ -72,11 +72,11 @@ public final class ResourceStack<T extends IResource> {
      * @param <R>           the resource type
      * @return a codec for a resource stack
      */
-    public static <R extends IResource> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
+    public static <R extends IResource> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
-                resourceCodec.fieldOf("resource").forGetter(ResourceStack<R>::resource),
-                NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1).forGetter(ResourceStack<R>::amount))
-                .apply(instance, stackFactory::create));
+                resourceCodec.fieldOf("resource").forGetter(ResourceStack::resource),
+                NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1).forGetter(ResourceStack::amount))
+                .apply(instance, ResourceStack::of));
     }
 
     /**
@@ -159,7 +159,9 @@ public final class ResourceStack<T extends IResource> {
      */
     public ResourceStack<T> grow(int amount) {
         TransferPreconditions.checkNonNegative(amount);
-        return withAmount(this.amount + amount);
+        int newAmount = this.amount + amount;
+        if (newAmount < 0) newAmount = Integer.MAX_VALUE;
+        return withAmount(newAmount);
     }
 
     /**

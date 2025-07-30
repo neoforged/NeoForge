@@ -29,7 +29,7 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
      * 
      * @param patch The patch added to the new resource instance.
      * @return A new resource instance with applied patch.
-     *         In the case of the resource being empty, the empty instance should be returned instead with no patches.
+     *         In the case of the resource being empty, the patch is empty, or the patch matches the current patch, then resource returns itself.
      */
     IDataComponentHolderResource<T> withPatch(DataComponentPatch patch);
 
@@ -44,7 +44,7 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
     <D> IDataComponentHolderResource<T> with(DataComponentType<D> type, D data);
 
     /**
-     * Creates a new copy of this resource without the data component.
+     * Creates a new copy of this resource without the data component explicitly removing it from the holder.
      *
      * @param type the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.

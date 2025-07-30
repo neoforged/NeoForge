@@ -8,6 +8,7 @@ package net.neoforged.neoforge.transfer.resources;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -59,7 +60,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * A codec for a {@code ResourceStack<FluidResource>} serializing the resource and the amount. Can accept empty resources.
      */
-    public static final Codec<ResourceStack<FluidResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, FluidResource::withAmount));
+    public static final Codec<ResourceStack<FluidResource>> RESOURCE_STACK_CODEC = ResourceStack.codec(OPTIONAL_CODEC);
 
     /**
      * Stream codec for a fluid resource. Accepts empty resources.
@@ -88,15 +89,15 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
-    public static FluidResource invalidateDefault(Fluid fluid) {
+    public static FluidResource createDefaultInstance(Fluid fluid) {
         if (fluid == Fluids.EMPTY) return EMPTY;
         return new FluidResource(new FluidStack(fluid, 1));
     }
 
     /**
-     * Creates an {@link FluidResource} using the default or copy of the passed in fluid stack.
+     * Creates an {@link FluidResource} using the default or copy of the passed in fluid stack. Note the amount is lost.
      *
-     * @param fluidStack stack to copy
+     * @param fluidStack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the fluid's default resource will be returned, otherwise a new instance with the copied stack.
      */
     public static FluidResource of(FluidStack fluidStack) {
@@ -198,7 +199,9 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     @Override
     public FluidResource withPatch(DataComponentPatch patch) {
-        if (isEmpty()) return FluidResource.EMPTY;
+        if (isEmpty() || patch.isEmpty() || innerStack.getComponentsPatch().equals(patch))
+            return this;
+
         FluidStack stack = innerStack.copy();
         stack.applyComponents(patch);
         return FluidResource.of(stack);
@@ -209,7 +212,13 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.set(type, data);
+        if (FluidStack.isSameFluidSameComponents(innerStack, stack)) return this;
         return FluidResource.of(stack);
+    }
+
+    @Override
+    public <D> FluidResource with(Supplier<? extends DataComponentType<D>> type, D data) {
+        return with(type.get(), data);
     }
 
     @Override
@@ -217,9 +226,22 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.remove(type);
+        if (FluidStack.isSameFluidSameComponents(innerStack, stack)) return this;
         return FluidResource.of(stack);
     }
 
+    @Override
+    public FluidResource without(Supplier<? extends DataComponentType<?>> type) {
+        return without(type.get());
+    }
+
+    /**
+     * Creates a new {@link ResourceStack} of the fluid resource with the specified amount.
+     * 
+     * @param amount Amount to make the stack with. Must be non-negative
+     * @return A new {@link ResourceStack} with the specified amount.
+     * @throws IllegalArgumentException when amount is negative
+     */
     public ResourceStack<FluidResource> withAmount(int amount) {
         return ResourceStack.of(this, amount);
     }
@@ -233,8 +255,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     @Override
     public DataComponentMap getComponents() {
-        if (isEmpty()) return DataComponentMap.EMPTY;
-        return innerStack.getComponents().toImmutableMap();
+        return innerStack.immutableComponents();
     }
 
     @Override

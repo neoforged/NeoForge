@@ -11,11 +11,12 @@ public final class ResourceHandlerUtil {
     private ResourceHandlerUtil() {}
 
     /**
-     * Determines if either the given resource or amount is classified as empty.
+     * Determines if either the given resource or amount is classified as empty: if either {@link IResource#isEmpty()} is {@code true},
+     * or the amount is zero then the resource is considered empty.
      *
      * @param resource The resource to check.
-     * @param amount   An amount to check. <strong>Must be non-negative.</strong>
-     * @return {@code true} if either {@link IResource#isEmpty()} returns true, or the amount is zero.
+     * @param amount   An amount to check.
+     * @return {@code true} if either {@link IResource#isEmpty()} returns {@code true}, or the amount is zero.
      */
     public static boolean isEmpty(IResource resource, int amount) {
         return amount <= 0 || resource.isEmpty();

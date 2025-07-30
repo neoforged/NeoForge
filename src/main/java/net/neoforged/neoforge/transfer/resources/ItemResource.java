@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -29,6 +30,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -67,7 +69,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * A codec for a {@code ResourceStack<ItemResource>} serializing the resource and the amount. Can accept empty resources.
      */
-    public static final Codec<ResourceStack<ItemResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, ItemResource::withAmount));
+    public static final Codec<ResourceStack<ItemResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC));
 
     /**
      * Stream codec for an item resource. Accepts empty resources.
@@ -102,9 +104,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
-     * Creates an ItemResource using the default or copy of the passed in item stack.
+     * Creates an ItemResource using the default or copy of the passed in item stack. Note the count is lost.
      *
-     * @param itemStack stack to copy
+     * @param itemStack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
      */
     public static ItemResource of(ItemStack itemStack) {
@@ -130,13 +132,31 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
      *
+     * @param item  Item holder to create the resource with.
+     * @param patch Data components that should be on the resource instance.
+     * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
     public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
-        if (item.value() == Items.AIR) return EMPTY;
-        if (patch.isEmpty()) return item.value().getDefaultResource();
-        return item.value().getDefaultResource().withPatch(patch);
+        return of(item.value(), patch);
+    }
+
+    /**
+     * <strong>Note:</strong> This cannot be called before your item is registered
+     *
+     * @param item  Item to create the resource with.
+     * @param patch Data components that should be on the resource instance.
+     * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
+     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     * @throws IllegalStateException If the underlying default {@link ItemResource} when used has not been yet initialized.
+     */
+    public static ItemResource of(Item item, DataComponentPatch patch) {
+        if (item == Items.AIR) return EMPTY;
+        if (patch.isEmpty()) return item.getDefaultResource();
+        return item.getDefaultResource().withPatch(patch);
     }
 
     /**
@@ -212,9 +232,12 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     @Override
     public ItemResource withPatch(DataComponentPatch patch) {
-        if (isEmpty()) return ItemResource.EMPTY;
+        if (isEmpty() || patch.isEmpty() || innerStack.getComponentsPatch().equals(patch))
+            return this;
+
         ItemStack stack = innerStack.copy();
         stack.applyComponents(patch);
+
         return ItemResource.of(stack);
     }
 
@@ -223,14 +246,29 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         if (isEmpty()) return ItemResource.EMPTY;
         ItemStack stack = innerStack.copy();
         stack.set(type, data);
+        if (ItemStack.isSameItemSameComponents(innerStack, stack)) return this;
+
         return ItemResource.of(stack);
     }
 
     @Override
+    public <D> ItemResource with(Supplier<? extends DataComponentType<D>> type, D data) {
+        return with(type.get(), data);
+    }
+
+    @Override
     public ItemResource without(DataComponentType<?> type) {
+        if (isEmpty()) return ItemResource.EMPTY;
         ItemStack stack = innerStack.copy();
         stack.remove(type);
-        return new ItemResource(stack);
+        if (ItemStack.isSameItemSameComponents(innerStack, stack)) return this;
+
+        return ItemResource.of(stack);
+    }
+
+    @Override
+    public ItemResource without(Supplier<? extends DataComponentType<?>> type) {
+        return without(type.get());
     }
 
     @Override
@@ -254,28 +292,49 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
-     * Creates a list of {@link ItemStack ItemStacks} of the specified count taking into account the max stack size of the item.
+     * Creates an {@link ItemStack} with a count of 1.
      *
-     * @param count The amount of the item the stack should have.
+     * @return A new copy of the inner item stack with a count of 1.
+     */
+    public ItemStack toStack() {
+        return toStack(1);
+    }
+
+    /**
+     * Creates a list of {@link ItemStack ItemStacks} of the specified count taking into account the max stack size of the item.
+     * Note: This is not guaranteed to be mutable. For the case of empty, an immutable empty list is returned.
+     *
+     * @param count The amount of the item the stack should have. Must be non-negative.
      * @return A list of item stacks that all have a maximum count of the max stack size of the item.
+     * @throws IllegalArgumentException when the count is negative.
      */
     public List<ItemStack> toStacks(int count) {
+        TransferPreconditions.checkNonNegative(count);
         if (count == 0 || isEmpty())
             return Collections.emptyList();
 
         int maxStackSize = getMaxStackSize();
         int stackCount = count / maxStackSize;
+        int remainder = count % maxStackSize;
+
         List<ItemStack> stacks = new ArrayList<>(stackCount + 1);
         for (int i = 0; i < stackCount; i++) {
             stacks.add(toStack(maxStackSize));
         }
-        int remainder = count % maxStackSize;
+
         if (remainder > 0) {
             stacks.add(toStack(remainder));
         }
         return stacks;
     }
 
+    /**
+     * Creates a new {@link ResourceStack} of the item resource with the specified amount.
+     * 
+     * @param amount Amount to make the stack with. Must be non-negative
+     * @return A new {@link ResourceStack} with the specified amount.
+     * @throws IllegalArgumentException when amount is negative
+     */
     public ResourceStack<ItemResource> withAmount(int amount) {
         return ResourceStack.of(this, amount);
     }
