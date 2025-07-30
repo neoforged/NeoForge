@@ -1,0 +1,104 @@
+{
+    "extensions": [
+        {
+            "original": {
+                "owner": "net/minecraft/world/level/block/Block",
+                "name": "getFriction",
+                "descriptor": "()F"
+            },
+            "replacement": {
+                "owner": "net/neoforged/neoforge/common/extensions/IBlockStateExtension",
+                "name": "getFriction",
+                "descriptor": "(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F"
+            },
+            "exclusions": [
+                {
+                    "owner": "net/neoforged/neoforge/common/extensions/IBlockExtension",
+                    "name": "getFriction",
+                    "descriptor": "(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F"
+                }
+            ]
+        },
+        {
+            "original": {
+                "owner": "net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase",
+                "name": "getLightEmission",
+                "descriptor": "()I"
+            },
+            "replacement": {
+                "owner": "net/neoforged/neoforge/common/extensions/IBlockStateExtension",
+                "name": "getLightEmission",
+                "descriptor": "(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I"
+            },
+            "exclusions": [
+                {
+                    "owner": "net/neoforged/neoforge/common/extensions/IBlockExtension",
+                    "name": "getLightEmission",
+                    "descriptor": "(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)I"
+                }
+            ]
+        },
+        {
+            "original": {
+                "owner": "net/minecraft/world/level/block/Block",
+                "name": "getExplosionResistance",
+                "descriptor": "()F"
+            },
+            "replacement": {
+                "owner": "net/neoforged/neoforge/common/extensions/IBlockStateExtension",
+                "name": "getExplosionResistance",
+                "descriptor": "(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/Explosion;)F"
+            },
+            "exclusions": [
+                {
+                    "owner": "net/neoforged/neoforge/common/extensions/IBlockExtension",
+                    "name": "getExplosionResistance",
+                    "descriptor": "(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/Explosion;)F"
+                },
+                {
+                    "owner": "net/minecraft/world/level/block/StairBlock",
+                    "name": "getExplosionResistance",
+                    "descriptor": "()F"
+                }
+            ]
+        },
+        {
+            "original": {
+                "owner": "net/minecraft/world/level/block/state/BlockBehaviour",
+                "name": "getCloneItemStack",
+                "descriptor": "(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/item/ItemStack;"
+            },
+            "replacement": {
+                "owner": "net/neoforged/neoforge/common/extensions/IBlockExtension",
+                "name": "getCloneItemStack",
+                "descriptor": "(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;ZLnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/item/ItemStack;"
+            },
+            "exclusions": [
+                {
+                    "owner": "net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase",
+                    "name": "getCloneItemStack",
+                    "descriptor": "(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Lnet/minecraft/world/item/ItemStack;"
+                }
+            ]
+        },
+        {
+            "original": {
+                "owner": "net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase",
+                "name": "getCloneItemStack",
+                "descriptor": "(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Lnet/minecraft/world/item/ItemStack;"
+            },
+            "replacement": {
+                "owner": "net/neoforged/neoforge/common/extensions/IBlockStateExtension",
+                "name": "getCloneItemStack",
+                "descriptor": "(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/LevelReader;ZLnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/item/ItemStack;"
+            },
+            "exclusions": [
+                {
+                    "owner": "net/neoforged/neoforge/common/extensions/IBlockExtension",
+                    "name": "getCloneItemStack",
+                    "descriptor": "(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;ZLnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/item/ItemStack;"
+                }
+            ]
+        }
+    ]
+}

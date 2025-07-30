@@ -1,6 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
+import net.neoforged.neodev.CheckExtensions
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 import net.neoforged.neodev.ProvideCompatibilityCheckJar
 import net.neoforged.neodev.DownloadFile
@@ -292,6 +293,14 @@ tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.clas
     description "Generate the targets for the finalizeSpawn MethodRedirector coremod"
     input = generateAccessTransformers.input
     output = rootProject.file("coremods/src/main/resources/net/neoforged/neoforge/coremods/finalize_spawn_targets.json")
+}
+
+tasks.register('checkExtensions', CheckExtensions) {
+    group generateAccessTransformers.group
+    description "Validate that all calls to vanilla methods which NeoForge extends upon are replaced by alls to the extensions"
+    dependsOn('joinedJar')
+    input = tasks.named('joinedJar', Jar).get().getArchiveFile()
+    definitions = rootProject.file("src/main/resources/META-INF/extension-definitions.json")
 }
 
 tasks.withType(JavaCompile.class).configureEach {
