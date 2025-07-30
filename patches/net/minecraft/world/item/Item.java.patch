@@ -59,7 +59,7 @@
      public final ItemStack getCraftingRemainder() {
          return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
      }
-@@ -338,7 +_,19 @@
+@@ -338,7 +_,23 @@
      }
  
      public boolean useOnRelease(ItemStack p_41464_) {
@@ -70,6 +70,10 @@
 +    protected final boolean canCombineRepair;
 +    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.ItemResource> defaultResource;
 +
++    /**
++     * Use the {@link net.neoforged.neoforge.transfer.resources.ItemResource#of ItemResource.of} instead.
++     */
++    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final net.neoforged.neoforge.transfer.resources.ItemResource getDefaultResource() {
 +        return this.defaultResource.get();
 +    }
