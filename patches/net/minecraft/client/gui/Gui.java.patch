@@ -33,7 +33,7 @@
      }
  
      public void resetTitleTimes() {
-@@ -212,27 +_,44 @@
+@@ -212,27 +_,45 @@
  
      public void render(GuiGraphics p_282884_, DeltaTracker p_348630_) {
          if (this.minecraft.screen == null || !(this.minecraft.screen instanceof ReceivingLevelScreen)) {
@@ -72,13 +72,14 @@
 +
 +        // TODO: Split this up again into its pieces
 +        layerManager.add(HOTBAR, this::renderHotbar, guiVisible);
++        java.util.function.BooleanSupplier survivalVisible = () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean();
 +        var playerHealthComponents = new net.neoforged.neoforge.client.gui.GuiLayerManager()
 +                .add(PLAYER_HEALTH, (guiGraphics, partialTick) -> renderHealthLevel(guiGraphics))
 +                .add(ARMOR_LEVEL, (guiGraphics, partialTick) -> renderArmorLevel(guiGraphics))
-+                .add(FOOD_LEVEL, (guiGraphics, partialTick) -> renderFoodLevel(guiGraphics))
-+                .add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics));
-+        layerManager.add(playerHealthComponents, () -> this.minecraft.gameMode.canHurtPlayer() && guiVisible.getAsBoolean());
++                .add(FOOD_LEVEL, (guiGraphics, partialTick) -> renderFoodLevel(guiGraphics));
++        layerManager.add(playerHealthComponents, survivalVisible);
 +        layerManager.add(VEHICLE_HEALTH, (guiGraphics, partialTick) -> renderVehicleHealth(guiGraphics), guiVisible);
++        layerManager.add(AIR_LEVEL, (guiGraphics, partialTick) -> renderAirLevel(guiGraphics), survivalVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR_BACKGROUND, this::renderContextualInfoBarBackground, guiVisible);
 +        layerManager.add(EXPERIENCE_LEVEL, this::renderExperienceLevel, guiVisible);
 +        layerManager.add(CONTEXTUAL_INFO_BAR, this::renderContextualInfoBar, guiVisible);
