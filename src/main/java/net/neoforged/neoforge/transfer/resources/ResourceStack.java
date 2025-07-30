@@ -23,7 +23,7 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
  * Represents an immutable {@link IResource} and an amount.
  * Can be seen as an immutable version of {@link ItemStack} or {@link FluidStack}.
  */
-public final class ResourceStack<T extends IResource<T>> {
+public final class ResourceStack<T extends IResource> {
     /**
      * Creates a resource stack from a given resource and amount.
      * <p>
@@ -42,14 +42,15 @@ public final class ResourceStack<T extends IResource<T>> {
      * @return A new resource stack (or the empty instance if had been empty).
      * @see ItemResource#withAmount(int)
      * @see FluidResource#withAmount(int)
-     * @throws IllegalArgumentException When the amount is negative
+     * @throws IllegalArgumentException When the amount is negative.
+     * @throws ClassCastException       when the info resource type does not match the resource class type. This indicates a problem with the resource implementation.
      */
-    public static <T extends IResource<T>> ResourceStack<T> of(T resource, int amount) {
+    public static <T extends IResource> ResourceStack<T> of(T resource, int amount) {
+        TransferPreconditions.checkNonNegative(amount);
         if (ResourceHandlerUtil.isEmpty(resource, amount)) {
-            var existingEmpty = resource.getEmptyResourceStackInstance();
-            //noinspection ReplaceNullCheck, ConstantValue This allows assigning the empty instances instead of having a different method for it.
-            if (existingEmpty != null) return existingEmpty;
-            return new ResourceStack<>(resource, 0);
+            ResourceStack<?> emptyStack = resource.getEmptyInfo().emptyResourceStack();
+            //noinspection unchecked
+            return (ResourceStack<T>) emptyStack;
         }
         return new ResourceStack<>(resource, amount);
     }
@@ -71,7 +72,7 @@ public final class ResourceStack<T extends IResource<T>> {
      * @param <R>           the resource type
      * @return a codec for a resource stack
      */
-    public static <R extends IResource<R>> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
+    public static <R extends IResource> Codec<ResourceStack<R>> codec(Codec<R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 resourceCodec.fieldOf("resource").forGetter(ResourceStack<R>::resource),
                 NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.NON_NEGATIVE_INT, "amount", 1).forGetter(ResourceStack<R>::amount))
@@ -85,7 +86,7 @@ public final class ResourceStack<T extends IResource<T>> {
      * @param stackFactory  The method used to create a new resource stack given a resource and an amount.
      *                      This is expected to handle returning the EMPTY instance when the stack would be empty.
      */
-    public static <B extends FriendlyByteBuf, R extends IResource<R>> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
+    public static <B extends FriendlyByteBuf, R extends IResource> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
         return StreamCodec.composite(
                 resourceCodec, ResourceStack::resource,
                 ByteBufCodecs.VAR_INT, ResourceStack::amount,
@@ -95,7 +96,7 @@ public final class ResourceStack<T extends IResource<T>> {
     /**
      * Creates a hashcode derived from a resource stack list. This is similar to how vanilla handles ItemStack lists.
      */
-    public static <T extends IResource<T>> int hashTypes(Iterable<ResourceStack<T>> stacks) {
+    public static <T extends IResource> int hashTypes(Iterable<ResourceStack<T>> stacks) {
         int i = 0;
         //Like vanilla, the count is omitted in the hash comparison
         for (ResourceStack<T> resourceStack : stacks) {
@@ -107,7 +108,7 @@ public final class ResourceStack<T extends IResource<T>> {
     private final T resource;
     private final int amount;
 
-    private ResourceStack(T resource, int amount) {
+    ResourceStack(T resource, int amount) {
         this.resource = resource;
         this.amount = amount;
     }
@@ -131,7 +132,6 @@ public final class ResourceStack<T extends IResource<T>> {
     public ResourceStack<T> withAmount(int amount) {
         TransferPreconditions.checkNonNegative(amount);
         if (amount == this.amount) return this;
-        if (amount == 0 || resource.isEmpty()) return resource().getEmptyResourceStackInstance();
         return ResourceStack.of(resource, amount);
     }
 
@@ -175,9 +175,7 @@ public final class ResourceStack<T extends IResource<T>> {
      */
     public ResourceStack<T> with(UnaryOperator<T> operator, int amount) {
         T result = operator.apply(resource);
-        if (amount == 0) return result.getEmptyResourceStackInstance();
-
-        if (result.equals(resource) && amount == amount()) return this;
+        if (amount == amount() && result.equals(resource)) return this;
         return ResourceStack.of(result, amount);
     }
 
@@ -189,6 +187,21 @@ public final class ResourceStack<T extends IResource<T>> {
      */
     public boolean isEmpty() {
         return ResourceHandlerUtil.isEmpty(resource(), amount());
+    }
+
+    /**
+     * A helper method to convert the resource stack to a given type such as an {@link ItemStack} or {@link FluidStack}.
+     *
+     * @param stackFactory Factory used to create the new instance
+     * @return Stack instance of type {@code T} using the resource and amount of the resource stack.
+     *
+     * @param <S> Type of stack
+     *
+     * @see ItemResource#toStack(int)
+     * @see ItemResource#withAmount(int)
+     */
+    public <S> S as(IStackFactory<T, S> stackFactory) {
+        return stackFactory.create(resource, amount);
     }
 
     @Override

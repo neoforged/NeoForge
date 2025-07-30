@@ -17,7 +17,7 @@ public final class ResourceHandlerUtil {
      * @param amount   An amount to check. <strong>Must be non-negative.</strong>
      * @return {@code true} if either {@link IResource#isEmpty()} returns true, or the amount is zero.
      */
-    public static boolean isEmpty(IResource<?> resource, int amount) {
-        return amount == 0 || resource.isEmpty();
+    public static boolean isEmpty(IResource resource, int amount) {
+        return amount <= 0 || resource.isEmpty();
     }
 }

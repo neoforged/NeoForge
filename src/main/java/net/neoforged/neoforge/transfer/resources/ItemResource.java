@@ -35,27 +35,34 @@ import org.jetbrains.annotations.ApiStatus;
  * Immutable combination of an {@link Item} and data components.
  * Similar to an {@link ItemStack}, but immutable and without a count.
  */
-public final class ItemResource implements IDataComponentHolderResource<Item, ItemResource> {
+public final class ItemResource implements IDataComponentHolderResource<Item> {
+    /**
+     * Resource information used to initialize the empty instance fields {@link #EMPTY} and {@link #EMPTY_STACK}.
+     */
+    private static final EmptyResourceInfo<ItemResource> INFO = new EmptyResourceInfo<>(new ItemResource(ItemStack.EMPTY));
+
     /**
      * The empty resource instance of a {@link ItemResource}
      */
-    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
+    public static final ItemResource EMPTY = INFO.emptyInstance();
     /**
      * The empty resource stack instance of a {@link ItemResource}.
      */
-    public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.of(ItemResource.EMPTY, 0);
+    public static final ResourceStack<ItemResource> EMPTY_STACK = INFO.emptyResourceStack();
 
     /**
      * Codec for an item resource.
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<ItemResource> CODEC = Codec.lazyInitialized(() -> ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, itemResource -> itemResource.toStack(1)));
+    public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, itemResource -> itemResource.toStack(1));
 
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
-    public static final Codec<ItemResource> OPTIONAL_CODEC = Codec.lazyInitialized(() -> ExtraCodecs.optionalEmptyMap(CODEC).xmap(ItemResource::fromOptional, ItemResource::asOptional));
+    public static final Codec<ItemResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(
+            optional -> optional.orElse(ItemResource.EMPTY),
+            itemResource -> itemResource.isEmpty() ? Optional.empty() : Optional.of(itemResource));
 
     /**
      * A codec for a {@code ResourceStack<ItemResource>} serializing the resource and the amount. Can accept empty resources.
@@ -76,28 +83,13 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     /**
-     * A helper to provide clearer readability when making the {@link #OPTIONAL_CODEC}
-     */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static ItemResource fromOptional(Optional<ItemResource> optional) {
-        return optional.orElse(ItemResource.EMPTY);
-    }
-
-    /**
-     * A helper to provide clearer readability when making the {@link #OPTIONAL_CODEC}
-     */
-    private Optional<ItemResource> asOptional() {
-        return isEmpty() ? Optional.empty() : Optional.of(this);
-    }
-
-    /**
      * A helper method to quickly construct an {@link ItemStack} from a ResourceStack
      *
      * @param resourceStack The resource stack with the item resource and amount
      * @return A new item stack with the same size as the resourceStack.
      */
     public static ItemStack itemStackOf(ResourceStack<ItemResource> resourceStack) {
-        return resourceStack.resource().toStack(resourceStack.amount());
+        return resourceStack.as(ItemResource::toStack);
     }
 
     /**
@@ -111,7 +103,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * Creates an ItemResource using the default or copy of the passed in item stack.
-     * 
+     *
      * @param itemStack stack to copy
      * @return If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
      */
@@ -126,7 +118,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
-     * 
+     *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
@@ -137,7 +129,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
-     * 
+     *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
@@ -149,7 +141,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
-     * 
+     *
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
@@ -187,7 +179,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * {@return true if the stack components and instance matches the inner stack's components and instance} Uses the {@link ItemStack#isSameItemSameComponents(ItemStack, ItemStack)} method for comparison.
-     * 
+     *
      * @param stack the item stack to check
      */
     public boolean is(ItemStack stack) {
@@ -205,7 +197,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * Tests an {@link ItemStack} predicate with the inner stack.
-     * 
+     *
      * @param predicate Predicate to perform the test with
      * @return {@code true} if the test passed
      */
@@ -235,7 +227,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     }
 
     @Override
-    public <D> ItemResource without(DataComponentType<D> type) {
+    public ItemResource without(DataComponentType<?> type) {
         ItemStack stack = innerStack.copy();
         stack.remove(type);
         return new ItemResource(stack);
@@ -253,7 +245,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * Creates an {@link ItemStack} of the specified count.
-     * 
+     *
      * @param count The amount of the item the stack should have.
      * @return A new copy of the inner item stack with the specified count.
      */
@@ -263,7 +255,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
 
     /**
      * Creates a list of {@link ItemStack ItemStacks} of the specified count taking into account the max stack size of the item.
-     * 
+     *
      * @param count The amount of the item the stack should have.
      * @return A list of item stacks that all have a maximum count of the max stack size of the item.
      */
@@ -282,6 +274,10 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
             stacks.add(toStack(remainder));
         }
         return stacks;
+    }
+
+    public ResourceStack<ItemResource> withAmount(int amount) {
+        return ResourceStack.of(this, amount);
     }
 
     public int getMaxStackSize() {
@@ -304,8 +300,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item, It
     }
 
     @Override
-    public ResourceStack<ItemResource> getEmptyResourceStackInstance() {
-        return ItemResource.EMPTY_STACK;
+    public EmptyResourceInfo<ItemResource> getEmptyInfo() {
+        return INFO;
     }
 
     @Override

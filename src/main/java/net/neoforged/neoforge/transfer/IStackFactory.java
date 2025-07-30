@@ -23,7 +23,7 @@ import net.neoforged.neoforge.transfer.resources.IResource;
  * @param <S> The type of the returned quantifiable stack
  */
 @FunctionalInterface
-public interface IStackFactory<R extends IResource<R>, S> {
+public interface IStackFactory<R extends IResource, S> {
     /**
      * Creates a stack of type {@code <S>} given a resource of type {@code <R>} and an amount.
      * It is expected that this handles cases where an empty resource or amount could occur.

@@ -28,27 +28,33 @@ import org.jetbrains.annotations.ApiStatus;
  * Immutable combination of a {@link Fluid} and data components.
  * Similar to a {@link FluidStack}, but immutable and without amount information.
  */
-public final class FluidResource implements IDataComponentHolderResource<Fluid, FluidResource> {
+public final class FluidResource implements IDataComponentHolderResource<Fluid> {
+    /**
+     * Resource information used to initialize the empty instance fields {@link #EMPTY} and {@link #EMPTY_STACK}.
+     */
+    private static final EmptyResourceInfo<FluidResource> INFO = new EmptyResourceInfo<>(new FluidResource(FluidStack.EMPTY));
     /**
      * The empty resource instance of a {@link FluidResource}
      */
-    public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
+    public static final FluidResource EMPTY = INFO.emptyInstance();
     /**
      * The empty resource stack instance of a {@link FluidResource}.
      */
-    public static final ResourceStack<FluidResource> EMPTY_STACK = ResourceStack.of(FluidResource.EMPTY, 0);
+    public static final ResourceStack<FluidResource> EMPTY_STACK = INFO.emptyResourceStack();
 
     /**
      * Codec for a fluid resource.
      * Same format as {@link FluidStack#fixedAmountCodec}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<FluidResource> CODEC = Codec.lazyInitialized(() -> FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME).xmap(FluidResource::of, resource -> resource.toStack(FluidType.BUCKET_VOLUME)));
+    public static final Codec<FluidResource> CODEC = FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME).xmap(FluidResource::of, resource -> resource.toStack(FluidType.BUCKET_VOLUME));
 
     /**
      * Codec for a fluid resource. Same format as {@link #CODEC}, and also accepts empty resources.
      */
-    public static final Codec<FluidResource> OPTIONAL_CODEC = Codec.lazyInitialized(() -> ExtraCodecs.optionalEmptyMap(CODEC).xmap(FluidResource::fromOptional, FluidResource::asOptional));
+    public static final Codec<FluidResource> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC).xmap(
+            optional -> optional.orElse(FluidResource.EMPTY),
+            resource -> resource.isEmpty() ? Optional.empty() : Optional.of(resource));
 
     /**
      * A codec for a {@code ResourceStack<FluidResource>} serializing the resource and the amount. Can accept empty resources.
@@ -68,15 +74,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static FluidResource fromOptional(Optional<FluidResource> optional) {
-        return optional.orElse(FluidResource.EMPTY);
-    }
-
-    private Optional<FluidResource> asOptional() {
-        return isEmpty() ? Optional.empty() : Optional.of(this);
-    }
-
     /**
      * A helper method to quickly construct a {@link FluidStack} from a ResourceStack
      * 
@@ -84,7 +81,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
      * @return A new fluid stack with the same size as the resourceStack.
      */
     public static FluidStack fluidStackOf(ResourceStack<FluidResource> resourceStack) {
-        return resourceStack.resource().toStack(resourceStack.amount());
+        return resourceStack.as(FluidResource::toStack);
     }
 
     /**
@@ -216,11 +213,15 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     @Override
-    public <D> FluidResource without(DataComponentType<D> type) {
+    public FluidResource without(DataComponentType<?> type) {
         if (isEmpty()) return FluidResource.EMPTY;
         FluidStack stack = innerStack.copy();
         stack.remove(type);
         return FluidResource.of(stack);
+    }
+
+    public ResourceStack<FluidResource> withAmount(int amount) {
+        return ResourceStack.of(this, amount);
     }
 
     /**
@@ -300,8 +301,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid, 
     }
 
     @Override
-    public ResourceStack<FluidResource> getEmptyResourceStackInstance() {
-        return FluidResource.EMPTY_STACK;
+    public EmptyResourceInfo<FluidResource> getEmptyInfo() {
+        return INFO;
     }
 
     @Override

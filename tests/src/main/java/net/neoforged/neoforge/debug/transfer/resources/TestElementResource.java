@@ -9,6 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.transfer.resources.EmptyResourceInfo;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
@@ -16,7 +17,7 @@ import net.neoforged.neoforge.transfer.resources.ResourceStack;
  * Demonstrates a possible option of how to make an IResource using an Enum.
  * It is advised when taking this approach to not use ordinal as the backing serialized id, given you may reorder the entries.
  */
-public enum TestElementResource implements IResource<TestElementResource>, StringRepresentable {
+public enum TestElementResource implements IResource, StringRepresentable {
     EMPTY("empty"),
     FIRE("fire"),
     WATER("water"),
@@ -24,7 +25,9 @@ public enum TestElementResource implements IResource<TestElementResource>, Strin
     AIR("air");
 
     private final String elementName;
-    private static final ResourceStack<TestElementResource> EMPTY_STACK = ResourceStack.of(EMPTY, 0);
+    public static final EmptyResourceInfo<TestElementResource> INFO = new EmptyResourceInfo<>(EMPTY);
+
+    private static final ResourceStack<TestElementResource> EMPTY_STACK = INFO.emptyResourceStack();
 
     TestElementResource(String elementName) {
         this.elementName = elementName;
@@ -36,8 +39,8 @@ public enum TestElementResource implements IResource<TestElementResource>, Strin
     }
 
     @Override
-    public ResourceStack<TestElementResource> getEmptyResourceStackInstance() {
-        return EMPTY_STACK;
+    public EmptyResourceInfo<TestElementResource> getEmptyInfo() {
+        return INFO;
     }
 
     @Override

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @see ItemResource
  * @see FluidResource
  */
-public interface IRegisteredResource<T, R extends IResource<R>> extends IResource<R> {
+public interface IRegisteredResource<T> extends IResource {
     /**
      * @return The backing instance of the resource.
      * @see ItemResource#getInstanceValue() returns an Item

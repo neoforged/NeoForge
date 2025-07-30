@@ -21,17 +21,17 @@ import net.minecraft.world.item.ItemStack;
  * @see ItemResource
  * @see FluidResource
  */
-public interface IDataComponentHolderResource<T, R extends IResource<R>> extends IRegisteredResource<T, R>, DataComponentHolder {
+public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
     boolean isComponentsPatchEmpty();
 
     /**
-     * Creates a new instance of the resource with the desired patch
+     * Creates a new instance of the resource with the desired patch applied on top of the existing one.
      * 
      * @param patch The patch added to the new resource instance.
      * @return A new resource instance with applied patch.
      *         In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    IDataComponentHolderResource<T, R> withPatch(DataComponentPatch patch);
+    IDataComponentHolderResource<T> withPatch(DataComponentPatch patch);
 
     /**
      * Creates a new copy of this resource with the set data component.
@@ -41,7 +41,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param <D>  the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    <D> IDataComponentHolderResource<T, R> with(DataComponentType<D> type, D data);
+    <D> IDataComponentHolderResource<T> with(DataComponentType<D> type, D data);
 
     /**
      * Creates a new copy of this resource without the data component.
@@ -49,7 +49,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param type the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    <D> IDataComponentHolderResource<T, R> without(DataComponentType<D> type);
+    IDataComponentHolderResource<T> without(DataComponentType<?> type);
 
     /**
      * Patches currently applied to the resource's data component holder.
@@ -64,7 +64,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param <D>  the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    default <D> IDataComponentHolderResource<T, R> with(Supplier<? extends DataComponentType<D>> type, D data) {
+    default <D> IDataComponentHolderResource<T> with(Supplier<? extends DataComponentType<D>> type, D data) {
         return with(type.get(), data);
     }
 
@@ -74,7 +74,7 @@ public interface IDataComponentHolderResource<T, R extends IResource<R>> extends
      * @param type the supplier for the type of data component
      * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
-    default <D> IDataComponentHolderResource<T, R> without(Supplier<? extends DataComponentType<? extends D>> type) {
+    default IDataComponentHolderResource<T> without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
     }
 }
