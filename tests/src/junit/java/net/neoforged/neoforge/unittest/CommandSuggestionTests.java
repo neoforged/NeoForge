@@ -23,7 +23,7 @@ public class CommandSuggestionTests {
     @Test
     public void commandSuggestionTest_pathSearchIsNotMinecraftHardcoded() {
         List<String> suggestions = new ArrayList<>();
-        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "pickle", ResourceLocation::parse, suggestions::add);
+        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "pickle", ResourceLocation::new, suggestions::add);
 
         // ["minecraft:sea_pickle"] is what vanilla will do without the patch
         assertEquals(List.of("minecraft:sea_pickle", "modid1:dried_pickle"), suggestions);
@@ -32,7 +32,7 @@ public class CommandSuggestionTests {
     @Test
     public void commandSuggestionTest_minecraftNamespaceSearchStillWorks() {
         List<String> suggestions = new ArrayList<>();
-        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "minecraft:", ResourceLocation::parse, suggestions::add);
+        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "minecraft:", ResourceLocation::new, suggestions::add);
 
         // ["minecraft:sea_pickle", "minecraft:grass"] is what vanilla will do without the patch
         assertEquals(List.of("minecraft:sea_pickle", "minecraft:grass"), suggestions);
