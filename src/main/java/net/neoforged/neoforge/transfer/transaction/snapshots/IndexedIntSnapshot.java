@@ -12,6 +12,10 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
+// TODO Note for review: This was built during the design with energy handlers being indexable, and in some cases we could make use of this even outside indexable energy;
+// however, regardless if we make it non-indexable or not, this should still likely remain, but can be moved to the energy slice if necessary as most snapshot
+// patterns for that would be identical and unnecessary to force devs to recreate the wheel on consumption side.
+// The class should be suffixed with SnapshotJournal, but I'll wait until after changes as GitHub handles moved files as deletions rather than redirects.
 /**
  * A snapshot journal that can keep track of {@code int} values in an indexable structure. Also takes in a SnapshotJournal
  * that can be updated when an index gets written to. An example is using a {@link NotifyingSnapshotJournal} to handle
@@ -43,11 +47,11 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     private final SnapshotJournal<?> onChangedSnapshot;
 
     /**
-     * Returns a snapshot handling a specific index of a container for integers.
+     * Returns a snapshot handling a container for an integer. Only handles one integer.
      * 
      * @param setter   The reversion method to apply the snapshot value should a transaction fail.
      * @param getter   The snapshot method to take note of the current value to store as a snapshot in the {@link SnapshotJournal}
-     * @param onChange A groupable journal that is updated along side each index. This is typically a shared reference between indices,
+     * @param onChange A groupable journal that is updated alongside each index. This is typically a shared reference between indices,
      *                 so that only one {@link SnapshotJournal#onCommit} or {@link SnapshotJournal#revertToSnapshot} can be applied in
      *                 scenarios where it may be doing an expensive call; rather than also doing this once per index change.
      * @return {@link SnapshotJournal} for handling integer value snapshotting at an index
@@ -67,7 +71,7 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
      *                 scenarios where it may be doing an expensive call; rather than also doing this once per index change.
      * @return A list of {@link SnapshotJournal SnapshotJournals} for handling integer value snapshotting at their respective indices
      */
-    public static List<IndexedIntSnapshot> listOf(int size, Revert setter, Snapshot getter, SnapshotJournal<?> onChange) {
+    public static List<IndexedIntSnapshot> listOf(int size, Revert setter, Snapshot getter, @Nullable SnapshotJournal<?> onChange) {
         List<IndexedIntSnapshot> snapshots = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             snapshots.add(new IndexedIntSnapshot(i, setter, getter, onChange));

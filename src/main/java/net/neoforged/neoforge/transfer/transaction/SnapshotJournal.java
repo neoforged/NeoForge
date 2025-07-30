@@ -7,8 +7,6 @@ package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.ResourceHandlerDeprecationHandling;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,31 +27,25 @@ import org.jetbrains.annotations.Nullable;
  * <h3>More technical explanation</h3>
  *
  * <p>{@link #updateSnapshots} should be called before any modification.
- * This will save the state of this participant using {@link #createSnapshot} if no state was already saved for that transaction.
+ * This will record the state in the journal using {@link #createSnapshot} if no state was already saved for that transaction.
  * When the transaction is aborted and changes need to be rolled back, {@link #revertToSnapshot} will be called
  * to signal that the current state should revert to that of the snapshot.
  * The snapshot object is then {@linkplain #releaseSnapshot released}, and can be cached for subsequent use, or discarded.
  *
- * <p>When an outer transaction is committed, {@link #revertToSnapshot} will not be called so that the current state of this participant
+ * <p>When the root transaction is committed, {@link #revertToSnapshot} will not be called so that the current state of the journal
  * is retained. {@link #onCommit} will be called after the transaction is closed
  * and then {@link #releaseSnapshot} will be called because the snapshot is not necessary anymore.
  *
- * @param <T> The objects that this participant uses to save its state snapshots.
+ * @param <T> The objects that this journal uses to record its state snapshots.
  */
-public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, TransactionContext.RootCloseCallback {
-    //Neo TODO: Remove after migrations have been established. This is more for info really.
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6)
-    private static int DEEPEST_LAYER = -1;
-    @Nullable
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6)
-    private static SnapshotJournal<?> DEEPEST_SNAPSHOT = null;
+public abstract class SnapshotJournal<T> {
     private final ArrayList<T> snapshots = new ArrayList<>();
 
     @Nullable
     private T originalState = null;
 
     /**
-     * Return a new <b>nonnull</b> object containing the current state of this participant.
+     * Return a new <b>nonnull</b> object containing the current state of this journal.
      * <b>{@code null} may not be returned, or an exception will be thrown!</b>
      */
     protected abstract T createSnapshot();
@@ -70,63 +62,56 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
     protected void releaseSnapshot(T snapshot) {}
 
     /**
-     * Called after an outer transaction succeeded,
+     * Called after the root transaction succeeded,
      * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
-     * <p>
-     * Assume that without any implementation, data on something like BlockEntities that expect to be told when its data is written to, could be potentially lost on world save.
      *
-     * @param originalState state of this participant before the transactional operation.
+     * @param originalState state of this journal before the transactional operation.
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
+     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
      */
     protected void onCommit(T originalState) {}
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
      * committed or rolled back.
-     * This function should be called every time the participant is about to change its internal state as part of a transaction.
+     * This function should be called every time the journal is about to change its internal state as part of a transaction.
      * However, only the first snapshot taken of that depth will be taken.
      */
     public void updateSnapshots(TransactionContext transaction) {
-        int nestingDepth = transaction.nestingDepth();
+        int currentDepth = transaction.depth();
 
-        snapshots.ensureCapacity(nestingDepth);
-        for (int i = snapshots.size(); i <= nestingDepth; i++) {
+        snapshots.ensureCapacity(currentDepth);
+        for (int i = snapshots.size(); i <= currentDepth; i++) {
             snapshots.add(null);
         }
 
-        if (snapshots.get(nestingDepth) == null) {
+        if (snapshots.get(currentDepth) == null) {
             T snapshot = createSnapshot();
             Objects.requireNonNull(snapshot, "Snapshot may not be null!");
-            snapshots.set(nestingDepth, snapshot);
-            transaction.addCloseCallback(this);
+            snapshots.set(currentDepth, snapshot);
+            if (transaction instanceof Transaction resolvedTransaction)
+                resolvedTransaction.addRootCloseCallback(this);
         }
     }
 
-    @Override
-    public void onClose(TransactionContext transaction, Transaction.Result result) {
-        //region Migration phase removal
-        //Neo: for testing and will be removed after deprecation period is over for handler reworks.
-        // This is to provide a quick way to give some metrics during the migration phase
-        int currentDepth = transaction.nestingDepth();
-        int max = Math.max(DEEPEST_LAYER, currentDepth);
-        if (max != DEEPEST_LAYER) {
-            DEEPEST_LAYER = max;
-            DEEPEST_SNAPSHOT = this;
-        }
-        //endregion
+    public void onClose(TransactionContext transaction, boolean wasAborted) {
+        int currentDepth = transaction.depth();
+        //For testing and will be removed after deprecation period is over for handler reworks.
+        // This is to provide a quick way to give some metrics during the migration phase, unless another route can be decided on.
+        SnapshotJournalDebugInfo.updateDeepestSnapshot(currentDepth, this);
 
         // Get and remove the relevant snapshot.
         T snapshot = snapshots.remove(currentDepth);
 
-        //If the transaction was aborted, revert to snapshot
-        if (result.wasAborted()) {
+        if (wasAborted) {
             // If the transaction was aborted, we just revert to the state of the snapshot.
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
         } else if (currentDepth <= 0) {
             //The transaction is the root.
             originalState = snapshot;
-            transaction.addRootCloseCallback(this);
+            if (transaction instanceof Transaction resolvedTransaction)
+                resolvedTransaction.addRootCloseCallback(this);
         } else if (snapshots.get(currentDepth - 1) == null) {
             // No snapshot yet, so move the snapshot one nesting level up.
             snapshots.set(currentDepth - 1, snapshot);
@@ -138,27 +123,7 @@ public abstract class SnapshotJournal<T> implements Transaction.CloseCallback, T
         }
     }
 
-    /**
-     * @return The deepest nested layer from any transaction over the lifetime of the runtime. This is intended to identify some possible changes needed after migration. Not used outside Neo.
-     */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6)
-    @ApiStatus.Internal
-    public static int getDeepestLayer() {
-        return DEEPEST_LAYER;
-    }
-
-    /**
-     * @return The deepest nested layer from any transaction over the lifetime of the runtime. This is intended to identify some possible changes needed after migration. Not used outside Neo.
-     */
-    @Deprecated(since = ResourceHandlerDeprecationHandling.MC_1_21_6)
-    @ApiStatus.Internal
-    public static String getDeepestSnapshot() {
-        if (DEEPEST_SNAPSHOT == null) return "Nothing";
-        return DEEPEST_SNAPSHOT.getClass().toString();
-    }
-
-    @Override
-    public void afterRootClose(Transaction.Result result) {
+    public final void commit() {
         // The result is guaranteed to be COMMITTED,
         // as this is only scheduled during onClose() when the outer transaction is successful.
         // For the same reason, the originalState is known to be non-null.
