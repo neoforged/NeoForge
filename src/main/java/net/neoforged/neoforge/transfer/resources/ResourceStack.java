@@ -166,6 +166,7 @@ public final class ResourceStack<T extends IResource> {
 
     /**
      * @return A new this instance with an updated resource should it have changed, otherwise it returns itself.
+     * @throws IllegalArgumentException when {@code amount} is negative.
      */
     public ResourceStack<T> with(UnaryOperator<T> operator) {
         return with(operator, amount);
@@ -174,8 +175,11 @@ public final class ResourceStack<T extends IResource> {
     /**
      * @param amount the amount the new stack should be.
      * @return A new this instance with an updated resource should it have changed, otherwise it returns itself.
+     * @throws IllegalArgumentException when {@code amount} is negative.
      */
     public ResourceStack<T> with(UnaryOperator<T> operator, int amount) {
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return this;
         T result = operator.apply(resource);
         if (amount == amount() && result.equals(resource)) return this;
         return ResourceStack.of(result, amount);

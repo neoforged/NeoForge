@@ -22,10 +22,10 @@ import org.jetbrains.annotations.ApiStatus;
 public interface IRegisteredResource<T> extends IResource {
     /**
      * @return The backing instance of the resource.
-     * @see ItemResource#getInstanceValue() returns an Item
-     * @see FluidResource#getInstanceValue() returns a Fluid
+     * @see ItemResource#value() returns an Item
+     * @see FluidResource#value() returns a Fluid
      */
-    T getInstanceValue();
+    T value();
 
     /**
      * {@return The registered holder of the backing resource}
@@ -46,11 +46,11 @@ public interface IRegisteredResource<T> extends IResource {
 
     /**
      * @param instance the instance to compare
-     * @return {@code true} if an exact equality comparison ('==') between the instance provided and the value from {@link #getInstanceValue()} is {@code true}
+     * @return {@code true} if an exact equality comparison ('==') between the instance provided and the value from {@link #value()} is {@code true}
      */
     @ApiStatus.NonExtendable
     default boolean is(T instance) {
-        return instance == getInstanceValue();
+        return instance == value();
     }
 
     /**
@@ -64,7 +64,7 @@ public interface IRegisteredResource<T> extends IResource {
 
     /**
      * @param holder the holder to check
-     * @return {@code true} if the holder's value is exactly equal ('==') to the instance value from {@link #getInstanceValue()}
+     * @return {@code true} if the holder's value is exactly equal ('==') to the instance value from {@link #value()}
      */
     @ApiStatus.NonExtendable
     default boolean is(Holder<T> holder) {

@@ -183,7 +183,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @return The {@link Item} of the resource from the inner {@link ItemStack}
      */
     @Override
-    public Item getInstanceValue() {
+    public Item value() {
         return innerStack.getItem();
     }
 
