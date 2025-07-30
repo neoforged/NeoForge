@@ -44,7 +44,7 @@ public class TrimmedArmorModel implements ItemModel {
     private static final ModelState TRIM_STATE = new ComposedModelState(BlockModelRotation.X0_Y0, TRIM_TRANSFORM);
     private static final ModelDebugName DEBUG_NAME = () -> "TrimmedArmorModel";
 
-    private final Object2ObjectMap<TextureAtlasSprite, ItemModel> trimLayers = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<ResourceLocation, ItemModel> trimLayers = new Object2ObjectOpenHashMap<>();
 
     private final ItemModel base;
     private final ResourceLocation trimTexture;
@@ -68,14 +68,14 @@ public class TrimmedArmorModel implements ItemModel {
             if (equippable.assetId().isPresent()) {
                 Holder<TrimMaterial> material = Objects.requireNonNull(stack.get(DataComponents.TRIM)).material();
                 String suffix = material.value().assets().assetId(equippable.assetId().get()).suffix();
-                var sprite = this.context.blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(this.trimTexture.withSuffix("_" + suffix)), DEBUG_NAME);
 
-                this.trimLayers.computeIfAbsent(sprite, this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
+                this.trimLayers.computeIfAbsent(this.trimTexture.withSuffix("_" + suffix), this::createTrimLayer).update(renderState, stack, itemModelResolver, displayContext, level, entity, seed);
             }
         }
     }
 
-    private ItemModel createTrimLayer(TextureAtlasSprite sprite) {
+    private ItemModel createTrimLayer(ResourceLocation suffixedTrimTexture) {
+        var sprite = this.context.blockModelBaker().sprites().get(ClientHooks.getBlockMaterial(suffixedTrimTexture), DEBUG_NAME);
         var renderProperties = new ModelRenderProperties(false, sprite, this.transforms);
 
         var unbaked = UnbakedElementsHelper.createUnbakedItemElements(0, sprite);
