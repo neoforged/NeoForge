@@ -103,9 +103,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
      *
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
      */
     public static FluidResource of(Holder<Fluid> fluid) {
         return of(fluid.value());
@@ -114,9 +113,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
      * 
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default FluidResource has not been yet initialized.
      */
     public static FluidResource of(Fluid fluid) {
         return of(fluid, DataComponentPatch.EMPTY);
@@ -128,9 +126,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @param holder Fluid holder to create the resource with.
      * @param patch  Data components that should be on the resource instance.
      * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
     public static FluidResource of(Holder<Fluid> holder, DataComponentPatch patch) {
         return of(holder.value(), patch);
@@ -142,9 +139,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @param fluid Fluid to create the resource with.
      * @param patch Data components that should be on the resource instance.
      * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
     public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
         if (fluid == Fluids.EMPTY) return EMPTY;

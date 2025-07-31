@@ -85,7 +85,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     /**
-     * This is used only for registry, you should not use this method!
+     * This is used only for registry, you should not use this method.
      */
     @ApiStatus.Internal
     public static ItemResource createDefaultInstance(Item item) {
@@ -111,7 +111,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
      *
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(ItemLike item) {
@@ -126,9 +126,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @param holder Item holder to create the resource with.
      * @param patch  Data components that should be on the resource instance.
      * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
     public static ItemResource of(Holder<Item> holder, DataComponentPatch patch) {
         return of(holder.value(), patch);
@@ -140,9 +139,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @param item  Item to create the resource with.
      * @param patch Data components that should be on the resource instance.
      * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     * @throws IllegalStateException If the underlying default {@link ItemResource} when used has not been yet initialized.
      */
     public static ItemResource of(ItemLike item, DataComponentPatch patch) {
         Item value = item.asItem();
@@ -159,7 +157,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
      *
-     * @throws IllegalStateException If the backing registry is unavailable.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(Holder<Item> holder) {
