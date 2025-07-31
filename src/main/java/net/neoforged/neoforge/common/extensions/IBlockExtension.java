@@ -81,6 +81,8 @@ import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.internal.ExtensionMethod;
+import net.neoforged.neoforge.internal.MethodDesc;
 import net.neoforged.neoforge.model.data.ModelData;
 import org.jetbrains.annotations.Nullable;
 
@@ -324,6 +326,7 @@ public interface IBlockExtension {
      *
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
+    @ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.class), exclusions = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class))
     default ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
         return state.getCloneItemStack(level, pos, includeData);
     }
@@ -491,6 +494,7 @@ public interface IBlockExtension {
         return 0;
     }
 
+    @ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.class), exclusions = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class))
     default BlockState rotate(BlockState state, LevelAccessor level, BlockPos pos, Rotation direction) {
         return state.rotate(direction);
     }
@@ -552,6 +556,7 @@ public interface IBlockExtension {
      * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
      * @return A SoundType to use
      */
+    @ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.class), exclusions = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class))
     default SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return state.getSoundType();
     }

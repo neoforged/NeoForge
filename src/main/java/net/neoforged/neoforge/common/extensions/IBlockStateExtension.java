@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TriState;
 import net.minecraft.world.entity.Entity;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
@@ -30,8 +32,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,6 +51,8 @@ import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.enums.BubbleColumnDirection;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.internal.ExtensionMethod;
+import net.neoforged.neoforge.internal.MethodDesc;
 import org.jetbrains.annotations.Nullable;
 
 public interface IBlockStateExtension {
@@ -67,6 +74,7 @@ public interface IBlockStateExtension {
      * @param entity the entity in question
      * @return the factor by which the entity's motion should be multiplied
      */
+    @ExtensionMethod(original = @MethodDesc(owner = Block.class), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default float getFriction(LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return self().getBlock().getFriction(self(), level, pos, entity);
     }
@@ -85,6 +93,7 @@ public interface IBlockStateExtension {
     /**
      * Get a light value for this block, taking into account the given state and coordinates, normal ranges are between 0 and 15
      */
+    @ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default int getLightEmission(BlockGetter level, BlockPos pos) {
         return self().getBlock().getLightEmission(self(), level, pos);
     }
@@ -213,6 +222,7 @@ public interface IBlockStateExtension {
      * @param explosion The explosion
      * @return The amount of the explosion absorbed.
      */
+    @ExtensionMethod(original = @MethodDesc(owner = Block.class), exclusions = { @MethodDesc(owner = IBlockExtension.class), @MethodDesc(owner = StairBlock.class) })
     default float getExplosionResistance(BlockGetter level, BlockPos pos, Explosion explosion) {
         return self().getBlock().getExplosionResistance(self(), level, pos, explosion);
     }
@@ -223,6 +233,7 @@ public interface IBlockStateExtension {
      *
      * @return A ItemStack to add to the player's inventory, empty itemstack if nothing should be added.
      */
+    @ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default ItemStack getCloneItemStack(BlockPos pos, LevelReader level, boolean includeData, Player player) {
         return self().getBlock().getCloneItemStack(level, pos, self(), includeData, player);
     }
@@ -375,6 +386,7 @@ public interface IBlockStateExtension {
         return self().getBlock().getExpDrop(self(), level, pos, blockEntity, breaker, tool);
     }
 
+    //@ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default BlockState rotate(LevelAccessor level, BlockPos pos, Rotation direction) {
         return self().getBlock().rotate(self(), level, pos, direction);
     }
@@ -437,6 +449,10 @@ public interface IBlockStateExtension {
      * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
      * @return A SoundType to use
      */
+    @ExtensionMethod(original = @MethodDesc(owner = BlockBehaviour.BlockStateBase.class), exclusions = {
+            @MethodDesc(owner = IBlockExtension.class),
+            @MethodDesc(owner = BlockItem.class, name = "getPlaceSound", descriptor = { SoundEvent.class, BlockState.class })
+    })
     default SoundType getSoundType(LevelReader level, BlockPos pos, @Nullable Entity entity) {
         return self().getBlock().getSoundType(self(), level, pos, entity);
     }
@@ -499,6 +515,7 @@ public interface IBlockStateExtension {
      * @param face  The face that the fire is coming from
      * @return A number ranging from 0 to 300 relating used to determine if the block will be consumed by fire
      */
+    @ExtensionMethod(original = @MethodDesc(owner = FireBlock.class, name = "getBurnOdds"), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default int getFlammability(BlockGetter level, BlockPos pos, Direction face) {
         return self().getBlock().getFlammability(self(), level, pos, face);
     }
@@ -539,6 +556,10 @@ public interface IBlockStateExtension {
      * @param face  The face that the fire is coming from
      * @return A number that is used to determine the speed of fire growth around the block
      */
+    @ExtensionMethod(original = @MethodDesc(owner = FireBlock.class, name = "getIgniteOdds", descriptor = { int.class, BlockState.class }), exclusions = {
+            @MethodDesc(owner = IBlockExtension.class),
+            @MethodDesc(owner = FireBlock.class, name = "canBurn")
+    })
     default int getFireSpreadSpeed(BlockGetter level, BlockPos pos, Direction face) {
         return self().getBlock().getFireSpreadSpeed(self(), level, pos, face);
     }
@@ -614,6 +635,7 @@ public interface IBlockStateExtension {
     /**
      * Determines if this block should drop loot when exploded.
      */
+    @ExtensionMethod(original = @MethodDesc(owner = Block.class, name = "dropFromExplosion"), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default boolean canDropFromExplosion(BlockGetter level, BlockPos pos, Explosion explosion) {
         return self().getBlock().canDropFromExplosion(self(), level, pos, explosion);
     }
@@ -627,6 +649,7 @@ public interface IBlockStateExtension {
      * @param pos       Block position in level
      * @param explosion The explosion instance affecting the block
      */
+    @ExtensionMethod(original = @MethodDesc(owner = Block.class, name = "wasExploded"), exclusions = @MethodDesc(owner = IBlockExtension.class))
     default void onBlockExploded(ServerLevel level, BlockPos pos, Explosion explosion) {
         self().getBlock().onBlockExploded(self(), level, pos, explosion);
     }

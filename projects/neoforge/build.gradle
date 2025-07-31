@@ -297,10 +297,11 @@ tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.clas
 
 tasks.register('checkExtensions', CheckExtensions) {
     group generateAccessTransformers.group
-    description "Validate that all calls to vanilla methods which NeoForge extends upon are replaced by calls to the extensions"
+    description 'Validate that all calls to vanilla methods which NeoForge extends upon are replaced by calls to the extensions'
     dependsOn('joinedJar')
     input = tasks.named('joinedJar', Jar).get().getArchiveFile()
-    definitions = rootProject.file("src/main/resources/META-INF/extension-definitions.json")
+    definitions = rootProject.file('src/main/resources/META-INF/extension-definitions.json')
+    interfaceInjections = rootProject.file('src/main/resources/META-INF/injected-interfaces.json');
 }
 
 tasks.withType(JavaCompile.class).configureEach {

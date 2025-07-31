@@ -32,9 +32,24 @@ public abstract class CheckExtensions extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getDefinitions();
 
+    @InputFile
+    public abstract RegularFileProperty getInterfaceInjections();
+
     @TaskAction
     public void exec() throws IOException {
         Set<ExtensionDefinition> definitions = loadDefinitions();
+        Map<String, String> itfInjectTargets = loadInterfaceInjections();
+
+        CollectingVisitor collector = new CollectingVisitor(itfInjectTargets);
+        AsmUtils.visitAllClasses(getInput().getAsFile().get(), collector, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
+
+        if (collector.definitions.stream().anyMatch(def -> def.original.descriptor == null || def.anyExclusionUnresolved())) {
+            ResolvingVisitor resolver = new ResolvingVisitor(collector.definitions);
+            AsmUtils.visitAllClasses(getInput().getAsFile().get(), resolver, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES | ClassReader.SKIP_CODE);
+            collector.definitions.replaceAll(resolver::resolve);
+        }
+
+        definitions.addAll(collector.definitions);
 
         Map<String, Set<String>> expectedOriginals = new HashMap<>();
         Map<String, Set<String>> expectedReplacements = new HashMap<>();
@@ -132,6 +147,7 @@ public abstract class CheckExtensions extends DefaultTask {
                         if (!caller.owner.equals(lastClassAndMethod[0])) {
                             builder.append("\t\t- ").append(caller.owner).append("\n");
                             lastClassAndMethod[0] = caller.owner;
+                            lastClassAndMethod[1] = null;
                         }
                         String callerDesc = caller.name + caller.descriptor;
                         if (!callerDesc.equals(lastClassAndMethod[1])) {
@@ -189,7 +205,30 @@ public abstract class CheckExtensions extends DefaultTask {
         );
     }
 
-    private record ExtensionDefinition(MethodDesc original, MethodDesc replacement, Set<MethodDesc> exclusions) implements Serializable {}
+    private Map<String, String> loadInterfaceInjections() throws IOException {
+        Set<String> encounteredInterfaces = new HashSet<>();
+        Map<String, String> injections = new HashMap<>();
+        try (BufferedReader reader = Files.newBufferedReader(getInterfaceInjections().get().getAsFile().toPath())) {
+            JsonObject root = new Gson().fromJson(reader, JsonObject.class);
+            for (Map.Entry<String, JsonElement> entry : root.entrySet()) {
+                for (JsonElement element : entry.getValue().getAsJsonArray()) {
+                    String itf = element.getAsString();
+                    if (encounteredInterfaces.add(itf)) {
+                        injections.put(itf, entry.getKey());
+                    } else {
+                        injections.remove(itf);
+                    }
+                }
+            }
+        }
+        return injections;
+    }
+
+    record ExtensionDefinition(MethodDesc original, MethodDesc replacement, Set<MethodDesc> exclusions) implements Serializable {
+        boolean anyExclusionUnresolved() {
+            return exclusions.stream().anyMatch(desc -> desc.descriptor == null);
+        }
+    }
 
     record MethodDesc(String owner, String name, String descriptor) implements Serializable {}
 
