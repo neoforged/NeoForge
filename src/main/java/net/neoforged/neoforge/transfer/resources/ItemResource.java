@@ -57,7 +57,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * Same format as {@link ItemStack#SINGLE_ITEM_CODEC}.
      * Does <b>not</b> accept empty resources.
      */
-    public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, itemResource -> itemResource.toStack(1));
+    public static final Codec<ItemResource> CODEC = ItemStack.SINGLE_ITEM_CODEC.xmap(ItemResource::of, ItemResource::toStack);
 
     /**
      * Codec for an item resource. Same format as {@link #CODEC}, and also accepts empty resources.
@@ -85,37 +85,27 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     /**
-     * A helper method to quickly construct an {@link ItemStack} from a ResourceStack
-     *
-     * @param resourceStack The resource stack with the item resource and amount
-     * @return A new item stack with the same size as the resourceStack.
-     */
-    public static ItemStack itemStackOf(ResourceStack<ItemResource> resourceStack) {
-        return resourceStack.as(ItemResource::toStack);
-    }
-
-    /**
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
-    public static ItemResource createDefaultInstance(ItemLike item) {
-        if (item.asItem() == Items.AIR) return EMPTY;
+    public static ItemResource createDefaultInstance(Item item) {
+        if (item == Items.AIR) return EMPTY;
         return new ItemResource(new ItemStack(item));
     }
 
     /**
      * Creates an ItemResource using the default or copy of the passed in item stack. Note the count is lost.
      *
-     * @param itemStack stack to copy with a size of 1
+     * @param stack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
      */
-    public static ItemResource of(ItemStack itemStack) {
-        if (itemStack.isEmpty()) return EMPTY;
+    public static ItemResource of(ItemStack stack) {
+        if (stack.isEmpty()) return EMPTY;
 
-        if (itemStack.isComponentsPatchEmpty())
-            return itemStack.getItem().getDefaultResource();
+        if (stack.isComponentsPatchEmpty())
+            return stack.getItem().getDefaultResource();
 
-        return new ItemResource(itemStack.copyWithCount(1));
+        return new ItemResource(stack.copyWithCount(1));
     }
 
     /**
@@ -125,22 +115,23 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(ItemLike item) {
-        if (item.asItem() == Items.AIR) return EMPTY;
-        return item.asItem().getDefaultResource();
+        Item value = item.asItem();
+        if (value == Items.AIR) return EMPTY;
+        return value.getDefaultResource();
     }
 
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
      *
-     * @param item  Item holder to create the resource with.
-     * @param patch Data components that should be on the resource instance.
+     * @param holder Item holder to create the resource with.
+     * @param patch  Data components that should be on the resource instance.
      * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
-    public static ItemResource of(Holder<Item> item, DataComponentPatch patch) {
-        return of(item.value(), patch);
+    public static ItemResource of(Holder<Item> holder, DataComponentPatch patch) {
+        return of(holder.value(), patch);
     }
 
     /**
@@ -153,10 +144,16 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      * @throws IllegalStateException If the underlying default {@link ItemResource} when used has not been yet initialized.
      */
-    public static ItemResource of(Item item, DataComponentPatch patch) {
-        if (item == Items.AIR) return EMPTY;
-        if (patch.isEmpty()) return item.getDefaultResource();
-        return item.getDefaultResource().withPatch(patch);
+    public static ItemResource of(ItemLike item, DataComponentPatch patch) {
+        Item value = item.asItem();
+        if (value == Items.AIR) return EMPTY;
+        if (patch.isEmpty()) return value.getDefaultResource();
+
+        //The constructor that takes in a component patch doesn't take in an ItemLike so we opted for the setter method instead.
+        ItemStack stack = new ItemStack(item);
+        stack.applyComponents(patch);
+
+        return new ItemResource(stack);
     }
 
     /**
@@ -165,8 +162,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
-    public static ItemResource of(Holder<Item> item) {
-        return of(item.value());
+    public static ItemResource of(Holder<Item> holder) {
+        return of(holder.value());
     }
 
     /**
@@ -175,8 +172,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     private final ItemStack innerStack;
 
-    private ItemResource(ItemStack innerStack) {
-        this.innerStack = innerStack;
+    private ItemResource(ItemStack stack) {
+        this.innerStack = stack;
     }
 
     /**
@@ -284,10 +281,13 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * Creates an {@link ItemStack} of the specified count.
      *
-     * @param count The amount of the item the stack should have.
+     * @param count The amount of the item the stack should have. Must be non-negative.
      * @return A new copy of the inner item stack with the specified count.
+     * @throws IllegalArgumentException when count is negative.
      */
     public ItemStack toStack(int count) {
+        TransferPreconditions.checkNonNegative(count);
+        if (count == 0) return ItemStack.EMPTY;
         return this.innerStack.copyWithCount(count);
     }
 
@@ -297,7 +297,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @return A new copy of the inner item stack with a count of 1.
      */
     public ItemStack toStack() {
-        return toStack(1);
+        return this.innerStack.copyWithCount(1);
     }
 
     /**
@@ -318,12 +318,13 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         int remainder = count % maxStackSize;
 
         List<ItemStack> stacks = new ArrayList<>(stackCount + 1);
+        var stack = toStack(maxStackSize);
         for (int i = 0; i < stackCount; i++) {
-            stacks.add(toStack(maxStackSize));
+            stacks.add(stack.copy());
         }
 
         if (remainder > 0) {
-            stacks.add(toStack(remainder));
+            stacks.add(stack.copyWithCount(remainder));
         }
         return stacks;
     }

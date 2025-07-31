@@ -23,6 +23,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -76,16 +77,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
 
     /**
-     * A helper method to quickly construct a {@link FluidStack} from a ResourceStack
-     * 
-     * @param resourceStack The resource resourceStack with the fluid resource and amount
-     * @return A new fluid stack with the same size as the resourceStack.
-     */
-    public static FluidStack fluidStackOf(ResourceStack<FluidResource> resourceStack) {
-        return resourceStack.as(FluidResource::toStack);
-    }
-
-    /**
      * This is used only for registry, you should not use this method!
      */
     @ApiStatus.Internal
@@ -97,16 +88,16 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * Creates an {@link FluidResource} using the default or copy of the passed in fluid stack. Note the amount is lost.
      *
-     * @param fluidStack stack to copy with a size of 1
+     * @param stack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the fluid's default resource will be returned, otherwise a new instance with the copied stack.
      */
-    public static FluidResource of(FluidStack fluidStack) {
-        if (fluidStack.isEmpty()) return FluidResource.EMPTY;
+    public static FluidResource of(FluidStack stack) {
+        if (stack.isEmpty()) return FluidResource.EMPTY;
 
-        if (fluidStack.isComponentsPatchEmpty())
-            return fluidStack.getFluid().getDefaultResource();
+        if (stack.isComponentsPatchEmpty())
+            return stack.getFluid().getDefaultResource();
 
-        return new FluidResource(fluidStack.copyWithAmount(1));
+        return new FluidResource(stack.copyWithAmount(1));
     }
 
     /**
@@ -134,15 +125,15 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
      *
-     * @param fluid Fluid holder to create the resource with.
-     * @param patch Data components that should be on the resource instance.
+     * @param holder Fluid holder to create the resource with.
+     * @param patch  Data components that should be on the resource instance.
      * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
      * @throws IllegalStateException If the backing registry is unavailable.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      * @throws IllegalStateException If the underlying default FluidResource when used has not been yet initialized.
      */
-    public static FluidResource of(Holder<Fluid> fluid, DataComponentPatch patch) {
-        return of(fluid.value(), patch);
+    public static FluidResource of(Holder<Fluid> holder, DataComponentPatch patch) {
+        return of(holder.value(), patch);
     }
 
     /**
@@ -167,8 +158,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      */
     private final FluidStack innerStack;
 
-    private FluidResource(FluidStack innerStack) {
-        this.innerStack = innerStack;
+    private FluidResource(FluidStack stack) {
+        this.innerStack = stack;
     }
 
     /**
@@ -266,10 +257,13 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * Creates an {@link FluidStack} of the specified count.
      *
-     * @param amount The amount of the fluid the stack should have.
+     * @param amount The amount of the fluid the stack should have. Must be non-negative.
      * @return A new copy of the inner fluid stack with the specified count.
+     * @throws IllegalArgumentException when amount is negative.
      */
     public FluidStack toStack(int amount) {
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return FluidStack.EMPTY;
         return this.innerStack.copyWithAmount(amount);
     }
 

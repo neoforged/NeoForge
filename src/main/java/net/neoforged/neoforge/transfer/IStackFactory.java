@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
- * Creates a stack of type {@code <S>} given a resource of type {@code <R>} and an amount.
+ * Creates a stack of type {@code <S>} given a resource of type {@code <R>} and a non-negative amount.
  * It is expected that this handles cases where an empty resource or amount could occur.
  * In which case ensure you return the empty instanced value as necessary.
  * <p>

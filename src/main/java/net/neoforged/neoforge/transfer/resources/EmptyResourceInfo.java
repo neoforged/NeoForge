@@ -10,7 +10,7 @@ package net.neoforged.neoforge.transfer.resources;
  *
  * @param <T> The resource type
  */
-//Note for reviewers, this name (while works) might need alternatives. It was originally called ResourceType when @covers
+//TODO Note for reviewers, this name (while works) might need alternatives. It was originally called ResourceType when @covers
 // proposed it as a possible avenue to explore, but I was concerned it would be seen as a FluidType like system which it is not.
 // The purpose of this class is to set up the resource's empty instances of both its type and the resource stack.
 // The benefit of doing it this way, is that we can make ResourceStack.of(resource, amount) always be the route to take
