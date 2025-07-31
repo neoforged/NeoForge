@@ -1,4 +1,4 @@
-package net.neoforged.neodev;
+package net.neoforged.neodev.extensionvalidation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -10,9 +10,6 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +34,7 @@ public abstract class CheckExtensions extends DefaultTask {
 
     @TaskAction
     public void exec() throws IOException {
-        List<ExtensionDefinition> definitions = loadDefinitions();
+        Set<ExtensionDefinition> definitions = loadDefinitions();
 
         Map<String, Set<String>> expectedOriginals = new HashMap<>();
         Map<String, Set<String>> expectedReplacements = new HashMap<>();
@@ -49,13 +47,13 @@ public abstract class CheckExtensions extends DefaultTask {
                     .add(replacement.name + replacement.descriptor);
         }
 
-        Visitor visitor = new Visitor(expectedOriginals, expectedReplacements);
-        AsmUtils.visitAllClasses(getInput().getAsFile().get(), visitor, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        ValidatingVisitor validator = new ValidatingVisitor(expectedOriginals, expectedReplacements);
+        AsmUtils.visitAllClasses(getInput().getAsFile().get(), validator, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
 
         Map<MethodDesc, Set<MethodDesc>> permittedOriginals = new HashMap<>();
         Map<MethodDesc, MethodDesc> replacements = new HashMap<>();
         for (ExtensionDefinition definition : definitions) {
-            for (MethodDesc original : resolveAlternateCallees(visitor.inheritors, definition.original)) {
+            for (MethodDesc original : resolveAlternateCallees(validator.inheritors, definition.original)) {
                 permittedOriginals.computeIfAbsent(definition.replacement, $ -> new HashSet<>()).add(original);
                 for (MethodDesc exclusion : definition.exclusions) {
                     permittedOriginals.computeIfAbsent(exclusion, $ -> new HashSet<>())
@@ -67,7 +65,7 @@ public abstract class CheckExtensions extends DefaultTask {
 
         Map<String, Set<String>> missingOriginals = new HashMap<>();
         for (Map.Entry<String, Set<String>> entry : expectedOriginals.entrySet()) {
-            Set<String> found = visitor.locatedOriginals.get(entry.getKey());
+            Set<String> found = validator.locatedOriginals.get(entry.getKey());
             if (found == null) {
                 missingOriginals.put(entry.getKey(), entry.getValue());
                 continue;
@@ -81,7 +79,7 @@ public abstract class CheckExtensions extends DefaultTask {
         }
         Map<String, Set<String>> missingReplacements = new HashMap<>();
         for (Map.Entry<String, Set<String>> entry : expectedReplacements.entrySet()) {
-            Set<String> found = visitor.locatedReplacements.get(entry.getKey());
+            Set<String> found = validator.locatedReplacements.get(entry.getKey());
             if (found == null) {
                 missingReplacements.put(entry.getKey(), entry.getValue());
                 continue;
@@ -93,7 +91,7 @@ public abstract class CheckExtensions extends DefaultTask {
                 missingReplacements.put(entry.getKey(), missing);
             }
         }
-        Map<MethodDesc, Set<MethodDesc>> unreplacedTargets = visitor.unreplacedTargets
+        Map<MethodDesc, Set<MethodDesc>> unreplacedTargets = validator.unreplacedTargets
                 .entrySet()
                 .stream()
                 .peek(entry -> entry.getValue().removeIf(desc ->
@@ -160,8 +158,8 @@ public abstract class CheckExtensions extends DefaultTask {
         throw new GradleException(builder.toString());
     }
 
-    private List<ExtensionDefinition> loadDefinitions() throws IOException {
-        List<ExtensionDefinition> list = new ArrayList<>();
+    private Set<ExtensionDefinition> loadDefinitions() throws IOException {
+        Set<ExtensionDefinition> defSet = new LinkedHashSet<>();
         try (BufferedReader reader = Files.newBufferedReader(getDefinitions().get().getAsFile().toPath())) {
             JsonObject root = new Gson().fromJson(reader, JsonObject.class);
             for (JsonElement element : root.getAsJsonArray("extensions").asList()) {
@@ -174,13 +172,13 @@ public abstract class CheckExtensions extends DefaultTask {
                     }
                 }
 
-                list.add(new ExtensionDefinition(
+                defSet.add(new ExtensionDefinition(
                         loadDescriptor(extension.getAsJsonObject("original")),
                         loadDescriptor(extension.getAsJsonObject("replacement")),
                         exclusions));
             }
         }
-        return list;
+        return defSet;
     }
 
     private static MethodDesc loadDescriptor(JsonObject obj) {
@@ -193,7 +191,7 @@ public abstract class CheckExtensions extends DefaultTask {
 
     private record ExtensionDefinition(MethodDesc original, MethodDesc replacement, Set<MethodDesc> exclusions) implements Serializable {}
 
-    private record MethodDesc(String owner, String name, String descriptor) implements Serializable {}
+    record MethodDesc(String owner, String name, String descriptor) implements Serializable {}
 
     private static List<MethodDesc> resolveAlternateCallees(Map<String, Set<String>> inheritors, MethodDesc original) {
         List<MethodDesc> callees = new ArrayList<>();
@@ -213,69 +211,5 @@ public abstract class CheckExtensions extends DefaultTask {
             }
         }
         return callees;
-    }
-
-    private static final class Visitor extends ClassVisitor {
-        // Class name -> set of method descriptors
-        private final Map<String, Set<String>> expectedOriginals;
-        // Class name -> set of method descriptors
-        private final Map<String, Set<String>> expectedReplacements;
-        private final Set<String> originalMethods;
-        // Class name -> set of method descriptors
-        private final Map<String, Set<String>> locatedOriginals = new HashMap<>();
-        // Class name -> set of method descriptors
-        private final Map<String, Set<String>> locatedReplacements = new HashMap<>();
-        // Calling method descriptor -> callee method descriptors
-        private final Map<MethodDesc, Set<MethodDesc>> unreplacedTargets = new HashMap<>();
-        // Inherited class -> set of inheriting classes
-        private final Map<String, Set<String>> inheritors = new HashMap<>();
-        private String currentClass;
-
-        Visitor(Map<String, Set<String>> expectedOriginals, Map<String, Set<String>> expectedReplacements) {
-            super(Opcodes.ASM9);
-            this.expectedOriginals = expectedOriginals;
-            this.expectedReplacements = expectedReplacements;
-            this.originalMethods = expectedOriginals.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
-        }
-
-        @Override
-        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            currentClass = name;
-            if (!superName.equals("java/lang/Object")) {
-                inheritors.computeIfAbsent(superName, $ -> new HashSet<>()).add(name);
-            }
-            for (String itf : interfaces) {
-                inheritors.computeIfAbsent(itf, $ -> new HashSet<>()).add(name);
-            }
-        }
-
-        @Override
-        public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-            String methodDesc = name + descriptor;
-            Set<String> expectedOriginalMethods = expectedOriginals.get(currentClass);
-            if (expectedOriginalMethods != null && expectedOriginalMethods.contains(methodDesc)) {
-                locatedOriginals.computeIfAbsent(currentClass, $ -> new HashSet<>()).add(methodDesc);
-            }
-            Set<String> expectedReplacementMethods = expectedReplacements.get(currentClass);
-            if (expectedReplacementMethods != null && expectedReplacementMethods.contains(methodDesc)) {
-                locatedReplacements.computeIfAbsent(currentClass, $ -> new HashSet<>()).add(methodDesc);
-            }
-
-            MethodDesc outerDesc = new MethodDesc(currentClass, name, descriptor);
-            return new MethodVisitor(api) {
-                @Override
-                public void visitMethodInsn(int opcode, String owner, String calleeName, String calleeDescriptor, boolean isInterface) {
-                    if (opcode == Opcodes.INVOKESPECIAL && calleeName.equals(name) && calleeDescriptor.equals(descriptor)) {
-                        // Ignore super calls
-                        return;
-                    }
-
-                    if (originalMethods.contains(calleeName + calleeDescriptor)) {
-                        unreplacedTargets.computeIfAbsent(outerDesc, $ -> new HashSet<>())
-                                .add(new MethodDesc(owner, calleeName, calleeDescriptor));
-                    }
-                }
-            };
-        }
     }
 }

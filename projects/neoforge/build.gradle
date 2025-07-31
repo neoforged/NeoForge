@@ -1,7 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
-import net.neoforged.neodev.CheckExtensions
+import net.neoforged.neodev.extensionvalidation.CheckExtensions
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
 import net.neoforged.neodev.ProvideCompatibilityCheckJar
 import net.neoforged.neodev.DownloadFile
@@ -297,7 +297,7 @@ tasks.register("generateFinalizeSpawnTargets", GenerateFinalizeSpawnTargets.clas
 
 tasks.register('checkExtensions', CheckExtensions) {
     group generateAccessTransformers.group
-    description "Validate that all calls to vanilla methods which NeoForge extends upon are replaced by alls to the extensions"
+    description "Validate that all calls to vanilla methods which NeoForge extends upon are replaced by calls to the extensions"
     dependsOn('joinedJar')
     input = tasks.named('joinedJar', Jar).get().getArchiveFile()
     definitions = rootProject.file("src/main/resources/META-INF/extension-definitions.json")
