@@ -9,14 +9,17 @@ import com.google.common.base.Predicates;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -46,7 +49,7 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  * <h3>{@link ChunkAccess}-exclusive behavior:</h3>
  * <ul>
- * <li>Modifications to attachments should be followed by a call to {@link ChunkAccess#markUnsaved}.</li>
+ * <li>Modifications to attachments should be followed by a call to {@link ChunkAccess#setUnsaved(boolean)}.</li>
  * <li>Serializable attachments are copied from a {@link ProtoChunk} to a {@link LevelChunk} on promotion.</li>
  * </ul>
  */

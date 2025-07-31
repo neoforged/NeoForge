@@ -25,19 +25,12 @@
          servergamepacketlistenerimpl.send(new ClientboundUpdateRecipesPacket(this.server.getRecipeManager().getOrderedRecipes()));
          this.sendPlayerPermissionLevel(p_11263_);
          p_11263_.getStats().markAllDirty();
-@@ -239,6 +_,8 @@
-                 if (compoundtag.hasUUID("Attach")) {
-                     uuid = compoundtag.getUUID("Attach");
-                 } else {
-+
-+            net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(p_11263_);
-                     uuid = null;
-                 }
- 
-@@ -265,6 +_,7 @@
+@@ -265,6 +_,9 @@
          }
  
          p_11263_.initInventoryMenu();
++
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialPlayerAttachments(p_11263_);
 +        net.neoforged.neoforge.event.EventHooks.firePlayerLoggedIn( p_11263_ );
      }
  

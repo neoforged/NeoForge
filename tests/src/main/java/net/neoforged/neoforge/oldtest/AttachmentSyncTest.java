@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -31,7 +32,7 @@ public class AttachmentSyncTest {
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MOD_ID);
     private static final Supplier<AttachmentType<Integer>> ATTACHMENT_TYPE = ATTACHMENT_TYPES.register("test",
             () -> AttachmentType.builder(() -> 0)
-                    .serialize(Codec.INT.fieldOf("value"))
+                    .serialize(Codec.INT)
                     .copyOnDeath()
                     .sync(ByteBufCodecs.VAR_INT)
                     .build());
@@ -89,7 +90,7 @@ public class AttachmentSyncTest {
             if (context.getPlayer() instanceof Player p
                     && context.getLevel().getBlockEntity(context.getClickedPos()) instanceof BlockEntity be) {
                 testInteraction("block entity", p, be);
-                return InteractionResult.SUCCESS_SERVER;
+                return InteractionResult.sidedSuccess(p.level().isClientSide());
             }
             return super.useOn(context);
         }
@@ -101,9 +102,9 @@ public class AttachmentSyncTest {
         }
 
         @Override
-        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
             testInteraction("chunk", player, level.getChunkAt(player.blockPosition()));
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
         }
     }
 
@@ -119,16 +120,16 @@ public class AttachmentSyncTest {
                 return super.interactLivingEntity(stack, player, livingEntity, hand);
             }
             testInteraction("entity", player, livingEntity);
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResult.sidedSuccess(player.level().isClientSide());
         }
 
         @Override
-        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
             if (!player.isSecondaryUseActive()) {
                 return super.use(level, player, hand);
             }
             testInteraction("player", player, player);
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
         }
     }
 
@@ -138,9 +139,9 @@ public class AttachmentSyncTest {
         }
 
         @Override
-        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
             testInteraction("level", player, level);
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
         }
     }
 }

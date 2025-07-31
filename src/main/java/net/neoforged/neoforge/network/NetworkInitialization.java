@@ -106,6 +106,10 @@ public class NetworkInitialization {
                 .playToClient(
                         ClientboundCustomSetTimePayload.TYPE,
                         ClientboundCustomSetTimePayload.STREAM_CODEC,
+                        ClientPayloadHandler::handle)
+                .playToClient(
+                        SyncAttachmentsPayload.TYPE,
+                        SyncAttachmentsPayload.STREAM_CODEC,
                         ClientPayloadHandler::handle);
     }
 }

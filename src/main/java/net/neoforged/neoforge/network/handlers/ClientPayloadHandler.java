@@ -25,6 +25,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import net.neoforged.neoforge.common.world.LevelChunkAuxiliaryLightManager;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -39,6 +41,7 @@ import net.neoforged.neoforge.network.payload.ConfigFilePayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistryPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncCompletedPayload;
 import net.neoforged.neoforge.network.payload.FrozenRegistrySyncStartPayload;
+import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.RegistrySnapshot;
 import org.jetbrains.annotations.ApiStatus;
@@ -157,5 +160,37 @@ public final class ClientPayloadHandler {
         level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(payload.gameRule(), null);
         level.setDayTimeFraction(payload.dayTimeFraction());
         level.setDayTimePerTick(payload.dayTimePerTick());
+    }
+
+    public static void handle(SyncAttachmentsPayload payload, IPayloadContext context) {
+        switch (payload.target()) {
+            case SyncAttachmentsPayload.BlockEntityTarget(var pos) -> {
+                var blockEntity = context.player().level().getBlockEntity(pos);
+                if (blockEntity == null) {
+                    LOGGER.warn("Received synced attachments from unknown block entity");
+                } else {
+                    AttachmentSync.receiveSyncedDataAttachments(blockEntity, context.player().registryAccess(), payload.types(), payload.syncPayload());
+                }
+            }
+            case SyncAttachmentsPayload.ChunkTarget(var pos) -> {
+                var chunk = context.player().level().getChunk(pos.x, pos.z, ChunkStatus.FULL, false);
+                if (chunk == null) {
+                    LOGGER.warn("Received synced attachments from unknown chunk");
+                } else {
+                    AttachmentSync.receiveSyncedDataAttachments(chunk.getAttachmentHolder(), chunk.getLevel().registryAccess(), payload.types(), payload.syncPayload());
+                }
+            }
+            case SyncAttachmentsPayload.EntityTarget(var entityId) -> {
+                var entity = context.player().level().getEntity(entityId);
+                if (entity == null) {
+                    LOGGER.warn("Received synced attachments from unknown entity");
+                } else {
+                    AttachmentSync.receiveSyncedDataAttachments(entity, entity.registryAccess(), payload.types(), payload.syncPayload());
+                }
+            }
+            case SyncAttachmentsPayload.LevelTarget() -> {
+                AttachmentSync.receiveSyncedDataAttachments(context.player().level(), context.player().registryAccess(), payload.types(), payload.syncPayload());
+            }
+        }
     }
 }

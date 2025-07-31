@@ -132,8 +132,6 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
                     Tag serialized = ((IAttachmentSerializer<?, Object>) type.serializer).write(entry.getValue(), provider);
                     if (serialized != null) {
                         if (tag == null)
-     *
-     * <p>This does not trigger {@link IAttachmentHolder#syncData syncing} of the deserialized attachments.
                             tag = new CompoundTag();
                         tag.put(key.toString(), serialized);
                     }
@@ -147,6 +145,8 @@ public abstract class AttachmentHolder implements IAttachmentHolder {
 
     /**
      * Reads serializable attachments from a tag previously created via {@link #serializeAttachments(HolderLookup.Provider)}.
+     *
+     * <p>This does not trigger {@link IAttachmentHolder#syncData syncing} of the deserialized attachments.
      */
     protected final void deserializeAttachments(HolderLookup.Provider provider, CompoundTag tag) {
         for (var key : tag.getAllKeys()) {

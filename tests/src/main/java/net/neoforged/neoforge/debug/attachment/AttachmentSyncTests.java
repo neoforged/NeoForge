@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -31,7 +32,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-import net.neoforged.testframework.gametest.GameTest;
 import net.neoforged.testframework.registration.RegistrationHelper;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class AttachmentSyncTests {
     @TestHolder(description = "Tests that attachment values properly sync to clients")
     static void testAttachmentSyncManual(DynamicTest test, RegistrationHelper reg) {
         var attachment = reg.attachments().register("value", () -> AttachmentType.builder(() -> 0)
-                .serialize(Codec.INT.fieldOf("value")).sync(ByteBufCodecs.VAR_INT).build());
+                .serialize(Codec.INT).sync(ByteBufCodecs.VAR_INT).build());
 
         var packetType = new CustomPacketPayload.Type(ResourceLocation.fromNamespaceAndPath(reg.modId(), "expect_attachment"));
 
@@ -91,11 +91,11 @@ public class AttachmentSyncTests {
     @TestHolder(description = "Gametest that tests if attachments sync properly in different scenarios")
     static void testAttachmentSync(DynamicTest test, RegistrationHelper reg) {
         var blacklistedPlayer = reg.attachments().register("sync_blacklist", () -> AttachmentType.builder(() -> false)
-                .serialize(Codec.BOOL.fieldOf("value")).build());
+                .serialize(Codec.BOOL).build());
         var intAttachment = reg.attachments().register("int", () -> AttachmentType.builder(() -> 0)
-                .serialize(Codec.INT.fieldOf("value")).sync(ByteBufCodecs.VAR_INT).build());
+                .serialize(Codec.INT).sync(ByteBufCodecs.VAR_INT).build());
         var mutableIntAttachment = reg.attachments().register("mutable_int", () -> AttachmentType.builder(() -> new MutableInt(23))
-                .serialize(Codec.INT.fieldOf("value").xmap(MutableInt::new, MutableInt::getValue))
+                .serialize(Codec.INT.xmap(MutableInt::new, MutableInt::getValue))
                 .sync((h, p) -> !Boolean.TRUE.equals(p.getExistingDataOrNull(blacklistedPlayer)), ByteBufCodecs.VAR_INT.map(MutableInt::new, MutableInt::getValue)).build());
 
         class TestHelper extends ExtendedGameTestHelper {

@@ -7,7 +7,6 @@ package net.neoforged.testframework.gametest;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +27,11 @@ import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.Connection;
+import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.ClientboundKeepAlivePacket;
+import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
@@ -123,7 +126,7 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             }
 
             @Override
-            public void send(Packet<?> packet, @Nullable ChannelFutureListener listeners, boolean flush) {
+            public void send(Packet<?> packet, @Nullable PacketSendListener listeners, boolean flush) {
                 super.send(packet, listeners, flush);
                 // Respond to keepalive packets instantly
                 if (packet instanceof ClientboundKeepAlivePacket ckp) {

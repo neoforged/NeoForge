@@ -57,7 +57,7 @@ public final class AttachmentSync {
                                 // Sanity check to ensure that no entries are added to this registry by accident
                                 if (!NeoForgeRegistries.ATTACHMENT_TYPES.containsKey(key.location())
                                         || !NeoForgeRegistries.ATTACHMENT_TYPES.containsValue(value)
-                                        || NeoForgeRegistries.ATTACHMENT_TYPES.getValue(key.location()) != value) {
+                                        || NeoForgeRegistries.ATTACHMENT_TYPES.get(key.location()) != value) {
                                     throw new IllegalStateException("Cannot add entries to the SYNCED_ATTACHMENT_TYPES registry directly.");
                                 }
                             })
