@@ -77,7 +77,7 @@ public final class NotifyingSnapshotJournal extends StatelessSnapshotJournal {
     }
 
     @Override
-    public void onCommit() {
+    public void onRootCommit() {
         if (commitCallback != null)
             commitCallback.run();
     }

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A global operation that guarantees either the whole operation succeeds,
  * or it is completely aborted and rolls back.
+ * When passed to a method, it should be passed as a {@link TransactionContext} to prevent misuse
  *
  * <p>One can imagine that transactions are like video game checkpoints.
  * <ul>
@@ -22,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
  * <li>Calling {@link #close} or doing nothing and letting the transaction be {@linkplain #close closed} at the end
  * of the try-with-resources block cancels any modification that happened during the transaction,
  * reverting to the checkpoint.</li>
- * <li>Calling {@link Transaction#open} with a non-{@code null} parent creates a new nested transaction, i.e. a new checkpoint with the current state.
- * Committing a nested transaction will validate the changes that happened, but they may
+ * <li>Calling {@link Transaction#open} with a non-{@code null} parent creates a new inner transaction, i.e. a new checkpoint with the current state.
+ * Committing an inner transaction will validate the changes that happened, but they may
  * still be cancelled later if a parent transaction is cancelled.
- * Aborting a nested transaction immediately reverts the changes within that nested transaction - cancelling any modification made after the call
+ * Aborting an inner transaction immediately reverts the changes within that inner transaction - cancelling any modification made after the call
  * to {@link Transaction#open}.</li>
  * </ul>
  *
@@ -34,11 +35,11 @@ import org.jetbrains.annotations.Nullable;
  * <pre>{@code
  * try (Transaction rootTransaction = TransactionManager.open(null)) {
  *     // (A) some transaction operations
- *     try (Transaction nestedTransaction = TransactionManager.open(rootTransaction)) {
+ *     try (Transaction innerTransaction = TransactionManager.open(rootTransaction)) {
  *         // (B) more operations
- *         nestedTransaction.commit();
+ *         innerTransaction.commit();
  *         // Commit the changes that happened in this transaction.
- *         // This is a nested transaction, so changes will only be applied if the root
+ *         // This is an inner transaction, so changes will only be applied if the root
  *         // transaction is committed too.
  *         // auto-close the transaction when exiting the try block
  *     }
@@ -85,7 +86,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      * @throws IllegalStateException If a parent is passed, but it was already closed.
      */
     public static Transaction open(@Nullable TransactionContext parent) {
-        return TransactionManager.getManagerForThread().internalOpen(parent, STACK_WALKER.getCallerClass());
+        return TransactionManager.getManagerForThread().open(parent, STACK_WALKER.getCallerClass());
     }
 
     /**
@@ -110,13 +111,20 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      * @return Current transaction on the current thread
      * @deprecated Only intended to be used in the case you don't have the transaction context in the method you are in,
      *             while expecting a transaction to be open already.
+     *             If you have access to a transaction context already, be sure to use that rather than using this method.
+     * @throws IllegalStateException when called while a transaction is closing.
      */
     @Nullable
     @Deprecated
     public static TransactionContext getCurrentOpenedTransaction() {
         TransactionManager manager = TransactionManager.getManagerForThread();
+        //This should also handle the case of LifeCycle is NONE without having to explicitly check
         if (manager.currentDepth == -1) return null;
-        return manager.stack.get(manager.currentDepth);
+
+        Transaction transaction = manager.stack.get(manager.currentDepth);
+        if (transaction.lifecycle == Lifecycle.OPEN) return transaction;
+        //The life cycle is either CLOSING or ROOT_CLOSING
+        throw new IllegalStateException("`getCurrentOpenedTransaction()` cannot be called while a transaction is closing.");
     }
 
     /**
@@ -266,7 +274,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         if (manager.currentDepth == 0) {
             lifecycle = Lifecycle.ROOT_CLOSING;
 
-            // Invoke close callbacks in reverse order
+            // Invoke root close callbacks in reverse order
             for (int i = manager.closeableJournals.size() - 1; i >= 0; i--) {
                 try {
                     manager.closeableJournals.get(i).commit();

@@ -43,7 +43,7 @@ final class TransactionManager {
         return callerClass.toString();
     }
 
-    Transaction internalOpen(@Nullable TransactionContext parent, Class<?> callerClass) {
+    Transaction open(@Nullable TransactionContext parent, Class<?> callerClass) {
         if (parent != null) {
             Transaction parentImpl = (Transaction) parent;
             parentImpl.validateCurrentTransaction();

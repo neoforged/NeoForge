@@ -20,9 +20,12 @@ public abstract class StatelessSnapshotJournal extends SnapshotJournal<Stateless
     protected abstract void onRevert();
 
     /**
-     * Called on a successful transaction.
+     * Called after the root transaction succeeded,
+     * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     *
+     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
      */
-    protected abstract void onCommit();
+    protected abstract void onRootCommit();
 
     /**
      * The current state is ignored and instead a singleton instance is returned
@@ -32,20 +35,14 @@ public abstract class StatelessSnapshotJournal extends SnapshotJournal<Stateless
         return Singleton.INSTANCE;
     }
 
-    /**
-     * Notifies the journal that the transaction requested to revert
-     */
     @Override
     protected final void revertToSnapshot(Singleton ignored) {
         onRevert();
     }
 
-    /**
-     * Notifies the journal the transaction was successful and should commit
-     */
     @Override
-    protected final void onCommit(Singleton ignored) {
-        onCommit();
+    protected final void onRootCommit(Singleton ignored) {
+        onRootCommit();
     }
 
     /**

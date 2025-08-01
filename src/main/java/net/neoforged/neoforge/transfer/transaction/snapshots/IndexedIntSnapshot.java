@@ -52,7 +52,7 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
      * @param setter   The reversion method to apply the snapshot value should a transaction fail.
      * @param getter   The snapshot method to take note of the current value to store as a snapshot in the {@link SnapshotJournal}
      * @param onChange A groupable journal that is updated alongside each index. This is typically a shared reference between indices,
-     *                 so that only one {@link SnapshotJournal#onCommit} or {@link SnapshotJournal#revertToSnapshot} can be applied in
+     *                 so that only one {@link SnapshotJournal#onRootCommit} or {@link SnapshotJournal#revertToSnapshot} can be applied in
      *                 scenarios where it may be doing an expensive call; rather than also doing this once per index change.
      * @return {@link SnapshotJournal} for handling integer value snapshotting at an index
      */
@@ -66,8 +66,8 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
      * @param size     The number of indices to make
      * @param setter   The reversion method to apply the snapshot value should a transaction fail.
      * @param getter   The snapshot method to take note of the current value to store as a snapshot in the {@link SnapshotJournal}
-     * @param onChange A groupable journal that is updated along side each index. This is typically a shared reference between indices,
-     *                 so that only one {@link SnapshotJournal#onCommit} or {@link SnapshotJournal#revertToSnapshot} can be applied in
+     * @param onChange A groupable journal that is updated alongside each index. This is typically a shared reference between indices,
+     *                 so that only one {@link SnapshotJournal#onRootCommit} or {@link SnapshotJournal#revertToSnapshot} can be applied in
      *                 scenarios where it may be doing an expensive call; rather than also doing this once per index change.
      * @return A list of {@link SnapshotJournal SnapshotJournals} for handling integer value snapshotting at their respective indices
      */

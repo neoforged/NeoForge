@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>Call {@link #updateSnapshots} right before the state of your subclass is modified in a transaction.</li>
  * <li>Override {@link #createSnapshot}: it is called when necessary to create an object representing the state of your subclass.</li>
  * <li>Override {@link #revertToSnapshot}: it is called when necessary to revert to a previous state of your subclass.</li>
- * <li>You may optionally override {@link #onCommit}: it is called at the end of a transaction that modified the state.
+ * <li>You may optionally override {@link #onRootCommit}: it is called at the end of a transaction that modified the state.
  * For example, it could contain a call to {@code setChanged()}.</li>
  * <li>(Advanced!) You may optionally override {@link #releaseSnapshot}: it is called once a snapshot object will not be used,
  * for example you may wish to pool expensive state objects.</li>
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * The snapshot object is then {@linkplain #releaseSnapshot released}, and can be cached for subsequent use, or discarded.
  *
  * <p>When the root transaction is committed, {@link #revertToSnapshot} will not be called so that the current state of the journal
- * is retained. {@link #onCommit} will be called after the transaction is closed
+ * is retained. {@link #onRootCommit} will be called after the transaction is closed
  * and then {@link #releaseSnapshot} will be called because the snapshot is not necessary anymore.
  *
  * @param <T> The objects that this journal uses to record its state snapshots.
@@ -69,7 +69,7 @@ public abstract class SnapshotJournal<T> {
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
      * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
      */
-    protected void onCommit(T originalState) {}
+    protected void onRootCommit(T originalState) {}
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
@@ -123,13 +123,13 @@ public abstract class SnapshotJournal<T> {
         }
     }
 
-    public final void commit() {
+    final void commit() {
         // The result is guaranteed to be COMMITTED,
-        // as this is only scheduled during onClose() when the outer transaction is successful.
+        // as this is only scheduled during onClose() when the root transaction is successful.
         // For the same reason, the originalState is known to be non-null.
         Objects.requireNonNull(originalState);
 
-        onCommit(originalState);
+        onRootCommit(originalState);
         releaseSnapshot(originalState);
         originalState = null;
     }

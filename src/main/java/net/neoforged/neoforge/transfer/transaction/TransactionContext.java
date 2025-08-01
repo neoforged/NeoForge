@@ -9,14 +9,16 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A subset of a {@link Transaction} that lets journals properly record in transactions, manage their state,
- * or open nested transactions, but does not allow them to close the transaction they are passed.
+ * or open inner transactions, but does not allow them to close the transaction they are passed.
+ * <p>
+ * You should never cast this to a {@link Transaction}.
  */
 @ApiStatus.NonExtendable
 public interface TransactionContext {
     /**
      * Gets the current depth of the transaction.
      * 
-     * @return The depth of this transaction: 0 if it is the root and has no parent; 1 or more otherwise.
+     * @return The depth of this transaction: 0 if it is the root and has no parent; 1 or more otherwise indicating how far away from the root the transaction is.
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
      */
     int depth();
