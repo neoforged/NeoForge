@@ -41,7 +41,7 @@ public class CommandSuggestionTests {
     @Test
     public void commandSuggestionTest_modNamespaceSearchStillWorks() {
         List<String> suggestions = new ArrayList<>();
-        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "modid", ResourceLocation::parse, suggestions::add);
+        SharedSuggestionProvider.filterResources(PRETEND_BLOCK_REGISTRY, "modid", ResourceLocation::new, suggestions::add);
 
         // ["modid1:dried_pickle", "modid2:burnt_grass"] is what vanilla will do without the patch
         assertEquals(List.of("modid1:dried_pickle", "modid2:burnt_grass"), suggestions);
