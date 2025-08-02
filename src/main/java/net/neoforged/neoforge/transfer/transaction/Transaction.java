@@ -54,14 +54,14 @@ import org.jetbrains.annotations.Nullable;
  * <p>Journals are responsible for upholding this contract themselves, by using {@link SnapshotJournal#onClose}
  * to react to transaction close events and properly validate or revert changes.
  * Any action that modifies the state outside the transaction, such as calls to {@code markDirty()} or neighbor updates,
- * should be deferred until {@linkplain SnapshotJournal#commit() after the root transaction is closed}
+ * should be deferred until {@linkplain SnapshotJournal#onRootCommit(Object) after the root transaction is closed}
  * to give every journal a chance to react to transaction close events.
  *
  * <p>This is very low-level for most applications, and most journals should subclass {@link SnapshotJournal}
  * that will take care of properly maintaining their state.
  *
- * <p>Generally, methods should be passed a {@link TransactionContext} parameter instead of the full {@code Transaction},
- * to make sure they don't accidentally call {@link #commit} or {@link #close}.
+ * <p>Generally, methods should be passed a {@link TransactionContext} parameter instead of the full {@link Transaction},
+ * to make sure they don't accidentally call {@link #commit} or {@link #close()}.
  *
  * <p>Every transaction is only valid on the thread it was opened on,
  * and attempts to use it on another thread will throw an exception.
