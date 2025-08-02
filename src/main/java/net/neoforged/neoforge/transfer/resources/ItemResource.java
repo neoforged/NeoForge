@@ -40,9 +40,10 @@ import org.jetbrains.annotations.ApiStatus;
 public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * Resource information used to initialize the empty instance fields {@link #EMPTY} and {@link #EMPTY_STACK}.
+     * This is predominantly used for {@link ResourceStack#of} to avoid allocation, but can be used for other inquiries
+     * as well should you want to go from an item resource to its empty instance.
      */
     private static final EmptyResourceInfo<ItemResource> INFO = new EmptyResourceInfo<>(new ItemResource(ItemStack.EMPTY));
-
     /**
      * The empty resource instance of a {@link ItemResource}
      */
@@ -246,6 +247,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return ItemResource.of(stack);
     }
 
+    //This is overridden to return ItemResource to allow method chaining
     @Override
     public <D> ItemResource with(Supplier<? extends DataComponentType<D>> type, D data) {
         return with(type.get(), data);
@@ -261,6 +263,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return ItemResource.of(stack);
     }
 
+    //This is overridden to return ItemResource to allow method chaining
     @Override
     public ItemResource without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
@@ -343,16 +346,31 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
+     * Returns the hover name of the {@link ItemStack}.
+     *
      * @return The hover name of the {@link ItemStack}
      */
     public Component getHoverName() {
         return innerStack.getHoverName();
     }
 
+    /**
+     * Determines if the specific ItemResource can be placed in the specified armor
+     * slot, for the entity.
+     *
+     * @param slot   Armor slot to be verified.
+     * @param entity The entity trying to equip the armor
+     * @return {@code true} if the given {@link ItemStack} can be inserted in the slot
+     */
     public boolean canEquip(EquipmentSlot slot, LivingEntity entity) {
         return innerStack.canEquip(slot, entity);
     }
 
+    /**
+     * Determines if the specific ItemResource can be removed from, as an example, an entity.
+     *
+     * @return {@code true} if the given {@link ItemStack} can be unequipped; {@code false} otherwise
+     */
     public boolean canUnequip() {
         return !EnchantmentHelper.has(innerStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE);
     }

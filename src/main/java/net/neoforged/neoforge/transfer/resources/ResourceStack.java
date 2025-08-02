@@ -25,31 +25,24 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
  */
 public final class ResourceStack<T extends IResource> {
     /**
-     * Creates a resource stack from a given resource and amount.
-     * <p>
-     * For custom resources, it is required to have an accessible EMPTY stack instance to use. Note, this is true even if
-     * your resource type can never be empty. In that scenario, it would be more accurate to call it a default instance
-     * rather than empty.
-     * See {@link ItemResource#EMPTY} for an example:
-     *
-     * <pre>{@code
-     * public static final ResourceStack<ItemResource> EMPTY_STACK = ResourceStack.constructEmptyReference(ItemResource.EMPTY);
-     * }</pre>
+     * Creates a resource stack from a given resource and amount. Should the amount be 0 or resource be empty, the empty
+     * resource stack instance provided by {@link IResource#getEmptyInfo() the resource} will be returned.
+     * This means that you cannot have a resource in a resource stack that is non-empty and an amount of 0.
      *
      * @param resource The resource to wrap the stack around.
-     * @param amount   The amount of the resource the stack is holding.
+     * @param amount   The amount of the resource the stack is holding. Must be non-negative.
      * @param <T>      The type of resource.
      * @return A new resource stack (or the empty instance if had been empty).
      * @see ItemResource#withAmount(int)
      * @see FluidResource#withAmount(int)
      * @throws IllegalArgumentException When the amount is negative.
-     * @throws ClassCastException       when the info resource type does not match the resource class type. This indicates a problem with the resource implementation.
+     * @throws ClassCastException       When the info resource type does not match the resource class type. This indicates a problem with the resource implementation.
      */
     public static <T extends IResource> ResourceStack<T> of(T resource, int amount) {
         TransferPreconditions.checkNonNegative(amount);
         if (ResourceHandlerUtil.isEmpty(resource, amount)) {
             ResourceStack<?> emptyStack = resource.getEmptyInfo().emptyResourceStack();
-            //noinspection unchecked
+            //noinspection unchecked This is expected to crash if the types don't line up as documented above.
             return (ResourceStack<T>) emptyStack;
         }
         return new ResourceStack<>(resource, amount);

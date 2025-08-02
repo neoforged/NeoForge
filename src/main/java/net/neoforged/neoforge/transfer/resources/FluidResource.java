@@ -33,6 +33,8 @@ import org.jetbrains.annotations.ApiStatus;
 public final class FluidResource implements IDataComponentHolderResource<Fluid> {
     /**
      * Resource information used to initialize the empty instance fields {@link #EMPTY} and {@link #EMPTY_STACK}.
+     * This is predominantly used for {@link ResourceStack#of} to avoid allocation, but can be used for other inquiries
+     * as well should you want to go from a fluid resource to its empty instance.
      */
     private static final EmptyResourceInfo<FluidResource> INFO = new EmptyResourceInfo<>(new FluidResource(FluidStack.EMPTY));
     /**
@@ -203,6 +205,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return FluidResource.of(stack);
     }
 
+    //This is overridden to return FluidResource to allow method chaining
     @Override
     public <D> FluidResource with(Supplier<? extends DataComponentType<D>> type, D data) {
         return with(type.get(), data);
@@ -217,13 +220,15 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         return FluidResource.of(stack);
     }
 
+    //This is overridden to return FluidResource to allow method chaining
     @Override
     public FluidResource without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
     }
 
     /**
-     * Creates a new {@link ResourceStack} of the fluid resource with the specified amount.
+     * Creates a new {@link ResourceStack} of the fluid resource with the specified amount. If an empty resource
+     * or an amount of 0 is used, then the empty resource stack instance from {@link ResourceStack#of} will be returned.
      * 
      * @param amount Amount to make the stack with. Must be non-negative
      * @return A new {@link ResourceStack} with the specified amount.
@@ -279,7 +284,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * {@return true if the stack components and instance matches the inner stack's components and instance} Uses the {@link FluidStack#isSameFluidSameComponents(FluidStack, FluidStack)} method for comparison.
      *
-     * @param stack the item stack to check
+     * @param stack the fluid stack to check
      */
     public boolean is(FluidStack stack) {
         return FluidStack.isSameFluidSameComponents(stack, innerStack);
