@@ -68,6 +68,9 @@ import org.jetbrains.annotations.Nullable;
  * Consequently, transactions can be concurrent across multiple threads, as long as they don't share any state.
  */
 public final class Transaction implements AutoCloseable, TransactionContext {
+    /**
+     * Stack walker to provide a name for the opener of the transaction. This is used for debugging purposes such as {@link TransactionManager#validateCurrentTransaction}.
+     */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
@@ -90,25 +93,27 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     }
 
     /**
-     * @return The current lifecycle of the transaction stack on this thread.
+     * {@return The current lifecycle of the transaction stack on this thread.}
      */
     public static Lifecycle getLifecycle() {
-        TransactionManager transactionManager = TransactionManager.getManagerForThread();
-        return transactionManager.currentDepth == -1 ? Lifecycle.NONE : transactionManager.stack.get(transactionManager.currentDepth).lifecycle;
+        TransactionManager manager = TransactionManager.getManagerForThread();
+        return manager.currentDepth == -1 ? Lifecycle.NONE : manager.stack.get(manager.currentDepth).lifecycle();
     }
 
     /**
-     * @return True if a transaction is open or closing on the current thread, and false otherwise.
+     * Indicates if there is an active transaction on the current thread.
+     *
+     * @return {@code true} if a transaction is open or closing on the current thread, and {@code false} otherwise.
      */
-    public static boolean isActive() {
-        return getLifecycle() != Lifecycle.NONE;
+    public static boolean hasActiveTransaction() {
+        return getLifecycle().isActive();
     }
 
     /**
      * Intended to be used when a method will be part of a transaction chain, but the current transaction
      * is not passed in with no way to change the method signature.
      *
-     * @return Current transaction on the current thread
+     * @return Current {@link Transaction} on the current thread
      * @deprecated Only intended to be used in the case you don't have the transaction context in the method you are in,
      *             while expecting a transaction to be open already.
      *             If you have access to a transaction context already, be sure to use that rather than using this method.
@@ -118,12 +123,12 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     @Deprecated
     public static TransactionContext getCurrentOpenedTransaction() {
         TransactionManager manager = TransactionManager.getManagerForThread();
-        //This should also handle the case of LifeCycle is NONE without having to explicitly check
+        // This should also handle the case of LifeCycle is NONE without having to explicitly check
         if (manager.currentDepth == -1) return null;
 
         Transaction transaction = manager.stack.get(manager.currentDepth);
-        if (transaction.lifecycle == Lifecycle.OPEN) return transaction;
-        //The life cycle is either CLOSING or ROOT_CLOSING
+        if (transaction.lifecycle.isOpen()) return transaction;
+        // The life cycle is either CLOSING or ROOT_CLOSING
         throw new IllegalStateException("`getCurrentOpenedTransaction()` cannot be called while a transaction is closing.");
     }
 
@@ -146,42 +151,35 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     @Override
     public void close() {
         // check that a transaction is open on this thread and that this transaction is open.
-        if (manager.isOpen() && lifecycle == Lifecycle.OPEN) {
+        if (manager.isOpen() && lifecycle.isOpen()) {
             close(Result.ABORTED);
         }
     }
 
     @Override
     public int depth() {
-        validateCurrentThread();
+        manager.validateCurrentThread();
         return depth;
     }
 
     @Override
-    public Transaction getOpenTransaction(int depth) {
-        validateCurrentThread();
-
-        if (depth < 0) {
-            throw new IndexOutOfBoundsException("Nesting depth may not be negative.");
-        }
-
-        if (depth > manager.currentDepth) {
-            throw new IndexOutOfBoundsException("There is no open transaction for nesting depth " + depth);
-        }
-
-        Transaction transaction = manager.stack.get(depth);
-        transaction.validateOpen();
-        return transaction;
+    public Lifecycle lifecycle() {
+        manager.validateCurrentThread();
+        return lifecycle;
     }
 
-    void addCloseCallback(SnapshotJournal<?> closeCallback) {
-        validateCurrentThread();
+    public void addClosingJournal(SnapshotJournal<?> journal) {
+        manager.validateCurrentThread();
         validateOpen();
-        closeCallbacks.add(closeCallback);
+        journalsToClose.add(journal);
     }
 
-    void addRootCloseCallback(SnapshotJournal<?> journal) {
-        validateCurrentThread();
+    public void addClosingJournalToPrevDepth(SnapshotJournal<?> journal) {
+        manager.getOpenTransaction(depth - 1).addClosingJournal(journal);
+    }
+
+    public void addCommittingJournal(SnapshotJournal<?> journal) {
+        manager.validateCurrentThread();
         // Note: we don't call validateOpen() because this transaction may not be open if this is called during a CloseCallback.
         // We rely on a currentDepth check instead, as the depth is only set to -1 at the very end of close(Result).
 
@@ -189,7 +187,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
             throw new IllegalStateException("There is no open transaction on this thread.");
         }
 
-        manager.closeableJournals.add(journal);
+        manager.journalsToCommit.add(journal);
     }
 
     @Override
@@ -197,57 +195,28 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         return "Transaction[depth=%d, lifecycle=%s, thread=%s]".formatted(depth, lifecycle.name(), manager.thread.getName());
     }
 
-    //Internal handling
+    // Internals
     Lifecycle lifecycle = Lifecycle.NONE;
 
     private final TransactionManager manager;
     private final int depth;
-    private final List<SnapshotJournal<?>> closeCallbacks = new ArrayList<>();
+    private final List<SnapshotJournal<?>> journalsToClose = new ArrayList<>();
 
-    //Package protected constructor
+    // Package protected constructor
     Transaction(TransactionManager manager, int depth) {
         this.manager = manager;
         this.depth = depth;
     }
 
-    void validateCurrentThread() {
-        if (Thread.currentThread() != manager.thread) {
-            String errorMessage = String.format(
-                    "Attempted to access transaction state from thread %s, but this transaction is only valid on thread %s.",
-                    Thread.currentThread().getName(),
-                    manager.thread.getName());
-            throw new IllegalStateException(errorMessage);
-        }
-    }
-
-    void validateCurrentTransaction() {
-        validateCurrentThread();
-
-        if (manager.currentDepth != -1 && manager.stack.get(manager.currentDepth) == this)
-            return;
-
-        String self = TransactionManager.debugNameFrom(manager.debugMap.get(depth));
-        String actual = TransactionManager.debugNameFrom(manager.debugMap.get(manager.currentDepth));
-
-        String errorMessage = String.format(
-                "Transaction function was called on a transaction (%s) with depth `%d`, " +
-                        "but the current transaction (%s) has depth `%d`.",
-                actual,
-                depth,
-                self,
-                manager.currentDepth);
-        throw new IllegalStateException(errorMessage);
-    }
-
     // Validate that this transaction is open.
     void validateOpen() {
-        if (lifecycle != Lifecycle.OPEN) {
-            throw new IllegalStateException("Transaction operation cannot be applied to a closed transaction.");
+        if (!lifecycle.isOpen()) {
+            throw new IllegalStateException("Transaction operation cannot be applied to a closed or closing transaction.");
         }
     }
 
     private void close(Result result) {
-        validateCurrentTransaction();
+        manager.validateCurrentTransaction(this);
         validateOpen();
         // Block transaction operations
         lifecycle = Lifecycle.CLOSING;
@@ -257,9 +226,9 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         RuntimeException closeException = null;
 
         // Invoke callbacks in reverse order
-        for (int i = closeCallbacks.size() - 1; i >= 0; i--) {
+        for (int i = journalsToClose.size() - 1; i >= 0; i--) {
             try {
-                closeCallbacks.get(i).onClose(this, result.wasAborted());
+                journalsToClose.get(i).onClose(this, result.wasAborted());
             } catch (Exception exception) {
                 if (closeException == null) {
                     closeException = new RuntimeException("Encountered an exception while invoking a transaction close callback.", exception);
@@ -269,15 +238,15 @@ public final class Transaction implements AutoCloseable, TransactionContext {
             }
         }
 
-        closeCallbacks.clear();
+        journalsToClose.clear();
 
         if (manager.currentDepth == 0) {
             lifecycle = Lifecycle.ROOT_CLOSING;
 
             // Invoke root close callbacks in reverse order
-            for (int i = manager.closeableJournals.size() - 1; i >= 0; i--) {
+            for (int i = manager.journalsToCommit.size() - 1; i >= 0; i--) {
                 try {
-                    manager.closeableJournals.get(i).commit();
+                    manager.journalsToCommit.get(i).commit();
                 } catch (Exception exception) {
                     if (closeException == null) {
                         closeException = new RuntimeException("Encountered an exception while invoking a transaction root close callback.", exception);
@@ -287,7 +256,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
                 }
             }
 
-            manager.closeableJournals.clear();
+            manager.journalsToCommit.clear();
         }
 
         // Only this check will allow openOuter operations.

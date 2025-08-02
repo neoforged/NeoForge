@@ -42,7 +42,7 @@ public class IndexedIntSnapshot extends SnapshotJournal<Integer> {
     private final int index;
     private final Revert setter;
     private final Snapshot getter;
-    //One shared setChanged journal shared across all indices
+    // One shared setChanged journal shared across all indices
     @Nullable
     private final SnapshotJournal<?> onChangedSnapshot;
 

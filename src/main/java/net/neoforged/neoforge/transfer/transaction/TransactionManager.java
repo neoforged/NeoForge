@@ -20,9 +20,10 @@ final class TransactionManager {
     private static final ThreadLocal<TransactionManager> MANAGERS = ThreadLocal.withInitial(TransactionManager::new);
     final Thread thread = Thread.currentThread();
     final List<Transaction> stack = new ArrayList<>();
-    final List<SnapshotJournal<?>> closeableJournals = new ArrayList<>();
+    final List<SnapshotJournal<?>> journalsToCommit = new ArrayList<>();
     int currentDepth = -1;
-    final Int2ObjectMap<Class<?>> debugMap = new Int2ObjectOpenHashMap<>();
+
+    private final Int2ObjectMap<Class<?>> debugMap = new Int2ObjectOpenHashMap<>();
 
     boolean isOpen() {
         return currentDepth > -1;
@@ -46,7 +47,7 @@ final class TransactionManager {
     Transaction open(@Nullable TransactionContext parent, Class<?> callerClass) {
         if (parent != null) {
             Transaction parentImpl = (Transaction) parent;
-            parentImpl.validateCurrentTransaction();
+            validateCurrentTransaction(parentImpl);
             parentImpl.validateOpen();
         } else if (isOpen()) {
             String currentRoot = debugMap.get(0).toString();
@@ -63,6 +64,58 @@ final class TransactionManager {
         debugMap.put(currentDepth, callerClass);
         current.lifecycle = TransactionContext.Lifecycle.OPEN;
         return current;
+    }
+
+    /**
+     * Return the transaction with the specified depth.
+     *
+     * @param depth Queried depth of the transaction desired.
+     * @throws IndexOutOfBoundsException If there is no open transaction with the requested depth.
+     * @throws IllegalStateException     If this function is not called on the thread this transaction was opened in.
+     */
+    Transaction getOpenTransaction(int depth) {
+        validateCurrentThread();
+
+        if (depth < 0) {
+            throw new IndexOutOfBoundsException("Depth may not be negative.");
+        }
+
+        if (depth > this.currentDepth) {
+            throw new IndexOutOfBoundsException("There is no open transaction for depth `" + depth + "`");
+        }
+
+        Transaction transaction = this.stack.get(depth);
+        transaction.validateOpen();
+        return transaction;
+    }
+
+    void validateCurrentThread() {
+        if (Thread.currentThread() != thread) {
+            String errorMessage = String.format(
+                    "Attempted to access transaction state from thread %s, but this transaction is only valid on thread %s.",
+                    Thread.currentThread().getName(),
+                    thread.getName());
+            throw new IllegalStateException(errorMessage);
+        }
+    }
+
+    void validateCurrentTransaction(Transaction transaction) {
+        validateCurrentThread();
+
+        if (currentDepth != -1 && stack.get(currentDepth) == transaction)
+            return;
+
+        String self = debugNameFrom(debugMap.get(transaction.depth()));
+        String actual = debugNameFrom(debugMap.get(currentDepth));
+
+        String errorMessage = String.format(
+                "Transaction function was called on a transaction (%s) with depth `%d`, " +
+                        "but the current transaction (%s) has depth `%d`.",
+                actual,
+                transaction.depth(),
+                self,
+                currentDepth);
+        throw new IllegalStateException(errorMessage);
     }
 
     private TransactionManager() {}

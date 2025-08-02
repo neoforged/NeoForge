@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -48,28 +49,21 @@ public abstract class SnapshotJournal<T> {
      * Return a new <b>nonnull</b> object containing the current state of this journal.
      * <b>{@code null} may not be returned, or an exception will be thrown!</b>
      */
+    @ApiStatus.OverrideOnly
     protected abstract T createSnapshot();
 
     /**
      * Roll back to a state previously created by {@link #createSnapshot}.
      */
+    @ApiStatus.OverrideOnly
     protected abstract void revertToSnapshot(T snapshot);
 
     /**
      * Signals that the snapshot will not be used anymore, and is safe to cache for future calls to {@link #createSnapshot},
      * or discard entirely.
      */
+    @ApiStatus.OverrideOnly
     protected void releaseSnapshot(T snapshot) {}
-
-    /**
-     * Called after the root transaction succeeded,
-     * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
-     *
-     * @param originalState state of this journal before the transactional operation.
-     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
-     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
-     */
-    protected void onRootCommit(T originalState) {}
 
     /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
@@ -89,14 +83,27 @@ public abstract class SnapshotJournal<T> {
             T snapshot = createSnapshot();
             Objects.requireNonNull(snapshot, "Snapshot may not be null!");
             snapshots.set(currentDepth, snapshot);
+
+            // This is a special case where we need to cast to access the add journalToCommit method.
+            // This should not be used as a usage example for your implementations
+            // with exception to the updateSnapshots method though you should just be able to call super.updateSnapshots to avoid
+            // doing it yourself when necessary.
             if (transaction instanceof Transaction resolvedTransaction)
-                resolvedTransaction.addRootCloseCallback(this);
+                resolvedTransaction.addClosingJournal(this);
         }
     }
 
-    public void onClose(TransactionContext transaction, boolean wasAborted) {
+    /**
+     * Perform an action when a transaction is closed.
+     *
+     * @param transaction The closed transaction. Only {@link Transaction#depth()}, {@link Transaction#lifecycle()}, {@link Transaction#addCommittingJournal(SnapshotJournal)},
+     *                    {@link Transaction#addClosingJournal(SnapshotJournal)}, and {@link Transaction#addClosingJournalToPrevDepth(SnapshotJournal)} may be called on that transaction.
+     * @param wasAborted  {@code true} if the transaction was aborted, {@code false} if it should be committed.
+     */
+    @ApiStatus.OverrideOnly
+    protected void onClose(Transaction transaction, boolean wasAborted) {
         int currentDepth = transaction.depth();
-        //For testing and will be removed after deprecation period is over for handler reworks.
+        // For testing and will be removed after deprecation period is over for handler reworks.
         // This is to provide a quick way to give some metrics during the migration phase, unless another route can be decided on.
         SnapshotJournalDebugInfo.updateDeepestSnapshot(currentDepth, this);
 
@@ -108,20 +115,30 @@ public abstract class SnapshotJournal<T> {
             revertToSnapshot(snapshot);
             releaseSnapshot(snapshot);
         } else if (currentDepth <= 0) {
-            //The transaction is the root.
+            // The transaction is the root.
             originalState = snapshot;
-            if (transaction instanceof Transaction resolvedTransaction)
-                resolvedTransaction.addRootCloseCallback(this);
+            transaction.addCommittingJournal(this);
         } else if (snapshots.get(currentDepth - 1) == null) {
-            // No snapshot yet, so move the snapshot one nesting level up.
+            // No snapshot yet, so move the snapshot one depth up.
             snapshots.set(currentDepth - 1, snapshot);
-            // This is the first snapshot at this level: we need to call addCloseCallback.
-            transaction.getOpenTransaction(currentDepth - 1).addCloseCallback(this);
+            // This is the first snapshot at this level: we need to add the closing journal to the previous depth.
+            transaction.addClosingJournalToPrevDepth(this);
         } else {
-            // There is already an older snapshot at the nesting level above, just release the newer one.
+            // There is already an older snapshot at the depth above, just release the newer one.
             releaseSnapshot(snapshot);
         }
     }
+
+    /**
+     * Called after the root transaction succeeded,
+     * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     *
+     * @param originalState state of this journal before the transactional operation.
+     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
+     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
+     */
+    @ApiStatus.OverrideOnly
+    protected void onRootCommit(T originalState) {}
 
     final void commit() {
         // The result is guaranteed to be COMMITTED,
