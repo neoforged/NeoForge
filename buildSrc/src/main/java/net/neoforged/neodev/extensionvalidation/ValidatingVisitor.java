@@ -10,6 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Given expected original methods and expected replacement methods, validates that both sets of expected methods are
+ * present in the encountered classes and collects method calls which appear to be calls to the given original methods
+ * by their method name and descriptor matching an original method. Inheritance info is collected from the encountered
+ * classes to later filter these potential calls to original methods.
+ */
 final class ValidatingVisitor extends ClassVisitor {
     // Class name -> set of method descriptors
     private final Map<String, Set<String>> expectedOriginals;

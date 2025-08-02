@@ -11,6 +11,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Given a list of {@link CheckExtensions.ExtensionDefinition}s, attempt to fill in unspecified method descriptors
+ * in the original method and exclusions specified by the definitions. If the target class contains zero or more than
+ * one method with the specified name, an exception is thrown.
+ */
 final class ResolvingVisitor extends ClassVisitor {
     // Class name -> method names
     private final Map<String, Set<String>> toResolve = new HashMap<>();

@@ -11,6 +11,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Collects all {@link CheckExtensions.ExtensionDefinition}s specified via {@code ExtensionMethod} annotations on the
+ * classes passed through this visitor. Certain parameters are automatically filled in if omitted from the annotation:
+ * <ul>
+ *     <li>
+ *         If no original method's owner is specified, assume this is an interface and attempt to resolve the class it
+ *         might be interface-injected onto. If this fails, an exception is thrown
+ *     </li>
+ *     <li>
+ *         If the original method or exclusions don't specify a method name, assume the method name matches the
+ *         annotated extension method and rely on later presence validation
+ *     </li>
+ *     <li>
+ *         If the original method or exclusions don't specify a method descriptor, assume the owning class only has one
+ *         method with the specified (or assumed, see above) name and rely on {@link ResolvingVisitor} to fill it in
+ *     </li>
+ * </ul>
+ */
 final class CollectingVisitor extends ClassVisitor {
     private static final String EXTENSION_METHOD_ANNO = "Lnet/neoforged/neoforge/internal/ExtensionMethod;";
     static final String METHOD_DESC_ANNO = "Lnet/neoforged/neoforge/internal/MethodDesc;";

@@ -25,6 +25,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Given the joined compiled JAR containing both vanilla and NeoForge code and optionally a JSON file containing
+ * extension definitions and a JSON file containing interface-injection definitions, collects extension definitions
+ * from the JSON file and {@code @ExtensionMethod} annotations from the joined JAR and walks the JAR to check the
+ * existence of the original and extension methods and collect calls to the original methods which are not declared
+ * as "permitted" in the extension definitions.
+ * <p>
+ * An extension definition is defined as an original (vanilla) method, a replacement method (usually an extension
+ * method added by NeoForge) and optionally a list of exclusions (methods which are permitted to call the original
+ * method).
+ */
 public abstract class CheckExtensions extends DefaultTask {
     @InputFile
     public abstract RegularFileProperty getInput();

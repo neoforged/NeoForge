@@ -7,7 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-class MethodDescAnnotationVisitor extends AnnotationVisitor {
+/**
+ * Parses the {@link CheckExtensions.MethodDesc} from an {@code @MethodDesc} annotation specifying the original method
+ * or the exclusions in an {@code @ExtensionMethod} annotation. Certain parameters are automatically filled in if
+ * omitted from the annotation:
+ * <ul>
+ *     <li>
+ *         If the method name is unspecified, assume the method name matches the name of the method annotated with the
+ *         {@code ExtensionMethod} containing the {@code MethodDesc} being visited and rely on later presence validation
+ *     </li>
+ *     <li>
+ *         If the method descriptor is unspecified, assume the owning class only has one method with the specified
+ *         (or assumed, see above) name and rely on {@link ResolvingVisitor} to fill it in
+ *     </li>
+ * </ul>
+ */
+final class MethodDescAnnotationVisitor extends AnnotationVisitor {
     private final String extMthName;
     private final Consumer<CheckExtensions.MethodDesc> descConsumer;
     private String owner;
