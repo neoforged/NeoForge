@@ -53,8 +53,12 @@ final class ResolvingVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
+        if (!toResolve.containsKey(currentClass)) {
+            return;
+        }
+
+        Map<String, Optional<String>> resolvedInClass = resolved.computeIfAbsent(currentClass, $ -> new HashMap<>());
         for (Map.Entry<String, Set<String>> entry : currentResolved.entrySet()) {
-            Map<String, Optional<String>> resolvedInClass = resolved.computeIfAbsent(currentClass, $ -> new HashMap<>());
             if (entry.getValue().size() == 1) {
                 resolvedInClass.put(entry.getKey(), Optional.of(entry.getValue().iterator().next()));
             } else if (entry.getValue().size() > 1) {
@@ -68,7 +72,11 @@ final class ResolvingVisitor extends ClassVisitor {
         if (desc.descriptor() != null) {
             return desc;
         }
-        Optional<String> descriptor = resolved.getOrDefault(desc.owner(), Map.of()).get(desc.name());
+        Map<String, Optional<String>> resolvedInClass = resolved.get(desc.owner());
+        if (resolvedInClass == null) {
+            throw new IllegalStateException("Class " + desc.owner() + " does not exist");
+        }
+        Optional<String> descriptor = resolvedInClass.get(desc.name());
         if (descriptor == null) {
             throw new IllegalStateException("Class " + desc.owner() + " does not contain a method named " + desc.name());
         } else if (descriptor.isEmpty()) {
