@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.objectweb.asm.ClassReader;
 
@@ -29,9 +30,11 @@ public abstract class CheckExtensions extends DefaultTask {
     public abstract RegularFileProperty getInput();
 
     @InputFile
+    @Optional
     public abstract RegularFileProperty getDefinitions();
 
     @InputFile
+    @Optional
     public abstract RegularFileProperty getInterfaceInjections();
 
     @TaskAction
@@ -65,6 +68,10 @@ public abstract class CheckExtensions extends DefaultTask {
      */
     private Set<ExtensionDefinition> loadDefinitionsFromJson() throws IOException {
         Set<ExtensionDefinition> defSet = new LinkedHashSet<>();
+        if (!getDefinitions().isPresent()) {
+            return defSet;
+        }
+
         try (BufferedReader reader = Files.newBufferedReader(getDefinitions().get().getAsFile().toPath())) {
             JsonObject root = new Gson().fromJson(reader, JsonObject.class);
             for (JsonElement element : root.getAsJsonArray("extensions").asList()) {
@@ -120,6 +127,10 @@ public abstract class CheckExtensions extends DefaultTask {
      * Load interface-injection data to aid in resolving incomplete descriptors from {@code @ExtensionMethod} annotations.
      */
     private Map<String, String> loadInterfaceInjections() throws IOException {
+        if (!getInterfaceInjections().isPresent()) {
+            return Map.of();
+        }
+
         Set<String> encounteredInterfaces = new HashSet<>();
         Map<String, String> injections = new HashMap<>();
         try (BufferedReader reader = Files.newBufferedReader(getInterfaceInjections().get().getAsFile().toPath())) {
