@@ -78,7 +78,7 @@ final class ResolvingVisitor extends ClassVisitor {
     }
 
     CheckExtensions.ExtensionDefinition resolve(CheckExtensions.ExtensionDefinition definition) {
-        if (definition.original().descriptor() == null || definition.anyExclusionUnresolved()) {
+        if (definition.isIncomplete()) {
             Set<CheckExtensions.MethodDesc> exclusions = new HashSet<>();
             for (CheckExtensions.MethodDesc exclusion : definition.exclusions()) {
                 exclusions.add(resolve(exclusion));
