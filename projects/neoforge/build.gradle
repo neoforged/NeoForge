@@ -1,8 +1,9 @@
 import net.neoforged.jarcompatibilitychecker.gradle.JCCPlugin
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
-import net.neoforged.jarcompatibilitychecker.gradle.ProvideNeoForgeJarTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import net.neoforged.neodev.GenerateFinalizeSpawnTargets
+import net.neoforged.neodev.ProvideCompatibilityCheckJar
+import net.neoforged.neodev.DownloadFile
 
 plugins {
     id 'java-library'
@@ -51,12 +52,15 @@ final checkVersion = JCCPlugin.providePreviousVersion(
         project.providers, project.providers.provider({['https://maven.neoforged.net/releases']}), project.providers.provider({'net.neoforged:neoforge'}),
         project.provider { project.version }.map { ver -> CompatibilityTask.VersionComponentTest.MINOR.predicate(ver) }
 )
-final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideNeoForgeJarTask) {
-    // Use the same jar that the patches were generated against
-    cleanJar.set(tasks.generateClientBinPatches.cleanJar)
-    maven.set('https://maven.neoforged.net/releases')
-    artifact.set('net.neoforged:neoforge')
-    version.set(checkVersion)
+def downloadPreviousVersionInstaller = tasks.register('downloadPreviousVersionInstaller', DownloadFile) {
+    url = checkVersion.map { "https://maven.neoforged.net/releases/net/neoforged/neoforge/${it}/neoforge-${it}-installer.jar".toString() }
+    destination = layout.buildDirectory.file("createCompatibilityCheckJar/installer.jar")
+}
+final createCompatJar = tasks.register('createCompatibilityCheckJar', ProvideCompatibilityCheckJar) {
+    installer.from(downloadPreviousVersionInstaller)
+    installationDir = layout.buildDirectory.dir("createCompatibilityCheckJar")
+    output = layout.buildDirectory.file("createCompatibilityCheckJar/merged.jar")
+    version = checkVersion
     javaLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(java_version)
     }
@@ -102,8 +106,11 @@ dependencies {
     }
 
     moduleLibraries "net.neoforged.fancymodloader:securejarhandler:${project.fancy_mod_loader_version}"
+    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
+    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
+
     for (var asmModule : ["org.ow2.asm:asm", "org.ow2.asm:asm-commons", "org.ow2.asm:asm-tree", "org.ow2.asm:asm-util", "org.ow2.asm:asm-analysis"]) {
-        moduleLibraries(asmModule) {
+        libraries(asmModule) {
             // Vanilla ships with ASM 9.3 transitively (via their OpenID connect library dependency), we require
             // ASM in a more recent version and have to strictly require this to override the strict Minecraft version.
             version {
@@ -111,9 +118,6 @@ dependencies {
             }
         }
     }
-    moduleLibraries "net.neoforged.fancymodloader:bootstraplauncher:${project.fancy_mod_loader_version}"
-    moduleLibraries "net.neoforged:JarJarFileSystems:${project.jarjar_version}"
-
     libraries ("net.neoforged.fancymodloader:loader:${project.fancy_mod_loader_version}") {
         exclude group: 'org.slf4j'
         exclude group: 'net.fabricmc'

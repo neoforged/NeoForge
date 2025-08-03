@@ -29,6 +29,7 @@ import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsPayload;
 import net.neoforged.neoforge.network.payload.KnownRegistryDataMapsReplyPayload;
 import net.neoforged.neoforge.network.payload.RecipeContentPayload;
 import net.neoforged.neoforge.network.payload.RegistryDataMapSyncPayload;
+import net.neoforged.neoforge.network.payload.SyncAttachmentsPayload;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegistryManager;
 import org.jetbrains.annotations.ApiStatus;
@@ -98,6 +99,9 @@ final class NetworkInitialization {
                         ClientboundCustomSetTimePayload.STREAM_CODEC)
                 .playToClient(
                         RecipeContentPayload.TYPE,
-                        RecipeContentPayload.STREAM_CODEC);
+                        RecipeContentPayload.STREAM_CODEC)
+                .playToClient(
+                        SyncAttachmentsPayload.TYPE,
+                        SyncAttachmentsPayload.STREAM_CODEC);
     }
 }

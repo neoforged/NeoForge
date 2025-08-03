@@ -2,6 +2,9 @@ modLoader="javafml"
 loaderVersion="[1,)"
 license="LGPL v2.1"
 
+[[mixins]]
+config="unittests.mixins.json"
+
 [[mods]]
 modId="block_entity_type_valid_blocks_event_test"
 [[mods]]
