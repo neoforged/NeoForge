@@ -1,30 +1,13 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -101,6 +_,9 @@
+@@ -101,6 +_,7 @@
      @Nullable
      private static DynamicUniforms dynamicUniforms;
      private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
-+    @Nullable
-+    public static net.neoforged.neoforge.client.stencil.StencilTest STENCIL_TEST = null;
 +    private static final net.neoforged.neoforge.client.pipeline.PipelineModifierStack PIPELINE_MODIFIERS = new net.neoforged.neoforge.client.pipeline.PipelineModifierStack();
  
      public static void initRenderThread() {
          if (renderThread != null) {
-@@ -199,6 +_,14 @@
-         return scissorStateForRenderTypeDraws;
-     }
- 
-+    public static void enableStencil(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
-+        STENCIL_TEST = stencilTest;
-+    }
-+
-+    public static void disableStencil() {
-+        STENCIL_TEST = null;
-+    }
-+
-     public static String getBackendDescription() {
-         return String.format(Locale.ROOT, "LWJGL version %s", GLX._getLWJGLVersion());
-     }
 @@ -214,7 +_,7 @@
      public static void initRenderer(
          long p_409720_, int p_69581_, boolean p_69582_, BiFunction<ResourceLocation, ShaderType, String> p_410113_, boolean p_410401_

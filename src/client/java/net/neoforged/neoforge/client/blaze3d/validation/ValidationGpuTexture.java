@@ -40,9 +40,9 @@ public class ValidationGpuTexture extends GpuTexture {
 
     @Override
     public void setTextureFilter(FilterMode minFilter, FilterMode magFilter, boolean useMipmaps) {
-        super.setTextureFilter(magFilter, magFilter, useMipmaps);
+        super.setTextureFilter(minFilter, magFilter, useMipmaps);
         // updating the TextureFilter must be forwarded, though no validation is done
-        realTexture.setTextureFilter(magFilter, magFilter, useMipmaps);
+        realTexture.setTextureFilter(minFilter, magFilter, useMipmaps);
     }
 
     @Override

@@ -75,12 +75,16 @@ public class ValidationGpuDevice implements GpuDevice {
         return wrapGpuTexture(realDevice.createTexture(label, usage, format, width, height, depthOrLayers, mipLevels), validator);
     }
 
+    protected ValidationGpuTextureView wrapGpuTextureView(ValidationGpuTexture validationGpuTexture, GpuTextureView gpuTextureView, GpuDeviceUsageValidator validator) {
+        return new ValidationGpuTextureView(validationGpuTexture, gpuTextureView, validator);
+    }
+
     @Override
     public GpuTextureView createTextureView(GpuTexture texture) {
         if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
-        return realDevice.createTextureView(validationTexture.getRealTexture());
+        return wrapGpuTextureView(validationTexture, realDevice.createTextureView(validationTexture.getRealTexture()), validator);
     }
 
     @Override
@@ -88,7 +92,7 @@ public class ValidationGpuDevice implements GpuDevice {
         if (!(texture instanceof ValidationGpuTexture validationTexture)) {
             throw new IllegalArgumentException();
         }
-        return realDevice.createTextureView(validationTexture.getRealTexture(), baseMipLevel, mipLevels);
+        return wrapGpuTextureView(validationTexture, realDevice.createTextureView(validationTexture.getRealTexture(), baseMipLevel, mipLevels), validator);
     }
 
     @Override
