@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A global operation that guarantees either the whole operation succeeds,
  * or it is completely aborted and rolls back.
- * When passed to a method, it should be passed as a {@link TransactionContext} to prevent misuse
+ * Generally when passed to a method, a {@link Transaction} should be passed as a {@link TransactionContext} to prevent misuse such as calling {@link #commit()} or {@link #close()}
  *
  * <p>One can imagine that transactions are like video game checkpoints.
  * <ul>
@@ -59,9 +59,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>This is very low-level for most applications, and most journals should subclass {@link SnapshotJournal}
  * that will take care of properly maintaining their state.
- *
- * <p>Generally, methods should be passed a {@link TransactionContext} parameter instead of the full {@link Transaction},
- * to make sure they don't accidentally call {@link #commit} or {@link #close()}.
  *
  * <p>Every transaction is only valid on the thread it was opened on,
  * and attempts to use it on another thread will throw an exception.
@@ -225,10 +222,10 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         // That is why every callback has to run inside its own try-with-resources block.
         RuntimeException closeException = null;
 
-        // Invoke callbacks in reverse order
-        for (int i = journalsToClose.size() - 1; i >= 0; i--) {
+        // Invoke callbacks
+        for (SnapshotJournal<?> journal : journalsToClose) {
             try {
-                journalsToClose.get(i).onClose(this, result.wasAborted());
+                journal.onClose(this, result.wasAborted());
             } catch (Exception exception) {
                 if (closeException == null) {
                     closeException = new RuntimeException("Encountered an exception while invoking a transaction close callback.", exception);
@@ -243,10 +240,10 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         if (manager.currentDepth == 0) {
             lifecycle = Lifecycle.ROOT_CLOSING;
 
-            // Invoke root close callbacks in reverse order
-            for (int i = manager.journalsToCommit.size() - 1; i >= 0; i--) {
+            // Invoke root close callbacks
+            for (SnapshotJournal<?> journal : manager.journalsToCommit) {
                 try {
-                    manager.journalsToCommit.get(i).commit();
+                    journal.commit();
                 } catch (Exception exception) {
                     if (closeException == null) {
                         closeException = new RuntimeException("Encountered an exception while invoking a transaction root close callback.", exception);
