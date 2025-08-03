@@ -7,9 +7,13 @@ import org.gradle.internal.component.external.model.ModuleComponentArtifactIdent
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class DependencyUtils {
+
+    private static final Pattern EXT_PATTERN = Pattern.compile("\\.([a-z]{1,4}(?:\\.[a-z]{1,4})*)$");
+
     private DependencyUtils() {
     }
 
@@ -24,10 +28,10 @@ public final class DependencyUtils {
         String classifier = "";
 
         var filename = result.getFile().getName();
-        var startOfExt = filename.lastIndexOf('.');
-        if (startOfExt != -1) {
-            ext = filename.substring(startOfExt + 1);
-            filename = filename.substring(0, startOfExt);
+        var extMatcher = EXT_PATTERN.matcher(filename);
+        if (extMatcher.find()) {
+            ext = extMatcher.group(1);
+            filename = filename.substring(0, extMatcher.start());
         }
 
         if (result.getId() instanceof ModuleComponentArtifactIdentifier moduleId) {

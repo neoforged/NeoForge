@@ -98,6 +98,11 @@ dependencies {
         }
         endorseStrictVersions()
     }
+    neoFormMappings("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
+        capabilities {
+            requireCapability 'net.neoforged:neoform-parameter-mappings'
+        }
+    }
     neoFormDependencies("net.neoforged:neoform:${project.minecraft_version}-${project.neoform_version}") {
         capabilities {
             requireCapability 'net.neoforged:neoform-dependencies'

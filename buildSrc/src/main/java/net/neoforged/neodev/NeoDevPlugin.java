@@ -348,8 +348,12 @@ public class NeoDevPlugin implements Plugin<Project> {
             // Anything that is on the launcher classpath should be downloaded by the installer.
             // (At least on the server side).
             task.addLibraries(configurations.launcherProfileClasspath);
+            // Note: to properly support that, we need to know which libraries are part of the Vanilla server jar
+            // to *not* download them before it is unpacked.
+            task.addMinecraftServerLibraries(configurations.minecraftServerClasspath);
+            task.addMinecraftClientLibraries(configurations.minecraftClientClasspath);
             // We need the NeoForm zip for the SRG mappings.
-            task.addLibraries(configurations.neoFormDataOnly);
+            task.addLibraries(configurations.neoFormMappingsFiles);
             task.getRepositoryURLs().set(installerRepositoryUrls);
             task.getUniversalJar().set(universalJar.flatMap(AbstractArchiveTask::getArchiveFile));
             task.getInstallerProfile().set(neoDevBuildDir.map(dir -> dir.file("installer-profile.json")));
