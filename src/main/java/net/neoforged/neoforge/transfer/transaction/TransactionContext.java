@@ -11,10 +11,13 @@ import org.jetbrains.annotations.ApiStatus;
  * A subset of a {@link Transaction} that lets journals properly record, manage their state,
  * or open inner transactions, but does not allow them to close the transaction they are passed.
  * <p>
- * You should never need to cast this to a {@link Transaction}.
+ * Recording changes to a transaction can be done with an implementation of {@link SnapshotJournal} and calling
+ * {@link SnapshotJournal#updateSnapshots(TransactionContext) updateSnapshots(TransactionContext)} before having the state change.
+ *
+ * @see SnapshotJournal#updateSnapshots(TransactionContext)
  */
 @ApiStatus.NonExtendable
-public interface TransactionContext {
+public sealed interface TransactionContext permits Transaction {
     /**
      * Gets the current depth of the transaction.
      * 

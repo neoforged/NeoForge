@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -49,20 +48,17 @@ public abstract class SnapshotJournal<T> {
      * Return a new <b>nonnull</b> object containing the current state of this journal.
      * <b>{@code null} may not be returned, or an exception will be thrown!</b>
      */
-    @ApiStatus.OverrideOnly
     protected abstract T createSnapshot();
 
     /**
      * Roll back to a state previously created by {@link #createSnapshot}.
      */
-    @ApiStatus.OverrideOnly
     protected abstract void revertToSnapshot(T snapshot);
 
     /**
      * Signals that the snapshot will not be used anymore, and is safe to cache for future calls to {@link #createSnapshot},
      * or discard entirely.
      */
-    @ApiStatus.OverrideOnly
     protected void releaseSnapshot(T snapshot) {}
 
     /**
@@ -73,7 +69,6 @@ public abstract class SnapshotJournal<T> {
      *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
      * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
      */
-    @ApiStatus.OverrideOnly
     protected void onRootCommit(T originalState) {}
 
     /**
@@ -108,8 +103,7 @@ public abstract class SnapshotJournal<T> {
      *                    {@link Transaction#addClosingJournal(SnapshotJournal)}, and {@link Transaction#addClosingJournalToPrevDepth(SnapshotJournal)} may be called on that transaction.
      * @param wasAborted  {@code true} if the transaction was aborted, {@code false} if it should be committed.
      */
-    @ApiStatus.OverrideOnly
-    protected void onClose(Transaction transaction, boolean wasAborted) {
+    void close(Transaction transaction, boolean wasAborted) {
         int currentDepth = transaction.depth();
 
         // Get and remove the relevant snapshot.

@@ -51,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
  * // If we hadn't committed the rootTransaction, all changes (A), (B) and (C) would have been reverted.
  * }</pre>
  *
- * <p>Journals are responsible for upholding this contract themselves, by using {@link SnapshotJournal#onClose}
+ * <p>Journals are responsible for upholding this contract themselves, by using {@link SnapshotJournal#close}
  * to react to transaction close events and properly validate or revert changes.
  * Any action that modifies the state outside the transaction, such as calls to {@code markDirty()} or neighbor updates,
  * should be deferred until {@linkplain SnapshotJournal#onRootCommit(Object) after the root transaction is closed}
@@ -234,7 +234,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         // Invoke callbacks
         for (SnapshotJournal<?> journal : journalsToClose) {
             try {
-                journal.onClose(this, result.wasAborted());
+                journal.close(this, result.wasAborted());
             } catch (Exception exception) {
                 if (closeException == null) {
                     closeException = new RuntimeException("Encountered an exception while invoking a transaction close callback.", exception);
