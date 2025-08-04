@@ -22,36 +22,4 @@ public interface TransactionContext {
      * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
      */
     int depth();
-
-    enum Lifecycle {
-        /**
-         * No transaction is currently open or closing.
-         */
-        NONE,
-        /**
-         * A transaction is currently open.
-         */
-        OPEN,
-        /**
-         * The current transaction is invoking its close callbacks.
-         */
-        CLOSING,
-        /**
-         * The current transaction is invoking its root close callbacks.
-         */
-        ROOT_CLOSING;
-
-        /**
-         * Indicates if there is any activity in the life cycle. In other words anything other than {@link #NONE}
-         * 
-         * @return {@code true} if is open or closing, and {@code false} otherwise.
-         */
-        boolean isActive() {
-            return this != NONE;
-        }
-
-        boolean isOpen() {
-            return this == OPEN;
-        }
-    }
 }

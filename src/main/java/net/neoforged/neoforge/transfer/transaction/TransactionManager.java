@@ -50,7 +50,7 @@ final class TransactionManager {
         } else {
             current = stack.get(currentDepth);
         }
-        current.lifecycle = TransactionContext.Lifecycle.OPEN;
+        current.lifecycle = Transaction.Lifecycle.OPEN;
         return current;
     }
 

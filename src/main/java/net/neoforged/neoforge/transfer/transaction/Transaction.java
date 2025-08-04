@@ -160,11 +160,6 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         return depth;
     }
 
-    public Lifecycle lifecycle() {
-        manager.validateCurrentThread();
-        return lifecycle;
-    }
-
     public void addClosingJournal(SnapshotJournal<?> journal) {
         manager.validateCurrentThread();
         validateOpen();
@@ -212,6 +207,11 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         if (!lifecycle.isOpen()) {
             throw new IllegalStateException("Transaction operation cannot be applied to a closed or closing transaction.");
         }
+    }
+
+    Lifecycle lifecycle() {
+        manager.validateCurrentThread();
+        return lifecycle;
     }
 
     /**
@@ -272,6 +272,38 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         // Throw exception if necessary
         if (closeException != null) {
             throw closeException;
+        }
+    }
+
+    public enum Lifecycle {
+        /**
+         * No transaction is currently open or closing.
+         */
+        NONE,
+        /**
+         * A transaction is currently open.
+         */
+        OPEN,
+        /**
+         * The current transaction is invoking its close callbacks.
+         */
+        CLOSING,
+        /**
+         * The current transaction is invoking its root close callbacks.
+         */
+        ROOT_CLOSING;
+
+        /**
+         * Indicates if there is any activity in the life cycle. In other words anything other than {@link #NONE}
+         *
+         * @return {@code true} if is open or closing, and {@code false} otherwise.
+         */
+        boolean isActive() {
+            return this != NONE;
+        }
+
+        boolean isOpen() {
+            return this == OPEN;
         }
     }
 
