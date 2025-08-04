@@ -5,27 +5,12 @@
 
 package net.neoforged.neoforge.unittest.transfer;
 
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
-import net.neoforged.neoforge.transfer.transaction.snapshots.IndexedIntSnapshot;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TransactionTests {
-    private static class Container {
-        int value;
-
-        void set(int index, int value) {
-            this.value = value;
-        }
-
-        int get(int index) {
-            return this.value;
-        }
-    }
-
     @Test
     void testHierarchy() {
         try (Transaction transaction = Transaction.open(null)) {
@@ -39,30 +24,31 @@ public class TransactionTests {
 
     @Test
     void testCommit() {
-        final int valueToBe = 2;
+        final int expectedValueAfterCommit = 2;
         final Container container = new Container();
-        IndexedIntSnapshot journal = IndexedIntSnapshot.of(container::set, container::get, null);
+        IntSnapshotJournal journal = IntSnapshotJournal.of(container::set, container::get);
 
         try (Transaction transaction = Transaction.open(null)) {
             Assertions.assertEquals(0, transaction.depth());
             try (Transaction subTransaction = Transaction.open(transaction)) {
                 journal.updateSnapshots(subTransaction);
-                container.set(0, valueToBe);
+                container.set(expectedValueAfterCommit);
                 subTransaction.commit();
             }
         }
+
         Assertions.assertEquals(0, container.value);
 
         try (Transaction transaction = Transaction.open(null)) {
             Assertions.assertEquals(0, transaction.depth());
             try (Transaction subTransaction = Transaction.open(transaction)) {
                 journal.updateSnapshots(subTransaction);
-                container.set(0, valueToBe);
+                container.set(expectedValueAfterCommit);
                 subTransaction.commit();
             }
             transaction.commit();
         }
-        Assertions.assertEquals(valueToBe, container.value);
+        Assertions.assertEquals(expectedValueAfterCommit, container.value);
     }
 
     @SuppressWarnings("deprecation")
@@ -88,6 +74,62 @@ public class TransactionTests {
                 Assertions.assertEquals(subTransaction, Transaction.getCurrentOpenedTransaction());
             }
 
+        }
+    }
+
+    private static class Container {
+        int value;
+
+        void set(int value) {
+            this.value = value;
+        }
+
+        int get() {
+            return this.value;
+        }
+    }
+
+    /**
+     * A snapshot journal that can keep track of an {@code int}.
+     */
+    private static class IntSnapshotJournal extends SnapshotJournal<Integer> {
+        /**
+         * Apply the value for snapshotting. This value should be the last valid value from the {@link IntSnapshotJournal.Snapshot}
+         * during the transaction chain.
+         */
+        @FunctionalInterface
+        public interface Revert {
+            void set(int value);
+        }
+
+        /**
+         * Gets the current value for snapshotting.
+         */
+        @FunctionalInterface
+        public interface Snapshot {
+            Integer get();
+        }
+
+        private final IntSnapshotJournal.Revert setter;
+        private final IntSnapshotJournal.Snapshot getter;
+
+        public static IntSnapshotJournal of(IntSnapshotJournal.Revert setter, IntSnapshotJournal.Snapshot getter) {
+            return new IntSnapshotJournal(setter, getter);
+        }
+
+        private IntSnapshotJournal(IntSnapshotJournal.Revert setter, IntSnapshotJournal.Snapshot getter) {
+            this.setter = setter;
+            this.getter = getter;
+        }
+
+        @Override
+        protected Integer createSnapshot() {
+            return getter.get();
+        }
+
+        @Override
+        protected void revertToSnapshot(Integer snapshot) {
+            setter.set(snapshot);
         }
     }
 }

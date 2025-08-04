@@ -6,7 +6,7 @@
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package net.neoforged.neoforge.transfer.transaction.snapshots;
+package net.neoforged.neoforge.unittest.transfer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.FieldsAreNonnullByDefault;

@@ -116,6 +116,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
      *             If you have access to a transaction context already, be sure to use that rather than using this method.
      * @throws IllegalStateException when called while a transaction is closing.
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Nullable
     @Deprecated
     public static TransactionContext getCurrentOpenedTransaction() {
@@ -159,7 +160,6 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         return depth;
     }
 
-    @Override
     public Lifecycle lifecycle() {
         manager.validateCurrentThread();
         return lifecycle;
@@ -184,7 +184,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
             throw new IllegalStateException("There is no open transaction on this thread.");
         }
 
-        manager.journalsToCommit.add(journal);
+        manager.journalsToCommitWithRoot.add(journal);
     }
 
     @Override
@@ -198,11 +198,13 @@ public final class Transaction implements AutoCloseable, TransactionContext {
     private final TransactionManager manager;
     private final int depth;
     private final List<SnapshotJournal<?>> journalsToClose = new ArrayList<>();
+    private final Class<?> callerClass;
 
     // Package protected constructor
-    Transaction(TransactionManager manager, int depth) {
+    Transaction(TransactionManager manager, int depth, Class<?> callerClass) {
         this.manager = manager;
         this.depth = depth;
+        this.callerClass = callerClass;
     }
 
     // Validate that this transaction is open.
@@ -210,6 +212,13 @@ public final class Transaction implements AutoCloseable, TransactionContext {
         if (!lifecycle.isOpen()) {
             throw new IllegalStateException("Transaction operation cannot be applied to a closed or closing transaction.");
         }
+    }
+
+    /**
+     * Gets what should be printed during exceptions to represent the caller class. This should include the package name as well.
+     */
+    String getDebugName() {
+        return callerClass.toString();
     }
 
     private void close(Result result) {
@@ -241,7 +250,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
             lifecycle = Lifecycle.ROOT_CLOSING;
 
             // Invoke root close callbacks
-            for (SnapshotJournal<?> journal : manager.journalsToCommit) {
+            for (SnapshotJournal<?> journal : manager.journalsToCommitWithRoot) {
                 try {
                     journal.commit();
                 } catch (Exception exception) {
@@ -253,7 +262,7 @@ public final class Transaction implements AutoCloseable, TransactionContext {
                 }
             }
 
-            manager.journalsToCommit.clear();
+            manager.journalsToCommitWithRoot.clear();
         }
 
         // Only this check will allow openOuter operations.

@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
@@ -20,10 +18,8 @@ final class TransactionManager {
     private static final ThreadLocal<TransactionManager> MANAGERS = ThreadLocal.withInitial(TransactionManager::new);
     final Thread thread = Thread.currentThread();
     final List<Transaction> stack = new ArrayList<>();
-    final List<SnapshotJournal<?>> journalsToCommit = new ArrayList<>();
+    final List<SnapshotJournal<?>> journalsToCommitWithRoot = new ArrayList<>();
     int currentDepth = -1;
-
-    private final Int2ObjectMap<Class<?>> debugMap = new Int2ObjectOpenHashMap<>();
 
     boolean isOpen() {
         return currentDepth > -1;
@@ -36,32 +32,24 @@ final class TransactionManager {
         return MANAGERS.get();
     }
 
-    /**
-     * Changing what is printed here will affect all places we debug
-     */
-    static String debugNameFrom(@Nullable Class<?> callerClass) {
-        if (callerClass == null) return "null";
-        return callerClass.toString();
-    }
-
     Transaction open(@Nullable TransactionContext parent, Class<?> callerClass) {
         if (parent != null) {
             Transaction parentImpl = (Transaction) parent;
             validateCurrentTransaction(parentImpl);
             parentImpl.validateOpen();
         } else if (isOpen()) {
-            String currentRoot = debugMap.get(0).toString();
-            throw new IllegalStateException("A root transaction of `" + currentRoot + "` is already active on this thread " + thread + " when `" + debugNameFrom(callerClass) + "` tried to open.");
+            //get the root's name
+            String currentRoot = getOpenTransaction(0).getDebugName();
+            throw new IllegalStateException("A root transaction of `" + currentRoot + "` is already active on this thread " + thread + " when `" + callerClass + "` tried to open.");
         }
 
         Transaction current;
         if (stack.size() == ++currentDepth) {
-            current = new Transaction(this, currentDepth);
+            current = new Transaction(this, currentDepth, callerClass);
             stack.add(current);
         } else {
             current = stack.get(currentDepth);
         }
-        debugMap.put(currentDepth, callerClass);
         current.lifecycle = TransactionContext.Lifecycle.OPEN;
         return current;
     }
@@ -105,8 +93,8 @@ final class TransactionManager {
         if (currentDepth != -1 && stack.get(currentDepth) == transaction)
             return;
 
-        String self = debugNameFrom(debugMap.get(transaction.depth()));
-        String actual = debugNameFrom(debugMap.get(currentDepth));
+        String self = transaction.getDebugName();
+        String actual = getOpenTransaction(currentDepth).getDebugName();
 
         String errorMessage = String.format(
                 "Transaction function was called on a transaction (%s) with depth `%d`, " +

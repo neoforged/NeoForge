@@ -23,24 +23,6 @@ public interface TransactionContext {
      */
     int depth();
 
-    /**
-     *
-     * {@return the current lifecycle of this transaction}
-     * 
-     * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
-     */
-    Lifecycle lifecycle();
-
-    /**
-     * {@return True if this transaction is open or closing, and false otherwise}
-     * 
-     * @throws IllegalStateException If this function is not called on the thread this transaction was opened in.
-     */
-    @ApiStatus.NonExtendable
-    default boolean isActive() {
-        return lifecycle().isActive();
-    }
-
     enum Lifecycle {
         /**
          * No transaction is currently open or closing.

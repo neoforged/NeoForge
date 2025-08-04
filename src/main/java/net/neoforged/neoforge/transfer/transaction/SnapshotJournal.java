@@ -66,6 +66,17 @@ public abstract class SnapshotJournal<T> {
     protected void releaseSnapshot(T snapshot) {}
 
     /**
+     * Called after the root transaction succeeded,
+     * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
+     *
+     * @param originalState state of this journal before the transactional operation.
+     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
+     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
+     */
+    @ApiStatus.OverrideOnly
+    protected void onRootCommit(T originalState) {}
+
+    /**
      * Update the stored snapshots so that the changes happening as part of the passed transaction can be correctly
      * committed or rolled back.
      * This function should be called every time the journal is about to change its internal state as part of a transaction.
@@ -85,11 +96,8 @@ public abstract class SnapshotJournal<T> {
             snapshots.set(currentDepth, snapshot);
 
             // This is a special case where we need to cast to access the add journalToCommit method.
-            // This should not be used as a usage example for your implementations
-            // with exception to the updateSnapshots method though you should just be able to call super.updateSnapshots to avoid
-            // doing it yourself when necessary.
-            if (transaction instanceof Transaction resolvedTransaction)
-                resolvedTransaction.addClosingJournal(this);
+            // You should never, however, cast to call commit or close!
+            ((Transaction) transaction).addClosingJournal(this);
         }
     }
 
@@ -103,9 +111,6 @@ public abstract class SnapshotJournal<T> {
     @ApiStatus.OverrideOnly
     protected void onClose(Transaction transaction, boolean wasAborted) {
         int currentDepth = transaction.depth();
-        // For testing and will be removed after deprecation period is over for handler reworks.
-        // This is to provide a quick way to give some metrics during the migration phase, unless another route can be decided on.
-        SnapshotJournalDebugInfo.updateDeepestSnapshot(currentDepth, this);
 
         // Get and remove the relevant snapshot.
         T snapshot = snapshots.remove(currentDepth);
@@ -128,17 +133,6 @@ public abstract class SnapshotJournal<T> {
             releaseSnapshot(snapshot);
         }
     }
-
-    /**
-     * Called after the root transaction succeeded,
-     * to perform irreversible actions such as {@code setChanged()} or neighbor updates.
-     *
-     * @param originalState state of this journal before the transactional operation.
-     *                      This corresponds to the first {@link #createSnapshot() snapshot} that was created in the transactional operation.
-     * @throws IllegalStateException when trying to open a new transaction during this method as the current transaction is still in the process of closing.
-     */
-    @ApiStatus.OverrideOnly
-    protected void onRootCommit(T originalState) {}
 
     final void commit() {
         // The result is guaranteed to be COMMITTED,
