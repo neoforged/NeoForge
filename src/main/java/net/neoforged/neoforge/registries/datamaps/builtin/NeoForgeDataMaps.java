@@ -21,6 +21,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -102,7 +103,8 @@ public class NeoForgeDataMaps {
      * <li>{@code stripped_stage}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
      * </ul>
      *
-     * The use of a string as the value is also possible, though discouraged in case more options are added in the future.
+     * Note that adding blocks to this data map will copy over the {@link RotatedPillarBlock#AXIS} property from the original state if present there at all. If you want more advanced behavior,
+     * implement the appropriate behaviors in your block class.
      */
     public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
             id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_STAGE_CODEC, false).build();
