@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.transfer.transaction;
 
-import org.jetbrains.annotations.ApiStatus;
-
 /**
  * A subset of a {@link Transaction} that lets journals properly record, manage their state,
  * or open inner transactions, but does not allow them to close the transaction they are passed.
@@ -16,7 +14,6 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @see SnapshotJournal#updateSnapshots(TransactionContext)
  */
-@ApiStatus.NonExtendable
 public sealed interface TransactionContext permits Transaction {
     /**
      * Gets the current depth of the transaction.
