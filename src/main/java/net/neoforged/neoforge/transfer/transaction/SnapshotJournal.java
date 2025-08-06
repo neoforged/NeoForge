@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> The objects that this journal uses to record its state snapshots.
  */
-public abstract class SnapshotJournal<@Nullable T> {
+public abstract class SnapshotJournal<T extends @Nullable Object> {
     /**
      * Used for entries of {@link #snapshots} that do not correspond to a snapshot.
      * {@code null} corresponds to a snapshot that happens to be {@code null}.
