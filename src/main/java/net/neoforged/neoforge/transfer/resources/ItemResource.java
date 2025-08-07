@@ -83,7 +83,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * Stream codec for a resource stack backed by an ItemResource. Accepts empty resources.
      */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC);
 
     /**
      * This is used only for registry, you should not use this method.

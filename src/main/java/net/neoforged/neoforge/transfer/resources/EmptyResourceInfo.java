@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer.resources;
 
+import java.util.Objects;
+
 /**
  * Information regarding the empty instances for a given resource type.
  *
@@ -14,7 +16,7 @@ package net.neoforged.neoforge.transfer.resources;
 // proposed it as a possible avenue to explore, but I was concerned it would be seen as a FluidType like system which it is not.
 // The purpose of this class is to set up the resource's empty instances of both its type and the resource stack.
 // The benefit of doing it this way, is that we can make ResourceStack.of(resource, amount) always be the route to take
-// to create a new stack. It will return either the new resource stack, or in the case of being empty, the empty instance below.
+// to create a new resource stack. It will return either the new resource stack, or in the case of being empty, the empty instance below.
 //Possible names off the top of my head were, but I'm not particularly sold on any of them:
 //  - ResourceInfo
 //  - EmptyResourceInfo
@@ -27,8 +29,11 @@ public final class EmptyResourceInfo<T extends IResource> {
      * A new resource info that initializes the empty {@link ResourceStack}instance.
      *
      * @param emptyInstance The empty instance of the resource type. In the case that the resource type is never empty, a default value should be provided.
+     * @throws NullPointerException if {@code emptyInstance} is {@code null}
+     *
      */
     public EmptyResourceInfo(T emptyInstance) {
+        Objects.requireNonNull(emptyInstance);
         this.emptyInstance = emptyInstance;
         this.emptyStackInstance = new ResourceStack<>(emptyInstance, 0);
     }

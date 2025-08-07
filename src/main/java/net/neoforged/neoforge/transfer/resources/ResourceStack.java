@@ -49,7 +49,8 @@ public final class ResourceStack<T extends IResource> {
     }
 
     /**
-     * Creates a codec with the resource being a field in the object.
+     * Creates a codec with the resource being a field in the object. Should the resource or amount be empty, the empty resource stack instance
+     * provided by the resource will be used.
      *
      * <pre>{@code
      * {
@@ -73,17 +74,16 @@ public final class ResourceStack<T extends IResource> {
     }
 
     /**
-     * Creates a standard stream codec for a ResourceStack of the specified resource type.
+     * Creates a standard stream codec for a ResourceStack of the specified resource type. Should the resource or amount be empty, the empty resource stack instance
+     * provided by the resource will be used.
      *
      * @param resourceCodec The codec for the resource type.
-     * @param stackFactory  The method used to create a new resource stack given a resource and an amount.
-     *                      This is expected to handle returning the EMPTY instance when the stack would be empty.
      */
-    public static <B extends FriendlyByteBuf, R extends IResource> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec, IStackFactory<R, ResourceStack<R>> stackFactory) {
+    public static <B extends FriendlyByteBuf, R extends IResource> StreamCodec<B, ResourceStack<R>> streamCodec(StreamCodec<? super B, R> resourceCodec) {
         return StreamCodec.composite(
                 resourceCodec, ResourceStack::resource,
                 ByteBufCodecs.VAR_INT, ResourceStack::amount,
-                stackFactory::create);
+                ResourceStack::of);
     }
 
     /**
@@ -143,10 +143,10 @@ public final class ResourceStack<T extends IResource> {
     }
 
     /**
-     * @param amount Amount to grow by. Must be non-negative.
+     * @param amount Amount to grow by. Must be non-negative. In the case of an overflow, the resulting stack's amount will be {@link Integer#MAX_VALUE}
      *
      * @return A new immutable instance of this resource stack with an amount increased by the specified {@code amount}.
-     *         If the resource was already empty, then the EMPTY instance will be returned instead
+     *         If the resource was already empty, then the EMPTY instance will be returned instead.
      *
      * @throws IllegalArgumentException when {@code amount} is negative.
      */
@@ -197,7 +197,7 @@ public final class ResourceStack<T extends IResource> {
      * @param <S> Type of stack
      *
      * @see ItemResource#toStack(int)
-     * @see ItemResource#withAmount(int)
+     * @see FluidResource#toStack(int)
      */
     public <S> S as(IStackFactory<T, S> stackFactory) {
         return stackFactory.create(resource, amount);

@@ -76,7 +76,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * Stream codec for a resource stack backed by an FluidResource. Accepts empty resources.
      */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -84,7 +84,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @ApiStatus.Internal
     public static FluidResource createDefaultInstance(Fluid fluid) {
         if (fluid == Fluids.EMPTY) return EMPTY;
-        return new FluidResource(new FluidStack(fluid, 1));
+        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
     }
 
     /**
@@ -99,7 +99,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         if (stack.isComponentsPatchEmpty())
             return stack.getFluid().getDefaultResource();
 
-        return new FluidResource(stack.copyWithAmount(1));
+        return new FluidResource(stack.copyWithAmount(FluidType.BUCKET_VOLUME));
     }
 
     /**
