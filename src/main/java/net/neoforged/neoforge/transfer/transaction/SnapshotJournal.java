@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.transaction;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -38,7 +37,13 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> The objects that this journal uses to record its state snapshots.
  */
-public abstract class SnapshotJournal<T> {
+public abstract class SnapshotJournal<T extends @Nullable Object> {
+    /**
+     * Used for entries of {@link #snapshots} that do not correspond to a snapshot.
+     * {@code null} corresponds to a snapshot that happens to be {@code null}.
+     */
+    private static final Object NO_SNAPSHOT = new Object();
+
     private final ArrayList<T> snapshots = new ArrayList<>();
 
     @Nullable
@@ -77,18 +82,17 @@ public abstract class SnapshotJournal<T> {
      * This function should be called every time the journal is about to change its internal state as part of a transaction.
      * However, only the first snapshot taken of that depth will be taken.
      */
+    @SuppressWarnings("unchecked")
     public void updateSnapshots(TransactionContext transaction) {
         int currentDepth = transaction.depth();
 
         snapshots.ensureCapacity(currentDepth);
         for (int i = snapshots.size(); i <= currentDepth; i++) {
-            snapshots.add(null);
+            snapshots.add((T) NO_SNAPSHOT);
         }
 
-        if (snapshots.get(currentDepth) == null) {
-            T snapshot = createSnapshot();
-            Objects.requireNonNull(snapshot, "Snapshot may not be null!");
-            snapshots.set(currentDepth, snapshot);
+        if (snapshots.get(currentDepth) == NO_SNAPSHOT) {
+            snapshots.set(currentDepth, createSnapshot());
 
             // This is a special case where we need to cast to access the add journalToCommit method.
             // You should never, however, cast to call commit or close!
@@ -117,7 +121,7 @@ public abstract class SnapshotJournal<T> {
             // The transaction is the root.
             originalState = snapshot;
             transaction.addCommittingJournal(this);
-        } else if (snapshots.get(currentDepth - 1) == null) {
+        } else if (snapshots.get(currentDepth - 1) == NO_SNAPSHOT) {
             // No snapshot yet, so move the snapshot one depth up.
             snapshots.set(currentDepth - 1, snapshot);
             // This is the first snapshot at this level: we need to add the closing journal to the previous depth.
@@ -129,11 +133,8 @@ public abstract class SnapshotJournal<T> {
     }
 
     final void commit() {
-        // The result is guaranteed to be COMMITTED,
-        // as this is only scheduled during onClose() when the root transaction is successful.
-        // For the same reason, the originalState is known to be non-null.
-        Objects.requireNonNull(originalState);
-
+        // This is only scheduled during onClose() when the root transaction is successful,
+        // hence the originalState is known to correspond to the first snapshot even if nullable.
         onRootCommit(originalState);
         releaseSnapshot(originalState);
         originalState = null;
