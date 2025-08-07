@@ -5,8 +5,11 @@
 
 package net.neoforged.neoforge.unittest.transfer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -169,5 +172,47 @@ public class TransactionTests {
         protected void revertToSnapshot(Integer snapshot) {
             setter.set(snapshot);
         }
+    }
+
+    @Test
+    void testNullSnapshots() {
+        class VoidJournal extends SnapshotJournal<Void> {
+            int createdSnapshots = 0;
+            int rootCommits = 0;
+
+            @Override
+            protected @Nullable Void createSnapshot() {
+                ++createdSnapshots;
+                return null;
+            }
+
+            @Override
+            protected void revertToSnapshot(@Nullable Void snapshot) {}
+
+            @Override
+            protected void onRootCommit(@Nullable Void originalState) {
+                if (originalState != null) {
+                    throw new AssertionError("originalState should have been null");
+                }
+                ++rootCommits;
+            }
+        }
+
+        var journal = new VoidJournal();
+        try (var tx = Transaction.open(null)) {
+            journal.updateSnapshots(tx);
+            assertThat(journal.createdSnapshots).isEqualTo(1);
+            // Second update is a no-op because the snapshot already exists
+            journal.updateSnapshots(tx);
+            assertThat(journal.createdSnapshots).isEqualTo(1);
+
+            try (var nested = Transaction.open(tx)) {
+                journal.updateSnapshots(nested);
+                assertThat(journal.createdSnapshots).isEqualTo(2);
+            }
+
+            tx.commit();
+        }
+        assertThat(journal.rootCommits).isOne();
     }
 }
