@@ -22,13 +22,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import org.jetbrains.annotations.ApiStatus;
@@ -39,19 +35,13 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
-     * Resource information used to initialize the empty instance fields {@link #EMPTY} and {@link #EMPTY_STACK}.
-     * This is predominantly used for {@link ResourceStack#of} to avoid allocation, but can be used for other inquiries
-     * as well should you want to go from an item resource to its empty instance.
-     */
-    private static final EmptyResourceInfo<ItemResource> INFO = new EmptyResourceInfo<>(new ItemResource(ItemStack.EMPTY));
-    /**
      * The empty resource instance of a {@link ItemResource}
      */
-    public static final ItemResource EMPTY = INFO.emptyInstance();
+    public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
     /**
      * The empty resource stack instance of a {@link ItemResource}.
      */
-    public static final ResourceStack<ItemResource> EMPTY_STACK = INFO.emptyResourceStack();
+    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     /**
      * Codec for an item resource.
@@ -70,7 +60,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * A codec for a {@code ResourceStack<ItemResource>} serializing the resource and the amount. Can accept empty resources.
      */
-    public static final Codec<ResourceStack<ItemResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC));
+    public static final Codec<ResourceStack<ItemResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, ItemResource::withAmount));
 
     /**
      * Stream codec for an item resource. Accepts empty resources.
@@ -83,7 +73,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * Stream codec for a resource stack backed by an ItemResource. Accepts empty resources.
      */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     /**
      * This is used only for registry, you should not use this method.
@@ -331,14 +321,16 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
-     * Creates a new {@link ResourceStack} of the item resource with the specified amount.
+     * Creates a new {@link ResourceStack} of the item resource with the specified amount. If an empty resource
+     * or an amount of 0 is used, then the empty resource stack instance {@link #EMPTY_STACK} will be returned.
      * 
      * @param amount Amount to make the stack with. Must be non-negative
      * @return A new {@link ResourceStack} with the specified amount.
      * @throws IllegalArgumentException when amount is negative
      */
     public ResourceStack<ItemResource> withAmount(int amount) {
-        return ResourceStack.of(this, amount);
+        if (amount == 0 || isEmpty()) return EMPTY_STACK;
+        return new ResourceStack<>(this, amount);
     }
 
     public int getMaxStackSize() {
@@ -352,32 +344,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public Component getHoverName() {
         return innerStack.getHoverName();
-    }
-
-    /**
-     * Determines if the specific ItemResource can be placed in the specified armor
-     * slot, for the entity.
-     *
-     * @param slot   Armor slot to be verified.
-     * @param entity The entity trying to equip the armor
-     * @return {@code true} if the given {@link ItemStack} can be inserted in the slot
-     */
-    public boolean canEquip(EquipmentSlot slot, LivingEntity entity) {
-        return innerStack.canEquip(slot, entity);
-    }
-
-    /**
-     * Determines if the specific ItemResource can be removed from, as an example, an entity.
-     *
-     * @return {@code true} if the given {@link ItemStack} can be unequipped; {@code false} otherwise
-     */
-    public boolean canUnequip() {
-        return !EnchantmentHelper.has(innerStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE);
-    }
-
-    @Override
-    public EmptyResourceInfo<ItemResource> getEmptyInfo() {
-        return INFO;
     }
 
     @Override

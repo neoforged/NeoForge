@@ -20,14 +20,4 @@ public interface IResource {
      * <p>Examples include item resource with air as an item, or fluid resource with empty fluid.
      */
     boolean isEmpty();
-
-    /**
-     * {@return The backing information for the resource} This provides information needed to get the empty resource instance as
-     * well as the empty {@link ResourceStack} instance from the resource. Be sure the resource type used in the info matches the resource type of your implementing class.
-     * This is expected to be a cached field.
-     * 
-     * @see ItemResource#getEmptyInfo()
-     * @see FluidResource#getEmptyInfo()
-     */
-    EmptyResourceInfo<? extends IResource> getEmptyInfo();
 }

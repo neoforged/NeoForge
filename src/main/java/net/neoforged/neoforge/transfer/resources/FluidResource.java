@@ -32,19 +32,13 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public final class FluidResource implements IDataComponentHolderResource<Fluid> {
     /**
-     * Resource information used to initialize the empty instance fields {@link #EMPTY} and {@link #EMPTY_STACK}.
-     * This is predominantly used for {@link ResourceStack#of} to avoid allocation, but can be used for other inquiries
-     * as well should you want to go from a fluid resource to its empty instance.
-     */
-    private static final EmptyResourceInfo<FluidResource> INFO = new EmptyResourceInfo<>(new FluidResource(FluidStack.EMPTY));
-    /**
      * The empty resource instance of a {@link FluidResource}
      */
-    public static final FluidResource EMPTY = INFO.emptyInstance();
+    public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
     /**
      * The empty resource stack instance of a {@link FluidResource}.
      */
-    public static final ResourceStack<FluidResource> EMPTY_STACK = INFO.emptyResourceStack();
+    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     /**
      * Codec for a fluid resource.
@@ -63,7 +57,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * A codec for a {@code ResourceStack<FluidResource>} serializing the resource and the amount. Can accept empty resources.
      */
-    public static final Codec<ResourceStack<FluidResource>> RESOURCE_STACK_CODEC = ResourceStack.codec(OPTIONAL_CODEC);
+    public static final Codec<ResourceStack<FluidResource>> RESOURCE_STACK_CODEC = ResourceStack.codec(OPTIONAL_CODEC, FluidResource::withAmount);
 
     /**
      * Stream codec for a fluid resource. Accepts empty resources.
@@ -76,7 +70,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     /**
      * Stream codec for a resource stack backed by an FluidResource. Accepts empty resources.
      */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -228,14 +222,15 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     /**
      * Creates a new {@link ResourceStack} of the fluid resource with the specified amount. If an empty resource
-     * or an amount of 0 is used, then the empty resource stack instance from {@link ResourceStack#of} will be returned.
+     * or an amount of 0 is used, then the empty resource stack instance {@link #EMPTY_STACK} will be returned.
      * 
      * @param amount Amount to make the stack with. Must be non-negative
      * @return A new {@link ResourceStack} with the specified amount.
      * @throws IllegalArgumentException when amount is negative
      */
     public ResourceStack<FluidResource> withAmount(int amount) {
-        return ResourceStack.of(this, amount);
+        if (amount == 0 || isEmpty()) return EMPTY_STACK;
+        return new ResourceStack<>(this, amount);
     }
 
     /**
@@ -301,24 +296,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     /**
-     * {@return the filled bucket item resource for the fluid resource}
-     */
-    public ItemResource getFilledBucket() {
-        // Only the instance and data components are expected to be used in getBucket(FluidStack).
-        // The amount is ignored.
-        return ItemResource.of(getFluidType().getBucket(innerStack));
-    }
-
-    /**
      * @return The hover name of the {@link FluidStack}
      */
     public Component getHoverName() {
         return innerStack.getHoverName();
-    }
-
-    @Override
-    public EmptyResourceInfo<FluidResource> getEmptyInfo() {
-        return INFO;
     }
 
     @Override

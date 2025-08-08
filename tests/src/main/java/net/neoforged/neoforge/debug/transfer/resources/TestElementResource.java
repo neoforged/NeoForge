@@ -9,7 +9,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
-import net.neoforged.neoforge.transfer.resources.EmptyResourceInfo;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
@@ -25,9 +24,8 @@ public enum TestElementResource implements IResource, StringRepresentable {
     AIR("air");
 
     private final String elementName;
-    public static final EmptyResourceInfo<TestElementResource> INFO = new EmptyResourceInfo<>(EMPTY);
 
-    private static final ResourceStack<TestElementResource> EMPTY_STACK = INFO.emptyResourceStack();
+    private static final ResourceStack<TestElementResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     TestElementResource(String elementName) {
         this.elementName = elementName;
@@ -36,11 +34,6 @@ public enum TestElementResource implements IResource, StringRepresentable {
     @Override
     public boolean isEmpty() {
         return this == EMPTY;
-    }
-
-    @Override
-    public EmptyResourceInfo<TestElementResource> getEmptyInfo() {
-        return INFO;
     }
 
     @Override
