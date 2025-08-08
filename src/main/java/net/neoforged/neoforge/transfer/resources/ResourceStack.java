@@ -101,21 +101,6 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
         return ResourceHandlerUtil.isEmpty(resource(), amount());
     }
 
-    /**
-     * A helper method to convert the resource stack to a given type such as an {@link ItemStack}, {@link FluidStack}, or other modded stack type.
-     *
-     * @param stackFactory Factory used to create the new instance
-     * @return Stack instance of type {@code T} using the resource and amount of the resource stack.
-     *
-     * @param <S> Type of stack
-     *
-     * @see ItemResource#toStack(int)
-     * @see FluidResource#toStack(int)
-     */
-    public <S> S as(IStackFactory<T, S> stackFactory) {
-        return stackFactory.create(resource, amount);
-    }
-
     @Override
     public String toString() {
         return resource + "(" + amount + ")";
