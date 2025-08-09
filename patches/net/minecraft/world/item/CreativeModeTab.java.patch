@@ -145,7 +145,7 @@
              return this;
          }
  
-@@ -182,13 +_,94 @@
+@@ -182,13 +_,109 @@
              return this;
          }
  
@@ -230,6 +230,21 @@
 +        public final CreativeModeTab.Builder withTabsAfter(net.minecraft.resources.ResourceKey<CreativeModeTab>... tabs) {
 +            java.util.stream.Stream.of(tabs).map(net.minecraft.resources.ResourceKey::location).forEach(this.tabsAfter::add);
 +            return this;
++        }
++
++        /**
++         * Helper to set this tabs contents to everything in the supplied Collection of Holders.
++         * Intended for use with {@link net.neoforged.neoforge.registries.DeferredRegister#getEntries()}, for Item or Block DeferredRegisters.
++         * Entries added through this method are filtered out if {@link ItemLike#asItem()} returns {@link Items.AIR} or if disabled via {@link Item#isEnabled(FeatureFlagSet)}.
++         * Note that like the vanilla method this overrides any other calls for this tab to {@link #displayItems}.
++         */
++        public CreativeModeTab.Builder displayItems(Collection<? extends net.minecraft.core.Holder<? extends ItemLike>> collection) {
++            return this.displayItems((p, o) -> collection.stream()
++                    .map(net.minecraft.core.Holder::value)
++                    .map(ItemLike::asItem)
++                    .filter(i -> i != Items.AIR)
++                    .filter(i -> i.isEnabled(p.enabledFeatures()))
++                    .forEach(o::accept));
 +        }
 +
          public CreativeModeTab build() {
