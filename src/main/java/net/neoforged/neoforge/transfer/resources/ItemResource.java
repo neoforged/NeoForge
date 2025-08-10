@@ -6,9 +6,6 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -277,35 +274,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
         return this.innerStack.copyWithCount(1);
     }
 
-    /**
-     * Creates a list of {@link ItemStack ItemStacks} of the specified count taking into account the max stack size of the item.
-     * Note: This is not guaranteed to be mutable. For the case of empty, an immutable empty list is returned.
-     *
-     * @param count The amount of the item the stack should have. Must be non-negative.
-     * @return A list of item stacks that all have a maximum count of the max stack size of the item.
-     * @throws IllegalArgumentException when the count is negative.
-     */
-    public List<ItemStack> toStacks(int count) {
-        TransferPreconditions.checkNonNegative(count);
-        if (count == 0 || isEmpty())
-            return Collections.emptyList();
-
-        int maxStackSize = getMaxStackSize();
-        int stackCount = count / maxStackSize;
-        int remainder = count % maxStackSize;
-
-        List<ItemStack> stacks = new ArrayList<>(stackCount + 1);
-        var stack = toStack(maxStackSize);
-        for (int i = 0; i < stackCount; i++) {
-            stacks.add(stack.copy());
-        }
-
-        if (remainder > 0) {
-            stacks.add(stack.copyWithCount(remainder));
-        }
-        return stacks;
-    }
-
     public int getMaxStackSize() {
         return innerStack.getMaxStackSize();
     }
@@ -332,6 +300,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     @Override
     public String toString() {
-        return innerStack.getItem().toString();
+        //Item string with patch count
+        return value() + " [" + getComponentsPatch().size() + "]";
     }
 }

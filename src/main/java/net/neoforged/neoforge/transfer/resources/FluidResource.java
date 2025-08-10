@@ -288,6 +288,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     @Override
     public String toString() {
-        return innerStack.getFluid().getFluidType().toString();
+        //Fluid type string with patch count
+        return getFluidType() + " [" + getComponentsPatch().size() + "]";
     }
 }
