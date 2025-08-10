@@ -41,8 +41,6 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -395,15 +393,6 @@ public interface IItemStackExtension {
     @Nullable
     default <T> T getCapability(ItemCapability<T, @Nullable Void> capability) {
         return capability.getCapability(self(), null);
-    }
-
-    /**
-     * Returns an immutable {@link ResourceStack} with the current count.
-     * 
-     * @return An immutable {@link ResourceStack} with the current count
-     */
-    default ResourceStack<ItemResource> immutable() {
-        return ItemResource.of(self()).withAmount(self().getCount());
     }
 
     /**

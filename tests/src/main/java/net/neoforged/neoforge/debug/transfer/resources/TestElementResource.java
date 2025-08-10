@@ -10,7 +10,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 
 /**
  * Demonstrates a possible option of how to make an IResource using an Enum.
@@ -24,8 +23,6 @@ public enum TestElementResource implements IResource, StringRepresentable {
     AIR("air");
 
     private final String elementName;
-
-    private static final ResourceStack<TestElementResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     TestElementResource(String elementName) {
         this.elementName = elementName;

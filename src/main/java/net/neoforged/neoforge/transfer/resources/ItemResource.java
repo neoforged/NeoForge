@@ -38,10 +38,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * The empty resource instance of a {@link ItemResource}
      */
     public static final ItemResource EMPTY = new ItemResource(ItemStack.EMPTY);
-    /**
-     * The empty resource stack instance of a {@link ItemResource}.
-     */
-    public static final ResourceStack<ItemResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     /**
      * Codec for an item resource.
@@ -58,22 +54,12 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
             itemResource -> itemResource.isEmpty() ? Optional.empty() : Optional.of(itemResource));
 
     /**
-     * A codec for a {@code ResourceStack<ItemResource>} serializing the resource and the amount. Can accept empty resources.
-     */
-    public static final Codec<ResourceStack<ItemResource>> RESOURCE_STACK_CODEC = Codec.lazyInitialized(() -> ResourceStack.codec(OPTIONAL_CODEC, ItemResource::withAmount));
-
-    /**
      * Stream codec for an item resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, ItemResource> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.holderRegistry(Registries.ITEM), ItemResource::getHolder,
             DataComponentPatch.STREAM_CODEC, ItemResource::getComponentsPatch,
             ItemResource::of);
-
-    /**
-     * Stream codec for a resource stack backed by an ItemResource. Accepts empty resources.
-     */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<ItemResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(ItemResource.STREAM_CODEC, ItemResource::withAmount);
 
     /**
      * This is used only for registry, you should not use this method.
@@ -318,19 +304,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
             stacks.add(stack.copyWithCount(remainder));
         }
         return stacks;
-    }
-
-    /**
-     * Creates a new {@link ResourceStack} of the item resource with the specified amount. If an empty resource
-     * or an amount of 0 is used, then the empty resource stack instance {@link #EMPTY_STACK} will be returned.
-     * 
-     * @param amount Amount to make the stack with. Must be non-negative
-     * @return A new {@link ResourceStack} with the specified amount.
-     * @throws IllegalArgumentException when amount is negative
-     */
-    public ResourceStack<ItemResource> withAmount(int amount) {
-        if (amount == 0 || isEmpty()) return EMPTY_STACK;
-        return new ResourceStack<>(this, amount);
     }
 
     public int getMaxStackSize() {

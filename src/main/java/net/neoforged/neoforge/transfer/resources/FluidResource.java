@@ -35,10 +35,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * The empty resource instance of a {@link FluidResource}
      */
     public static final FluidResource EMPTY = new FluidResource(FluidStack.EMPTY);
-    /**
-     * The empty resource stack instance of a {@link FluidResource}.
-     */
-    public static final ResourceStack<FluidResource> EMPTY_STACK = new ResourceStack<>(EMPTY, 0);
 
     /**
      * Codec for a fluid resource.
@@ -55,22 +51,12 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
             resource -> resource.isEmpty() ? Optional.empty() : Optional.of(resource));
 
     /**
-     * A codec for a {@code ResourceStack<FluidResource>} serializing the resource and the amount. Can accept empty resources.
-     */
-    public static final Codec<ResourceStack<FluidResource>> RESOURCE_STACK_CODEC = ResourceStack.codec(OPTIONAL_CODEC, FluidResource::withAmount);
-
-    /**
      * Stream codec for a fluid resource. Accepts empty resources.
      */
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidResource> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.holderRegistry(Registries.FLUID), FluidResource::getHolder,
             DataComponentPatch.STREAM_CODEC, FluidResource::getComponentsPatch,
             FluidResource::of);
-
-    /**
-     * Stream codec for a resource stack backed by an FluidResource. Accepts empty resources.
-     */
-    public static final StreamCodec<RegistryFriendlyByteBuf, ResourceStack<FluidResource>> RESOURCE_STACK_STREAM_CODEC = ResourceStack.streamCodec(FluidResource.STREAM_CODEC, FluidResource::withAmount);
 
     /**
      * This is used only for registry, you should not use this method!
@@ -141,7 +127,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
         if (fluid == Fluids.EMPTY) return EMPTY;
         if (patch.isEmpty()) return fluid.getDefaultResource();
-        return new FluidResource(new FluidStack(fluid, 1, patch));
+        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME, patch));
     }
 
     /**
@@ -218,19 +204,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @Override
     public FluidResource without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
-    }
-
-    /**
-     * Creates a new {@link ResourceStack} of the fluid resource with the specified amount. If an empty resource
-     * or an amount of 0 is used, then the empty resource stack instance {@link #EMPTY_STACK} will be returned.
-     * 
-     * @param amount Amount to make the stack with. Must be non-negative
-     * @return A new {@link ResourceStack} with the specified amount.
-     * @throws IllegalArgumentException when amount is negative
-     */
-    public ResourceStack<FluidResource> withAmount(int amount) {
-        if (amount == 0 || isEmpty()) return EMPTY_STACK;
-        return new ResourceStack<>(this, amount);
     }
 
     /**

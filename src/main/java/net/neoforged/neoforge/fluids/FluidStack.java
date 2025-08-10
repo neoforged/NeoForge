@@ -34,8 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
-import net.neoforged.neoforge.transfer.resources.ResourceStack;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -279,15 +277,6 @@ public final class FluidStack implements MutableDataComponentHolder {
             fluidStack.setAmount(amount);
             return fluidStack;
         }
-    }
-
-    /**
-     * Returns an immutable {@link ResourceStack} with the current count.
-     * 
-     * @return An immutable {@link ResourceStack} with the current count
-     */
-    public ResourceStack<FluidResource> immutable() {
-        return FluidResource.of(this).withAmount(amount);
     }
 
     /**
