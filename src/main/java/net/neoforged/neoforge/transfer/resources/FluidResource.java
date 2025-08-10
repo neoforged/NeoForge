@@ -140,12 +140,16 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
         this.innerStack = stack;
     }
 
-    /**
-     * @return The {@link Fluid} of this resource from the inner {@link FluidStack}
-     */
     @Override
     public Fluid value() {
         return innerStack.getFluid();
+    }
+
+    /**
+     * @return The {@link Fluid} of this resource from the inner {@link FluidStack}
+     */
+    public Fluid getFluid() {
+        return value();
     }
 
     /**
@@ -154,6 +158,13 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @Override
     public Holder<Fluid> getHolder() {
         return innerStack.getFluidHolder();
+    }
+
+    /**
+     * @return the fluid type of this resource
+     */
+    public FluidType getFluidType() {
+        return innerStack.getFluidType();
     }
 
     /**
@@ -204,13 +215,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @Override
     public FluidResource without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());
-    }
-
-    /**
-     * @return the fluid type of this resource
-     */
-    public FluidType getFluidType() {
-        return innerStack.getFluidType();
     }
 
     @Override
