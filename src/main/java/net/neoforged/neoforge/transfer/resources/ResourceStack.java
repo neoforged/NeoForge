@@ -9,10 +9,9 @@ import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 
 /**
  * Creates a resource stack from a given {@link IResource resource} and {@code amount}.
- * 
- * @param resource The resource to wrap the stack around.
- * @param amount   The amount of the resource the stack is holding. Must be non-negative. Should only be 0 if the resource isEmpty
  *
+ * @param resource The resource to wrap the stack around.
+ * @param amount   The amount of the resource the stack is holding.
  */
 public record ResourceStack<T extends IResource>(T resource, int amount) {
     /**
@@ -27,6 +26,6 @@ public record ResourceStack<T extends IResource>(T resource, int amount) {
 
     @Override
     public String toString() {
-        return resource + "(" + amount + ")";
+        return amount + "x " + resource;
     }
 }

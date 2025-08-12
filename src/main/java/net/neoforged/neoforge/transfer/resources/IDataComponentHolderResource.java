@@ -18,15 +18,13 @@ import net.minecraft.world.item.ItemStack;
  * which holds data components and patches associated to it; backed by an {@link Item}
  *
  * @param <T> The type of the backing instance.
- * @see ItemResource
- * @see FluidResource
  */
 public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
     boolean isComponentsPatchEmpty();
 
     /**
      * Creates a new instance of the resource with the desired patch applied on top of the existing one.
-     * 
+     *
      * @param patch The patch added to the new resource instance.
      * @return A new resource instance with applied patch.
      *         In the case of the resource being empty, the patch is empty, or the patch matches the current patch, then resource returns itself.

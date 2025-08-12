@@ -16,28 +16,21 @@ import org.jetbrains.annotations.ApiStatus;
  * A helper version of {@link IResource} intended for resources registered to some registry bound by some holder, such as {@link Item Item} is for {@link ItemResource}
  *
  * @param <T> The type of the backing instance.
- * @see ItemResource
- * @see FluidResource
  */
 public interface IRegisteredResource<T> extends IResource {
     /**
-     * @return The backing instance of the resource.
-     * @see ItemResource#value() returns an Item
-     * @see FluidResource#value() returns a Fluid
+     * {@return the backing instance of the resource}
      */
     T value();
 
     /**
      * {@return The registered holder of the backing resource}
-     * 
-     * @see ItemResource#getHolder()
-     * @see FluidResource#getHolder()
      */
     Holder<T> getHolder();
 
     /**
      * @param tag Tag to check
-     * @return {@code true} if the holder from {@link #getHolder()} has the specified tag applied
+     * @return {@code true} if the holder from {@link #getHolder()} is in the specified tag
      */
     @ApiStatus.NonExtendable
     default boolean is(TagKey<T> tag) {
@@ -64,7 +57,7 @@ public interface IRegisteredResource<T> extends IResource {
 
     /**
      * @param holder the holder to check
-     * @return {@code true} if the holder's value is exactly equal ('==') to the instance value from {@link #value()}
+     * @return {@code true} if the holder's value is the instance value from {@link #value()}
      */
     @ApiStatus.NonExtendable
     default boolean is(Holder<T> holder) {

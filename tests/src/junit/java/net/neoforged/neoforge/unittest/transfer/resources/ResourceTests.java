@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 class ResourceTests {
     @Test
     void basicItemResourceChecks() {
-        //Basic apple
         ItemResource apple = ItemResource.of(Items.APPLE);
         Assertions.assertNotNull(apple);
         Assertions.assertFalse(apple.isEmpty(), "Apples should not be empty");

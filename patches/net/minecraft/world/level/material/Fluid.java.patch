@@ -46,7 +46,7 @@
 +    }
 +
 +    /**
-+     * Use the {@link net.neoforged.neoforge.transfer.resources.FluidResource#of FluidResource.of} instead.
++     * Use {@link net.neoforged.neoforge.transfer.resources.FluidResource#of FluidResource.of} instead.
 +     */
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public final net.neoforged.neoforge.transfer.resources.FluidResource getDefaultResource() {
