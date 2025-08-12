@@ -8,7 +8,6 @@ package net.neoforged.neoforge.common.extensions;
 import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
