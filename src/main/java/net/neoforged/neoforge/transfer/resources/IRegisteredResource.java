@@ -13,9 +13,9 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * A helper version of {@link IResource} intended for resources registered to some registry bound by some holder, such as {@link Item Item} is for {@link ItemResource}
+ * Helper interface for resources backed by a {@linkplain #value registry entry}.
  *
- * @param <T> The type of the backing instance.
+ * @param <T> The type of the backing registry entry.
  */
 public interface IRegisteredResource<T> extends IResource {
     /**

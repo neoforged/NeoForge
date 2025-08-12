@@ -9,17 +9,17 @@ import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 /**
- * A helper version of {@link IResource} intended for resources registered to some registry bound by some backing
- * that also holds data component values. Such as {@link ItemResource} that has an inner {@link ItemStack}
- * which holds data components and patches associated to it; backed by an {@link Item}
+ * Helper interface for resources backed by a registry entry and which also hold data component values.
  *
- * @param <T> The type of the backing instance.
+ * @param <T> The type of the backing registry entry.
  */
 public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
+    /**
+     * Checks if the resource's data component holder has no patches applied to it.
+     * Equivalent to checking if the {@link #getComponentsPatch() patch} is empty, but more efficient.
+     */
     boolean isComponentsPatchEmpty();
 
     /**
@@ -29,7 +29,7 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
      * @return A new resource instance with applied patch.
      *         In the case of the resource being empty, the patch is empty, or the patch matches the current patch, then resource returns itself.
      */
-    IDataComponentHolderResource<T> withPatch(DataComponentPatch patch);
+    IDataComponentHolderResource<T> withMergedPatch(DataComponentPatch patch);
 
     /**
      * Creates a new copy of this resource with the set data component.

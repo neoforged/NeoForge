@@ -94,7 +94,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     /**
      * <strong>Note:</strong> This cannot be called before your fluid is registered
-     * 
+     *
      * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
@@ -178,7 +178,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     @Override
-    public FluidResource withPatch(DataComponentPatch patch) {
+    public FluidResource withMergedPatch(DataComponentPatch patch) {
         if (isEmpty() || patch.isEmpty() || innerStack.getComponentsPatch().equals(patch))
             return this;
 
@@ -231,7 +231,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * Creates an {@link FluidStack} of the specified count.
      *
      * @param amount The amount of the fluid the stack should have. Must be non-negative.
-     * @return A new copy of the inner fluid stack with the specified count.
      * @throws IllegalArgumentException when amount is negative.
      */
     public FluidStack toStack(int amount) {

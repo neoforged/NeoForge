@@ -204,7 +204,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     @Override
-    public ItemResource withPatch(DataComponentPatch patch) {
+    public ItemResource withMergedPatch(DataComponentPatch patch) {
         if (isEmpty() || patch.isEmpty() || innerStack.getComponentsPatch().equals(patch))
             return this;
 
@@ -260,7 +260,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * Creates an {@link ItemStack} of the specified count.
      *
      * @param count The amount of the item the stack should have. Must be non-negative.
-     * @return A new copy of the inner item stack with the specified count.
      * @throws IllegalArgumentException when count is negative.
      */
     public ItemStack toStack(int count) {
@@ -271,13 +270,14 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     /**
      * Creates an {@link ItemStack} with a count of 1.
-     *
-     * @return A new copy of the inner item stack with a count of 1.
      */
     public ItemStack toStack() {
         return this.innerStack.copyWithCount(1);
     }
 
+    /**
+     * @see ItemStack#getMaxStackSize()
+     */
     public int getMaxStackSize() {
         return innerStack.getMaxStackSize();
     }
