@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -217,10 +219,10 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     @Override
     public <D> ItemResource with(DataComponentType<D> type, D data) {
         if (isEmpty()) return ItemResource.EMPTY;
+        if (Objects.equals(get(type), data)) return this;
+
         ItemStack stack = innerStack.copy();
         stack.set(type, data);
-        if (ItemStack.isSameItemSameComponents(innerStack, stack)) return this;
-
         return ItemResource.of(stack);
     }
 
@@ -233,10 +235,10 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     @Override
     public ItemResource without(DataComponentType<?> type) {
         if (isEmpty()) return ItemResource.EMPTY;
+        if (get(type) == null) return this;
+
         ItemStack stack = innerStack.copy();
         stack.remove(type);
-        if (ItemStack.isSameItemSameComponents(innerStack, stack)) return this;
-
         return ItemResource.of(stack);
     }
 

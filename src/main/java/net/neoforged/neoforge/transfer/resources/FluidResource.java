@@ -6,6 +6,8 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
+
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -190,9 +192,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @Override
     public <D> FluidResource with(DataComponentType<D> type, D data) {
         if (isEmpty()) return FluidResource.EMPTY;
+        if (Objects.equals(get(type), data)) return this;
+
         FluidStack stack = innerStack.copy();
         stack.set(type, data);
-        if (FluidStack.isSameFluidSameComponents(innerStack, stack)) return this;
         return FluidResource.of(stack);
     }
 
@@ -205,9 +208,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @Override
     public FluidResource without(DataComponentType<?> type) {
         if (isEmpty()) return FluidResource.EMPTY;
+        if (get(type) == null) return this;
+
         FluidStack stack = innerStack.copy();
         stack.remove(type);
-        if (FluidStack.isSameFluidSameComponents(innerStack, stack)) return this;
         return FluidResource.of(stack);
     }
 
