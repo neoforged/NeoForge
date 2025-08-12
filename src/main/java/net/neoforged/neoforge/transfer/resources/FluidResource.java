@@ -257,11 +257,11 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     /**
-     * {@return true if the stack components and instance matches the inner stack's components and instance} Uses the {@link FluidStack#isSameFluidSameComponents(FluidStack, FluidStack)} method for comparison.
+     * {@return true if this resource matches the fluid and components of the passed stack}
      *
      * @param stack the fluid stack to check
      */
-    public boolean is(FluidStack stack) {
+    public boolean matches(FluidStack stack) {
         return FluidStack.isSameFluidSameComponents(stack, innerStack);
     }
 
@@ -285,7 +285,9 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof FluidResource other && other.is(innerStack);
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        FluidResource other = (FluidResource) obj;
+        return FluidStack.isSameFluidSameComponents(this.innerStack, other.innerStack);
     }
 
     @Override

@@ -173,11 +173,11 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     }
 
     /**
-     * {@return true if the stack components and instance matches the inner stack's components and instance} Uses the {@link ItemStack#isSameItemSameComponents(ItemStack, ItemStack)} method for comparison.
+     * {@return true if this resource matches the item and components of the passed stack}
      *
      * @param stack the item stack to check
      */
-    public boolean is(ItemStack stack) {
+    public boolean matches(ItemStack stack) {
         return ItemStack.isSameItemSameComponents(stack, innerStack);
     }
 
@@ -296,7 +296,9 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        return obj instanceof ItemResource other && other.is(innerStack);
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        ItemResource other = (ItemResource) obj;
+        return ItemStack.isSameItemSameComponents(this.innerStack, other.innerStack);
     }
 
     @Override
