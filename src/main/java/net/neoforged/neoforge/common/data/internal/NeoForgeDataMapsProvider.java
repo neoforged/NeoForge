@@ -92,7 +92,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
 
         final var strippables = builder(NeoForgeDataMaps.STRIPPABLES);
         ObfuscationReflectionHelper.<Map<Block, Block>, AxeItem>getPrivateValue(AxeItem.class, null, "STRIPPABLES")
-                .forEach((block, strippedStage) -> strippables.add(strippedStage.builtInRegistryHolder(), new Strippable(strippedStage), false));
+                .forEach((block, strippedStage) -> strippables.add(block.builtInRegistryHolder(), new Strippable(strippedStage), false));
 
         final var monsterRoomMobs = builder(NeoForgeDataMaps.MONSTER_ROOM_MOBS);
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
