@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.resources;
 
 import com.mojang.serialization.Codec;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
