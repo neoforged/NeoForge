@@ -205,7 +205,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
 
     @Override
     public ItemResource withMergedPatch(DataComponentPatch patch) {
-        if (isEmpty() || patch.isEmpty() || innerStack.getComponentsPatch().equals(patch))
+        if (isEmpty() || patch.isEmpty())
             return this;
 
         ItemStack stack = innerStack.copy();

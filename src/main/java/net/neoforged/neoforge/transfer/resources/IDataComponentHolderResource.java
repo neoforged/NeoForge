@@ -13,6 +13,9 @@ import net.minecraft.core.component.DataComponentType;
 /**
  * Helper interface for resources backed by a registry entry and which also hold data component values.
  *
+ * <p>Note that {@link #isEmpty() empty resources} never have any data components,
+ * and methods that modify data components will simply return the empty resource instance again.
+ *
  * @param <T> The type of the backing registry entry.
  */
 public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>, DataComponentHolder {
@@ -23,29 +26,26 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
     boolean isComponentsPatchEmpty();
 
     /**
-     * Creates a new instance of the resource with the desired patch applied on top of the existing one.
+     * {@return an instance of the resource with the desired patch applied on top of the existing one}
      *
      * @param patch The patch added to the new resource instance.
-     * @return A new resource instance with applied patch.
-     *         In the case of the resource being empty, the patch is empty, or the patch matches the current patch, then resource returns itself.
+     * @implSpec If the patch is empty, the same resource instance is returned directly.
      */
     IDataComponentHolderResource<T> withMergedPatch(DataComponentPatch patch);
 
     /**
-     * Creates a new copy of this resource with the set data component.
+     * {@return a resource with the data component set to the given value}
      *
      * @param type the type of data component
      * @param data the data to set
      * @param <D>  the type of data component
-     * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
     <D> IDataComponentHolderResource<T> with(DataComponentType<D> type, D data);
 
     /**
-     * Creates a new copy of this resource without the data component explicitly removing it from the holder.
+     * {@return a resource without the data component, i.e. with the data component explicitly removed}
      *
      * @param type the type of data component
-     * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
     IDataComponentHolderResource<T> without(DataComponentType<?> type);
 
@@ -55,22 +55,20 @@ public interface IDataComponentHolderResource<T> extends IRegisteredResource<T>,
     DataComponentPatch getComponentsPatch();
 
     /**
-     * Creates a new copy of this resource with the set data component.
+     * {@return a resource with the data component set to the given value}
      *
      * @param type the supplier for the type of data component
      * @param data the data to set
      * @param <D>  the type of data component
-     * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
     default <D> IDataComponentHolderResource<T> with(Supplier<? extends DataComponentType<D>> type, D data) {
         return with(type.get(), data);
     }
 
     /**
-     * Creates a new copy of this resource without the data component.
+     * {@return a resource without the data component, i.e. with the data component explicitly removed}
      *
      * @param type the supplier for the type of data component
-     * @return The new resource. In the case of the resource being empty, the empty instance should be returned instead with no patches.
      */
     default IDataComponentHolderResource<T> without(Supplier<? extends DataComponentType<?>> type) {
         return without(type.get());

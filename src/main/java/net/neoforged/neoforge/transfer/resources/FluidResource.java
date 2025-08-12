@@ -179,7 +179,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
 
     @Override
     public FluidResource withMergedPatch(DataComponentPatch patch) {
-        if (isEmpty() || patch.isEmpty() || innerStack.getComponentsPatch().equals(patch))
+        if (isEmpty() || patch.isEmpty())
             return this;
 
         FluidStack stack = innerStack.copy();
