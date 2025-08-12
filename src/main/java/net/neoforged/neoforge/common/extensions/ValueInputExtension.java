@@ -8,7 +8,9 @@ package net.neoforged.neoforge.common.extensions;
 import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.storage.ValueInput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 /**
  * Extension class for {@link ValueInput}
@@ -24,5 +26,9 @@ public interface ValueInputExtension {
     default Set<String> keySet() {
         //noinspection deprecation
         return self().read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseThrow().keySet();
+    }
+
+    default void readChild(String key, ValueIOSerializable child) {
+        child.deserialize(self().childOrEmpty(key));
     }
 }
