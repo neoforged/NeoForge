@@ -27,6 +27,12 @@ public interface ValueInputExtension {
         return self().read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElseThrow().keySet();
     }
 
+    /**
+     * Read the given {@code child} object from the given {@code key}.
+     *
+     * @param key   the key to read the child from
+     * @param child the child to read from given key
+     */
     default void readChild(String key, ValueIOSerializable child) {
         child.deserialize(self().childOrEmpty(key));
     }
