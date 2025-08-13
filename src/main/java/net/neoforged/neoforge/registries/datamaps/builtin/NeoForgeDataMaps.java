@@ -102,7 +102,7 @@ public class NeoForgeDataMaps {
      * <li>{@code stripped_block}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
      * </ul>
      *
-     * Note that adding blocks to this data map will copy over all properties from the original state if present there at all.
+     * Note that adding blocks to this data map will copy over all properties from the original, unstripped state.
      * If you want more advanced behavior, implement the appropriate behaviors in your block class.
      */
     public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
