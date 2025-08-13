@@ -50,7 +50,7 @@
 +    @org.jetbrains.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
 +        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);
++        if (strippable != null) return strippable.strippedBlock().defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS));
 +        Block block = STRIPPABLES.get(originalState.getBlock());
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }

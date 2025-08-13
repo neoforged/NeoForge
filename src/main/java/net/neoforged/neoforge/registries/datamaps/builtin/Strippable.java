@@ -9,11 +9,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 
 /**
  * Data map value for {@link NeoForgeDataMaps#STRIPPABLES raid hero gifts}.
- *
- * Note that the stripped block will inherit all block state properties of the unstripped block.
+ * Note that the stripped block will inherit the {@link RotatedPillarBlock#AXIS} property of the unstripped block.
  *
  * @param strippedBlock the stripped block, as a result of being right-clicked by an axe.
  */
