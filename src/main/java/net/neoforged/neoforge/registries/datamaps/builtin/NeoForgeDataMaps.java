@@ -198,6 +198,7 @@ public class NeoForgeDataMaps {
         event.register(OXIDIZABLES);
         event.register(PARROT_IMITATIONS);
         event.register(RAID_HERO_GIFTS);
+        event.register(STRIPPABLES);
         event.register(VIBRATION_FREQUENCIES);
         event.register(VILLAGER_TYPES);
         event.register(WAXABLES);
