@@ -43,7 +43,7 @@
                  if (optional2.isPresent()) {
                      p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
                      p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -114,8 +_,27 @@
+@@ -114,8 +_,25 @@
          }
      }
  
@@ -58,9 +58,7 @@
      private Optional<BlockState> getStripped(BlockState p_150691_) {
 +        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) {
-+            return Optional.of(strippable.strippedBlock().defaultBlockState())
-+                    .map(BlockState::getBlock)
-+                    .map(block -> block.withPropertiesOf(p_150691_));
++            return Optional.of(strippable.strippedBlock()).map(block -> block.withPropertiesOf(p_150691_));
 +        }
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
              .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
