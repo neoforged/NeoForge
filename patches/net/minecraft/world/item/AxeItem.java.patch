@@ -1,10 +1,11 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -24,6 +_,7 @@
+@@ -24,6 +_,8 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class AxeItem extends Item {
 +    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
++    @Deprecated
      protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
          .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
          .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
