@@ -95,20 +95,6 @@ public class NeoForgeDataMaps {
             id("monster_room_mobs"), Registries.ENTITY_TYPE, MonsterRoomMob.CODEC).synced(MonsterRoomMob.WEIGHT_CODEC, false).build();
 
     /**
-     * The {@linkplain Block} data map that replaces {@link AxeItem#STRIPPABLES}.
-     * <p>
-     * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
-     * <ul>
-     * <li>{@code stripped_block}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
-     * </ul>
-     *
-     * Note that adding blocks to this data map will copy over all properties from the original, unstripped state.
-     * If you want more advanced behavior, implement the appropriate behaviors in your block class.
-     */
-    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
-            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_BLOCK_CODEC, false).build();
-
-    /**
      * The {@linkplain Block} data map that replaces {@link WeatheringCopper#NEXT_BY_BLOCK}.
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/oxidizables.json}, and the values are objects with 1 field:
@@ -144,6 +130,20 @@ public class NeoForgeDataMaps {
      */
     public static final DataMapType<VillagerProfession, RaidHeroGift> RAID_HERO_GIFTS = DataMapType.builder(
             id("raid_hero_gifts"), Registries.VILLAGER_PROFESSION, RaidHeroGift.CODEC).synced(RaidHeroGift.LOOT_TABLE_CODEC, false).build();
+
+    /**
+     * The {@linkplain Block} data map that replaces {@link AxeItem#STRIPPABLES}.
+     * <p>
+     * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
+     * <ul>
+     * <li>{@code stripped_block}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
+     * </ul>
+     *
+     * Note that adding blocks to this data map will copy over all properties from the original, unstripped state.
+     * If you want more advanced behavior, implement the appropriate behaviors in your block class.
+     */
+    public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
+            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_BLOCK_CODEC, false).build();
 
     /**
      * The {@linkplain GameEvent} data map that replaces {@link VibrationSystem#VIBRATION_FREQUENCY_FOR_EVENT}.
