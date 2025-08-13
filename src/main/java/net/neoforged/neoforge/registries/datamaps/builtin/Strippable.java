@@ -10,13 +10,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 
-public record Strippable(Block strippedStage) {
-    public static final Codec<Strippable> STRIPPED_STAGE_CODEC = BuiltInRegistries.BLOCK.byNameCodec().xmap(Strippable::new, Strippable::strippedStage);
+public record Strippable(Block strippedBlock) {
+    public static final Codec<Strippable> STRIPPED_BLOCK_CODEC = BuiltInRegistries.BLOCK.byNameCodec()
+            .xmap(Strippable::new, Strippable::strippedBlock);
 
     public static final Codec<Strippable> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(inst -> inst.group(
-                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("stripped_stage")
-                            .forGetter(o -> o.strippedStage))
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("stripped_block")
+                            .forGetter(o -> o.strippedBlock))
                     .apply(inst, Strippable::new)),
-            STRIPPED_STAGE_CODEC);
+            STRIPPED_BLOCK_CODEC);
 }

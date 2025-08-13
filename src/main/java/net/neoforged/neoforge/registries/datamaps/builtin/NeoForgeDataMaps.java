@@ -100,14 +100,14 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code stripped_stage}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
+     * <li>{@code stripped_block}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
      * </ul>
      *
      * Note that adding blocks to this data map will copy over the {@link RotatedPillarBlock#AXIS} property from the original state if present there at all. If you want more advanced behavior,
      * implement the appropriate behaviors in your block class.
      */
     public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(
-            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_STAGE_CODEC, false).build();
+            id("strippables"), Registries.BLOCK, Strippable.CODEC).synced(Strippable.STRIPPED_BLOCK_CODEC, false).build();
 
     /**
      * The {@linkplain Block} data map that replaces {@link WeatheringCopper#NEXT_BY_BLOCK}.

@@ -49,7 +49,7 @@
 +    @org.jetbrains.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
 +        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
-+        if (strippable != null) return strippable.strippedStage().defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS));
++        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);
 +        Block block = STRIPPABLES.get(originalState.getBlock());
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }
@@ -58,10 +58,10 @@
 +        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
 +        if (strippable != null) {
 +            if (p_150691_.hasProperty(RotatedPillarBlock.AXIS)) {
-+                return Optional.of(strippable.strippedStage().defaultBlockState())
++                return Optional.of(strippable.strippedBlock().defaultBlockState())
 +                        .map(blockState -> blockState.setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +            }
-+            return Optional.of(strippable.strippedStage().defaultBlockState());
++            return Optional.of(strippable.strippedBlock().defaultBlockState());
 +        }
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
              .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
