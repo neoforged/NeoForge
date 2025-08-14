@@ -25,7 +25,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Immutable combination of a {@link Fluid} and data components.
@@ -60,26 +59,15 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
             FluidResource::of);
 
     /**
-     * This is used only for registry, you should not use this method!
-     */
-    @ApiStatus.Internal
-    public static FluidResource createDefaultInstance(Fluid fluid) {
-        if (fluid == Fluids.EMPTY) return EMPTY;
-        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
-    }
-
-    /**
      * Creates an {@link FluidResource} using the default or copy of the passed in fluid stack. Note the amount is lost.
      *
      * @param stack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the fluid's default resource will be returned, otherwise a new instance with the copied stack.
      */
     public static FluidResource of(FluidStack stack) {
-        if (stack.isEmpty()) return FluidResource.EMPTY;
-
-        if (stack.isComponentsPatchEmpty())
-            return stack.getFluid().getDefaultResource();
-
+        if (stack.isEmpty() || stack.isComponentsPatchEmpty()) {
+            return of(stack.getFluid());
+        }
         return new FluidResource(stack.copyWithAmount(FluidType.BUCKET_VOLUME));
     }
 
@@ -100,7 +88,9 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static FluidResource of(Fluid fluid) {
-        return of(fluid, DataComponentPatch.EMPTY);
+        if (fluid == Fluids.EMPTY) return EMPTY;
+        // TODO: cache the resource with an empty patch for each fluid
+        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
     }
 
     /**
@@ -113,7 +103,10 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static FluidResource of(Holder<Fluid> holder, DataComponentPatch patch) {
-        return of(holder.value(), patch);
+        if (holder.value() == Fluids.EMPTY|| patch.isEmpty()) {
+            return of(holder.value());
+        }
+        return new FluidResource(new FluidStack(holder, FluidType.BUCKET_VOLUME, patch));
     }
 
     /**
@@ -126,9 +119,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
-        if (fluid == Fluids.EMPTY) return EMPTY;
-        if (patch.isEmpty()) return fluid.getDefaultResource();
-        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME, patch));
+        return of(fluid.builtInRegistryHolder(), patch);
     }
 
     /**

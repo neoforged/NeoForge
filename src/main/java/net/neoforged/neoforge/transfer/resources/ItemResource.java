@@ -25,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Immutable combination of an {@link Item} and data components.
@@ -60,26 +59,15 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
             ItemResource::of);
 
     /**
-     * This is used only for registry, you should not use this method.
-     */
-    @ApiStatus.Internal
-    public static ItemResource createDefaultInstance(Item item) {
-        if (item == Items.AIR) return EMPTY;
-        return new ItemResource(new ItemStack(item));
-    }
-
-    /**
      * Creates an ItemResource using the default or copy of the passed in item stack. Note the count is lost.
      *
      * @param stack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the item's default resource will be returned, otherwise a new instance with the copied stack.
      */
     public static ItemResource of(ItemStack stack) {
-        if (stack.isEmpty()) return EMPTY;
-
-        if (stack.isComponentsPatchEmpty())
-            return stack.getItem().getDefaultResource();
-
+        if (stack.isEmpty() || stack.isComponentsPatchEmpty()) {
+            return of(stack.getItem());
+        }
         return new ItemResource(stack.copyWithCount(1));
     }
 
@@ -92,7 +80,8 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     public static ItemResource of(ItemLike item) {
         Item value = item.asItem();
         if (value == Items.AIR) return EMPTY;
-        return value.getDefaultResource();
+        // TODO: cache the resource with an empty patch for each item
+        return new ItemResource(new ItemStack(value));
     }
 
     /**
@@ -105,7 +94,10 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(Holder<Item> holder, DataComponentPatch patch) {
-        return of(holder.value(), patch);
+        if (holder.value() == Items.AIR || patch.isEmpty()) {
+            return of(holder.value());
+        }
+        return new ItemResource(new ItemStack(holder, 1, patch));
     }
 
     /**
@@ -118,15 +110,7 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static ItemResource of(ItemLike item, DataComponentPatch patch) {
-        Item value = item.asItem();
-        if (value == Items.AIR) return EMPTY;
-        if (patch.isEmpty()) return value.getDefaultResource();
-
-        //The constructor that takes in a component patch doesn't take in an ItemLike so we opted for the setter method instead.
-        ItemStack stack = new ItemStack(item);
-        stack.applyComponents(patch);
-
-        return new ItemResource(stack);
+        return of(item.asItem().builtInRegistryHolder(), patch);
     }
 
     /**

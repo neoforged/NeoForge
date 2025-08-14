@@ -9,7 +9,7 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -125,12 +_,14 @@
+@@ -125,12 +_,13 @@
          this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -21,11 +21,10 @@
              }
          }
 +        this.canCombineRepair = p_41383_.canCombineRepair;
-+        this.defaultResource = net.neoforged.neoforge.common.util.Lazy.of(()->net.neoforged.neoforge.transfer.resources.ItemResource.createDefaultInstance(this));
      }
  
      @Deprecated
-@@ -142,6 +_,16 @@
+@@ -142,6 +_,15 @@
          return this.components;
      }
  
@@ -36,7 +35,6 @@
 +        var builder = DataComponentMap.builder().addAll(components);
 +        patch.entrySet().forEach(entry -> builder.set((DataComponentType)entry.getKey(), entry.getValue().orElse(null)));
 +        components = Properties.validateComponents(builder.build());
-+        defaultResource.invalidate();
 +    }
 +
      public int getDefaultMaxStackSize() {
@@ -59,7 +57,7 @@
      public final ItemStack getCraftingRemainder() {
          return this.craftingRemainingItem == null ? ItemStack.EMPTY : new ItemStack(this.craftingRemainingItem);
      }
-@@ -338,7 +_,23 @@
+@@ -338,7 +_,14 @@
      }
  
      public boolean useOnRelease(ItemStack p_41464_) {
@@ -68,15 +66,6 @@
 +    }
 +
 +    protected final boolean canCombineRepair;
-+    private final net.neoforged.neoforge.common.util.Lazy<net.neoforged.neoforge.transfer.resources.ItemResource> defaultResource;
-+
-+    /**
-+     * Use {@link net.neoforged.neoforge.transfer.resources.ItemResource#of ItemResource.of} instead.
-+     */
-+    @org.jetbrains.annotations.ApiStatus.Internal
-+    public final net.neoforged.neoforge.transfer.resources.ItemResource getDefaultResource() {
-+        return this.defaultResource.get();
-+    }
 +
 +    @Override
 +    public boolean isCombineRepairable(ItemStack stack) {
