@@ -227,13 +227,14 @@ public interface IBlockExtension {
      *
      * @param state       The current state.
      * @param level       The current level
-     * @param player      The player damaging the block, may be null
      * @param pos         Block position in level
+     * @param player      The player damaging the block, may be null
+     * @param toolStack   The players main-hand prior to destroying the block and applying damage to the tool.
      * @param willHarvest The result of {@link #canHarvestBlock}, if called on the server by a non-creative player, otherwise always false.
      * @param fluid       The current fluid state at current position
      * @return True if the block is actually destroyed.
      */
-    default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
         if (level.isClientSide()) {
             // On the client, vanilla calls Level#setBlock, per MultiPlayerGameMode#destroyBlock
             return level.setBlock(pos, fluid.createLegacyBlock(), 11);
