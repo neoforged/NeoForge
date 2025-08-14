@@ -87,22 +87,6 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
     /**
      * <strong>Note:</strong> This cannot be called before your item is registered
      *
-     * @param holder Item holder to create the resource with.
-     * @param patch  Data components that should be on the resource instance.
-     * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
-     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
-     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     */
-    public static ItemResource of(Holder<Item> holder, DataComponentPatch patch) {
-        if (holder.value() == Items.AIR || patch.isEmpty()) {
-            return of(holder.value());
-        }
-        return new ItemResource(new ItemStack(holder, 1, patch));
-    }
-
-    /**
-     * <strong>Note:</strong> This cannot be called before your item is registered
-     *
      * @param item  Item to create the resource with.
      * @param patch Data components that should be on the resource instance.
      * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
@@ -121,6 +105,22 @@ public final class ItemResource implements IDataComponentHolderResource<Item> {
      */
     public static ItemResource of(Holder<Item> holder) {
         return of(holder.value());
+    }
+
+    /**
+     * <strong>Note:</strong> This cannot be called before your item is registered
+     *
+     * @param holder Item holder to create the resource with.
+     * @param patch  Data components that should be on the resource instance.
+     * @return a new {@link ItemResource}. If the item is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that item will be provided.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     */
+    public static ItemResource of(Holder<Item> holder, DataComponentPatch patch) {
+        if (holder.value() == Items.AIR || patch.isEmpty()) {
+            return of(holder.value());
+        }
+        return new ItemResource(new ItemStack(holder, 1, patch));
     }
 
     /**

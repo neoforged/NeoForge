@@ -77,8 +77,23 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
-    public static FluidResource of(Holder<Fluid> fluid) {
-        return of(fluid.value());
+    public static FluidResource of(Fluid fluid) {
+        if (fluid == Fluids.EMPTY) return EMPTY;
+        // TODO: cache the resource with an empty patch for each fluid
+        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
+    }
+
+    /**
+     * <strong>Note:</strong> This cannot be called before your fluid is registered
+     *
+     * @param fluid Fluid to create the resource with.
+     * @param patch Data components that should be on the resource instance.
+     * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
+     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
+     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
+     */
+    public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
+        return of(fluid.builtInRegistryHolder(), patch);
     }
 
     /**
@@ -87,10 +102,8 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
-    public static FluidResource of(Fluid fluid) {
-        if (fluid == Fluids.EMPTY) return EMPTY;
-        // TODO: cache the resource with an empty patch for each fluid
-        return new FluidResource(new FluidStack(fluid, FluidType.BUCKET_VOLUME));
+    public static FluidResource of(Holder<Fluid> fluid) {
+        return of(fluid.value());
     }
 
     /**
@@ -107,19 +120,6 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
             return of(holder.value());
         }
         return new FluidResource(new FluidStack(holder, FluidType.BUCKET_VOLUME, patch));
-    }
-
-    /**
-     * <strong>Note:</strong> This cannot be called before your fluid is registered
-     *
-     * @param fluid Fluid to create the resource with.
-     * @param patch Data components that should be on the resource instance.
-     * @return a new {@link FluidResource}. If the fluid is empty, then {@link #EMPTY} will be returned; If the patch matches the default values the default instance of that fluid will be provided.
-     * @throws IllegalStateException If the backing registry is unavailable or not yet ready.
-     * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
-     */
-    public static FluidResource of(Fluid fluid, DataComponentPatch patch) {
-        return of(fluid.builtInRegistryHolder(), patch);
     }
 
     /**
