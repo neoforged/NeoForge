@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import java.util.Objects;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.ISingleResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -33,6 +32,11 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
     @Override
     public int insert(T resource, int amount, TransactionContext context) {
         return amount; // ignore the inputs, and inform the return is always accepted
+    }
+
+    @Override
+    public boolean supportsExtraction() {
+        return false;
     }
 
     @Override
@@ -68,10 +72,5 @@ public final class VoidResourceHandler<T extends IResource> implements ISingleRe
     public boolean isValid(int index, T resource) {
         Objects.checkIndex(index, size());
         return true; // What ever resource is queried is always allowed
-    }
-
-    @Override
-    public int characteristics() {
-        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERTABLE | TransferCharacteristics.VOIDING | TransferCharacteristics.IMMUTABLE;
     }
 }

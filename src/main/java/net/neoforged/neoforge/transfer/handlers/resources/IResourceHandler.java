@@ -5,13 +5,12 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
+import net.minecraft.core.BlockPos;
+import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.intellij.lang.annotations.MagicConstant;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A generic handler for handling a {@link IResource resource} of type {@link T} whether it be inserting, extracting, querying some size value, etc.
@@ -104,57 +103,14 @@ public interface IResourceHandler<T extends IResource> {
     boolean isValid(int index, T resource);
 
     /**
-     * A description of how this handler is intended to be used. For instance, if resources are intended
-     * to be insertable, then this would be expected to return a composite value that contains {@link TransferCharacteristics#INSERTABLE}.
-     * It should be noted, that this isn't intended to be used as the control logic for your handler, but rather a communication to
-     * outside consumers of this resource handler to make some pre-calculated decisions on. Examples of when calling this
-     * is to be used, pipes creating pre-emptive look up tables for what should be interactable, prioritization on handlers
-     * that don't have {@code VOIDING} as a characteristic, etc.
-     * <p>
-     * If this were to return {@link TransferCharacteristics#UNKNOWN}, then no assumptions can be made about the
-     * handler and should be used as you would without this information. Meaning that if you were planning on calling {@link #insert}
-     * and the return is {@code UNKNOWN} then you would carry on as though it was insertable.
-     * <p>
-     * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
+     * Return false if attempting to insert resources will absolutely always return 0, or true otherwise or in doubt.
      *
-     * <pre>{@code
-     * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
-     * }</pre>
-     *
-     * @return Composite value of characteristics. These can be composed with a bitwise OR, (the '|').
-     *
-     * @see TransferCharacteristics
-     * @see #characteristics(int)
-     * @see #hasCharacteristics(int)
+     * <p>This function is meant to be used by pipes or other devices that can transfer resources to know if
+     * they should interact with this handler at all.
+     * For block capabilities, a change in this value should trigger {@link ILevelExtension#invalidateCapabilities(BlockPos) a capability invalidation}.
      */
-    @MagicConstant(flagsFromClass = TransferCharacteristics.class)
-    int characteristics();
-
-    /**
-     * A description of how this handler for this index is intended to be used. For instance, if resources are intended
-     * to be insertable, then this would be expected to return a composite value that contains {@link TransferCharacteristics#INSERTABLE}.
-     * It should be noted, that this isn't intended to be used as the control logic for your handler, but rather a communication to
-     * outside consumers of this resource handler to make some pre-calculated decisions on. By default, all indices return what the
-     * handler would return with the {@link #characteristics() index-less variant}.
-     * <p>
-     * If this were to return {@link TransferCharacteristics#UNKNOWN}, then no assumptions can be made about the
-     * handler and should be used as you would without this information.
-     * <p>
-     * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
-     *
-     * <pre>{@code
-     * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
-     * }</pre>
-     *
-     * @return Composite value of characteristics. These can be composed with a bitwise OR (the '|').
-     * @param index The index to check. <strong>Must be non-negative</strong>
-     * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
-     * @see #characteristics()
-     * @see #hasCharacteristics(int,int)
-     */
-    @MagicConstant(flagsFromClass = TransferCharacteristics.class)
-    default int characteristics(int index) {
-        return characteristics();
+    default boolean supportsInsertion() {
+        return true;
     }
 
     /**
@@ -198,6 +154,17 @@ public interface IResourceHandler<T extends IResource> {
     }
 
     /**
+     * Return false if attempting to extract resources will absolutely always return 0, or true otherwise or in doubt.
+     *
+     * <p>This function is meant to be used by pipes or other devices that can transfer resources to know if
+     * they should interact with this handler at all.
+     * For block capabilities, a change in this value should trigger {@link ILevelExtension#invalidateCapabilities(BlockPos) a capability invalidation}.
+     */
+    default boolean supportsExtraction() {
+        return true;
+    }
+
+    /**
      * Extracts a given amount of the resource from the handler at the given index.
      *
      * @param index       The index to extract the resource from. <strong>Must be non-negative</strong>
@@ -235,41 +202,6 @@ public interface IResourceHandler<T extends IResource> {
             if (handled == amount) break;
         }
         return handled;
-    }
-
-    /**
-     * Transfer characteristics can be used to describe how this handler is intended to be used based on the returns
-     * of {@link #characteristics()}
-     * <p>
-     * <strong>Don't override this method.</strong>
-     *
-     * @param characteristics The characteristics to test against.
-     * @return {@code true} if the current set of characteristics contains the inquiry or is fully {@code UNKNOWN}; {@code false} otherwise.
-     * @see #characteristics()
-     * @see TransferCharacteristics
-     */
-    @ApiStatus.NonExtendable
-    default boolean hasCharacteristics(@MagicConstant(flagsFromClass = TransferCharacteristics.class) int characteristics) {
-        if (characteristics == TransferCharacteristics.UNKNOWN) return true;
-        return (characteristics() & characteristics) == characteristics;
-    }
-
-    /**
-     * Transfer characteristics can be used to describe how this handler is intended to be used based on the returns
-     * of {@link #characteristics()}
-     * <p>
-     * <strong>Don't override this method.</strong>
-     *
-     * @param index           The index to check. <strong>Must be non-negative</strong>
-     * @param characteristics The characteristics to test against.
-     * @return {@code true} if the current set of characteristics at the index contains the inquiry or is fully {@code UNKNOWN}; {@code false} otherwise.
-     * @see #characteristics(int)
-     * @see TransferCharacteristics
-     */
-    @ApiStatus.NonExtendable
-    default boolean hasCharacteristics(int index, @MagicConstant(flagsFromClass = TransferCharacteristics.class) int characteristics) {
-        if (characteristics == TransferCharacteristics.UNKNOWN) return true;
-        return (characteristics(index) & characteristics) == characteristics;
     }
 
     /**

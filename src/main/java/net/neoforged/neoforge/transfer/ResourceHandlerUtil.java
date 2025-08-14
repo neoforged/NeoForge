@@ -14,7 +14,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -434,14 +433,8 @@ public final class ResourceHandlerUtil {
         TransferPreconditions.checkNonNegative(amount);
         if (amount == 0) return 0;
         if (from == null || to == null) return 0;
-
-        //Test if the `from` handler has the extraction characteristic (or is unknown).
-        //While this is not strictly necessary, it can reduce our iteration loop cost
-        if (!from.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)) return 0;
-
-        //Test if the `to` handler has the insertion characteristic (or is unknown).
-        //While this is not strictly necessary, it can reduce our iteration loop cost
-        if (!to.hasCharacteristics(TransferCharacteristics.INSERTABLE)) return 0;
+        // Not strictly necessary, but quite cheap and can prevent unnecessary iteration
+        if (!from.supportsExtraction() || !to.supportsInsertion()) return 0;
 
         try (Transaction subTransaction = Transaction.open(transaction)) {
             int totalMoved = 0;

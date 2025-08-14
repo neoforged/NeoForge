@@ -69,11 +69,4 @@ public interface ISingleResourceHandler<T extends IResource> extends IResourceHa
         // With single resource handlers the index is ignored
         return extract(resource, amount, context);
     }
-
-    @ApiStatus.NonExtendable
-    @Override
-    default int characteristics(int index) {
-        Objects.checkIndex(index, size());
-        return characteristics();
-    }
 }

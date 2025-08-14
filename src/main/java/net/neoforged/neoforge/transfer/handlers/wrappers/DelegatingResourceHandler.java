@@ -76,14 +76,8 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public int characteristics(int index) {
-        Objects.checkIndex(index, size());
-        return getDelegate().characteristics(convertIndex(index));
-    }
-
-    @Override
-    public int characteristics() {
-        return getDelegate().characteristics();
+    public boolean supportsInsertion() {
+        return getDelegate().supportsInsertion();
     }
 
     @Override
@@ -95,6 +89,11 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
         return getDelegate().insert(resource, amount, transaction);
+    }
+
+    @Override
+    public boolean supportsExtraction() {
+        return getDelegate().supportsExtraction();
     }
 
     @Override

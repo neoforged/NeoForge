@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -16,7 +15,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * <strong>Important: This will only work with constant sized handlers.</strong>
  * Dynamically sized handlers are supported by api, but not by this implementation
- * 
+ *
  * @param <T>
  */
 public class CombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
@@ -104,19 +103,13 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public int characteristics(int index) {
-        int handlerIndex = getHandlerIndex(index);
-        var specifiedIndex = getSlotFromIndex(index, handlerIndex);
-        return getHandlerFromIndex(handlerIndex).characteristics(specifiedIndex);
-    }
-
-    @Override
-    public int characteristics() {
-        int handled = TransferCharacteristics.UNKNOWN;
-        for (IResourceHandler<T> resourceHandler : handlers) {
-            handled |= resourceHandler.characteristics();
+    public boolean supportsInsertion() {
+        for (var handler : handlers) {
+            if (handler.supportsInsertion()) {
+                return true;
+            }
         }
-        return handled;
+        return false;
     }
 
     @Override
@@ -135,6 +128,16 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
             if (handled == amount) break;
         }
         return handled;
+    }
+
+    @Override
+    public boolean supportsExtraction() {
+        for (var handler : handlers) {
+            if (handler.supportsExtraction()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

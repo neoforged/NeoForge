@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -30,14 +29,19 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
-    public int characteristics() {
-        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.NO_OP | TransferCharacteristics.IMMUTABLE;
+    public boolean supportsInsertion() {
+        return false;
     }
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
         ResourceHandlerUtil.isEmpty(resource, amount);
         return 0;
+    }
+
+    @Override
+    public boolean supportsExtraction() {
+        return false;
     }
 
     @Override
@@ -75,11 +79,6 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
 
     @Override
     public boolean isValid(int index, T resource) {
-        throw new IndexOutOfBoundsException(index);
-    }
-
-    @Override
-    public int characteristics(int index) {
         throw new IndexOutOfBoundsException(index);
     }
 
