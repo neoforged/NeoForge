@@ -7,7 +7,6 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.StackListHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -117,11 +116,11 @@ public interface IResourceHandler<T extends IResource> {
      * and the return is {@code UNKNOWN} then you would carry on as though it was insertable.
      * <p>
      * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
-     * 
+     *
      * <pre>{@code
      * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
      * }</pre>
-     * 
+     *
      * @return Composite value of characteristics. These can be composed with a bitwise OR, (the '|').
      *
      * @see TransferCharacteristics
@@ -142,11 +141,11 @@ public interface IResourceHandler<T extends IResource> {
      * handler and should be used as you would without this information.
      * <p>
      * <strong>For blocks, this value is expected to be the same as long as the capability cache is valid.</strong>
-     * 
+     *
      * <pre>{@code
      * TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.INSERT | TransferCharacteristics.EXTRACT
      * }</pre>
-     * 
+     *
      * @return Composite value of characteristics. These can be composed with a bitwise OR (the '|').
      * @param index The index to check. <strong>Must be non-negative</strong>
      * @throws IndexOutOfBoundsException when passing an invalid index. Negative indices are always invalid.
@@ -260,7 +259,7 @@ public interface IResourceHandler<T extends IResource> {
      * of {@link #characteristics()}
      * <p>
      * <strong>Don't override this method.</strong>
-     * 
+     *
      * @param index           The index to check. <strong>Must be non-negative</strong>
      * @param characteristics The characteristics to test against.
      * @return {@code true} if the current set of characteristics at the index contains the inquiry or is fully {@code UNKNOWN}; {@code false} otherwise.

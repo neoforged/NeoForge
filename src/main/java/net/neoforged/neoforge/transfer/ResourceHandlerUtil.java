@@ -16,12 +16,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
 import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.handlers.templates.resources.ResourceContainerContentsHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.TransactionManager;
-import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 import org.jetbrains.annotations.Nullable;
 
 public final class ResourceHandlerUtil {
@@ -173,9 +170,10 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return 0;
 
-        try (Transaction tx = TransactionManager.open(transaction)) {
+        try (Transaction tx = Transaction.open(transaction)) {
             int inserted = 0;
             int size = handler.size();
             //attempt to insert into matching resources first
@@ -222,9 +220,10 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return 0;
 
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = Transaction.open(transaction)) {
             int inserted = 0;
             int size = handler.size();
             for (int index = 0; index < size; index++) {
@@ -255,9 +254,10 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return 0;
 
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = Transaction.open(transaction)) {
             int extracted = 0;
             int size = handler.size();
             for (int index = 0; index < size; index++) {
@@ -271,117 +271,122 @@ public final class ResourceHandlerUtil {
         }
     }
 
-    /**
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to extract the resource from
-     * @param resource the resource to extract
-     * @return The total extractable amount of a resource in a given handler
-     */
-    public static <T extends IResource> int getExtractableAmount(IResourceHandler<T> handler, T resource) {
-        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-            //We don't commit allow us to just inquiry the amount
-            return handler.extract(resource, Integer.MAX_VALUE, transaction);
-        }
-    }
+    // TODO: unsafe access to tx state
+//    /**
+//     * @param <T>      the type of resource handled by the handler
+//     * @param handler  the {@link IResourceHandler} to extract the resource from
+//     * @param resource the resource to extract
+//     * @return The total extractable amount of a resource in a given handler
+//     */
+//    public static <T extends IResource> int getExtractableAmount(IResourceHandler<T> handler, T resource) {
+//        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+//            //We don't commit allow us to just inquiry the amount
+//            return handler.extract(resource, Integer.MAX_VALUE, transaction);
+//        }
+//    }
+//
+//    /**
+//     * @param <T>      the type of resource handled by the handler
+//     * @param handler  the {@link IResourceHandler} to insert the resource to
+//     * @param resource the resource to insert
+//     * @return The total insertable amount of a resource in a given handler
+//     */
+//    public static <T extends IResource> int getInsertableAmount(IResourceHandler<T> handler, T resource) {
+//        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+//            //We don't commit allow us to just inquiry the amount
+//            return handler.insert(resource, Integer.MAX_VALUE, transaction);
+//        }
+//    }
 
-    /**
-     * @param <T>      the type of resource handled by the handler
-     * @param handler  the {@link IResourceHandler} to insert the resource to
-     * @param resource the resource to insert
-     * @return The total insertable amount of a resource in a given handler
-     */
-    public static <T extends IResource> int getInsertableAmount(IResourceHandler<T> handler, T resource) {
-        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-            //We don't commit allow us to just inquiry the amount
-            return handler.insert(resource, Integer.MAX_VALUE, transaction);
-        }
-    }
-
-    /**
-     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
-     *
-     * @param <R>          The type of resource handled by the handler
-     * @param <S>          The type of stack created by the extraction
-     * @param handler      The {@link IResourceHandler} to extract the resource from
-     * @param filter       The filter to apply to the resources
-     * @param amount       The desired amount of the resource to extract
-     * @param transaction  The transaction context for the operation.
-     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                     allow you to make the final decision to commit based on the results of this method.
-     * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
-     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
-     */
-    public static <R extends IResource, S> S extract(
-            IResourceHandler<R> handler,
-            Predicate<R> filter,
-            int amount,
-            R defaultResource,
-            @Nullable TransactionContext transaction,
-            IStackFactory<R, S> stackFactory) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
-
-        int size = handler.size();
-        int handled = 0;
-        R resourceTarget = defaultResource;
-
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
-            for (int index = 0; index < size; index++) {
-                R resource = handler.getResource(index);
-                //Filter testing
-                if (doesNotMatch(filter, resource))
-                    continue;
-
-                if (resourceTarget.isEmpty()) { //If our current resource that we are expecting to return is still empty
-                    resourceTarget = resource;
-                } else if (!resourceTarget.equals(resource)) { // If it isn't empty, we check if it matches the one we found
-                    continue;
-                }
-
-                handled += handler.extract(resource, amount - handled, subTransaction);
-                if (handled == amount) break;
-            }
-
-            subTransaction.commit();
-            if (handled == 0) return stackFactory.create(defaultResource, 0);
-            return stackFactory.create(resourceTarget, handled);
-        }
-    }
-
-    /**
-     * Extracts the first resource from an {@link IResourceHandler} that is not empty.
-     *
-     * @param <R>          the type of resource handled by the handler.
-     * @param <S>          The type of stack returned by the handler.
-     * @param handler      the {@link IResourceHandler} to extract the resource from.
-     * @param filter       The filter to apply to the resources
-     * @param index        The index that is being checked in the handler.
-     * @param amount       the desired amount of the resource to extract.
-     * @param transaction  The transaction context for the operation.
-     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                     allow you to make the final decision to commit based on the results of this method.
-     * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
-     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
-     */
-    public static <R extends IResource, S> S extract(
-            IResourceHandler<R> handler,
-            Predicate<R> filter,
-            int index,
-            int amount,
-            R defaultResource,
-            @Nullable TransactionContext transaction,
-            IStackFactory<R, S> stackFactory) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
-        R resource = handler.getResource(index);
-        if (doesNotMatch(filter, resource))
-            return stackFactory.create(defaultResource, 0);
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
-            int extract = handler.extract(resource, amount, subTransaction);
-            if (extract == 0)
-                return stackFactory.create(defaultResource, 0);
-            subTransaction.commit();
-            return stackFactory.create(resource, extract);
-        }
-    }
+    // TODO: stack factory usage
+//    /**
+//     * Extracts the first resource from an {@link IResourceHandler} that matches the given filter.
+//     *
+//     * @param <R>          The type of resource handled by the handler
+//     * @param <S>          The type of stack created by the extraction
+//     * @param handler      The {@link IResourceHandler} to extract the resource from
+//     * @param filter       The filter to apply to the resources
+//     * @param amount       The desired amount of the resource to extract
+//     * @param transaction  The transaction context for the operation.
+//     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+//     *                     allow you to make the final decision to commit based on the results of this method.
+//     * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
+//     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
+//     */
+//    public static <R extends IResource, S> S extract(
+//            IResourceHandler<R> handler,
+//            Predicate<R> filter,
+//            int amount,
+//            R defaultResource,
+//            @Nullable TransactionContext transaction,
+//            IStackFactory<R, S> stackFactory) {
+//        TransferPreconditions.checkNonNegative(amount);
+//        if (amount == 0) return stackFactory.create(defaultResource, 0);
+//
+//        int size = handler.size();
+//        int handled = 0;
+//        R resourceTarget = defaultResource;
+//
+//        try (Transaction subTransaction = Transaction.open(transaction)) {
+//            for (int index = 0; index < size; index++) {
+//                R resource = handler.getResource(index);
+//                //Filter testing
+//                if (doesNotMatch(filter, resource))
+//                    continue;
+//
+//                if (resourceTarget.isEmpty()) { //If our current resource that we are expecting to return is still empty
+//                    resourceTarget = resource;
+//                } else if (!resourceTarget.equals(resource)) { // If it isn't empty, we check if it matches the one we found
+//                    continue;
+//                }
+//
+//                handled += handler.extract(resource, amount - handled, subTransaction);
+//                if (handled == amount) break;
+//            }
+//
+//            subTransaction.commit();
+//            if (handled == 0) return stackFactory.create(defaultResource, 0);
+//            return stackFactory.create(resourceTarget, handled);
+//        }
+//    }
+//
+//    /**
+//     * Extracts the first resource from an {@link IResourceHandler} that is not empty.
+//     *
+//     * @param <R>          the type of resource handled by the handler.
+//     * @param <S>          The type of stack returned by the handler.
+//     * @param handler      the {@link IResourceHandler} to extract the resource from.
+//     * @param filter       The filter to apply to the resources
+//     * @param index        The index that is being checked in the handler.
+//     * @param amount       the desired amount of the resource to extract.
+//     * @param transaction  The transaction context for the operation.
+//     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+//     *                     allow you to make the final decision to commit based on the results of this method.
+//     * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
+//     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
+//     */
+//    public static <R extends IResource, S> S extract(
+//            IResourceHandler<R> handler,
+//            Predicate<R> filter,
+//            int index,
+//            int amount,
+//            R defaultResource,
+//            @Nullable TransactionContext transaction,
+//            IStackFactory<R, S> stackFactory) {
+//        TransferPreconditions.checkNonNegative(amount);
+//        if (amount == 0) return stackFactory.create(defaultResource, 0);
+//
+//        R resource = handler.getResource(index);
+//        if (doesNotMatch(filter, resource))
+//            return stackFactory.create(defaultResource, 0);
+//        try (Transaction subTransaction = Transaction.open(transaction)) {
+//            int extract = handler.extract(resource, amount, subTransaction);
+//            if (extract == 0)
+//                return stackFactory.create(defaultResource, 0);
+//            subTransaction.commit();
+//            return stackFactory.create(resource, extract);
+//        }
+//    }
 
     /**
      * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
@@ -426,7 +431,8 @@ public final class ResourceHandlerUtil {
             int amount,
             @Nullable TransactionContext transaction) {
         Objects.requireNonNull(filter, "Filter may not be null");
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return 0;
         if (from == null || to == null) return 0;
 
         //Test if the `from` handler has the extraction characteristic (or is unknown).
@@ -437,7 +443,7 @@ public final class ResourceHandlerUtil {
         //While this is not strictly necessary, it can reduce our iteration loop cost
         if (!to.hasCharacteristics(TransferCharacteristics.INSERTABLE)) return 0;
 
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = Transaction.open(transaction)) {
             int totalMoved = 0;
             int size = from.size();
 
@@ -447,13 +453,13 @@ public final class ResourceHandlerUtil {
 
                 // check how much can be extracted
                 int maxExtracted;
-                try (Transaction simulatedExtract = TransactionManager.open(subTransaction)) {
+                try (Transaction simulatedExtract = Transaction.open(subTransaction)) {
                     maxExtracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtract);
                 }
 
                 if (maxExtracted == 0) continue;
 
-                try (Transaction transferTransaction = TransactionManager.open(subTransaction)) {
+                try (Transaction transferTransaction = Transaction.open(subTransaction)) {
                     // check how much can be inserted
                     int inserted = to.insert(fromResource, maxExtracted, transferTransaction);
 
@@ -485,102 +491,104 @@ public final class ResourceHandlerUtil {
         }
     }
 
-    /**
-     * Similar to {@link #move}, but instead of all resources, it will be the first one that matches the filter. While this won't be a full list, this will simplify things like {@link FluidUtil#moveFluidWithSound}
-     *
-     * @param from         The source handler. May be null.
-     * @param to           The target handler. May be null.
-     * @param filter       The filter for transferred resources.
-     *                     Only resources for which this filter returns {@code true} will be transferred.
-     *                     This filter will never be tested with an empty resource, and filters are encouraged to throw an
-     *                     exception if this guarantee is violated.
-     * @param amount       The maximum amount that will be transferred.
-     * @param transaction  The transaction context for the operation.
-     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                     allow you to make the final decision to commit based on the results of this method.
-     * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
-     * @param <R>          the type of resource to move.
-     * @param <S>          The type of stack returned by the handler.
-     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
-     */
-    public static <R extends IResource, S> S moveFirstOrDefault(
-            @Nullable IResourceHandler<R> from,
-            @Nullable IResourceHandler<R> to,
-            Predicate<R> filter,
-            int amount,
-            R defaultResource,
-            @Nullable TransactionContext transaction,
-            IStackFactory<R, S> stackFactory) {
-        Objects.requireNonNull(filter, "Filter may not be null");
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return stackFactory.create(defaultResource, 0);
-
-        if (from == null || to == null)
-            return stackFactory.create(defaultResource, 0);
-
-        try {
-            int totalMoved = 0;
-            R lastMovedResource = defaultResource;
-
-            int size = from.size();
-
-            for (int index = 0; index < size; ++index) {
-                R fromResource = from.getResource(index);
-                if (doesNotMatch(filter, fromResource)) continue;
-
-                // check how much can be extracted
-                int extracted;
-                try (Transaction simulatedExtractTransaction = TransactionManager.open(transaction)) {
-                    extracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtractTransaction);
-                }
-
-                if (extracted == 0) continue;
-
-                try (Transaction transferTransaction = TransactionManager.open(transaction)) {
-                    // check how much can be inserted
-                    int inserted = to.insert(fromResource, extracted, transferTransaction);
-
-                    // extract it, or rollback if the amounts don't match
-                    if (inserted != from.extract(index, fromResource, inserted, transferTransaction))
-                        continue;
-
-                    totalMoved += inserted;
-                    transferTransaction.commit();
-                    lastMovedResource = fromResource;
-
-                    //if we have the amount we are targeting exit the for-loop
-                    if (amount == totalMoved) break;
-                }
-
-            }
-            //lastMovedResource should be defaultResource if totalMoved was 0 as well.
-            return stackFactory.create(lastMovedResource, totalMoved);
-        } catch (Exception e) {
-            CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
-            //noinspection DataFlowIssue
-            report.addCategory("Move details")
-                    .setDetail("Input", from::toString)
-                    .setDetail("Output", to::toString)
-                    .setDetail("Filter", filter::toString)
-                    .setDetail("Amount", amount)
-                    .setDetail("Transaction", transaction);
-            throw new ReportedException(report);
-        }
-    }
-
-    /**
-     * A helper to construct a stack of type {@code <S>} based on the resource and amount at the specified index.
-     *
-     * @param <R> the type of resource to move.
-     * @param <S> The type of stack returned by the handler.
-     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
-     */
-    public static <R extends IResource, S> S getStackAt(IResourceHandler<R> handler, int index, IStackFactory<R, S> stackFactory) {
-        R resource = handler.getResource(index);
-        int amount = handler.getAmount(index);
-        //Handles the negative checks and throws
-        ResourceHandlerUtil.isEmpty(resource, amount);
-        return stackFactory.create(resource, amount);
-    }
+    // TODO: stack factory usage
+//    /**
+//     * Similar to {@link #move}, but instead of all resources, it will be the first one that matches the filter. While this won't be a full list, this will simplify things like {@link FluidUtil#moveFluidWithSound}
+//     *
+//     * @param from         The source handler. May be null.
+//     * @param to           The target handler. May be null.
+//     * @param filter       The filter for transferred resources.
+//     *                     Only resources for which this filter returns {@code true} will be transferred.
+//     *                     This filter will never be tested with an empty resource, and filters are encouraged to throw an
+//     *                     exception if this guarantee is violated.
+//     * @param amount       The maximum amount that will be transferred.
+//     * @param transaction  The transaction context for the operation.
+//     *                     Passing in {@code null} will open a root transaction, whereas passing in a transaction will
+//     *                     allow you to make the final decision to commit based on the results of this method.
+//     * @param stackFactory A factory the given a resource of type {@code <R>} and an amount, a stack of type {@code <S>} can be created. The return is expected to be non-null and properly be the instanced empty value for a given resource.
+//     * @param <R>          the type of resource to move.
+//     * @param <S>          The type of stack returned by the handler.
+//     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
+//     */
+//    public static <R extends IResource, S> S moveFirstOrDefault(
+//            @Nullable IResourceHandler<R> from,
+//            @Nullable IResourceHandler<R> to,
+//            Predicate<R> filter,
+//            int amount,
+//            R defaultResource,
+//            @Nullable TransactionContext transaction,
+//            IStackFactory<R, S> stackFactory) {
+//        Objects.requireNonNull(filter, "Filter may not be null");
+//        TransferPreconditions.checkNonNegative(amount);
+//        if (amount == 0) return stackFactory.create(defaultResource, 0);
+//
+//        if (from == null || to == null)
+//            return stackFactory.create(defaultResource, 0);
+//
+//        try {
+//            int totalMoved = 0;
+//            R lastMovedResource = defaultResource;
+//
+//            int size = from.size();
+//
+//            for (int index = 0; index < size; ++index) {
+//                R fromResource = from.getResource(index);
+//                if (doesNotMatch(filter, fromResource)) continue;
+//
+//                // check how much can be extracted
+//                int extracted;
+//                try (Transaction simulatedExtractTransaction = Transaction.open(transaction)) {
+//                    extracted = from.extract(index, fromResource, amount - totalMoved, simulatedExtractTransaction);
+//                }
+//
+//                if (extracted == 0) continue;
+//
+//                try (Transaction transferTransaction = Transaction.open(transaction)) {
+//                    // check how much can be inserted
+//                    int inserted = to.insert(fromResource, extracted, transferTransaction);
+//
+//                    // extract it, or rollback if the amounts don't match
+//                    if (inserted != from.extract(index, fromResource, inserted, transferTransaction))
+//                        continue;
+//
+//                    totalMoved += inserted;
+//                    transferTransaction.commit();
+//                    lastMovedResource = fromResource;
+//
+//                    //if we have the amount we are targeting exit the for-loop
+//                    if (amount == totalMoved) break;
+//                }
+//
+//            }
+//            //lastMovedResource should be defaultResource if totalMoved was 0 as well.
+//            return stackFactory.create(lastMovedResource, totalMoved);
+//        } catch (Exception e) {
+//            CrashReport report = CrashReport.forThrowable(e, "Moving resources between storages");
+//            //noinspection DataFlowIssue
+//            report.addCategory("Move details")
+//                    .setDetail("Input", from::toString)
+//                    .setDetail("Output", to::toString)
+//                    .setDetail("Filter", filter::toString)
+//                    .setDetail("Amount", amount)
+//                    .setDetail("Transaction", transaction);
+//            throw new ReportedException(report);
+//        }
+//    }
+//
+//    /**
+//     * A helper to construct a stack of type {@code <S>} based on the resource and amount at the specified index.
+//     *
+//     * @param <R> the type of resource to move.
+//     * @param <S> The type of stack returned by the handler.
+//     * @return a stack of type {@code <S>} typically in the form of an ResourceStack or as an example an ItemStack based on the factory provided
+//     */
+//    public static <R extends IResource, S> S getStackAt(IResourceHandler<R> handler, int index, IStackFactory<R, S> stackFactory) {
+//        R resource = handler.getResource(index);
+//        int amount = handler.getAmount(index);
+//        //Handles the negative checks and throws
+//        ResourceHandlerUtil.isEmpty(resource, amount);
+//        return stackFactory.create(resource, amount);
+//    }
 
     public static <T extends IResource> int getAmount(IResourceHandler<T> handler) {
         long sum = 0L;
@@ -680,18 +688,19 @@ public final class ResourceHandlerUtil {
         return -1;
     }
 
-    public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, Predicate<T> filter) {
-        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
-            //Simulated: we don't commit
-            int size = handler.size();
-            for (int index = 0; index < size; index++) {
-                T resource = handler.getResource(index);
-                if (!doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0)
-                    return true;
-            }
-            return false;
-        }
-    }
+    // TODO: unsafe access to tx state
+//    public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, Predicate<T> filter) {
+//        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
+//            //Simulated: we don't commit
+//            int size = handler.size();
+//            for (int index = 0; index < size; index++) {
+//                T resource = handler.getResource(index);
+//                if (!doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0)
+//                    return true;
+//            }
+//            return false;
+//        }
+//    }
 
     /**
      * Empty never matches, and uses the filter to validate the resource.
@@ -702,20 +711,21 @@ public final class ResourceHandlerUtil {
         return resource.isEmpty() || !filter.test(resource);
     }
 
-    public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
-        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
-            //Simulated: we don't commit
-            T resource = handler.getResource(index);
-            return !doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0;
-        }
-    }
-
-    public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, T resource) {
-        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
-            //Simulated: we don't commit
-            return handler.extract(resource, 1, temp) > 0;
-        }
-    }
+    // TODO: unsafe access to tx state
+//    public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
+//        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
+//            //Simulated: we don't commit
+//            T resource = handler.getResource(index);
+//            return !doesNotMatch(filter, resource) && handler.extract(resource, 1, temp) > 0;
+//        }
+//    }
+//
+//    public static <T extends IResource> boolean hasExtractableResource(IResourceHandler<T> handler, T resource) {
+//        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
+//            //Simulated: we don't commit
+//            return handler.extract(resource, 1, temp) > 0;
+//        }
+//    }
 
     public static <T extends IResource> T getFirstResourceOrDefault(IResourceHandler<T> handler, T defaultResource) {
         int size = handler.size();
