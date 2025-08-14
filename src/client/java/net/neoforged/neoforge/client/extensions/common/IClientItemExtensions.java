@@ -240,7 +240,7 @@ public interface IClientItemExtensions {
      * @param stack The scoping item stack
      * @return The texture to use for scoping
      */
-    default ResourceLocation getScopingTexture(ItemStack stack) {
+    default ResourceLocation getScopeOverlayTexture(ItemStack stack) {
         return Gui.SPYGLASS_SCOPE_LOCATION;
     }
 
