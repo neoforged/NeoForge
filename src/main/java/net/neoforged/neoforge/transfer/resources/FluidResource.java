@@ -116,7 +116,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
      * @throws NullPointerException  If the underlying Holder has not been populated (the target object is not registered).
      */
     public static FluidResource of(Holder<Fluid> holder, DataComponentPatch patch) {
-        if (holder.value() == Fluids.EMPTY|| patch.isEmpty()) {
+        if (holder.value() == Fluids.EMPTY || patch.isEmpty()) {
             return of(holder.value());
         }
         return new FluidResource(new FluidStack(holder, FluidType.BUCKET_VOLUME, patch));
