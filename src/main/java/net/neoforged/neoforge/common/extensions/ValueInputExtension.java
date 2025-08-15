@@ -28,12 +28,23 @@ public interface ValueInputExtension {
     }
 
     /**
+     * Read the given {@code child} object from the given {@code key}, with the possibility that the {@code child} object may be empty.
+     *
+     * @param key   the key to read the child from
+     * @param child the child to read from given key
+     */
+    default void readChildOrEmpty(String key, ValueIOSerializable child) {
+        child.deserialize(self().childOrEmpty(key));
+    }
+
+    /**
      * Read the given {@code child} object from the given {@code key}.
+     * Note that the object will only read the child <strong>ONLY</strong> if it's present.
      *
      * @param key   the key to read the child from
      * @param child the child to read from given key
      */
     default void readChild(String key, ValueIOSerializable child) {
-        child.deserialize(self().childOrEmpty(key));
+        self().child(key).ifPresent(child::deserialize);
     }
 }
