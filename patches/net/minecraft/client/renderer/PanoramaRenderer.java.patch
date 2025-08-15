@@ -1,5 +1,16 @@
 --- a/net/minecraft/client/renderer/PanoramaRenderer.java
 +++ b/net/minecraft/client/renderer/PanoramaRenderer.java
+@@ -21,6 +_,10 @@
+     }
+ 
+     public void render(GuiGraphics p_334063_, int p_333839_, int p_333923_, float p_110004_, float p_110005_) {
++        // Neo: as we fix MC-273464, the partial tick passed into the method is now based on game time rather than
++        // real time causing the panorama to flicker in speed. See https://github.com/neoforged/NeoForge/issues/2362
++        // We however preserve partial tick values of zero as the AccesibilityOnboardingScreen renders a static panorama
++        p_110005_ = p_110005_ == 0F ? 0F : this.minecraft.getTimer().getRealtimeDeltaTicks();
+         float f = (float)((double)p_110005_ * this.minecraft.options.panoramaSpeed().get());
+         this.spin = wrap(this.spin + f * 0.1F, 360.0F);
+         this.bob = wrap(this.bob + f * 0.001F, (float) (Math.PI * 2));
 @@ -30,6 +_,8 @@
          p_334063_.blit(PANORAMA_OVERLAY, 0, 0, p_333839_, p_333923_, 0.0F, 0.0F, 16, 128, 16, 128);
          p_334063_.setColor(1.0F, 1.0F, 1.0F, 1.0F);

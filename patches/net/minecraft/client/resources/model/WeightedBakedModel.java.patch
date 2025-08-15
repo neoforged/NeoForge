@@ -1,14 +1,5 @@
 --- a/net/minecraft/client/resources/model/WeightedBakedModel.java
 +++ b/net/minecraft/client/resources/model/WeightedBakedModel.java
-@@ -17,7 +_,7 @@
- import net.neoforged.api.distmarker.OnlyIn;
- 
- @OnlyIn(Dist.CLIENT)
--public class WeightedBakedModel implements BakedModel {
-+public class WeightedBakedModel implements BakedModel, net.neoforged.neoforge.client.model.IDynamicBakedModel {
-     private final int totalWeight;
-     private final List<WeightedEntry.Wrapper<BakedModel>> list;
-     private final BakedModel wrapped;
 @@ -29,9 +_,10 @@
      }
  

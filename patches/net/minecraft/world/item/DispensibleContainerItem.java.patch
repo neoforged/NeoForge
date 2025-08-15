@@ -1,11 +1,6 @@
 --- a/net/minecraft/world/item/DispensibleContainerItem.java
 +++ b/net/minecraft/world/item/DispensibleContainerItem.java
-@@ -6,9 +_,10 @@
- import net.minecraft.world.level.Level;
- import net.minecraft.world.phys.BlockHitResult;
- 
--public interface DispensibleContainerItem {
-+public interface DispensibleContainerItem extends net.neoforged.neoforge.common.extensions.IDispensibleContainerItemExtension {
+@@ -10,5 +_,6 @@
      default void checkExtraContent(@Nullable Player p_150817_, Level p_150818_, ItemStack p_150819_, BlockPos p_150820_) {
      }
  

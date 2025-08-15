@@ -19,7 +19,7 @@ import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 import net.neoforged.neoforge.registries.datamaps.DataMapsUpdatedEvent;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(modid = NeoForgeVersion.MOD_ID)
 public class MonsterRoomHooks {
     private static List<MobEntry> monsterRoomMobs = List.of();
 

@@ -82,6 +82,7 @@ public class AdvancementTests {
 
     @GameTest
     @EmptyTemplate
+    @SuppressWarnings("removal")
     @TestHolder(description = "Tests if custom advancement predicates work")
     static void customPredicateTest(final DynamicTest test, final RegistrationHelper reg) {
         ItemSubPredicate.Type<CustomNamePredicate> type = new ItemSubPredicate.Type<>(RecordCodecBuilder.create(g -> g.group(

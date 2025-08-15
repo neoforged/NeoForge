@@ -27,7 +27,7 @@ import net.neoforged.neoforge.client.command.ClientConfigCommand;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = NeoForgeVersion.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = NeoForgeVersion.MOD_ID)
 public class ConfigCommand {
     @SubscribeEvent
     public static void onClientCommandsRegister(RegisterClientCommandsEvent event) {

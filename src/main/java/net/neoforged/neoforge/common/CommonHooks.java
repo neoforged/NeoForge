@@ -66,6 +66,7 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -683,8 +684,12 @@ public class CommonHooks {
 
     public static boolean onAnvilChange(AnvilMenu container, ItemStack left, ItemStack right, Container outputSlot, String name, long baseCost, Player player) {
         AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-        if (NeoForge.EVENT_BUS.post(e).isCanceled())
+        if (NeoForge.EVENT_BUS.post(e).isCanceled()) {
+            outputSlot.setItem(0, ItemStack.EMPTY);
+            container.setMaximumCost(0);
+            container.repairItemCountCost = 0;
             return false;
+        }
         if (e.getOutput().isEmpty())
             return true;
 
@@ -1139,17 +1144,25 @@ public class CommonHooks {
         return event;
     }
 
+    @Nullable
+    private static ListTag modList;
+
     @ApiStatus.Internal
     public static void writeAdditionalLevelSaveData(WorldData worldData, CompoundTag levelTag) {
+        if (CommonHooks.modList == null) {
+            var mods = ModList.get().getMods();
+            var modListTag = new ListTag(mods.size());
+            mods.forEach(mi -> {
+                final CompoundTag mod = new CompoundTag(2);
+                mod.putString("ModId", mi.getModId());
+                mod.putString("ModVersion", MavenVersionTranslator.artifactVersionToString(mi.getVersion()));
+                modListTag.add(mod);
+            });
+            CommonHooks.modList = modListTag;
+        }
+
         CompoundTag fmlData = new CompoundTag();
-        ListTag modList = new ListTag();
-        ModList.get().getMods().forEach(mi -> {
-            final CompoundTag mod = new CompoundTag();
-            mod.putString("ModId", mi.getModId());
-            mod.putString("ModVersion", MavenVersionTranslator.artifactVersionToString(mi.getVersion()));
-            modList.add(mod);
-        });
-        fmlData.put("LoadingModList", modList);
+        fmlData.put("LoadingModList", CommonHooks.modList);
 
         LOGGER.debug(WORLDPERSISTENCE, "Gathered mod list to write to world save {}", worldData.getLevelName());
         levelTag.put("fml", fmlData);
@@ -1507,9 +1520,24 @@ public class CommonHooks {
      * @param entity The target entity the mob effect is being applied to.
      * @param effect The mob effect being applied.
      * @return True if the mob effect can be applied, otherwise false.
+     *
+     * @deprecated Use {@link CommonHooks#canMobEffectBeApplied(LivingEntity, MobEffectInstance, Entity)} instead.
      */
+    @Deprecated(forRemoval = true)
     public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect) {
-        var event = new MobEffectEvent.Applicable(entity, effect);
+        return canMobEffectBeApplied(entity, effect, null);
+    }
+
+    /**
+     * Checks if a mob effect can be applied to an entity by firing {@link MobEffectEvent.Applicable}.
+     *
+     * @param entity The target entity the mob effect is being applied to.
+     * @param effect The mob effect being applied.
+     * @param source The source entity who is applying the mob effect, or {@code null} if none exists.
+     * @return True if the mob effect can be applied, otherwise false.
+     */
+    public static boolean canMobEffectBeApplied(LivingEntity entity, MobEffectInstance effect, @Nullable Entity source) {
+        var event = new MobEffectEvent.Applicable(entity, effect, source);
         return NeoForge.EVENT_BUS.post(event).getApplicationResult();
     }
 
@@ -1531,6 +1559,18 @@ public class CommonHooks {
             return ClientHooks.resolveLookup(key);
         }
         return null;
+    }
+
+    /**
+     * Extracts a {@link HolderLookup.Provider} from the given {@code ops}, if possible.
+     *
+     * @throws IllegalArgumentException if the ops were not created using a {@linkplain HolderLookup.Provider}
+     */
+    public static HolderLookup.Provider extractLookupProvider(RegistryOps<?> ops) {
+        if (ops.lookupProvider instanceof RegistryOps.HolderLookupAdapter hla) {
+            return hla.lookupProvider;
+        }
+        throw new IllegalArgumentException("Registry ops has lookup provider " + ops.lookupProvider + " which is not a HolderLookupAdapter");
     }
 
     /**

@@ -1,17 +1,15 @@
 --- a/net/minecraft/world/item/Rarity.java
 +++ b/net/minecraft/world/item/Rarity.java
-@@ -9,7 +_,10 @@
+@@ -9,6 +_,9 @@
  import net.minecraft.util.ByIdMap;
  import net.minecraft.util.StringRepresentable;
  
--public enum Rarity implements StringRepresentable {
 +@net.neoforged.fml.common.asm.enumextension.IndexedEnum
 +@net.neoforged.fml.common.asm.enumextension.NamedEnum(1)
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.BIDIRECTIONAL)
-+public enum Rarity implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum Rarity implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      COMMON(0, "common", ChatFormatting.WHITE),
      UNCOMMON(1, "uncommon", ChatFormatting.YELLOW),
-     RARE(2, "rare", ChatFormatting.AQUA),
 @@ -21,19 +_,38 @@
      private final int id;
      private final String name;

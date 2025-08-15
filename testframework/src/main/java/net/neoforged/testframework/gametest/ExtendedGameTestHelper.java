@@ -27,7 +27,11 @@ import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.Connection;
+import net.minecraft.network.PacketSendListener;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.ClientboundKeepAlivePacket;
+import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
@@ -119,6 +123,15 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             @Override
             public boolean isMemoryConnection() {
                 return true;
+            }
+
+            @Override
+            public void send(Packet<?> packet, @Nullable PacketSendListener listeners, boolean flush) {
+                super.send(packet, listeners, flush);
+                // Respond to keepalive packets instantly
+                if (packet instanceof ClientboundKeepAlivePacket ckp) {
+                    serverplayer.connection.handleKeepAlive(new ServerboundKeepAlivePacket(ckp.getId()));
+                }
             }
         };
         EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);
@@ -347,6 +360,10 @@ public class ExtendedGameTestHelper extends GameTestHelper {
     public <T extends Event> void addTemporaryListener(Consumer<T> event) {
         NeoForge.EVENT_BUS.addListener(event);
         addEndListener(success -> NeoForge.EVENT_BUS.unregister(event));
+    }
+
+    public void assertNotNull(@Nullable Object var, String message) {
+        this.assertTrue(var != null, message);
     }
 
     public <E extends LivingEntity> void assertMobEffectPresent(E entity, Holder<MobEffect> effect, String testName) {

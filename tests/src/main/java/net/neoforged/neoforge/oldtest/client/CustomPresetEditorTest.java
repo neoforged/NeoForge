@@ -48,7 +48,7 @@ public class CustomPresetEditorTest {
     public static final String MODID = "custom_preset_editor_test";
     public static final ResourceKey<WorldPreset> WORLD_PRESET_KEY = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.fromNamespaceAndPath(MODID, MODID));
 
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MODID)
     public static class CommonModEvents {
         @SubscribeEvent
         public static void onGatherData(GatherDataEvent event) {
@@ -81,7 +81,7 @@ public class CustomPresetEditorTest {
         }
     }
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onRegisterPresetEditors(RegisterPresetEditorsEvent event) {

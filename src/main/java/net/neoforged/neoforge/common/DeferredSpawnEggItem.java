@@ -73,7 +73,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
         return stack;
     };
 
-    @EventBusSubscriber(modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = "neoforge")
     private static class CommonHandler {
         @SubscribeEvent
         public static void onCommonSetup(FMLCommonSetupEvent event) {
@@ -90,7 +90,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
         }
     }
 
-    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge", bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = "neoforge")
     private static class ColorRegisterHandler {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void registerSpawnEggColors(RegisterColorHandlersEvent.Item event) {

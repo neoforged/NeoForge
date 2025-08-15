@@ -108,12 +108,7 @@
          return this.builders.computeIfAbsent(p_236452_.location(), p_236442_ -> TagBuilder.create());
      }
  
-@@ -127,11 +_,19 @@
-         });
-     }
- 
--    public static class TagAppender<T> {
-+    public static class TagAppender<T> implements net.neoforged.neoforge.common.extensions.ITagAppenderExtension<T> {
+@@ -131,7 +_,15 @@
          private final TagBuilder builder;
  
          protected TagAppender(TagBuilder p_256426_) {

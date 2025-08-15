@@ -26,6 +26,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -692,15 +693,24 @@ public class EventHooks {
     }
 
     /**
+     * Use the {@link #loadLootTable(HolderLookup.Provider, ResourceLocation, LootTable) instead}
+     */
+    @Deprecated
+    public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
+        return loadLootTable(RegistryAccess.EMPTY, name, table);
+    }
+
+    /**
      * Fires the {@link LootTableLoadEvent} for non-empty loot tables and returns the table if the event was not
      * canceled and the table was not set to {@link LootTable#EMPTY} in the event. Otherwise returns {@code null}
      * which maps to an empty {@link Optional} in {@link LootDataType#deserialize(ResourceLocation, DynamicOps, Object)}
      */
     @Nullable
-    public static LootTable loadLootTable(ResourceLocation name, LootTable table) {
+    @ApiStatus.Internal
+    public static LootTable loadLootTable(HolderLookup.Provider registries, ResourceLocation name, LootTable table) {
         if (table == LootTable.EMPTY) // Empty table has a null name, and shouldn't be modified anyway.
             return null;
-        LootTableLoadEvent event = new LootTableLoadEvent(name, table);
+        LootTableLoadEvent event = new LootTableLoadEvent(registries, name, table);
         if (NeoForge.EVENT_BUS.post(event).isCanceled() || event.getTable() == LootTable.EMPTY)
             return null;
         return event.getTable();

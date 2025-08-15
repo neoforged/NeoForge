@@ -9,7 +9,7 @@
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final LootDataType<LootItemCondition> PREDICATE = new LootDataType<>(
          Registries.PREDICATE, LootItemCondition.DIRECT_CODEC, createSimpleValidator()
-@@ -24,17 +_,33 @@
+@@ -24,17 +_,36 @@
      public static final LootDataType<LootItemFunction> MODIFIER = new LootDataType<>(
          Registries.ITEM_MODIFIER, LootItemFunctions.ROOT_CODEC, createSimpleValidator()
      );
@@ -42,7 +42,10 @@
 +        return dataresult.result().map(it -> {
 +            it.ifPresent(val -> idSetter.accept(val, p_279253_));
 +            T value = it.orElse(defaultValue);
-+            if (value instanceof LootTable lootTable) value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(p_279253_, lootTable);
++            if (value instanceof LootTable lootTable && p_324006_ instanceof net.minecraft.resources.RegistryOps<V> registryOps) {
++                var provider = net.neoforged.neoforge.common.CommonHooks.extractLookupProvider(registryOps);
++                value = (T) net.neoforged.neoforge.event.EventHooks.loadLootTable(provider, p_279253_, lootTable);
++            }
 +            return value;
 +        });
      }

@@ -65,8 +65,8 @@ public class LootPoolTest {
         test.onGameTest(helper -> {
             var testTable = helper.getLevel().getServer().reloadableRegistries().getLootTable(TEST_LOOT_TABLE_1);
 
-            helper.assertTrue(testTable.getPool("custom_name") != null, "Expected custom_name pool");
-            helper.assertTrue(testTable.getPool("pool1") != null, "Expected unnamed pool pool1");
+            helper.assertNotNull(testTable.getPool("custom_name"), "Expected custom_name pool");
+            helper.assertNotNull(testTable.getPool("pool1"), "Expected unnamed pool pool1");
 
             helper.succeed();
         });
@@ -92,7 +92,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 event.setCanceled(true);
             }
         });
@@ -131,7 +131,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.BLUE_CONCRETE);
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.setTable(new LootTable.Builder().withPool(pool).build());
@@ -172,7 +172,7 @@ public class LootPoolTest {
                 event.getLookupProvider()));
 
         NeoForge.EVENT_BUS.addListener((final LootTableLoadEvent event) -> {
-            if (event.getName().equals(lootTableToUse.location())) {
+            if (event.getKey() == lootTableToUse) {
                 LootPoolSingletonContainer.Builder<?> entry = LootItem.lootTableItem(Items.YELLOW_CONCRETE);
                 LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(entry).when(ExplosionCondition.survivesExplosion());
                 event.getTable().addPool(pool.build());

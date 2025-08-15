@@ -3,9 +3,8 @@
 @@ -1,8 +_,13 @@
  package net.minecraft.world.inventory;
  
--public enum RecipeBookType {
 +@net.neoforged.fml.common.asm.enumextension.NetworkedEnum(net.neoforged.fml.common.asm.enumextension.NetworkedEnum.NetworkCheck.CLIENTBOUND)
-+public enum RecipeBookType implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
+ public enum RecipeBookType implements net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      CRAFTING,
      FURNACE,
      BLAST_FURNACE,

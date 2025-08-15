@@ -6,6 +6,7 @@
 package net.neoforged.neoforge.client.event;
 
 import com.mojang.datafixers.util.Either;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.client.gui.Font;
@@ -116,7 +117,7 @@ public abstract class RenderTooltipEvent extends Event {
             this.itemStack = itemStack;
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
-            this.tooltipElements = tooltipElements;
+            this.tooltipElements = tooltipElements instanceof ArrayList<Either<FormattedText, TooltipComponent>> ? tooltipElements : new ArrayList<>(tooltipElements);
             this.maxWidth = maxWidth;
         }
 

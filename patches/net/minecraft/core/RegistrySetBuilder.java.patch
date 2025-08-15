@@ -64,15 +64,6 @@
              };
          }
  
-@@ -408,7 +_,7 @@
-         }
-     }
- 
--    static class UniversalLookup extends RegistrySetBuilder.EmptyTagLookup<Object> {
-+    static class UniversalLookup extends RegistrySetBuilder.EmptyTagLookup<Object> implements HolderLookup<Object> {
-         final Map<ResourceKey<Object>, Holder.Reference<Object>> holders = new HashMap<>();
- 
-         public UniversalLookup(HolderOwner<Object> p_256629_) {
 @@ -418,6 +_,26 @@
          @Override
          public Optional<Holder.Reference<Object>> get(ResourceKey<Object> p_256303_) {

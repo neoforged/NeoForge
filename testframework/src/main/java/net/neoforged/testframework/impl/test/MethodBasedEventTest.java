@@ -15,6 +15,7 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.impl.ReflectionUtils;
 
+@SuppressWarnings("removal")
 public class MethodBasedEventTest extends AbstractTest.Dynamic {
     protected MethodHandle handle;
     private final Method method;

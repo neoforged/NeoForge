@@ -71,9 +71,7 @@ public abstract class CreateArgsFile extends DefaultTask {
     protected abstract ArchiveOperations getArchiveOperations();
 
     private String resolveClasspath() throws IOException {
-        var ourClasspath = getClasspath().get() + getPathSeparator().get()
-                + "libraries/net/minecraft/server/%s/server-%s-extra.jar".formatted(
-                        getRawNeoFormVersion().get(), getRawNeoFormVersion().get());
+        var ourClasspath = getClasspath().get();
 
         // The raw server jar also contains its own classpath.
         // We want to make sure that our versions of the libraries are used when there is a conflict.

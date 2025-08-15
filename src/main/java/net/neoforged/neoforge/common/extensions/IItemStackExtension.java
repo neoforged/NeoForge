@@ -222,6 +222,7 @@ public interface IItemStackExtension {
      * @deprecated To be replaced with hand sensitive version in 21.2
      * @see #onEntitySwing(LivingEntity, InteractionHand)
      */
+    @SuppressWarnings("removal")
     @Deprecated(forRemoval = true, since = "21.1")
     default boolean onEntitySwing(LivingEntity entity) {
         return self().getItem().onEntitySwing(self(), entity);
