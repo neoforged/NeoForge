@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer;
 
-import com.google.common.primitives.Ints;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.CrashReport;
@@ -87,7 +86,7 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the resource at the specified index is full, {@code false} otherwise
      */
     public static <T extends IResource> boolean isIndexFull(IResourceHandler<T> handler, int index) {
-        return handler.getAmountAsLong(index) == handler.getCapacityAsLong(index, handler.getResource(index));
+        return handler.getAmount(index) == handler.getCapacity(index, handler.getResource(index));
     }
 
     /**
@@ -142,7 +141,7 @@ public final class ResourceHandlerUtil {
         int size = handler.size();
 
         for (int index = 0; index < size; ++index) {
-            int indexFill = handler.getAmount(index);
+            long indexFill = handler.getAmount(index);
             if (indexFill > 0)
                 proportion += (float) indexFill / handler.getCapacity(index, handler.getResource(index));
         }
@@ -433,8 +432,6 @@ public final class ResourceHandlerUtil {
         TransferPreconditions.checkNonNegative(amount);
         if (amount == 0) return 0;
         if (from == null || to == null) return 0;
-        // Not strictly necessary, but quite cheap and can prevent unnecessary iteration
-        if (!from.supportsExtraction() || !to.supportsInsertion()) return 0;
 
         try (Transaction subTransaction = Transaction.open(transaction)) {
             int totalMoved = 0;
@@ -583,87 +580,88 @@ public final class ResourceHandlerUtil {
 //        return stackFactory.create(resource, amount);
 //    }
 
-    public static <T extends IResource> int getAmount(IResourceHandler<T> handler) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            sum += handler.getAmount(index);
-            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
-        }
-        return Ints.saturatedCast(sum);
-    }
-
-    public static <T extends IResource> int getAmount(IResourceHandler<T> handler, T resource) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            if (!resource.equals(handler.getResource(index))) continue;
-            sum += handler.getAmount(index);
-            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
-        }
-        return Ints.saturatedCast(sum);
-    }
-
-    public static <T extends IResource> int getCapacity(IResourceHandler<T> handler) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            sum += handler.getCapacity(index, handler.getResource(index));
-            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
-        }
-        return Ints.saturatedCast(sum);
-    }
-
-    public static <T extends IResource> int getCapacity(IResourceHandler<T> handler, T resource) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            sum += handler.getCapacityAsLong(index, resource);
-            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
-        }
-        return Ints.saturatedCast(sum);
-    }
-
-    public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            sum += handler.getAmountAsLong(index);
-            if (sum < 0) return Long.MAX_VALUE;
-        }
-        return sum;
-    }
-
-    public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler, T resource) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            if (!resource.equals(handler.getResource(index))) continue;
-            sum += handler.getAmountAsLong(index);
-            if (sum < 0) return Long.MAX_VALUE;
-        }
-        return sum;
-    }
-
-    public static <T extends IResource> long getCapacityAsLong(IResourceHandler<T> handler) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            sum += handler.getCapacityAsLong(index, handler.getResource(index));
-            if (sum < 0) return Long.MAX_VALUE;
-        }
-        return sum;
-    }
-
-    public static <T extends IResource> long getCapacityAsLong(IResourceHandler<T> handler, T resource) {
-        long sum = 0L;
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            sum += handler.getCapacityAsLong(index, resource);
-            if (sum < 0) return Long.MAX_VALUE;
-        }
-        return sum;
-    }
+    // TODO: int <-> long switching
+//    public static <T extends IResource> int getAmount(IResourceHandler<T> handler) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            sum += handler.getAmount(index);
+//            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        }
+//        return Ints.saturatedCast(sum);
+//    }
+//
+//    public static <T extends IResource> int getAmount(IResourceHandler<T> handler, T resource) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            if (!resource.equals(handler.getResource(index))) continue;
+//            sum += handler.getAmount(index);
+//            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        }
+//        return Ints.saturatedCast(sum);
+//    }
+//
+//    public static <T extends IResource> int getCapacity(IResourceHandler<T> handler) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            sum += handler.getCapacity(index, handler.getResource(index));
+//            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        }
+//        return Ints.saturatedCast(sum);
+//    }
+//
+//    public static <T extends IResource> int getCapacity(IResourceHandler<T> handler, T resource) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            sum += handler.getCapacityAsLong(index, resource);
+//            if (sum >= Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        }
+//        return Ints.saturatedCast(sum);
+//    }
+//
+//    public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            sum += handler.getAmountAsLong(index);
+//            if (sum < 0) return Long.MAX_VALUE;
+//        }
+//        return sum;
+//    }
+//
+//    public static <T extends IResource> long getAmountAsLong(IResourceHandler<T> handler, T resource) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            if (!resource.equals(handler.getResource(index))) continue;
+//            sum += handler.getAmountAsLong(index);
+//            if (sum < 0) return Long.MAX_VALUE;
+//        }
+//        return sum;
+//    }
+//
+//    public static <T extends IResource> long getCapacityAsLong(IResourceHandler<T> handler) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            sum += handler.getCapacityAsLong(index, handler.getResource(index));
+//            if (sum < 0) return Long.MAX_VALUE;
+//        }
+//        return sum;
+//    }
+//
+//    public static <T extends IResource> long getCapacityAsLong(IResourceHandler<T> handler, T resource) {
+//        long sum = 0L;
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            sum += handler.getCapacityAsLong(index, resource);
+//            if (sum < 0) return Long.MAX_VALUE;
+//        }
+//        return sum;
+//    }
 
     /**
      * @return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise

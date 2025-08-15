@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import java.util.Objects;
-
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -55,19 +54,13 @@ public final class VoidResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmount(int index) {
         Objects.checkIndex(index, size());
         return 0;
     }
 
     @Override
-    public int getCapacity(int index, T resource) {
-        Objects.checkIndex(index, size());
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public long getCapacityAsLong(int index, T resource) {
+    public long getCapacity(int index, T resource) {
         Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
     }

@@ -72,27 +72,15 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmount(int index) {
         int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getAmount(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
-    public long getAmountAsLong(int index) {
-        int handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).getAmountAsLong(getSlotFromIndex(index, handlerIndex));
-    }
-
-    @Override
-    public int getCapacity(int index, T resource) {
+    public long getCapacity(int index, T resource) {
         int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).getCapacity(getSlotFromIndex(index, handlerIndex), resource);
-    }
-
-    @Override
-    public long getCapacityAsLong(int index, T resource) {
-        int handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).getCapacityAsLong(getSlotFromIndex(index, handlerIndex), resource);
     }
 
     @Override

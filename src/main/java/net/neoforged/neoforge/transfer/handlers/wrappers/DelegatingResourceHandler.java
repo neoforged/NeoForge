@@ -45,27 +45,15 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public int getAmount(int index) {
+    public long getAmount(int index) {
         Objects.checkIndex(index, size());
         return getDelegate().getAmount(convertIndex(index));
     }
 
     @Override
-    public long getAmountAsLong(int index) {
-        Objects.checkIndex(index, size());
-        return getDelegate().getAmountAsLong(convertIndex(index));
-    }
-
-    @Override
-    public int getCapacity(int index, T resource) {
+    public long getCapacity(int index, T resource) {
         Objects.checkIndex(index, size());
         return getDelegate().getCapacity(convertIndex(index), resource);
-    }
-
-    @Override
-    public long getCapacityAsLong(int index, T resource) {
-        Objects.checkIndex(index, size());
-        return getDelegate().getCapacityAsLong(convertIndex(index), resource);
     }
 
     @Override
