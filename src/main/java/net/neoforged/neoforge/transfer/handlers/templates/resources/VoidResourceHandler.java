@@ -6,23 +6,18 @@
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import java.util.Objects;
+
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
-import net.neoforged.neoforge.transfer.resources.FluidResource;
 import net.neoforged.neoforge.transfer.resources.IResource;
-import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A resource handler that automatically destroys any resources that are inserted into it.
- * You should use the static instances provided such as {@link #ITEM} or {@link #FLUID} instead of creating one yourself.
- * In the case of your own resource type, or one not specifically builtin, it is advised to create your own cached instance for reuse.
  *
- * @param <T> The type of resource that this storage can accept.
+ * @param <T> The type of resource that this handler can accept.
  */
 public final class VoidResourceHandler<T extends IResource> implements IResourceHandler<T> {
-    public static final VoidResourceHandler<ItemResource> ITEM = new VoidResourceHandler<>(ItemResource.EMPTY);
-    public static final VoidResourceHandler<FluidResource> FLUID = new VoidResourceHandler<>(FluidResource.EMPTY);
-
     private final T emptyResource;
 
     public VoidResourceHandler(T emptyResource) {
@@ -37,6 +32,7 @@ public final class VoidResourceHandler<T extends IResource> implements IResource
     @Override
     public int insert(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
         // Always accept the full amount
         return amount;
     }
@@ -44,6 +40,7 @@ public final class VoidResourceHandler<T extends IResource> implements IResource
     @Override
     public int extract(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
         return 0;
     }
 

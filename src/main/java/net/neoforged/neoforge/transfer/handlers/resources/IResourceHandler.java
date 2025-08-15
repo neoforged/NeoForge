@@ -7,6 +7,7 @@ package net.neoforged.neoforge.transfer.handlers.resources;
 
 import com.google.common.primitives.Ints;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -165,14 +166,15 @@ public interface IResourceHandler<T extends IResource> {
      * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
+        int inserted = 0;
         int size = size();
         for (int index = 0; index < size; index++) {
-            handled += insert(index, resource, amount - handled, transaction);
-            if (handled == amount) break;
+            inserted += insert(index, resource, amount - inserted, transaction);
+            if (inserted == amount) break;
         }
-        return handled;
+        return inserted;
     }
 
     /**
@@ -208,14 +210,15 @@ public interface IResourceHandler<T extends IResource> {
      * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler
      */
     default int extract(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
+        int extracted = 0;
         int size = size();
         for (int index = 0; index < size; index++) {
-            handled += extract(index, resource, amount - handled, transaction);
-            if (handled == amount) break;
+            extracted += extract(index, resource, amount - extracted, transaction);
+            if (extracted == amount) break;
         }
-        return handled;
+        return extracted;
     }
 
     /**

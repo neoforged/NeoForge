@@ -5,27 +5,24 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Wraps a set of handlers to handle each as if it was a contiguous resource handler blob.
+ * A resource handler that wraps multiple resource handlers, concatenating all their indices into one large handler.
  * <p>
- * <strong>Important: This will only work with constant sized handlers.</strong>
- * Dynamically sized handlers are supported by api, but not by this implementation
- *
- * @param <T>
+ * <strong>This wrapper assumes that all internal handlers have a constant size.</strong>
  */
 public class CombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
     protected final IResourceHandler<T>[] handlers; // the handlers
     protected final int[] baseIndex; // index-offsets of the different handlers
-    protected final int sizeCache; // number of total slots
+    protected final int sizeCache; // number of total indices
 
     @SafeVarargs
     public CombinedResourceHandlerWrapper(IResourceHandler<T>... handlers) {
-        if (handlers.length <= 1) throw new IllegalArgumentException("At least 2 handlers must be specified");
+        if (handlers.length <= 1) throw new IllegalArgumentException("At least 2 handlers must be specified. Received: " + handlers.length);
         this.handlers = handlers;
         this.baseIndex = new int[handlers.length];
         int index = 0;
@@ -38,21 +35,20 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
     // returns the handler index for the index
     protected int getHandlerIndex(int index) {
-        if (index < 0) throw new IndexOutOfBoundsException(index);
+        if (index < 0) throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + sizeCache);
 
         for (int i = 0; i < baseIndex.length; i++) {
             if (index - baseIndex[i] < 0) {
                 return i;
             }
         }
-        throw new IndexOutOfBoundsException(index);
+        throw new IndexOutOfBoundsException();
     }
 
     protected IResourceHandler<T> getHandlerFromIndex(int index) {
         if (index >= 0 && index < handlers.length)
             return handlers[index];
 
-        // Probably log something here for the user to know, but we likely shouldn't crash given this is cross mod support.
         throw new IndexOutOfBoundsException(index);
     }
 
@@ -92,37 +88,41 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
         int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
+        int inserted = 0;
         for (IResourceHandler<T> resourceHandler : handlers) {
-            handled += resourceHandler.insert(resource, amount - handled, transaction);
-            if (handled == amount) break;
+            inserted += resourceHandler.insert(resource, amount - inserted, transaction);
+            if (inserted == amount) break;
         }
-        return handled;
+        return inserted;
     }
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
         int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
     }
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
-        int handled = 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
+        int extracted = 0;
         for (IResourceHandler<T> resourceHandler : handlers) {
-            handled += resourceHandler.extract(resource, amount - handled, transaction);
-            if (handled == amount) break;
+            extracted += resourceHandler.extract(resource, amount - extracted, transaction);
+            if (extracted == amount) break;
         }
-        return handled;
+        return extracted;
     }
 }

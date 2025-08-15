@@ -5,6 +5,8 @@
 
 package net.neoforged.neoforge.transfer;
 
+import net.neoforged.neoforge.transfer.resources.IResource;
+
 public class TransferPreconditions {
     private TransferPreconditions() {}
 
@@ -16,6 +18,18 @@ public class TransferPreconditions {
     public static void checkNonNegative(int value) {
         if (value < 0) {
             throw new IllegalArgumentException("Expected value to be non-negative: " + value);
+        }
+    }
+
+    /**
+     * Ensures the resource passed in is non-empty and the value passed in is non-negative, throws otherwise.
+     *
+     * @throws IllegalArgumentException when resource is empty or value is negative.
+     */
+    public static void checkNonEmptyNonBlank(IResource resource, int value) {
+        checkNonNegative(value);
+        if (resource.isEmpty()) {
+            throw new IllegalArgumentException("Expected resource to be non-empty: " + resource);
         }
     }
 }

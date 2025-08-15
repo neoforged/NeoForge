@@ -7,14 +7,14 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A wrapper that delegates all calls to a handler.
- *
- * @param <T> The type of resource this handler manages.
+ * A resource handler that delegates all calls to another handler.
  */
 public class DelegatingResourceHandler<T extends IResource> implements IResourceHandler<T> {
     protected final Supplier<IResourceHandler<T>> delegate;
@@ -33,6 +33,9 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
         return getDelegate().size();
     }
 
+    /**
+     * Converts the external index to the internal index to use for the delegated-to handler.
+     */
     protected int convertIndex(int index) {
         Objects.checkIndex(index, size());
         return index;
@@ -66,6 +69,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
         return getDelegate().insert(convertIndex(index), resource, amount, transaction);
     }
 
@@ -77,6 +81,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
         return getDelegate().extract(convertIndex(index), resource, amount, transaction);
     }
 

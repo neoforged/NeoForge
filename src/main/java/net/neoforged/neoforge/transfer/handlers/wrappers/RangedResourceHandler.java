@@ -9,16 +9,13 @@ import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A wrapper that delegates all calls to a range of indices of a handler.
- * <p>
- * <b>By itself, this does not handle snapshotting.</b> It is expected the delegated handlers take care of what needs to be journaled.
- *
- * @param <T> The type of resource this handler manages.
+ * A resource handler that wraps a range of indices of another handler.
  */
 public class RangedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
     protected int start;
@@ -35,6 +32,14 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
         this.end = end;
     }
 
+    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(IResourceHandler<T> delegate, int index) {
+        return new RangedResourceHandler<>(delegate, index, index + 1);
+    }
+
+    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(Supplier<IResourceHandler<T>> delegate, int index) {
+        return new RangedResourceHandler<>(delegate, index, index + 1);
+    }
+
     @Override
     public int size() {
         return end - start;
@@ -48,7 +53,8 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
         int extracted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index = start; index < end; index++) {
@@ -63,7 +69,8 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
+        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+
         int inserted = 0;
         IResourceHandler<T> handler = getDelegate();
         for (int index = start; index < end; index++) {
