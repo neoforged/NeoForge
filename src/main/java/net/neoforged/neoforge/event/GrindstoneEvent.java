@@ -12,6 +12,7 @@ import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class GrindstoneEvent extends Event {
     private final ItemStack top;
@@ -118,9 +119,10 @@ public abstract class GrindstoneEvent extends Event {
         private ItemStack newBottom = ItemStack.EMPTY;
 
         private final ContainerLevelAccess access;
+        @Nullable
         private final Player player;
 
-        public OnTakeItem(ContainerLevelAccess access, Player player, ItemStack top, ItemStack bottom, int xp) {
+        public OnTakeItem(ContainerLevelAccess access, @Nullable Player player, ItemStack top, ItemStack bottom, int xp) {
             super(top, bottom, xp);
             this.access = access;
             this.player = player;
@@ -185,6 +187,7 @@ public abstract class GrindstoneEvent extends Event {
         /**
          * @return the player currently using the grindstone
          */
+        @Nullable
         public Player getPlayer() {
             return this.player;
         }
