@@ -15,13 +15,13 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>
  * <strong>This wrapper assumes that all internal handlers have a constant size.</strong>
  */
-public class CombinedResourceHandlerWrapper<T extends IResource> implements IResourceHandler<T> {
+public class CombinedResourceHandler<T extends IResource> implements IResourceHandler<T> {
     protected final IResourceHandler<T>[] handlers; // the handlers
     protected final int[] baseIndex; // index-offsets of the different handlers
     protected final int sizeCache; // number of total indices
 
     @SafeVarargs
-    public CombinedResourceHandlerWrapper(IResourceHandler<T>... handlers) {
+    public CombinedResourceHandler(IResourceHandler<T>... handlers) {
         if (handlers.length <= 1) throw new IllegalArgumentException("At least 2 handlers must be specified. Received: " + handlers.length);
         this.handlers = handlers;
         this.baseIndex = new int[handlers.length];
