@@ -5,8 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.resources;
 
-import net.minecraft.core.BlockPos;
-import net.neoforged.neoforge.common.extensions.ILevelExtension;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -103,17 +101,6 @@ public interface IResourceHandler<T extends IResource> {
     boolean isValid(int index, T resource);
 
     /**
-     * Return false if attempting to insert resources will absolutely always return 0, or true otherwise or in doubt.
-     *
-     * <p>This function is meant to be used by pipes or other devices that can transfer resources to know if
-     * they should interact with this handler at all.
-     * For block capabilities, a change in this value should trigger {@link ILevelExtension#invalidateCapabilities(BlockPos) a capability invalidation}.
-     */
-    default boolean supportsInsertion() {
-        return true;
-    }
-
-    /**
      * Inserts a given amount of the resource into the handler at the given index.
      *
      * @param index       The index to insert the resource into. <strong>Must be non-negative</strong>
@@ -151,17 +138,6 @@ public interface IResourceHandler<T extends IResource> {
             if (handled == amount) break;
         }
         return handled;
-    }
-
-    /**
-     * Return false if attempting to extract resources will absolutely always return 0, or true otherwise or in doubt.
-     *
-     * <p>This function is meant to be used by pipes or other devices that can transfer resources to know if
-     * they should interact with this handler at all.
-     * For block capabilities, a change in this value should trigger {@link ILevelExtension#invalidateCapabilities(BlockPos) a capability invalidation}.
-     */
-    default boolean supportsExtraction() {
-        return true;
     }
 
     /**

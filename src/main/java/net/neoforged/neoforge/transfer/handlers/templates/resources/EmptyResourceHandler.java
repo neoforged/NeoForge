@@ -29,19 +29,9 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
-    public boolean supportsInsertion() {
-        return false;
-    }
-
-    @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
         ResourceHandlerUtil.isEmpty(resource, amount);
         return 0;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        return false;
     }
 
     @Override

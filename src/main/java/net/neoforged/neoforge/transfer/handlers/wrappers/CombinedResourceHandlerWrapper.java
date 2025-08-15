@@ -103,16 +103,6 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
     }
 
     @Override
-    public boolean supportsInsertion() {
-        for (var handler : handlers) {
-            if (handler.supportsInsertion()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
         if (ResourceHandlerUtil.isEmpty(resource, amount)) return 0;
         int handlerIndex = getHandlerIndex(index);
@@ -128,16 +118,6 @@ public class CombinedResourceHandlerWrapper<T extends IResource> implements IRes
             if (handled == amount) break;
         }
         return handled;
-    }
-
-    @Override
-    public boolean supportsExtraction() {
-        for (var handler : handlers) {
-            if (handler.supportsExtraction()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

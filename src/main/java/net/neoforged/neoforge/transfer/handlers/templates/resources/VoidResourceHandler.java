@@ -43,11 +43,6 @@ public final class VoidResourceHandler<T extends IResource> implements IResource
     }
 
     @Override
-    public boolean supportsExtraction() {
-        return false;
-    }
-
-    @Override
     public int extract(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
         return 0;
