@@ -152,7 +152,7 @@
      public boolean canFitInsideContainerItems() {
          return true;
      }
-@@ -341,13 +_,22 @@
+@@ -341,6 +_,14 @@
          return this.requiredFeatures;
      }
  
