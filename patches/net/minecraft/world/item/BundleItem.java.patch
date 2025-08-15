@@ -9,6 +9,15 @@
              return false;
          } else {
              BundleContents bundlecontents = p_150733_.get(DataComponents.BUNDLE_CONTENTS);
+@@ -54,7 +_,7 @@
+                         ItemStack itemstack2 = p_150734_.safeInsert(itemstack1);
+                         bundlecontents$mutable.tryInsert(itemstack2);
+                     }
+-                } else if (itemstack.getItem().canFitInsideContainerItems()) {
++                } else if (itemstack.canFitInsideContainerItems()) { // Neo: stack-aware placeability check
+                     int i = bundlecontents$mutable.tryTransfer(p_150734_, p_150736_);
+                     if (i > 0) {
+                         this.playInsertSound(p_150736_);
 @@ -71,6 +_,7 @@
      public boolean overrideOtherStackedOnMe(
          ItemStack p_150742_, ItemStack p_150743_, Slot p_150744_, ClickAction p_150745_, Player p_150746_, SlotAccess p_150747_

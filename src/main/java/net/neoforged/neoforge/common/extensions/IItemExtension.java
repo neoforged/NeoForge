@@ -797,4 +797,15 @@ public interface IItemExtension {
 
         return stack;
     }
+
+    /**
+     * Determines whether this item can be safely stored inside another container item, optionally taking the provided
+     * stack's data into account.
+     *
+     * @param stack The stack holding this item
+     * @return whether this item can fit inside a container item
+     */
+    default boolean canFitInsideContainerItems(ItemStack stack) {
+        return self().canFitInsideContainerItems();
+    }
 }

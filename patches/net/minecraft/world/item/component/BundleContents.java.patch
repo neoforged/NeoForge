@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/component/BundleContents.java
++++ b/net/minecraft/world/item/component/BundleContents.java
+@@ -141,7 +_,7 @@
+         }
+ 
+         public int tryInsert(ItemStack p_331789_) {
+-            if (!p_331789_.isEmpty() && p_331789_.getItem().canFitInsideContainerItems()) {
++            if (!p_331789_.isEmpty() && p_331789_.canFitInsideContainerItems()) { // Neo: stack-aware placeability check
+                 int i = Math.min(p_331789_.getCount(), this.getMaxAmountToAdd(p_331789_));
+                 if (i == 0) {
+                     return 0;
