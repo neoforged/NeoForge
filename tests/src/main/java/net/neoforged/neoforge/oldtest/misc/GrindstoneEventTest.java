@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.GrindstoneEvent;
 
 @Mod("grindstone_event_test")
 public class GrindstoneEventTest {
-    private static final boolean ENABLED = true;
+    private static final boolean ENABLED = false;
 
     public GrindstoneEventTest() {
         if (ENABLED) {
