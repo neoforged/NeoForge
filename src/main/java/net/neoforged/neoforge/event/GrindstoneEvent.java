@@ -127,6 +127,14 @@ public abstract class GrindstoneEvent extends Event {
         }
 
         /**
+         * @deprecated Use {@link #OnTakeItem(ContainerLevelAccess, Player, ItemStack, ItemStack, int) the context-aware version} instead
+         */
+        @Deprecated(forRemoval = true, since = "1.21.8")
+        public OnTakeItem(ItemStack top, ItemStack bottom, int xp) {
+            this(ContainerLevelAccess.NULL, null, top, bottom, xp);
+        }
+
+        /**
          * @return The item in that will be in the top input grindstone slot after the event. <br>
          */
         public ItemStack getNewTopItem() {

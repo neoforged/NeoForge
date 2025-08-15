@@ -770,6 +770,14 @@ public class CommonHooks {
         return e.getXp();
     }
 
+    /**
+     * @deprecated Use {@link #onGrindstoneTake(Container, ContainerLevelAccess, Player, Function) the player version} instead
+     */
+    @Deprecated(forRemoval = true, since = "1.21.8")
+    public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Function<Level, Integer> xpFunction) {
+        return onGrindstoneTake(inputSlots, access, null, xpFunction);
+    }
+
     public static boolean onGrindstoneTake(Container inputSlots, ContainerLevelAccess access, Player player, Function<Level, Integer> xpFunction) {
         access.execute((l, p) -> {
             int xp = xpFunction.apply(l);
