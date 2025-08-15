@@ -119,7 +119,7 @@ public class AttachmentSyncTests {
                 return new Holder();
             }
 
-            public class Holder extends AttachmentHolder {
+            class Holder extends AttachmentHolder {
                 public void readFrom(SyncAttachmentsPayload payload) {
                     AttachmentSync.receiveSyncedDataAttachments(
                             this,

@@ -113,52 +113,36 @@ public class RegistryManager {
     }
 
     public static void revertToVanilla() {
-        applySnapshot(vanillaSnapshot, false, true);
+        applySnapshot(vanillaSnapshot, true);
     }
 
     public static void revertToFrozen() {
-        applySnapshot(frozenSnapshot, false, true);
+        applySnapshot(frozenSnapshot, true);
     }
 
     /**
      * Applies the snapshot to the current state of the {@link BuiltInRegistries}.
      *
      * @param snapshots    the map of registry name to snapshot
-     * @param allowMissing if {@code true}, missing registries will be skipped but will log a warning.
-     *                     Otherwise, an exception will be thrown if a registry name in the snapshot map is missing.
      * @param isLocalWorld changes the logging depending on if the snapshot is coming from a local save or a remote connection
      * @return the set of unhandled missing registry entries after firing remapping events for mods
      */
-    public static Set<ResourceKey<?>> applySnapshot(Map<ResourceLocation, RegistrySnapshot> snapshots, boolean allowMissing, boolean isLocalWorld) {
-        List<ResourceLocation> missingRegistries = allowMissing ? new ArrayList<>() : null;
+    public static Set<ResourceKey<?>> applySnapshot(Map<ResourceLocation, RegistrySnapshot> snapshots, boolean isLocalWorld) {
         Set<ResourceKey<?>> missingEntries = new HashSet<>();
 
         snapshots.forEach((registryName, snapshot) -> {
             if (!BuiltInRegistries.REGISTRY.containsKey(registryName)) {
-                if (!allowMissing)
+                if (snapshot.getIds().isEmpty()) {
+                    // Ignore registries that the client is not aware of as long as they are empty.
+                    return;
+                } else {
                     throw new IllegalStateException("Tried to applied snapshot with registry name " + registryName + " but was not found");
-
-                missingRegistries.add(registryName);
-                return;
+                }
             }
 
             MappedRegistry<?> registry = (MappedRegistry<?>) BuiltInRegistries.REGISTRY.getValue(registryName);
             applySnapshot(registry, snapshot, missingEntries);
         });
-
-        if (missingRegistries != null && !missingRegistries.isEmpty() && LOGGER.isWarnEnabled(REGISTRIES)) {
-            StringBuilder builder = new StringBuilder("NeoForge detected missing/unknown registries.\n\n")
-                    .append("There are ").append(missingRegistries.size()).append(" missing registries.\n");
-            if (isLocalWorld)
-                builder.append("These missing registries will be deleted from the save file on next save.\n");
-
-            builder.append("Missing Registries:\n");
-
-            for (ResourceLocation registryName : missingRegistries)
-                builder.append(registryName).append("\n");
-
-            LOGGER.warn(REGISTRIES, builder.toString());
-        }
 
         if (missingEntries.isEmpty()) {
             return Set.of();

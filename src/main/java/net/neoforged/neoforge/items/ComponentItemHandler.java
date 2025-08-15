@@ -140,7 +140,7 @@ public class ComponentItemHandler implements IItemHandlerModifiable {
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack) {
-        return stack.getItem().canFitInsideContainerItems();
+        return stack.canFitInsideContainerItems();
     }
 
     /**

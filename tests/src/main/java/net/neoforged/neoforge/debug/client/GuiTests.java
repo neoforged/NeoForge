@@ -13,20 +13,24 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.testframework.DynamicTest;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.TestFramework;
@@ -34,6 +38,8 @@ import net.neoforged.testframework.TestListener;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @ForEachTest(groups = "client.gui", side = Dist.CLIENT)
 public class GuiTests {
@@ -220,5 +226,37 @@ public class GuiTests {
                         "Do you see a red square in the top right corner of the screen?"));
             }
         });
+    }
+
+    @TestHolder(description = "Checks that InventoryScreen.renderEntityInInventory() can render multiple entities of the same type within a single frame")
+    static void testInventoryEntityRenderMulti(DynamicTest test) {
+        Lazy<ArmorStand> entityOne = Lazy.of(() -> makeTestArmorStand(140F));
+        Lazy<ArmorStand> entityTwo = Lazy.of(() -> makeTestArmorStand(210F));
+        Vector3f armorStandTranslation = new Vector3f(0.0F, 1.0F, 0.0F);
+        Quaternionf armorStandAngle = new Quaternionf().rotationXYZ(0.43633232F, 0.0F, (float) Math.PI);
+        test.framework().modEventBus().addListener((RegisterGuiLayersEvent event) -> {
+            event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(test.createModId(), "inv_entities"), (graphics, deltaTracker) -> {
+                if (!test.framework().tests().isEnabled(test.id())) return;
+
+                int maxX = graphics.guiWidth();
+                InventoryScreen.renderEntityInInventory(graphics, maxX - 100, 20, maxX - 60, 80, 25.0F, armorStandTranslation, armorStandAngle, null, entityOne.get());
+                InventoryScreen.renderEntityInInventory(graphics, maxX - 50, 20, maxX - 10, 80, 25.0F, armorStandTranslation, armorStandAngle, null, entityTwo.get());
+            });
+        });
+        test.eventListeners().forge().addListener((ClientPlayerNetworkEvent.LoggingOut event) -> {
+            entityOne.invalidate();
+            entityTwo.invalidate();
+        });
+    }
+
+    private static ArmorStand makeTestArmorStand(float yRot) {
+        ArmorStand armorStand = new ArmorStand(Minecraft.getInstance().level, 0.0, 0.0, 0.0);
+        armorStand.setNoBasePlate(true);
+        armorStand.setShowArms(true);
+        armorStand.yBodyRot = yRot;
+        armorStand.setXRot(25.0F);
+        armorStand.yHeadRot = armorStand.getYRot();
+        armorStand.yHeadRotO = armorStand.getYRot();
+        return armorStand;
     }
 }

@@ -47,3 +47,17 @@
          Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
          Quaternionf quaternionf1 = new Quaternionf().rotateX(f3 * 20.0F * (float) (Math.PI / 180.0));
          quaternionf.mul(quaternionf1);
+@@ -160,8 +_,11 @@
+         LivingEntity p_282466_
+     ) {
+         EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+-        EntityRenderer<? super LivingEntity, ?> entityrenderer = entityrenderdispatcher.getRenderer(p_282466_);
+-        EntityRenderState entityrenderstate = entityrenderer.createRenderState(p_282466_, 1.0F);
++        EntityRenderer entityrenderer = entityrenderdispatcher.getRenderer(p_282466_);
++        // Neo: use fresh render state to support multiple entities of the same type within a single frame
++        EntityRenderState entityrenderstate = entityrenderer.createRenderState();
++        entityrenderer.extractRenderState(p_282466_, entityrenderstate, 1.0F);
++        net.neoforged.neoforge.client.renderstate.RenderStateExtensions.onUpdateEntityRenderState(entityrenderer, p_282466_, entityrenderstate);
+         entityrenderstate.hitboxesRenderState = null;
+         p_282665_.submitEntityRenderState(entityrenderstate, p_296361_, p_295026_, p_281880_, p_282882_, p_416436_, p_416211_, p_416017_, p_416187_);
+     }

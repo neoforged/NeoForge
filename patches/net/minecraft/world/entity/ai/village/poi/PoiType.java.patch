@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ai/village/poi/PoiType.java
++++ b/net/minecraft/world/entity/ai/village/poi/PoiType.java
+@@ -9,7 +_,7 @@
+     public static final Predicate<Holder<PoiType>> NONE = p_218041_ -> false;
+ 
+     public PoiType(Set<BlockState> matchingStates, int maxTickets, int validRange) {
+-        matchingStates = Set.copyOf(matchingStates);
++        matchingStates = new net.neoforged.neoforge.common.world.poi.PoiStateSet(matchingStates);
+         this.matchingStates = matchingStates;
+         this.maxTickets = maxTickets;
+         this.validRange = validRange;
