@@ -8,7 +8,6 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.function.Supplier;
-
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
