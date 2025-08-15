@@ -88,7 +88,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).insert(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
@@ -96,7 +96,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int inserted = 0;
         for (IResourceHandler<T> resourceHandler : handlers) {
@@ -108,7 +108,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int handlerIndex = getHandlerIndex(index);
         return getHandlerFromIndex(handlerIndex).extract(getSlotFromIndex(index, handlerIndex), resource, amount, transaction);
@@ -116,7 +116,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int extracted = 0;
         for (IResourceHandler<T> resourceHandler : handlers) {

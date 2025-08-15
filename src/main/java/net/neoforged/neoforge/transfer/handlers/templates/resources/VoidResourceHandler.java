@@ -32,7 +32,7 @@ public final class VoidResourceHandler<T extends IResource> implements IResource
     @Override
     public int insert(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         // Always accept the full amount
         return amount;
     }
@@ -40,7 +40,7 @@ public final class VoidResourceHandler<T extends IResource> implements IResource
     @Override
     public int extract(int index, T resource, int amount, TransactionContext context) {
         Objects.checkIndex(index, size());
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         return 0;
     }
 

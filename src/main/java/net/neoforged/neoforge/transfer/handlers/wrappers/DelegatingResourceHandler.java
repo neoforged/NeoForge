@@ -69,7 +69,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         return getDelegate().insert(convertIndex(index), resource, amount, transaction);
     }
 
@@ -81,7 +81,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
         Objects.checkIndex(index, size());
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         return getDelegate().extract(convertIndex(index), resource, amount, transaction);
     }
 

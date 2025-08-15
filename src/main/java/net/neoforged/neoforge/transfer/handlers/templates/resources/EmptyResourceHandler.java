@@ -33,13 +33,13 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         throw new IndexOutOfBoundsException(index);
     }
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         throw new IndexOutOfBoundsException(index);
     }
 

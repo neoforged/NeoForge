@@ -8,7 +8,7 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.function.Supplier;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
@@ -53,7 +53,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     public int extract(T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int extracted = 0;
         IResourceHandler<T> handler = getDelegate();
@@ -69,7 +69,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     @Override
     public int insert(T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int inserted = 0;
         IResourceHandler<T> handler = getDelegate();

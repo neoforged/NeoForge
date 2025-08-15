@@ -47,8 +47,9 @@ public final class ResourceHandlerUtil {
     public static boolean isEmpty(IResourceHandler<? extends IResource> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (!handler.getResource(i).isEmpty())
+            if (handler.getAmount(i) > 0 || !handler.getResource(i).isEmpty()) {
                 return false;
+            }
         }
         return true;
     }
@@ -63,67 +64,32 @@ public final class ResourceHandlerUtil {
      * @param handler the {@link IResourceHandler} to check
      * @return {@code true} if the {@link IResourceHandler} is full, {@code false} otherwise
      */
-    public static boolean isFull(IResourceHandler<? extends IResource> handler) {
+    public static <T extends IResource> boolean isFull(IResourceHandler<T> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (!isIndexFull(handler, i))
+            if (handler.getAmount(i) < handler.getCapacity(i, handler.getResource(i))) {
                 return false;
+            }
         }
         return true;
     }
 
     /**
-     * Checks if a specific index of an {@link IResourceHandler} is full.
+     * Returns whether the given resource {@link IResourceHandler#isValid is valid} in any index of the given resource handler.
      *
-     * <p>
-     * An index is considered full if the amount of the resource at the specified index is equal to
-     * the limit of the resource at the specified index.
-     * <p>
-     * Amount should never surpass the capacity.
-     *
-     * @param handler the {@link IResourceHandler} to check
-     * @param index   the index of the resource to check
-     * @return {@code true} if the resource at the specified index is full, {@code false} otherwise
-     */
-    public static <T extends IResource> boolean isIndexFull(IResourceHandler<T> handler, int index) {
-        return handler.getAmount(index) == handler.getCapacity(index, handler.getResource(index));
-    }
-
-    /**
-     * @param handler  the {@link IResourceHandler} to check
-     * @param index    the index of the resource to check
-     * @param resource the resource to check
-     * @param <T>      the type of resource handled by the handler
-     * @return {@code true} if the resource & amount at the specified index of the handler matches the resource & amount parameters
-     */
-    public static <T extends IResource> boolean resourceAndCountMatches(IResourceHandler<T> handler, int index, T resource, int amount) {
-        return resourceMatches(handler, index, resource) && handler.getAmount(index) == amount;
-    }
-
-    /**
-     * @param handler  the {@link IResourceHandler} to check
-     * @param index    the index of the resource to check
-     * @param resource the resource to check
-     * @param <T>      the type of resource handled by the handler
-     * @return {@code true} if the resource at the specified index of the handler matches the resource parameter
-     */
-    public static <T extends IResource> boolean resourceMatches(IResourceHandler<T> handler, int index, T resource) {
-        return handler.getResource(index).equals(resource);
-    }
-
-    /**
      * @param handler  the {@link IResourceHandler} to check
      * @param resource the resource to check
-     * @return {@code true} if the resource is valid in any index of the handler. Empty is always {@code true}
+     * @return {@code true} if the resource is valid in any index of the handler.
+     * @see IResourceHandler#isValid(int, IResource)
      */
     public static <T extends IResource> boolean isValid(IResourceHandler<T> handler, T resource) {
-        //short circuit as empty should always be valid
-        if (resource.isEmpty()) return true;
+        TransferPreconditions.checkNonEmpty(resource);
 
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (handler.isValid(i, resource))
+            if (handler.isValid(i, resource)) {
                 return true;
+            }
         }
         return false;
     }
@@ -136,14 +102,15 @@ public final class ResourceHandlerUtil {
      * @param <T>     the type of resource handled by the handler
      * @return the redstone signal strength
      */
-    public static <T extends IResource> int getRedstoneSignalStrength(IResourceHandler<T> handler) {
+    public static <T extends IResource> int getRedstoneSignalFromResourceHandler(IResourceHandler<T> handler) {
         float proportion = 0.0F;
         int size = handler.size();
 
         for (int index = 0; index < size; ++index) {
             long indexFill = handler.getAmount(index);
-            if (indexFill > 0)
+            if (indexFill > 0) {
                 proportion += (float) indexFill / handler.getCapacity(index, handler.getResource(index));
+            }
         }
 
         proportion /= size;
@@ -151,16 +118,14 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Inserts a resource into an {@link IResourceHandler} using stacking logic.
-     * Resources will be inserted into filled indices first, then empty indices.
+     * Tries to insert up to some amount of a resource into the handler,
+     * using stacking logic: resources will be inserted into filled indices first, then empty indices.
      *
-     * @param <T>         the type of resource handled by the handler
      * @param handler     the {@link IResourceHandler} to insert the resource into
-     * @param resource    the resource to insert
-     * @param amount      the desired amount of the resource to insert
-     * @param transaction The transaction context for the operation.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
+     * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
+     * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
+     * @param transaction The transaction that this operation is part of.
+     *                    Passing in {@code null} will open a root transaction, and commit it at the end of the method.
      * @return the amount of the resource that was inserted
      */
     public static <T extends IResource> int insertStacking(
@@ -174,127 +139,26 @@ public final class ResourceHandlerUtil {
         try (Transaction tx = Transaction.open(transaction)) {
             int inserted = 0;
             int size = handler.size();
-            //attempt to insert into matching resources first
+            // Attempt to insert into indices with a non-empty resource first
             for (int index = 0; index < size; index++) {
-
-                if (handler.getResource(index).isEmpty()) continue;
-                inserted += handler.insert(index, resource, amount - inserted, tx);
-
-                if (inserted != amount) continue;
-
-                tx.commit();
-                return inserted;
+                if (!handler.getResource(index).isEmpty()) {
+                    inserted += handler.insert(index, resource, amount - inserted, tx);
+                    if (inserted == amount) break;
+                }
             }
 
-            //if any remain we need to handle those in index order filling in empty indices
+            // Then go through empty indices
             for (int index = 0; index < size; index++) {
-
-                if (!handler.getResource(index).isEmpty()) continue;
-
-                inserted += handler.insert(index, resource, amount - inserted, tx);
-                if (inserted == amount)
-                    break;
+                if (handler.getResource(index).isEmpty()) {
+                    inserted += handler.insert(index, resource, amount - inserted, tx);
+                    if (inserted == amount) break;
+                }
             }
+
             tx.commit();
             return inserted;
         }
     }
-
-    /**
-     * Inserts a resource into an {@link IResourceHandler} using non-stacking logic.
-     * Resources will be inserted into the first indices that can accept the resource.
-     *
-     * @param <T>         the type of resource handled by the handler
-     * @param handler     the {@link IResourceHandler} to insert the resource into
-     * @param resource    the resource to insert
-     * @param amount      the desired amount of the resource to insert
-     * @param transaction The transaction context for the operation.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
-     * @return the amount of the resource that was inserted
-     */
-    public static <T extends IResource> int insertInIndexOrder(
-            IResourceHandler<T> handler,
-            T resource,
-            int amount,
-            @Nullable TransactionContext transaction) {
-        TransferPreconditions.checkNonNegative(amount);
-        if (amount == 0) return 0;
-
-        try (Transaction subTransaction = Transaction.open(transaction)) {
-            int inserted = 0;
-            int size = handler.size();
-            for (int index = 0; index < size; index++) {
-                inserted += handler.insert(index, resource, amount - inserted, subTransaction);
-                if (inserted == amount)
-                    break;
-            }
-            subTransaction.commit();
-            return inserted;
-        }
-    }
-
-    /**
-     * Extracts a resource from an {@link IResourceHandler}
-     * Resources will be extracted from the first indices that contain the resource.
-     *
-     * @param <T>         the type of resource handled by the handler
-     * @param handler     the {@link IResourceHandler} to extract the resource from
-     * @param resource    the resource to extract
-     * @param amount      the desired amount of the resource to extract
-     * @param transaction The transaction context for the operation.
-     *                    Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
-     * @return the amount of the resource that was extracted
-     */
-    public static <T extends IResource> int extract(
-            IResourceHandler<T> handler,
-            T resource,
-            int amount,
-            @Nullable TransactionContext transaction) {
-        TransferPreconditions.checkNonNegative(amount);
-        if (amount == 0) return 0;
-
-        try (Transaction subTransaction = Transaction.open(transaction)) {
-            int extracted = 0;
-            int size = handler.size();
-            for (int index = 0; index < size; index++) {
-                extracted += handler.extract(index, resource, amount - extracted, subTransaction);
-                if (extracted == amount)
-                    break;
-            }
-            if (extracted > 0)
-                subTransaction.commit();
-            return extracted;
-        }
-    }
-
-    // TODO: unsafe access to tx state
-//    /**
-//     * @param <T>      the type of resource handled by the handler
-//     * @param handler  the {@link IResourceHandler} to extract the resource from
-//     * @param resource the resource to extract
-//     * @return The total extractable amount of a resource in a given handler
-//     */
-//    public static <T extends IResource> int getExtractableAmount(IResourceHandler<T> handler, T resource) {
-//        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-//            //We don't commit allow us to just inquiry the amount
-//            return handler.extract(resource, Integer.MAX_VALUE, transaction);
-//        }
-//    }
-//
-//    /**
-//     * @param <T>      the type of resource handled by the handler
-//     * @param handler  the {@link IResourceHandler} to insert the resource to
-//     * @param resource the resource to insert
-//     * @return The total insertable amount of a resource in a given handler
-//     */
-//    public static <T extends IResource> int getInsertableAmount(IResourceHandler<T> handler, T resource) {
-//        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
-//            //We don't commit allow us to just inquiry the amount
-//            return handler.insert(resource, Integer.MAX_VALUE, transaction);
-//        }
-//    }
 
     // TODO: stack factory usage
 //    /**
@@ -396,11 +260,10 @@ public final class ResourceHandlerUtil {
      * IResourceHandler<FluidResource> source;
      * // Target
      * IResourceHandler<FluidResource> target;
-     * Predicate<FluidResource> filter = resource -> resource.is(Fluids.WATER);
      *
      * // Move exactly one bucket in total, only of water:
      * try (Transaction transaction = Transaction.open(null)) {
-     *     int waterMoved = ResourceHandlerUtil.move(source, target, filter, FluidType.BUCKET_VOLUME, transaction);
+     *     int waterMoved = ResourceHandlerUtil.move(source, target, fr -> fr.is(Fluids.WATER), FluidType.BUCKET_VOLUME, transaction);
      *     if (waterMoved == FluidType.BUCKET_VOLUME) {
      *         // Only commit if exactly one bucket was moved.
      *         transaction.commit();
@@ -413,12 +276,12 @@ public final class ResourceHandlerUtil {
      * @param to          The target handler. May be null.
      * @param filter      The filter for transferred resources.
      *                    Only resources for which this filter returns {@code true} will be transferred.
-     *                    This filter will never be tested with an empty resource, and filters are encouraged to throw an
-     *                    exception if this guarantee is violated.
+     *                    This filter will never be tested with an empty resource.
      * @param amount      The maximum amount that will be transferred.
-     * @param transaction The transaction context for the operation. Passing in {@code null} will open a root transaction, whereas passing in a transaction will
-     *                    allow you to make the final decision to commit based on the results of this method.
-     * @param <T>         The type of resources to move.
+     * @param transaction The transaction that this operation is part of.
+     *                    Passing in {@code null} will open a root transaction, and commit it at the end of the method.
+     *                    Passing in a transaction will allow the caller to make the final decision to commit or not,
+     *                    based on the results of this method.
      * @return The total amount of resources that was successfully transferred. This number is not necessarily for one resource, as we only pass in a filter. It is intended to be used to determine a raw number of resources moved.
      * @throws IllegalStateException If no transaction is passed and a transaction is already active on the current thread.
      */
@@ -439,7 +302,7 @@ public final class ResourceHandlerUtil {
 
             for (int index = 0; index < size; ++index) {
                 T fromResource = from.getResource(index);
-                if (doesNotMatch(filter, fromResource)) continue;
+                if (fromResource.isEmpty() || !filter.test(fromResource)) continue;
 
                 // check how much can be extracted
                 int maxExtracted;
@@ -664,12 +527,15 @@ public final class ResourceHandlerUtil {
 //    }
 
     /**
-     * @return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise
+     * {@return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise}
      */
     public static <T extends IResource> boolean contains(IResourceHandler<T> handler, T resource) {
         return indexOf(handler, resource) != -1;
     }
 
+    /**
+     * {@return the first index that contains the given resource, or -1 if no index contains it}
+     */
     public static <T extends IResource> int indexOf(IResourceHandler<T> handler, T resource) {
         int size = handler.size();
         for (int index = 0; index < size; index++) {
@@ -693,15 +559,6 @@ public final class ResourceHandlerUtil {
 //        }
 //    }
 
-    /**
-     * Empty never matches, and uses the filter to validate the resource.
-     *
-     * @return {@code false} if the resource does match the filter. Empty is always {@code true}
-     */
-    private static <T extends IResource> boolean doesNotMatch(Predicate<T> filter, T resource) {
-        return resource.isEmpty() || !filter.test(resource);
-    }
-
     // TODO: unsafe access to tx state
 //    public static <T extends IResource> boolean hasExtractableResourceAtIndex(IResourceHandler<T> handler, Predicate<T> filter, int index) {
 //        try (Transaction temp = UnsafeTransactionManager.openUnsafe()) {
@@ -718,13 +575,14 @@ public final class ResourceHandlerUtil {
 //        }
 //    }
 
-    public static <T extends IResource> T getFirstResourceOrDefault(IResourceHandler<T> handler, T defaultResource) {
-        int size = handler.size();
-        for (int index = 0; index < size; index++) {
-            T resource = handler.getResource(index);
-            if (!resource.isEmpty())
-                return resource;
-        }
-        return defaultResource;
-    }
+    // TODO: do we want it?
+//    public static <T extends IResource> T getFirstResourceOrDefault(IResourceHandler<T> handler, T defaultResource) {
+//        int size = handler.size();
+//        for (int index = 0; index < size; index++) {
+//            T resource = handler.getResource(index);
+//            if (!resource.isEmpty())
+//                return resource;
+//        }
+//        return defaultResource;
+//    }
 }

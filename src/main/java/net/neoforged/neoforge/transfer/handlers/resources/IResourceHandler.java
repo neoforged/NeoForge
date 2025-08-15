@@ -6,7 +6,6 @@
 package net.neoforged.neoforge.transfer.handlers.resources;
 
 import com.google.common.primitives.Ints;
-import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
@@ -166,7 +165,7 @@ public interface IResourceHandler<T extends IResource> {
      * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int inserted = 0;
         int size = size();
@@ -210,7 +209,7 @@ public interface IResourceHandler<T extends IResource> {
      * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler
      */
     default int extract(T resource, int amount, TransactionContext transaction) {
-        TransferPreconditions.checkNonEmptyNonBlank(resource, amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int extracted = 0;
         int size = size();
