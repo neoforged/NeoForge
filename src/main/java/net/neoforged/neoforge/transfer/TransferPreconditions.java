@@ -7,11 +7,14 @@ package net.neoforged.neoforge.transfer;
 
 import net.neoforged.neoforge.transfer.resources.IResource;
 
+/**
+ * Precondition checks useful for implementing {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler}.
+ */
 public class TransferPreconditions {
     private TransferPreconditions() {}
 
     /**
-     * Ensures the resource passed in is non-empty, throws otherwise.
+     * Ensures the resource is non-empty, throws otherwise.
      *
      * @throws IllegalArgumentException when resource is empty.
      */
@@ -22,7 +25,7 @@ public class TransferPreconditions {
     }
 
     /**
-     * Ensures the value passed in is non-negative, throws otherwise.
+     * Ensures the value is non-negative, throws otherwise.
      *
      * @throws IllegalArgumentException when value is negative.
      */
@@ -33,7 +36,7 @@ public class TransferPreconditions {
     }
 
     /**
-     * Ensures the resource passed in is non-empty and the value passed in is non-negative, throws otherwise.
+     * Ensures the resource is non-empty and the value is non-negative, throws otherwise.
      *
      * @throws IllegalArgumentException when resource is empty or value is negative.
      */

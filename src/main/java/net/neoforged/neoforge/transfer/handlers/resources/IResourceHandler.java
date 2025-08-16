@@ -36,7 +36,7 @@ public interface IResourceHandler<T extends IResource> {
     int size();
 
     /**
-     * {@return the resource at the given index}
+     * {@return the resource at the given index, which may be empty}
      *
      * @param index The index to get the resource from.
      */
@@ -67,6 +67,7 @@ public interface IResourceHandler<T extends IResource> {
      *
      * <p>The returned amount should be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsInt capacity} of the same index.
      *
+     * @implNote This method should not be implemented. The default method will call {@link #getAmount(int)} and convert the result appropriately.
      * @param index The index to get the amount from.
      * @return the amount at the given index, as an int
      * @see #getAmount(int) the long-returning overload
@@ -85,12 +86,11 @@ public interface IResourceHandler<T extends IResource> {
      * or if the caller prefers to deal in {@code int}s only,
      * the {@link #getCapacityAsInt int-returning overload} can be used instead.
      * <p>
-     * While passing in resources that would return {@code false} on {@link #isValid(int, IResource)}, it should be expected to always return 0.
-     * <p>
      * This function serves as metadata only, and its result might be approximate. The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
      *
-     * @param index    The index to get the limit for.
-     * @param resource The resource to get the limit for. May be empty to return a generic limit.
+     * @implSpec This method should return 0 for any resource for which {@link #isValid(int,IResource)} returns {@code false}.
+     * @param index    The index to get the capacity for.
+     * @param resource The resource to get the capacity for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index
      * @see #getCapacityAsInt(int, IResource)
      */
@@ -101,17 +101,16 @@ public interface IResourceHandler<T extends IResource> {
      * Returns the capacity of the handler at the given index and for the given resource,
      * irrespective of the current amount or resource currently at that index, as an {@code int}.
      * <p>
-     * This is a convenience method to clamp the capacity to an {@code int},
+     * This is a convenience method to get the capacity clamped to an {@code int},
      * for the cases where the handler is known to only support capacities up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only.
      * <p>
-     * While passing in resources that would return {@code false} on {@link #isValid(int, IResource)}, it should be expected to always return 0.
-     * <p>
      * This function serves as metadata only, and its result might be approximate.
-     * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
+     * The only way to know if a handler will accept a resource, is to try to {@linkplain #insert insert} it.
      *
+     * @implNote This method should not be implemented. The default method will call {@link #getCapacity(int, IResource)} and convert the result appropriately.
      * @param index    The index to get the limit for.
-     * @param resource The resource to get the limit for. May be empty to return a generic limit.
+     * @param resource The resource to get the limit for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index, as an int
      * @see #getCapacity(int, IResource)
      */
@@ -121,48 +120,49 @@ public interface IResourceHandler<T extends IResource> {
     }
 
     /**
-     * {@return whether the given resource is generally allowed to be contained in the handler at the given index,
+     * {@return whether the given resource is generally allowed to be inserted at the given index,
      * irrespective of the current amount or resource currently at that index}
      * <p>
-     * This function serves as metadata only, and its result might be approximate.
-     * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
+     * This method only provides a hint.
+     * The only way to find out whether a handler will accept a resource, is to try {@linkplain #insert inserting} it.
      *
      * @param index    The index to check.
-     * @param resource The resource to check. Must not be empty, or an exception will typically be thrown.
+     * @param resource The resource to check. <strong>Must be non-empty.</strong>
      */
     boolean isValid(int index, T resource);
 
     /**
-     * Tries to insert up to some amount of a resource into the handler at the given index.
+     * Inserts up to the given amount of a resource into the handler at the given index.
      *
-     * <p>Changes to the handler are made in the context of a {@link Transaction},
-     * and are expected to properly support rollbacks/reversions, see also {@link SnapshotJournal}.
+     * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param index       The index to insert the resource into.
      * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was inserted.
-     * @see #insert(IResource, int, TransactionContext) Inserting into any index in the handler
+     * @see #insert(IResource, int, TransactionContext) Inserting without a specific index, which can be more efficient.
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
 
     /**
-     * Tries to insert up to some amount of a resource into the handler.
+     * Inserts up to the given amount of a resource into the handler.
      *
      * <p>This function is preferred to the {@link #insert(int, IResource, int, TransactionContext) index-specific overload}
      * since it lets the handler decide how to distribute the resource.
-     * It can also be a lot more efficient than calling the index-specific overload in a loop,
-     * as resource handlers with a special internal structure can optimize it.
+     * <p>This method is expected to be more efficient than callers trying to find a suitable index for insertion themselves.
      *
-     * <p>Changes to the handler are made in the context of a {@link Transaction},
-     * and are expected to properly support rollbacks/reversions, see also {@link SnapshotJournal}.
+     * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was inserted.
-     * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler
+     * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler.
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
@@ -177,36 +177,37 @@ public interface IResourceHandler<T extends IResource> {
     }
 
     /**
-     * Tries to extract up to some amount of a resource from the handler at the given index.
+     * Extracts up to the given amount of a resource from the handler at the given index.
      *
-     * <p>Changes to the handler are made in the context of a {@link Transaction},
-     * and are expected to properly support rollbacks/reversions, see also {@link SnapshotJournal}.
+     * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param index       The index to extract the resource from.
      * @param resource    The resource to extract. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to extract. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was extracted.
-     * @see #extract(IResource, int, TransactionContext) Extracting from any index in the handler
+     * @see #extract(IResource, int, TransactionContext) Extracting without a specific index, which can be more efficient.
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
 
     /**
-     * Tries to extract up to some amount of a resource from the handler.
+     * Tries to extract up to the given amount of a resource from the handler.
      *
      * <p>This function is preferred to the {@link #extract(int, IResource, int, TransactionContext) index-specific overload}
-     * since it lets the handler decide how to select the resource.
-     * It can also be a lot more efficient than calling the index-specific overload in a loop,
-     * as resource handlers with a special internal structure can optimize it.
+     * since it lets the handler decide how to find indices that contain the resource.
+     * <p>This method is expected to be more efficient than callers trying to find indices that contain the resource themselves.
      *
-     * <p>Changes to the handler are made in the context of a {@link Transaction},
-     * and are expected to properly support rollbacks/reversions, see also {@link SnapshotJournal}.
+     * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param resource    The resource to extract. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to extract. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was extracted.
-     * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler
+     * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler.
      */
     default int extract(T resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);

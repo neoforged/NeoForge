@@ -12,13 +12,16 @@ import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * A resource handler that automatically destroys any resources that are inserted into it.
+ * A resource handler that destroys any resources inserted into it.
  *
  * @param <T> The type of resource that this handler can accept.
  */
 public final class VoidResourceHandler<T extends IResource> implements IResourceHandler<T> {
     private final T emptyResource;
 
+    /**
+     * @param emptyResource The resource to return when the contents of this handler are queried.
+     */
     public VoidResourceHandler(T emptyResource) {
         this.emptyResource = emptyResource;
     }

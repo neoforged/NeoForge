@@ -19,6 +19,9 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Utility methods for dealing with {@link IResourceHandler}.
+ */
 public final class ResourceHandlerUtil {
     private ResourceHandlerUtil() {}
 
@@ -39,7 +42,7 @@ public final class ResourceHandlerUtil {
      *
      * <p>An {@link IResourceHandler} is considered empty if all of its indices
      * contain either an empty resource or have an amount less than or equal to zero.
-     * A handler with zero indices will always return true.
+     * <p>A handler of size zero will always be considered empty.
      *
      * @param handler the {@link IResourceHandler} to check for emptiness
      * @return {@code true} if the {@link IResourceHandler} is empty, {@code false} otherwise
@@ -58,8 +61,8 @@ public final class ResourceHandlerUtil {
      * Checks if an {@link IResourceHandler} is full.
      * <p>
      * An {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
-     * greater than or equal to their respective limits.
-     * Note, A handler with zero indices will always return that it is full.
+     * greater than or equal to their respective {@linkplain IResourceHandler#getCapacity(int, IResource) capacity}.
+     * <p>A handler of size zero is always considered full.
      *
      * @param handler the {@link IResourceHandler} to check
      * @return {@code true} if the {@link IResourceHandler} is full, {@code false} otherwise
@@ -75,10 +78,10 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Returns whether the given resource {@link IResourceHandler#isValid is valid} in any index of the given resource handler.
+     * Returns whether the given resource {@link IResourceHandler#isValid is valid} for any index of the given resource handler.
      *
      * @param handler  the {@link IResourceHandler} to check
-     * @param resource the resource to check
+     * @param resource the resource to check. <strong>Must be non-empty.</strong>
      * @return {@code true} if the resource is valid in any index of the handler.
      * @see IResourceHandler#isValid(int, IResource)
      */
@@ -95,8 +98,8 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Calculates the redstone signal strength based on the given resource handler. This value is between 0 and 15.
-     * This method is based off of {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}
+     * Calculates the redstone signal strength based on the given resource handler's content. This value is between 0 and 15.
+     * <p>This method is based on {@link AbstractContainerMenu#getRedstoneSignalFromContainer(Container)}.
      *
      * @param handler the resource handler to calculate the signal from
      * @param <T>     the type of resource handled by the handler
@@ -251,9 +254,9 @@ public final class ResourceHandlerUtil {
 //    }
 
     /**
-     * Move resources between two storages, matching the passed filter, and return the amount that was successfully transferred.
+     * Move resources matching a given filter between two resource handlers, and return the amount that was successfully moved.
      *
-     * <p>Here is a usage example:
+     * <h3>Usage Example</h3>
      *
      * <pre>{@code
      * // Source
@@ -261,14 +264,14 @@ public final class ResourceHandlerUtil {
      * // Target
      * IResourceHandler<FluidResource> target;
      *
-     * // Move exactly one bucket in total, only of water:
+     * // Move exactly one bucket of water:
      * try (Transaction transaction = Transaction.open(null)) {
      *     int waterMoved = ResourceHandlerUtil.move(source, target, fr -> fr.is(Fluids.WATER), FluidType.BUCKET_VOLUME, transaction);
      *     if (waterMoved == FluidType.BUCKET_VOLUME) {
      *         // Only commit if exactly one bucket was moved.
      *         transaction.commit();
      *     }
-     *     //If committed, leaving this try-block will keep all changes.
+     *     // Leaving this try-block will keep changes only when the transaction was committed.
      * }
      * }</pre>
      *
@@ -527,7 +530,7 @@ public final class ResourceHandlerUtil {
 //    }
 
     /**
-     * {@return {@code true} if the given resource is in the resource handler (though not necessarily interactable), {@code false} otherwise}
+     * {@return {@code true} if the resource handler contains the given resource, {@code false} otherwise}
      */
     public static <T extends IResource> boolean contains(IResourceHandler<T> handler, T resource) {
         return indexOf(handler, resource) != -1;
