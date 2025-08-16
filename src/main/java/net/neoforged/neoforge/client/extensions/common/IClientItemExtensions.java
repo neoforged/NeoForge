@@ -10,12 +10,14 @@ import java.util.function.Consumer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.InteractionHand;
@@ -229,6 +231,16 @@ public interface IClientItemExtensions {
      */
     default int getDefaultDyeColor(ItemStack stack) {
         return stack.is(ItemTags.DYEABLE) ? FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(stack, DyedItemColor.LEATHER_COLOR)) : 0xFFFFFFFF;
+    }
+
+    /**
+     * Returns the texture to use for scoping with the item.
+     *
+     * @param stack The scoping item stack
+     * @return The texture to use for scoping
+     */
+    default ResourceLocation getScopeOverlayTexture(ItemStack stack) {
+        return Gui.SPYGLASS_SCOPE_LOCATION;
     }
 
     enum FontContext {

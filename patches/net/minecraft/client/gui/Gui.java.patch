@@ -390,6 +390,18 @@
                      j1 += 20;
                  }
  
+@@ -1036,8 +_,10 @@
+         int l = (p_282069_.guiHeight() - j) / 2;
+         int i1 = k + i;
+         int j1 = l + j;
++        ItemStack useItem = this.minecraft.player.getUseItem();
++        var clientItemExtensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(useItem);
+         RenderSystem.enableBlend();
+-        p_282069_.blit(SPYGLASS_SCOPE_LOCATION, k, l, -90, 0.0F, 0.0F, i, j, i, j);
++        p_282069_.blit(clientItemExtensions.getScopeOverlayTexture(useItem), k, l, -90, 0.0F, 0.0F, i, j, i, j);
+         RenderSystem.disableBlend();
+         p_282069_.fill(RenderType.guiOverlay(), 0, j1, p_282069_.guiWidth(), p_282069_.guiHeight(), -90, -16777216);
+         p_282069_.fill(RenderType.guiOverlay(), 0, 0, p_282069_.guiWidth(), l, -90, -16777216);
 @@ -1163,7 +_,7 @@
                  this.toolHighlightTimer = 0;
              } else if (this.lastToolHighlight.isEmpty()
