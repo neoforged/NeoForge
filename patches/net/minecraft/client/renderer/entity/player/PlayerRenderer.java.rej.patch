@@ -1,0 +1,13 @@
+--- /dev/null
++++ b/net/minecraft/client/renderer/entity/player/PlayerRenderer.java.rej
+@@ -1,0 +_,10 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/client/renderer/entity/player/PlayerRenderer.java b/projects/neoforge/src/main/java/net/minecraft/client/renderer/entity/player/PlayerRenderer.java	(rejected hunks)
++@@ -213,7 +213,7 @@ public class PlayerRenderer extends LivingEntityRenderer<AbstractClientPlayer, P
++         p_360583_.heldOnHead.clear();
++         if (p_360583_.isUsingItem) {
++             ItemStack itemstack = p_361478_.getItemInHand(p_360583_.useItemHand);
++-            if (itemstack.is(Items.SPYGLASS)) {
+++            if (itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE)) {
++                 this.itemModelResolver.updateForLiving(p_360583_.heldOnHead, itemstack, ItemDisplayContext.HEAD, p_361478_);
++             }
++         }

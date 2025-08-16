@@ -1,0 +1,15 @@
+--- /dev/null
++++ b/net/minecraft/client/gui/Gui.java.rej
+@@ -1,0 +_,12 @@
++diff a/projects/neoforge/src/main/java/net/minecraft/client/gui/Gui.java b/projects/neoforge/src/main/java/net/minecraft/client/gui/Gui.java	(rejected hunks)
++@@ -1155,7 +1155,9 @@ public class Gui {
++         int l = (p_282069_.guiHeight() - j) / 2;
++         int i1 = k + i;
++         int j1 = l + j;
++-        p_282069_.blit(RenderPipelines.GUI_TEXTURED, SPYGLASS_SCOPE_LOCATION, k, l, 0.0F, 0.0F, i, j, i, j);
+++        ItemStack useItem = this.minecraft.player.getUseItem();
+++        var clientItemExtensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(useItem);
+++        p_282069_.blit(RenderPipelines.GUI_TEXTURED, clientItemExtensions.getScopeOverlayTexture(useItem), k, l, 0.0F, 0.0F, i, j, i, j);
++         p_282069_.fill(RenderPipelines.GUI, 0, j1, p_282069_.guiWidth(), p_282069_.guiHeight(), -16777216);
++         p_282069_.fill(RenderPipelines.GUI, 0, 0, p_282069_.guiWidth(), l, -16777216);
++         p_282069_.fill(RenderPipelines.GUI, 0, l, k, j1, -16777216);
