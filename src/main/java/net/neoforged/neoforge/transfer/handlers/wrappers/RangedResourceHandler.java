@@ -17,26 +17,47 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * A resource handler that wraps a range of indices of another handler.
  */
 public class RangedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
-    protected int start;
-    protected int end;
-
-    public RangedResourceHandler(IResourceHandler<T> delegate, int start, int end) {
-        this(() -> delegate, start, end);
+    /**
+     * Creates a wrapper for a range of indices.
+     */
+    public static <T extends IResource> RangedResourceHandler<T> of(IResourceHandler<T> delegate, int start, int end) {
+        return new RangedResourceHandler<>(delegate, start, end);
     }
 
-    public RangedResourceHandler(Supplier<IResourceHandler<T>> delegate, int start, int end) {
-        super(delegate);
-        Preconditions.checkArgument(end > start, "Max index must be greater than min index");
-        this.start = start;
-        this.end = end;
+    /**
+     * Creates a wrapper for a range of indices, with the passed supplier being queried every time the handler is accessed.
+     */
+    public static <T extends IResource> RangedResourceHandler<T> of(Supplier<IResourceHandler<T>> delegate, int start, int end) {
+        return new RangedResourceHandler<>(delegate, start, end);
     }
 
+    /**
+     * Creates a wrapper for a single index.
+     */
     public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(IResourceHandler<T> delegate, int index) {
         return new RangedResourceHandler<>(delegate, index, index + 1);
     }
 
+    /**
+     * Creates a wrapper for a single index, with the passed supplier being queried every time the handler is accessed.
+     */
     public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(Supplier<IResourceHandler<T>> delegate, int index) {
         return new RangedResourceHandler<>(delegate, index, index + 1);
+    }
+
+    protected int start;
+    protected int end;
+
+    protected RangedResourceHandler(IResourceHandler<T> delegate, int start, int end) {
+        this(() -> delegate, start, end);
+        Objects.requireNonNull(delegate, "Delegate cannot be null");
+    }
+
+    protected RangedResourceHandler(Supplier<IResourceHandler<T>> delegate, int start, int end) {
+        super(delegate);
+        Preconditions.checkArgument(end > start, "Max index must be greater than min index");
+        this.start = start;
+        this.end = end;
     }
 
     @Override
