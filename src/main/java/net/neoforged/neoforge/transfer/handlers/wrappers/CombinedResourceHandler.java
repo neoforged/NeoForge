@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -16,11 +16,11 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * The range of indices handled by each wrapped handler is assigned when the combined handler is created.
  * <strong>As a result, later changes to a wrapped handler's size will not be reflected.</strong>
  */
-public class CombinedResourceHandler<T extends IResource> implements IResourceHandler<T> {
+public class CombinedResourceHandler<T extends IResource> implements ResourceHandler<T> {
     /**
      * The wrapped handlers.
      */
-    protected final IResourceHandler<T>[] handlers;
+    protected final ResourceHandler<T>[] handlers;
     /**
      * For each wrapped handler, the index at which it starts in the combined handler.
      */
@@ -31,7 +31,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
     protected final int sizeCache;
 
     @SafeVarargs
-    public CombinedResourceHandler(IResourceHandler<T>... handlers) {
+    public CombinedResourceHandler(ResourceHandler<T>... handlers) {
         if (handlers.length <= 1)
             throw new IllegalArgumentException("At least 2 handlers must be specified. Received: " + handlers.length);
         this.handlers = handlers;
@@ -59,7 +59,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
         throw new IndexOutOfBoundsException();
     }
 
-    protected IResourceHandler<T> getHandlerFromIndex(int index) {
+    protected ResourceHandler<T> getHandlerFromIndex(int index) {
         if (index >= 0 && index < handlers.length)
             return handlers[index];
 
@@ -113,7 +113,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int inserted = 0;
-        for (IResourceHandler<T> resourceHandler : handlers) {
+        for (ResourceHandler<T> resourceHandler : handlers) {
             inserted += resourceHandler.insert(resource, amount - inserted, transaction);
             if (inserted == amount) break;
         }
@@ -133,7 +133,7 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int extracted = 0;
-        for (IResourceHandler<T> resourceHandler : handlers) {
+        for (ResourceHandler<T> resourceHandler : handlers) {
             extracted += resourceHandler.extract(resource, amount - extracted, transaction);
             if (extracted == amount) break;
         }

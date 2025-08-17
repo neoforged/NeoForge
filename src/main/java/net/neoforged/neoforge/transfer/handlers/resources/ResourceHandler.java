@@ -25,7 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * @param <T> The type of resource this handler manages.
  */
-public interface IResourceHandler<T extends IResource> {
+public interface ResourceHandler<T extends IResource> {
     /**
      * {@return the <i>current</i> number of indices in this resource handler}
      *
@@ -225,7 +225,7 @@ public interface IResourceHandler<T extends IResource> {
      * Creates a class with the right generic type, such that it can be used to register a capability.
      */
     @SuppressWarnings("unchecked")
-    static <T extends IResource> Class<IResourceHandler<T>> asClass() {
-        return (Class<IResourceHandler<T>>) (Object) IResourceHandler.class;
+    static <T extends IResource> Class<ResourceHandler<T>> asClass() {
+        return (Class<ResourceHandler<T>>) (Object) ResourceHandler.class;
     }
 }

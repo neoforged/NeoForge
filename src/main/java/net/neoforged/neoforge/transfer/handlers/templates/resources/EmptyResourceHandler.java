@@ -6,7 +6,7 @@
 package net.neoforged.neoforge.transfer.handlers.templates.resources;
 
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>It has zero indices and rejects all operations.
  * <p>Use {@link #instance()} to obtain an empty handler for any resource type.
  */
-public final class EmptyResourceHandler<T extends IResource> implements IResourceHandler<T> {
+public final class EmptyResourceHandler<T extends IResource> implements ResourceHandler<T> {
     private final static EmptyResourceHandler<?> INSTANCE = new EmptyResourceHandler<>();
 
     /**

@@ -8,22 +8,22 @@ package net.neoforged.neoforge.transfer.handlers.wrappers;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * A resource handler that delegates all calls to another handler.
  */
-public class DelegatingResourceHandler<T extends IResource> implements IResourceHandler<T> {
-    protected final Supplier<IResourceHandler<T>> delegate;
+public class DelegatingResourceHandler<T extends IResource> implements ResourceHandler<T> {
+    protected final Supplier<ResourceHandler<T>> delegate;
 
-    public DelegatingResourceHandler(IResourceHandler<T> delegate) {
+    public DelegatingResourceHandler(ResourceHandler<T> delegate) {
         Objects.requireNonNull(delegate);
         this.delegate = () -> delegate;
     }
 
-    public DelegatingResourceHandler(Supplier<IResourceHandler<T>> delegate) {
+    public DelegatingResourceHandler(Supplier<ResourceHandler<T>> delegate) {
         this.delegate = delegate;
     }
 
@@ -89,7 +89,7 @@ public class DelegatingResourceHandler<T extends IResource> implements IResource
         return getDelegate().extract(resource, amount, transaction);
     }
 
-    public IResourceHandler<T> getDelegate() {
+    public ResourceHandler<T> getDelegate() {
         return delegate.get();
     }
 }

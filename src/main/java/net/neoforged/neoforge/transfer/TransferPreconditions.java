@@ -5,10 +5,11 @@
 
 package net.neoforged.neoforge.transfer;
 
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 
 /**
- * Precondition checks useful for implementing {@link net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler}.
+ * Precondition checks useful for implementing {@link ResourceHandler}.
  */
 public class TransferPreconditions {
     private TransferPreconditions() {}

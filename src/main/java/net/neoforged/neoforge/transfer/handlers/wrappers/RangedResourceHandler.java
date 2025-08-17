@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
-import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
+import net.neoforged.neoforge.transfer.handlers.resources.ResourceHandler;
 import net.neoforged.neoforge.transfer.resources.IResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -20,40 +20,40 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
     /**
      * Creates a wrapper for a range of indices.
      */
-    public static <T extends IResource> RangedResourceHandler<T> of(IResourceHandler<T> delegate, int start, int end) {
+    public static <T extends IResource> RangedResourceHandler<T> of(ResourceHandler<T> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
     }
 
     /**
      * Creates a wrapper for a range of indices, with the passed supplier being queried every time the handler is accessed.
      */
-    public static <T extends IResource> RangedResourceHandler<T> of(Supplier<IResourceHandler<T>> delegate, int start, int end) {
+    public static <T extends IResource> RangedResourceHandler<T> of(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
     }
 
     /**
      * Creates a wrapper for a single index.
      */
-    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(IResourceHandler<T> delegate, int index) {
+    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(ResourceHandler<T> delegate, int index) {
         return new RangedResourceHandler<>(delegate, index, index + 1);
     }
 
     /**
      * Creates a wrapper for a single index, with the passed supplier being queried every time the handler is accessed.
      */
-    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(Supplier<IResourceHandler<T>> delegate, int index) {
+    public static <T extends IResource> RangedResourceHandler<T> ofSingleIndex(Supplier<ResourceHandler<T>> delegate, int index) {
         return new RangedResourceHandler<>(delegate, index, index + 1);
     }
 
     protected int start;
     protected int end;
 
-    protected RangedResourceHandler(IResourceHandler<T> delegate, int start, int end) {
+    protected RangedResourceHandler(ResourceHandler<T> delegate, int start, int end) {
         this(() -> delegate, start, end);
         Objects.requireNonNull(delegate, "Delegate cannot be null");
     }
 
-    protected RangedResourceHandler(Supplier<IResourceHandler<T>> delegate, int start, int end) {
+    protected RangedResourceHandler(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         super(delegate);
         Preconditions.checkArgument(end > start, "Max index must be greater than min index");
         this.start = start;
@@ -76,7 +76,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int extracted = 0;
-        IResourceHandler<T> handler = getDelegate();
+        ResourceHandler<T> handler = getDelegate();
         for (int index = start; index < end; index++) {
             extracted += handler.extract(index, resource, amount - extracted, transaction);
             if (extracted == amount) {
@@ -92,7 +92,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
 
         int inserted = 0;
-        IResourceHandler<T> handler = getDelegate();
+        ResourceHandler<T> handler = getDelegate();
         for (int index = start; index < end; index++) {
             inserted += handler.insert(index, resource, amount - inserted, transaction);
             if (inserted == amount) {
