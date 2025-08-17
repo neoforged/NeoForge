@@ -53,13 +53,13 @@ public final class VoidingResourceHandler<T extends IResource> implements IResou
     }
 
     @Override
-    public long getAmount(int index) {
+    public long getAmountAsLong(int index) {
         Objects.checkIndex(index, size());
         return 0;
     }
 
     @Override
-    public long getCapacity(int index, T resource) {
+    public long getCapacityAsLong(int index, T resource) {
         Objects.checkIndex(index, size());
         return Long.MAX_VALUE;
     }

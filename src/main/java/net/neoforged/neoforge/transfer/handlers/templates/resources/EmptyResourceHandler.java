@@ -49,12 +49,12 @@ public final class EmptyResourceHandler<T extends IResource> implements IResourc
     }
 
     @Override
-    public long getAmount(int index) {
+    public long getAmountAsLong(int index) {
         throw new IndexOutOfBoundsException(index);
     }
 
     @Override
-    public long getCapacity(int index, T resource) {
+    public long getCapacityAsLong(int index, T resource) {
         throw new IndexOutOfBoundsException(index);
     }
 

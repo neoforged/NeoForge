@@ -43,20 +43,20 @@ public interface IResourceHandler<T extends IResource> {
     T getResource(int index);
 
     /**
-     * Returns the amount of the {@link #getResource currently stored resource} at the given index.
+     * Returns the amount of the {@link #getResource currently stored resource} at the given index, as a {@code long}.
      *
      * <p>In general, resource handlers can report {@code long} amounts.
      * However, if the handler is known to only support amounts up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only,
      * the {@link #getAmountAsInt int-returning overload} can be used instead.
      *
-     * <p>The returned amount should be <strong>non-negative</strong>, and should never surpass the {@link #getCapacity capacity} of the same index.
+     * <p>The returned amount should be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsLong capacity} of the same index.
      *
      * @param index The index to get the amount from.
-     * @return the amount at the given index
+     * @return the amount at the given index, as a long
      * @see #getAmountAsInt(int)
      */
-    long getAmount(int index);
+    long getAmountAsLong(int index);
 
     /**
      * Returns the amount of the {@link #getResource currently stored resource} at the given index, as an {@code int}.
@@ -67,19 +67,19 @@ public interface IResourceHandler<T extends IResource> {
      *
      * <p>The returned amount should be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsInt capacity} of the same index.
      *
-     * @implNote This method should not be implemented. The default method will call {@link #getAmount(int)} and convert the result appropriately.
+     * @implNote This method should not be implemented. The default method will call {@link #getAmountAsLong(int)} and convert the result appropriately.
      * @param index The index to get the amount from.
      * @return the amount at the given index, as an int
-     * @see #getAmount(int) the long-returning overload
+     * @see #getAmountAsLong(int) the long-returning overload
      */
     @ApiStatus.NonExtendable
     default int getAmountAsInt(int index) {
-        return Ints.saturatedCast(getAmount(index));
+        return Ints.saturatedCast(getAmountAsLong(index));
     }
 
     /**
      * Returns the capacity of the handler at the given index and for the given resource,
-     * irrespective of the current amount or resource currently at that index.
+     * irrespective of the current amount or resource currently at that index, as a {@code long}.
      * <p>
      * In general, resource handlers can report {@code long} capacities.
      * However, if the handler is known to only support capacities up to {@code Integer.MAX_VALUE},
@@ -91,11 +91,11 @@ public interface IResourceHandler<T extends IResource> {
      * @implSpec This method should return 0 for any resource for which {@link #isValid(int,IResource)} returns {@code false}.
      * @param index    The index to get the capacity for.
      * @param resource The resource to get the capacity for. May be empty to get the general capacity at the index.
-     * @return the capacity at the given index
+     * @return the capacity at the given index, as a long
      * @see #getCapacityAsInt(int, IResource)
      */
     // TODO: remark that the amount should be larger than the capacity?
-    long getCapacity(int index, T resource);
+    long getCapacityAsLong(int index, T resource);
 
     /**
      * Returns the capacity of the handler at the given index and for the given resource,
@@ -108,15 +108,15 @@ public interface IResourceHandler<T extends IResource> {
      * This function serves as metadata only, and its result might be approximate.
      * The only way to know if a handler will accept a resource, is to try to {@linkplain #insert insert} it.
      *
-     * @implNote This method should not be implemented. The default method will call {@link #getCapacity(int, IResource)} and convert the result appropriately.
+     * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, IResource)} and convert the result appropriately.
      * @param index    The index to get the limit for.
      * @param resource The resource to get the limit for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index, as an int
-     * @see #getCapacity(int, IResource)
+     * @see #getCapacityAsLong(int, IResource)
      */
     @ApiStatus.NonExtendable
     default int getCapacityAsInt(int index, T resource) {
-        return Ints.saturatedCast(getCapacity(index, resource));
+        return Ints.saturatedCast(getCapacityAsLong(index, resource));
     }
 
     /**

@@ -82,15 +82,15 @@ public class CombinedResourceHandler<T extends IResource> implements IResourceHa
     }
 
     @Override
-    public long getAmount(int index) {
+    public long getAmountAsLong(int index) {
         int handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).getAmount(getSlotFromIndex(index, handlerIndex));
+        return getHandlerFromIndex(handlerIndex).getAmountAsLong(getSlotFromIndex(index, handlerIndex));
     }
 
     @Override
-    public long getCapacity(int index, T resource) {
+    public long getCapacityAsLong(int index, T resource) {
         int handlerIndex = getHandlerIndex(index);
-        return getHandlerFromIndex(handlerIndex).getCapacity(getSlotFromIndex(index, handlerIndex), resource);
+        return getHandlerFromIndex(handlerIndex).getCapacityAsLong(getSlotFromIndex(index, handlerIndex), resource);
     }
 
     @Override

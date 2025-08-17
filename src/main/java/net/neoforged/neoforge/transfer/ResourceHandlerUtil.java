@@ -51,7 +51,7 @@ public final class ResourceHandlerUtil {
     public static boolean isEmpty(IResourceHandler<? extends IResource> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (handler.getAmount(i) > 0 || !handler.getResource(i).isEmpty()) {
+            if (handler.getAmountAsLong(i) > 0 || !handler.getResource(i).isEmpty()) {
                 return false;
             }
         }
@@ -62,7 +62,7 @@ public final class ResourceHandlerUtil {
      * Checks if an {@link IResourceHandler} is full.
      * <p>
      * An {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
-     * greater than or equal to their respective {@linkplain IResourceHandler#getCapacity(int, IResource) capacity}.
+     * greater than or equal to their respective {@linkplain IResourceHandler#getCapacityAsLong(int, IResource) capacity}.
      * <p>A handler of size zero is always considered full.
      *
      * @param handler the {@link IResourceHandler} to check
@@ -71,7 +71,7 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> boolean isFull(IResourceHandler<T> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (handler.getAmount(i) < handler.getCapacity(i, handler.getResource(i))) {
+            if (handler.getAmountAsLong(i) < handler.getCapacityAsLong(i, handler.getResource(i))) {
                 return false;
             }
         }
@@ -111,9 +111,9 @@ public final class ResourceHandlerUtil {
         int size = handler.size();
 
         for (int index = 0; index < size; ++index) {
-            long indexFill = handler.getAmount(index);
+            long indexFill = handler.getAmountAsLong(index);
             if (indexFill > 0) {
-                proportion += (float) indexFill / handler.getCapacity(index, handler.getResource(index));
+                proportion += (float) indexFill / handler.getCapacityAsLong(index, handler.getResource(index));
             }
         }
 
