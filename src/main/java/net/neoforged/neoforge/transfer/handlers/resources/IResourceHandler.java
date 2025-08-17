@@ -50,7 +50,7 @@ public interface IResourceHandler<T extends IResource> {
      * or if the caller prefers to deal in {@code int}s only,
      * the {@link #getAmountAsInt int-returning overload} can be used instead.
      *
-     * <p>The returned amount should be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsLong capacity} of the same index.
+     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsLong capacity} of the same index.
      *
      * @param index The index to get the amount from.
      * @return the amount at the given index, as a long
@@ -65,7 +65,7 @@ public interface IResourceHandler<T extends IResource> {
      * for the cases where the handler is known to only support amounts up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only.
      *
-     * <p>The returned amount should be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsInt capacity} of the same index.
+     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsInt capacity} of the same index.
      *
      * @implNote This method should not be implemented. The default method will call {@link #getAmountAsLong(int)} and convert the result appropriately.
      * @param index The index to get the amount from.
@@ -120,7 +120,7 @@ public interface IResourceHandler<T extends IResource> {
     }
 
     /**
-     * {@return whether the given resource is generally allowed to be inserted at the given index,
+     * {@return whether the given resource is generally allowed to be contained at the given index,
      * irrespective of the current amount or resource currently at that index}
      * <p>
      * This method only provides a hint.
