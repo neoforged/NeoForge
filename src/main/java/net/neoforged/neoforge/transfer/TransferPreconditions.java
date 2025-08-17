@@ -20,7 +20,7 @@ public class TransferPreconditions {
      */
     public static void checkNonEmpty(IResource resource) {
         if (resource.isEmpty()) {
-            throw new IllegalArgumentException("Expected value to be non-negative: " + resource);
+            throw new IllegalArgumentException("Expected resource to be non-empty: " + resource);
         }
     }
 
