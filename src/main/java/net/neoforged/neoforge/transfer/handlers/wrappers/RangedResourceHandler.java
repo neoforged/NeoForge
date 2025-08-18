@@ -5,7 +5,6 @@
 
 package net.neoforged.neoforge.transfer.handlers.wrappers;
 
-import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
@@ -21,7 +20,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
      * Creates a wrapper for a range of indices.
      *
      * @param start start of the range of indices, inclusive
-     * @param end end of the range of indices, exclusive
+     * @param end   end of the range of indices, exclusive
      */
     public static <T extends IResource> RangedResourceHandler<T> of(ResourceHandler<T> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
@@ -31,7 +30,7 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
      * Creates a wrapper for a range of indices, with the passed supplier being queried every time the handler is accessed.
      *
      * @param start start of the range of indices, inclusive
-     * @param end end of the range of indices, exclusive
+     * @param end   end of the range of indices, exclusive
      */
     public static <T extends IResource> RangedResourceHandler<T> of(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);

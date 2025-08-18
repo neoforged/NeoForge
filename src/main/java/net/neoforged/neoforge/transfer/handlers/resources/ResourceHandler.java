@@ -33,6 +33,7 @@ public interface ResourceHandler<T extends IResource> {
      * <p>This size provides a bound on the valid indices for this handler,
      * see the documentation of {@link ResourceHandler}.
      *
+     * @return The size of the resource handler. Can be {@code 0} if the handler currently has no indices.
      * @apiNote The size of a resource handler can change.
      *          In that case, the handler is expected to be lenient with its index checks,
      *          in case the caller is holding onto a previously returned size.
@@ -137,8 +138,9 @@ public interface ResourceHandler<T extends IResource> {
      * {@return whether the given resource is generally allowed to be contained at the given index,
      * irrespective of the current amount or resource currently at that index}
      * <p>
-     * This method only provides a hint.
-     * The only way to find out whether a handler will accept a resource, is to try {@linkplain #insert inserting} it.
+     * If this method returns {@code false}, the insertion of the resource is never valid.
+     * If this method returns {@code true}, no assumptions can be made: the only way to find out
+     * whether a handler will accept a resource, is to try {@linkplain #insert inserting} it.
      *
      * @param index    The index to check.
      * @param resource The resource to check. <strong>Must be non-empty.</strong>
@@ -154,9 +156,10 @@ public interface ResourceHandler<T extends IResource> {
      * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
-     * @return A non-negative integer not greater than {@code amount}: the amount that was inserted.
+     * @return The amount that was inserted. Between {@code 0} (inclusive, nothing was inserted) and {@code amount} (inclusive, everything was inserted).
+     * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
+     *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #insert(IResource, int, TransactionContext) Inserting without a specific index, which can be more efficient.
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
@@ -173,9 +176,10 @@ public interface ResourceHandler<T extends IResource> {
      * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
-     * @return A non-negative integer not greater than {@code amount}: the amount that was inserted.
+     * @return The amount that was inserted. Between {@code 0} (inclusive, nothing was inserted) and {@code amount} (inclusive, everything was inserted).
+     * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
+     *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler.
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
@@ -199,9 +203,10 @@ public interface ResourceHandler<T extends IResource> {
      * @param resource    The resource to extract. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to extract. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
-     * @return A non-negative integer not greater than {@code amount}: the amount that was extracted.
+     * @return The amount that was extracted. Between {@code 0} (inclusive, nothing was extracted) and {@code amount} (inclusive, everything was extracted).
+     * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
+     *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #extract(IResource, int, TransactionContext) Extracting without a specific index, which can be more efficient.
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
@@ -218,9 +223,10 @@ public interface ResourceHandler<T extends IResource> {
      * @param resource    The resource to extract. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to extract. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
-     * @return A non-negative integer not greater than {@code amount}: the amount that was extracted.
+     * @return The amount that was extracted. Between {@code 0} (inclusive, nothing was extracted) and {@code amount} (inclusive, everything was extracted).
+     * @throws IllegalArgumentException If the resource is empty or the amount is negative. See also {@link TransferPreconditions#checkNonEmptyNonNegative} to help perform this check.
      * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
+     *           Note that {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler.
      */
     default int extract(T resource, int amount, TransactionContext transaction) {
