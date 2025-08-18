@@ -71,9 +71,9 @@ public interface ResourceHandler<T extends IResource> {
      *
      * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsInt capacity} of the same index.
      *
-     * @implNote This method should not be implemented. The default method will call {@link #getAmountAsLong(int)} and convert the result appropriately.
      * @param index The index to get the amount from.
      * @return the amount at the given index, as an {@code int}
+     * @implNote This method should not be implemented. The default method will call {@link #getAmountAsLong(int)} and convert the result appropriately.
      * @see #getAmountAsLong(int) the long-returning overload
      */
     @ApiStatus.NonExtendable
@@ -96,10 +96,10 @@ public interface ResourceHandler<T extends IResource> {
      * The capacity for the {@linkplain #getResource currently stored resource} should be greater than or equal to
      * the {@linkplain #getAmountAsLong(int) amount} at the same index.
      *
-     * @implSpec This method should return 0 for any resource for which {@link #isValid(int,IResource)} returns {@code false}.
      * @param index    The index to get the capacity for.
      * @param resource The resource to get the capacity for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index, as a long
+     * @implSpec This method should return 0 for any resource for which {@link #isValid(int,IResource)} returns {@code false}.
      * @see #getCapacityAsInt(int, IResource)
      */
     long getCapacityAsLong(int index, T resource);
@@ -118,10 +118,10 @@ public interface ResourceHandler<T extends IResource> {
      * The capacity for the {@linkplain #getResource currently stored resource} should be greater than or equal to
      * the {@linkplain #getAmountAsInt(int) amount} at the same index.
      *
-     * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, IResource)} and convert the result appropriately.
      * @param index    The index to get the limit for.
      * @param resource The resource to get the limit for. May be empty to get the general capacity at the index.
      * @return the capacity at the given index, as an {@code int}
+     * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, IResource)} and convert the result appropriately.
      * @see #getCapacityAsLong(int, IResource)
      */
     @ApiStatus.NonExtendable
@@ -146,13 +146,13 @@ public interface ResourceHandler<T extends IResource> {
      *
      * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
-     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param index       The index to insert the resource into.
      * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was inserted.
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #insert(IResource, int, TransactionContext) Inserting without a specific index, which can be more efficient.
      */
     int insert(int index, T resource, int amount, TransactionContext transaction);
@@ -166,12 +166,12 @@ public interface ResourceHandler<T extends IResource> {
      *
      * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
-     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param resource    The resource to insert. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to insert. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was inserted.
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #insert(int, IResource, int, TransactionContext) Inserting into a specific index of the handler.
      */
     default int insert(T resource, int amount, TransactionContext transaction) {
@@ -191,13 +191,13 @@ public interface ResourceHandler<T extends IResource> {
      *
      * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
-     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param index       The index to extract the resource from.
      * @param resource    The resource to extract. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to extract. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was extracted.
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #extract(IResource, int, TransactionContext) Extracting without a specific index, which can be more efficient.
      */
     int extract(int index, T resource, int amount, TransactionContext transaction);
@@ -211,12 +211,12 @@ public interface ResourceHandler<T extends IResource> {
      *
      * <p>Changes to the handler are made in the context of a {@linkplain Transaction transaction}.
      *
-     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
-     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @param resource    The resource to extract. <strong>Must be non-empty.</strong>
      * @param amount      The maximum amount of the resource to extract. <strong>Must be non-negative.</strong>
      * @param transaction The transaction that this operation is part of.
      * @return A non-negative integer not greater than {@code amount}: the amount that was extracted.
+     * @implSpec Implementations must properly support {@linkplain Transaction transactions}.
+     * @implNote {@link SnapshotJournal} can serve as the base class for a transaction-aware resource handler.
      * @see #extract(int, IResource, int, TransactionContext) Extracting from a specific index of the handler.
      */
     default int extract(T resource, int amount, TransactionContext transaction) {
