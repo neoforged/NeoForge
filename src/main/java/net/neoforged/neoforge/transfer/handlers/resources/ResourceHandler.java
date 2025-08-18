@@ -33,9 +33,9 @@ public interface ResourceHandler<T extends IResource> {
      * <p>This size provides a bound on the valid indices for this handler,
      * see the documentation of {@link ResourceHandler}.
      *
-     * <p>Note that the size of a resource handler can change.
-     * In that case, the handler is expected to be lenient with its index checks,
-     * in case the caller is holding onto a previously returned size.
+     * @apiNote The size of a resource handler can change.
+     *          In that case, the handler is expected to be lenient with its index checks,
+     *          in case the caller is holding onto a previously returned size.
      */
     int size();
 
