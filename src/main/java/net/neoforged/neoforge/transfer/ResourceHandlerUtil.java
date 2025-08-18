@@ -109,6 +109,9 @@ public final class ResourceHandlerUtil {
     public static <T extends IResource> int getRedstoneSignalFromResourceHandler(ResourceHandler<T> handler) {
         float proportion = 0.0F;
         int size = handler.size();
+        if (size == 0) {
+            return Redstone.SIGNAL_NONE;
+        }
 
         for (int index = 0; index < size; ++index) {
             long indexFill = handler.getAmountAsLong(index);
@@ -137,7 +140,7 @@ public final class ResourceHandlerUtil {
             T resource,
             int amount,
             @Nullable TransactionContext transaction) {
-        TransferPreconditions.checkNonNegative(amount);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         if (handler == null || amount == 0) return 0;
 
         try (Transaction tx = Transaction.open(transaction)) {
