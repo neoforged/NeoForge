@@ -155,10 +155,12 @@ public final class ResourceHandlerUtil {
             }
 
             // Then go through empty indices
-            for (int index = 0; index < size; index++) {
-                if (handler.getResource(index).isEmpty()) {
-                    inserted += handler.insert(index, resource, amount - inserted, tx);
-                    if (inserted >= amount) break;
+            if (inserted < amount) {
+                for (int index = 0; index < size; index++) {
+                    if (handler.getResource(index).isEmpty()) {
+                        inserted += handler.insert(index, resource, amount - inserted, tx);
+                        if (inserted >= amount) break;
+                    }
                 }
             }
 
