@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/item/component/BundleContents.java
++++ b/net/minecraft/world/item/component/BundleContents.java
+@@ -73,7 +_,8 @@
+     }
+ 
+     public static boolean canItemBeInBundle(ItemStack p_362945_) {
+-        return !p_362945_.isEmpty() && p_362945_.getItem().canFitInsideContainerItems();
++        // Neo: stack-aware placeability check
++        return !p_362945_.isEmpty() && p_362945_.canFitInsideContainerItems();
+     }
+ 
+     public int getNumberOfItemsToShow() {

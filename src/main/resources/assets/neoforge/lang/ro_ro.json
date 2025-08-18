@@ -183,6 +183,8 @@
   "neoforge.configgui.advertiseDedicatedServerToLan.tooltip": "Setați acest lucru la adevărat pentru a activa publicitatea serverului dedicat clienților LAN locali, astfel încât să apară automat în ecranul Multiplayer.",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo": "Instrumente de atribute avansate suplimentare",
   "neoforge.configgui.attributeAdvancedTooltipDebugInfo.tooltip": "Setează la adevărat pentru a activa informații suplimentare despre atribute pe un element atunci când setarea detalii avansate este activată.",
+  "neoforge.configgui.enableB3DValidationLayer": "Enable Blaze3D Validation Layer",
+  "neoforge.configgui.enableB3DValidationLayer.tooltip": "When enabled, all usage of Blaze3D (Minecraft's internal rendering abstraction) will be validated against allowed usage.",
   "neoforge.configgui.forgeLightPipelineEnabled": "Pipeline lumină NeoForge",
   "neoforge.configgui.forgeLightPipelineEnabled.tooltip": "Enable the NeoForge block rendering pipeline - fixes the lighting of custom models.",
   "neoforge.configgui.fullBoundingBoxLadders": "Toată cutia de încadrare pentru scări",

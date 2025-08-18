@@ -7,6 +7,7 @@ package net.neoforged.testframework.gametest;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Set;
@@ -27,14 +28,14 @@ import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.network.Connection;
-import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.network.protocol.common.ClientboundKeepAlivePacket;
+import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -127,6 +128,15 @@ public class ExtendedGameTestHelper extends GameTestHelper {
             public boolean isMemoryConnection() {
                 return true;
             }
+
+            @Override
+            public void send(Packet<?> packet, @Nullable ChannelFutureListener listeners, boolean flush) {
+                super.send(packet, listeners, flush);
+                // Respond to keepalive packets instantly
+                if (packet instanceof ClientboundKeepAlivePacket ckp) {
+                    serverplayer.connection.handleKeepAlive(new ServerboundKeepAlivePacket(ckp.getId()));
+                }
+            }
         };
         EmbeddedChannel embeddedchannel = new EmbeddedChannel(connection);
         // TODO - check if needs to be ported
@@ -135,10 +145,6 @@ public class ExtendedGameTestHelper extends GameTestHelper {
         NetworkRegistry.configureMockConnection(connection);
         this.getLevel().getServer().getPlayerList().placeNewPlayer(connection, serverplayer, commonlistenercookie);
         this.getLevel().getServer().getConnection().getConnections().add(connection);
-        connection.setupInboundProtocol((ProtocolInfo<ServerGamePacketListener>) connection.getInboundProtocol(), new ServerGamePacketListenerImpl(serverplayer.getServer(), connection, serverplayer, commonlistenercookie) {
-            @Override
-            protected void keepConnectionAlive() {}
-        });
         this.testInfo.addListener(serverplayer);
         serverplayer.gameMode.changeGameModeForPlayer(gameType);
         serverplayer.setYRot(180);

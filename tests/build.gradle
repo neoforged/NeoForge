@@ -60,6 +60,7 @@ junitTest {
     classpath = sourceSets.junit.output + sourceSets.junit.runtimeClasspath
     testClassesDirs = sourceSets.junit.output.classesDirs
     outputs.upToDateWhen { false }
+    exclude("**/mixin/**")
 }
 
 neoDev {

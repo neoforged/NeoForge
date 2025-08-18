@@ -39,3 +39,12 @@
          if (this.trackedDataValues != null) {
              p_289563_.accept(new ClientboundSetEntityDataPacket(this.entity.getId(), this.trackedDataValues));
          }
+@@ -321,6 +_,8 @@
+         if (this.entity instanceof Leashable leashable && leashable.isLeashed()) {
+             p_289563_.accept(new ClientboundSetEntityLinkPacket(this.entity, leashable.getLeashHolder()));
+         }
++
++        net.neoforged.neoforge.attachment.AttachmentSync.syncInitialEntityAttachments(this.entity, p_289562_, p_289563_);
+     }
+ 
+     public Vec3 getPositionBase() {
