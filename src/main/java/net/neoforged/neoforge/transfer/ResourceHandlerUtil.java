@@ -190,30 +190,18 @@ public final class ResourceHandlerUtil {
         TransferPreconditions.checkNonNegative(amount);
         if (handler == null || amount == 0) return null;
 
-        int size = handler.size();
-        int handled = 0;
-        T resourceTarget = null;
+        T resource = findExtractableResource(handler, filter, transaction);
+        if (resource == null) return null;
 
-        try (Transaction subTransaction = Transaction.open(transaction)) {
-            for (int index = 0; index < size; index++) {
-                T resource = handler.getResource(index);
-                if (resource.isEmpty()) {
-                    continue;
-                }
-
-                if (resourceTarget == null && filter.test(resource)) { // We still haven't decided which resource to actually extract
-                    resourceTarget = resource;
-                }
-                if (resourceTarget != null && resourceTarget.equals(resource)) { // If it isn't empty, we check if it matches the one we found
-                    handled += handler.extract(resource, amount - handled, subTransaction);
-                    if (handled >= amount) break;
-                }
+        try (var tx = Transaction.open(transaction)) {
+            int extracted = handler.extract(resource, amount, tx);
+            if (extracted > 0) {
+                tx.commit();
+                return new ResourceStack<>(resource, extracted);
+            } else {
+                return null;
             }
-
-            subTransaction.commit();
         }
-
-        return handled == 0 ? null : new ResourceStack<>(resourceTarget, handled);
     }
 
     /**
