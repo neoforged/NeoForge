@@ -20,11 +20,11 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
     /**
      * The wrapped handlers.
      */
-    protected final ResourceHandler<T>[] handlers;
+    private final ResourceHandler<T>[] handlers;
     /**
      * For each wrapped handler, the index at which it starts in the combined handler.
      */
-    protected final int[] baseIndex;
+    private final int[] baseIndex;
     /**
      * The total number of indices in the combined handler, which is the sum of the sizes of all wrapped handlers.
      */
@@ -38,8 +38,8 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
         this.baseIndex = new int[handlers.length];
         int index = 0;
         for (int i = 0; i < handlers.length; i++) {
-            index += handlers[i].size();
             this.baseIndex[i] = index;
+            index += handlers[i].size();
         }
         this.sizeCache = index;
     }
@@ -48,30 +48,28 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
      * Returns the index of the handler in {@link #handlers} that contains the given index.
      */
     protected int getHandlerIndex(int index) {
-        if (index < 0)
-            throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + size());
+        if (index < 0 || index >= sizeCache)
+            throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + sizeCache);
 
-        for (int i = 0; i < baseIndex.length; i++) {
-            if (index - baseIndex[i] < 0) {
-                return i;
+        for (int handlerIndex = 0; handlerIndex < baseIndex.length - 1; handlerIndex++) {
+            if (index < baseIndex[handlerIndex + 1]) {
+                return handlerIndex;
             }
         }
-        throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + size());
+        // Guaranteed to be in bounds since we checked index < size above
+        return baseIndex.length - 1;
     }
 
-    protected ResourceHandler<T> getHandlerFromIndex(int index) {
-        if (index >= 0 && index < handlers.length)
-            return handlers[index];
-
-        throw new IndexOutOfBoundsException(index);
+    protected ResourceHandler<T> getHandlerFromIndex(int handlerIndex) {
+        return handlers[handlerIndex];
     }
 
     protected int getSlotFromIndex(int index, int handlerIndex) {
-        return handlerIndex > 0 && handlerIndex < baseIndex.length ? index - baseIndex[handlerIndex - 1] : index;
+        return index - baseIndex[handlerIndex];
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return sizeCache;
     }
 
