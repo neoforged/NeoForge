@@ -30,7 +30,12 @@ public interface ResourceHandler<T extends IResource> {
     /**
      * {@return the <i>current</i> number of indices in this resource handler}
      *
+     * <p>This size provides a bound on the valid indices for this handler,
+     * see the documentation of {@link ResourceHandler}.
+     *
      * <p>Note that the size of a resource handler can change.
+     * In that case, the handler is expected to be lenient with its index checks,
+     * in case the caller is holding onto a previously returned size.
      */
     int size();
 
@@ -42,14 +47,14 @@ public interface ResourceHandler<T extends IResource> {
     T getResource(int index);
 
     /**
-     * Returns the amount of the {@link #getResource currently stored resource} at the given index, as a {@code long}.
+     * Returns the amount of the {@linkplain #getResource currently stored resource} at the given index, as a {@code long}.
      *
      * <p>In general, resource handlers can report {@code long} amounts.
      * However, if the handler is known to only support amounts up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only,
-     * the {@link #getAmountAsInt int-returning overload} can be used instead.
+     * the {@linkplain #getAmountAsInt int-returning overload} can be used instead.
      *
-     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsLong capacity} of the same index.
+     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsLong capacity} of the same index.
      *
      * @param index The index to get the amount from.
      * @return the amount at the given index, as a long
@@ -58,13 +63,13 @@ public interface ResourceHandler<T extends IResource> {
     long getAmountAsLong(int index);
 
     /**
-     * Returns the amount of the {@link #getResource currently stored resource} at the given index, as an {@code int}.
+     * Returns the amount of the {@linkplain #getResource currently stored resource} at the given index, as an {@code int}.
      *
      * <p>This is a convenience method to clamp the amount to an {@code int},
      * for the cases where the handler is known to only support amounts up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only.
      *
-     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@link #getCapacityAsInt capacity} of the same index.
+     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsInt capacity} of the same index.
      *
      * @implNote This method should not be implemented. The default method will call {@link #getAmountAsLong(int)} and convert the result appropriately.
      * @param index The index to get the amount from.
@@ -83,9 +88,13 @@ public interface ResourceHandler<T extends IResource> {
      * In general, resource handlers can report {@code long} capacities.
      * However, if the handler is known to only support capacities up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only,
-     * the {@link #getCapacityAsInt int-returning overload} can be used instead.
+     * the {@linkplain #getCapacityAsInt int-returning overload} can be used instead.
      * <p>
-     * This function serves as metadata only, and its result might be approximate. The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
+     * This function serves as metadata only, and its result might be approximate.
+     * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
+     * <p>
+     * The capacity for the {@linkplain #getResource currently stored resource} should be greater than or equal to
+     * the {@linkplain #getAmountAsLong(int) amount} at the same index.
      *
      * @implSpec This method should return 0 for any resource for which {@link #isValid(int,IResource)} returns {@code false}.
      * @param index    The index to get the capacity for.
@@ -93,7 +102,6 @@ public interface ResourceHandler<T extends IResource> {
      * @return the capacity at the given index, as a long
      * @see #getCapacityAsInt(int, IResource)
      */
-    // TODO: remark that the amount should be larger than the capacity?
     long getCapacityAsLong(int index, T resource);
 
     /**
@@ -106,6 +114,9 @@ public interface ResourceHandler<T extends IResource> {
      * <p>
      * This function serves as metadata only, and its result might be approximate.
      * The only way to know if a handler will accept a resource, is to try to {@linkplain #insert insert} it.
+     * <p>
+     * The capacity for the {@linkplain #getResource currently stored resource} should be greater than or equal to
+     * the {@linkplain #getAmountAsInt(int) amount} at the same index.
      *
      * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, IResource)} and convert the result appropriately.
      * @param index    The index to get the limit for.
@@ -149,7 +160,7 @@ public interface ResourceHandler<T extends IResource> {
     /**
      * Inserts up to the given amount of a resource into the handler.
      *
-     * <p>This function is preferred to the {@link #insert(int, IResource, int, TransactionContext) index-specific overload}
+     * <p>This function is preferred to the {@linkplain #insert(int, IResource, int, TransactionContext) index-specific overload}
      * since it lets the handler decide how to distribute the resource.
      * <p>This method is expected to be more efficient than callers trying to find a suitable index for insertion themselves.
      *
@@ -194,7 +205,7 @@ public interface ResourceHandler<T extends IResource> {
     /**
      * Tries to extract up to the given amount of a resource from the handler.
      *
-     * <p>This function is preferred to the {@link #extract(int, IResource, int, TransactionContext) index-specific overload}
+     * <p>This function is preferred to the {@linkplain #extract(int, IResource, int, TransactionContext) index-specific overload}
      * since it lets the handler decide how to find indices that contain the resource.
      * <p>This method is expected to be more efficient than callers trying to find indices that contain the resource themselves.
      *
