@@ -59,7 +59,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
             FluidResource::of);
 
     /**
-     * Creates an {@link FluidResource} using the default or copy of the passed in fluid stack. Note the amount is lost.
+     * Creates a {@link FluidResource} for the given fluid stack. Note the amount is lost.
      *
      * @param stack stack to copy with a size of 1
      * @return If there were no patches on the stack's data components, the fluid's default resource will be returned, otherwise a new instance with the copied stack.
@@ -222,7 +222,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     /**
-     * Creates an {@link FluidStack} of the specified count.
+     * Creates a {@link FluidStack} of the specified amount.
      *
      * @param amount The amount of the fluid the stack should have. Must be non-negative.
      * @throws IllegalArgumentException when amount is negative.
@@ -256,7 +256,7 @@ public final class FluidResource implements IDataComponentHolderResource<Fluid> 
     }
 
     /**
-     * Tests an {@link FluidStack} predicate with the inner stack.
+     * Tests a {@link FluidStack} predicate with the inner stack.
      *
      * @param predicate Predicate to perform the test with
      * @return {@code true} if the test passed

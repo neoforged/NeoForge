@@ -18,7 +18,8 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * <h2>Indices</h2>
  * <p>A resource handler is organized into indices, which are addressed using an int between {@code 0} and {@code size() - 1}.
- * <p>Out-of-bounds access using methods that accept an {@code int slot} will usually throw an exception,
+ * <p>An index represents a "slot", "tank", "buffer", depending on the type of resource.
+ * <p>Out-of-bounds access using methods that accept an {@code index} will usually throw an exception,
  * so only indices between 0 (included) and the size (excluded) should be used.
  * If a storage has a dynamic size, it should be lenient to accommodate for callers
  * holding onto a previously returned size.
@@ -28,8 +29,6 @@ import org.jetbrains.annotations.ApiStatus;
 public interface ResourceHandler<T extends IResource> {
     /**
      * {@return the <i>current</i> number of indices in this resource handler}
-     *
-     * <p>An index is synonymous with "slot", "tank", "buffer", etc.
      *
      * <p>Note that the size of a resource handler can change.
      */
@@ -69,7 +68,7 @@ public interface ResourceHandler<T extends IResource> {
      *
      * @implNote This method should not be implemented. The default method will call {@link #getAmountAsLong(int)} and convert the result appropriately.
      * @param index The index to get the amount from.
-     * @return the amount at the given index, as an int
+     * @return the amount at the given index, as an {@code int}
      * @see #getAmountAsLong(int) the long-returning overload
      */
     @ApiStatus.NonExtendable
@@ -111,7 +110,7 @@ public interface ResourceHandler<T extends IResource> {
      * @implNote This method should not be implemented. The default method will call {@link #getCapacityAsLong(int, IResource)} and convert the result appropriately.
      * @param index    The index to get the limit for.
      * @param resource The resource to get the limit for. May be empty to get the general capacity at the index.
-     * @return the capacity at the given index, as an int
+     * @return the capacity at the given index, as an {@code int}
      * @see #getCapacityAsLong(int, IResource)
      */
     @ApiStatus.NonExtendable

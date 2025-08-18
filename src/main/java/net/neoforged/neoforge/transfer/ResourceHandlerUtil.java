@@ -39,10 +39,10 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Checks if an {@link ResourceHandler} is empty.
+     * Checks if a {@link ResourceHandler} is empty.
      *
-     * <p>An {@link ResourceHandler} is considered empty if all of its indices
-     * contain either an empty resource or have an amount less than or equal to zero.
+     * <p>A {@link ResourceHandler} is considered empty if all of its indices
+     * contain an empty resource or have an amount of zero.
      * <p>A handler of size zero will always be considered empty.
      *
      * @param handler the {@link ResourceHandler} to check for emptiness
@@ -59,9 +59,9 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Checks if an {@link ResourceHandler} is full.
+     * Checks if a {@link ResourceHandler} is full.
      * <p>
-     * An {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
+     * A {@code IResourceHandler} is considered full if all of its indices contain resources with amounts
      * greater than or equal to their respective {@linkplain ResourceHandler#getCapacityAsLong(int, IResource) capacity}.
      * <p>A handler of size zero is always considered full.
      *
@@ -165,7 +165,7 @@ public final class ResourceHandlerUtil {
     }
 
     /**
-     * Extracts the first resource from an {@link ResourceHandler} that is not empty and matches the given filter.
+     * Extracts the first resource from a {@link ResourceHandler} that is not empty and matches the given filter.
      *
      * @param <T>         The type of resource handled by the handler
      * @param handler     The {@link ResourceHandler} to extract the resource from. Can be {@code null}, which makes this method a no-op.
