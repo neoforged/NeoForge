@@ -42,6 +42,8 @@ public interface ResourceHandler<T extends IResource> {
     /**
      * {@return the resource at the given index, which may be empty}
      *
+     * <p>If the resource is empty, the {@linkplain #getAmountAsLong stored amount} must be 0.
+     *
      * @param index The index to get the resource from.
      */
     T getResource(int index);
@@ -55,6 +57,7 @@ public interface ResourceHandler<T extends IResource> {
      * the {@linkplain #getAmountAsInt int-returning overload} can be used instead.
      *
      * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsLong capacity} of the same index.
+     * If the {@linkplain #getResource stored resource} is empty, the amount must be 0.
      *
      * @param index The index to get the amount from.
      * @return the amount at the given index, as a long
@@ -70,6 +73,7 @@ public interface ResourceHandler<T extends IResource> {
      * or if the caller prefers to deal in {@code int}s only.
      *
      * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsInt capacity} of the same index.
+     * If the {@linkplain #getResource stored resource} is empty, the amount must be 0.
      *
      * @param index The index to get the amount from.
      * @return the amount at the given index, as an {@code int}

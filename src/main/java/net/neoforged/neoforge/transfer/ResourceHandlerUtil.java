@@ -41,8 +41,8 @@ public final class ResourceHandlerUtil {
     /**
      * Checks if a {@link ResourceHandler} is empty.
      *
-     * <p>A {@link ResourceHandler} is considered empty if all of its indices
-     * contain an empty resource or have an amount of zero.
+     * <p>A {@link ResourceHandler} is considered empty if it has an amount of zero at all its indices.
+     *
      * <p>A handler of size zero will always be considered empty.
      *
      * @param handler the {@link ResourceHandler} to check for emptiness
@@ -51,7 +51,7 @@ public final class ResourceHandlerUtil {
     public static boolean isEmpty(ResourceHandler<? extends IResource> handler) {
         int size = handler.size();
         for (int i = 0; i < size; i++) {
-            if (handler.getAmountAsLong(i) > 0 || !handler.getResource(i).isEmpty()) {
+            if (handler.getAmountAsLong(i) > 0) {
                 return false;
             }
         }
