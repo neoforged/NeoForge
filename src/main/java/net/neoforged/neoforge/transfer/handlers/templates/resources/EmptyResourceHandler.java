@@ -16,7 +16,7 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * <p>Use {@link #instance()} to obtain an empty handler for any resource type.
  */
 public final class EmptyResourceHandler<T extends IResource> implements ResourceHandler<T> {
-    private final static EmptyResourceHandler<?> INSTANCE = new EmptyResourceHandler<>();
+    private static final EmptyResourceHandler<?> INSTANCE = new EmptyResourceHandler<>();
 
     /**
      * Returns an empty resource handler for the desired resource type.

@@ -42,32 +42,27 @@ public class DelegatingResourceHandler<T extends IResource> implements ResourceH
 
     @Override
     public T getResource(int index) {
-        Objects.checkIndex(index, size());
         return getDelegate().getResource(convertIndex(index));
     }
 
     @Override
     public long getAmountAsLong(int index) {
-        Objects.checkIndex(index, size());
         return getDelegate().getAmountAsLong(convertIndex(index));
     }
 
     @Override
     public long getCapacityAsLong(int index, T resource) {
-        Objects.checkIndex(index, size());
         return getDelegate().getCapacityAsLong(convertIndex(index), resource);
     }
 
     @Override
     public boolean isValid(int index, T resource) {
-        Objects.checkIndex(index, size());
         if (resource.isEmpty()) return true;
         return getDelegate().isValid(convertIndex(index), resource);
     }
 
     @Override
     public int insert(int index, T resource, int amount, TransactionContext transaction) {
-        Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         return getDelegate().insert(convertIndex(index), resource, amount, transaction);
     }
@@ -79,7 +74,6 @@ public class DelegatingResourceHandler<T extends IResource> implements ResourceH
 
     @Override
     public int extract(int index, T resource, int amount, TransactionContext transaction) {
-        Objects.checkIndex(index, size());
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         return getDelegate().extract(convertIndex(index), resource, amount, transaction);
     }

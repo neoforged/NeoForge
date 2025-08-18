@@ -19,6 +19,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 public class RangedResourceHandler<T extends IResource> extends DelegatingResourceHandler<T> {
     /**
      * Creates a wrapper for a range of indices.
+     *
+     * @param start start of the range of indices, inclusive
+     * @param end end of the range of indices, exclusive
      */
     public static <T extends IResource> RangedResourceHandler<T> of(ResourceHandler<T> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
@@ -26,6 +29,9 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     /**
      * Creates a wrapper for a range of indices, with the passed supplier being queried every time the handler is accessed.
+     *
+     * @param start start of the range of indices, inclusive
+     * @param end end of the range of indices, exclusive
      */
     public static <T extends IResource> RangedResourceHandler<T> of(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         return new RangedResourceHandler<>(delegate, start, end);
@@ -55,7 +61,9 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     protected RangedResourceHandler(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         super(delegate);
-        Preconditions.checkArgument(end > start, "Max index must be greater than min index");
+        if (!(0 <= start && start <= end)) {
+            throw new IndexOutOfBoundsException("Invalid range: start=" + start + ", end=" + end);
+        }
         this.start = start;
         this.end = end;
     }

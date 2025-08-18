@@ -28,7 +28,7 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
     /**
      * The total number of indices in the combined handler, which is the sum of the sizes of all wrapped handlers.
      */
-    protected final int sizeCache;
+    private final int sizeCache;
 
     @SafeVarargs
     public CombinedResourceHandler(ResourceHandler<T>... handlers) {
@@ -39,7 +39,7 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
         int index = 0;
         for (int i = 0; i < handlers.length; i++) {
             index += handlers[i].size();
-            baseIndex[i] = index;
+            this.baseIndex[i] = index;
         }
         this.sizeCache = index;
     }
@@ -49,14 +49,14 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
      */
     protected int getHandlerIndex(int index) {
         if (index < 0)
-            throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + sizeCache);
+            throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + size());
 
         for (int i = 0; i < baseIndex.length; i++) {
             if (index - baseIndex[i] < 0) {
                 return i;
             }
         }
-        throw new IndexOutOfBoundsException();
+        throw new IndexOutOfBoundsException("Index " + index + " is out-of-bounds for combined handler with size " + size());
     }
 
     protected ResourceHandler<T> getHandlerFromIndex(int index) {
