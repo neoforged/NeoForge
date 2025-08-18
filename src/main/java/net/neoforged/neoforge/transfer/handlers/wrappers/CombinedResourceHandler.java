@@ -32,8 +32,6 @@ public class CombinedResourceHandler<T extends IResource> implements ResourceHan
 
     @SafeVarargs
     public CombinedResourceHandler(ResourceHandler<T>... handlers) {
-        if (handlers.length <= 1)
-            throw new IllegalArgumentException("At least 2 handlers must be specified. Received: " + handlers.length);
         this.handlers = handlers;
         this.baseIndex = new int[handlers.length];
         int index = 0;
