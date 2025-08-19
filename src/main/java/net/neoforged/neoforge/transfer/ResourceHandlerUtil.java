@@ -116,7 +116,12 @@ public final class ResourceHandlerUtil {
         for (int index = 0; index < size; ++index) {
             long indexFill = handler.getAmountAsLong(index);
             if (indexFill > 0) {
-                proportion += (float) indexFill / handler.getCapacityAsLong(index, handler.getResource(index));
+                long capacity = handler.getCapacityAsLong(index, handler.getResource(index));
+                if (capacity == 0) {
+                    // Avoid division by zero
+                    return Redstone.SIGNAL_NONE;
+                }
+                proportion += (float) indexFill / capacity;
             }
         }
 

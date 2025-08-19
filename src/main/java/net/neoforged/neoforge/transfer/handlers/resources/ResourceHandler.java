@@ -57,7 +57,7 @@ public interface ResourceHandler<T extends IResource> {
      * or if the caller prefers to deal in {@code int}s only,
      * the {@linkplain #getAmountAsInt int-returning overload} can be used instead.
      *
-     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsLong capacity} of the same index.
+     * <p>The returned amount must be <strong>non-negative</strong>.
      * If the {@linkplain #getResource stored resource} is empty, the amount must be 0.
      *
      * @param index The index to get the amount from.
@@ -73,7 +73,7 @@ public interface ResourceHandler<T extends IResource> {
      * for the cases where the handler is known to only support amounts up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only.
      *
-     * <p>The returned amount must be <strong>non-negative</strong>, and should never surpass the {@linkplain #getCapacityAsInt capacity} of the same index.
+     * <p>The returned amount must be <strong>non-negative</strong>.
      * If the {@linkplain #getResource stored resource} is empty, the amount must be 0.
      *
      * @param index The index to get the amount from.
@@ -95,11 +95,9 @@ public interface ResourceHandler<T extends IResource> {
      * or if the caller prefers to deal in {@code int}s only,
      * the {@linkplain #getCapacityAsInt int-returning overload} can be used instead.
      * <p>
-     * This function serves as metadata only, and its result might be approximate.
+     * This function serves only as a hint on the maximum {@linkplain #getAmountAsLong(int) amount} the resource handler might contain.
+     * The returned capacity may overestimate the actual allowed amount, and it might be smaller than the current amount.
      * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
-     * <p>
-     * The capacity for the {@linkplain #getResource currently stored resource} should be greater than or equal to
-     * the {@linkplain #getAmountAsLong(int) amount} at the same index.
      *
      * @param index    The index to get the capacity for.
      * @param resource The resource to get the capacity for. May be empty to get the general capacity at the index.
@@ -117,11 +115,9 @@ public interface ResourceHandler<T extends IResource> {
      * for the cases where the handler is known to only support capacities up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only.
      * <p>
-     * This function serves as metadata only, and its result might be approximate.
-     * The only way to know if a handler will accept a resource, is to try to {@linkplain #insert insert} it.
-     * <p>
-     * The capacity for the {@linkplain #getResource currently stored resource} should be greater than or equal to
-     * the {@linkplain #getAmountAsInt(int) amount} at the same index.
+     * This function serves only as a hint on the maximum {@linkplain #getAmountAsInt(int) amount} the resource handler might contain.
+     * The returned capacity may overestimate the actual allowed amount, and it might be smaller than the current amount.
+     * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
      *
      * @param index    The index to get the limit for.
      * @param resource The resource to get the limit for. May be empty to get the general capacity at the index.
@@ -138,7 +134,7 @@ public interface ResourceHandler<T extends IResource> {
      * {@return whether the given resource is generally allowed to be contained at the given index,
      * irrespective of the current amount or resource currently at that index}
      * <p>
-     * If this method returns {@code false}, the insertion of the resource is never valid.
+     * If this method returns {@code false}, the insertion of the resource is not currently valid.
      * If this method returns {@code true}, no assumptions can be made: the only way to find out
      * whether a handler will accept a resource, is to try {@linkplain #insert inserting} it.
      *
