@@ -413,6 +413,15 @@
              }
          }
      }
+@@ -2011,7 +_,7 @@
+     }
+ 
+     public boolean isScoping() {
+-        return this.isUsingItem() && this.getUseItem().is(Items.SPYGLASS);
++        return this.isUsingItem() && this.getUseItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE);
+     }
+ 
+     @Override
 @@ -2159,5 +_,41 @@
          public Component getMessage() {
              return this.message;
