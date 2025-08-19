@@ -30,6 +30,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -461,5 +462,10 @@ public class ModListScreen extends Screen {
     @Override
     public void onClose() {
         this.minecraft.setScreen(this.parentScreen);
+    }
+
+    @Override
+    protected void handleClickEvent(Minecraft minecraft, ClickEvent clickEvent) {
+        defaultHandleClickEvent(clickEvent, minecraft, this);
     }
 }

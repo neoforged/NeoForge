@@ -21,7 +21,7 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -72,18 +_,65 @@
+@@ -72,18 +_,68 @@
      @Override
      public boolean keyPressed(int p_345810_, int p_345447_, int p_344981_) {
          if (this.selectedKey != null) {
@@ -40,10 +40,13 @@
 +        }
 +    }
 +
-+    // Neo: This method is override to more easily handle modifier keys
++    // Neo: This method is overridden to more easily handle modifier keys
 +    @Override
 +    public boolean keyReleased(int p_94715_, int p_94716_, int p_94717_) {
-+        if (this.selectedKey != null) {
++        // We ignore events from keys with the scan code 63 as they're emitted
++        // (only as RELEASE, not PRESS) by Mac systems to indicate that "Fn" is being pressed
++        // See https://github.com/neoforged/NeoForge/issues/1683
++        if (this.selectedKey != null && (!net.minecraft.client.Minecraft.ON_OSX || p_94716_ != 63)) {
 +            if (p_94715_ == 256) {
 +                this.selectedKey.setKeyModifierAndCode(net.neoforged.neoforge.client.settings.KeyModifier.NONE, InputConstants.UNKNOWN);
                  this.selectedKey.setKey(InputConstants.UNKNOWN);

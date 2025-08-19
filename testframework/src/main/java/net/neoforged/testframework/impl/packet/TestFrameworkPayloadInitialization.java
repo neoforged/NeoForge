@@ -21,10 +21,10 @@ public record TestFrameworkPayloadInitialization(MutableTestFramework framework)
 
         registrar.playBidirectional(ChangeStatusPayload.ID,
                 StreamCodec.of((RegistryFriendlyByteBuf buf, ChangeStatusPayload packet) -> packet.write(buf), buf -> ChangeStatusPayload.decode(framework, buf)),
-                (payload, context) -> payload.handle(context));
+                ChangeStatusPayload::handle, ChangeStatusPayload::handle);
 
         registrar.playBidirectional(ChangeEnabledPayload.ID,
                 StreamCodec.of((buf, packet) -> packet.write(buf), buf -> ChangeEnabledPayload.decode(framework, buf)),
-                (payload, context) -> payload.handle(context));
+                ChangeEnabledPayload::handle, ChangeEnabledPayload::handle);
     }
 }

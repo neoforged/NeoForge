@@ -741,7 +741,6 @@ public final class ConfigurationScreen extends OptionsSubScreen {
          * A custom variant of OptionsInstance.Enum that doesn't show the key on the button, just the value
          */
         public record Custom<T>(List<T> values) implements OptionInstance.ValueSet<T> {
-
             @Override
             public Function<OptionInstance<T>, AbstractWidget> createButton(OptionInstance.TooltipSupplier<T> tooltip, Options options, int x, int y, int width, Consumer<T> target) {
                 return optionsInstance -> CycleButton.builder(optionsInstance.toString)
@@ -765,6 +764,7 @@ public final class ConfigurationScreen extends OptionsSubScreen {
             public Codec<T> codec() {
                 return null;
             }
+
             public static final Custom<Boolean> BOOLEAN_VALUES_NO_PREFIX = new Custom<>(ImmutableList.of(Boolean.TRUE, Boolean.FALSE));
         }
 

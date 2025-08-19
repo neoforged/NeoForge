@@ -1,6 +1,6 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -591,4 +_,8 @@
+@@ -567,4 +_,8 @@
      public void setHint(Component p_259584_) {
          this.hint = p_259584_;
      }

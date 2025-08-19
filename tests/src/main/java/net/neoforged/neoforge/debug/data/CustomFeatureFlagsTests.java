@@ -10,6 +10,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -85,6 +86,8 @@ public class CustomFeatureFlagsTests {
                 .registerSimpleItem("ext_range_disabled_test", new Item.Properties().requiredFeatures(extRangeDisabledTestFlag));
 
         test.eventListeners().forge().addListener((ServerStartedEvent event) -> {
+            if (event.getServer() instanceof GameTestServer) return; // The gametest server enables all flags, so we're not interested in running the check
+
             FeatureFlagSet flagSet = event.getServer().getLevel(Level.OVERWORLD).enabledFeatures();
             if (!baseRangeEnabledTestItem.get().isEnabled(flagSet)) {
                 test.fail("Item with enabled custom flag in base mask range was unexpectedly disabled");

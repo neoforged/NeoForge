@@ -177,7 +177,6 @@ public class DynamicFluidContainerModel implements ItemModel {
     }
 
     public record Unbaked(Textures textures, Fluid fluid, boolean flipGas, boolean coverIsMask, boolean applyFluidLuminosity) implements ItemModel.Unbaked {
-
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(
                 instance -> instance
                         .group(
@@ -187,6 +186,7 @@ public class DynamicFluidContainerModel implements ItemModel {
                                 Codec.BOOL.optionalFieldOf("cover_is_mask", true).forGetter(Unbaked::coverIsMask),
                                 Codec.BOOL.optionalFieldOf("apply_fluid_luminosity", true).forGetter(Unbaked::applyFluidLuminosity))
                         .apply(instance, Unbaked::new));
+
         @Override
         public MapCodec<? extends ItemModel.Unbaked> type() {
             return MAP_CODEC;

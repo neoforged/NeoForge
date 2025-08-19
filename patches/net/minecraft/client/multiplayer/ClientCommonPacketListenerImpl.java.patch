@@ -47,7 +47,7 @@
 +
 +        // Neo: Handle modded payloads. Vanilla payloads do not get sent to the modded handling pass. Additional payloads cannot be registered in the minecraft domain.
 +        if (net.neoforged.neoforge.network.registration.NetworkRegistry.isModdedPayload(p_295727_.payload())) {
-+            net.neoforged.neoforge.network.registration.NetworkRegistry.handleModdedPayload(this, p_295727_);
++            net.neoforged.neoforge.client.network.registration.ClientNetworkRegistry.handleModdedPayload(this, p_295727_);
 +            return;
 +        }
 +

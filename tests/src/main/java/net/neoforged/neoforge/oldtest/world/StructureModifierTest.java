@@ -84,8 +84,8 @@ generator.addProvider(event.includeServer(), structureModifierProvider);*/
 
     public record TestModifier(HolderSet<Structure> structures, MobCategory category, MobSpawnSettings.SpawnerData spawn)
             implements StructureModifier {
-
         private static final DeferredHolder<MapCodec<? extends StructureModifier>, MapCodec<? extends StructureModifier>> SERIALIZER = DeferredHolder.create(NeoForgeRegistries.Keys.STRUCTURE_MODIFIER_SERIALIZERS, ADD_SPAWNS_TO_STRUCTURE_RL);
+
         @Override
         public void modify(Holder<Structure> structure, Phase phase, Builder builder) {
             if (phase == Phase.ADD && this.structures.contains(structure)) {

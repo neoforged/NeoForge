@@ -1,4 +1,7 @@
 {
+  "com/mojang/blaze3d/systems/GpuDevice": [
+    "net/neoforged/neoforge/client/extensions/blaze3d/GpuDeviceExtension"
+  ],
   "com/mojang/blaze3d/vertex/PoseStack": [
     "net/neoforged/neoforge/client/extensions/IPoseStackExtension"
   ],

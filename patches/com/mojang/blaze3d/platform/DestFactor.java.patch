@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/platform/DestFactor.java
++++ b/com/mojang/blaze3d/platform/DestFactor.java
+@@ -6,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
++@net.neoforged.neoforge.internal.NonExhaustiveEnum(reason = "Further dest factors may be added")
+ public enum DestFactor {
+     CONSTANT_ALPHA,
+     CONSTANT_COLOR,

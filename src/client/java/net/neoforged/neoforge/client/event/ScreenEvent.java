@@ -16,7 +16,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.fml.LogicalSide;
@@ -42,11 +41,9 @@ import org.lwjgl.glfw.GLFW;
  *
  * @see Init
  * @see Render
- * @see BackgroundRendered
  * @see MouseInput
  * @see KeyInput
  */
-@OnlyIn(Dist.CLIENT)
 public abstract class ScreenEvent extends Event {
     private final Screen screen;
 
@@ -150,6 +147,7 @@ public abstract class ScreenEvent extends Event {
      * See the two subclasses for listening before and after drawing.
      *
      * @see Render.Pre
+     * @see Render.Background
      * @see Render.Post
      */
     public static abstract class Render extends ScreenEvent {
@@ -207,6 +205,24 @@ public abstract class ScreenEvent extends Event {
         public static class Pre extends Render implements ICancellableEvent {
             @ApiStatus.Internal
             public Pre(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                super(screen, guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
+
+        /**
+         * Fired <b>after</b> the screen's renderBackground and <b>before</b> its render method.
+         *
+         * <p>This can be used for rendering elements that must be below tooltips and the dragged stack,
+         * such as slot or item stack specific overlays.</p>
+         *
+         * <p>This event is not {@linkplain ICancellableEvent cancellable}.</p>
+         *
+         * <p>This event is fired on the {@linkplain NeoForge#EVENT_BUS game event bus},
+         * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
+         */
+        public static class Background extends ScreenEvent.Render {
+            @ApiStatus.Internal
+            public Background(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                 super(screen, guiGraphics, mouseX, mouseY, partialTick);
             }
         }

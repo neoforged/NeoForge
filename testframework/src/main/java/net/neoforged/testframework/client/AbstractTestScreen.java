@@ -42,6 +42,7 @@ import org.lwjgl.glfw.GLFW;
 @ParametersAreNonnullByDefault
 public abstract class AbstractTestScreen extends Screen {
     protected final MutableTestFramework framework;
+    private final Screen outer = this;
 
     public AbstractTestScreen(Component title, MutableTestFramework framework) {
         super(title);
@@ -186,7 +187,7 @@ public abstract class AbstractTestScreen extends Screen {
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, icon, pLeft, pTop, 9, 9, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
 
                 final Component title = TestsOverlay.statusColoured(test.visuals().title(), status);
-                graphics.drawString(font, title, pLeft + 11, pTop, renderTransparent ? (alpha | 0xffffff0) : 0xffffff);
+                graphics.drawString(font, title, pLeft + 11, pTop, renderTransparent ? (alpha | 0x00FFFFFF) : 0xFFFFFFFF);
             }
 
             @Override
@@ -266,9 +267,9 @@ public abstract class AbstractTestScreen extends Screen {
                 final List<Test> all = group.resolveAll();
                 final int enabledCount = (int) all.stream().filter(it -> framework.tests().isEnabled(it.id())).count();
                 if (enabledCount == all.size()) {
-                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group (" + all.size() + ") are enabled!").withStyle(ChatFormatting.GREEN), mouseX, mouseY);
                 } else if (enabledCount == 0) {
-                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, Component.literal("All tests in group (" + all.size() + ") are disabled!").withStyle(ChatFormatting.GRAY), mouseX, mouseY);
                 } else {
                     graphics.setTooltipForNextFrame(font, Component.literal(enabledCount + "/" + all.size() + " tests enabled!").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
                 }
@@ -291,7 +292,7 @@ public abstract class AbstractTestScreen extends Screen {
             }
 
             private void openBrowseGUI() {
-                Minecraft.getInstance().pushGuiLayer(new TestScreen(
+                Minecraft.getInstance().setScreen(new TestScreen(
                         Component.literal("Tests of group ").append(getTitle()),
                         framework, List.of(group)) {
                     @Override
@@ -302,7 +303,7 @@ public abstract class AbstractTestScreen extends Screen {
                         showAsGroup.setValue(false);
                         groupableList.resetRows("");
 
-                        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, (p_97691_) -> this.onClose())
+                        addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, (p_97691_) -> minecraft.setScreen(outer))
                                 .size(60, 20)
                                 .pos(this.width - 20 - 60, this.height - 29)
                                 .build());

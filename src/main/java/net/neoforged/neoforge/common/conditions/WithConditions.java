@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.lang3.Validate;
 
 public record WithConditions<A>(List<ICondition> conditions, A carrier) {
-
     public WithConditions(A carrier, ICondition... conditions) {
         this(List.of(conditions), carrier);
     }
@@ -23,6 +22,7 @@ public record WithConditions<A>(List<ICondition> conditions, A carrier) {
     public static <A> Builder<A> builder(A carrier) {
         return new Builder<A>().withCarrier(carrier);
     }
+
     public static class Builder<T> {
         private final List<ICondition> conditions = new ArrayList<>();
         private T carrier;

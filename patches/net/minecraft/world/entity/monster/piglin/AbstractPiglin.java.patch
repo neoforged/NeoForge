@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/piglin/AbstractPiglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/AbstractPiglin.java
-@@ -86,7 +_,7 @@
+@@ -85,7 +_,7 @@
              this.timeInOverworld = 0;
          }
  
@@ -9,7 +9,7 @@
              this.playConvertedSound();
              this.finishConversion(p_376586_);
          }
-@@ -105,7 +_,10 @@
+@@ -104,7 +_,10 @@
          this.convertTo(
              EntityType.ZOMBIFIED_PIGLIN,
              ConversionParams.single(this, true, true),

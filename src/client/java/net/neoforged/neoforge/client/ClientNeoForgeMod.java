@@ -157,7 +157,10 @@ public class ClientNeoForgeMod {
         event.addDependency(NeoForgeReloadListeners.BRANDING, VanillaClientListeners.FIRST);
 
         event.addListener(NeoForgeReloadListeners.OBJ_LOADER, ObjLoader.INSTANCE);
+
         event.addListener(NeoForgeReloadListeners.ENTITY_ANIMATIONS, AnimationLoader.INSTANCE);
+        // Animations need to be loaded before entity renderers are instantiated
+        event.addDependency(NeoForgeReloadListeners.ENTITY_ANIMATIONS, VanillaClientListeners.ENTITY_RENDERER);
     }
 
     @SubscribeEvent
