@@ -150,7 +150,7 @@ public final class ResourceHandlerUtil {
             for (int index = 0; index < size; index++) {
                 if (!handler.getResource(index).isEmpty()) {
                     inserted += handler.insert(index, resource, amount - inserted, tx);
-                    if (inserted >= amount) break;
+                    if (inserted == amount) break;
                 }
             }
 
@@ -159,7 +159,7 @@ public final class ResourceHandlerUtil {
                 for (int index = 0; index < size; index++) {
                     if (handler.getResource(index).isEmpty()) {
                         inserted += handler.insert(index, resource, amount - inserted, tx);
-                        if (inserted >= amount) break;
+                        if (inserted == amount) break;
                     }
                 }
             }
@@ -430,7 +430,7 @@ public final class ResourceHandlerUtil {
             int size = handler.size();
             for (int index = 0; index < size; index++) {
                 T resource = handler.getResource(index);
-                if (!resource.isEmpty() && filter.test(resource) && handler.extract(resource, handler.getAmountAsInt(index), temp) > 0) {
+                if (!resource.isEmpty() && filter.test(resource) && handler.extract(index, resource, handler.getAmountAsInt(index), temp) > 0) {
                     return resource;
                 }
             }
