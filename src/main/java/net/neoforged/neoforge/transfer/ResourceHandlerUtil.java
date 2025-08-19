@@ -190,6 +190,11 @@ public final class ResourceHandlerUtil {
         TransferPreconditions.checkNonNegative(amount);
         if (handler == null || amount == 0) return null;
 
+        // We are potentially iterating through the indices twice:
+        // a first time in findExtractableResource and a second time in the extract call below.
+        // This is done for simplicity of implementation, and to give the handler a chance to optimize the extract call.
+        // This can be reconsidered if finding the resource and extracting all copies of it in a single iteration pass
+        // would turn out to be generally faster.
         T resource = findExtractableResource(handler, filter, transaction);
         if (resource == null) return null;
 

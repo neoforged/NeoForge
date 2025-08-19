@@ -55,13 +55,16 @@ public class RangedResourceHandler<T extends IResource> extends DelegatingResour
 
     protected RangedResourceHandler(ResourceHandler<T> delegate, int start, int end) {
         this(() -> delegate, start, end);
-        Objects.requireNonNull(delegate, "Delegate cannot be null");
     }
 
     protected RangedResourceHandler(Supplier<ResourceHandler<T>> delegate, int start, int end) {
         super(delegate);
-        if (!(0 <= start && start <= end)) {
+        if (start < 0 || start >= end) {
             throw new IndexOutOfBoundsException("Invalid range: start=" + start + ", end=" + end);
+        }
+        int delegateSize = delegate.get().size();
+        if (end > delegateSize) {
+            throw new IndexOutOfBoundsException("Invalid range: end " + end + " is larger than the size of the handler " + delegateSize);
         }
         this.start = start;
         this.end = end;

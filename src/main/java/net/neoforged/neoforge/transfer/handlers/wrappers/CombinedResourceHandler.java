@@ -13,8 +13,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 /**
  * A resource handler that wraps multiple resource handlers, concatenating all their indices into one large handler.
  * <p>
- * The range of indices handled by each wrapped handler is assigned when the combined handler is created.
- * <strong>As a result, later changes to a wrapped handler's size will not be reflected.</strong>
+ * <strong>The size of the wrapper will not change in response to changes in the size of wrapped handlers.</strong>
+ * This means that indices added to the wrapped handlers will not be visible and indices removed will appear empty and read-only.
+ * To adjust to size changes of the wrapped handlers, the wrapper must be recreated.
  */
 public class CombinedResourceHandler<T extends IResource> implements ResourceHandler<T> {
     /**
