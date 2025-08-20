@@ -95,8 +95,9 @@ public interface ResourceHandler<T extends IResource> {
      * or if the caller prefers to deal in {@code int}s only,
      * the {@linkplain #getCapacityAsInt int-returning overload} can be used instead.
      * <p>
-     * This function serves only as a hint on the maximum {@linkplain #getAmountAsLong(int) amount} the resource handler might contain.
-     * The returned capacity may overestimate the actual allowed amount, and it might be smaller than the current amount.
+     * This function serves as a hint on the maximum {@linkplain #getAmountAsLong(int) amount} the resource handler might contain,
+     * for example the handler can be considered full if {@code amount >= capacity}.
+     * Note that the returned capacity may overestimate the actual allowed amount, and it might be smaller than the current amount.
      * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
      *
      * @param index    The index to get the capacity for.
@@ -115,8 +116,9 @@ public interface ResourceHandler<T extends IResource> {
      * for the cases where the handler is known to only support capacities up to {@code Integer.MAX_VALUE},
      * or if the caller prefers to deal in {@code int}s only.
      * <p>
-     * This function serves only as a hint on the maximum {@linkplain #getAmountAsInt(int) amount} the resource handler might contain.
-     * The returned capacity may overestimate the actual allowed amount, and it might be smaller than the current amount.
+     * This function serves as a hint on the maximum {@linkplain #getAmountAsInt(int) amount} the resource handler might contain,
+     * for example the handler can be considered full if {@code amount >= capacity}.
+     * Note that the returned capacity may overestimate the actual allowed amount, and it might be smaller than the current amount.
      * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
      *
      * @param index    The index to get the limit for.
