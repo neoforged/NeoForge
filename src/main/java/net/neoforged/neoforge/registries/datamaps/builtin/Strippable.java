@@ -23,7 +23,7 @@ public record Strippable(Block strippedBlock) {
     public static final Codec<Strippable> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(inst -> inst.group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("stripped_block")
-                            .forGetter(o -> o.strippedBlock))
+                            .forGetter(Strippable::strippedBlock))
                     .apply(inst, Strippable::new)),
             STRIPPED_BLOCK_CODEC);
 }
