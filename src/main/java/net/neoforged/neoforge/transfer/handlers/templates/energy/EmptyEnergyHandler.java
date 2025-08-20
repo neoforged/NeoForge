@@ -5,22 +5,21 @@
 
 package net.neoforged.neoforge.transfer.handlers.templates.energy;
 
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
+import net.neoforged.neoforge.transfer.handlers.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public final class EmptyEnergyHandler implements IEnergyHandler {
+public final class EmptyEnergyHandler implements EnergyHandler {
     public static final EmptyEnergyHandler INSTANCE = new EmptyEnergyHandler();
 
     private EmptyEnergyHandler() {}
 
     @Override
-    public int getAmount() {
+    public long getAmountAsLong() {
         return 0;
     }
 
     @Override
-    public int getCapacity() {
+    public long getCapacityAsLong() {
         return 0;
     }
 
@@ -32,10 +31,5 @@ public final class EmptyEnergyHandler implements IEnergyHandler {
     @Override
     public int extract(int amount, TransactionContext transaction) {
         return 0;
-    }
-
-    @Override
-    public int characteristics() {
-        return TransferCharacteristics.STATICALLY_SIZED | TransferCharacteristics.NO_OP | TransferCharacteristics.IMMUTABLE;
     }
 }

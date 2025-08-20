@@ -11,17 +11,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.redstone.Redstone;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
+import net.neoforged.neoforge.transfer.handlers.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import net.neoforged.neoforge.transfer.transaction.TransactionManager;
-import net.neoforged.neoforge.transfer.transaction.UnsafeTransactionManager;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 /**
- * Utility class for handling various {@link IEnergyHandler} interactions
+ * Utility class for handling various {@link EnergyHandler} interactions
  */
 public final class EnergyHandlerUtil {
     /**
@@ -32,27 +29,24 @@ public final class EnergyHandlerUtil {
      * @param amount      The maximum amount that will be transferred.
      * @param transaction The transaction this transfer is part of, or {@code null} if a transaction should be opened just for this transfer.
      * @return The total amount of energy that was successfully transferred.
-     * @throws IllegalStateException If no transaction is passed.
-     * @throws ReportedException     If amount is negative.
+     * @throws IllegalStateException    If no transaction is passed.
+     * @throws IllegalArgumentException If amount is negative.
      */
     public static int move(
-            @Nullable IEnergyHandler from, @Nullable IEnergyHandler to,
+            @Nullable EnergyHandler from, @Nullable EnergyHandler to,
             int amount,
             @Nullable TransactionContext transaction) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
-        if (from == null || to == null) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0 || from == null || to == null) return 0;
 
-        //Test if the `from` handler has the extraction characteristic (or is unknown).
-        //While this is not strictly necessary, it can reduce our iteration loop cost
-        if (!from.hasCharacteristics(TransferCharacteristics.EXTRACTABLE)) return 0;
+        //Test if the `from` handler supports extracting energy from it.
+        //Test if the `to` handler supports inserting energy into it.
+        //While these are  not strictly necessary, it can reduce our iteration loop cost
+        if (!from.supportsExtraction() || !to.supportsInsertion()) return 0;
 
-        //Test if the `to` handler has the insertion characteristic (or is unknown).
-        //While this is not strictly necessary, it can reduce our iteration loop cost
-        if (!to.hasCharacteristics(TransferCharacteristics.INSERTABLE)) return 0;
-
-        try (Transaction subTransaction = TransactionManager.open(transaction)) {
+        try (Transaction subTransaction = Transaction.open(transaction)) {
             int extractableAmount;
-            try (Transaction simulatedTransaction = TransactionManager.open(subTransaction)) {
+            try (Transaction simulatedTransaction = Transaction.open(subTransaction)) {
                 extractableAmount = from.extract(amount, simulatedTransaction);
                 //Don't commit. This will revert the extraction to allow work with the amount we "simulated".
             }
@@ -85,8 +79,8 @@ public final class EnergyHandlerUtil {
      * @return the redstone signal strength
      */
     @Range(from = Redstone.SIGNAL_NONE, to = Redstone.SIGNAL_MAX)
-    public static int getRedstoneSignalStrength(IEnergyHandler handler) {
-        var capacity = handler.getCapacityAsLong();
+    public static int getRedstoneSignalStrength(EnergyHandler handler) {
+        var capacity = handler.getCapacityAsInt();
         if (capacity == 0) return Redstone.SIGNAL_NONE;
         var amount = handler.getAmountAsLong();
         if (amount == 0) return Redstone.SIGNAL_NONE;
@@ -100,7 +94,7 @@ public final class EnergyHandlerUtil {
      * @param handler The energy handler to check
      * @return {@code true} if any energy could be accepted by the handler, otherwise {@code false}.
      */
-    public static boolean canAcceptEnergy(IEnergyHandler handler) {
+    public static boolean canAcceptEnergy(EnergyHandler handler) {
         return getInsertableAmount(handler) > 0;
     }
 
@@ -110,8 +104,8 @@ public final class EnergyHandlerUtil {
      * @param handler the energy handler to check
      * @return The max value that energy handler could receive
      */
-    public static int getInsertableAmount(IEnergyHandler handler) {
-        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+    public static int getInsertableAmount(EnergyHandler handler) {
+        try (Transaction transaction = Transaction.open(Transaction.getCurrentOpenedTransaction())) {
             return handler.insert(Integer.MAX_VALUE, transaction);
         }
     }
@@ -122,8 +116,8 @@ public final class EnergyHandlerUtil {
      * @param handler the energy handler to check
      * @return The max value that energy handler could provide
      */
-    public static int getExtractableAmount(IEnergyHandler handler) {
-        try (Transaction transaction = UnsafeTransactionManager.openUnsafe()) {
+    public static int getExtractableAmount(EnergyHandler handler) {
+        try (Transaction transaction = Transaction.open(Transaction.getCurrentOpenedTransaction())) {
             return handler.insert(Integer.MAX_VALUE, transaction);
         }
     }

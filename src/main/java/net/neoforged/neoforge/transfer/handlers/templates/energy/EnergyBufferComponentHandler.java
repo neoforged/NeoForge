@@ -13,8 +13,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.handlers.IItemContext;
-import net.neoforged.neoforge.transfer.handlers.TransferCharacteristics;
-import net.neoforged.neoforge.transfer.handlers.energy.IEnergyHandler;
+import net.neoforged.neoforge.transfer.handlers.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.contexts.PlayerItemContext;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -37,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * }
  * </pre>
  */
-public final class EnergyBufferComponentHandler implements IEnergyHandler {
+public final class EnergyBufferComponentHandler implements EnergyHandler {
     private final IItemContext itemContext;
     private final DataComponentType<Integer> componentType;
 
@@ -46,7 +45,6 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
     private final int capacityOfOneItem;
     private final int maxInsert;
     private final int maxExtract;
-    private final int characteristics;
 
     /**
      * Creates a new ComponentEnergyStorage with a data component as the backing store for the energy value.
@@ -58,20 +56,15 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
      * @param maxExtract        The max per-transfer power output rate
      */
     public EnergyBufferComponentHandler(IItemContext itemContext, DataComponentType<Integer> componentType, int capacityOfOneItem, int maxInsert, int maxExtract) {
+        TransferPreconditions.checkNonNegative(capacityOfOneItem);
+        TransferPreconditions.checkNonNegative(maxInsert);
+        TransferPreconditions.checkNonNegative(maxExtract);
+
         this.itemContext = itemContext;
         this.componentType = componentType;
         this.capacityOfOneItem = capacityOfOneItem;
         this.maxInsert = maxInsert;
         this.maxExtract = maxExtract;
-
-        var characteristics = 0;
-        if (maxInsert > 0)
-            characteristics |= TransferCharacteristics.INSERTABLE;
-        if (maxExtract > 0)
-            characteristics |= TransferCharacteristics.EXTRACTABLE;
-        if (characteristics == 0)
-            characteristics = TransferCharacteristics.NO_OP;
-        this.characteristics = TransferCharacteristics.STATICALLY_SIZED | characteristics;
     }
 
     private int getIndividualAmount() {
@@ -80,7 +73,8 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
 
     @Override
     public int insert(int amount, TransactionContext transaction) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0) return 0;
         if (maxInsert == 0) return 0;
         if (itemContext.getAmount() == 0) return 0;
 
@@ -101,9 +95,8 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
 
     @Override
     public int extract(int amount, TransactionContext transaction) {
-        if (TransferPreconditions.checkNonNegative(amount) == 0) return 0;
-        if (maxExtract == 0) return 0;
-        if (itemContext.getAmount() == 0) return 0;
+        TransferPreconditions.checkNonNegative(amount);
+        if (amount == 0 || maxExtract == 0 || itemContext.getAmount() == 0) return 0;
 
         int stackedAmount = IntMath.saturatedMultiply(maxExtract, itemContext.getAmount());
         amount = Math.min(amount, stackedAmount);
@@ -137,30 +130,13 @@ public final class EnergyBufferComponentHandler implements IEnergyHandler {
     }
 
     @Override
-    public int getAmount() {
-        int rawEnergy = getIndividualAmount();
-        return IntMath.saturatedMultiply(Math.min(rawEnergy, capacityOfOneItem), itemContext.getAmount());
-    }
-
-    @Override
     public long getAmountAsLong() {
-        int currentOfOne = getIndividualAmount();
-        return (long) Math.min(currentOfOne, capacityOfOneItem) * itemContext.getAmount();
-    }
-
-    @Override
-    public int getCapacity() {
-        return IntMath.saturatedMultiply(capacityOfOneItem, itemContext.getAmount());
+        return (long) Math.min(getIndividualAmount(), capacityOfOneItem) * itemContext.getAmount();
     }
 
     @Override
     public long getCapacityAsLong() {
         return (long) capacityOfOneItem * itemContext.getAmount();
-    }
-
-    @Override
-    public int characteristics() {
-        return characteristics;
     }
 
     /**
