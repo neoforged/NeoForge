@@ -134,9 +134,8 @@ public interface ResourceHandler<T extends IResource> {
      * {@return whether the given resource is generally allowed to be contained at the given index,
      * irrespective of the current amount or resource currently at that index}
      * <p>
-     * If this method returns {@code false}, the insertion of the resource is not currently valid.
-     * If this method returns {@code true}, no assumptions can be made: the only way to find out
-     * whether a handler will accept a resource, is to try {@linkplain #insert inserting} it.
+     * This function serves as a hint on whether the resource handler can contain the resource or not.
+     * The only way to know if a handler will accept a resource, is to try to {@link #insert insert} it.
      *
      * @param index    The index to check.
      * @param resource The resource to check. <strong>Must be non-empty.</strong>
