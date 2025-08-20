@@ -78,14 +78,22 @@
          this.window.updateVsync(this.options.enableVsync().get());
          this.window.updateRawMouseInput(this.options.rawMouseInput().get());
          this.window.setDefaultErrorCallback();
-@@ -655,9 +_,9 @@
+@@ -655,9 +_,16 @@
          GameLoadTimesEvent.INSTANCE.beginStep(TelemetryProperty.LOAD_TIME_LOADING_OVERLAY_MS);
          Minecraft.GameLoadCookie minecraft$gameloadcookie = new Minecraft.GameLoadCookie(realmsclient, p_91084_.quickPlay);
          this.setOverlay(
 -            new LoadingOverlay(
-+            net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(
-                 this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
+-                this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie), () -> {
 -                    if (SharedConstants.IS_RUNNING_IN_IDE) {
++            net.neoforged.neoforge.client.ClientHooks.createLoadingOverlay(
++                this, reloadinstance, p_299779_ -> Util.ifElse(p_299779_, p_299772_ -> {
++                    if (p_299772_.getCause() instanceof net.neoforged.fml.ModLoadingException mle) {
++                        // Hard-crash if the reload failed due to a modloading error to prevent spurious errors during the recovery reload
++                        // TODO: replace with call to MC-independent error screen
++                        throw mle;
++                    }
++                    this.rollbackResourcePacks(p_299772_, minecraft$gameloadcookie);
++                }, () -> {
 +                    if (SharedConstants.IS_RUNNING_IN_IDE && false /* Neo: Disable self-test */) {
                          this.selfTest();
                      }
@@ -116,12 +124,13 @@
          }
  
          stringbuilder.append(" ");
-@@ -797,7 +_,7 @@
+@@ -797,7 +_,8 @@
      }
  
      private void rollbackResourcePacks(Throwable p_91240_, @Nullable Minecraft.GameLoadCookie p_299846_) {
 -        if (this.resourcePackRepository.getSelectedIds().size() > 1) {
-+        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired())) { //Forge: This caused infinite loop if any resource packs are forced. Such as mod resources. So check if we can disable any.
++        //Neo: Checking for size>1 causes an infinite loop if any packs such as mod resources are forced or hidden
++        if (this.resourcePackRepository.getSelectedPacks().stream().anyMatch(e -> !e.isRequired() && !e.isHidden())) {
              this.clearResourcePacksOnError(p_91240_, null, p_299846_);
          } else {
              Util.throwAsRuntime(p_91240_);
