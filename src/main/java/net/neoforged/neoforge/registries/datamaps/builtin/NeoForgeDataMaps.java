@@ -137,10 +137,10 @@ public class NeoForgeDataMaps {
      * <p>
      * The location of this data map is {@code neoforge/data_maps/block/strippables.json}, and the values are objects with 1 field:
      * <ul>
-     * <li>{@code stripped_block}, the stripped equivalent of the block after being right-clicked on by an axe.</li>
+     * <li>{@code stripped_block} - the stripped equivalent of the block after being right-clicked on by an axe.</li>
      * </ul>
      *
-     * Note that adding blocks to this data map will copy over the {@link RotatedPillarBlock#AXIS} from the unstripped state.
+     * Note that adding blocks to this data map will copy over all the block state properties from the unstripped state.
      * If you want more advanced behavior, implement the appropriate methods in your block class.
      */
     public static final DataMapType<Block, Strippable> STRIPPABLES = DataMapType.builder(

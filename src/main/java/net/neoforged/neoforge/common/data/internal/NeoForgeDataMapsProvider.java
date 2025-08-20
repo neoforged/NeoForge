@@ -30,6 +30,7 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -91,8 +92,7 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
                 .forEach((type, lootTable) -> raidHeroGifts.add(BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(type), new RaidHeroGift(lootTable), false));
 
         final var strippables = builder(NeoForgeDataMaps.STRIPPABLES);
-        ObfuscationReflectionHelper.<Map<Block, Block>, AxeItem>getPrivateValue(AxeItem.class, null, "STRIPPABLES")
-                .forEach((block, stripped) -> strippables.add(block.builtInRegistryHolder(), new Strippable(stripped), false));
+        StrippablesAccess.getStrippables().forEach((block, stripped) -> strippables.add(block.builtInRegistryHolder(), new Strippable(stripped), false));
 
         final var monsterRoomMobs = builder(NeoForgeDataMaps.MONSTER_ROOM_MOBS);
         Arrays.stream(ObfuscationReflectionHelper.<EntityType<?>[], MonsterRoomFeature>getPrivateValue(MonsterRoomFeature.class, null, "MOBS"))
@@ -108,6 +108,16 @@ public class NeoForgeDataMapsProvider extends DataMapProvider {
         HoneycombItem.WAXABLES.get().forEach((now, after) -> {
             waxables.add(now.builtInRegistryHolder(), new Waxable(after), false);
         });
+    }
+
+    private static class StrippablesAccess extends AxeItem {
+        private StrippablesAccess(ToolMaterial material, float p_364213_, float p_365432_, Properties p_40524_) {
+            super(material, p_364213_, p_365432_, p_40524_);
+        }
+
+        public static Map<Block, Block> getStrippables() {
+            return STRIPPABLES;
+        }
     }
 
     private static class FuelValuesDataMapBuilder extends FuelValues.Builder {

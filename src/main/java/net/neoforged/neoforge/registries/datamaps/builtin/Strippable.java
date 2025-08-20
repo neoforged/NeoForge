@@ -12,10 +12,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 
 /**
- * Data map value for {@link NeoForgeDataMaps#STRIPPABLES raid hero gifts}.
- * Note that the stripped block will inherit the {@link RotatedPillarBlock#AXIS} property of the unstripped block.
+ * Data map value for {@link NeoForgeDataMaps#STRIPPABLES strippable blocks}.
+ * Note that the stripped block will inherit all properties of the unstripped block, given that they're present on the strippable block as well.
  *
- * @param strippedBlock the stripped block, as a result of being right-clicked by an axe.
+ * @param strippedBlock the stripped block, as a result of being right-clicked by an axe
  */
 public record Strippable(Block strippedBlock) {
     public static final Codec<Strippable> STRIPPED_BLOCK_CODEC = BuiltInRegistries.BLOCK.byNameCodec()
